@@ -1,3 +1,5 @@
+[![Gitter](https://img.shields.io/gitter/room/Samsung/ONE-vscode?color=orange)](https://gitter.im/Samsung/ONE-vscode)
+
 # **ONE**-vscode
 
 Visual Studio Code Extension of [**ONE**](https://github.com/Samsung/ONE) compiler toolchain.
