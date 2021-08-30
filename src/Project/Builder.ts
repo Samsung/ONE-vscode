@@ -21,6 +21,8 @@ import * as helpers from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
 import {JobImportTF} from './JobImportTF';
+import {JobOptimize} from './JobOptimize';
+import {JobQuantize} from './JobQuantize';
 import {WorkFlow} from './WorkFlow';
 
 export class Builder {
@@ -37,7 +39,38 @@ export class Builder {
   // TODO import .cfg file to BuildFlow
 
   public init() {
-    // TODO implement
+    // temporary initial build jobs for testing
+    {
+      // import-tf
+      let importTF = new JobImportTF();
+      importTF.name = 'ImportTF inception_v3.pb';
+      importTF.inputPath = './inception_v3.pb';
+      importTF.outputPath = './inception_v3.circle';
+      importTF.inputArrays = 'input';
+      importTF.outputArrays = 'InceptionV3/Predictions/Reshape_1';
+      importTF.inputShapes = '1,299,299,3';
+      importTF.converterVersion = 'v1';
+
+      this.workFlow.addJob(importTF);
+    }
+
+    {
+      // optimize
+      let optimize = new JobOptimize();
+      optimize.name = 'Optimize inception_v3.circle';
+      optimize.inputPath = './inception_v3.circle';
+      optimize.outputPath = './inception_v3.opt.circle';
+      this.workFlow.addJob(optimize);
+    }
+
+    {
+      // quantize
+      let quantize = new JobQuantize();
+      quantize.name = 'Quantize inception_v3.circle';
+      quantize.inputPath = './inception_v3.opt.circle';
+      quantize.outputPath = './inception_v3.opt.q8.circle';
+      this.workFlow.addJob(quantize);
+    }
   }
 
   // called from user interface

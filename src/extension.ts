@@ -15,6 +15,7 @@
  */
 
 import * as vscode from 'vscode';
+import {OneCfgBuilder} from './oneCfgBuilder';
 import {Project} from './Project';
 import {Utils} from './Utils';
 
@@ -22,12 +23,19 @@ export function activate(context: vscode.ExtensionContext) {
   console.log('one-vscode activate OK');
 
   let logger = new Utils.Logger();
+  let onecfgBuilder = new OneCfgBuilder();
   let projectBuilder = new Project.Builder(logger);
 
   projectBuilder.init();
 
+  let disposableOneCC = vscode.commands.registerCommand('onecc.build', () => {
+    console.log('onecc build...');
+    onecfgBuilder.build(context);
+  });
+  context.subscriptions.push(disposableOneCC);
+
   let disposableOneVsc = vscode.commands.registerCommand('onevscode.build', () => {
-    console.log('one build...');
+    console.log('one-vscode build...');
     projectBuilder.build(context);
   });
   context.subscriptions.push(disposableOneVsc);

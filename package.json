@@ -10,14 +10,19 @@
     "Other"
   ],
   "activationEvents": [
+    "onCommand:onecc.build",
     "onCommand:onevscode.build"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
+        "command": "onecc.build",
+        "title": "onecc build"
+      },
+      {
         "command": "onevscode.build",
-        "title": "one build"
+        "title": "onevscode build"
       }
     ]
   },
