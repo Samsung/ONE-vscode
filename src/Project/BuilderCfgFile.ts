@@ -22,6 +22,7 @@ import * as helpers from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
 import {BuilderJob} from './BuilderJob';
+import {JobCodegen} from './JobCodegen';
 import {JobImportTF} from './JobImportTF';
 import {JobOptimize} from './JobOptimize';
 import {JobPack} from './JobPack';
@@ -40,6 +41,7 @@ const K_IMPORT_BCQ: string = 'one-import-bcq';
 const K_OPTIMIZE: string = 'one-optimize';
 const K_QUANTIZE: string = 'one-quantize';
 const K_PACK: string = 'one-pack';
+const K_CODEGEN: string = 'one-codegen';
 // key for properties
 const K_INPUT_PATH: string = 'input_path';
 const K_OUTPUT_PATH: string = 'output_path';
@@ -47,6 +49,8 @@ const K_INPUT_ARRAYS: string = 'input_arrays';
 const K_OUTPUT_ARRAYS: string = 'output_arrays';
 const K_INPUT_SHAPES: string = 'input_shapes';
 const K_CONVERTER_VERSION: string = 'converter_version';
+const K_BACKEND: string = 'backend';
+const K_COMMAND: string = 'command';
 
 /**
  * @brief onecc/one-build cfg importer
@@ -121,6 +125,18 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
     console.log('pack = ', pack);
     this.jobOwner.addJob(pack);
     this.logger.outputLine('Add Pack: ' + inputModel);
+  }
+
+  private cfgCodegen(prop: any) {
+    let codegen = new JobCodegen();
+    codegen.backend = prop[K_BACKEND];
+    codegen.command = prop[K_COMMAND];
+
+    codegen.name = 'Codegen ' + codegen.backend;
+
+    console.log('Codegen = ', codegen);
+    this.jobOwner.addJob(codegen);
+    this.logger.outputLine('Add Codegen: ' + codegen.backend);
   }
 
   private isItemTrue(item: string): boolean {
@@ -224,8 +240,10 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
       let prop = cfgIni[K_PACK];
       this.cfgPack(prop);
     }
-
-    // TODO add one-codegen
+    if (this.isItemTrue(cfgOne[K_CODEGEN])) {
+      let prop = cfgIni[K_CODEGEN];
+      this.cfgCodegen(prop);
+    }
 
     this.logger.outputLine('Done import configuration.');
     this.jobOwner.finishAdd();

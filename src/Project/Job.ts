@@ -34,6 +34,7 @@ export const enum Type {
   tOptimize,
   tQuantize,
   tPack,
+  tCodegen,
   // TODO add more
 }
 

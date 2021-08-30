@@ -55,6 +55,8 @@ export class JobImportTF extends JobImport {
     args.add('--input_shapes', this.inputShapes);
     args.add('--converter_version', this.converterVersion);
 
+    console.log('args = ', args);
+
     return args;
   }
 }
