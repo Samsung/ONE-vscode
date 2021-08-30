@@ -1,0 +1,145 @@
+#!/bin/bash
+
+INVALID_EXIT=0
+FILES_TO_CHECK=()
+DIRECTORIES_TO_BE_TESTED=()
+DIRECTORIES_NOT_TO_BE_TESTED=()
+CLANG_FORMAT_CANDIDATES=()
+PATCH_FILE=format.patch
+
+THIS_PROJECT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+echo $PROJECT_PATH
+
+function Usage()
+{
+  echo "Usage: $0 $(basename ${BASH_SOURCE[0]}) [OPTIONS] [<file|dir> ...]"
+  echo "If no arguments are specified, it formats codes in src folder"
+  echo "If <file>s are given, it reformats the files"
+  echo ""
+  echo "Options:"
+  echo "      --clang-format <TOOL>     clang format bin (default: clang-format-3.9, clang-format)"
+}
+
+DIRECTORIES_TO_BE_TESTED="src"
+
+while [[ $# -gt 0 ]]
+do
+  arg="$1"
+  case $arg in
+    -h|--help|help)
+      Usage
+      exit 0
+      ;;
+    --clang-format)
+      CLANG_FORMAT_CANDIDATES=($2)
+      shift 2
+      ;;
+    --clang-format=*)
+      CLANG_FORMAT_CANDIDATES=(${1#*=})
+      shift
+      ;;
+    *)
+      DIRECTORIES_TO_BE_TESTED+=($1)
+      shift
+      ;;
+  esac
+done
+
+function pushd () {
+  command pushd "$@" > /dev/null
+}
+
+function popd () {
+  command popd "$@" > /dev/null
+}
+
+function command_exists() {
+  command -v $1 > /dev/null 2>&1
+}
+
+function exclude_symbolic_links() {
+  # Check all files (CMakeLists.txt, *.cl, ... not only for C++, Python)
+  if [[ ${#FILES_TO_CHECK} -ne 0 ]]; then
+    FILES_EXCLUDE_SYMLINKS=$(file ${FILES_TO_CHECK} | grep -v "symbolic link" | cut -d':' -f1)
+    FILES_TO_CHECK=${FILES_EXCLUDE_SYMLINKS}
+  fi
+}
+
+function check_ts_files() {
+  CLANG_FORMAT_CANDIDATES+=("clang-format-8")
+  for CLANG_FORMAT_CANDIDATE in ${CLANG_FORMAT_CANDIDATES[@]}; do
+    if command_exists ${CLANG_FORMAT_CANDIDATE} ; then
+      CLANG_FORMAT="${CLANG_FORMAT_CANDIDATE}"
+      break
+    fi
+  done
+
+  if [[ -z ${CLANG_FORMAT}  ]]; then
+    echo "[ERROR] clang-format-8 is unavailable"
+    echo
+    echo "        Please install clang-format-8 before running format check"
+    exit 1
+  fi
+
+  # Check .ts files
+  FILES_TO_CHECK_TS=()
+  for f in ${FILES_TO_CHECK[@]}; do
+    # File extension to check
+    if [[ ${f} == +(*.ts) ]]; then
+      FILES_TO_CHECK_TS+=("${f}")
+    fi
+  done
+
+  # Skip by '.FORMATDENY' file
+  for s in ${DIRECTORIES_NOT_TO_BE_TESTED[@]}; do
+    FILES_TO_CHECK_TS=(${FILES_TO_CHECK_TS[*]/$s*/})
+    FILES_TO_CHECK_TS_BY_CLANG_FORMAT_8=(${FILES_TO_CHECK_TS_BY_CLANG_FORMAT_8[*]/$s*/})
+  done
+
+  if [[ ${#FILES_TO_CHECK_TS} -ne 0 ]]; then
+    ${CLANG_FORMAT} -i ${FILES_TO_CHECK_TS[@]}
+    EXIT_CODE=$?
+    if [[ ${EXIT_CODE} -ne 0 ]]; then
+      INVALID_EXIT=${EXIT_CODE}
+    fi
+  fi
+}
+
+pushd ${THIS_PROJECT_PATH}
+
+if [[ -n "$(git diff)" ]]; then
+  echo "[WARNING] Commit all the changes before running format check"
+  echo "          ${PATCH_FILE} file will contain unstaged files"
+fi
+
+FILES_TO_CHECK=$(git ls-files -c --exclude-standard ${DIRECTORIES_TO_BE_TESTED[@]})
+
+for DIR_NOT_TO_BE_TESTED in $(git ls-files -co --exclude-standard '*/.FORMATDENY'); do
+  DIRECTORIES_NOT_TO_BE_TESTED+=($(dirname "${DIR_NOT_TO_BE_TESTED}"))
+done
+
+exclude_symbolic_links
+check_ts_files
+
+DIFF=$(git diff | tee ${PATCH_FILE})
+
+popd
+
+if [[ ! -n "${DIFF}" ]] && [[ ${INVALID_EXIT} -eq 0 ]]; then
+  echo "[PASSED] Format checker succeed."
+  exit 0
+fi
+
+# Something went wrong
+
+if [[ -s ${PATCH_FILE} ]]; then
+  echo "[FAILED] Format checker failed and update code to follow convention."
+  echo "         You can find changes in ${PATCH_FILE}"
+fi
+
+if [[ ${INVALID_EXIT} -ne 0 ]]; then
+  echo "[[FAILED] Invalid format checker exit."
+fi
+
+exit 1
