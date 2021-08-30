@@ -67,7 +67,6 @@ function exclude_symbolic_links() {
 }
 
 function check_ts_files() {
-
   CLANG_FORMAT_CANDIDATES+=("clang-format-8")
   for CLANG_FORMAT_CANDIDATE in ${CLANG_FORMAT_CANDIDATES[@]}; do
     if command_exists ${CLANG_FORMAT_CANDIDATE} ; then
