@@ -30,7 +30,11 @@ export function activate(context: vscode.ExtensionContext) {
     console.log('one build...');
     projectBuilder.build(context);
   });
+  let disposableOneConfigurationSettings = vscode.commands.registerCommand('onevscode.configuration-settings', () => {
+    console.log('configuration-settings...');
+  })
   context.subscriptions.push(disposableOneVsc);
+  context.subscriptions.push(disposableOneConfigurationSettings);
 }
 
 export function deactivate() {
