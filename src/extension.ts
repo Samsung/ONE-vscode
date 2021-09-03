@@ -35,6 +35,7 @@ export function activate(context: vscode.ExtensionContext) {
     console.log('one build...');
     projectBuilder.build(context);
   });
+<<<<<<< HEAD
   context.subscriptions.push(disposableOneBuild);
 
   let disposableOneImport = vscode.commands.registerCommand('onevscode.import', () => {
@@ -72,6 +73,13 @@ export function activate(context: vscode.ExtensionContext) {
   let hover = new HoverProvider();
   let disposableHover = vscode.languages.registerHoverProvider('ini', hover);
   context.subscriptions.push(disposableHover);
+=======
+  let disposableOneConfigurationSettings = vscode.commands.registerCommand('onevscode.configuration-settings', () => {
+    console.log('configuration-settings...');
+  })
+  context.subscriptions.push(disposableOneVsc);
+  context.subscriptions.push(disposableOneConfigurationSettings);
+>>>>>>> 4bf80fe (feat: init configuration-setting extension and create a file structure for configuration-settings)
 }
 
 export function deactivate() {

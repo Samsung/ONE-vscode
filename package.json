@@ -11,10 +11,7 @@
   ],
   "activationEvents": [
     "onCommand:onevscode.build",
-    "onCommand:onevscode.import",
-    "onCommand:onevscode.json-tracer",
-    "onCommand:onevscode.configuration-settings",
-    "onCommand:onevscode.toggle-codelens"
+    "onCommand:onevscode.configuration-settings"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -24,53 +21,9 @@
         "title": "one build"
       },
       {
-        "command": "onevscode.import",
-        "title": "one cfg import"
-      },
-      {
-        "command": "onevscode.json-tracer",
-        "title": "one json tracer"
-      },
-      {
         "command": "onevscode.configuration-settings",
-        "title": "one configuration-settings"
-      },
-      {
-        "command": "onevscode.toggle-codelens",
-        "title": "one toggle codelens"
-      }
-    ],
-    "configuration": {
-      "properties": {
-        "one-vscode.enableCodelens": {
-          "type": "boolean",
-          "default": true
-        }
-      }
-    },
-    "languages": [
-      {
-        "id": "ini",
-        "aliases": [
-          "Configuration"
-        ],
-        "extensions": [
-          ".cfg"
-        ]
-      }
-    ],
-    "snippets": [
-      {
-        "language": "ini",
-        "path": "./src/Snippets/one-build.json"
-      },
-      {
-        "language": "ini",
-        "path": "./src/Snippets/onecc.json"
-      },
-      {
-        "language": "ini",
-        "path": "./src/Snippets/tools.json"
+        "category": "ONE",
+        "title":"configuration-settings"
       }
     ]
   },
