@@ -22,7 +22,11 @@ export function activate(context: vscode.ExtensionContext) {
   let disposableOneVsc = vscode.commands.registerCommand('onevscode.build', () => {
     console.log('one build...');
   });
+  let disposableOneConfigurationSettings = vscode.commands.registerCommand('onevscode.configuration-settings', () => {
+    console.log('configuration-settings...');
+  })
   context.subscriptions.push(disposableOneVsc);
+  context.subscriptions.push(disposableOneConfigurationSettings);
 }
 
 export function deactivate() {

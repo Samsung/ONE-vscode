@@ -10,7 +10,8 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:onevscode.build"
+    "onCommand:onevscode.build",
+    "onCommand:onevscode.configuration-settings"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -18,6 +19,11 @@
       {
         "command": "onevscode.build",
         "title": "one build"
+      },
+      {
+        "command": "onevscode.configuration-settings",
+        "category": "ONE",
+        "title":"configuration-settings"
       }
     ]
   },
