@@ -16,7 +16,11 @@
 
 import * as vscode from 'vscode';
 
+<<<<<<< HEAD
 import {ConfigPanel} from './Config/ConfigPanel';
+=======
+import {ConfigurationSettingsPanel} from './configuration-settings/ConfigurationSettingsPanel';
+>>>>>>> d1c031f ([Draft] Introduce Configuration-Setting GUI)
 import {Project} from './Project';
 import {Utils} from './Utils';
 
@@ -54,5 +58,6 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
+
   // TODO do cleanup
 }
