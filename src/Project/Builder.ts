@@ -15,22 +15,18 @@
  */
 
 import * as vscode from 'vscode';
-import {Project} from './Project';
 
-export function activate(context: vscode.ExtensionContext) {
-  console.log('one-vscode activate OK');
+export class Builder {
+  constructor() {}
 
-  let projectBuilder = new Project.Builder();
+  // TODO import .cfg file to BuildFlow
 
-  projectBuilder.init();
+  public init() {
+    // TODO implement
+  }
 
-  let disposableOneVsc = vscode.commands.registerCommand('onevscode.build', () => {
-    console.log('one build...');
-    projectBuilder.build(context);
-  });
-  context.subscriptions.push(disposableOneVsc);
-}
-
-export function deactivate() {
-  // TODO do cleanup
+  // called from user interface
+  public build(context: vscode.ExtensionContext) {
+    // TODO implement
+  }
 }
