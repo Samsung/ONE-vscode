@@ -17,6 +17,7 @@
 import * as vscode from 'vscode';
 import {Project} from './Project';
 import {Utils} from './Utils';
+import { ConfigurationSettingsPanel } from './configuration-settings/ConfigurationSettingsPanel' 
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('one-vscode activate OK');
@@ -44,7 +45,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(disposableOneBarchart);
   
   let disposableOneConfigurationSettings = vscode.commands.registerCommand('onevscode.configuration-settings', () => {
-    console.log('configuration-settings...');
+    ConfigurationSettingsPanel.createOrShow(context.extensionUri);
   })
   context.subscriptions.push(disposableOneConfigurationSettings);
 }
