@@ -28,9 +28,14 @@ export function activate(context: vscode.ExtensionContext) {
     console.log('one build...');
     projectBuilder.build(context);
   });
-  context.subscriptions.push(disposableOneVsc);
+     context.subscriptions.push(disposableOneVsc);
+
+
 }
 
 export function deactivate() {
   // TODO do cleanup
 }
+
+
+
