@@ -14,21 +14,11 @@
  * limitations under the License.
  */
 
-import * as vscode from 'vscode';
+import {Balloon as _Balloon} from './Utils/Balloon';
 
-import {Balloon} from '../Utils/Balloon';
+export namespace Utils {
 
-export class Builder {
-  constructor() {}
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const Balloon = _Balloon;
 
-  // TODO import .cfg file to BuildFlow
-
-  public init() {
-    // TODO implement
-  }
-
-  // called from user interface
-  public build(context: vscode.ExtensionContext) {
-    // TODO implement
-  }
-}
+}  // namespace Utils
