@@ -16,19 +16,11 @@
 
 import * as vscode from 'vscode';
 
-import {Balloon} from '../Utils/Balloon';
-
-export class Builder {
-  constructor() {}
-
-  // TODO import .cfg file to BuildFlow
-
-  public init() {
-    // TODO implement
+export class Balloon {
+  static error(msg: string) {
+    vscode.window.showErrorMessage(msg);
   }
-
-  // called from user interface
-  public build(context: vscode.ExtensionContext) {
-    // TODO implement
+  static info(msg: string) {
+    vscode.window.showInformationMessage(msg);
   }
 }
