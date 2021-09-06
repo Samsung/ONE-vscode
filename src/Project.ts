@@ -14,23 +14,11 @@
  * limitations under the License.
  */
 
-import * as vscode from 'vscode';
-import {Project} from './Project';
+import {Builder as _Builder} from './Project/Builder';
 
-export function activate(context: vscode.ExtensionContext) {
-  console.log('one-vscode activate OK');
+export namespace Project {
 
-  let projectBuilder = new Project.Builder();
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const Builder = _Builder;
 
-  projectBuilder.init();
-
-  let disposableOneVsc = vscode.commands.registerCommand('onevscode.build', () => {
-    console.log('one build...');
-    projectBuilder.build(context);
-  });
-  context.subscriptions.push(disposableOneVsc);
-}
-
-export function deactivate() {
-  // TODO do cleanup
-}
+}  // namespace Project
