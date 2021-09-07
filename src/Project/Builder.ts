@@ -17,9 +17,14 @@
 import * as vscode from 'vscode';
 
 import {Balloon} from '../Utils/Balloon';
+import * as helpers from '../Utils/Helpers';
 
 export class Builder {
-  constructor() {}
+  currentWorkspace: string;
+
+  constructor() {
+    this.currentWorkspace = '';
+  }
 
   // TODO import .cfg file to BuildFlow
 
@@ -29,6 +34,12 @@ export class Builder {
 
   // called from user interface
   public build(context: vscode.ExtensionContext) {
-    // TODO implement
+    try {
+      this.currentWorkspace = helpers.obtainWorkspaceRoot();
+    } catch (e) {
+      Balloon.error(e);
+      return;
+    }
+    // TODO initialize workflow
   }
 }
