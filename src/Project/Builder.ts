@@ -43,8 +43,13 @@ export class Builder {
   public build(context: vscode.ExtensionContext) {
     try {
       this.currentWorkspace = helpers.obtainWorkspaceRoot();
-    } catch (e) {
-      Balloon.error(e);
+    } catch (e: unknown) {
+      let errmsg = 'Failed to obtain workspace root';
+      if (e instanceof Error) {
+        errmsg = e.message;
+      }
+      // TODO add more type for e if changed in obtainWorkspaceRoot
+      Balloon.error(errmsg);
       return;
     }
 
