@@ -4,10 +4,11 @@
 	--input-padding-horizontal: 4px;
 	--input-margin-vertical: 4px;
 	--input-margin-horizontal: 0;
+	--container-margin: 10px;
 }
 
 body {
-	padding: 0 var(--container-padding);
+	padding: var(--container-padding);
 	color: var(--vscode-foreground);
 	font-size: var(--vscode-font-size);
 	font-weight: var(--vscode-font-weight);
@@ -21,21 +22,64 @@ ul {
 }
 
 .container {
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	grid-template-rows: 50px 300px 50px;
-	max-width: 96%;
-    min-height: 100vh;
+	height: 90vh;
+	width: 90vw;
 }
 
-.item {
+.main, .tools, .options {
 	border: 1px solid white;
 }
-
-.item:nth-child(5) {
-	grid-column: 2 / span 2;
+.header {
+	height: 10%;
+	width: 100%;
+	display: table;
 }
-
+.heading {
+	width: 50%;
+	vertical-align: bottom;
+	display: table-cell;
+}
+.importBtn {
+	width: 50%;
+	text-align: end;
+	vertical-align: bottom;
+	display: table-cell;
+}
+.main {
+	height: 80%;
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	margin-top: var(--container-margin);
+}
+.mainL {
+	width: 30%;
+	padding-left: var(--container-padding);
+	margin-top: var(--container-margin);
+}
+.mainR {
+	width: 70%;
+	padding-right: var(--container-padding);
+	margin-top: var(--container-margin);
+}
+.tools {
+	height: 50%;
+	width: 80%;
+	margin-top: var(--container-margin);
+	padding-right: var(--container-padding);
+}
+.options {
+	height: 85%;
+	width: 100%;
+	margin-top: var(--container-margin);
+	padding-right: var(--container-padding);
+	overflow: scroll;
+}
+.footer {
+	width: 100%;
+	text-align: end;
+	margin-top: var(--container-margin);
+}
 
 body > *,
 form > * {
@@ -64,7 +108,6 @@ code {
 button {
 	border: none;
 	padding: var(--input-padding-vertical) var(--input-padding-horizontal);
-	/* width: 100%; */
 	text-align: center;
 	outline: 1px solid transparent;
 	outline-offset: 2px !important;
