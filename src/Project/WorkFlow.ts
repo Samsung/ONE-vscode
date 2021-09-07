@@ -14,40 +14,19 @@
  * limitations under the License.
  */
 
-import * as vscode from 'vscode';
-
-import {Balloon} from '../Utils/Balloon';
-import * as helpers from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
-import {WorkFlow} from './WorkFlow';
-
-export class Builder {
+export class WorkFlow {
   logger: Logger;
-  workFlow: WorkFlow;  // our build WorkFlow
-  currentWorkspace: string;
+  workspace: string;
 
-  constructor(l: Logger) {
-    this.logger = l;
-    this.workFlow = new WorkFlow(l);
-    this.currentWorkspace = '';
+  constructor(logger: Logger) {
+    this.logger = logger;
+    this.workspace = '';
   }
 
-  // TODO import .cfg file to BuildFlow
-
-  public init() {
+  public start(workspace: string) {
+    this.workspace = workspace;
     // TODO implement
-  }
-
-  // called from user interface
-  public build(context: vscode.ExtensionContext) {
-    try {
-      this.currentWorkspace = helpers.obtainWorkspaceRoot();
-    } catch (e) {
-      Balloon.error(e);
-      return;
-    }
-
-    this.workFlow.start(this.currentWorkspace);
   }
 }
