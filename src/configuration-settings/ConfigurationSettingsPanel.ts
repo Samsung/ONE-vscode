@@ -171,7 +171,12 @@ export class ConfigurationSettingsPanel {
               <div class="mainR">
                   <h2>Options for</h2>
                   <div class="options">
-
+                    <div class="optionsName">
+                        nameTest
+                    </div>
+                    <div class="optionsValue">
+                      valueTest
+                    </div>
                   </div>
               </div>
   
