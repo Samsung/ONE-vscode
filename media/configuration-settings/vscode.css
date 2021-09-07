@@ -20,6 +20,23 @@ ul {
 	padding-left: var(--container-padding);
 }
 
+.container {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	grid-template-rows: 50px 300px 50px;
+	max-width: 96%;
+    min-height: 100vh;
+}
+
+.item {
+	border: 1px solid white;
+}
+
+.item:nth-child(5) {
+	grid-column: 2 / span 2;
+}
+
+
 body > *,
 form > * {
 	margin-block-start: var(--input-margin-vertical);
@@ -47,7 +64,7 @@ code {
 button {
 	border: none;
 	padding: var(--input-padding-vertical) var(--input-padding-horizontal);
-	width: 100%;
+	/* width: 100%; */
 	text-align: center;
 	outline: 1px solid transparent;
 	outline-offset: 2px !important;
