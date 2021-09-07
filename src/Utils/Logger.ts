@@ -16,33 +16,35 @@
 
 import * as vscode from 'vscode';
 
-import {Balloon} from '../Utils/Balloon';
-import * as helpers from '../Utils/Helpers';
-import {Logger} from '../Utils/Logger';
+export class Logger {
+  outputChannel: vscode.OutputChannel;
+  firstFocus: boolean;
 
-export class Builder {
-  logger: Logger;
-  currentWorkspace: string;
-
-  constructor(l: Logger) {
-    this.logger = l;
-    this.currentWorkspace = '';
+  constructor() {
+    this.outputChannel = vscode.window.createOutputChannel('ONE-VSCode');
+    this.firstFocus = true;
   }
 
-  // TODO import .cfg file to BuildFlow
-
-  public init() {
-    // TODO implement
-  }
-
-  // called from user interface
-  public build(context: vscode.ExtensionContext) {
-    try {
-      this.currentWorkspace = helpers.obtainWorkspaceRoot();
-    } catch (e) {
-      Balloon.error(e);
-      return;
+  private checkShow() {
+    if (this.firstFocus) {
+      this.outputChannel.show(false);
+      this.firstFocus = false;
     }
-    // TODO initialize workflow
+  }
+
+  public outputWithTime(msg: string) {
+    let dateTime = new Date();
+    this.checkShow();
+    this.outputChannel.appendLine('[' + dateTime + '] ' + msg);
+  }
+
+  public output(msg: string) {
+    this.checkShow();
+    this.outputChannel.append(msg);
+  }
+
+  public outputLine(msg: string) {
+    this.checkShow();
+    this.outputChannel.appendLine(msg);
   }
 }
