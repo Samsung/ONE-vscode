@@ -19,3 +19,11 @@ jobs:
       - run: npm run lint
       - run: sudo apt-get install clang-format-8
       - run: bash infra/format
+
+      - name: Upload format.patch
+        uses: actions/upload-artifact@v2
+        if: ${{ failure() }}
+        with:
+          name: format.patch
+          path: format.patch
+          retention-days: 1
