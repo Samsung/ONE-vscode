@@ -14,22 +14,6 @@
  * limitations under the License.
  */
 
-import {Logger} from '../Utils/Logger';
-import {WorkJobs} from './WorkJobs';
+import {Job} from './Job';
 
-export class WorkFlow {
-  logger: Logger;
-  workspace: string;
-  jobs: WorkJobs;
-
-  constructor(logger: Logger) {
-    this.logger = logger;
-    this.workspace = '';
-    this.jobs = new WorkJobs();
-  }
-
-  public start(workspace: string) {
-    this.workspace = workspace;
-    // TODO implement
-  }
-}
+export class WorkJobs extends Array<Job> {}
