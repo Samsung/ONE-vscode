@@ -1,0 +1,156 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap');
+
+* {
+  box-sizing: border-box;
+  transition: width 0.2s ease;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  font: 14px 'Noto Sans', sans-serif;
+  color: black;
+  margin: 0px;
+  height: 100%;
+}
+
+#root {
+  height: 100%;
+}
+
+.App {
+  height: 100%;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.main-container nav{
+  display: flex;
+  gap: 3px;
+  padding: 3px;
+  background: linear-gradient(rgb(243, 243, 243), rgb(224, 224, 224));
+}
+
+.main-container nav .file-name{
+  display: flex;
+  margin-left: 5px;
+  justify-content: center;
+  align-items: center;
+}
+
+.main-container .board {
+  border: 0.5px solid gray;
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+}
+
+.main-container .detail {
+  position: relative;
+  bottom: 0%;
+  background-color: rgb(255, 255, 255);
+  border: 1px solid gray;
+}
+
+.main-container .detail .detail-content{
+  height: 30vh;
+  padding: 10px 20px;
+  overflow-y: auto;
+
+}
+
+.main-container .detail .detail-content .arg{
+  margin-left: 3px;
+}
+
+.main-container .detail .title{
+  display: flex;
+  align-items: center;
+  background-color: rgb(245, 245, 245);
+  border-bottom: 1px solid gray;
+  padding: 3px;
+  font-weight: 700;
+}
+
+.board {
+  background-color: white;
+}
+
+.main-container .menu-bar {
+  background-color: white;
+}
+
+.board .content .level-container .level-title{
+  background-color: rgb(218, 218, 218);
+  border-bottom: 0.5px solid gray;
+  padding: 3px 5px;
+  font-size: smaller;
+  cursor: pointer;
+}
+
+.board .content .level-container .level-title .utility{
+  font-weight: 600;
+}
+
+.board .content .level-container .data-bar-container{
+  display: flex;
+  height: 25px;
+  width: auto;
+}
+
+.board .content .level-container .data-bar-container .data-bar-title{
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding-left: 3px;
+  margin: 0px;
+  height: 100%;
+  width: 200px;
+  font-weight: 600;
+  background-color: rgb(245, 245, 245);
+}
+
+.board .content .level-container .data-bar-container .data-bar {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(248, 248, 248);
+  border: 0.5px solid gray;
+  border-top: none;
+}
+
+.board .content .level-container .data-bar-container .data-bar > div{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.board .content .level-container .data-bar-container .data-bar .bar{
+  overflow: hidden;
+  font-size: smaller;
+}
+
+.board .content .ruler-container {
+  display: flex;
+}
+
+.board .content .ruler-container .ruler-blank {
+  position: relative;
+  height: 20px;
+  width: 200px;
+}
+
+.board .content .ruler-container .ruler {
+  position: relative;
+  width: 100%;
+  height: 20px;
+  background-color: rgb(255, 255, 255);
+  border-bottom: 0.5px solid gray;
+}
