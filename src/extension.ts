@@ -16,11 +16,13 @@
 
 import * as vscode from 'vscode';
 import {Project} from './Project';
+import {Utils} from './Utils';
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('one-vscode activate OK');
 
-  let projectBuilder = new Project.Builder();
+  let logger = new Utils.Logger();
+  let projectBuilder = new Project.Builder(logger);
 
   projectBuilder.init();
 
