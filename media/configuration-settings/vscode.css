@@ -74,6 +74,14 @@ ul {
 	margin-top: var(--container-margin);
 	padding-right: var(--container-padding);
 	overflow: scroll;
+	display: flex;
+}
+.optionsName {
+	width: 40%;
+	padding-left: var(--container-padding);
+}
+.optionsValue {
+	width: 60%;
 }
 .footer {
 	width: 100%;
