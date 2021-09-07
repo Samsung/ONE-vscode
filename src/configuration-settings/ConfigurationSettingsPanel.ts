@@ -151,10 +151,129 @@ export class ConfigurationSettingsPanel {
                 <link href="${stylesMainUri}" rel="stylesheet">
                 <script nonce="${nonce}"></script>
 			</head>
-            <body>
-                <h1>Configuration Settings</h1>
-                <h2> 이제 여기다가 필요한 html 넣으시면 됩니다. </h2>
-                <button>compile</button>
+      <body>
+      <h1>Configuration Settings</h1>
+  
+      <div class="container">
+        <div class="item">Tools</div>
+        <div class="item">Options for</div>
+        <div class="item">
+          <button>import config</button>
+        </div>
+        <div class="item">
+          <div class="one-import"><button>one-import</button></div>
+          <div>one-optimize</div>
+          <div>one-quantize</div>
+          <div>one-pack</div>
+          <div>one-codegen</div>
+          <div>one-profile</div>
+        </div>
+        <div class="item">
+          <div>
+            <label for="tool-select">Choose a tool:</label>
+  
+            <select name="tools" id="tool-select">
+              <option value="">--Please choose a tool--</option>
+              <option value="bcq" class="bcq">bcq</option>
+              <option value="onnx" class="onnx">onnx</option>
+              <option value="tf" class="tf">tf</option>
+              <option value="tflite" class="tflite">tflite</option>
+            </select>
+  
+            <hr />
+  
+            <div class="options">
+  
+            </div>
+  
+            <!-- <div class="onnx">
+              <h2>onnx</h2>
+  
+              <div class="v1">
+                --v1
+                <label class="switch">
+                  <input type="checkbox" />
+                  <span class="slider round"></span>
+                </label>
+              </div>
+  
+              <div class="v2">
+                --v2
+                <label class="switch">
+                  <input type="checkbox" />
+                  <span class="slider round"></span>
+                </label>
+              </div>
+  
+              <div class="input_path">
+                input_path
+                <label class="input">
+                  <input type="input" />
+                </label>
+              </div>
+  
+              <div class="output_path">
+                output_path
+                <label class="input">
+                  <input type="input" />
+                </label>
+              </div>
+  
+              <div>input_arrays</div>
+  
+              <div>input_shapes</div>
+  
+              <div>output_arrays</div>
+            </div>
+  
+            <div class="bcq">
+              <h2>bcq</h2>
+  
+              <div class="v1">
+                --v1
+                <label class="switch">
+                  <input type="checkbox" />
+                  <span class="slider round"></span>
+                </label>
+              </div>
+  
+              <div class="v2">
+                --v2
+                <label class="switch">
+                  <input type="checkbox" />
+                  <span class="slider round"></span>
+                </label>
+              </div>
+  
+              <div class="input_path">
+                input_path
+                <label class="input">
+                  <input type="input" />
+                </label>
+              </div>
+  
+              <div class="output_path">
+                output_path
+                <label class="input">
+                  <input type="input" />
+                </label>
+              </div>
+  
+              <div>input_arrays</div>
+  
+              <div>input_shapes</div>
+  
+              <div>output_arrays</div> -->
+            </div>
+          </div>
+        </div>
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item">
+          <button>Run</button>
+          <button>export config</button>
+        </div>
+      </div>
                 <script src="${scriptUri}" nonce="${nonce}">
 			</body>
 			</html>`;
