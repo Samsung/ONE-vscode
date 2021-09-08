@@ -20,8 +20,7 @@ const oneImportBcq = {
     type: 'import_bcq',
     use: false,
     options: [
-        {optionName: 'v1', optionValue: false},
-        {optionName: 'v2', optionValue: false},
+        {optionName: 'converter_version', optionValue:['v1','v2'], chosenValue:'v1'},
         {optionName: 'input_path', optionValue: ''},
         {optionName: 'output_path', optionValue: ''},
         {optionName: 'input_arrays', optionValue: ''},
@@ -47,11 +46,8 @@ const oneImportTf = {
     type: 'import_tf',
     use: false,
     options: [
-        {optionName: 'v1', optionValue: false},
-        {optionName: 'v2', optionValue: false},
-        {optionName: 'graph_def', optionValue: false},
-        {optionName: 'saved_model', optionValue: false},
-        {optionName: 'keras_model', optionValue: false},
+        {optionName: 'converter_version', optionValue: ['v1', 'v2'], chosenValue:'v1'},
+        {optionName: 'model_format', optionValue:['graph_def','saved_model','keras_model'], chosenValue:'graph_def'},
         {optionName: 'input_path', optionValue: ''},
         {optionName: 'output_path', optionValue: ''},
         {optionName: 'input_arrays', optionValue: ''},
@@ -177,20 +173,13 @@ const changeTargetUse = function(target) {
     }
 }
 
-const configurations = [
-    oneImport,
-    oneImportBcq,
-    oneImportOnnx,
-    oneImportTf,
-    oneImportTflite,
-    optimize,
-    quantize,
-    pack,
-    codegen,
-    profile
-]
-
-const emptyOptionBox = function() { 
+const emptyOptionBox = function(isImport) { 
+    if (!isImport) {
+        const locaForSelect = document.querySelector('#locaForSelect')
+        while (locaForSelect.hasChildNodes()) {
+        locaForSelect.removeChild(locaForSelect.firstChild)
+        }
+    }
     const optionsName = document.querySelector('#optionsName')
     while (optionsName.hasChildNodes()) {
         optionsName.removeChild(optionsName.firstChild)
@@ -255,17 +244,56 @@ const buildOptionDom = function(target) {
             valueLabelTag.appendChild(spanTag)
             valueLiTag.appendChild(valueLabelTag)
             nameLiTag.innerText = target.options[i].optionName
-        } else {
+        } else if (typeof target.options[i].optionValue === 'string') {
             // 들어오는 값이 string 값일 경우
             nameLiTag.innerText = target.options[i].optionName
-            const inputTag = document.createElement('input')
-            if (target.options[i].optionValue.trim() !== '') {
-                inputTag.value = target.options[i].optionValue
+            if (target.options[i].optionName === 'input_path') {
+                const inputTag = document.createElement('input')
+                inputTag.disabled = true
+                inputTag.id = target.options[i].optionName
+                if (target.options[i].optionValue.trim() !== '') {
+                    inputTag.value = target.options[i].optionValue
+                }
+                const Btn = document.createElement('button')
+                Btn.innerText = "Search"
+                valueLiTag.appendChild(inputTag)
+                valueLiTag.appendChild(Btn)
+            } else if (target.options[i].optionName === 'output_path') {
+                const inputTag = document.createElement('input')
+                inputTag.disabled = true
+                inputTag.id = target.options[i].optionName
+                if (target.options[i].optionValue.trim() !== '') {
+                    inputTag.value = target.options[i].optionValue
+                }
+                const Btn = document.createElement('button')
+                Btn.innerText = "Search"
+                valueLiTag.appendChild(inputTag)
+                valueLiTag.appendChild(Btn)
+            } else {
+                const inputTag = document.createElement('input')
+                if (target.options[i].optionValue.trim() !== '') {
+                    inputTag.value = target.options[i].optionValue
+                }
+                inputTag.addEventListener('change', function(event) {
+                    target.options[i].optionValue = event.target.value
+                })
+                valueLiTag.appendChild(inputTag)
             }
-            inputTag.addEventListener('change', function(event) {
-                target.options[i].optionValue = event.target.value
+        } else {
+            nameLiTag.innerText =target.options[i].optionName
+            const select = document.createElement('select')
+            select.id = target.options[i].optionName
+            select.name = target.options[i].optionName
+            for (let j=0; j<target.options[i].optionValue.length;j++) {
+                const option = document.createElement('option')
+                option.value = target.options[i].optionValue[j]
+                option.text = target.options[i].optionValue[j]
+                select.appendChild(option)
+            }
+            select.addEventListener('change', function(event) {
+                target.options[i].chosenValue = select[event.target.selectedIndex].value
             })
-            valueLiTag.appendChild(inputTag)
+            valueLiTag.appendChild(select)
         }
         valueUlTag.appendChild(valueLiTag)
         nameUlTag.appendChild(nameLiTag)
@@ -274,15 +302,98 @@ const buildOptionDom = function(target) {
     optionsNameTag.appendChild(nameUlTag)
 }
 
+const changeSelect = function(event) {
+    emptyOptionBox(true)
+    const selectedText = event.target.options[event.target.selectedIndex].text
+    switch (selectedText) {
+        case 'bcq': {
+            oneImportBcq.use = true
+            oneImportOnnx.use = false
+            oneImportTf.use = false
+            oneImportTflite.use = false
+            for (let i=0;i<oneImport.options.length;i++) {
+                if (i == 0) {
+                    oneImport.options[i].optionValue = true
+                } else {
+                    oneImport.options[i].optionValue = false
+                }
+            }
+            buildOptionDom(oneImportBcq)
+            break
+        }
+        case 'onnx': {
+            oneImportBcq.use = false
+            oneImportOnnx.use = true
+            oneImportTf.use = false
+            oneImportTflite.use = false
+            for (let i=0;i<oneImport.options.length;i++) {
+                if (i == 1) {
+                    oneImport.options[i].optionValue = true
+                } else {
+                    oneImport.options[i].optionValue = false
+                }
+            }
+            buildOptionDom(oneImportOnnx)
+            break
+        }
+        case 'tf': {
+            oneImportBcq.use = false
+            oneImportOnnx.use = false
+            oneImportTf.use = true
+            oneImportTflite.use = false
+            for (let i=0;i<oneImport.options.length;i++) {
+                if (i == 2) {
+                    oneImport.options[i].optionValue = true
+                } else {
+                    oneImport.options[i].optionValue = false
+                }
+            }
+            buildOptionDom(oneImportTf)
+            break
+        }
+        case 'tflite': {
+            for (let i=0;i<oneImport.options.length;i++) {
+                if (i == 3) {
+                    oneImport.options[i].optionValue = true
+                } else {
+                    oneImport.options[i].optionValue = false
+                }
+            }
+            oneImportBcq.use = false
+            oneImportOnnx.use = false
+            oneImportTf.use = false
+            oneImportTflite.use = true
+            buildOptionDom(oneImportTflite)
+            break
+        }
+    }
+}
+
 const showOptions = function(event) {
-    emptyOptionBox()
+    emptyOptionBox(false)
     switch (event.target.id) {
         case 'import':{
             const h2Tag = document.querySelector('#toolName')
             h2Tag.innerText = 'Options for Import'
             const useBtn = document.querySelector('#useBtn')
-            const optionFieldset = document.querySelector('#options')
             useBtn.checked = true
+            const locaForSelect = document.querySelector('#locaForSelect')
+            const select = document.createElement('select')
+            select.id = 'framework'
+            select.name = 'framework'
+            const defaultOption = document.createElement('option')
+            defaultOption.value = 'beforeDecision'
+            defaultOption.text='choose your framework'
+            select.appendChild(defaultOption)
+            for (let i=0; i<oneImport.options.length;i++) {
+                console.log(oneImport.options[i])
+                const option = document.createElement('option')
+                option.value = oneImport.options[i].optionName
+                option.text = oneImport.options[i].optionName
+                select.appendChild(option)
+            }
+            select.addEventListener('change',changeSelect)
+            locaForSelect.appendChild(select)
             break
         }
         case 'optimize':{
@@ -325,4 +436,4 @@ document.querySelector('#codegen').addEventListener('click', showOptions)
 document.querySelector('#profile').addEventListener('click', showOptions)
 document.querySelector('#importBtn').addEventListener('click', importConfiguration)
 document.querySelector('#runBtn').addEventListener('click',runConfiguration)
-document.querySelector('#exportConfiguration').addEventListener('click', exportConfiguration)
+document.querySelector('#exportBtn').addEventListener('click', exportConfiguration)
