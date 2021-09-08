@@ -14,10 +14,21 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "languages": [{
+      "id": "ini",
+      "aliases": ["Configuration"],
+      "extensions": [".cfg"]
+    }],
     "commands": [
       {
         "command": "onevscode.build",
         "title": "one build"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "ini",
+        "path": "./snippets.json"
       }
     ]
   },
