@@ -15,17 +15,20 @@
  */
 
 import {Logger} from '../Utils/Logger';
+import {JobRunner} from './JobRunner';
 import {WorkJobs} from './WorkJobs';
 
 export class WorkFlow {
   logger: Logger;
   workspace: string;
   jobs: WorkJobs;
+  jobRunner: JobRunner;
 
   constructor(logger: Logger) {
     this.logger = logger;
     this.workspace = '';
     this.jobs = new WorkJobs();
+    this.jobRunner = new JobRunner(this.logger);
   }
 
   public start(workspace: string) {
