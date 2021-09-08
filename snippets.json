@@ -1,0 +1,69 @@
+{
+    "one-build": {
+        "prefix": "one-build",
+        "body": [
+            "[one-build]",
+            "one-import-tf=${1:True}",
+            "one-import-tflite=${2:True}",
+            "one-import-bcq=${3:True}",
+            "one-import-onnx=${4:True}",
+            "one-optimize=${5:True}",
+            "one-quantize=${6:True}",
+            "one-pack=${7:True}",
+            "one-codegen=${8:True}",
+            "$0"
+        ],
+        "description": [
+            "command line tool to run ONE drivers in customized order"
+        ]
+    },
+    "one-import-tf": {
+        "prefix" : "one-import-tf",
+        "body" : [
+            "[one-import-tf]",
+            "input_path=$1",
+            "output_path=$2",
+            "$0"
+        ],
+        "description" : [
+            "command line tool to convert TensorFlow to circle"
+        ]
+    },
+    "one-import-tflite": {
+        "prefix" : "one-import-tflite",
+        "body" : [
+            "[one-import-tflite]",
+            "input_path=$1",
+            "output_path=$2",
+            "$0"
+        ],
+        "description" : [
+            "command line tool to convert TensorFlow lite to circle"
+        ]
+    },
+    "one-import-bcq": {
+        "prefix" : "one-import-bcq",
+        "body" : [
+            "[one-import-bcq]",
+            "input_path=$1",
+            "output_path=$2",
+            "$0"
+        ],
+        "description" : [
+            "command line tool to convert TensorFlow with BCQ to circle"
+        ]
+    },
+    "one-import-onnx": {
+        "prefix" : "one-import-onnx",
+        "body" : [
+            "[one-import-onnx]",
+            "input_path=$1",
+            "output_path=$2",
+            "$0"
+        ],
+        "description" : [
+            "command line tool to convert ONNX to circle"
+        ]
+    }
+
+}
