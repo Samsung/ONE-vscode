@@ -152,47 +152,48 @@ export class ConfigurationSettingsPanel {
                 <script nonce="${nonce}"></script>
 			</head>
       <body>
-        <div class="container">
-          <div class="header">
-            <div class="heading">
+      <div class="container">
+      <div class="header">
+          <div class="heading">
               <h2>Configuration Settings</h2>
-            </div>
-            <div class="importBtn">
-              <button>Import Configuration</button>
-            </div>
           </div>
-          <fieldset class="main">
-            <div class="mainL">
-              <h2>Tools</h2>
-              <div class="tools">
-                  <button id="import">>one-import</button>
-                  <button id="optimize">>one-optimize</button>
-                  <button id="quantize">>one-quantize</button>
-                  <button id="pack">>one-pack</button>
-                  <button id="codegen">>one-codegen</button>
-                  <button id="profile">>one-profile</button>
+          <div class="importBtn">
+              <button id="importBtn">Import Configuration</button>
+          </div>
+      </div>
+      <fieldset class="main">
+              <div class="mainL">
+                  <h2>Tools</h2>
+                  <div class="tools">
+                      <button id="import">>one-import</button>
+                      <button id="optimize">>one-optimize</button>
+                      <button id="quantize">>one-quantize</button>
+                      <button id="pack">>one-pack</button>
+                      <button id="codegen">>one-codegen</button>
+                      <button id="profile">>one-profile</button>
+                  </div>
               </div>
-            </div>
-            <div class="mainR">
-              <h2 id="toolName">Options for</h2>
-              <label class="switch">
-                  <input id="useBtn"type="checkbox">
-                  <span class="slider round"></span>
-              </label>
-              <fieldset id="options" class="options">
-                  <div id="optionsName" class="optionsName">
-                      nameTest
-                  </div>
-                  <div id="optionsValue" class="optionsValue">
-                      valueTest
-                  </div>
-              </fieldset>
-            </div>
-          </fieldset>
-          <div class="footer">
-              <button>Run</button>
-              <button>Export Configuration</button>
-          </div>
+              <div class="mainR">
+                  <h2 id="toolName">Options for</h2>
+                  <label class="switch">
+                      <input id="useBtn"type="checkbox">
+                      <span class="slider round"></span>
+                  </label>
+                  <fieldset id="options" class="options">
+                      <div id="optionsName" class="optionsName">
+                          nameTest
+                      </div>
+                      <div id="optionsValue" class="optionsValue">
+                          valueTest
+                      </div>
+                  </fieldset>
+              </div>
+      </fieldset>
+      <div class="footer">
+          <button id="runBtn">Run</button>
+          <button id="exportBtn">Export Configuration</button>
+      </div>
+  </div>
         </div>
         <script src="${scriptUri}" nonce="${nonce}">
 			</body>
