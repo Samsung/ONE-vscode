@@ -19,6 +19,8 @@ import {EventEmitter} from 'events';
 import {Balloon} from '../Utils/Balloon';
 import {Logger} from '../Utils/Logger';
 
+import {ToolArgs} from './ToolArgs';
+import {ToolRunner} from './ToolRunner';
 import {WorkJobs} from './WorkJobs';
 
 const K_INVOKE: string = 'invoke';
@@ -29,6 +31,7 @@ export class JobRunner extends EventEmitter {
   jobs: WorkJobs;
   cwd: string;
   running: boolean;
+  toolRunner: ToolRunner;
 
   constructor(l: Logger) {
     super();
@@ -36,9 +39,24 @@ export class JobRunner extends EventEmitter {
     this.jobs = [];
     this.cwd = '';
     this.running = false;
+    this.toolRunner = new ToolRunner(l);
 
     this.on(K_INVOKE, this.onInvoke);
     this.on(K_CLEANUP, this.onCleanup);
+  }
+
+  private invoke(name: string, tool: string, toolArgs: ToolArgs, path: string) {
+    const runner = this.toolRunner.getRunner(name, tool, toolArgs, path);
+
+    runner
+        .then(() => {
+          // Move on to next job
+          this.emit(K_INVOKE);
+        })
+        .catch(() => {
+          Balloon.error('Running ONE failed');
+          this.emit(K_CLEANUP);
+        });
   }
 
   private onInvoke() {
@@ -48,7 +66,7 @@ export class JobRunner extends EventEmitter {
       this.emit(K_CLEANUP);
       return;
     }
-    // TODO invoke tool
+    this.invoke(job.name, job.tool, job.toolArgs, this.cwd);
   }
 
   private onCleanup() {
