@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import {Balloon} from '../Utils/Balloon';
 import {Logger} from '../Utils/Logger';
 import {JobRunner} from './JobRunner';
 import {WorkJobs} from './WorkJobs';
@@ -31,8 +32,36 @@ export class WorkFlow {
     this.jobRunner = new JobRunner(this.logger);
   }
 
+  private validateJobs(): boolean {
+    let isValid = true;
+    this.jobs.forEach((job) => {
+      if (!job.valid) {
+        Balloon.error('Job ' + job.name + ' is not valid');
+        isValid = false;
+      }
+    });
+    return isValid;
+  }
+
+  // Make copy of Jobs for running as it will alter while running
+  private getRunJobs(): WorkJobs {
+    let runJobs = new WorkJobs();
+    this.jobs.forEach((job) => {
+      runJobs.push(job);
+    });
+    return runJobs;
+  }
+
+  private startRunner() {
+    let runJobs: WorkJobs = this.getRunJobs();
+    this.jobRunner.start(this.workspace, runJobs);
+  }
+
   public start(workspace: string) {
     this.workspace = workspace;
-    // TODO implement
+    if (!this.validateJobs()) {
+      return;
+    }
+    this.startRunner();
   }
 }
