@@ -5,6 +5,7 @@
 	--input-margin-vertical: 4px;
 	--input-margin-horizontal: 0;
 	--container-margin: 10px;
+	--container-width: 80vw;
 }
 
 body {
@@ -16,14 +17,24 @@ body {
 	background-color: var(--vscode-editor-background);
 }
 
+h2 {
+	display: inline;
+	margin-right: 10px;
+}
+
 ol,
 ul {
 	padding-left: var(--container-padding);
 }
 
+li {
+	list-style: none;
+	height: 50px;
+}
+
 .container {
 	height: 90vh;
-	width: 90vw;
+	width: var(--container-width);
 }
 
 .main, .tools, .options {
@@ -31,7 +42,7 @@ ul {
 }
 .header {
 	height: 10%;
-	width: 100%;
+	width: var(--container-width);
 	display: table;
 }
 .heading {
@@ -47,7 +58,7 @@ ul {
 }
 .main {
 	height: 80%;
-	width: 100%;
+	width: var(--container-width);
 	display: flex;
 	justify-content: space-between;
 	margin-top: var(--container-margin);
@@ -68,13 +79,24 @@ ul {
 	margin-top: var(--container-margin);
 	padding-right: var(--container-padding);
 }
+.tools div {
+	margin-bottom: 5px;
+}
+.tools div:hover {
+	margin-bottom: 5px;
+	cursor: pointer;
+}
 .options {
 	height: 85%;
 	width: 100%;
 	margin-top: var(--container-margin);
 	padding-right: var(--container-padding);
+	padding-top: var(--container-padding);
 	overflow: scroll;
-	display: flex;
+}
+.twoOpts {
+	display:flex;
+	justify-content: space-around;
 }
 .optionsName {
 	width: 40%;
@@ -83,10 +105,24 @@ ul {
 .optionsValue {
 	width: 60%;
 }
+
+@media (max-width: 1280px) { 
+	.optionsName {
+		width: 70%;
+	};
+	.optionsValue {
+		width: 30%;
+	}
+ }
+
 .footer {
-	width: 100%;
+	width: var(--container-width);
 	text-align: end;
 	margin-top: var(--container-margin);
+}
+
+.selected {
+	font-weight: bold;
 }
 
 body > *,
@@ -114,7 +150,9 @@ code {
 }
 
 button {
-	border: none;
+	/* border: none; */
+	border-width: 1px;
+	border-color: var(--vscode-button-background);
 	padding: var(--input-padding-vertical) var(--input-padding-horizontal);
 	text-align: center;
 	outline: 1px solid transparent;
@@ -143,8 +181,8 @@ button.secondary:hover {
 
 input:not([type='checkbox']),
 textarea {
-	display: block;
-	width: 100%;
+	display: inline-block;
+	width: 80%;
 	border: none;
 	font-family: var(--vscode-font-family);
 	padding: var(--input-padding-vertical) var(--input-padding-horizontal);
@@ -161,8 +199,9 @@ textarea::placeholder {
 .switch {
 	position: relative;
 	display: inline-block;
-	width: 60px;
-	height: 34px;
+	width: 40px;
+	height: 22px;
+	margin-right: var(--container-margin);
   }
   
   /* Hide default HTML checkbox */
@@ -188,8 +227,8 @@ textarea::placeholder {
   .slider:before {
 	position: absolute;
 	content: "";
-	height: 26px;
-	width: 26px;
+	height: 15px;
+	width: 15px;
 	left: 4px;
 	bottom: 4px;
 	background-color: white;
@@ -206,9 +245,9 @@ textarea::placeholder {
   }
   
   input:checked + .slider:before {
-	-webkit-transform: translateX(26px);
-	-ms-transform: translateX(26px);
-	transform: translateX(26px);
+	-webkit-transform: translateX(15px);
+	-ms-transform: translateX(15px);
+	transform: translateX(15px);
   }
   
   /* Rounded sliders */

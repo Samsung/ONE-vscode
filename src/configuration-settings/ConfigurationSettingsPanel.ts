@@ -168,12 +168,12 @@ export class ConfigurationSettingsPanel {
                     <div class="mainL">
                         <h2>Tools</h2>
                         <div class="tools">
-                            <button id="import">>one-import</button>
-                            <button id="optimize">>one-optimize</button>
-                            <button id="quantize">>one-quantize</button>
-                            <button id="pack">>one-pack</button>
-                            <button id="codegen">>one-codegen</button>
-                            <button id="profile">>one-profile</button>
+                          <div id="import">>one-import</div>
+                          <div id="optimize">>one-optimize</div>
+                          <div id="quantize">>one-quantize</div>
+                          <div id="pack">>one-pack</div>
+                          <div id="codegen">>one-codegen</div>
+                          <div id="profile">>one-profile</div>
                         </div>
                     </div>
                     <div class="mainR">
@@ -182,16 +182,16 @@ export class ConfigurationSettingsPanel {
                             <input id="useBtn"type="checkbox">
                             <span class="slider round"></span>
                         </label>
-                        <div id="locaForSelect">
-                            
-                        </div>
+                        <span id="locaForSelect"></span>
                         <fieldset id="options" class="options">
+                        <div class="twoOpts">
                             <div id="optionsName" class="optionsName">
                                 nameTest
                             </div>
                             <div id="optionsValue" class="optionsValue">
                                 valueTest
                             </div>
+                          </div>
                         </fieldset>
                     </div>
             </fieldset>
