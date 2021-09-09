@@ -65,6 +65,13 @@ const oneImportTflite = {
     ]
 }
 
+const oneImportOptions = [
+    oneImportBcq,
+    oneImportOnnx,
+    oneImportTf,
+    oneImportTflite
+]
+
 const optimize = {
     type: 'optimize',
     use: true,
@@ -195,6 +202,7 @@ const buildOptionDom = function(target) {
     const h2Tag = document.querySelector('#toolName')
     h2Tag.innerText = `Options for ${target.type}`
     const useBtn = document.querySelector('#useBtn')
+    console.log(target.type.startsWith('import'))
     useBtn.addEventListener('click', function(target) {
         const optionFieldset = document.querySelector('#options')
         if (target.use === true) {
@@ -254,10 +262,10 @@ const buildOptionDom = function(target) {
                 if (target.options[i].optionValue.trim() !== '') {
                     inputTag.value = target.options[i].optionValue
                 }
-                const Btn = document.createElement('button')
-                Btn.innerText = "Search"
+                const btn = document.createElement('button')
+                btn.innerText = "Search"
                 valueLiTag.appendChild(inputTag)
-                valueLiTag.appendChild(Btn)
+                valueLiTag.appendChild(btn)
             } else if (target.options[i].optionName === 'output_path') {
                 const inputTag = document.createElement('input')
                 inputTag.disabled = true
@@ -265,10 +273,10 @@ const buildOptionDom = function(target) {
                 if (target.options[i].optionValue.trim() !== '') {
                     inputTag.value = target.options[i].optionValue
                 }
-                const Btn = document.createElement('button')
-                Btn.innerText = "Search"
+                const btn = document.createElement('button')
+                btn.innerText = "Search"
                 valueLiTag.appendChild(inputTag)
-                valueLiTag.appendChild(Btn)
+                valueLiTag.appendChild(btn)
             } else {
                 const inputTag = document.createElement('input')
                 if (target.options[i].optionValue.trim() !== '') {
@@ -312,7 +320,7 @@ const changeSelect = function(event) {
             oneImportTf.use = false
             oneImportTflite.use = false
             for (let i=0;i<oneImport.options.length;i++) {
-                if (i == 0) {
+                if (i === 0) {
                     oneImport.options[i].optionValue = true
                 } else {
                     oneImport.options[i].optionValue = false
@@ -327,7 +335,7 @@ const changeSelect = function(event) {
             oneImportTf.use = false
             oneImportTflite.use = false
             for (let i=0;i<oneImport.options.length;i++) {
-                if (i == 1) {
+                if (i === 1) {
                     oneImport.options[i].optionValue = true
                 } else {
                     oneImport.options[i].optionValue = false
@@ -342,7 +350,7 @@ const changeSelect = function(event) {
             oneImportTf.use = true
             oneImportTflite.use = false
             for (let i=0;i<oneImport.options.length;i++) {
-                if (i == 2) {
+                if (i === 2) {
                     oneImport.options[i].optionValue = true
                 } else {
                     oneImport.options[i].optionValue = false
@@ -353,7 +361,7 @@ const changeSelect = function(event) {
         }
         case 'tflite': {
             for (let i=0;i<oneImport.options.length;i++) {
-                if (i == 3) {
+                if (i === 3) {
                     oneImport.options[i].optionValue = true
                 } else {
                     oneImport.options[i].optionValue = false
@@ -386,7 +394,6 @@ const showOptions = function(event) {
             defaultOption.text='choose your framework'
             select.appendChild(defaultOption)
             for (let i=0; i<oneImport.options.length;i++) {
-                console.log(oneImport.options[i])
                 const option = document.createElement('option')
                 option.value = oneImport.options[i].optionName
                 option.text = oneImport.options[i].optionName
@@ -394,6 +401,17 @@ const showOptions = function(event) {
             }
             select.addEventListener('change',changeSelect)
             locaForSelect.appendChild(select)
+            let flag = -1
+            for (let i=0; i<oneImport.options.length;i++) {
+                if (oneImport.options[i].optionValue === true) {
+                    flag = i
+                    break
+                }
+            }
+            if (flag !== -1) {
+                select.options[flag+1].selected = true
+                buildOptionDom(oneImportOptions[flag])
+            }
             break
         }
         case 'optimize':{
@@ -437,3 +455,9 @@ document.querySelector('#profile').addEventListener('click', showOptions)
 document.querySelector('#importBtn').addEventListener('click', importConfiguration)
 document.querySelector('#runBtn').addEventListener('click',runConfiguration)
 document.querySelector('#exportBtn').addEventListener('click', exportConfiguration)
+const tmpEvent = {
+    target: {
+        id:'import'
+    }
+}
+showOptions(tmpEvent)
