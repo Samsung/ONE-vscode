@@ -261,7 +261,6 @@ const buildOptionDom = function(target) {
             nameLiTag.innerText = target.options[i].optionName
             if (target.options[i].optionName === 'input_path') {
                 const inputTag = document.createElement('input')
-                inputTag.disabled = true
                 inputTag.id = target.options[i].optionName
                 inputTag.placeholder = 'please enter path to your model'
                 if (target.options[i].optionValue.trim() !== '') {
@@ -270,7 +269,6 @@ const buildOptionDom = function(target) {
                 valueLiTag.appendChild(inputTag)
             } else if (target.options[i].optionName === 'output_path') {
                 const inputTag = document.createElement('input')
-                inputTag.disabled = true
                 inputTag.id = target.options[i].optionName
                 inputTag.placeholder = 'please enter path to your result'
                 if (target.options[i].optionValue.trim() !== '') {
