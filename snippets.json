@@ -64,6 +64,52 @@
         "description" : [
             "command line tool to convert ONNX to circle"
         ]
+    },
+    "one-optimize": {
+        "prefix": "one-optimize",
+        "body": [
+            "[one-optimize]",
+            "input_path=$1",
+            "output_path=$2",
+            "$0"
+        ],
+        "description": [
+            "command line tool to optimize circle model"
+        ]
+    },
+    "one-codegen": {
+        "prefix": "one-codegen",
+        "body": [
+            "[one-codegen]",
+            "backend=$1",
+            "$0"
+        ],
+        "description": [
+            "command line tool for code generation"
+        ]
+    },
+    "one-quantize": {
+        "prefix": "one-quantize",
+        "body": [
+            "[one-quantize]",
+            "input_path=$1",
+            "output_path=$2",
+            "$0"
+        ],
+        "description": [
+            "command line tool to quantize circle model"
+        ]
+    },
+    "one-pack": {
+        "prefix": "one-pack",
+        "body": [
+            "[one-pack]",
+            "input_path=$1",
+            "output_path=$2",
+            "$0"
+        ],
+        "description": [
+            "command line tool to package circle and metadata into nnpackage"
+        ]
     }
-
 }
