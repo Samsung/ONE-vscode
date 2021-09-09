@@ -202,7 +202,11 @@ const buildOptionDom = function(target) {
     const h2Tag = document.querySelector('#toolName')
     h2Tag.innerText = `Options for ${target.type}`
     const useBtn = document.querySelector('#useBtn')
-    console.log(target.type.startsWith('import'))
+    if (target.type.startsWith('import')) {
+        useBtn.disabled = true
+    } else {
+        useBtn.disabled = false
+    }
     useBtn.addEventListener('click', function(target) {
         const optionFieldset = document.querySelector('#options')
         if (target.use === true) {
@@ -296,11 +300,15 @@ const buildOptionDom = function(target) {
                 const option = document.createElement('option')
                 option.value = target.options[i].optionValue[j]
                 option.text = target.options[i].optionValue[j]
+                if (target.options[i].optionValue[j]  === target.options[i].chosenValue) {
+                    option.selected = true
+                }
                 select.appendChild(option)
             }
             select.addEventListener('change', function(event) {
                 target.options[i].chosenValue = select[event.target.selectedIndex].value
             })
+            
             valueLiTag.appendChild(select)
         }
         valueUlTag.appendChild(valueLiTag)
@@ -385,6 +393,7 @@ const showOptions = function(event) {
             h2Tag.innerText = 'Options for Import'
             const useBtn = document.querySelector('#useBtn')
             useBtn.checked = true
+            useBtn.disabled = true
             const locaForSelect = document.querySelector('#locaForSelect')
             const select = document.createElement('select')
             select.id = 'framework'
