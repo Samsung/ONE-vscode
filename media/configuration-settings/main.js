@@ -263,29 +263,20 @@ const buildOptionDom = function(target) {
                 const inputTag = document.createElement('input')
                 inputTag.disabled = true
                 inputTag.id = target.options[i].optionName
+                inputTag.placeholder = 'please enter path to your model'
                 if (target.options[i].optionValue.trim() !== '') {
                     inputTag.value = target.options[i].optionValue
                 }
-                const btn = document.createElement('button')
-                btn.innerText = "Search"
-                btn.id = "findFileBtn"
-                btn.addEventListener('click', function() {
-                    getFilePath()
-                })
-                
                 valueLiTag.appendChild(inputTag)
-                valueLiTag.appendChild(btn)
             } else if (target.options[i].optionName === 'output_path') {
                 const inputTag = document.createElement('input')
                 inputTag.disabled = true
                 inputTag.id = target.options[i].optionName
+                inputTag.placeholder = 'please enter path to your result'
                 if (target.options[i].optionValue.trim() !== '') {
                     inputTag.value = target.options[i].optionValue
                 }
-                const btn = document.createElement('button')
-                btn.innerText = "Search"
                 valueLiTag.appendChild(inputTag)
-                valueLiTag.appendChild(btn)
             } else {
                 const inputTag = document.createElement('input')
                 if (target.options[i].optionValue.trim() !== '') {
