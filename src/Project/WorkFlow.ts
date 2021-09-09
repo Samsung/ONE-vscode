@@ -16,6 +16,7 @@
 
 import {Balloon} from '../Utils/Balloon';
 import {Logger} from '../Utils/Logger';
+import {Job} from './Job';
 import {JobRunner} from './JobRunner';
 import {WorkJobs} from './WorkJobs';
 
@@ -55,6 +56,10 @@ export class WorkFlow {
   private startRunner() {
     let runJobs: WorkJobs = this.getRunJobs();
     this.jobRunner.start(this.workspace, runJobs);
+  }
+
+  public addJob(job: Job) {
+    this.jobs.push(job);
   }
 
   public start(workspace: string) {
