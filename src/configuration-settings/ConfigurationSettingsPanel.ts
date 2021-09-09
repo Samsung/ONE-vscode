@@ -168,12 +168,12 @@ export class ConfigurationSettingsPanel {
                     <div class="mainL">
                         <h2>Tools</h2>
                         <div class="tools">
-                          <div id="import">>one-import</div>
-                          <div id="optimize">>one-optimize</div>
-                          <div id="quantize">>one-quantize</div>
-                          <div id="pack">>one-pack</div>
-                          <div id="codegen">>one-codegen</div>
-                          <div id="profile">>one-profile</div>
+                          <div id="import">one-import</div>
+                          <div id="optimize">one-optimize</div>
+                          <div id="quantize">one-quantize</div>
+                          <div id="pack">one-pack</div>
+                          <div id="codegen">one-codegen</div>
+                          <div id="profile">one-profile</div>
                         </div>
                     </div>
                     <div class="mainR">

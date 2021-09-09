@@ -4,6 +4,8 @@
 	--input-padding-horizontal: 4px;
 	--input-margin-vertical: 4px;
 	--input-margin-horizontal: 0;
+	--input-border-radius: 8px;
+	--input-color: white;
 	--container-margin: 10px;
 	--container-width: 80vw;
 }
@@ -77,7 +79,7 @@ li {
 	height: 50%;
 	width: 80%;
 	margin-top: var(--container-margin);
-	padding-right: var(--container-padding);
+	padding: var(--container-padding);
 }
 .tools div {
 	margin-bottom: 5px;
@@ -113,6 +115,9 @@ li {
 	.optionsValue {
 		width: 30%;
 	}
+	#locaForSelect{
+		visibility: hidden;
+	}
  }
 
 .footer {
@@ -124,6 +129,23 @@ li {
 .selected {
 	font-weight: bold;
 }
+
+#locaForSelect{
+	position: absolute;
+	right: 22%;
+}
+
+select {
+	width: 170px;
+	padding: .3em .2em;
+	border: 1px solid #999;
+	font-family: inherit;
+	border-radius: var(--input-border-radius);
+	text-align-last: center;
+	text-align: center;
+	-ms-text-align-last: center;
+	-moz-text-align-last: center;
+	}
 
 body > *,
 form > * {
@@ -184,11 +206,12 @@ textarea {
 	display: inline-block;
 	width: 80%;
 	border: none;
+	border-radius: var(--input-border-radius);
 	font-family: var(--vscode-font-family);
 	padding: var(--input-padding-vertical) var(--input-padding-horizontal);
 	color: var(--vscode-input-foreground);
 	outline-color: var(--vscode-input-border);
-	background-color: var(--vscode-input-background);
+	background-color: var(--input-color);
 }
 
 input::placeholder,
@@ -201,7 +224,6 @@ textarea::placeholder {
 	display: inline-block;
 	width: 40px;
 	height: 22px;
-	margin-right: var(--container-margin);
   }
   
   /* Hide default HTML checkbox */
