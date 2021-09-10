@@ -397,7 +397,7 @@ const showOptions = function(event) {
     switch (event.target.id) {
         case 'import':{
             const h2Tag = document.querySelector('#toolName')
-            h2Tag.innerText = 'Options for Import'
+            h2Tag.innerText = 'Options for import'
             const useBtn = document.querySelector('#useBtn')
             useBtn.checked = true
             useBtn.disabled = true
