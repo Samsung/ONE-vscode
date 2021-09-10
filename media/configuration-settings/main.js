@@ -477,8 +477,6 @@ document.querySelector('#importBtn').addEventListener('click', importConfigurati
 document.querySelector('#runBtn').addEventListener('click',runConfiguration)
 document.querySelector('#exportBtn').addEventListener('click', exportConfiguration)
 const tmpEvent = {
-    target: {
-        id:'import'
-    }
+    target: document.querySelector('#import') 
 }
 showOptions(tmpEvent)
