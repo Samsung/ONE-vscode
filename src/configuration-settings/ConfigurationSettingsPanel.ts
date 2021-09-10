@@ -97,7 +97,7 @@ export class ConfigurationSettingsPanel {
     this._panel.webview.html = this._getHtmlForWebview(webview);
     webview.onDidReceiveMessage(async (data) => {
       switch (data.command) {
-        case 'inputPath':{
+        case 'inputPath':
           const options: vscode.OpenDialogOptions = {
             canSelectMany: false, 
             openLabel: 'Open',
@@ -111,13 +111,13 @@ export class ConfigurationSettingsPanel {
                 console.log('Selected file: ' + pathToModelFile);
                 webview.postMessage({
                   command: 'inputPath',
-                  payload: pathToModelFile
+                  selectedTool: data.selectedTool,
+                  filePath: pathToModelFile,
                 });
               }
             }
           );
-          break;
-        }
+        break;
       }
     });
   }
