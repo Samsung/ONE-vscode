@@ -266,6 +266,9 @@ const buildOptionDom = function(target) {
                 if (target.options[i].optionValue.trim() !== '') {
                     inputTag.value = target.options[i].optionValue
                 }
+                inputTag.addEventListener('click', function(){
+                    getFilePath()
+                })             
                 valueLiTag.appendChild(inputTag)
             } else if (target.options[i].optionName === 'output_path') {
                 const inputTag = document.createElement('input')
