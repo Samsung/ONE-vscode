@@ -1,7 +1,7 @@
 // This script will be run within the webview itself
 // It cannot access the main VS Code APIs directly.
 
-// const vscode = acquireVsCodeApi();
+const vscode = acquireVsCodeApi();
 
 console.log('view from javascript.');
 
@@ -268,6 +268,11 @@ const buildOptionDom = function(target) {
                 }
                 const btn = document.createElement('button')
                 btn.innerText = "Search"
+                btn.id = "findFileBtn"
+                btn.addEventListener('click', function() {
+                    getFilePath()
+                })
+                
                 valueLiTag.appendChild(inputTag)
                 valueLiTag.appendChild(btn)
             } else if (target.options[i].optionName === 'output_path') {
@@ -316,6 +321,13 @@ const buildOptionDom = function(target) {
     }
     optionsValueTag.appendChild(valueUlTag)
     optionsNameTag.appendChild(nameUlTag)
+}
+
+
+const getFilePath = function(){
+    vscode.postMessage({
+        command: 'inputPath'
+    })
 }
 
 const changeSelect = function(event) {
@@ -386,6 +398,7 @@ const changeSelect = function(event) {
 }
 
 const showOptions = function(event) {
+    console.log("aaaaaaaaaaaaaa")
     emptyOptionBox(false)
     switch (event.target.id) {
         case 'import':{
@@ -455,6 +468,17 @@ const runConfiguration = function() {
 const importConfiguration = function() {
 
 }
+
+window.addEventListener('message', event => {
+    const data = event.data; 
+    switch(data.command){
+        case 'inputPath':
+            const inputTag = document.querySelector('#input_path')
+            inputTag.value = data.payload
+        break;
+    }
+})
+
 document.querySelector('#import').addEventListener('click', showOptions)
 document.querySelector('#optimize').addEventListener('click', showOptions)
 document.querySelector('#quantize').addEventListener('click', showOptions)
