@@ -201,13 +201,15 @@ const buildOptionDom = function(target) {
     // tool 이름이랑 토글버튼 변경하는 부분
     const h2Tag = document.querySelector('#toolName')
     h2Tag.innerText = `Options for ${target.type}`
-    const useBtn = document.querySelector('#useBtn')
+    const tmpBtn = document.querySelector('#useBtn')
+    const useBtn = tmpBtn.cloneNode(true)
+    tmpBtn.parentNode.replaceChild(useBtn, tmpBtn)
     if (target.type.startsWith('import')) {
         useBtn.disabled = true
     } else {
         useBtn.disabled = false
     }
-    useBtn.addEventListener('click', function(target) {
+    useBtn.addEventListener('click', function() {
         const optionFieldset = document.querySelector('#options')
         if (target.use === true) {
             target.use = false
