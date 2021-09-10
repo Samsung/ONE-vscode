@@ -169,23 +169,16 @@ const profile = {
     ]
 }
 
-const changeTargetUse = function(target) {
-    const optionFieldset = document.querySelector('#options')
-    if (target.use === true) {
-        target.use = false
-        optionFieldset.disabled = true
-    } else {
-        target.use = true
-        optionFieldset.disabled = false
-    }
-}
-
 const emptyOptionBox = function(isImport) { 
     if (!isImport) {
         const locaForSelect = document.querySelector('#locaForSelect')
         while (locaForSelect.hasChildNodes()) {
         locaForSelect.removeChild(locaForSelect.firstChild)
         }
+    }
+    const toolList = document.querySelectorAll('.tools div')
+    for (let i=0;i<toolList.length;i++) {
+        toolList[i].classList.remove('selected')
     }
     const optionsName = document.querySelector('#optionsName')
     while (optionsName.hasChildNodes()) {
@@ -394,6 +387,7 @@ const changeSelect = function(event) {
 const showOptions = function(event) {
     console.log("aaaaaaaaaaaaaa")
     emptyOptionBox(false)
+    event.target.classList.add('selected')
     switch (event.target.id) {
         case 'import':{
             const h2Tag = document.querySelector('#toolName')
