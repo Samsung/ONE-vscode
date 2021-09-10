@@ -124,7 +124,7 @@ const optimize = {
 }
 
 const quantize = {
-    type: 'pack',
+    type: 'quantize',
     use: true,
     options: [
         {optionName: 'input_path', optionValue: ''},
