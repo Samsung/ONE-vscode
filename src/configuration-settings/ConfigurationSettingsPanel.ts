@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import {getNonce} from '../getNonce';
+import { PathDialog } from './PathDialog';
 
 export class ConfigurationSettingsPanel {
   /**
@@ -95,26 +96,28 @@ export class ConfigurationSettingsPanel {
 
     this._panel.webview.html = this._getHtmlForWebview(webview);
     webview.onDidReceiveMessage(async (data) => {
-      switch (data.type) {
-        case 'onInfo': {
-          if (!data.value) {
-            return;
-          }
-          vscode.window.showInformationMessage(data.value);
+      switch (data.command) {
+        case 'inputPath':{
+          const options: vscode.OpenDialogOptions = {
+            canSelectMany: false, 
+            openLabel: 'Open',
+            filters: {
+               'allFiles': ['*']
+           }
+         };
+        vscode.window.showOpenDialog(options).then(fileUri => {
+            if (fileUri && fileUri[0]) {
+                const pathToModelFile = fileUri[0].fsPath;
+                console.log('Selected file: ' + pathToModelFile);
+                webview.postMessage({
+                  command: 'inputPath',
+                  payload: pathToModelFile
+                });
+              }
+            }
+          );
           break;
         }
-        case 'onError': {
-          if (!data.value) {
-            return;
-          }
-          vscode.window.showErrorMessage(data.value);
-          break;
-        }
-          // case 'tokens': {
-          //   await Util.globalState.update(accessTokenKey, data.accessToken);
-          //   await Util.globalState.update(refreshTokenKey,
-          //   data.refreshToken); break;
-          // }
       }
     });
   }
