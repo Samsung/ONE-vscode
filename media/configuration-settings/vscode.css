@@ -115,10 +115,9 @@ li {
 	.optionsValue {
 		width: 30%;
 	}
-	#locaForSelect{
-		visibility: hidden;
-	}
  }
+
+
 
 .footer {
 	width: var(--container-width);
@@ -128,6 +127,7 @@ li {
 
 .selected {
 	font-weight: bold;
+	color: var(--vscode-button-background);
 }
 
 #locaForSelect{
@@ -209,7 +209,7 @@ textarea {
 	border-radius: var(--input-border-radius);
 	font-family: var(--vscode-font-family);
 	padding: var(--input-padding-vertical) var(--input-padding-horizontal);
-	color: var(--vscode-input-foreground);
+	color: black;
 	outline-color: var(--vscode-input-border);
 	background-color: var(--input-color);
 }
