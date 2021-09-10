@@ -169,6 +169,18 @@ const profile = {
     ]
 }
 
+const oneToolList = [
+    oneImportBcq,
+    oneImportOnnx,
+    oneImportTf,
+    oneImportTflite,
+    optimize,
+    quantize,
+    pack,
+    codegen,
+    profile
+]
+
 const emptyOptionBox = function(isImport) { 
     if (!isImport) {
         const locaForSelect = document.querySelector('#locaForSelect')
@@ -262,7 +274,7 @@ const buildOptionDom = function(target) {
                     inputTag.value = target.options[i].optionValue
                 }
                 inputTag.addEventListener('click', function(){
-                    getFilePath()
+                    getFilePath(target.type)
                 })             
                 valueLiTag.appendChild(inputTag)
             } else if (target.options[i].optionName === 'output_path') {
@@ -311,9 +323,10 @@ const buildOptionDom = function(target) {
 }
 
 
-const getFilePath = function(){
+const getFilePath = function(tool){
     vscode.postMessage({
-        command: 'inputPath'
+        command: 'inputPath',
+        selectedTool: tool
     })
 }
 
@@ -461,8 +474,19 @@ window.addEventListener('message', event => {
     const data = event.data; 
     switch(data.command){
         case 'inputPath':
-            const inputTag = document.querySelector('#input_path')
-            inputTag.value = data.payload
+            for(let i = 0; i < oneToolList.length; i++){
+                if(oneToolList[i].type === data.selectedTool){
+                    for(let j = 0; j < oneToolList[i].options.length; j++){
+                        if(oneToolList[i].options[j].optionName === 'input_path'){
+                            oneToolList[i].options[j].optionValue = data.filePath
+                            const inputTag = document.querySelector('#input_path')
+                            inputTag.value = data.filePath
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
         break;
     }
 })
