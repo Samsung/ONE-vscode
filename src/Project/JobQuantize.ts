@@ -22,7 +22,7 @@ export class JobQuantize extends JobBase {
   // TODO add quantize options
   constructor() {
     super();
-    this.jobType = Job.Type.tOptimize;
+    this.jobType = Job.Type.tQuantize;
     this.name = '(noname)';
   }
 
