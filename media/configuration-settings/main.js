@@ -234,28 +234,6 @@ const autoCompletePath = function() {
                                 oneToolList[i].options[j].optionValue = paths.join('/')
                                 break
                             }
-                            case 'codegen': {
-                                let paths = input.split('/')
-                                let tmp = paths[paths.length-1].split('.')
-                                if (tmp.length > 2) {
-                                    tmp.splice(1,1)
-                                }
-                                tmp[tmp.length-1] = 'bin'
-                                paths[paths.length-1] = tmp.join('.')
-                                oneToolList[i].options[j].optionValue = paths.join('/')
-                                break
-                            }
-                            case 'profile': {
-                                let paths = input.split('/')
-                                let tmp = paths[paths.length-1].split('.')
-                                if (tmp.length > 2) {
-                                    tmp.splice(1,1)
-                                }
-                                tmp[tmp.length-1] = 'json'
-                                paths[paths.length-1] = tmp.join('.')
-                                oneToolList[i].options[j].optionValue = paths.join('/')
-                                break   
-                            }
                             default: {
                                 let paths = input.split('/')
                                 let tmp = paths[paths.length-1].split('.')
@@ -575,7 +553,7 @@ window.addEventListener('message', event => {
                         }
                     }
                     autoCompletePath()
-                    emptyOptionBox()
+                    emptyOptionBox(true)
                     buildOptionDom(oneToolList[i])
                     break;
                 }
