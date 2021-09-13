@@ -9,10 +9,10 @@ const oneImport = {
     type: 'import',
     use: true,
     options: [
+        {optionName: 'tf', optionValue: false},
+        {optionName: 'tflite', optionValue: false},
         {optionName: 'bcq', optionValue: false},
         {optionName: 'onnx', optionValue: false},
-        {optionName: 'tf', optionValue: false},
-        {optionName: 'tflite', optionValue: false}
     ]
 }
 
@@ -182,20 +182,20 @@ const oneToolList = [
 ]
 
 const autoCompletePath = function() {
-    let flag = false
-    for (let a=0;a<4;a++) {
+    let flag = -1
+    for (let a=0;a<oneToolList.length;a++) {
         if (oneToolList[a].use === true) {
             for (let b=0;b<oneToolList[a].options.length;b++) {
                 if (oneToolList[a].options[b].optionName === 'input_path' && oneToolList[a].options[b].optionValue.trim() !== '') {
-                    flag = true
+                    flag = a
                     break
                 }
             }
             break
         }
     }
-    if (flag) {
-        for (let i=0;i<oneToolList.length;i++) {
+    if (flag !== -1) {
+        for (let i=flag;i<oneToolList.length;i++) {
             if (oneToolList[i].use === true) {
                 let input = ''
                 for (let j=0;j<oneToolList[i].options.length;j++) {
@@ -215,9 +215,9 @@ const autoCompletePath = function() {
                                 let paths = input.split('/')
                                 let tmp = paths[paths.length-1].split('.')
                                 if (tmp.length > 2) {
-                                    tmp[1] = 'qua'
+                                    tmp[1] = 'quantized'
                                 } else {
-                                    tmp.splice(1,0,'qua')
+                                    tmp.splice(1,0,'quantized')
                                 }
                                 paths[paths.length-1] = tmp.join('.')
                                 oneToolList[i].options[j].optionValue = paths.join('/')
@@ -289,28 +289,40 @@ const buildOptionDom = function(target) {
     const useBtn = tmpBtn.cloneNode(true)
     tmpBtn.parentNode.replaceChild(useBtn, tmpBtn)
     if (target.type.startsWith('import')) {
-        useBtn.disabled = true
+        useBtn.addEventListener('click', function() {
+            const optionFieldset = document.querySelector('#options')
+            const selectTag = document.querySelector('#framework')
+            if (oneImport.use === true) {
+                oneImport.use = false
+                optionFieldset.disabled = true
+                selectTag.disabled = true
+            } else {
+                oneImport.use = true
+                optionFieldset.disabled = false
+                selectTag.disabled = false
+            }
+            autoCompletePath()
+        })
     } else {
-        useBtn.disabled = false
-    }
-    useBtn.addEventListener('click', function() {
+        useBtn.addEventListener('click', function() {
+            const optionFieldset = document.querySelector('#options')
+            if (target.use === true) {
+                target.use = false
+                optionFieldset.disabled = true
+            } else {
+                target.use = true
+                optionFieldset.disabled = false
+            }
+            autoCompletePath()
+        })
         const optionFieldset = document.querySelector('#options')
         if (target.use === true) {
-            target.use = false
-            optionFieldset.disabled = true
-        } else {
-            target.use = true
+            useBtn.checked = true
             optionFieldset.disabled = false
+        } else {
+            useBtn.checked = false
+            optionFieldset.disabled = true
         }
-        autoCompletePath()
-    })
-    const optionFieldset = document.querySelector('#options')
-    if (target.use === true) {
-        useBtn.checked = true
-        optionFieldset.disabled = false
-    } else {
-        useBtn.checked = false
-        optionFieldset.disabled = true
     }
     // 내부 옵션들 하나씩 포문 돌면서 생성하는 기능
     const optionsNameTag = document.querySelector('#optionsName')
@@ -346,10 +358,10 @@ const buildOptionDom = function(target) {
         } else if (typeof target.options[i].optionValue === 'string') {
             // 들어오는 값이 string 값일 경우
             nameLiTag.innerText = target.options[i].optionName
-            if (target.options[i].optionName === 'input_path' && target.type.startsWith('import')) {
+            if (target.options[i].optionName === 'input_path') {
                 const inputTag = document.createElement('input')
                 inputTag.id = target.options[i].optionName
-                inputTag.placeholder = 'please enter path to your model'
+                inputTag.placeholder = 'please enter path to your target'
                 if (target.options[i].optionValue.trim() !== '') {
                     inputTag.value = target.options[i].optionValue
                 }
@@ -492,6 +504,31 @@ const showOptions = function(event) {
             }
             select.addEventListener('change',changeSelect)
             locaForSelect.appendChild(select)
+            const tmpBtn = document.querySelector('#useBtn')
+            const useBtn = tmpBtn.cloneNode(true)
+            tmpBtn.parentNode.replaceChild(useBtn, tmpBtn)
+            const optionFieldset = document.querySelector('#options')
+            if (oneImport.use === true) {
+                useBtn.checked = true
+                optionFieldset.disabled = false
+            } else {
+                useBtn.checked = false
+                optionFieldset.disabled = true
+            }
+            useBtn.addEventListener('click', function() {
+            const optionFieldset = document.querySelector('#options')
+            const selectTag = document.querySelector('#framework')
+            if (oneImport.use === true) {
+                oneImport.use = false
+                optionFieldset.disabled = true
+                selectTag.disabled = true
+            } else {
+                oneImport.use = true
+                optionFieldset.disabled = false
+                selectTag.disabled = false
+            }
+            autoCompletePath()
+        })
             let flag = -1
             for (let i=0; i<oneImport.options.length;i++) {
                 if (oneImport.options[i].optionValue === true) {
@@ -502,6 +539,11 @@ const showOptions = function(event) {
             if (flag !== -1) {
                 select.options[flag+1].selected = true
                 buildOptionDom(oneImportOptions[flag])
+            }
+            if (oneImport.use === false) {
+                select.disabled = true
+            } else {
+                select.disabled = false
             }
             break
         }
