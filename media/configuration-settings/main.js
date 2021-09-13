@@ -76,10 +76,10 @@ const optimize = {
     type: 'optimize',
     use: true,
     options: [
-        {optionName: 'p', optionValue: false},
-        {optionName: 'change_outputs', optionValue: false},
         {optionName: 'input_path', optionValue: ''},
         {optionName: 'output_path', optionValue: ''},
+        {optionName: 'p', optionValue: false},
+        {optionName: 'change_outputs', optionValue: false},
         {optionName: '01', optionValue: false},
         {optionName: 'conver_nchw_to_nhwd', optionValue: false},
         {optionName: 'nchw_to_nhwc_input_shape', optionValue: false},
@@ -131,7 +131,6 @@ const quantize = {
         {optionName: 'input_data', optionValue: ''},
         {optionName: 'input_data_format', optionValue: ''},
         {optionName: 'output_path', optionValue: ''},
-        {optionName: 'p', optionValue: false},
         {optionName: 'input_dtype', optionValue: ''},
         {optionName: 'quantized_dtype', optionValue: ''},
         {optionName: 'granularity', optionValue: ''},
@@ -139,6 +138,7 @@ const quantize = {
         {optionName: 'min_percentile', optionValue: ''},
         {optionName: 'max_percentile', optionValue: ''},
         {optionName: 'mode', optionValue: ''},
+        {optionName: 'p', optionValue: false},
     ]
 }
 
