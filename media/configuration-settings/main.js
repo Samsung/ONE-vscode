@@ -181,6 +181,107 @@ const oneToolList = [
     profile
 ]
 
+const autoCompletePath = function() {
+    let flag = false
+    for (let a=0;a<4;a++) {
+        if (oneToolList[a].use === true) {
+            for (let b=0;b<oneToolList[a].options.length;b++) {
+                if (oneToolList[a].options[b].optionName === 'input_path' && oneToolList[a].options[b].optionValue.trim() !== '') {
+                    flag = true
+                    break
+                }
+            }
+            break
+        }
+    }
+    if (flag) {
+        for (let i=0;i<oneToolList.length;i++) {
+            if (oneToolList[i].use === true) {
+                let input = ''
+                for (let j=0;j<oneToolList[i].options.length;j++) {
+                    if (oneToolList[i].options[j].optionName === 'input_path') {
+                        input = oneToolList[i].options[j].optionValue
+                    } else if (oneToolList[i].options[j].optionName === 'output_path') {
+                        switch (oneToolList[i].type) {
+                            case 'optimize': {
+                                let paths = input.split('/')
+                                let tmp = paths[paths.length-1].split('.')
+                                tmp.splice(1,0,'opt')
+                                paths[paths.length-1] = tmp.join('.')
+                                oneToolList[i].options[j].optionValue = paths.join('/')
+                                break
+                            }
+                            case 'quantize': {
+                                let paths = input.split('/')
+                                let tmp = paths[paths.length-1].split('.')
+                                if (tmp.length > 2) {
+                                    tmp[1] = 'qua'
+                                } else {
+                                    tmp.splice(1,0,'qua')
+                                }
+                                paths[paths.length-1] = tmp.join('.')
+                                oneToolList[i].options[j].optionValue = paths.join('/')
+                                break
+                            }
+                            case 'pack': {
+                                let paths = input.split('/')
+                                let tmp = paths[paths.length-1].split('.')
+                                if (tmp.length > 2) {
+                                    tmp.splice(1,1)
+                                }
+                                tmp[tmp.length-1] = 'pkg'
+                                paths[paths.length-1] = tmp.join('.')
+                                oneToolList[i].options[j].optionValue = paths.join('/')
+                                break
+                            }
+                            case 'codegen': {
+                                let paths = input.split('/')
+                                let tmp = paths[paths.length-1].split('.')
+                                if (tmp.length > 2) {
+                                    tmp.splice(1,1)
+                                }
+                                tmp[tmp.length-1] = 'bin'
+                                paths[paths.length-1] = tmp.join('.')
+                                oneToolList[i].options[j].optionValue = paths.join('/')
+                                break
+                            }
+                            case 'profile': {
+                                let paths = input.split('/')
+                                let tmp = paths[paths.length-1].split('.')
+                                if (tmp.length > 2) {
+                                    tmp.splice(1,1)
+                                }
+                                tmp[tmp.length-1] = 'json'
+                                paths[paths.length-1] = tmp.join('.')
+                                oneToolList[i].options[j].optionValue = paths.join('/')
+                                break   
+                            }
+                            default: {
+                                let paths = input.split('/')
+                                let tmp = paths[paths.length-1].split('.')
+                                tmp[tmp.length-1] = 'circle'
+                                paths[paths.length-1] = tmp.join('.')
+                                oneToolList[i].options[j].optionValue = paths.join('/')
+                            }
+                        }
+                        for (let k=i+1;k<oneToolList.length;k++) {
+                            if (oneToolList[k].use === true) {
+                                for (let l=0;l<oneToolList[k].options.length;l++) {
+                                    if (oneToolList[k].options[l].optionName === 'input_path') {
+                                        oneToolList[k].options[l].optionValue = oneToolList[i].options[j].optionValue
+                                        break
+                                    }
+                                }
+                                break
+                            }
+                        }
+                    }
+                }
+            } 
+        }
+    }
+}
+
 const emptyOptionBox = function(isImport) { 
     if (!isImport) {
         const locaForSelect = document.querySelector('#locaForSelect')
@@ -223,6 +324,7 @@ const buildOptionDom = function(target) {
             target.use = true
             optionFieldset.disabled = false
         }
+        autoCompletePath()
     })
     const optionFieldset = document.querySelector('#options')
     if (target.use === true) {
@@ -303,8 +405,7 @@ const buildOptionDom = function(target) {
             }
             select.addEventListener('change', function(event) {
                 target.options[i].chosenValue = select[event.target.selectedIndex].value
-            })
-            
+            })            
             valueLiTag.appendChild(select)
         }
         valueUlTag.appendChild(valueLiTag)
@@ -397,9 +498,6 @@ const showOptions = function(event) {
         case 'import':{
             const h2Tag = document.querySelector('#toolName')
             h2Tag.innerText = 'Options for import'
-            const useBtn = document.querySelector('#useBtn')
-            useBtn.checked = true
-            useBtn.disabled = true
             const locaForSelect = document.querySelector('#locaForSelect')
             const select = document.createElement('select')
             select.id = 'framework'
@@ -466,22 +564,26 @@ window.addEventListener('message', event => {
     const data = event.data; 
     switch(data.command){
         case 'inputPath':
-            for(let i = 0; i < oneToolList.length; i++){
-                if(oneToolList[i].type === data.selectedTool){
-                    for(let j = 0; j < oneToolList[i].options.length; j++){
-                        if(oneToolList[i].options[j].optionName === 'input_path'){
+            for (let i = 0; i < oneToolList.length; i++) {
+                if (oneToolList[i].type === data.selectedTool) {
+                    for (let j = 0; j < oneToolList[i].options.length; j++) {
+                        if (oneToolList[i].options[j].optionName === 'input_path') {
                             oneToolList[i].options[j].optionValue = data.filePath
                             const inputTag = document.querySelector('#input_path')
                             inputTag.value = data.filePath
                             break;
                         }
                     }
+                    autoCompletePath()
+                    emptyOptionBox()
+                    buildOptionDom(oneToolList[i])
                     break;
                 }
             }
-        break;
+            break;
+        }
     }
-})
+)
 
 document.querySelector('#import').addEventListener('click', showOptions)
 document.querySelector('#optimize').addEventListener('click', showOptions)
