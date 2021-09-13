@@ -62,6 +62,12 @@ export class WorkFlow {
     this.jobs.push(job);
   }
 
+  public clearJobs() {
+    while (this.jobs.length) {
+      this.jobs.pop();
+    }
+  }
+
   public start(workspace: string) {
     this.workspace = workspace;
     if (!this.validateJobs()) {

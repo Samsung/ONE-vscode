@@ -37,7 +37,7 @@ export class Builder {
   // TODO import .cfg file to BuildFlow
 
   public init() {
-    // TODO implement
+    this.workFlow.clearJobs();
   }
 
   // called from user interface
