@@ -187,10 +187,10 @@ const emptyOptionBox = function(isImport) {
         while (locaForSelect.hasChildNodes()) {
         locaForSelect.removeChild(locaForSelect.firstChild)
         }
-    }
-    const toolList = document.querySelectorAll('.tools div')
-    for (let i=0;i<toolList.length;i++) {
-        toolList[i].classList.remove('selected')
+        const toolList = document.querySelectorAll('.tools div')
+        for (let i=0;i<toolList.length;i++) {
+            toolList[i].classList.remove('selected')
+        }
     }
     const optionsName = document.querySelector('#optionsName')
     while (optionsName.hasChildNodes()) {
@@ -266,7 +266,7 @@ const buildOptionDom = function(target) {
         } else if (typeof target.options[i].optionValue === 'string') {
             // 들어오는 값이 string 값일 경우
             nameLiTag.innerText = target.options[i].optionName
-            if (target.options[i].optionName === 'input_path') {
+            if (target.options[i].optionName === 'input_path' && target.type.startsWith('import')) {
                 const inputTag = document.createElement('input')
                 inputTag.id = target.options[i].optionName
                 inputTag.placeholder = 'please enter path to your model'
@@ -276,14 +276,6 @@ const buildOptionDom = function(target) {
                 inputTag.addEventListener('click', function(){
                     getFilePath(target.type)
                 })             
-                valueLiTag.appendChild(inputTag)
-            } else if (target.options[i].optionName === 'output_path') {
-                const inputTag = document.createElement('input')
-                inputTag.id = target.options[i].optionName
-                inputTag.placeholder = 'please enter path to your result'
-                if (target.options[i].optionValue.trim() !== '') {
-                    inputTag.value = target.options[i].optionValue
-                }
                 valueLiTag.appendChild(inputTag)
             } else {
                 const inputTag = document.createElement('input')
