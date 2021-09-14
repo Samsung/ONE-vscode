@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
+import * as fs from 'fs';
 import * as vscode from 'vscode';
 import {Balloon} from './Balloon';
+
+var ini = require('ini');
 
 /**
  * @brief Get Workspace root folder as string
@@ -68,4 +71,16 @@ export function getImportCfgFilepath(selector: FileSelector): void {
       selector.onFileSelected(undefined);
     }
   });
+}
+
+/**
+ * @brief Load cfg file and return Object
+ */
+export function loadCfgFile(filePath: string): any {
+  let cfgData = fs.readFileSync(filePath, 'utf-8');
+  // TODO check cfgData validity
+  let cfgIni = ini.parse(cfgData);
+  // TODO check cfgIni validity
+
+  return cfgIni;
 }
