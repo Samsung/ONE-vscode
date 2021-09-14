@@ -181,78 +181,78 @@ const oneToolList = [
     profile
 ]
 
-const autoCompletePath = function() {
-    let flag = -1
-    for (let a=0;a<oneToolList.length;a++) {
-        if (oneToolList[a].use === true) {
-            for (let b=0;b<oneToolList[a].options.length;b++) {
-                if (oneToolList[a].options[b].optionName === 'input_path' && oneToolList[a].options[b].optionValue.trim() !== '') {
-                    flag = a
-                    break
-                }
-            }
-            break
-        }
-    }
-    if (flag !== -1) {
-        for (let i=flag;i<oneToolList.length;i++) {
-            if (oneToolList[i].use === true) {
-                let input = ''
-                for (let j=0;j<oneToolList[i].options.length;j++) {
-                    if (oneToolList[i].options[j].optionName === 'input_path') {
-                        input = oneToolList[i].options[j].optionValue
-                    } else if (oneToolList[i].options[j].optionName === 'output_path') {
-                        let paths = input.split('/')
-                        let tmp = paths[paths.length-1].split('.')
-                        switch (oneToolList[i].type) {
-                            case 'optimize': {
-                                tmp.splice(1,0,'opt')
-                                paths[paths.length-1] = tmp.join('.')
-                                oneToolList[i].options[j].optionValue = paths.join('/')
-                                break
-                            }
-                            case 'quantize': {
-                                if (tmp.length > 2) {
-                                    tmp[1] = 'quantized'
-                                } else {
-                                    tmp.splice(1,0,'quantized')
-                                }
-                                paths[paths.length-1] = tmp.join('.')
-                                oneToolList[i].options[j].optionValue = paths.join('/')
-                                break
-                            }
-                            case 'pack': {
-                                if (tmp.length > 2) {
-                                    tmp.splice(1,1)
-                                }
-                                tmp[tmp.length-2] += '_pack'
-                                paths[paths.length-1] = tmp.join('.')
-                                oneToolList[i].options[j].optionValue = paths.join('/')
-                                break
-                            }
-                            default: {
-                                tmp[tmp.length-1] = 'circle'
-                                paths[paths.length-1] = tmp.join('.')
-                                oneToolList[i].options[j].optionValue = paths.join('/')
-                            }
-                        }
-                        for (let k=i+1;k<oneToolList.length;k++) {
-                            if (oneToolList[k].use === true) {
-                                for (let l=0;l<oneToolList[k].options.length;l++) {
-                                    if (oneToolList[k].options[l].optionName === 'input_path') {
-                                        oneToolList[k].options[l].optionValue = oneToolList[i].options[j].optionValue
-                                        break
-                                    }
-                                }
-                                break
-                            }
-                        }
-                    }
-                }
-            } 
-        }
-    }
-}
+// const autoCompletePath = function() {
+//     let flag = -1
+//     for (let a=0;a<oneToolList.length;a++) {
+//         if (oneToolList[a].use === true) {
+//             for (let b=0;b<oneToolList[a].options.length;b++) {
+//                 if (oneToolList[a].options[b].optionName === 'input_path' && oneToolList[a].options[b].optionValue.trim() !== '') {
+//                     flag = a
+//                     break
+//                 }
+//             }
+//             break
+//         }
+//     }
+//     if (flag !== -1) {
+//         for (let i=flag;i<oneToolList.length;i++) {
+//             if (oneToolList[i].use === true) {
+//                 let input = ''
+//                 for (let j=0;j<oneToolList[i].options.length;j++) {
+//                     if (oneToolList[i].options[j].optionName === 'input_path') {
+//                         input = oneToolList[i].options[j].optionValue
+//                     } else if (oneToolList[i].options[j].optionName === 'output_path') {
+//                         let paths = input.split('/')
+//                         let tmp = paths[paths.length-1].split('.')
+//                         switch (oneToolList[i].type) {
+//                             case 'optimize': {
+//                                 tmp.splice(1,0,'opt')
+//                                 paths[paths.length-1] = tmp.join('.')
+//                                 oneToolList[i].options[j].optionValue = paths.join('/')
+//                                 break
+//                             }
+//                             case 'quantize': {
+//                                 if (tmp.length > 2) {
+//                                     tmp[1] = 'quantized'
+//                                 } else {
+//                                     tmp.splice(1,0,'quantized')
+//                                 }
+//                                 paths[paths.length-1] = tmp.join('.')
+//                                 oneToolList[i].options[j].optionValue = paths.join('/')
+//                                 break
+//                             }
+//                             case 'pack': {
+//                                 if (tmp.length > 2) {
+//                                     tmp.splice(1,1)
+//                                 }
+//                                 tmp[tmp.length-2] += '_pack'
+//                                 paths[paths.length-1] = tmp.join('.')
+//                                 oneToolList[i].options[j].optionValue = paths.join('/')
+//                                 break
+//                             }
+//                             default: {
+//                                 tmp[tmp.length-1] = 'circle'
+//                                 paths[paths.length-1] = tmp.join('.')
+//                                 oneToolList[i].options[j].optionValue = paths.join('/')
+//                             }
+//                         }
+//                         for (let k=i+1;k<oneToolList.length;k++) {
+//                             if (oneToolList[k].use === true) {
+//                                 for (let l=0;l<oneToolList[k].options.length;l++) {
+//                                     if (oneToolList[k].options[l].optionName === 'input_path') {
+//                                         oneToolList[k].options[l].optionValue = oneToolList[i].options[j].optionValue
+//                                         break
+//                                     }
+//                                 }
+//                                 break
+//                             }
+//                         }
+//                     }
+//                 }
+//             } 
+//         }
+//     }
+// }
 
 const emptyOptionBox = function(isImport) { 
     if (!isImport) {
@@ -299,7 +299,7 @@ const buildOptionDom = function(target) {
                 optionFieldset.disabled = false
                 selectTag.disabled = false
             }
-            autoCompletePath()
+            // autoCompletePath()
         })
     } else {
         useBtn.addEventListener('click', function() {
@@ -311,7 +311,7 @@ const buildOptionDom = function(target) {
                 target.use = true
                 optionFieldset.disabled = false
             }
-            autoCompletePath()
+            // autoCompletePath()
         })
         const optionFieldset = document.querySelector('#options')
         if (target.use === true) {
@@ -529,7 +529,7 @@ const showOptions = function(event) {
                 optionFieldset.disabled = false
                 selectTag.disabled = false
             }
-            autoCompletePath()
+            // autoCompletePath()
         })
             let flag = -1
             for (let i=0; i<oneImport.options.length;i++) {
@@ -596,7 +596,7 @@ window.addEventListener('message', event => {
                             break;
                         }
                     }
-                    autoCompletePath()
+                    // autoCompletePath()
                     emptyOptionBox(true)
                     buildOptionDom(oneToolList[i])
                     break;
