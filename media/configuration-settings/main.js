@@ -208,10 +208,12 @@ const oneImportToggleFunction = function() {
     const selectTag = document.querySelector('#framework')
     if (oneImport.use === true) {
         oneImport.use = false
-        oneImportBcq.use = false
-        oneImportOnnx.use = false
-        oneImportTf.use = false
-        oneImportTflite.use = false
+        for (let i=0;i<oneImport.options.length;i++) {
+            oneImport.options[i].optionValue = false
+        }
+        for (let j=0;j<oneImportOptions.length;j++) {
+            oneImportOptions[j].use = false
+        }
         optionFieldset.disabled = true
         selectTag.disabled = true
     } else {
@@ -480,16 +482,16 @@ const showOptions = function(event) {
                 optionFieldset.disabled = true
             }
             useBtn.addEventListener('click', oneImportToggleFunction)
-            let flag = -1
+            let chosenOptionIndex = -1
             for (let i=0; i<oneImport.options.length;i++) {
                 if (oneImport.options[i].optionValue === true) {
-                    flag = i
+                    chosenOptionIndex = i
                     break
                 }
             }
-            if (flag !== -1) {
-                select.options[flag+1].selected = true
-                buildOptionDom(oneImportOptions[flag])
+            if (chosenOptionIndex !== -1) {
+                select.options[chosenOptionIndex+1].selected = true
+                buildOptionDom(oneImportOptions[chosenOptionIndex])
             }
             if (oneImport.use === false) {
                 select.disabled = true
