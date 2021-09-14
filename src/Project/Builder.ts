@@ -39,7 +39,7 @@ export class Builder implements BuilderJob {
   // TODO import .cfg file to BuildFlow
 
   public init() {
-    // TODO implement
+    this.workFlow.clearJobs();
   }
 
   // BuilderJob implements
