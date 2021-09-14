@@ -218,6 +218,11 @@ input::placeholder,
 textarea::placeholder {
 	color: var(--vscode-input-placeholderForeground);
 }
+
+fieldset:disabled input {
+	background-color: var(--vscode-descriptionForeground);
+}
+
 /* The switch - the box around the slider */
 .switch {
 	position: relative;
