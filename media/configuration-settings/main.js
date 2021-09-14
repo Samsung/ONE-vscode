@@ -202,18 +202,16 @@ const autoCompletePath = function() {
                     if (oneToolList[i].options[j].optionName === 'input_path') {
                         input = oneToolList[i].options[j].optionValue
                     } else if (oneToolList[i].options[j].optionName === 'output_path') {
+                        let paths = input.split('/')
+                        let tmp = paths[paths.length-1].split('.')
                         switch (oneToolList[i].type) {
                             case 'optimize': {
-                                let paths = input.split('/')
-                                let tmp = paths[paths.length-1].split('.')
                                 tmp.splice(1,0,'opt')
                                 paths[paths.length-1] = tmp.join('.')
                                 oneToolList[i].options[j].optionValue = paths.join('/')
                                 break
                             }
                             case 'quantize': {
-                                let paths = input.split('/')
-                                let tmp = paths[paths.length-1].split('.')
                                 if (tmp.length > 2) {
                                     tmp[1] = 'quantized'
                                 } else {
@@ -224,8 +222,6 @@ const autoCompletePath = function() {
                                 break
                             }
                             case 'pack': {
-                                let paths = input.split('/')
-                                let tmp = paths[paths.length-1].split('.')
                                 if (tmp.length > 2) {
                                     tmp.splice(1,1)
                                 }
@@ -235,8 +231,6 @@ const autoCompletePath = function() {
                                 break
                             }
                             default: {
-                                let paths = input.split('/')
-                                let tmp = paths[paths.length-1].split('.')
                                 tmp[tmp.length-1] = 'circle'
                                 paths[paths.length-1] = tmp.join('.')
                                 oneToolList[i].options[j].optionValue = paths.join('/')
