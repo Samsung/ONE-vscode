@@ -182,38 +182,24 @@ const oneToolList = [
 ]
 
 const autoCompletePath = function() {
-    let flag = -1
-    for (let a=0;a<oneToolList.length;a++) {
-        if (oneToolList[a].use === true) {
-            for (let b=0;b<oneToolList[a].options.length;b++) {
-                if (oneToolList[a].options[b].optionName === 'input_path' && oneToolList[a].options[b].optionValue.trim() !== '') {
-                    flag = a
-                    break
-                }
-            }
-            break
-        }
-    }
-    if (flag !== -1) {
-        for (let i=flag;i<oneToolList.length;i++) {
-            if (oneToolList[i].use === true) {
-                for (let j=0;j<oneToolList[i].options.length;j++) {
-                    if (oneToolList[i].options[j].optionName === 'output_path') {
-                        for (let k=i+1;k<oneToolList.length;k++) {
-                            if (oneToolList[k].use === true) {
-                                for (let l=0;l<oneToolList[k].options.length;l++) {
-                                    if (oneToolList[k].options[l].optionName === 'input_path') {
-                                        oneToolList[k].options[l].optionValue = oneToolList[i].options[j].optionValue
-                                        break
-                                    }
+    for (let i=0;i<oneToolList.length;i++) {
+        if (oneToolList[i].use === true) {
+            for (let j=0;j<oneToolList[i].options.length;j++) {
+                if (oneToolList[i].options[j].optionName === 'output_path') {
+                    for (let k=i+1;k<oneToolList.length;k++) {
+                        if (oneToolList[k].use === true) {
+                            for (let l=0;l<oneToolList[k].options.length;l++) {
+                                if (oneToolList[k].options[l].optionName === 'input_path') {
+                                    oneToolList[k].options[l].optionValue = oneToolList[i].options[j].optionValue
+                                    break
                                 }
-                                break
                             }
+                            break
                         }
                     }
                 }
-            } 
-        }
+            }
+        } 
     }
 }
 
