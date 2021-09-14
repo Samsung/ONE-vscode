@@ -22,7 +22,6 @@ import {Logger} from '../Utils/Logger';
 
 import {BuilderJob} from './BuilderJob';
 import {Job} from './Job';
-import {JobImportTF} from './JobImportTF';
 import {WorkFlow} from './WorkFlow';
 
 export class Builder implements BuilderJob {
