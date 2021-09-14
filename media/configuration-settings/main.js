@@ -315,13 +315,16 @@ const buildOptionDom = function(target) {
                 btnTag.innerText = '+'
                 btnTag.addEventListener('click', function(){
                     getFilePath(target.type)
-                })  
+                })
                 const inputTag = document.createElement('input')
                 inputTag.id = target.options[i].optionName
                 inputTag.placeholder = 'please enter path to your target'
+                inputTag.addEventListener('change', function(event) {
+                    target.options[i].optionValue = event.target.value
+                    autoCompletePath()
+                })
                 if (target.options[i].optionValue.trim() !== '') {
                     inputTag.value = target.options[i].optionValue
-                    btnTag.disabled = true
                 }
                 valueLiTag.appendChild(inputTag)
                 valueLiTag.appendChild(btnTag)
