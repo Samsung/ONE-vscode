@@ -330,7 +330,7 @@ const buildOptionDom = function(target) {
                 valueLiTag.appendChild(btnTag)
             } else if (target.options[i].optionName === 'output_path') {
                 const inputTag = document.createElement('input')
-                inputTag.placeholder = 'if you chang this value than next input_path will be changed automatically'
+                inputTag.placeholder = 'next inputPath will be changed automatically'
                 if (target.options[i].optionValue.trim() !== '') {
                     inputTag.value = target.options[i].optionValue
                 }
