@@ -1,0 +1,134 @@
+{
+    "one-import-tf": {
+        "prefix" : "one-import-tf",
+        "body" : [
+            "[one-import-tf]",
+            "input_path=$1",
+            "output_path=$2",
+            "input_arrays=$3",
+            "input_shapes=$4",
+            "output_arrays=$5",
+            "converter_version=$6",
+            "model_format=$7",
+            "save_intermediate=$8",
+            "$0"
+        ],
+        "description" : [
+            "command line tool to convert TensorFlow to circle"
+        ]
+    },
+    "one-import-tflite": {
+        "prefix" : "one-import-tflite",
+        "body" : [
+            "[one-import-tflite]",
+            "input_path=$1",
+            "output_path=$2",
+            "$0"
+        ],
+        "description" : [
+            "command line tool to convert TensorFlow lite to circle"
+        ]
+    },
+    "one-import-bcq": {
+        "prefix" : "one-import-bcq",
+        "body" : [
+            "[one-import-bcq]",
+            "input_path=$1",
+            "output_path=$2",
+            "input_arrays=$3",
+            "input_shapes=$4",
+            "output_arrays=$5",
+            "converter_version=$6",
+            "$0"
+        ],
+        "description" : [
+            "command line tool to convert TensorFlow with BCQ to circle"
+        ]
+    },
+    "one-import-onnx": {
+        "prefix" : "one-import-onnx",
+        "body" : [
+            "[one-import-onnx]",
+            "input_path=$1",
+            "output_path=$2",
+            "input_arrays=$3",
+            "output_arrays=$4",
+            "converter_version=$5",
+            "model_format=$6",
+            "save_intermediate=$7",
+            "$0"
+        ],
+        "description" : [
+            "command line tool to convert ONNX to circle"
+        ]
+    },
+    "one-optimize": {
+        "prefix": "one-optimize",
+        "body": [
+            "[one-optimize]",
+            "input_path=$1",
+            "output_path=$2",
+            "$0"
+        ],
+        "description": [
+            "command line tool to optimize circle model"
+        ]
+    },
+    "one-codegen": {
+        "prefix": "one-codegen",
+        "body": [
+            "[one-codegen]",
+            "backend=$1",
+            "command=$2",
+            "$0"
+        ],
+        "description": [
+            "command line tool for code generation"
+        ]
+    },
+    "one-quantize": {
+        "prefix": "one-quantize",
+        "body": [
+            "[one-quantize]",
+            "input_path=$1",
+            "output_path=$2",
+            "input_data=$3",
+            "input_data_format=$4",
+            "generate_profile_data=$5",
+            "input_dtype=$6",
+            "quantized_dtype=$7",
+            "granularity=$8",
+            "min_percentile=$9",
+            "max_percentile=$10",
+            "mode=$11",
+            "$0"
+        ],
+        "description": [
+            "command line tool to quantize circle model"
+        ]
+    },
+    "one-pack": {
+        "prefix": "one-pack",
+        "body": [
+            "[one-pack]",
+            "input_path=$1",
+            "output_path=$2",
+            "$0"
+        ],
+        "description": [
+            "command line tool to package circle and metadata into nnpackage"
+        ]
+    },
+    "one-profile": {
+        "prefix": "one-profile",
+        "body": [
+            "[one-profile]",
+            "backend=$1",
+            "command=$2",
+            "$0"
+        ],
+        "description": [
+            "command line tool for profiling backend model"
+        ]
+    }
+}
