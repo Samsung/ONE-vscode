@@ -217,6 +217,26 @@ const autoCompletePath = function() {
     }
 }
 
+const oneImportToggleFunction = function() {
+    const optionFieldset = document.querySelector('#options')
+    const selectTag = document.querySelector('#framework')
+    if (oneImport.use === true) {
+        oneImport.use = false
+        oneImportBcq.use = false
+        oneImportOnnx.use = false
+        oneImportTf.use = false
+        oneImportTflite.use = false
+        optionFieldset.disabled = true
+        selectTag.disabled = true
+    } else {
+        oneImport.use = true
+        optionFieldset.disabled = false
+        selectTag.disabled = false
+    }
+    autoCompletePath()
+}
+
+
 const emptyOptionBox = function(isImport) { 
     if (!isImport) {
         const locaForSelect = document.querySelector('#locaForSelect')
@@ -246,24 +266,7 @@ const buildOptionDom = function(target) {
     const useBtn = tmpBtn.cloneNode(true)
     tmpBtn.parentNode.replaceChild(useBtn, tmpBtn)
     if (target.type.startsWith('import')) {
-        useBtn.addEventListener('click', function() {
-            const optionFieldset = document.querySelector('#options')
-            const selectTag = document.querySelector('#framework')
-            if (oneImport.use === true) {
-                oneImport.use = false
-                oneImportBcq.use = false
-                oneImportOnnx.use = false
-                oneImportTf.use = false
-                oneImportTflite.use = false
-                optionFieldset.disabled = true
-                selectTag.disabled = true
-            } else {
-                oneImport.use = true
-                optionFieldset.disabled = false
-                selectTag.disabled = false
-            }
-            autoCompletePath()
-        })
+        useBtn.addEventListener('click', oneImportToggleFunction)
     } else {
         useBtn.addEventListener('click', function() {
             const optionFieldset = document.querySelector('#options')
@@ -490,24 +493,7 @@ const showOptions = function(event) {
                 useBtn.checked = false
                 optionFieldset.disabled = true
             }
-            useBtn.addEventListener('click', function() {
-            const optionFieldset = document.querySelector('#options')
-            const selectTag = document.querySelector('#framework')
-            if (oneImport.use === true) {
-                oneImport.use = false
-                oneImportBcq.use = false
-                oneImportOnnx.use = false
-                oneImportTf.use = false
-                oneImportTflite.use = false
-                optionFieldset.disabled = true
-                selectTag.disabled = true
-            } else {
-                oneImport.use = true
-                optionFieldset.disabled = false
-                selectTag.disabled = false
-            }
-            autoCompletePath()
-        })
+            useBtn.addEventListener('click', oneImportToggleFunction)
             let flag = -1
             for (let i=0; i<oneImport.options.length;i++) {
                 if (oneImport.options[i].optionValue === true) {
