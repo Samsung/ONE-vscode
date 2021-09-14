@@ -105,19 +105,22 @@ export class ConfigurationSettingsPanel {
                'allFiles': ['*']
            }
          };
-        vscode.window.showOpenDialog(options).then(fileUri => {
-            if (fileUri && fileUri[0]) {
-                const pathToModelFile = fileUri[0].fsPath;
-                console.log('Selected file: ' + pathToModelFile);
-                webview.postMessage({
-                  command: 'inputPath',
-                  selectedTool: data.selectedTool,
-                  filePath: pathToModelFile,
-                });
+          vscode.window.showOpenDialog(options).then(fileUri => {
+              if (fileUri && fileUri[0]) {
+                  const pathToModelFile = fileUri[0].fsPath;
+                  console.log('Selected file: ' + pathToModelFile);
+                  webview.postMessage({
+                    command: 'inputPath',
+                    selectedTool: data.selectedTool,
+                    filePath: pathToModelFile,
+                  });
+                }
               }
-            }
-          );
-        break;
+            );
+          break;
+        case 'alert': 
+          vscode.window.showErrorMessage(data.text);
+          break;
       }
     });
   }
