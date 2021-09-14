@@ -225,7 +225,7 @@ const autoCompletePath = function() {
                                 if (tmp.length > 2) {
                                     tmp.splice(1,1)
                                 }
-                                tmp[tmp.length-1] = 'pkg'
+                                tmp[tmp.length-2] += '_pack'
                                 paths[paths.length-1] = tmp.join('.')
                                 oneToolList[i].options[j].optionValue = paths.join('/')
                                 break
@@ -288,6 +288,10 @@ const buildOptionDom = function(target) {
             const selectTag = document.querySelector('#framework')
             if (oneImport.use === true) {
                 oneImport.use = false
+                oneImportBcq.use = false
+                oneImportOnnx.use = false
+                oneImportTf.use = false
+                oneImportTflite.use = false
                 optionFieldset.disabled = true
                 selectTag.disabled = true
             } else {
@@ -514,6 +518,10 @@ const showOptions = function(event) {
             const selectTag = document.querySelector('#framework')
             if (oneImport.use === true) {
                 oneImport.use = false
+                oneImportBcq.use = false
+                oneImportOnnx.use = false
+                oneImportTf.use = false
+                oneImportTflite.use = false
                 optionFieldset.disabled = true
                 selectTag.disabled = true
             } else {
