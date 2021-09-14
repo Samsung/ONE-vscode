@@ -20,6 +20,7 @@ import {Balloon} from '../Utils/Balloon';
 import * as helpers from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
+import {BuilderCfgFile} from './BuilderCfgFile';
 import {BuilderJob} from './BuilderJob';
 import {Job} from './Job';
 import {JobImportTF} from './JobImportTF';
@@ -29,14 +30,14 @@ export class Builder implements BuilderJob {
   logger: Logger;
   workFlow: WorkFlow;  // our build WorkFlow
   currentWorkspace: string;
+  builderCfgFile: BuilderCfgFile;
 
   constructor(l: Logger) {
     this.logger = l;
     this.workFlow = new WorkFlow(l);
     this.currentWorkspace = '';
+    this.builderCfgFile = new BuilderCfgFile(this, l);
   }
-
-  // TODO import .cfg file to BuildFlow
 
   public init() {
     this.workFlow.clearJobs();
@@ -62,5 +63,10 @@ export class Builder implements BuilderJob {
     }
 
     this.workFlow.start(this.currentWorkspace);
+  }
+
+  // called from user interface
+  public import(context: vscode.ExtensionContext) {
+    helpers.getImportCfgFilepath(this.builderCfgFile);
   }
 }
