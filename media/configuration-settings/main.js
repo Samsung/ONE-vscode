@@ -527,12 +527,92 @@ const showOptions = function(event) {
     }
 }
 
-const exportValidation = function() {
+const pathValidator = function(target) {
+    for (let j=0;j<target.options.length;j++) {
+        if (target.options[j].optionName === 'input_path' && target.options[j].optionValue.trim() === '') {
+            vscode.postMessage({
+                command: 'alert',
+                text: `If you want to use ${target.type}, then input_path is required`
+            })
+            return true
+        }
+        if (target.options[j].optionName === 'output_path' && target.options[j].optionValue.trim() === '') {
+            vscode.postMessage({
+                command: 'alert',
+                text: `If you want to use ${target.type}, then output_path is required`
+            })
+            return true
+        }
+    }
+    return false
+}
 
+const baekendValidator = function(target) {
+    for (let j=0;j<target.options.length;j++) {
+        if (target.options[j].optionName === 'backend' && target.options[j].optionValue.trim() === '') {
+            vscode.postMessage({
+                command: 'alert',
+                text: `If you want to use ${target.type}, then backend is required`
+            })
+            return true
+        }
+    }
+    return false
+}
+
+const exportValidation = function() {
+    if (oneImport.use === true) {
+        let chosenModelIndex = -1
+        for (let i=0;i<oneImport.options.length;i++) {
+            if (oneImport.options[i].optionValue === true) {
+                chosenModelIndex = i
+                break
+            }
+        }
+        if (chosenModelIndex === -1 ) {
+            vscode.postMessage({
+                command: 'alert',
+                text: 'If you want to use oneImport, than you have to choose your framework'
+            })
+            return false
+        } else {
+            if (pathValidator(oneImportOptions[chosenModelIndex])) {
+                return false
+            }
+        }
+    }
+    if (optimize.use === true) {
+        if (pathValidator(optimize)) {
+            return false
+        }
+    }
+    if (quantize.use === true) {
+        if (pathValidator(quantize)) {
+            return false
+        }
+    }
+    if (pack.use === true) {
+        if (pathValidator(pack)) {
+            return false
+        }
+    }
+    if (codegen.use === true) {
+        if (backendValidator(codegen)) {
+            return false
+        }
+    }
+    if (profile.use === true) {
+        if (backendValidator(profile)) {
+            return false
+        }
+    }
+    return true
 }
 
 const exportConfiguration = function() {
-
+    if (exportValidation()) {
+        console.log('validation OK')
+    }
 }
 const runConfiguration = function() {
 
