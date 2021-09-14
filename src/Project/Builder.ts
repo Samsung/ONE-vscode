@@ -20,10 +20,12 @@ import {Balloon} from '../Utils/Balloon';
 import * as helpers from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
+import {BuilderJob} from './BuilderJob';
+import {Job} from './Job';
 import {JobImportTF} from './JobImportTF';
 import {WorkFlow} from './WorkFlow';
 
-export class Builder {
+export class Builder implements BuilderJob {
   logger: Logger;
   workFlow: WorkFlow;  // our build WorkFlow
   currentWorkspace: string;
@@ -38,6 +40,11 @@ export class Builder {
 
   public init() {
     // TODO implement
+  }
+
+  // BuilderJob implements
+  public addJob(job: Job): void {
+    this.workFlow.addJob(job);
   }
 
   // called from user interface
