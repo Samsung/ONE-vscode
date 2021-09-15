@@ -22,7 +22,7 @@ import {HoverProvider} from './Editor/HoverProvider';
 import {Jsontracer} from './Jsontracer';
 import {Project} from './Project';
 import {Utils} from './Utils';
-import { ConfigurationSettingsPanel } from './configuration-settings/ConfigurationSettingsPanel' 
+import { ConfigurationSettingsPanel } from './configuration-settings/ConfigurationSettingsPanel';
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('one-vscode activate OK');
@@ -77,7 +77,7 @@ export function activate(context: vscode.ExtensionContext) {
 =======
   let disposableOneConfigurationSettings = vscode.commands.registerCommand('onevscode.configuration-settings', () => {
     ConfigurationSettingsPanel.createOrShow(context.extensionUri);
-  })
+  });
   context.subscriptions.push(disposableOneVsc);
   context.subscriptions.push(disposableOneConfigurationSettings);
 >>>>>>> 4bf80fe (feat: init configuration-setting extension and create a file structure for configuration-settings)
