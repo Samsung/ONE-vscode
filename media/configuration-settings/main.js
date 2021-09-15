@@ -6,7 +6,7 @@ const vscode = acquireVsCodeApi();
 console.log('view from javascript.');
 
 const oneImport = {
-    type: 'import',
+    type: 'one-import',
     use: true,
     options: [
         {optionName: 'tf', optionValue: false},
@@ -17,10 +17,10 @@ const oneImport = {
 }
 
 const oneImportBcq = {
-    type: 'import_bcq',
+    type: 'one-import-bcq',
     use: false,
     options: [
-        {optionName: 'converter_version', optionValue:['v1','v2'], chosenValue:'v1'},
+        {optionName: 'converter_version', optionValue:'v1', optionType:['v1','v2']},
         {optionName: 'input_path', optionValue: ''},
         {optionName: 'output_path', optionValue: ''},
         {optionName: 'input_arrays', optionValue: ''},
@@ -30,7 +30,7 @@ const oneImportBcq = {
 }
 
 const oneImportOnnx = {
-    type: 'import_onnx',
+    type: 'one-import-onnx',
     use: false,
     options: [
         {optionName: 'input_path', optionValue: ''},
@@ -43,11 +43,11 @@ const oneImportOnnx = {
 }
 
 const oneImportTf = {
-    type: 'import_tf',
+    type: 'one-import-tf',
     use: false,
     options: [
-        {optionName: 'converter_version', optionValue: ['v1', 'v2'], chosenValue:'v1'},
-        {optionName: 'model_format', optionValue:['graph_def','saved_model','keras_model'], chosenValue:'graph_def'},
+        {optionName: 'converter_version', optionValue:'v1' ,optionType: ['v1', 'v2']},
+        {optionName: 'model_format', optionValue:'graph_def', optionType:['graph_def','saved_model','keras_model']},
         {optionName: 'input_path', optionValue: ''},
         {optionName: 'output_path', optionValue: ''},
         {optionName: 'input_arrays', optionValue: ''},
@@ -57,7 +57,7 @@ const oneImportTf = {
 }
 
 const oneImportTflite = {
-    type: 'import_tflite',
+    type: 'one-import-tflite',
     use: false,
     options: [
         {optionName: 'input_path', optionValue: ''},
@@ -73,7 +73,7 @@ const oneImportOptions = [
 ]
 
 const optimize = {
-    type: 'optimize',
+    type: 'one-optimize',
     use: true,
     options: [
         {optionName: 'input_path', optionValue: ''},
@@ -124,7 +124,7 @@ const optimize = {
 }
 
 const quantize = {
-    type: 'quantize',
+    type: 'one-quantize',
     use: true,
     options: [
         {optionName: 'input_path', optionValue: ''},
@@ -143,7 +143,7 @@ const quantize = {
 }
 
 const pack = {
-    type: 'pack',
+    type: 'one-pack',
     use: true,
     options: [
         {optionName: 'input_path', optionValue: ''},
@@ -152,7 +152,7 @@ const pack = {
 }
 
 const codegen = {
-    type: 'codegen',
+    type: 'one-codegen',
     use: false,
     options: [
         {optionName: 'backend', optionValue: ''},
@@ -161,7 +161,7 @@ const codegen = {
 }
 
 const profile = {
-    type: 'profile',
+    type: 'one-profile',
     use: false,
     options: [
         {optionName: 'backend', optionValue: ''},
@@ -253,7 +253,7 @@ const buildOptionDom = function(target) {
     const tmpBtn = document.querySelector('#useBtn')
     const useBtn = tmpBtn.cloneNode(true)
     tmpBtn.parentNode.replaceChild(useBtn, tmpBtn)
-    if (target.type.startsWith('import')) {
+    if (target.type.startsWith('one-import')) {
         useBtn.addEventListener('click', oneImportToggleFunction)
     } else {
         useBtn.addEventListener('click', function() {
@@ -284,89 +284,91 @@ const buildOptionDom = function(target) {
     for (let i=0;i<target.options.length;i++) {
         const nameLiTag = document.createElement('li')
         const valueLiTag = document.createElement('li')
-        if (typeof target.options[i].optionValue === 'boolean') {
-            // 들어오는 값이 boolean 값일 경우
-            const valueLabelTag = document.createElement('label')
-            valueLabelTag.classList.add('switch')
-            const inputTag = document.createElement('input')
-            inputTag.type = 'checkbox'
-            if (target.options[i].optionValue === true) {
-                inputTag.checked = true
-            }
-            inputTag.addEventListener('click', function() {
-                if (target.options[i].optionValue === true) {
-                    target.options[i].optionValue = false
-                } else {
-                    target.options[i].optionValue = true
-                }
-            })
-            const spanTag = document.createElement('span')
-            spanTag.classList.add('slider')
-            spanTag.classList.add('round')
-            valueLabelTag.appendChild(inputTag)
-            valueLabelTag.appendChild(spanTag)
-            valueLiTag.appendChild(valueLabelTag)
-            nameLiTag.innerText = target.options[i].optionName
-        } else if (typeof target.options[i].optionValue === 'string') {
-            // 들어오는 값이 string 값일 경우
-            nameLiTag.innerText = target.options[i].optionName
-            if (target.options[i].optionName === 'input_path') {
-                const btnTag = document.createElement('button')
-                btnTag.innerText = '+'
-                btnTag.addEventListener('click', function(){
-                    getFilePath(target.type)
-                })
-                const inputTag = document.createElement('input')
-                inputTag.id = target.options[i].optionName
-                inputTag.placeholder = 'please enter path to your target'
-                inputTag.addEventListener('change', function(event) {
-                    target.options[i].optionValue = event.target.value
-                    autoCompletePath()
-                })
-                if (target.options[i].optionValue.trim() !== '') {
-                    inputTag.value = target.options[i].optionValue
-                }
-                valueLiTag.appendChild(inputTag)
-                valueLiTag.appendChild(btnTag)
-            } else if (target.options[i].optionName === 'output_path') {
-                const inputTag = document.createElement('input')
-                inputTag.placeholder = 'next inputPath will be changed automatically'
-                if (target.options[i].optionValue.trim() !== '') {
-                    inputTag.value = target.options[i].optionValue
-                }
-                inputTag.addEventListener('change', function(event) {
-                    target.options[i].optionValue = event.target.value
-                    autoCompletePath()
-                })
-                valueLiTag.appendChild(inputTag)
-            } else {
-                const inputTag = document.createElement('input')
-                if (target.options[i].optionValue.trim() !== '') {
-                    inputTag.value = target.options[i].optionValue
-                }
-                inputTag.addEventListener('change', function(event) {
-                    target.options[i].optionValue = event.target.value
-                })
-                valueLiTag.appendChild(inputTag)
-            }
-        } else {
+        if (target.options[i].optionType) {
             nameLiTag.innerText =target.options[i].optionName
             const select = document.createElement('select')
             select.id = target.options[i].optionName
             select.name = target.options[i].optionName
-            for (let j=0; j<target.options[i].optionValue.length;j++) {
+            for (let j=0; j<target.options[i].optionType.length;j++) {
                 const option = document.createElement('option')
-                option.value = target.options[i].optionValue[j]
-                option.text = target.options[i].optionValue[j]
-                if (target.options[i].optionValue[j]  === target.options[i].chosenValue) {
+                option.value = target.options[i].optionType[j]
+                option.text = target.options[i].optionType[j]
+                if (target.options[i].optionType[j]  === target.options[i].optionValue) {
                     option.selected = true
                 }
                 select.appendChild(option)
             }
             select.addEventListener('change', function(event) {
-                target.options[i].chosenValue = select[event.target.selectedIndex].value
+                target.options[i].optionValue = select[event.target.selectedIndex].value
             })            
             valueLiTag.appendChild(select)
+        } else {   
+            if (typeof target.options[i].optionValue === 'boolean') {
+                // 들어오는 값이 boolean 값일 경우
+                const valueLabelTag = document.createElement('label')
+                valueLabelTag.classList.add('switch')
+                const inputTag = document.createElement('input')
+                inputTag.type = 'checkbox'
+                if (target.options[i].optionValue === true) {
+                    inputTag.checked = true
+                }
+                inputTag.addEventListener('click', function() {
+                    if (target.options[i].optionValue === true) {
+                        target.options[i].optionValue = false
+                    } else {
+                        target.options[i].optionValue = true
+                    }
+                })
+                const spanTag = document.createElement('span')
+                spanTag.classList.add('slider')
+                spanTag.classList.add('round')
+                valueLabelTag.appendChild(inputTag)
+                valueLabelTag.appendChild(spanTag)
+                valueLiTag.appendChild(valueLabelTag)
+                nameLiTag.innerText = target.options[i].optionName
+            } else if (typeof target.options[i].optionValue === 'string') {
+                // 들어오는 값이 string 값일 경우
+                nameLiTag.innerText = target.options[i].optionName
+                if (target.options[i].optionName === 'input_path') {
+                    const btnTag = document.createElement('button')
+                    btnTag.innerText = '+'
+                    btnTag.addEventListener('click', function(){
+                        getFilePath(target.type)
+                    })
+                    const inputTag = document.createElement('input')
+                    inputTag.id = target.options[i].optionName
+                    inputTag.placeholder = 'please enter path to your target'
+                    inputTag.addEventListener('change', function(event) {
+                        target.options[i].optionValue = event.target.value
+                        autoCompletePath()
+                    })
+                    if (target.options[i].optionValue.trim() !== '') {
+                        inputTag.value = target.options[i].optionValue
+                    }
+                    valueLiTag.appendChild(inputTag)
+                    valueLiTag.appendChild(btnTag)
+                } else if (target.options[i].optionName === 'output_path') {
+                    const inputTag = document.createElement('input')
+                    inputTag.placeholder = 'next inputPath will be changed automatically'
+                    if (target.options[i].optionValue.trim() !== '') {
+                        inputTag.value = target.options[i].optionValue
+                    }
+                    inputTag.addEventListener('change', function(event) {
+                        target.options[i].optionValue = event.target.value
+                        autoCompletePath()
+                    })
+                    valueLiTag.appendChild(inputTag)
+                } else {
+                    const inputTag = document.createElement('input')
+                    if (target.options[i].optionValue.trim() !== '') {
+                        inputTag.value = target.options[i].optionValue
+                    }
+                    inputTag.addEventListener('change', function(event) {
+                        target.options[i].optionValue = event.target.value
+                    })
+                    valueLiTag.appendChild(inputTag)
+                }
+            }
         }
         valueUlTag.appendChild(valueLiTag)
         nameUlTag.appendChild(nameLiTag)
