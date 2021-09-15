@@ -17,6 +17,7 @@
 import * as vscode from 'vscode';
 import {Project} from './Project';
 import {Utils} from './Utils';
+import {ReactPanel} from './Visualizer/ext-src/ReactPanel'
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('one-vscode activate OK');
@@ -37,8 +38,24 @@ export function activate(context: vscode.ExtensionContext) {
     projectBuilder.import(context);
   });
   context.subscriptions.push(disposableOneImport);
+  
+  let disposalbeOneVisualizer = vscode.commands.registerCommand("one-vscode-barchart.start", () => {
+    ReactPanel.createOrShow(context.extensionPath+'\\src\\Visualizer');
+  });
+  context.subscriptions.push(disposalbeOneVisualizer);
+  
 }
 
 export function deactivate() {
   // TODO do cleanup
+}
+
+function getNonce() {
+  let text = "";
+  const possible =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  for (let i = 0; i < 32; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  return text;
 }

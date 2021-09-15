@@ -1,0 +1,220 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap');
+
+* {
+  box-sizing: border-box;
+  transition: width 0.2s ease;
+}
+
+html {
+  height: 100%;
+  min-width: 850px;
+}
+
+body {
+  font: 14px 'Noto Sans', sans-serif;
+  margin: 0px;
+  height: 100%;
+}
+
+#root {
+  height: 100%;
+}
+
+.App {
+  height: 100%;
+}
+
+button {
+  color: var(--vscode-button-foreground);
+  background-color: var(--vscode-button-background);
+  border-radius: 2px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: small;
+}
+
+button:hover {
+  background-color: var(--vscode-button-hoverBackground);
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  width: 100%;
+  border: 0.5px solid var(--vscode-foreground, gray);
+}
+
+.main-container nav{
+  display: flex;
+  justify-content: space-between;
+  padding: 5px;
+  border-bottom: 0.5px solid var(--vscode-foreground, gray);
+}
+
+.main-container nav > div{
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.main-container nav .zoom-menu{
+  display: flex;
+  gap: 10px;
+  min-width: 400px;
+  padding: 0px 5px;
+}
+
+.main-container nav .zoom-menu .zoom-btns {
+  display: flex;
+  gap: 5px;
+}
+
+.main-container nav .capture-btns{
+  display: flex;
+  gap: 5px;
+}
+
+.main-container nav .file-name{
+  display: flex;
+  margin-left: 5px;
+  justify-content: center;
+  align-items: center;
+}
+
+.main-container .board {
+  border-bottom: 0.5px solid var(--vscode-foreground, gray);
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+}
+
+.main-container .detail {
+  position: relative;
+  bottom: 0%;
+}
+
+.main-container .detail .detail-content{
+  height: 30vh;
+  padding: 10px 20px;
+  overflow-y: auto;
+
+}
+
+.main-container .detail .detail-content .arg{
+  margin-left: 3px;
+}
+
+.main-container .detail .title{
+  display: flex;
+  align-items: center;
+  border-bottom: 0.5px solid var(--vscode-foreground, gray);
+  padding: 3px 5px;
+  font-weight: 700;
+}
+
+.board .content .level-container{
+  border-bottom: 0.5px solid var(--vscode-foreground, gray);
+}
+
+.board .content .level-container .level-title{
+  padding: 3px 5px;
+  font-size: smaller;
+  cursor: pointer;
+}
+
+.board .content .level-container .level-title .utility{
+  font-weight: 600;
+}
+
+.board .content .level-container .data-bar-container{
+  display: flex;
+  height: 25px;
+  width: auto;
+}
+
+.board .content .level-container .data-bar-container .data-bar-title{
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding-left: 3px;
+  margin: 0px;
+  height: 100%;
+  width: 200px;
+  font-weight: 600;
+  border-right: 0.5px solid var(--vscode-foreground, gray);
+}
+
+.board .content .level-container .data-bar-container .data-bar {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-bottom: 0.5px solid var(--vscode-foreground, gray);
+}
+
+.board .content .level-container .data-bar-container:last-child .data-bar {
+  border: none;
+}
+
+.board .content .level-container .data-bar-container .data-bar > div{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.board .content .level-container .data-bar-container .data-bar .bar{
+  overflow: hidden;
+  font-size: smaller;
+  color: black;
+}
+
+.board .content .ruler-container {
+  display: flex;
+  border-bottom: 0.5px solid var(--vscode-foreground, gray);
+}
+
+.board .content .ruler-container .ruler-blank {
+  position: relative;
+  height: 20px;
+  width: 200px;
+}
+
+.board .content .ruler-container .ruler {
+  display: flex;
+  position: relative;
+  width: 100%;
+  height: 20px;
+}
+
+.board .content .ruler-container .ruler .graduation {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  height: 20px;
+  border-left: 0.5px solid var(--vscode-foreground, black); 
+}
+
+.board .content .ruler-container .ruler .graduation .small-graduation{
+  position: relative;
+  bottom: 0%;
+  width: 100%;
+  height: 10px;
+  border-left: 0.5px solid var(--vscode-foreground, gray); 
+}
+
+.board .content .ruler-container .ruler .graduation .small-graduation:first-child{
+  position: relative;
+  bottom: 0%;
+  width: 100%;
+  height: 80%;
+  border-left: none;
+  font-size: x-small;
+}
+
+.board .content .ruler-container .ruler .graduation .small-graduation .index{
+  position: absolute;
+  z-index: 1;
+  margin-left: 3px;
+}

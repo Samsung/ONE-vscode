@@ -1,0 +1,35 @@
+/* Slider.css */
+
+.slider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.input-range {
+    margin: 0px 5px;
+}
+
+.input-range__slider {
+    background: var(--vscode-progressBar-background, #e27a3f);
+    border: none;
+}
+
+.input-range__slider:active {
+    -webkit-transform: scale(1.2);
+    transform: scale(1.2);
+}
+
+.input-range__track {
+    background: var(--vscode-scrollbarSlider-background, #ddd);
+}
+
+.input-range__track--active {
+    background: var(--vscode-progressBar-background, #e27a3f);
+}
+
+.input-range__label {
+    display: none;
+}
+

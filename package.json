@@ -11,7 +11,8 @@
   ],
   "activationEvents": [
     "onCommand:onevscode.build",
-    "onCommand:onevscode.import"
+    "onCommand:onevscode.import",
+    "onCommand:one-vscode-barchart.start"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -23,6 +24,11 @@
       {
         "command": "onevscode.import",
         "title": "one cfg import"
+      },
+      {
+        "command": "one-vscode-barchart.start",
+        "title": "one vscode barchart",
+        "category": "ONE"
       }
     ]
   },
@@ -32,7 +38,9 @@
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "test": "node ./out/test/runTest.js",
+    "start": "cd src/Visualizer && npm run start",
+    "build": "cd src/Visualizer && node scripts/build-non-split.js && tsc -p tsconfig.extension.json"
   },
   "devDependencies": {
     "@types/glob": "^7.1.3",
@@ -42,8 +50,8 @@
     "@typescript-eslint/eslint-plugin": "^4.9.0",
     "@typescript-eslint/parser": "^4.9.0",
     "eslint": "^7.15.0",
-    "ini": "^2.0.0",
     "glob": "^7.1.6",
+    "ini": "^2.0.0",
     "mocha": "^8.1.3",
     "typescript": "^4.1.2",
     "vscode-test": "^1.4.1"
