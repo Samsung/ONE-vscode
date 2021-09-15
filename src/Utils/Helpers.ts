@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
+import * as fs from 'fs';
 import * as vscode from 'vscode';
 import {Balloon} from './Balloon';
+
+var ini = require('ini');
 
 /**
  * @brief Get Workspace root folder as string
@@ -42,4 +45,42 @@ export function obtainWorkspaceRoot(): string {
   console.log('obtainWorkspaceRoot:', workspaceRoot);
 
   return workspaceRoot;
+}
+
+export interface FileSelector {
+  onFileSelected(uri: vscode.Uri|undefined): void;
+}
+
+/**
+ * @brief Get import cfg file path using file open dialog
+ */
+export function getImportCfgFilepath(selector: FileSelector): void {
+  const options: vscode.OpenDialogOptions = {
+    canSelectMany: false,
+    openLabel: 'Import',
+    filters: {
+      /* eslint-disable-next-line @typescript-eslint/naming-convention */
+      'ONE .cfg Files': ['cfg']
+    }
+  };
+
+  vscode.window.showOpenDialog(options).then(fileUri => {
+    if (fileUri && fileUri[0]) {
+      selector.onFileSelected(fileUri[0]);
+    } else {
+      selector.onFileSelected(undefined);
+    }
+  });
+}
+
+/**
+ * @brief Load cfg file and return Object
+ */
+export function loadCfgFile(filePath: string): any {
+  let cfgData = fs.readFileSync(filePath, 'utf-8');
+  // TODO check cfgData validity
+  let cfgIni = ini.parse(cfgData);
+  // TODO check cfgIni validity
+
+  return cfgIni;
 }
