@@ -28,15 +28,15 @@
     "snippets": [
       {
         "language": "ini",
-        "path": "./snippets/one-build.json"
+        "path": "./src/snippets/one-build.json"
       },
       {
         "language": "ini",
-        "path": "./snippets/onecc.json"
+        "path": "./src/snippets/onecc.json"
       },
       {
         "language": "ini",
-        "path": "./snippets/tools.json"
+        "path": "./src/snippets/tools.json"
       }
     ]
   },
