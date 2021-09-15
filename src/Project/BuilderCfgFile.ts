@@ -23,7 +23,16 @@ import {Logger} from '../Utils/Logger';
 
 import {BuilderJob} from './BuilderJob';
 
+var path = require('path');
+
 const K_BEGIN_IMPORT: string = 'beginImport';
+
+const K_ONE_BUILD: string = 'one-build';
+const K_ONECC: string = 'onecc';
+const K_IMPORT_TF: string = 'one-import-tf';
+const K_IMPORT_TFLITE: string = 'one-import-tflite';
+const K_IMPORT_ONNX: string = 'one-import-onnx';
+const K_IMPORT_BCQ: string = 'one-import-bcq';
 
 /**
  * @brief onecc/one-build cfg importer
@@ -44,8 +53,79 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
     this.on(K_BEGIN_IMPORT, this.onBeginImport);
   }
 
+  private isItemTrue(item: string): boolean {
+    if (item === 'True') {
+      return true;
+    }
+    // TODO add check for true to sync with one-cmds
+    return false;
+  }
+
+  private validateUniqueImport(cfgOne: any): boolean {
+    let importCount = 0;
+
+    this.logger.outputLine('Reading configuration...');
+    if (this.isItemTrue(cfgOne[K_IMPORT_TF])) {
+      this.logger.outputLine(K_IMPORT_TF + ' is True');
+      importCount = importCount + 1;
+    }
+    if (this.isItemTrue(cfgOne[K_IMPORT_TFLITE])) {
+      this.logger.outputLine(K_IMPORT_TFLITE + ' is True');
+      importCount = importCount + 1;
+    }
+    if (this.isItemTrue(cfgOne[K_IMPORT_ONNX])) {
+      this.logger.outputLine(K_IMPORT_ONNX + ' is True');
+      importCount = importCount + 1;
+    }
+    if (this.isItemTrue(cfgOne[K_IMPORT_BCQ])) {
+      this.logger.outputLine(K_IMPORT_BCQ + ' is True');
+      importCount = importCount + 1;
+    }
+    return importCount === 1;
+  }
+
+  private validateCfg(cfgOne: any): boolean {
+    if (!this.validateUniqueImport(cfgOne)) {
+      return false;
+    }
+    // TODO add more validation
+
+    return true;
+  }
+
   private onBeginImport() {
-    // TODO implement
+    let cfgIni = helpers.loadCfgFile(this.cfgFilePath);
+    if (cfgIni === undefined) {
+      Balloon.error('Invalid cfg file');
+      return;
+    }
+    this.cfgFilename = path.basename(this.cfgFilePath);
+
+    // Search for onecc or one-build
+    // NOTE cfg has fixed items and fixed order of jobs
+    let cfgOne = cfgIni[K_ONECC];
+    if (cfgOne === undefined) {
+      cfgOne = cfgIni[K_ONE_BUILD];
+    }
+    // TODO warn if both onecc and one-build exist?
+    if (cfgOne === undefined) {
+      Balloon.error('Section \'' + K_ONECC + '\' or \'' + K_ONE_BUILD + '\' not found');
+      return;
+    }
+    if (!this.validateCfg(cfgOne)) {
+      Balloon.error('Invalid \'' + K_ONECC + '\' or \'' + K_ONE_BUILD + '\' section');
+      return;
+    }
+
+    // TODO get import item
+
+    // TODO add one-import
+    // TODO add one-optimize
+    // TODO add one-quantize
+    // TODO add one-pack
+    // TODO add one-codegen
+
+    this.logger.outputLine('Done import configuration.');
   }
 
   // helpers.FileSelector implements
