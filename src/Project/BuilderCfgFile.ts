@@ -131,7 +131,7 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
   // helpers.FileSelector implements
   public onFileSelected(fileUri: vscode.Uri|undefined): void {
     if (fileUri === undefined) {
-      Balloon.error('Invalid file selecttion');
+      Balloon.error('Invalid file selection');
       return;
     }
     console.log('Selected file: ' + fileUri.fsPath);
