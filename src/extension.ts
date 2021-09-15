@@ -31,6 +31,12 @@ export function activate(context: vscode.ExtensionContext) {
     projectBuilder.build(context);
   });
   context.subscriptions.push(disposableOneVsc);
+
+  let disposableOneImport = vscode.commands.registerCommand('onevscode.import', () => {
+    console.log('one import...');
+    projectBuilder.import(context);
+  });
+  context.subscriptions.push(disposableOneImport);
 }
 
 export function deactivate() {
