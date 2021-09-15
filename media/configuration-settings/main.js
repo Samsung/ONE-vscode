@@ -9,10 +9,10 @@ const oneImport = {
   type: "one-import",
   use: true,
   options: [
-    { optionName: "tf", optionValue: false },
-    { optionName: "tflite", optionValue: false },
     { optionName: "bcq", optionValue: false },
     { optionName: "onnx", optionValue: false },
+    { optionName: "tf", optionValue: false },
+    { optionName: "tflite", optionValue: false },
   ],
 };
 
