@@ -22,6 +22,7 @@ import * as helpers from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
 import {BuilderJob} from './BuilderJob';
+import {JobImportTF} from './JobImportTF';
 
 var path = require('path');
 
@@ -33,6 +34,13 @@ const K_IMPORT_TF: string = 'one-import-tf';
 const K_IMPORT_TFLITE: string = 'one-import-tflite';
 const K_IMPORT_ONNX: string = 'one-import-onnx';
 const K_IMPORT_BCQ: string = 'one-import-bcq';
+// key for properties
+const K_INPUT_PATH: string = 'input_path';
+const K_OUTPUT_PATH: string = 'output_path';
+const K_INPUT_ARRAYS: string = 'input_arrays';
+const K_OUTPUT_ARRAYS: string = 'output_arrays';
+const K_INPUT_SHAPES: string = 'input_shapes';
+const K_CONVERTER_VERSION: string = 'converter_version';
 
 /**
  * @brief onecc/one-build cfg importer
@@ -51,6 +59,23 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
     this.cfgFilename = '';
 
     this.on(K_BEGIN_IMPORT, this.onBeginImport);
+  }
+
+  private cfgImportTf(prop: any) {
+    let importTF = new JobImportTF();
+    importTF.inputPath = prop[K_INPUT_PATH];
+    importTF.outputPath = prop[K_OUTPUT_PATH];
+    importTF.inputArrays = prop[K_INPUT_ARRAYS];
+    importTF.outputArrays = prop[K_OUTPUT_ARRAYS];
+    importTF.inputShapes = prop[K_INPUT_SHAPES];
+    importTF.converterVersion = prop[K_CONVERTER_VERSION];
+
+    let inputModel = path.basename(importTF.inputPath);
+    importTF.name = 'ImportTF ' + inputModel;
+
+    console.log('importTF = ', importTF);
+    this.jobOwner.addJob(importTF);
+    this.logger.outputLine('Add Import: ' + inputModel);
   }
 
   private isItemTrue(item: string): boolean {
@@ -93,6 +118,18 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
     return true;
   }
 
+  private getImportItem(cfgOne: any): string|undefined {
+    let importItems = [K_IMPORT_TF, K_IMPORT_TFLITE, K_IMPORT_ONNX, K_IMPORT_ONNX];
+
+    for (let item of importItems) {
+      console.log('getImportItem:', item);
+      if (this.isItemTrue(cfgOne[item])) {
+        return item;
+      }
+    }
+    return undefined;
+  }
+
   private onBeginImport() {
     let cfgIni = helpers.loadCfgFile(this.cfgFilePath);
     if (cfgIni === undefined) {
@@ -117,9 +154,18 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
       return;
     }
 
-    // TODO get import item
-
-    // TODO add one-import
+    // Import
+    let itemJob = this.getImportItem(cfgOne);
+    if (itemJob === undefined) {
+      Balloon.error('Invalid \'' + K_ONECC + '\' or \'' + K_ONE_BUILD + '\' section');
+      return;
+    }
+    console.log('Import: ', itemJob);
+    if (itemJob === K_IMPORT_TF) {
+      let prop = cfgIni[itemJob];
+      this.cfgImportTf(prop);
+    }
+    // TODO add other import jobs
     // TODO add one-optimize
     // TODO add one-quantize
     // TODO add one-pack
