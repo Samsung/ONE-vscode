@@ -1,9 +1,9 @@
 out
+node_modules
 format.patch
 Makefile
 
 # dependencies
-/node_modules
 /.pnp
 .pnp.js
 
@@ -11,7 +11,7 @@ Makefile
 /coverage
 
 # production
-/build
+build
 
 # misc
 .DS_Store
