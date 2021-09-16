@@ -54,7 +54,6 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
       Balloon.error('Invalid file selecttion');
       return;
     }
-    console.log('Selected file: ' + fileUri.fsPath);
 
     this.cfgFilePath = fileUri.fsPath;
     this.emit(K_BEGIN_IMPORT);
