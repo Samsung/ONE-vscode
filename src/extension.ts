@@ -38,12 +38,11 @@ export function activate(context: vscode.ExtensionContext) {
     projectBuilder.import(context);
   });
   context.subscriptions.push(disposableOneImport);
-  
+
   let disposalbeOneVisualizer = vscode.commands.registerCommand('one-vscode-barchart.start', () => {
     ReactPanel.createOrShow(context.extensionPath + '/src/Visualizer');
   });
   context.subscriptions.push(disposalbeOneVisualizer);
-  
 }
 
 export function deactivate() {
