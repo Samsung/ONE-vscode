@@ -15,6 +15,5 @@
       "eqeqeq": "warn",
       "no-throw-literal": "warn",
       "semi": "off"
-  },
-  "extends": ["react-app"]
+  }
 }
