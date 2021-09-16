@@ -649,16 +649,16 @@ const importConfiguration = function () {
   });
 };
 
-function oneImportTools(data, importOpt, oneImport, tool) {
+function oneImportTools(data, importOpt, oneImport, tool, idx, defaultImportObject) {
   oneImport.use = true;
-  for (let i = 0; i < oneImportTf.options.length; i++) {
-      if (importOpt === oneImportTf.options[i].optionName) {
-        oneImportTf.options[i].optionValue =
+  for (let i = 0; i < defaultImportObject.options.length; i++) {
+      if (importOpt === defaultImportObject.options[i].optionName) {
+        defaultImportObject.options[i].optionValue =
           data[tool][importOpt];
       }
     }
     for (let i = 0; i < oneImport.options.length; i++) {
-      if (i === 2) {
+      if (i === idx) {
         oneImport.options[i].optionValue = true;
       } else {
         oneImport.options[i].optionValue = false;
@@ -668,7 +668,6 @@ function oneImportTools(data, importOpt, oneImport, tool) {
 
 function oneOtherTools(data, importOpt, tool, otherTool) {
   for (let i = 0; i < otherTool.options.length; i++) {
-    console.log(importOpt, oneImport, tool, otherTool)
     if (
       importOpt === otherTool.options[i].optionName &&
       data[tool][importOpt] === "False"
@@ -715,13 +714,13 @@ window.addEventListener("message", (event) => {
       for (const tool of Object.keys(data.options)) {
         for (const importOpt in data.options[tool]) {
           if (tool === "one-import-bcq") {
-            oneImportTools(data.options, importOpt, oneImport, tool);
+            oneImportTools(data.options, importOpt, oneImport, tool, 0, oneImportBcq);
           } else if (tool === "one-import-onnx") {
-            oneImportTools(data.options, importOpt, oneImport, tool);
+            oneImportTools(data.options, importOpt, oneImport, tool, 1, oneImportOnnx);
           } else if (tool === "one-import-tf") {
-            oneImportTools(data.options, importOpt, oneImport, tool);
+            oneImportTools(data.options, importOpt, oneImport, tool, 2, oneImportTf);
           } else if (tool === "one-import-tflite") {
-            oneImportTools(data.options, importOpt, oneImport, tool);
+            oneImportTools(data.options, importOpt, oneImport, tool, 3, oneImportTflite);
           } else if (tool === "one-optimize") {
             optimize.use = true;
             oneOtherTools(data.options, importOpt, tool, optimize);
