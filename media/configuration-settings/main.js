@@ -649,7 +649,7 @@ const importConfiguration = function () {
   });
 };
 
-function oneImportTools(data, importOpt, oneImport, tool, idx, defaultImportObject) {
+function oneImportTools(data, importOpt, tool, idx, defaultImportObject) {
   oneImport.use = true;
   for (let i = 0; i < defaultImportObject.options.length; i++) {
       if (importOpt === defaultImportObject.options[i].optionName) {
@@ -714,13 +714,13 @@ window.addEventListener("message", (event) => {
       for (const tool of Object.keys(data.options)) {
         for (const importOpt in data.options[tool]) {
           if (tool === "one-import-bcq") {
-            oneImportTools(data.options, importOpt, oneImport, tool, 0, oneImportBcq);
+            oneImportTools(data.options, importOpt, tool, 0, oneImportBcq);
           } else if (tool === "one-import-onnx") {
-            oneImportTools(data.options, importOpt, oneImport, tool, 1, oneImportOnnx);
+            oneImportTools(data.options, importOpt, tool, 1, oneImportOnnx);
           } else if (tool === "one-import-tf") {
-            oneImportTools(data.options, importOpt, oneImport, tool, 2, oneImportTf);
+            oneImportTools(data.options, importOpt, tool, 2, oneImportTf);
           } else if (tool === "one-import-tflite") {
-            oneImportTools(data.options, importOpt, oneImport, tool, 3, oneImportTflite);
+            oneImportTools(data.options, importOpt, tool, 3, oneImportTflite);
           } else if (tool === "one-optimize") {
             optimize.use = true;
             oneOtherTools(data.options, importOpt, tool, optimize);
