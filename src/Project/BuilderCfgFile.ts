@@ -23,6 +23,8 @@ import {Logger} from '../Utils/Logger';
 
 import {BuilderJob} from './BuilderJob';
 import {JobImportTF} from './JobImportTF';
+import {JobOptimize} from './JobOptimize';
+import {JobQuantize} from './JobQuantize';
 
 var path = require('path');
 
@@ -34,6 +36,8 @@ const K_IMPORT_TF: string = 'one-import-tf';
 const K_IMPORT_TFLITE: string = 'one-import-tflite';
 const K_IMPORT_ONNX: string = 'one-import-onnx';
 const K_IMPORT_BCQ: string = 'one-import-bcq';
+const K_OPTIMIZE: string = 'one-optimize';
+const K_QUANTIZE: string = 'one-quantize';
 // key for properties
 const K_INPUT_PATH: string = 'input_path';
 const K_OUTPUT_PATH: string = 'output_path';
@@ -76,6 +80,32 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
     console.log('importTF = ', importTF);
     this.jobOwner.addJob(importTF);
     this.logger.outputLine('Add Import: ' + inputModel);
+  }
+
+  private cfgOptimize(prop: any) {
+    let optimize = new JobOptimize();
+    optimize.inputPath = prop[K_INPUT_PATH];
+    optimize.outputPath = prop[K_OUTPUT_PATH];
+
+    let inputModel = path.basename(optimize.inputPath);
+    optimize.name = 'Optimize ' + inputModel;
+
+    console.log('optimize = ', optimize);
+    this.jobOwner.addJob(optimize);
+    this.logger.outputLine('Add Optimize: ' + inputModel);
+  }
+
+  private cfgQuantize(prop: any) {
+    let quantize = new JobQuantize();
+    quantize.inputPath = prop[K_INPUT_PATH];
+    quantize.outputPath = prop[K_OUTPUT_PATH];
+
+    let inputModel = path.basename(quantize.inputPath);
+    quantize.name = 'Quantize ' + inputModel;
+
+    console.log('quantize = ', quantize);
+    this.jobOwner.addJob(quantize);
+    this.logger.outputLine('Add Quantize: ' + inputModel);
   }
 
   private isItemTrue(item: string): boolean {
@@ -166,8 +196,15 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
       this.cfgImportTf(prop);
     }
     // TODO add other import jobs
-    // TODO add one-optimize
-    // TODO add one-quantize
+
+    if (this.isItemTrue(cfgOne[K_OPTIMIZE])) {
+      let prop = cfgIni[K_OPTIMIZE];
+      this.cfgOptimize(prop);
+    }
+    if (this.isItemTrue(cfgOne[K_QUANTIZE])) {
+      let prop = cfgIni[K_QUANTIZE];
+      this.cfgQuantize(prop);
+    }
     // TODO add one-pack
     // TODO add one-codegen
 
