@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import '../../styles/ruler.css';
 
 class Ruler extends Component {
     state = {

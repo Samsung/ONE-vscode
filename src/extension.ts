@@ -17,7 +17,7 @@
 import * as vscode from 'vscode';
 import {Project} from './Project';
 import {Utils} from './Utils';
-import {ReactPanel} from './Visualizer/ext-src/ReactPanel'
+import {ReactPanel} from './Visualizer/ext-src/ReactPanel';
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('one-vscode activate OK');

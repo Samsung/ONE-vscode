@@ -24,7 +24,7 @@ class Board extends Component {
     state = {
         rulerCnt: null,
         ratio: 100,
-        selectedOP: null,
+        selectedOP: [],
         fileName: null,
         data: null,
         calculatedEndTime: null,
@@ -51,14 +51,26 @@ class Board extends Component {
         this.setState({ratio: value})
     }
 
-    clickBar(info){
-        this.setState({selectedOP: info})
+    clickBar(info, state){
+        // 다중선택 추가
+        if (state === 0) {
+            for (const op of this.state.selectedOP) {
+                if (info.pk === op.pk) {
+                    return
+                }
+            }
+            const newstate = this.state.selectedOP.concat([info])
+            this.setState({selectedOP: newstate})
+        // 단일선택 갱신
+        } else {
+            this.setState({selectedOP: [info]})
+        }
     }
 
     initFIle(){
         this.setState({rulerCnt: null})
         this.setState({ratio: 100})
-        this.setState({selectedOP: null})
+        this.setState({selectedOP: []})
         this.setState({fileName: null})
         this.setState({data: null})
         this.setState({calculatedEndTime: null})

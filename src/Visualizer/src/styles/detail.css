@@ -1,0 +1,13 @@
+table {
+  width: 100%;
+}
+
+thead {
+  background-color: var(--vscode-foreground, gray);
+  color: var(--vscode-editor-background);
+}
+
+.totals {
+  background-color: var(--vscode-foreground, gray);
+  color: var(--vscode-editor-background);
+}

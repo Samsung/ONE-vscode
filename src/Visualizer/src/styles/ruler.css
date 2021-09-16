@@ -1,0 +1,52 @@
+.ruler-blank {
+  position: sticky;
+  left: 0;
+  height: 20px;
+  width: 200px;
+  z-index: 3;
+  border-right: 0.5px solid var(--vscode-foreground, gray);
+  background-color: var(--vscode-editor-background, white);
+}
+
+.ruler-container {
+  display: flex;
+  border-bottom: 0.5px solid var(--vscode-foreground, gray);
+}
+
+.ruler-container .ruler {
+  display: flex;
+  position: relative;
+  width: 100%;
+  height: 20px;
+}
+
+.ruler-container .ruler .graduation {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  height: 20px;
+  border-left: 0.5px solid var(--vscode-foreground, black); 
+}
+
+.ruler-container .ruler .graduation .small-graduation{
+  position: relative;
+  bottom: 0%;
+  width: 100%;
+  height: 10px;
+  border-left: 0.5px solid var(--vscode-foreground, gray); 
+}
+
+.ruler-container .ruler .graduation .small-graduation:first-child{
+  position: relative;
+  bottom: 0%;
+  width: 100%;
+  height: 80%;
+  border-left: none;
+  font-size: x-small;
+}
+
+.ruler-container .ruler .graduation .small-graduation .index{
+  position: absolute;
+  z-index: 1;
+  margin-left: 3px;
+}

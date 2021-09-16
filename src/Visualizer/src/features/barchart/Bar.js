@@ -15,12 +15,16 @@ const StyledBar = styled.div`
 `;
 
 class Bar extends Component {
-    clickBar(){
+    clickBar(e){
         const info = {
             ...this.props.data
         }
         delete info["backgroundColor"]
-        this.props.clickBar(info)
+        if (e.ctrlKey) {
+            this.props.clickBar(info, 0)
+        } else {
+            this.props.clickBar(info, 1)
+        }
     }
     
     render() {
@@ -29,7 +33,7 @@ class Bar extends Component {
                 className="bar"
                 calculatedEndTime={this.props.calculatedEndTime}
                 digit={this.props.digit}
-                onClick={() => this.clickBar()} 
+                onClick={(e) => this.clickBar(e)} 
                 start={this.props.data.ts}
                 duration={this.props.data.dur}
                 name={this.props.data.name}
