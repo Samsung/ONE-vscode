@@ -24,6 +24,31 @@
         "command": "onevscode.import",
         "title": "one cfg import"
       }
+    ],
+    "languages": [
+      {
+        "id": "ini",
+        "aliases": [
+          "Configuration"
+        ],
+        "extensions": [
+          ".cfg"
+        ]
+      }
+    ],
+    "snippets": [
+      {
+        "language": "ini",
+        "path": "./src/Snippets/one-build.json"
+      },
+      {
+        "language": "ini",
+        "path": "./src/Snippets/onecc.json"
+      },
+      {
+        "language": "ini",
+        "path": "./src/Snippets/tools.json"
+      }
     ]
   },
   "scripts": {
