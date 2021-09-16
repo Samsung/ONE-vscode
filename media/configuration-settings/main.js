@@ -471,7 +471,6 @@ const changeSelect = function (event) {
 };
 
 const showOptions = function (event) {
-  console.log("aaaaaaaaaaaaaa");
   emptyOptionBox(false);
   event.target.classList.add("selected");
   switch (event.target.id) {
@@ -644,7 +643,47 @@ const exportConfiguration = function () {
   }
 };
 const runConfiguration = function () {};
-const importConfiguration = function () {};
+const importConfiguration = function () {
+  vscode.postMessage({
+    command: "importConfig",
+  });
+};
+
+function oneImportTools(data, importOpt, oneImport, tool) {
+  oneImport.use = true;
+  for (let i = 0; i < oneImportTf.options.length; i++) {
+      if (importOpt === oneImportTf.options[i].optionName) {
+        oneImportTf.options[i].optionValue =
+          data[tool][importOpt];
+      }
+    }
+    for (let i = 0; i < oneImport.options.length; i++) {
+      if (i === 2) {
+        oneImport.options[i].optionValue = true;
+      } else {
+        oneImport.options[i].optionValue = false;
+      }
+    }
+}
+
+function oneOtherTools(data, importOpt, tool, otherTool) {
+  for (let i = 0; i < otherTool.options.length; i++) {
+    console.log(importOpt, oneImport, tool, otherTool)
+    if (
+      importOpt === otherTool.options[i].optionName &&
+      data[tool][importOpt] === "False"
+    ) {
+      otherTool.options[i].optionValue = false;
+    } else if (
+      importOpt === otherTool.options[i].optionName &&
+      data[tool][importOpt] === "True"
+    ) {
+      otherTool.options[i].optionValue = true;
+    } else if (importOpt === otherTool.options[i].optionName) {
+      otherTool.options[i].optionValue = data[tool][importOpt];
+    }
+  }
+}
 
 window.addEventListener("message", (event) => {
   const data = event.data;
@@ -667,6 +706,44 @@ window.addEventListener("message", (event) => {
           break;
         }
       }
+      break;
+    case "importConfig":
+      oneImport.use = false;
+      optimize.use = false;
+      quantize.use = false;
+      pack.use = false;
+      for (const tool of Object.keys(data.options)) {
+        for (const importOpt in data.options[tool]) {
+          if (tool === "one-import-bcq") {
+            oneImportTools(data.options, importOpt, oneImport, tool);
+          } else if (tool === "one-import-onnx") {
+            oneImportTools(data.options, importOpt, oneImport, tool);
+          } else if (tool === "one-import-tf") {
+            oneImportTools(data.options, importOpt, oneImport, tool);
+          } else if (tool === "one-import-tflite") {
+            oneImportTools(data.options, importOpt, oneImport, tool);
+          } else if (tool === "one-optimize") {
+            optimize.use = true;
+            oneOtherTools(data.options, importOpt, tool, optimize);
+          } else if (tool === "one-quantize") {
+            quantize.use = true;
+            oneOtherTools(data.options, importOpt, tool, quantize);
+          } else if (tool === "one-pack") {
+            pack.use = true;
+            oneOtherTools(data.options, importOpt, tool, pack);
+          } else if (tool === "one-codegen") {
+            codegen.use = true;
+            oneOtherTools(data.options, importOpt, tool, codegen);
+          } else if (tool === "one-profile") {
+            profile.use = true;
+            oneOtherTools(data.options, importOpt, tool, profile);
+          }
+        }
+      }
+      const tmpEvent = {
+        target: document.querySelector("#import"),
+      };
+      showOptions(tmpEvent);
       break;
   }
 });
