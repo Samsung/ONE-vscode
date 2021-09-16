@@ -25,7 +25,6 @@ export class ReactPanel {
   private _disposables: vscode.Disposable[] = [];
 
   public static createOrShow(extensionPath: string) {
-    console.log(extensionPath)
     const column = vscode.window.activeTextEditor
       ? vscode.window.activeTextEditor.viewColumn
       : undefined;
@@ -109,13 +108,10 @@ export class ReactPanel {
       "build",
       "asset-manifest.json"
     ));
-
-    console.log(manifest)
     
     const mainScript = manifest["files"]["main.js"];
     const mainStyle = manifest["files"]["main.css"];
     
-    console.log(mainScript)
     const scriptPathOnDisk = vscode.Uri.file(
       path.join(this._extensionPath, "build", mainScript)
     );

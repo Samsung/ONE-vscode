@@ -40,7 +40,7 @@
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js",
     "start": "cd src/Visualizer && npm run start",
-    "build": "cd src/Visualizer && node scripts/build-non-split.js && tsc -p tsconfig.extension.json"
+    "build": "cd src/Visualizer && npm install && node scripts/build-non-split.js && tsc -p tsconfig.extension.json"
   },
   "devDependencies": {
     "@types/glob": "^7.1.3",
