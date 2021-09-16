@@ -19,5 +19,10 @@
   "extends": [
     "react-app",
     "plugin:jest/recommended"
-  ]
+  ],
+  "settings": {
+	"jest": {
+		"version": 26
+	}
+  }
 }
