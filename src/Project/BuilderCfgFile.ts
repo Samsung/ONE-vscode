@@ -119,7 +119,7 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
   }
 
   private getImportItem(cfgOne: any): string|undefined {
-    let importItems = [K_IMPORT_TF, K_IMPORT_TFLITE, K_IMPORT_ONNX, K_IMPORT_ONNX];
+    let importItems = [K_IMPORT_TF, K_IMPORT_TFLITE, K_IMPORT_ONNX, K_IMPORT_BCQ];
 
     for (let item of importItems) {
       console.log('getImportItem:', item);
