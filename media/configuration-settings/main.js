@@ -352,7 +352,7 @@ const buildOptionDom = function (target) {
           const btnTag = document.createElement("button");
           btnTag.innerText = "+";
           btnTag.addEventListener("click", function () {
-            getFilePath(target.type);
+            sendMessage('inputPath', target.type);
           });
           const inputTag = document.createElement("input");
           inputTag.id = target.options[i].optionName;
@@ -396,11 +396,11 @@ const buildOptionDom = function (target) {
   optionsNameTag.appendChild(nameUlTag);
 };
 
-const getFilePath = function (tool) {
-  vscode.postMessage({
-    command: "inputPath",
-    selectedTool: tool,
-  });
+const sendMessage = function(command, payload){
+    vscode.postMessage({
+        command: command,
+        payload: payload
+    });
 };
 
 const changeSelect = function (event) {
@@ -552,20 +552,14 @@ const pathValidator = function (target) {
       target.options[j].optionName === "input_path" &&
       target.options[j].optionValue.trim() === ""
     ) {
-      vscode.postMessage({
-        command: "alert",
-        text: `If you want to use ${target.type}, then input_path is required`,
-      });
+      sendMessage("alert", `If you want to use ${target.type}, then input_path is required`);
       return true;
     }
     if (
       target.options[j].optionName === "output_path" &&
       target.options[j].optionValue.trim() === ""
     ) {
-      vscode.postMessage({
-        command: "alert",
-        text: `If you want to use ${target.type}, then output_path is required`,
-      });
+      sendMessage("alert", `If you want to use ${target.type}, then output_path is required`);
       return true;
     }
   }
@@ -578,10 +572,7 @@ const backendValidator = function (target) {
       target.options[j].optionName === "backend" &&
       target.options[j].optionValue.trim() === ""
     ) {
-      vscode.postMessage({
-        command: "alert",
-        text: `If you want to use ${target.type}, then backend is required`,
-      });
+      sendMessage("alert", `If you want to use ${target.type}, then backend is required`);
       return true;
     }
   }
@@ -598,10 +589,7 @@ const exportValidation = function () {
       }
     }
     if (chosenModelIndex === -1) {
-      vscode.postMessage({
-        command: "alert",
-        text: "If you want to use oneImport, than you have to choose your framework",
-      });
+      sendMessage("alert", "If you want to use one-import, then you should choose your framework");
       return false;
     } else {
       if (pathValidator(oneImportOptions[chosenModelIndex])) {
@@ -639,14 +627,12 @@ const exportValidation = function () {
 
 const exportConfiguration = function () {
   if (exportValidation()) {
-    console.log("validation OK");
+    sendMessage("exportConfig", oneToolList);
   }
 };
 const runConfiguration = function () {};
 const importConfiguration = function () {
-  vscode.postMessage({
-    command: "importConfig",
-  });
+  sendMessage("importConfig", "");
 };
 
 function oneImportTools(data, importOpt, tool, idx, defaultImportObject) {
