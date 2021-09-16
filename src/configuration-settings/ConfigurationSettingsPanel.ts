@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import {getNonce} from '../getNonce';
+import {importConfig} from './Dialog/ImportConfigDialog'
 // import { PathDialog } from './PathDialog';
 
 export class ConfigurationSettingsPanel {
@@ -121,9 +122,14 @@ export class ConfigurationSettingsPanel {
         case 'alert': 
           vscode.window.showErrorMessage(data.text);
           break;
-      }
-    });
-  }
+          case "importConfig":
+            const webview = this._panel.webview;
+            webview.html = this._getHtmlForWebview(webview);
+            importConfig(webview);
+            break;
+        }
+      });
+    }
 
   private _getHtmlForWebview(webview: vscode.Webview) {
     // And the uri we use to load this script in the webview
