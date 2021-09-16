@@ -52,6 +52,7 @@ class Board extends Component {
     }
 
     clickBar(info, state){
+        console.log(info, state)
         // 다중선택 추가
         if (state === 0) {
             for (const op of this.state.selectedOP) {
@@ -60,9 +61,11 @@ class Board extends Component {
                 }
             }
             const newstate = this.state.selectedOP.concat([info])
+            console.log(info)
             this.setState({selectedOP: newstate})
-        // 단일선택 갱신
+            // 단일선택 갱신
         } else {
+            console.log(info)
             this.setState({selectedOP: [info]})
         }
     }
@@ -108,7 +111,7 @@ class Board extends Component {
         let MaxEndTime = 0
         let colorIdx = 0
         const colorLen = this.state.colorList.length
-        data.forEach(ele => {
+        data.forEach((ele, idx) => {
             // init data
             if(!ele.pid) { return }
             processedData[ele.pid] = processedData[ele.pid] ? processedData[ele.pid] : {}
@@ -124,6 +127,8 @@ class Board extends Component {
             }
             ele['backgroundColor'] = backgroundColor[ele.name]
 
+            ele['pk'] = idx
+            
             // add data
             processedData[ele.pid][ele.tid].push(ele)
             
