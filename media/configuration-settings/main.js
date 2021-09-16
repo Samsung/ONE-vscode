@@ -3,8 +3,6 @@
 
 const vscode = acquireVsCodeApi();
 
-console.log("view from javascript.");
-
 const oneImport = {
   type: "one-import",
   use: true,
@@ -284,6 +282,8 @@ const buildOptionDom = function (target) {
         optionFieldset.disabled = false;
       }
       autoCompletePath();
+      emptyOptionBox(false);
+      buildOptionDom(target)
     });
     const optionFieldset = document.querySelector("#options");
     if (target.use === true) {
@@ -351,24 +351,31 @@ const buildOptionDom = function (target) {
         if (target.options[i].optionName === "input_path") {
           const btnTag = document.createElement("button");
           btnTag.innerText = "+";
-          btnTag.addEventListener("click", function () {
-            sendMessage('inputPath', target.type);
-          });
           const inputTag = document.createElement("input");
           inputTag.id = target.options[i].optionName;
-          inputTag.placeholder = "please enter path to your target";
+          inputTag.placeholder = "Please enter path to your target";
           inputTag.addEventListener("change", function (event) {
             target.options[i].optionValue = event.target.value;
             autoCompletePath();
           });
           if (target.options[i].optionValue.trim() !== "") {
             inputTag.value = target.options[i].optionValue;
+            btnTag.addEventListener("click", function () {
+              sendMessage(
+                "alert",
+                "If your earlier output_path exists, you can't change your input_path"
+              );
+            });
+          } else {
+            btnTag.addEventListener("click", function () {
+              sendMessage("inputPath", target.type);
+            });
           }
           valueLiTag.appendChild(inputTag);
           valueLiTag.appendChild(btnTag);
         } else if (target.options[i].optionName === "output_path") {
           const inputTag = document.createElement("input");
-          inputTag.placeholder = "next inputPath will be changed automatically";
+          inputTag.placeholder = "Next input_path will be changed automatically";
           if (target.options[i].optionValue.trim() !== "") {
             inputTag.value = target.options[i].optionValue;
           }
@@ -396,11 +403,11 @@ const buildOptionDom = function (target) {
   optionsNameTag.appendChild(nameUlTag);
 };
 
-const sendMessage = function(command, payload){
-    vscode.postMessage({
-        command: command,
-        payload: payload
-    });
+const sendMessage = function (command, payload) {
+  vscode.postMessage({
+    command: command,
+    payload: payload,
+  });
 };
 
 const changeSelect = function (event) {
@@ -483,7 +490,7 @@ const showOptions = function (event) {
       select.name = "framework";
       const defaultOption = document.createElement("option");
       defaultOption.value = "beforeDecision";
-      defaultOption.text = "choose your framework";
+      defaultOption.text = "Choose your framework";
       select.appendChild(defaultOption);
       for (let i = 0; i < oneImport.options.length; i++) {
         const option = document.createElement("option");
@@ -552,14 +559,20 @@ const pathValidator = function (target) {
       target.options[j].optionName === "input_path" &&
       target.options[j].optionValue.trim() === ""
     ) {
-      sendMessage("alert", `If you want to use ${target.type}, then input_path is required`);
+      sendMessage(
+        "alert",
+        `If you want to use ${target.type}, then input_path is required`
+      );
       return true;
     }
     if (
       target.options[j].optionName === "output_path" &&
       target.options[j].optionValue.trim() === ""
     ) {
-      sendMessage("alert", `If you want to use ${target.type}, then output_path is required`);
+      sendMessage(
+        "alert",
+        `If you want to use ${target.type}, then output_path is required`
+      );
       return true;
     }
   }
@@ -572,7 +585,10 @@ const backendValidator = function (target) {
       target.options[j].optionName === "backend" &&
       target.options[j].optionValue.trim() === ""
     ) {
-      sendMessage("alert", `If you want to use ${target.type}, then backend is required`);
+      sendMessage(
+        "alert",
+        `If you want to use ${target.type}, then backend is required`
+      );
       return true;
     }
   }
@@ -589,7 +605,10 @@ const exportValidation = function () {
       }
     }
     if (chosenModelIndex === -1) {
-      sendMessage("alert", "If you want to use one-import, then you should choose your framework");
+      sendMessage(
+        "alert",
+        "If you want to use one-import, then you should choose your framework"
+      );
       return false;
     } else {
       if (pathValidator(oneImportOptions[chosenModelIndex])) {
@@ -638,18 +657,17 @@ const importConfiguration = function () {
 function oneImportTools(data, importOpt, tool, idx, defaultImportObject) {
   oneImport.use = true;
   for (let i = 0; i < defaultImportObject.options.length; i++) {
-      if (importOpt === defaultImportObject.options[i].optionName) {
-        defaultImportObject.options[i].optionValue =
-          data[tool][importOpt];
-      }
+    if (importOpt === defaultImportObject.options[i].optionName) {
+      defaultImportObject.options[i].optionValue = data[tool][importOpt];
     }
-    for (let i = 0; i < oneImport.options.length; i++) {
-      if (i === idx) {
-        oneImport.options[i].optionValue = true;
-      } else {
-        oneImport.options[i].optionValue = false;
-      }
+  }
+  for (let i = 0; i < oneImport.options.length; i++) {
+    if (i === idx) {
+      oneImport.options[i].optionValue = true;
+    } else {
+      oneImport.options[i].optionValue = false;
     }
+  }
 }
 
 function oneOtherTools(data, importOpt, tool, otherTool) {
@@ -686,7 +704,6 @@ window.addEventListener("message", (event) => {
           }
           autoCompletePath();
           emptyOptionBox(true);
-          console.log(oneToolList[i]);
           buildOptionDom(oneToolList[i]);
           break;
         }

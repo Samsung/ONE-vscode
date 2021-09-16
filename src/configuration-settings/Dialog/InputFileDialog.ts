@@ -1,24 +1,25 @@
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
-export function getInputPath(webview: vscode.Webview, selectedTool: string): void{
+export function getInputPath(
+  webview: vscode.Webview,
+  selectedTool: string
+): void {
   const optionsForInputDialog: vscode.OpenDialogOptions = {
-    canSelectMany: false, 
+    canSelectMany: false,
     openLabel: "Open",
     filters: {
-      "allFiles": ["*"]
-  }
+      allFiles: ["*"],
+    },
   };
-  
-  vscode.window.showOpenDialog(optionsForInputDialog).then(fileUri => {
-  if (fileUri && fileUri[0]) {
-    const pathToModelFile = fileUri[0].fsPath;
-    console.log("Selected file: " + pathToModelFile);
-        webview.postMessage({
-          command: "inputPath",
-          selectedTool: selectedTool,
-          filePath: pathToModelFile,
-        });
-      }
+
+  vscode.window.showOpenDialog(optionsForInputDialog).then((fileUri) => {
+    if (fileUri && fileUri[0]) {
+      const pathToModelFile = fileUri[0].fsPath;
+      webview.postMessage({
+        command: "inputPath",
+        selectedTool: selectedTool,
+        filePath: pathToModelFile,
+      });
     }
-  );
+  });
 }
