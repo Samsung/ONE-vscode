@@ -47,6 +47,15 @@ export class Builder implements BuilderJob {
     this.workFlow.addJob(job);
   }
 
+  public clearJobs(): void {
+    this.init();
+  }
+
+  public finishAdd(): void {
+    console.log('Done building WorkFlow.');
+    console.log(this.workFlow.jobs);
+  }
+
   // called from user interface
   public build(context: vscode.ExtensionContext) {
     try {
