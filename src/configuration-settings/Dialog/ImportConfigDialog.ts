@@ -11,12 +11,12 @@ export function importConfig(newWebview: vscode.Webview): void{
       };
       vscode.window.showOpenDialog(optionsImport).then((fileUri) => {
         if (fileUri && fileUri[0]) {
-          const pathToModelFile = fileUri[0].fsPath;
+          const pathToConfiglFile = fileUri[0].fsPath;
 
           const configParser = require("configparser");
           const config = new configParser();
 
-          config.read(pathToModelFile);
+          config.read(pathToConfiglFile);
           const sections = config.sections();
           const options = sections.reduce(
             (options: object, section: string) => ({
@@ -27,7 +27,7 @@ export function importConfig(newWebview: vscode.Webview): void{
           );
         newWebview.postMessage({
             command: "importConfig",
-            filePath: pathToModelFile,
+            filePath: pathToConfiglFile,
             options: options,
           });
         }
