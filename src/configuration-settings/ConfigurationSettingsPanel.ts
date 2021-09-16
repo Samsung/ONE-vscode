@@ -94,8 +94,7 @@ export class ConfigurationSettingsPanel {
 
   private async _update() {
     const webview = this._panel.webview;
-
-    this._panel.webview.html = this._getHtmlForWebview(webview);
+    webview.html = this._getHtmlForWebview(webview);
     webview.onDidReceiveMessage(async (data) => {
       switch (data.command) {
         case 'inputPath':
@@ -122,10 +121,10 @@ export class ConfigurationSettingsPanel {
         case 'alert': 
           vscode.window.showErrorMessage(data.text);
           break;
-          case "importConfig":
-            const webview = this._panel.webview;
-            webview.html = this._getHtmlForWebview(webview);
-            importConfig(webview);
+        case "importConfig":
+            const newWebview = this._panel.webview;
+            newWebview.html = this._getHtmlForWebview(newWebview);
+            importConfig(newWebview);
             break;
         }
       });
