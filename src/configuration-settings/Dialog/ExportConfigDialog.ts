@@ -41,6 +41,14 @@ export function exportConfig(oneToolList: any): void {
   vscode.window.showSaveDialog(optionsForExportDialog).then((fileUri) => {
     if (fileUri) {
       config.write(fileUri.path);
+      const os = require("os");
+      let path = fileUri.path;
+      if (os.platform() === "win32") {
+        const pathTmp = path.split("/");
+        pathTmp.splice(0, 1);
+        path = pathTmp.join("\\");
+      }
+      config.write(path);
       vscode.window.showInformationMessage(
         "Your configuration file is successfully generated!"
       );
