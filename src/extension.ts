@@ -16,11 +16,8 @@
 
 import * as vscode from 'vscode';
 
-<<<<<<< HEAD
+
 import {ConfigPanel} from './Config/ConfigPanel';
-=======
-import {ConfigurationSettingsPanel} from './configuration-settings/ConfigurationSettingsPanel';
->>>>>>> d1c031f ([Draft] Introduce Configuration-Setting GUI)
 import {Project} from './Project';
 import {Utils} from './Utils';
 

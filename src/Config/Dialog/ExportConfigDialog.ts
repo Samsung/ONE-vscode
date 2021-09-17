@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2021 Samsung Electronics Co., Ltd. All Rights Reserved
  *
@@ -19,6 +20,11 @@ import * as vscode from 'vscode';
 export function exportConfig(payLoad: any): void {
   const oneToolList = payLoad.oneToolList;
   const fileName = payLoad.fileName;
+=======
+import * as vscode from 'vscode';
+
+export function exportConfig(oneToolList: any): void {
+>>>>>>> b80ada9 (refactor: change folder name)
   const configPareser = require('configparser');
   const config = new configPareser();
 
@@ -43,14 +49,24 @@ export function exportConfig(payLoad: any): void {
   }
 
   const optionsForExportDialog: vscode.SaveDialogOptions = {
+<<<<<<< HEAD
     defaultUri: vscode.Uri.file(fileName + '.cfg'),
     filters: {
       /* eslint-disable-next-line @typescript-eslint/naming-convention */
       'ONE .cfg Files': ['cfg'],
+=======
+    defaultUri: vscode.Uri.file('one-build-template.cfg'),
+    filters: {
+      allFiles: ['*'],
+>>>>>>> b80ada9 (refactor: change folder name)
     },
   };
   vscode.window.showSaveDialog(optionsForExportDialog).then((fileUri) => {
     if (fileUri) {
+<<<<<<< HEAD
+=======
+      config.write(fileUri.path);
+>>>>>>> b80ada9 (refactor: change folder name)
       const os = require('os');
       let path = fileUri.path;
       if (os.platform() === 'win32') {
@@ -59,11 +75,15 @@ export function exportConfig(payLoad: any): void {
         path = pathTmp.join('\\');
       }
       config.write(path);
+<<<<<<< HEAD
       console.log(path);
       vscode.window.showInformationMessage('Your configuration file is successfully generated!');
       vscode.workspace.openTextDocument(vscode.Uri.file(path)).then(doc => {
         vscode.window.showTextDocument(doc);
       });
+=======
+      vscode.window.showInformationMessage('Your configuration file is successfully generated!');
+>>>>>>> b80ada9 (refactor: change folder name)
     }
   });
 }

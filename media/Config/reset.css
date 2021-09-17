@@ -19,9 +19,15 @@ h6,
 p,
 ol,
 ul {
+<<<<<<< HEAD
   font-weight: normal;
   margin: 0;
   padding: 0;
+=======
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
+>>>>>>> b80ada9 (refactor: change folder name)
 }
 
 img {
