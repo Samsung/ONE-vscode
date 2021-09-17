@@ -52,13 +52,15 @@ const K_CONVERTER_VERSION: string = 'converter_version';
 export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector {
   jobOwner: BuilderJob;
   logger: Logger;
-  cfgFilePath: string = '';
-  cfgFilename: string = '';
+  cfgFilePath: string;
+  cfgFilename: string;
 
   constructor(jobOwner: BuilderJob, l: Logger) {
     super();
     this.jobOwner = jobOwner;
     this.logger = l;
+    this.cfgFilePath = '';
+    this.cfgFilename = '';
 
     this.on(K_BEGIN_IMPORT, this.onBeginImport);
   }
@@ -207,6 +209,7 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
     // TODO add one-codegen
 
     this.logger.outputLine('Done import configuration.');
+    this.jobOwner.finishAdd();
   }
 
   // helpers.FileSelector implements

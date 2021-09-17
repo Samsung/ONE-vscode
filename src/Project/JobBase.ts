@@ -19,10 +19,17 @@ import {MixinInOutPaths} from './JobMixins';
 import {ToolArgs} from './ToolArgs';
 
 export class JobBase implements Job, MixinInOutPaths {
-  jobType: Job.Type = Job.Type.tUndefined;
-  name: string = '(noname)';
-  inputPath: string = '';
-  outputPath: string = '';
+  jobType: Job.Type;
+  name: string;
+  inputPath: string;
+  outputPath: string;
+
+  constructor() {
+    this.jobType = Job.Type.tUndefined;
+    this.name = '(noname)';
+    this.inputPath = '';
+    this.outputPath = '';
+  }
 
   public get valid(): boolean {
     throw Error('Invalid valid call');

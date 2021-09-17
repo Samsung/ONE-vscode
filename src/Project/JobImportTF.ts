@@ -19,14 +19,18 @@ import {JobImport} from './JobImport';
 import {ToolArgs} from './ToolArgs';
 
 export class JobImportTF extends JobImport {
-  inputArrays?: string = undefined;
-  outputArrays?: string = undefined;
-  inputShapes?: string = undefined;
-  converterVersion?: string = undefined;
+  inputArrays?: string;
+  outputArrays?: string;
+  inputShapes?: string;
+  converterVersion?: string;
 
   constructor() {
     super();
     this.jobType = Job.Type.tImportTF;
+    this.inputArrays = undefined;
+    this.outputArrays = undefined;
+    this.inputShapes = undefined;
+    this.converterVersion = undefined;
   }
 
   public get valid() {

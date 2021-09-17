@@ -23,6 +23,7 @@ export class JobQuantize extends JobBase {
   constructor() {
     super();
     this.jobType = Job.Type.tQuantize;
+    this.name = '(noname)';
   }
 
   public get valid() {

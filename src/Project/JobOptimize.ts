@@ -23,6 +23,7 @@ export class JobOptimize extends JobBase {
   constructor() {
     super();
     this.jobType = Job.Type.tOptimize;
+    this.name = '(noname)';
   }
 
   public get valid() {

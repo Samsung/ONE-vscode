@@ -1,30 +1,9 @@
-<<<<<<< HEAD
+
 body {
   background-color: #252526;
   color: white;
   font-size: 16px;
   padding: 20px;
-=======
-:root {
-  --container-padding: 20px;
-  --input-padding-vertical: 6px;
-  --input-padding-horizontal: 4px;
-  --input-margin-vertical: 4px;
-  --input-margin-horizontal: 0;
-  --input-border-radius: 8px;
-  --input-color: white;
-  --container-margin: 10px;
-  --container-width: 80vw;
-}
-
-body {
-  padding: var(--container-padding);
-  color: var(--vscode-foreground);
-  font-size: var(--vscode-font-size);
-  font-weight: var(--vscode-font-weight);
-  font-family: var(--vscode-font-family);
-  background-color: var(--vscode-editor-background);
->>>>>>> b80ada9 (refactor: change folder name)
 }
 
 h2 {
@@ -34,7 +13,6 @@ h2 {
 
 ol,
 ul {
-<<<<<<< HEAD
   padding-left: 20px;
 }
 
@@ -46,19 +24,6 @@ li {
 .container {
   height: 680px;
   width: 1200px;
-=======
-  padding-left: var(--container-padding);
-}
-
-li {
-  list-style: none;
-  height: 50px;
-}
-
-.container {
-  height: 90vh;
-  width: var(--container-width);
->>>>>>> b80ada9 (refactor: change folder name)
 }
 
 .main,
@@ -66,7 +31,6 @@ li {
 .options {
   border: 1px solid white;
 }
-<<<<<<< HEAD
 
 .header {
   display: table;
@@ -131,7 +95,206 @@ li {
   width: 800px;
 }
 
-=======
+.twoOpts {
+  display: flex;
+  justify-content: space-around;
+}
+
+.optionsName {
+  /* padding-left: 20px; */
+  width: 400px;
+}
+
+.optionsValue {
+  width: 400px;
+}
+
+.footer {
+  margin-top: 10px;
+  text-align: end;
+  width: 1200px;
+}
+
+.selected {
+  color: #005BA4;
+  font-weight: bold;
+}
+
+#locaForSelect {
+  position: absolute;
+  left: 1050px;
+}
+
+select {
+  border: 1px solid #999;
+  border-radius: 8px;
+  font-family: inherit;
+  padding: 0.3em 0.2em;
+  text-align-last: center;
+  text-align: center;
+  width: 170px;
+  -ms-text-align-last: center;
+  -moz-text-align-last: center;
+}
+
+body > *,
+form > * {
+  margin-block-start: 4px;
+  margin-block-end: 4px;
+}
+
+button {
+  background: #005BA4;
+  border-color:#005BA4;
+  border-width: 1px;
+  color: white;
+  margin-left: 3%;
+  outline: 1px solid transparent;
+  outline-offset: 2px !important;
+  padding: 0.3em 0.5em;
+  text-align: center;
+}
+
+#exportBtn {
+  margin-left: 1%;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+input:not([type="checkbox"]),
+textarea {
+  background-color:white;
+  border: none;
+  border-radius: 8px;
+  color: black;
+  display: inline-block;
+  padding: 6px 4px;
+  width: 330px;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #DDDDDD;
+}
+
+fieldset:disabled input {
+  background-color: #6E6E6E;
+}
+
+fieldset:disabled input::placeholder {
+  color: #888888;
+}
+
+/* The switch - the box around the slider */
+.switch {
+  display: inline-block;
+  height: 22px;
+  position: relative;
+  width: 40px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  height: 0;
+  opacity: 0;
+  width: 0;
+}
+
+/* The slider */
+.slider {
+  bottom: 0;
+  background-color: #ccc;
+  cursor: pointer;
+  left: 0;
+  position: absolute;
+  right: 0;
+  transition: 0.4s;
+  top: 0;
+  -webkit-transition: 0.4s;
+}
+
+.slider:before {
+  background-color: white;
+  bottom: 4px;
+  content: "";
+  height: 15px;
+  left: 4px;
+  position: absolute;
+  transition: 0.4s;
+  width: 15px;
+  -webkit-transition: 0.4s;
+}
+
+input:checked + .slider {
+  background-color: #005BA4;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #005BA4;
+}
+
+input:checked + .slider:before {
+  transform: translateX(15px);
+  -webkit-transform: translateX(15px);
+  -ms-transform: translateX(15px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+:root {
+  --container-padding: 20px;
+  --input-padding-vertical: 6px;
+  --input-padding-horizontal: 4px;
+  --input-margin-vertical: 4px;
+  --input-margin-horizontal: 0;
+  --input-border-radius: 8px;
+  --input-color: white;
+  --container-margin: 10px;
+  --container-width: 80vw;
+}
+
+body {
+  padding: var(--container-padding);
+  color: var(--vscode-foreground);
+  font-size: var(--vscode-font-size);
+  font-weight: var(--vscode-font-weight);
+  font-family: var(--vscode-font-family);
+  background-color: var(--vscode-editor-background);
+}
+
+h2 {
+  display: inline;
+  margin-right: 10px;
+}
+
+ol,
+ul {
+  padding-left: var(--container-padding);
+}
+
+li {
+  list-style: none;
+  height: 50px;
+}
+
+.container {
+  height: 90vh;
+  width: var(--container-width);
+}
+
+.main,
+.tools,
+.options {
+  border: 1px solid white;
+}
 .header {
   height: 10%;
   width: var(--container-width);
@@ -186,32 +349,10 @@ li {
   padding-top: var(--container-padding);
   overflow: scroll;
 }
->>>>>>> b80ada9 (refactor: change folder name)
 .twoOpts {
   display: flex;
   justify-content: space-around;
 }
-<<<<<<< HEAD
-
-.optionsName {
-  /* padding-left: 20px; */
-  width: 400px;
-}
-
-.optionsValue {
-  width: 400px;
-}
-
-.footer {
-  margin-top: 10px;
-  text-align: end;
-  width: 1200px;
-}
-
-.selected {
-  color: #005BA4;
-  font-weight: bold;
-=======
 .optionsName {
   width: 40%;
   padding-left: var(--container-padding);
@@ -238,24 +379,10 @@ li {
 .selected {
   font-weight: bold;
   color: var(--vscode-button-background);
->>>>>>> b80ada9 (refactor: change folder name)
 }
 
 #locaForSelect {
   position: absolute;
-<<<<<<< HEAD
-  left: 1050px;
-}
-
-select {
-  border: 1px solid #999;
-  border-radius: 8px;
-  font-family: inherit;
-  padding: 0.3em 0.2em;
-  text-align-last: center;
-  text-align: center;
-  width: 170px;
-=======
   right: 22%;
 }
 
@@ -267,33 +394,12 @@ select {
   border-radius: var(--input-border-radius);
   text-align-last: center;
   text-align: center;
->>>>>>> b80ada9 (refactor: change folder name)
   -ms-text-align-last: center;
   -moz-text-align-last: center;
 }
 
 body > *,
 form > * {
-<<<<<<< HEAD
-  margin-block-start: 4px;
-  margin-block-end: 4px;
-}
-
-button {
-  background: #005BA4;
-  border-color:#005BA4;
-  border-width: 1px;
-  color: white;
-  margin-left: 3%;
-  outline: 1px solid transparent;
-  outline-offset: 2px !important;
-  padding: 0.3em 0.5em;
-  text-align: center;
-}
-
-#exportBtn {
-  margin-left: 1%;
-=======
   margin-block-start: var(--input-margin-vertical);
   margin-block-end: var(--input-margin-vertical);
 }
@@ -328,13 +434,10 @@ button {
   outline-offset: 2px !important;
   color: var(--vscode-button-foreground);
   background: var(--vscode-button-background);
->>>>>>> b80ada9 (refactor: change folder name)
 }
 
 button:hover {
   cursor: pointer;
-<<<<<<< HEAD
-=======
   background: var(--vscode-button-hoverBackground);
 }
 
@@ -349,20 +452,10 @@ button.secondary {
 
 button.secondary:hover {
   background: var(--vscode-button-secondaryHoverBackground);
->>>>>>> b80ada9 (refactor: change folder name)
 }
 
 input:not([type="checkbox"]),
 textarea {
-<<<<<<< HEAD
-  background-color:white;
-  border: none;
-  border-radius: 8px;
-  color: black;
-  display: inline-block;
-  padding: 6px 4px;
-  width: 330px;
-=======
   display: inline-block;
   width: 80%;
   border: none;
@@ -372,97 +465,34 @@ textarea {
   color: black;
   outline-color: var(--vscode-input-border);
   background-color: var(--input-color);
->>>>>>> b80ada9 (refactor: change folder name)
 }
 
 input::placeholder,
 textarea::placeholder {
-<<<<<<< HEAD
-  color: #DDDDDD;
-}
-
-fieldset:disabled input {
-  background-color: #6E6E6E;
-}
-
-fieldset:disabled input::placeholder {
-  color: #888888;
-=======
   color: var(--vscode-input-placeholderForeground);
 }
 
 fieldset:disabled input {
   background-color: var(--vscode-descriptionForeground);
->>>>>>> b80ada9 (refactor: change folder name)
 }
 
 /* The switch - the box around the slider */
 .switch {
-<<<<<<< HEAD
-  display: inline-block;
-  height: 22px;
-  position: relative;
-  width: 40px;
-=======
   position: relative;
   display: inline-block;
   width: 40px;
   height: 22px;
->>>>>>> b80ada9 (refactor: change folder name)
 }
 
 /* Hide default HTML checkbox */
 .switch input {
-<<<<<<< HEAD
-  height: 0;
-  opacity: 0;
-  width: 0;
-=======
   opacity: 0;
   width: 0;
   height: 0;
->>>>>>> b80ada9 (refactor: change folder name)
 }
 
 /* The slider */
 .slider {
-<<<<<<< HEAD
-  bottom: 0;
-  background-color: #ccc;
-  cursor: pointer;
-  left: 0;
-  position: absolute;
-  right: 0;
-  transition: 0.4s;
-  top: 0;
-  -webkit-transition: 0.4s;
-}
-
-.slider:before {
-  background-color: white;
-  bottom: 4px;
-  content: "";
-  height: 15px;
-  left: 4px;
-  position: absolute;
-  transition: 0.4s;
-  width: 15px;
-  -webkit-transition: 0.4s;
-}
-
-input:checked + .slider {
-  background-color: #005BA4;
-}
-
-input:focus + .slider {
-  box-shadow: 0 0 1px #005BA4;
-}
-
-input:checked + .slider:before {
-  transform: translateX(15px);
-  -webkit-transform: translateX(15px);
-  -ms-transform: translateX(15px);
-=======
   position: absolute;
   cursor: pointer;
   top: 0;
@@ -498,7 +528,6 @@ input:checked + .slider:before {
   -webkit-transform: translateX(15px);
   -ms-transform: translateX(15px);
   transform: translateX(15px);
->>>>>>> b80ada9 (refactor: change folder name)
 }
 
 /* Rounded sliders */

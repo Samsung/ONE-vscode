@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /*
  * Copyright (c) 2021 Samsung Electronics Co., Ltd. All Rights Reserved
  *
@@ -15,8 +14,6 @@
  * limitations under the License.
  */
 
-=======
->>>>>>> b80ada9 (refactor: change folder name)
 import * as vscode from 'vscode';
 
 export function importConfig(newWebview: vscode.Webview): void {
@@ -51,3 +48,5 @@ export function importConfig(newWebview: vscode.Webview): void {
     }
   });
 }
+
+

@@ -28,12 +28,13 @@ import {WorkFlow} from './WorkFlow';
 export class Builder implements BuilderJob {
   logger: Logger;
   workFlow: WorkFlow;  // our build WorkFlow
-  currentWorkspace: string = '';
+  currentWorkspace: string;
   builderCfgFile: BuilderCfgFile;
 
   constructor(l: Logger) {
     this.logger = l;
     this.workFlow = new WorkFlow(l);
+    this.currentWorkspace = '';
     this.builderCfgFile = new BuilderCfgFile(this, l);
   }
 
