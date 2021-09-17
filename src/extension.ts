@@ -37,7 +37,10 @@ export function activate(context: vscode.ExtensionContext) {
     projectBuilder.build(context);
   });
 <<<<<<< HEAD
+<<<<<<< HEAD
   context.subscriptions.push(disposableOneBuild);
+=======
+>>>>>>> 4fff6ce (merge conflict fixed)
 
   let disposableOneImport = vscode.commands.registerCommand('onevscode.import', () => {
     console.log('one import...');
@@ -45,6 +48,7 @@ export function activate(context: vscode.ExtensionContext) {
   });
   context.subscriptions.push(disposableOneImport);
 
+<<<<<<< HEAD
   let disposableOneJsontracer = vscode.commands.registerCommand('onevscode.json-tracer', () => {
     console.log('one json tracer...');
     Jsontracer.createOrShow(context.extensionUri);
@@ -75,10 +79,12 @@ export function activate(context: vscode.ExtensionContext) {
   let disposableHover = vscode.languages.registerHoverProvider('ini', hover);
   context.subscriptions.push(disposableHover);
 =======
+=======
+>>>>>>> 4fff6ce (merge conflict fixed)
   let disposableOneConfigurationSettings = vscode.commands.registerCommand('onevscode.configuration-settings', () => {
+    console.log('one configuration settings...')
     ConfigurationSettingsPanel.createOrShow(context.extensionUri);
   });
-  context.subscriptions.push(disposableOneVsc);
   context.subscriptions.push(disposableOneConfigurationSettings);
 >>>>>>> 4bf80fe (feat: init configuration-setting extension and create a file structure for configuration-settings)
 }
