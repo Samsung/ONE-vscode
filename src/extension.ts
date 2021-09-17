@@ -31,7 +31,10 @@ export function activate(context: vscode.ExtensionContext) {
     console.log('one build...');
     projectBuilder.build(context);
   });
+<<<<<<< HEAD
   context.subscriptions.push(disposableOneBuild);
+=======
+>>>>>>> 4fff6ce (merge conflict fixed)
 
   let disposableOneImport = vscode.commands.registerCommand('onevscode.import', () => {
     console.log('one import...');
@@ -45,6 +48,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(disposableOneBarchart);
   
   let disposableOneConfigurationSettings = vscode.commands.registerCommand('onevscode.configuration-settings', () => {
+    console.log('one configuration settings...')
     ConfigurationSettingsPanel.createOrShow(context.extensionUri);
   })
   context.subscriptions.push(disposableOneConfigurationSettings);
