@@ -16,7 +16,7 @@
 
 import * as vscode from 'vscode';
 
-import {ConfigurationSettingsPanel} from './configuration-settings/ConfigurationSettingsPanel';
+import {ConfigurationSettingsPanel} from './Config/ConfigurationSettingsPanel';
 import {Project} from './Project';
 import {Utils} from './Utils';
 
