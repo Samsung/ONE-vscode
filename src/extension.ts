@@ -17,12 +17,8 @@
 import * as vscode from 'vscode';
 
 import {ConfigPanel} from './Config/ConfigPanel';
-import {CodelensProvider} from './Editor/CodelensProvider';
-import {HoverProvider} from './Editor/HoverProvider';
-import {Jsontracer} from './Jsontracer';
 import {Project} from './Project';
 import {Utils} from './Utils';
-import { ConfigurationSettingsPanel } from './configuration-settings/ConfigurationSettingsPanel';
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('one-vscode activate OK');
@@ -36,11 +32,7 @@ export function activate(context: vscode.ExtensionContext) {
     console.log('one build...');
     projectBuilder.build(context);
   });
-<<<<<<< HEAD
-<<<<<<< HEAD
   context.subscriptions.push(disposableOneBuild);
-=======
->>>>>>> 4fff6ce (merge conflict fixed)
 
   let disposableOneImport = vscode.commands.registerCommand('onevscode.import', () => {
     console.log('one import...');
@@ -48,45 +40,17 @@ export function activate(context: vscode.ExtensionContext) {
   });
   context.subscriptions.push(disposableOneImport);
 
-<<<<<<< HEAD
-  let disposableOneJsontracer = vscode.commands.registerCommand('onevscode.json-tracer', () => {
-    console.log('one json tracer...');
-    Jsontracer.createOrShow(context.extensionUri);
+  let disposableOneBarchart = vscode.commands.registerCommand('onevscode.barchart', () => {
+    console.log('one barchart...');
   });
-  context.subscriptions.push(disposableOneJsontracer);
+  context.subscriptions.push(disposableOneBarchart);
 
   let disposableOneConfigurationSettings =
       vscode.commands.registerCommand('onevscode.configuration-settings', () => {
-        ConfigPanel.createOrShow(context);
         console.log('one configuration settings...');
+        ConfigPanel.createOrShow(context);
       });
   context.subscriptions.push(disposableOneConfigurationSettings);
-
-  let disposableToggleCodelens =
-      vscode.commands.registerCommand('onevscode.toggle-codelens', () => {
-        let codelensState =
-            vscode.workspace.getConfiguration('one-vscode').get('enableCodelens', true);
-        vscode.workspace.getConfiguration('one-vscode')
-            .update('enableCodelens', !codelensState, true);
-      });
-  context.subscriptions.push(disposableToggleCodelens);
-
-  let codelens = new CodelensProvider();
-  let disposableCodelens = vscode.languages.registerCodeLensProvider('ini', codelens);
-  context.subscriptions.push(disposableCodelens);
-
-  let hover = new HoverProvider();
-  let disposableHover = vscode.languages.registerHoverProvider('ini', hover);
-  context.subscriptions.push(disposableHover);
-=======
-=======
->>>>>>> 4fff6ce (merge conflict fixed)
-  let disposableOneConfigurationSettings = vscode.commands.registerCommand('onevscode.configuration-settings', () => {
-    console.log('one configuration settings...')
-    ConfigurationSettingsPanel.createOrShow(context.extensionUri);
-  });
-  context.subscriptions.push(disposableOneConfigurationSettings);
->>>>>>> 4bf80fe (feat: init configuration-setting extension and create a file structure for configuration-settings)
 }
 
 export function deactivate() {
