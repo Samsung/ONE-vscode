@@ -15,9 +15,10 @@
  */
 
 import * as vscode from 'vscode';
+
+import {ConfigurationSettingsPanel} from './configuration-settings/ConfigurationSettingsPanel';
 import {Project} from './Project';
 import {Utils} from './Utils';
-import { ConfigurationSettingsPanel } from './configuration-settings/ConfigurationSettingsPanel';
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('one-vscode activate OK');
@@ -31,10 +32,7 @@ export function activate(context: vscode.ExtensionContext) {
     console.log('one build...');
     projectBuilder.build(context);
   });
-<<<<<<< HEAD
   context.subscriptions.push(disposableOneBuild);
-=======
->>>>>>> 4fff6ce (merge conflict fixed)
 
   let disposableOneImport = vscode.commands.registerCommand('onevscode.import', () => {
     console.log('one import...');
