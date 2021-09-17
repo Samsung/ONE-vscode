@@ -15,6 +15,8 @@
  */
 
 import * as vscode from 'vscode';
+
+import {CodelensProvider} from './Codelens/CodelensProvider';
 import {Project} from './Project';
 import {Utils} from './Utils';
 
@@ -48,6 +50,10 @@ export function activate(context: vscode.ExtensionContext) {
         console.log('one configuration settings...');
       });
   context.subscriptions.push(disposableOneConfigurationSettings);
+
+  let codelens = new CodelensProvider();
+  let disposableCodelens = vscode.languages.registerCodeLensProvider('ini', codelens);
+  context.subscriptions.push(disposableCodelens);
 }
 
 export function deactivate() {
