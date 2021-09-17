@@ -11,8 +11,12 @@
   ],
   "activationEvents": [
     "onCommand:onevscode.build",
+<<<<<<< HEAD
     "onCommand:onevscode.import",
     "onCommand:onevscode.configuration-settings"
+=======
+    "onCommand:onevscode.import"
+>>>>>>> main
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -29,6 +33,31 @@
         "command": "onevscode.configuration-settings",
         "category": "ONE",
         "title": "configuration-settings"
+      }
+    ],
+    "languages": [
+      {
+        "id": "ini",
+        "aliases": [
+          "Configuration"
+        ],
+        "extensions": [
+          ".cfg"
+        ]
+      }
+    ],
+    "snippets": [
+      {
+        "language": "ini",
+        "path": "./src/Snippets/one-build.json"
+      },
+      {
+        "language": "ini",
+        "path": "./src/Snippets/onecc.json"
+      },
+      {
+        "language": "ini",
+        "path": "./src/Snippets/tools.json"
       }
     ]
   },
