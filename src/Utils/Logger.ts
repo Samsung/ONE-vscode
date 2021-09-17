@@ -35,7 +35,7 @@ export class Logger {
   public outputWithTime(msg: string) {
     let dateTime = new Date();
     this.checkShow();
-    this.outputChannel.appendLine('[' + dateTime + '] ' + msg);
+    this.outputChannel.appendLine('[' + dateTime.toLocaleString() + '] ' + msg);
   }
 
   public output(msg: string) {

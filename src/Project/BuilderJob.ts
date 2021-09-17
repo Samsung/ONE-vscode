@@ -18,4 +18,6 @@ import {Job} from './Job';
 
 export interface BuilderJob {
   addJob(job: Job): void;
+  clearJobs(): void;
+  finishAdd(): void;
 }

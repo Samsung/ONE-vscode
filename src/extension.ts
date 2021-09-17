@@ -31,10 +31,17 @@ export function activate(context: vscode.ExtensionContext) {
     console.log('one build...');
     projectBuilder.build(context);
   });
+
+  let disposableOneImport = vscode.commands.registerCommand('onevscode.import', () => {
+    console.log('one import...');
+    projectBuilder.import(context);
+  });
+  context.subscriptions.push(disposableOneImport);
+
   let disposableOneConfigurationSettings = vscode.commands.registerCommand('onevscode.configuration-settings', () => {
+    console.log('one configuration settings...')
     ConfigurationSettingsPanel.createOrShow(context.extensionUri);
   });
-  context.subscriptions.push(disposableOneVsc);
   context.subscriptions.push(disposableOneConfigurationSettings);
 }
 
