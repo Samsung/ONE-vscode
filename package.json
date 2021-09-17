@@ -65,8 +65,11 @@
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
+    "pretest": "npm run compile && npm run lint && npm run lintjs && npm run lintcss && npm run linthtml",
     "lint": "eslint src --ext ts",
+    "lintjs": "eslint media --ext js",
+    "lintcss": "csslint media src",
+    "linthtml": "htmlhint media src",
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
@@ -76,8 +79,10 @@
     "@types/vscode": "^1.46.0",
     "@typescript-eslint/eslint-plugin": "^4.9.0",
     "@typescript-eslint/parser": "^4.9.0",
+    "csslint": "^1.0.5",
     "eslint": "^7.15.0",
     "glob": "^7.1.6",
+    "htmlhint": "^0.15.2",
     "ini": "^2.0.0",
     "mocha": "^8.1.3",
     "typescript": "^4.1.2",

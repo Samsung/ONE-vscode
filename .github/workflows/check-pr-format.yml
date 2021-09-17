@@ -17,6 +17,8 @@ jobs:
           node-version: '12'
       - run: npm install
       - run: npm run lint
+      - run: npm run lintcss
+      - run: npm run linthtml
       - run: sudo apt-get install clang-format-8
       - run: bash infra/format
 
