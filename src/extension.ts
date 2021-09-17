@@ -37,6 +37,11 @@ export function activate(context: vscode.ExtensionContext) {
     projectBuilder.import(context);
   });
   context.subscriptions.push(disposableOneImport);
+
+  let disposableOneBarchart = vscode.commands.registerCommand('onevscode.barchart', () => {
+    console.log('one barchart...');
+  });
+  context.subscriptions.push(disposableOneBarchart);
 }
 
 export function deactivate() {

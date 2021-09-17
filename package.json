@@ -11,7 +11,8 @@
   ],
   "activationEvents": [
     "onCommand:onevscode.build",
-    "onCommand:onevscode.import"
+    "onCommand:onevscode.import",
+    "onCommand:onevscode.barchart"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -23,6 +24,10 @@
       {
         "command": "onevscode.import",
         "title": "one cfg import"
+      },
+      {
+        "command": "onevscode.barchart",
+        "title": "one visualizer barchart"
       }
     ],
     "languages": [
