@@ -172,6 +172,7 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
     // TODO add one-codegen
 
     this.logger.outputLine('Done import configuration.');
+    this.jobOwner.finishAdd();
   }
 
   // helpers.FileSelector implements
