@@ -11,10 +11,7 @@
   ],
   "activationEvents": [
     "onCommand:onevscode.build",
-<<<<<<< HEAD
-=======
     "onCommand:onevscode.import",
->>>>>>> 26ca62d0dbb95139ef66c500c548b20e0ee11d2f
     "onCommand:onevscode.configuration-settings"
   ],
   "main": "./out/extension.js",
