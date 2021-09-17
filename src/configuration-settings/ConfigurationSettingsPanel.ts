@@ -1,25 +1,24 @@
-import * as vscode from "vscode";
-import { getNonce } from "../getNonce";
-import { exportConfig } from "./Dialog/ExportConfigDialog";
-import { importConfig } from "./Dialog/ImportConfigDialog";
-import { getInputPath } from "./Dialog/InputFileDialog";
+import * as vscode from 'vscode';
+import {getNonce} from '../getNonce';
+import {exportConfig} from './Dialog/ExportConfigDialog';
+import {importConfig} from './Dialog/ImportConfigDialog';
+import {getInputPath} from './Dialog/InputFileDialog';
 
 export class ConfigurationSettingsPanel {
   /**
    * Track the currently panel. Only allow a single panel to exist at a time.
    */
-  public static currentPanel: ConfigurationSettingsPanel | undefined;
+  public static currentPanel: ConfigurationSettingsPanel|undefined;
 
-  public static readonly viewType = "one-vscode";
+  public static readonly viewType = 'one-vscode';
 
   private readonly _panel: vscode.WebviewPanel;
   private readonly _extensionUri: vscode.Uri;
   private _disposables: vscode.Disposable[] = [];
 
   public static createOrShow(extensionUri: vscode.Uri) {
-    const column = vscode.window.activeTextEditor
-      ? vscode.window.activeTextEditor.viewColumn
-      : undefined;
+    const column =
+        vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
 
     // If we already have a panel, show it.
     if (ConfigurationSettingsPanel.currentPanel) {
@@ -30,38 +29,29 @@ export class ConfigurationSettingsPanel {
 
     // Otherwise, create a new panel.
     const panel = vscode.window.createWebviewPanel(
-      ConfigurationSettingsPanel.viewType,
-      "ConfigurationSettings",
-      column || vscode.ViewColumn.One,
-      {
-        // Enable javascript in the webview
-        enableScripts: true,
+        ConfigurationSettingsPanel.viewType, 'ConfigurationSettings',
+        column || vscode.ViewColumn.One, {
+          // Enable javascript in the webview
+          enableScripts: true,
 
-        // And restrict the webview to only loading content from our
-        // extension"s `media` directory.
-        localResourceRoots: [
-          vscode.Uri.joinPath(extensionUri, "media/configuration-settings"),
-          vscode.Uri.joinPath(extensionUri, "out/compiled"),
-        ],
-      }
-    );
+          // And restrict the webview to only loading content from our
+          // extension"s `media` directory.
+          localResourceRoots: [
+            vscode.Uri.joinPath(extensionUri, 'media/configuration-settings'),
+            vscode.Uri.joinPath(extensionUri, 'out/compiled'),
+          ],
+        });
 
-    ConfigurationSettingsPanel.currentPanel = new ConfigurationSettingsPanel(
-      panel,
-      extensionUri
-    );
+    ConfigurationSettingsPanel.currentPanel = new ConfigurationSettingsPanel(panel, extensionUri);
   }
 
   public static kill() {
-    ConfigurationSettingsPanel.currentPanel?.dispose();
+    ConfigurationSettingsPanel.currentPanel ?.dispose();
     ConfigurationSettingsPanel.currentPanel = undefined;
   }
 
   public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
-    ConfigurationSettingsPanel.currentPanel = new ConfigurationSettingsPanel(
-      panel,
-      extensionUri
-    );
+    ConfigurationSettingsPanel.currentPanel = new ConfigurationSettingsPanel(panel, extensionUri);
   }
 
   private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
@@ -75,18 +65,18 @@ export class ConfigurationSettingsPanel {
 
     this._panel.webview.onDidReceiveMessage(async (data) => {
       switch (data.command) {
-        case "inputPath":
+        case 'inputPath':
           getInputPath(this._panel.webview, data.payload);
           break;
-        case "exportConfig":
+        case 'exportConfig':
           exportConfig(data.payload);
           break;
-        case "importConfig":
+        case 'importConfig':
           const newWebview = this._panel.webview;
           newWebview.html = this._getHtmlForWebview(newWebview);
           importConfig(newWebview);
           break;
-        case "alert":
+        case 'alert':
           vscode.window.showErrorMessage(data.payload);
           break;
       }
@@ -115,28 +105,13 @@ export class ConfigurationSettingsPanel {
   private _getHtmlForWebview(webview: vscode.Webview) {
     // And the uri we use to load this script in the webview
     const scriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(
-        this._extensionUri,
-        "media/configuration-settings",
-        "main.js"
-      )
-    );
+        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'main.js'));
 
     // Uri to load styles into webview
     const stylesResetUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(
-        this._extensionUri,
-        "media/configuration-settings",
-        "reset.css"
-      )
-    );
+        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'reset.css'));
     const stylesMainUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(
-        this._extensionUri,
-        "media/configuration-settings",
-        "vscode.css"
-      )
-    );
+        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'vscode.css'));
 
     // Use a nonce to only allow specific scripts to be run
     const nonce = getNonce();
@@ -149,7 +124,8 @@ export class ConfigurationSettingsPanel {
 					Use a content security policy to only allow loading images from https or from our extension directory,
 					and only allow scripts that have a specific nonce.
                 -->
-                <meta http-equiv="Content-Security-Policy" content="img-src https: data:; style-src 'unsafe-inline' ${webview.cspSource}; script-src 'nonce-${nonce}';">
+                <meta http-equiv="Content-Security-Policy" content="img-src https: data:; style-src 'unsafe-inline' ${
+        webview.cspSource}; script-src 'nonce-${nonce}';">
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <link href="${stylesResetUri}" rel="stylesheet">
                 <link href="${stylesMainUri}" rel="stylesheet">
