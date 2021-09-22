@@ -19,6 +19,7 @@ import * as vscode from 'vscode';
 import {CodelensProvider} from './Codelens/CodelensProvider';
 import {Project} from './Project';
 import {Utils} from './Utils';
+import {Visualizer} from './Visualizer';
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('one-vscode activate OK');
@@ -42,6 +43,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   let disposableOneBarchart = vscode.commands.registerCommand('onevscode.barchart', () => {
     console.log('one barchart...');
+    Visualizer.createOrShow(context.extensionPath + '/src/Visualizer');
   });
   context.subscriptions.push(disposableOneBarchart);
 

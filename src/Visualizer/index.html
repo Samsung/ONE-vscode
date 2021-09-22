@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>onevscode-barchart</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/html2canvas@1.3.2/dist/html2canvas.js"></script>
+</head>
+<body>
+  <div id="root">
+    <main>
+      <nav>
+        <div class="left-btns">
+          <button class="captureBtn">capture</button>
+          <button class="loadBtn">Load</button>
+          <div class="fileName"></div>
+          <div class="set-data"></div>
+        </div>
+        <div class="right-btns">
+          <button class="zoomInBtn" value="50">ZoomIn</button>
+          <button class="zoomOutBtn" value="-50">ZoomOut</button>
+          <input type="range" min="100" max="200" value="100">
+        </div>
+      </nav>
+      <article class="dash-board">
+        <div class="graph"></div>
+      </article>
+      <article class="detail-container">
+        <header>
+          <span>Detail</span>
+        </header>
+        <section>
+          <div class="selected"></div>
+        </section>
+      </article>
+    </main>
+  </div>
+  <script src="./index.js" type="module"></script>
+</body>
+</html>
