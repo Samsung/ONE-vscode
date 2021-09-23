@@ -182,6 +182,7 @@ const profile = {
   ],
 };
 
+// this is entire options for ONE compile
 const oneToolList = [
   oneImportBcq,
   oneImportOnnx,
@@ -194,6 +195,7 @@ const oneToolList = [
   profile,
 ];
 
+// autoCompletePath copy former output_path to later input_path
 const autoCompletePath = function () {
   for (let i = 0; i < oneToolList.length; i++) {
     if (oneToolList[i].use === true) {
@@ -220,6 +222,7 @@ const autoCompletePath = function () {
   }
 };
 
+// one-import options are different from other tools so separate toggle function
 const oneImportToggleFunction = function () {
   const optionFieldset = document.querySelector("#options");
   const selectTag = document.querySelector("#framework");
@@ -241,6 +244,7 @@ const oneImportToggleFunction = function () {
   autoCompletePath();
 };
 
+// remove every options on DOM
 const emptyOptionBox = function (isImport) {
   if (!isImport) {
     const locaForSelect = document.querySelector("#locaForSelect");
@@ -262,8 +266,9 @@ const emptyOptionBox = function (isImport) {
   }
 };
 
+// build DOM for selected tool
 const buildOptionDom = function (target) {
-  // tool 이름이랑 토글버튼 변경하는 부분
+  // change tool name and change toggle button
   const h2Tag = document.querySelector("#toolName");
   h2Tag.innerText = `Options for ${target.type}`;
   const tmpBtn = document.querySelector("#useBtn");
@@ -294,7 +299,7 @@ const buildOptionDom = function (target) {
       optionFieldset.disabled = true;
     }
   }
-  // 내부 옵션들 하나씩 for문 돌면서 생성하는 기능
+  // make tags for options
   const optionsNameTag = document.querySelector("#optionsName");
   const optionsValueTag = document.querySelector("#optionsValue");
   const nameUlTag = document.createElement("ul");
@@ -302,6 +307,7 @@ const buildOptionDom = function (target) {
   for (let i = 0; i < target.options.length; i++) {
     const nameLiTag = document.createElement("li");
     const valueLiTag = document.createElement("li");
+    // case for select tag
     if (target.options[i].optionType) {
       nameLiTag.innerText = target.options[i].optionName;
       const select = document.createElement("select");
@@ -322,8 +328,8 @@ const buildOptionDom = function (target) {
       });
       valueLiTag.appendChild(select);
     } else {
+      // case for toggle button
       if (typeof target.options[i].optionValue === "boolean") {
-        // 들어오는 값이 boolean 값일 경우
         const valueLabelTag = document.createElement("label");
         valueLabelTag.classList.add("switch");
         const inputTag = document.createElement("input");
@@ -345,9 +351,10 @@ const buildOptionDom = function (target) {
         valueLabelTag.appendChild(spanTag);
         valueLiTag.appendChild(valueLabelTag);
         nameLiTag.innerText = target.options[i].optionName;
+        // case for input tag
       } else if (typeof target.options[i].optionValue === "string") {
-        // 들어오는 값이 string 값일 경우
         nameLiTag.innerText = target.options[i].optionName;
+        // input_path needs path for real file so it needs explorer
         if (target.options[i].optionName === "input_path") {
           const btnTag = document.createElement("button");
           btnTag.innerText = "+";
@@ -373,6 +380,7 @@ const buildOptionDom = function (target) {
           }
           valueLiTag.appendChild(inputTag);
           valueLiTag.appendChild(btnTag);
+        // output_path option is diffrent from other option because of autocompletion
         } else if (target.options[i].optionName === "output_path") {
           const inputTag = document.createElement("input");
           inputTag.placeholder = "Next input_path will be changed automatically";
@@ -403,6 +411,7 @@ const buildOptionDom = function (target) {
   optionsNameTag.appendChild(nameUlTag);
 };
 
+// send message to config panel
 const sendMessage = function (command, payload) {
   vscode.postMessage({
     command: command,
@@ -410,6 +419,7 @@ const sendMessage = function (command, payload) {
   });
 };
 
+// function for selecting framework
 const changeSelect = function (event) {
   emptyOptionBox(true);
   const selectedText = event.target.options[event.target.selectedIndex].text;
@@ -477,6 +487,7 @@ const changeSelect = function (event) {
   }
 };
 
+// before building DOM, this function guide which tool will be built
 const showOptions = function (event) {
   emptyOptionBox(false);
   event.target.classList.add("selected");
@@ -553,6 +564,7 @@ const showOptions = function (event) {
   }
 };
 
+// validator for input_path and output_path, this validator checks only for empty or not
 const pathValidator = function (target) {
   for (let j = 0; j < target.options.length; j++) {
     if (
@@ -579,6 +591,7 @@ const pathValidator = function (target) {
   return false;
 };
 
+// validator for backend, this validator checks only for empty or not
 const backendValidator = function (target) {
   for (let j = 0; j < target.options.length; j++) {
     if (
@@ -595,6 +608,7 @@ const backendValidator = function (target) {
   return false;
 };
 
+// before exprot, checks options whether they are valid or not
 const exportValidation = function () {
   if (oneImport.use === true) {
     let chosenModelIndex = -1;
@@ -644,12 +658,21 @@ const exportValidation = function () {
   return true;
 };
 
+// send message to config panel about export configuration
 const exportConfiguration = function () {
   if (exportValidation()) {
     sendMessage("exportConfig", oneToolList);
   }
 };
-const runConfiguration = function () {};
+
+// send message to config panel about run configuration
+const runConfiguration = function () {
+  if (exportValidation()) {
+
+  }
+};
+
+// send message to config panel about import configuration
 const importConfiguration = function () {
   sendMessage("importConfig", "");
 };
@@ -687,6 +710,7 @@ function oneOtherTools(data, importOpt, tool, otherTool) {
     }
   }
 }
+
 
 window.addEventListener("message", (event) => {
   const data = event.data;
@@ -750,6 +774,7 @@ window.addEventListener("message", (event) => {
   }
 });
 
+// add EventListener to html tags
 document.querySelector("#import").addEventListener("click", showOptions);
 document.querySelector("#optimize").addEventListener("click", showOptions);
 document.querySelector("#quantize").addEventListener("click", showOptions);
