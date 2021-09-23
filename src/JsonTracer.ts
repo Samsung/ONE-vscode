@@ -1,12 +1,12 @@
 import * as vscode from 'vscode';
 
-export class Visualizer {
+export class JsonTracer {
   /**
    * Track the currently panel. Only allow a single panel to exist at a time.
    */
-  public static currentPanel: Visualizer | undefined;
+  public static currentPanel: JsonTracer | undefined;
 
-  private static readonly viewType = 'Visualizer';
+  private static readonly viewType = 'JsonTracer';
 
   private readonly _panel: vscode.WebviewPanel;
 	private readonly _extensionUri: vscode.Uri;
@@ -18,24 +18,24 @@ export class Visualizer {
 			: undefined;
 
     // If we already have a panel, show it.
-		if (Visualizer.currentPanel) {
-			Visualizer.currentPanel._panel.reveal(column);
+		if (JsonTracer.currentPanel) {
+			JsonTracer.currentPanel._panel.reveal(column);
 			return;
 		}
 
     // Otherwise, create a new panel.
 		const panel = vscode.window.createWebviewPanel(
-			Visualizer.viewType,
-			'Visualizer',
+			JsonTracer.viewType,
+			'JsonTracer',
 			column || vscode.ViewColumn.One,
 			getWebviewOptions(extensionUri),
 		);
 
-    Visualizer.currentPanel = new Visualizer(panel, extensionUri);
+    JsonTracer.currentPanel = new JsonTracer(panel, extensionUri);
   }
 
   public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
-		Visualizer.currentPanel = new Visualizer(panel, extensionUri);
+		JsonTracer.currentPanel = new JsonTracer(panel, extensionUri);
 	}
 
   private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
@@ -81,7 +81,7 @@ export class Visualizer {
 	}
 
   public dispose() {
-		Visualizer.currentPanel = undefined;
+		JsonTracer.currentPanel = undefined;
 
 		// Clean up our resources
 		this._panel.dispose();
@@ -102,9 +102,9 @@ export class Visualizer {
 	}
 
   private _getHtmlForWebview(webview: vscode.Webview) {
-    const scriptPathOnDisk = vscode.Uri.joinPath(this._extensionUri,'src/Visualizer','index.js');
+    const scriptPathOnDisk = vscode.Uri.joinPath(this._extensionUri,'src/JsonTracer','index.js');
     const scriptUri = scriptPathOnDisk.with({scheme: 'vscode-resource'});
-    const stylePathOnDisk = vscode.Uri.joinPath(this._extensionUri,'src/Visualizer','style.css');
+    const stylePathOnDisk = vscode.Uri.joinPath(this._extensionUri,'src/JsonTracer','style.css');
     const styleUri = stylePathOnDisk.with({scheme: 'vscode-resource'});
 
     // Use a nonce to whitelist which scripts can be run
@@ -116,7 +116,7 @@ export class Visualizer {
 				<meta charset="utf-8">
 				<meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
 				<meta name="theme-color" content="#000000">
-				<title>barchart-theone</title>
+				<title>json-tracer</title>
 				<link rel="stylesheet" type="text/css" href="${styleUri}">
 				<meta http-equiv="Content-Security-Policy" content="default-src ${webview.cspSource}; style-src ${webview.cspSource}; img-src ${webview.cspSource} https: http: data: blob:; script-src 'unsafe-inline' http: https:;">
 			</head>
@@ -171,7 +171,7 @@ function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {
 		// Enable javascript in the webview
 		enableScripts: true,
 
-		// And restrict the webview to only loading content from our extension's `'src/Visualizer` directories.
-		localResourceRoots: [vscode.Uri.joinPath(extensionUri, 'src/Visualizer')]
+		// And restrict the webview to only loading content from our extension's `'src/JsonTracer` directories.
+		localResourceRoots: [vscode.Uri.joinPath(extensionUri, 'src/JsonTracer')]
 	};
 }
