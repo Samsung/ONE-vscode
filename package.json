@@ -12,7 +12,7 @@
   "activationEvents": [
     "onCommand:onevscode.build",
     "onCommand:onevscode.import",
-    "onCommand:onevscode.barchart",
+    "onCommand:onevscode.json-traser",
     "onCommand:onevscode.configuration-settings"
   ],
   "main": "./out/extension.js",
@@ -27,8 +27,8 @@
         "title": "one cfg import"
       },
       {
-        "command": "onevscode.barchart",
-        "title": "one visualizer barchart"
+        "command": "onevscode.json-traser",
+        "title": "one json traser"
       },
       {
         "command": "onevscode.configuration-settings",
