@@ -1,39 +1,43 @@
 export default function renderRuler(endTime, digit){
-    const graph = document.querySelector('.graph')
+    const graph = document.querySelector('.graph');
 
-    const rulerContainer = document.createElement('div')
-    rulerContainer.className = "rulerContainer"
+    const rulerContainer = document.createElement('div');
+    rulerContainer.className = "ruler-container";
 
-    const rulerBlank = document.createElement('div')
-    rulerBlank.className = "rulerBlank"
+    const rulerBlank = document.createElement('div');
+    rulerBlank.className = "ruler-blank";
 
-    const ruler = document.createElement('div')
-    ruler.className = "ruler"
+    const ruler = document.createElement('div');
+    ruler.className = "ruler";
 
-    rulerContainer.append(rulerBlank, ruler)
-    graph.append(rulerContainer)
+    rulerContainer.append(rulerBlank, ruler);
+    graph.append(rulerContainer);
 
-    mapToRulergraduation(endTime, digit)
+    mapToRulergraduation(endTime, digit);
 }
 
 function mapToRulergraduation(endTime, digit) {
-    const ruler = document.querySelector('.ruler')
+    const ruler = document.querySelector('.ruler');
 
     for(let i = 0; i < parseInt(endTime / (10 ** (digit - 1))); i++){
-        const graduation = document.createElement('div')
-        graduation.className = "graduation"
+        const graduation = document.createElement('div');
+        graduation.className = "graduation";
+
         for (let j = 0; j < 5; j++){
-            const smallGraduation = document.createElement('div')
-            smallGraduation.className = "smallGraduation"
+            const smallGraduation = document.createElement('div');
+            smallGraduation.className = "small-graduation";
+
             if (j === 0) {
-                const index = document.createElement('div')
-                index.className = "index"
-                index.innerText = calculateGraduation(i * (10 ** (digit - 1)))
-                smallGraduation.append(index)
+                const index = document.createElement('div');
+                index.className = "index";
+                index.innerText = calculateGraduation(i * (10 ** (digit - 1)));
+                smallGraduation.append(index);
             }
-            graduation.append(smallGraduation)
+
+            graduation.append(smallGraduation);
         }
-        ruler.append(graduation)
+        
+        ruler.append(graduation);
     }
 
 }

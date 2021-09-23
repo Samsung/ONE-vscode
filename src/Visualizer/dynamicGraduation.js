@@ -1,16 +1,16 @@
 export default function dynamicGraduation() {
     const body = document.querySelector("body");
     const ruler = document.querySelector(".ruler");
-    if (!ruler) { return }
+    if (!ruler) { return; }
     
-    const rulerBlank = document.querySelector(".rulerBlank");
+    const rulerBlank = document.querySelector(".ruler-blank");
     const graduation = document.querySelector(".ruler .graduation");
     const cnt =  document.querySelectorAll(".ruler .graduation").length;
     const staticRulerWidth = body.clientWidth - rulerBlank.clientWidth;
-    const setData = document.querySelector('.set-data')
-    const endTime = setData.dataset['endTime']
-    const digit = setData.dataset['digit']
-    const initGraduationCnt = endTime / ( 10 ** (digit - 1))
+    const setData = document.querySelector('.set-data');
+    const endTime = setData.dataset['endTime'];
+    const digit = setData.dataset['digit'];
+    const initGraduationCnt = endTime / ( 10 ** (digit - 1));
     const staticGraduationWidth = parseInt(staticRulerWidth / initGraduationCnt);
 
     if (graduation.offsetWidth < staticGraduationWidth - 3) { 
@@ -37,7 +37,7 @@ function addGraduation(ruler, cnt){
 
         for(let i = 0; i < 5; i++){
             const childOfChild = document.createElement('div');
-            childOfChild.className = 'smallGraduation';
+            childOfChild.className = 'small-graduation';
 
             if (i === 0) {
                 const index = document.createElement('div');

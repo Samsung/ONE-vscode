@@ -1,27 +1,27 @@
-import renderBar from './bar.js'
+import renderBar from './bar.js';
 
-export default function renderCategory(endTime, digit, title, data){
-    const levelContainerList = document.querySelectorAll('.levelContainer')
-    const levelContainer = levelContainerList[levelContainerList.length - 1]
+export default function renderCategory(endTime, title, data){
+    const levelContainerList = document.querySelectorAll('.level-container');
+    const levelContainer = levelContainerList[levelContainerList.length - 1];
 
-    const categoryContainer = document.createElement('section')
-    categoryContainer.className = "categoryContainer"
+    const categoryContainer = document.createElement('section');
+    categoryContainer.className = "category-container";
 
-    const categoryHeader = document.createElement('header')
-    categoryHeader.className = "categoryHeader"
+    const categoryHeader = document.createElement('header');
+    categoryHeader.className = "category-header";
 
-    const categoryTItle = document.createElement('div')
-    categoryTItle.className = "categoryTItle"
-    categoryTItle.innerText = title
+    const categoryTitle = document.createElement('div');
+    categoryTitle.className = "category-title";
+    categoryTitle.innerText = title;
 
-    const barList = document.createElement('section')
-    barList.className = "barList"
+    const barList = document.createElement('section');
+    barList.className = "bar-list";
 
-    categoryHeader.append(categoryTItle)
-    categoryContainer.append(categoryHeader, barList)
-    levelContainer.append(categoryContainer)
+    categoryHeader.append(categoryTitle);
+    categoryContainer.append(categoryHeader, barList);
+    levelContainer.append(categoryContainer);
 
     data.forEach(element => {
-        renderBar(endTime, digit, element)
+        renderBar(endTime, element);
     });
 }

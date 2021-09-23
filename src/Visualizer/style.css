@@ -32,7 +32,7 @@ nav > * {
     gap: 10px;
 }
 
-.fileName {
+.file-name {
     color: var(--vscode-foreground, gray);
 }
 
@@ -74,23 +74,23 @@ button:hover {
 
 
 /* level */
-.levelContainer {
+.level-container {
     border-bottom: 0.5px solid var(--vscode-foreground, gray);
 }
 
-.levelHeader {
+.level-header {
     border-bottom: 0.5px solid var(--vscode-foreground, gray);
 }
 
-.levelHeader.fold ~ section{
+.level-header.fold ~ section{
     display: none;
 }
 
-.levelHeader.fold .levelTitle::before {
+.level-header.fold .level-title::before {
     content: '▶ ';
 }
 
-.levelTitle {
+.level-title {
     position: sticky;
     left: 0;
     width: 90vw;
@@ -100,7 +100,7 @@ button:hover {
     background-color: var(--vscode-editor-background, white);
 }
 
-.levelTitle::before {
+.level-title::before {
     content: '▼ ';
     margin-right: 2px;
 }
@@ -111,7 +111,7 @@ button:hover {
 
 
 /* ruler */
-.rulerBlank {
+.ruler-blank {
     position: sticky;
     left: 0;
     height: 20px;
@@ -121,7 +121,7 @@ button:hover {
     background-color: var(--vscode-editor-background, white);
 }
 
-.rulerContainer {
+.ruler-container {
     display: flex;
     border-bottom: 0.5px solid var(--vscode-foreground, gray);
 }
@@ -141,7 +141,7 @@ button:hover {
     border-left: 0.5px solid var(--vscode-foreground, black); 
 }
 
-.smallGraduation{
+.small-graduation{
     position: relative;
     bottom: 0%;
     width: 100%;
@@ -149,7 +149,7 @@ button:hover {
     border-left: 0.5px solid var(--vscode-foreground, gray); 
 }
 
-.smallGraduation:first-child{
+.small-graduation:first-child{
     position: relative;
     bottom: 0%;
     width: 100%;
@@ -166,13 +166,13 @@ button:hover {
 
 
 /* category */
-.categoryContainer{
+.category-container{
     display: flex;
     height: 20px;
     width: auto;
 }
 
-.categoryHeader{
+.category-header{
     position: sticky;
     display: flex;
     justify-content: flex-start;
@@ -188,14 +188,14 @@ button:hover {
     background-color: var(--vscode-editor-background, white);
 }
 
-.barList {
+.bar-list {
     position: relative;
     width: 100%;
     height: 100%;
     border-bottom: 0.5px solid var(--vscode-foreground, gray);
 }
 
-.barList > div{
+.bar-list > div{
     display: flex;
     justify-content: center;
     align-items: center;
