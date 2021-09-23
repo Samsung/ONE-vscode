@@ -44,7 +44,7 @@ export function renderSingleDetail(data) {
 
 function renderArgs(args) {
   const ul = document.createElement("ul");
-  args.split(".#/#.").forEach((element) => {
+  args.split(".#/#.").forEach(element => {
     const li = document.createElement("li");
     li.innerText = element;
     ul.append(li);
@@ -89,7 +89,7 @@ function refinedSelectedOp() {
   const refinedOPDict = {};
   let idx = 0;
 
-  selectedOpList.forEach((element) => {
+  selectedOpList.forEach(element => {
     const name = element.dataset.name;
     const ts = element.dataset.ts * 1;
     const dur = element.dataset.dur * 1;
@@ -122,7 +122,7 @@ function renderTds(value) {
     occurrences: 0,
   };
 
-  value.forEach((op) => {
+  value.forEach(op => {
     totals.dur += op.dur;
     totals.occurrences += op.occurrences;
   });
@@ -133,7 +133,7 @@ function renderTds(value) {
   const displayTimeUnit = setData.dataset["displayTimeUnit"];
   const detail = document.querySelector(".detail");
 
-  value.forEach((ele) => {
+  value.forEach(ele => {
     const tr = document.createElement("tr");
 
     if (ele["name"] === "totals") {

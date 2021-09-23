@@ -118,7 +118,7 @@ function processData(data) {
   });
 
   // select utility usage
-  Object.keys(utility).forEach((key) => {
+  Object.keys(utility).forEach(key => {
     utility[key] = Math.round((utility[key] * 100) / maxEndTime) / 100;
   });
 

@@ -96,15 +96,15 @@ export class JsonTracer {
 
   private _update() {
 		const webview = this._panel.webview;
-		this._panel.title = 'barchart-TheONE';
+		this._panel.title = 'json tracer';
 		this._panel.webview.html = this._getHtmlForWebview(webview);
 		return;
 	}
 
   private _getHtmlForWebview(webview: vscode.Webview) {
-    const scriptPathOnDisk = vscode.Uri.joinPath(this._extensionUri,'src/JsonTracer','index.js');
+    const scriptPathOnDisk = vscode.Uri.joinPath(this._extensionUri,'media/JsonTracer','index.js');
     const scriptUri = scriptPathOnDisk.with({scheme: 'vscode-resource'});
-    const stylePathOnDisk = vscode.Uri.joinPath(this._extensionUri,'src/JsonTracer','style.css');
+    const stylePathOnDisk = vscode.Uri.joinPath(this._extensionUri,'media/JsonTracer','style.css');
     const styleUri = stylePathOnDisk.with({scheme: 'vscode-resource'});
 
     // Use a nonce to whitelist which scripts can be run
@@ -171,7 +171,7 @@ function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {
 		// Enable javascript in the webview
 		enableScripts: true,
 
-		// And restrict the webview to only loading content from our extension's `'src/JsonTracer` directories.
-		localResourceRoots: [vscode.Uri.joinPath(extensionUri, 'src/JsonTracer')]
+		// And restrict the webview to only loading content from our extension's `'media/JsonTracer` directories.
+		localResourceRoots: [vscode.Uri.joinPath(extensionUri, 'media/JsonTracer')]
 	};
 }

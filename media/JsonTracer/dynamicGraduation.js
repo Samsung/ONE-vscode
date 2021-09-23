@@ -1,6 +1,7 @@
 export default function dynamicGraduation() {
   const body = document.querySelector("body");
   const ruler = document.querySelector(".ruler");
+  
   if (!ruler) {
     return;
   }
@@ -58,7 +59,7 @@ function updateGraduation(endTime) {
   const allGraduation = document.querySelectorAll(".ruler .graduation");
   let left = 0;
 
-  allGraduation.forEach((ele) => {
+  allGraduation.forEach(ele => {
     ele.firstChild.firstChild.innerText = calculateGraduation(
       (left / rulerWidth) * endTime
     );
