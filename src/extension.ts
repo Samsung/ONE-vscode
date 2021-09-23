@@ -16,7 +16,8 @@
 
 import * as vscode from 'vscode';
 
-import {CodelensProvider} from './Codelens/CodelensProvider';
+import { HoverProvider } from './Editor/HoverProvider';
+import {CodelensProvider} from './Editor/CodelensProvider';
 import {Project} from './Project';
 import {Utils} from './Utils';
 
@@ -54,6 +55,10 @@ export function activate(context: vscode.ExtensionContext) {
   let codelens = new CodelensProvider();
   let disposableCodelens = vscode.languages.registerCodeLensProvider('ini', codelens);
   context.subscriptions.push(disposableCodelens);
+  
+  let hover = new HoverProvider();
+  let disposableHover = vscode.languages.registerHoverProvider('ini',hover);
+  context.subscriptions.push(disposableHover);
 }
 
 export function deactivate() {
