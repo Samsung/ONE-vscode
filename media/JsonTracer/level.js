@@ -25,7 +25,7 @@ export default function renderLevel(endTime, title, usage, data) {
   levelContainer.append(levelHeader);
   graph.append(levelContainer);
 
-  Object.keys(data).map((key) => {
+  Object.keys(data).map(key => {
     renderCategory(endTime, key, data[key]);
   });
 }

@@ -11,10 +11,10 @@ loadBtn.addEventListener("click", () => {
 
 let ratio = 100;
 const slider = document.querySelector("input");
-slider.addEventListener("input", (e) => {
-  ratio = e.target.value;
+slider.addEventListener("input", event => {
+  ratio = event.target.value;
   graph.style.width = `${ratio}%`;
-  changeSlider(e.target.value, e.target.max, e.target.min);
+  changeSlider(event.target.value, event.target.max, event.target.min);
   dynamicGraduation();
 });
 
@@ -24,11 +24,13 @@ zoomInBtn.addEventListener("click", () => {
   ratio += 50;
   ratio = ratio > 5000 ? 5000 : ratio;
   graph.style.width = `${ratio}%`;
+
   // change slider
   const slider = document.querySelector("input");
   slider.value = ratio;
   changeSlider(slider.value, slider.max, slider.min);
-  // change graduation
+
+  // change graduation and set delay
   dynamicGraduation();
   zoomInBtn.disabled = true;
   setTimeout(() => (zoomInBtn.disabled = false), 300);
@@ -40,11 +42,13 @@ zoomOutBtn.addEventListener("click", () => {
   ratio -= 50;
   ratio = ratio < 100 ? 100 : ratio;
   graph.style.width = `${ratio}%`;
+
   // change slider
   const slider = document.querySelector("input");
   slider.value = ratio;
   changeSlider(slider.value, slider.max, slider.min);
-  // change graduation
+
+  // change graduation and set delay
   dynamicGraduation();
   zoomOutBtn.disabled = true;
   setTimeout(() => (zoomOutBtn.disabled = false), 300);
@@ -103,6 +107,8 @@ function changeSlider(inputValue, inputMax, inputMin) {
   } else {
     return;
   }
+
+  // set delay
   slider.disabled = true;
   setTimeout((slider.disabled = false), 100);
 }
@@ -112,20 +118,24 @@ function initData() {
   // init ratio
   ratio = 100;
   graph.style.width = `${ratio}%`;
+
   // init slider
   const silder = document.querySelector("input");
   silder.max = "200";
   silder.min = "100";
   silder.value = "100";
+
   // init graph
   while (graph.hasChildNodes()) {
     graph.removeChild(graph.firstChild);
   }
+
   // init selected bar
   const selected = document.querySelector(".selected");
   while (selected.hasChildNodes()) {
     selected.removeChild(selected.firstChild);
   }
+
   // init detail
   const detail = document.querySelector(".detail");
   if (detail) {
