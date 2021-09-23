@@ -43,7 +43,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   let disposableOneBarchart = vscode.commands.registerCommand('onevscode.barchart', () => {
     console.log('one barchart...');
-    Visualizer.createOrShow(context.extensionPath + '/src/Visualizer');
+    Visualizer.createOrShow(context.extensionUri);
   });
   context.subscriptions.push(disposableOneBarchart);
 
