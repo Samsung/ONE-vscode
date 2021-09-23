@@ -1,12 +1,28 @@
+/*
+ * Copyright (c) 2021 Samsung Electronics Co., Ltd. All Rights Reserved
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import * as vscode from 'vscode';
 
-export class JsonTracer {
+export class Jsontracer {
   /**
    * Track the currently panel. Only allow a single panel to exist at a time.
    */
-  public static currentPanel: JsonTracer | undefined;
+  public static currentPanel: Jsontracer | undefined;
 
-  private static readonly viewType = 'JsonTracer';
+  private static readonly viewType = 'Jsontracer';
 
   private readonly _panel: vscode.WebviewPanel;
 	private readonly _extensionUri: vscode.Uri;
@@ -18,24 +34,24 @@ export class JsonTracer {
 			: undefined;
 
     // If we already have a panel, show it.
-		if (JsonTracer.currentPanel) {
-			JsonTracer.currentPanel._panel.reveal(column);
+		if (Jsontracer.currentPanel) {
+			Jsontracer.currentPanel._panel.reveal(column);
 			return;
 		}
 
     // Otherwise, create a new panel.
 		const panel = vscode.window.createWebviewPanel(
-			JsonTracer.viewType,
-			'JsonTracer',
+			Jsontracer.viewType,
+			'Jsontracer',
 			column || vscode.ViewColumn.One,
 			getWebviewOptions(extensionUri),
 		);
 
-    JsonTracer.currentPanel = new JsonTracer(panel, extensionUri);
+    Jsontracer.currentPanel = new Jsontracer(panel, extensionUri);
   }
 
   public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
-		JsonTracer.currentPanel = new JsonTracer(panel, extensionUri);
+		Jsontracer.currentPanel = new Jsontracer(panel, extensionUri);
 	}
 
   private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
@@ -81,7 +97,7 @@ export class JsonTracer {
 	}
 
   public dispose() {
-		JsonTracer.currentPanel = undefined;
+		Jsontracer.currentPanel = undefined;
 
 		// Clean up our resources
 		this._panel.dispose();
@@ -102,16 +118,16 @@ export class JsonTracer {
 	}
 
   private _getHtmlForWebview(webview: vscode.Webview) {
-    const scriptPathOnDisk = vscode.Uri.joinPath(this._extensionUri,'media/JsonTracer','index.js');
+    const scriptPathOnDisk = vscode.Uri.joinPath(this._extensionUri,'media/Jsontracer','index.js');
     const scriptUri = scriptPathOnDisk.with({scheme: 'vscode-resource'});
-    const stylePathOnDisk = vscode.Uri.joinPath(this._extensionUri,'media/JsonTracer','style.css');
+    const stylePathOnDisk = vscode.Uri.joinPath(this._extensionUri,'media/Jsontracer','style.css');
     const styleUri = stylePathOnDisk.with({scheme: 'vscode-resource'});
 
     // Use a nonce to whitelist which scripts can be run
     const nonce = getNonce();
 
 		// import html
-		const html = require('../media/JsonTracer/html');
+		const html = require('../media/Jsontracer/html');
     return html(styleUri, webview, scriptUri, nonce);
   }
 }
@@ -130,7 +146,7 @@ function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {
 		// Enable javascript in the webview
 		enableScripts: true,
 
-		// And restrict the webview to only loading content from our extension's `'media/JsonTracer` directories.
-		localResourceRoots: [vscode.Uri.joinPath(extensionUri, 'media/JsonTracer')]
+		// And restrict the webview to only loading content from our extension's `'media/Jsontracer` directories.
+		localResourceRoots: [vscode.Uri.joinPath(extensionUri, 'media/Jsontracer')]
 	};
 }
