@@ -1,22 +1,8 @@
-:root {
-  --container-margin: 10px;
-  --container-padding: 20px;
-  --container-width: 80vw;
-  --input-border-radius: 8px;
-  --input-color: white;
-  --input-margin-vertical: 4px;
-  --input-margin-horizontal: 0;
-  --input-padding-vertical: 6px;
-  --input-padding-horizontal: 4px;
-}
-
 body {
-  background-color: var(--vscode-editor-background);
-  color: var(--vscode-foreground);
-  font-family: var(--vscode-font-family);
-  font-size: var(--vscode-font-size);
-  font-weight: var(--vscode-font-weight);
-  padding: var(--container-padding);
+  background-color: #263238;
+  color: white;
+  font-size: 1.125vw;
+  padding: 20px;
 }
 
 h2 {
@@ -26,7 +12,7 @@ h2 {
 
 ol,
 ul {
-  padding-left: var(--container-padding);
+  padding-left: 20px;
 }
 
 li {
@@ -36,7 +22,7 @@ li {
 
 .container {
   height: 90vh;
-  width: var(--container-width);
+  width: 80vw;
 }
 
 .main,
@@ -48,7 +34,7 @@ li {
 .header {
   display: table;
   height: 10%;
-  width: var(--container-width);
+  width: 80vw;
 }
 
 .heading {
@@ -68,27 +54,28 @@ li {
   display: flex;
   height: 80%;
   justify-content: space-between;
-  margin-top: var(--container-margin);
-  width: var(--container-width);
+  margin-top: 10px;
+  width: 80vw;
 }
 
 .mainL {
-  margin-top: var(--container-margin);
-  padding-left: var(--container-padding);
+  margin-top: 10px;
+  padding-left: 20px;
   width: 30%;
 }
 
 .mainR {
-  margin-top: var(--container-margin);
-  padding-right: var(--container-padding);
+  margin-top: 10px;
+  padding-right: 20px;
   width: 70%;
 }
 
 .tools {
   height: 50%;
-  margin-top: var(--container-margin);
-  padding: var(--container-padding);
+  margin-top: 10px;
+  padding: 20px;
   width: 80%;
+  font-size: 100%;
 }
 
 .tools div {
@@ -102,10 +89,10 @@ li {
 
 .options {
   height: 85%;
-  margin-top: var(--container-margin);
+  margin-top: 10px;
   overflow: scroll;
-  padding-right: var(--container-padding);
-  padding-top: var(--container-padding);
+  padding-right: 10px;
+  padding-top: 20px;
   width: 100%;
 }
 
@@ -115,31 +102,22 @@ li {
 }
 
 .optionsName {
-  padding-left: var(--container-padding);
-  width: 40%;
+  padding-left: 20px;
+  width: 50%;
 }
 
 .optionsValue {
-  width: 60%;
-}
-
-@media (max-width: 1280px) {
-  .optionsName {
-    width: 70%;
-  }
-  .optionsValue {
-    width: 30%;
-  }
+  width: 50%;
 }
 
 .footer {
-  margin-top: var(--container-margin);
+  margin-top: 10px;
   text-align: end;
-  width: var(--container-width);
+  width: 80vw;
 }
 
 .selected {
-  color: var(--vscode-button-background);
+  color: #3498DB;
   font-weight: bold;
 }
 
@@ -150,7 +128,7 @@ li {
 
 select {
   border: 1px solid #999;
-  border-radius: var(--input-border-radius);
+  border-radius: 8px;
   font-family: inherit;
   padding: 0.3em 0.2em;
   text-align-last: center;
@@ -162,34 +140,16 @@ select {
 
 body > *,
 form > * {
-  margin-block-start: var(--input-margin-vertical);
-  margin-block-end: var(--input-margin-vertical);
-}
-
-*:focus {
-  outline-color: var(--vscode-focusBorder) !important;
-}
-
-a {
-  color: var(--vscode-textLink-foreground);
-}
-
-a:hover,
-a:active {
-  color: var(--vscode-textLink-activeForeground);
-}
-
-code {
-  font-family: var(--vscode-editor-font-family);
-  font-size: var(--vscode-editor-font-size);
+  margin-block-start: 4px;
+  margin-block-end: 4px;
 }
 
 button {
-  background: var(--vscode-button-background);
-  border-color: var(--vscode-button-background);
+  background: #3498DB;
+  border-color:#3498DB;
   border-width: 1px;
-  color: var(--vscode-button-foreground);
-  font-size: 15px;
+  color: white;
+  font-size: 100%;
   margin-left: 10px;
   outline: 1px solid transparent;
   outline-offset: 2px !important;
@@ -198,43 +158,27 @@ button {
 }
 
 button:hover {
-  background: var(--vscode-button-hoverBackground);
   cursor: pointer;
-}
-
-button:focus {
-  outline-color: var(--vscode-focusBorder);
-}
-
-button.secondary {
-  background: var(--vscode-button-secondaryBackground);
-  color: var(--vscode-button-secondaryForeground);
-}
-
-button.secondary:hover {
-  background: var(--vscode-button-secondaryHoverBackground);
 }
 
 input:not([type="checkbox"]),
 textarea {
-  background-color: var(--input-color);
+  background-color:white;
   border: none;
-  border-radius: var(--input-border-radius);
+  border-radius: 8px;
   color: black;
   display: inline-block;
-  font-family: var(--vscode-font-family);
-  outline-color: var(--vscode-input-border);
-  padding: var(--input-padding-vertical) var(--input-padding-horizontal);
-  width: 80%;
+  padding: 6px 4px;
+  width: 85%;
 }
 
 input::placeholder,
 textarea::placeholder {
-  color: var(--vscode-input-placeholderForeground);
+  color: #DDDDDD;
 }
 
 fieldset:disabled input {
-  background-color: var(--vscode-descriptionForeground);
+  background-color: #6E6E6E;
 }
 
 /* The switch - the box around the slider */
@@ -278,11 +222,11 @@ fieldset:disabled input {
 }
 
 input:checked + .slider {
-  background-color: #2196f3;
+  background-color: #3498DB;
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #2196f3;
+  box-shadow: 0 0 1px #3498DB;
 }
 
 input:checked + .slider:before {
