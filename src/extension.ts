@@ -40,11 +40,16 @@ export function activate(context: vscode.ExtensionContext) {
   });
   context.subscriptions.push(disposableOneImport);
 
+  let disposableOneBarchart = vscode.commands.registerCommand('onevscode.barchart', () => {
+    console.log('one barchart...');
+  });
+  context.subscriptions.push(disposableOneBarchart);
+
   let disposableOneConfigurationSettings =
       vscode.commands.registerCommand('onevscode.configuration-settings', () => {
         console.log('one configuration settings...')
         ConfigurationSettingsPanel.createOrShow(context.extensionUri);
-      });
+      })
   context.subscriptions.push(disposableOneConfigurationSettings);
 }
 
