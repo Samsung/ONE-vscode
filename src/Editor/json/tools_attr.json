@@ -1,4 +1,14 @@
 [
+  {
+    "name" : "[one-build]",
+    "body": [],
+    "description": "command line tool to run ONE drivers in customized order"
+  },
+  {
+    "name" : "[onecc]",
+    "body": [],
+    "description": "Run ONE driver via several commands or configuration file"
+  },
 	{
 		"name" : "[one-import-tf]",
 		"body": [
