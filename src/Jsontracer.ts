@@ -109,28 +109,31 @@ export class Jsontracer {
     return;
   }
 
-  private _getHtmlForWebview(webview: vscode.Webview) {
-    const scriptPathOnDisk =
-        vscode.Uri.joinPath(this._extensionUri, 'media/Jsontracer', 'index.js');
-    const scriptUri = scriptPathOnDisk.with({scheme: 'vscode-resource'});
-    const stylePathOnDisk =
-        vscode.Uri.joinPath(this._extensionUri, 'media/Jsontracer', 'style.css');
-    const styleUri = stylePathOnDisk.with({scheme: 'vscode-resource'});
+  private getMediaPath(file: string) {
+    return vscode.Uri.joinPath(this._extensionUri, 'media/Jsontracer', file);
+  }
 
+  private _getHtmlForWebview(webview: vscode.Webview) {
     // Use a nonce to whitelist which scripts can be run
     const nonce = getNonce();
 
+    // import js
+    const scriptPathOnDisk = this.getMediaPath('index.js');
+    const scriptUri = scriptPathOnDisk.with({scheme: 'vscode-resource'});
+
+    // import css
+    const stylePathOnDisk = this.getMediaPath('style.css');
+    const styleUri = stylePathOnDisk.with({scheme: 'vscode-resource'});
+
     // import html
-    const htmlPath: vscode.Uri =
-        vscode.Uri.joinPath(this._extensionUri, 'media/Jsontracer', 'index.html');
+    const htmlPath = this.getMediaPath('index.html');
     let html = fs.readFileSync(htmlPath.fsPath, {encoding: 'utf-8'});
 
-    html = html.replace('$styleUri', `${styleUri}`);
-    html = html.replace('$scriptUri', `${scriptUri}`);
-    html = html.replace('$nonce', `${nonce}`);
-    while (html.includes('$webview.cspSource')) {
-      html = html.replace('$webview.cspSource', `${webview.cspSource}`);
-    }
+    // Apply js and cs to html
+    html = html.replace(/styleUri/g, `${styleUri}`);
+    html = html.replace(/scriptUri/g, `${scriptUri}`);
+    html = html.replace(/nonce/g, `${nonce}`);
+    html = html.replace(/webview.cspSource/g, `${webview.cspSource}`);
 
     return html;
   }

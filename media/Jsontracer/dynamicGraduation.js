@@ -32,7 +32,7 @@ export default function dynamicGraduation() {
   const initGraduationCnt = endTime / 10 ** (digit - 1);
   const staticGraduationWidth = parseInt(staticRulerWidth / initGraduationCnt);
 
-  if (graduation.offsetWidth < staticGraduationWidth - 3) {
+  if (graduation.offsetWidth < staticGraduationWidth - 10) {
     removeGraduation(ruler, cnt);
   } else if (graduation.offsetWidth < staticGraduationWidth * 2) {
     return;
