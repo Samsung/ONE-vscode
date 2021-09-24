@@ -15,6 +15,8 @@
  */
 
 import * as vscode from 'vscode';
+import * as fs from "fs";
+import * as path from "path";
 
 export class Jsontracer {
   /**
@@ -127,8 +129,20 @@ export class Jsontracer {
     const nonce = getNonce();
 
 		// import html
-		const html = require('../media/Jsontracer/html');
-    return html(styleUri, webview, scriptUri, nonce);
+		// const html = require('../media/Jsontracer/html');
+    // return html(styleUri, webview, scriptUri, nonce);
+
+		const htmlPath: vscode.Uri = vscode.Uri.joinPath(this._extensionUri,'media/Jsontracer','index.html');
+		let html = fs.readFileSync(htmlPath.fsPath, { encoding: "utf-8" });
+
+		html = html.replace("$styleUri", `${styleUri}`);
+		html = html.replace("$scriptUri", `${scriptUri}`);
+		html = html.replace("$nonce", `${nonce}`);
+		while (html.includes("$webview.cspSource")) {
+			html = html.replace("$webview.cspSource", `${webview.cspSource}`);
+		}
+
+		return html;
   }
 }
 
