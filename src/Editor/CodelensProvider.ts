@@ -15,54 +15,54 @@
  */
 
 import * as vscode from 'vscode';
-import tools_attr from './json/tools_attr.json';
+import toolsAttr from './json/tools_attr.json';
 
 export class CodelensProvider implements vscode.CodeLensProvider {
   codeLenses: vscode.CodeLens[] = [];
   regex: RegExp;
   showInfo: Array<string>;
-  now_tool_name: string;
-  NotshowAttr: Array<string>;
+  nowToolName: string;
+  notShowAttr: Array<string>;
   private _onDidChangeCodeLenses: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
   public readonly onDidChangeCodeLenses: vscode.Event<void> = this._onDidChangeCodeLenses.event;
 
   constructor() {
     this.regex = /(.+)/g;
     this.showInfo = [];
-    this.now_tool_name = "";
-    this.NotshowAttr = [];
+    this.nowToolName = "";
+    this.notShowAttr = [];
 
     vscode.workspace.onDidChangeConfiguration((_) => {
       this._onDidChangeCodeLenses.fire();
     });
 
-    vscode.commands.registerCommand('onevscode.codelensAction', (tool_name: any) => {
-      let find_tool_idx = this.showInfo.findIndex((tool) => tool == tool_name);
-      if (find_tool_idx == -1) {
-        this.showInfo.push(tool_name);
+    vscode.commands.registerCommand('onevscode.codelensAction', (toolName: any) => {
+      let findToolIdx = this.showInfo.findIndex((tool) => tool === toolName);
+      if (findToolIdx === -1) {
+        this.showInfo.push(toolName);
       } else {
-        this.showInfo.splice(find_tool_idx, 1);
+        this.showInfo.splice(findToolIdx, 1);
       }
-      this.NotshowAttr = this.NotshowAttr.filter((item) => !item.includes(tool_name));
+      this.notShowAttr = this.notShowAttr.filter((item) => !item.includes(toolName));
       this._onDidChangeCodeLenses.fire();
     });
 
-    vscode.commands.registerCommand('onevscode.codelensNotShowAttr', (tool_name: any, attr_name: any) => {
-      let tool_attr = tool_name + "." + attr_name;
-      let find_tool_attr_idx = this.NotshowAttr.findIndex((tool) => tool == tool_attr);
+    vscode.commands.registerCommand('onevscode.codelensNotShowAttr', (toolName: any, attrName: any) => {
+      let toolAttr = toolName + "." + attrName;
+      let findToolAttrIdx = this.notShowAttr.findIndex((tool) => tool === toolAttr);
 
-      if (find_tool_attr_idx == -1) {
-        this.NotshowAttr.push(tool_attr);
+      if (findToolAttrIdx === -1) {
+        this.notShowAttr.push(toolAttr);
       } else {
-        this.NotshowAttr.splice(find_tool_attr_idx, 1);
+        this.notShowAttr.splice(findToolAttrIdx, 1);
       }
 
       this._onDidChangeCodeLenses.fire();
-    })
+    });
 
     vscode.commands.registerCommand('onevscode.showCodeLens', () => {
-      const codelens_state = vscode.workspace.getConfiguration('one-vscode').get('enableCodeLens', true);
-      vscode.workspace.getConfiguration('one-vscode').update('enableCodeLens', !codelens_state, true);
+      let codelensState = vscode.workspace.getConfiguration('one-vscode').get('enableCodeLens', true);
+      vscode.workspace.getConfiguration('one-vscode').update('enableCodeLens', !codelensState, true);
     });
   }
 
@@ -70,37 +70,37 @@ export class CodelensProvider implements vscode.CodeLensProvider {
     if (vscode.workspace.getConfiguration('one-vscode').get('enableCodeLens', true)) {
       this.codeLenses = [];
 
-      const regex = new RegExp(this.regex);
-      const text = document.getText();
+      let regex = new RegExp(this.regex);
+      let text = document.getText();
       let matches;
       while ((matches = regex.exec(text)) !== null) {
-        const line = document.lineAt(document.positionAt(matches.index).line);
-        const indexOf = line.text.indexOf(matches[0]);
-        const position = new vscode.Position(line.lineNumber, indexOf);
+        let line = document.lineAt(document.positionAt(matches.index).line);
+        let indexOf = line.text.indexOf(matches[0]);
+        let position = new vscode.Position(line.lineNumber, indexOf);
         const range = document.getWordRangeAtPosition(position, this.regex);
-        let line_str = line.text;
+        let lineStr = line.text;
 
         if (range) {
-          if (line_str.indexOf('=') === -1) {
-            tools_attr.forEach((item) => {
-              if (item.name == line_str) {
+          if (lineStr.indexOf('=') === -1) {
+            toolsAttr.forEach((item) => {
+              if (item.name === lineStr) {
                 this.codeLenses.push(new vscode.CodeLens(range));
-                if (this.showInfo.includes(line_str)) {
-                  this.now_tool_name = line_str;
+                if (this.showInfo.includes(lineStr)) {
+                  this.nowToolName = lineStr;
                 } else {
-                  this.now_tool_name = "";
+                  this.nowToolName = "";
                 }
               }
             });
           } else {
-            if (this.now_tool_name != "") {
-              let attr_name = line_str.split('=')[0];
-              let tool_attr = this.now_tool_name + "." + attr_name;
-              if (this.NotshowAttr.indexOf(tool_attr) == -1) {
-                tools_attr.forEach((item) => {
-                  if (item.name === this.now_tool_name) {
+            if (this.nowToolName !== "") {
+              let attrName = lineStr.split('=')[0];
+              let toolAttr = this.nowToolName + "." + attrName;
+              if (this.notShowAttr.indexOf(toolAttr) === -1) {
+                toolsAttr.forEach((item) => {
+                  if (item.name === this.nowToolName) {
                     item.body.forEach((it) => {
-                      if (it.attr_name === attr_name) {
+                      if (it.attr_name === attrName) {
                         this.codeLenses.push(new vscode.CodeLens(range));
                       }
                     });
@@ -117,35 +117,33 @@ export class CodelensProvider implements vscode.CodeLensProvider {
   }
 
   public resolveCodeLens(codeLens: vscode.CodeLens, token: vscode.CancellationToken) {
-    let line_str = vscode.window.activeTextEditor?.document.getText(codeLens.range);
+    let lineStr = vscode.window.activeTextEditor?.document.getText(codeLens.range);
 
-    if (line_str?.indexOf('=') === -1) {
-      tools_attr.forEach((item) => {
-        if (item.name === line_str) {
-          this.now_tool_name = line_str;
+    if (lineStr?.indexOf('=') === -1) {
+      toolsAttr.forEach((item) => {
+        if (item.name === lineStr) {
+          this.nowToolName = lineStr;
           codeLens.command = {
             title: item.description,
             command: 'onevscode.codelensAction',
-            arguments: [this.now_tool_name],
+            arguments: [this.nowToolName],
           };
         }
       });
     }
     else {
-      tools_attr.forEach((item) => {
+      toolsAttr.forEach((item) => {
         item.body.forEach((it) => {
-          if (it.attr_name === line_str?.split('=')[0]) {
+          if (it.attr_name === lineStr?.split('=')[0]) {
             codeLens.command = {
               title: it.attr_desc,
               command: 'onevscode.codelensNotShowAttr',
-              arguments: [this.now_tool_name, it.attr_name]
+              arguments: [this.nowToolName, it.attr_name]
             };
           }
         });
-
       });
     }
-
     return codeLens;
   }
 }
