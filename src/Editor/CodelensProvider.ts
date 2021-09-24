@@ -59,11 +59,6 @@ export class CodelensProvider implements vscode.CodeLensProvider {
 
       this._onDidChangeCodeLenses.fire();
     });
-
-    vscode.commands.registerCommand('onevscode.showCodeLens', () => {
-      let codelensState = vscode.workspace.getConfiguration('one-vscode').get('enableCodeLens', true);
-      vscode.workspace.getConfiguration('one-vscode').update('enableCodeLens', !codelensState, true);
-    });
   }
 
   public provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.CodeLens[] | Thenable<vscode.CodeLens[]> {
