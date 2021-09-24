@@ -82,7 +82,7 @@ const oneImportOptions = [
   oneImportTflite,
 ];
 
-const optimize = {
+const oneOptimize = {
   type: "one-optimize",
   use: true,
   options: [
@@ -136,7 +136,7 @@ const optimize = {
   ],
 };
 
-const quantize = {
+const oneQuantize = {
   type: "one-quantize",
   use: true,
   options: [
@@ -155,7 +155,7 @@ const quantize = {
   ],
 };
 
-const pack = {
+const onePack = {
   type: "one-pack",
   use: true,
   options: [
@@ -164,7 +164,7 @@ const pack = {
   ],
 };
 
-const codegen = {
+const oneCodegen = {
   type: "one-codegen",
   use: false,
   options: [
@@ -173,7 +173,7 @@ const codegen = {
   ],
 };
 
-const profile = {
+const oneProfile = {
   type: "one-profile",
   use: false,
   options: [
@@ -187,11 +187,11 @@ const oneToolList = [
   oneImportOnnx,
   oneImportTf,
   oneImportTflite,
-  optimize,
-  quantize,
-  pack,
-  codegen,
-  profile,
+  oneOptimize,
+  oneQuantize,
+  onePack,
+  oneCodegen,
+  oneProfile,
 ];
 
 const autoCompletePath = function () {
@@ -531,23 +531,23 @@ const showOptions = function (event) {
       break;
     }
     case "optimize": {
-      buildOptionDom(optimize);
+      buildOptionDom(oneOptimize);
       break;
     }
     case "quantize": {
-      buildOptionDom(quantize);
+      buildOptionDom(oneQuantize);
       break;
     }
     case "pack": {
-      buildOptionDom(pack);
+      buildOptionDom(onePack);
       break;
     }
     case "codegen": {
-      buildOptionDom(codegen);
+      buildOptionDom(oneCodegen);
       break;
     }
     case "profile": {
-      buildOptionDom(profile);
+      buildOptionDom(oneProfile);
       break;
     }
   }
@@ -616,28 +616,28 @@ const exportValidation = function () {
       }
     }
   }
-  if (optimize.use === true) {
-    if (pathValidator(optimize)) {
+  if (oneOptimize.use === true) {
+    if (pathValidator(oneOptimize)) {
       return false;
     }
   }
-  if (quantize.use === true) {
-    if (pathValidator(quantize)) {
+  if (oneQuantize.use === true) {
+    if (pathValidator(oneQuantize)) {
       return false;
     }
   }
-  if (pack.use === true) {
-    if (pathValidator(pack)) {
+  if (onePack.use === true) {
+    if (pathValidator(onePack)) {
       return false;
     }
   }
-  if (codegen.use === true) {
-    if (backendValidator(codegen)) {
+  if (oneCodegen.use === true) {
+    if (backendValidator(oneCodegen)) {
       return false;
     }
   }
-  if (profile.use === true) {
-    if (backendValidator(profile)) {
+  if (oneProfile.use === true) {
+    if (backendValidator(oneProfile)) {
       return false;
     }
   }
@@ -711,9 +711,9 @@ window.addEventListener("message", (event) => {
       break;
     case "importConfig":
       oneImport.use = false;
-      optimize.use = false;
-      quantize.use = false;
-      pack.use = false;
+      oneOptimize.use = false;
+      oneQuantize.use = false;
+      onePack.use = false;
       for (const tool of Object.keys(data.options)) {
         for (const importOpt in data.options[tool]) {
           if (tool === "one-import-bcq") {
@@ -725,20 +725,20 @@ window.addEventListener("message", (event) => {
           } else if (tool === "one-import-tflite") {
             oneImportTools(data.options, importOpt, tool, 3, oneImportTflite);
           } else if (tool === "one-optimize") {
-            optimize.use = true;
-            oneOtherTools(data.options, importOpt, tool, optimize);
+            oneOptimize.use = true;
+            oneOtherTools(data.options, importOpt, tool, oneOptimize);
           } else if (tool === "one-quantize") {
-            quantize.use = true;
-            oneOtherTools(data.options, importOpt, tool, quantize);
+            oneQuantize.use = true;
+            oneOtherTools(data.options, importOpt, tool, oneQuantize);
           } else if (tool === "one-pack") {
-            pack.use = true;
-            oneOtherTools(data.options, importOpt, tool, pack);
+            onePack.use = true;
+            oneOtherTools(data.options, importOpt, tool, onePack);
           } else if (tool === "one-codegen") {
-            codegen.use = true;
-            oneOtherTools(data.options, importOpt, tool, codegen);
+            oneCodegen.use = true;
+            oneOtherTools(data.options, importOpt, tool, oneCodegen);
           } else if (tool === "one-profile") {
-            profile.use = true;
-            oneOtherTools(data.options, importOpt, tool, profile);
+            oneProfile.use = true;
+            oneOtherTools(data.options, importOpt, tool, oneProfile);
           }
         }
       }
