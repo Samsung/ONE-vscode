@@ -1,0 +1,245 @@
+body {
+  background-color: #263238;
+  color: white;
+  font-size: 1.125vw;
+  padding: 20px;
+}
+
+h2 {
+  display: inline;
+  margin-right: 10px;
+}
+
+ol,
+ul {
+  padding-left: 20px;
+}
+
+li {
+  height: 50px;
+  list-style: none;
+}
+
+.container {
+  height: 90vh;
+  width: 80vw;
+}
+
+.main,
+.tools,
+.options {
+  border: 1px solid white;
+}
+
+.header {
+  display: table;
+  height: 10%;
+  width: 80vw;
+}
+
+.heading {
+  display: table-cell;
+  vertical-align: bottom;
+  width: 50%;
+}
+
+.importBtn {
+  display: table-cell;
+  text-align: end;
+  vertical-align: bottom;
+  width: 50%;
+}
+
+.main {
+  display: flex;
+  height: 80%;
+  justify-content: space-between;
+  margin-top: 10px;
+  width: 80vw;
+}
+
+.mainL {
+  margin-top: 10px;
+  padding-left: 20px;
+  width: 30%;
+}
+
+.mainR {
+  margin-top: 10px;
+  padding-right: 20px;
+  width: 70%;
+}
+
+.tools {
+  height: 50%;
+  margin-top: 10px;
+  padding: 20px;
+  width: 80%;
+  font-size: 100%;
+}
+
+.tools div {
+  margin-bottom: 5px;
+}
+
+.tools div:hover {
+  cursor: pointer;
+  margin-bottom: 5px;
+}
+
+.options {
+  height: 85%;
+  margin-top: 10px;
+  overflow: scroll;
+  padding-right: 10px;
+  padding-top: 20px;
+  width: 100%;
+}
+
+.twoOpts {
+  display: flex;
+  justify-content: space-around;
+}
+
+.optionsName {
+  padding-left: 20px;
+  width: 50%;
+}
+
+.optionsValue {
+  width: 50%;
+}
+
+.footer {
+  margin-top: 10px;
+  text-align: end;
+  width: 80vw;
+}
+
+.selected {
+  color: #3498DB;
+  font-weight: bold;
+}
+
+#locaForSelect {
+  position: absolute;
+  right: 22%;
+}
+
+select {
+  border: 1px solid #999;
+  border-radius: 8px;
+  font-family: inherit;
+  padding: 0.3em 0.2em;
+  text-align-last: center;
+  text-align: center;
+  width: 170px;
+  -ms-text-align-last: center;
+  -moz-text-align-last: center;
+}
+
+body > *,
+form > * {
+  margin-block-start: 4px;
+  margin-block-end: 4px;
+}
+
+button {
+  background: #3498DB;
+  border-color:#3498DB;
+  border-width: 1px;
+  color: white;
+  font-size: 100%;
+  margin-left: 10px;
+  outline: 1px solid transparent;
+  outline-offset: 2px !important;
+  padding: 7px 10px;
+  text-align: center;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+input:not([type="checkbox"]),
+textarea {
+  background-color:white;
+  border: none;
+  border-radius: 8px;
+  color: black;
+  display: inline-block;
+  padding: 6px 4px;
+  width: 85%;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #DDDDDD;
+}
+
+fieldset:disabled input {
+  background-color: #6E6E6E;
+}
+
+/* The switch - the box around the slider */
+.switch {
+  display: inline-block;
+  height: 22px;
+  position: relative;
+  width: 40px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  height: 0;
+  opacity: 0;
+  width: 0;
+}
+
+/* The slider */
+.slider {
+  bottom: 0;
+  background-color: #ccc;
+  cursor: pointer;
+  left: 0;
+  position: absolute;
+  right: 0;
+  transition: 0.4s;
+  top: 0;
+  -webkit-transition: 0.4s;
+}
+
+.slider:before {
+  background-color: white;
+  bottom: 4px;
+  content: "";
+  height: 15px;
+  left: 4px;
+  position: absolute;
+  transition: 0.4s;
+  width: 15px;
+  -webkit-transition: 0.4s;
+}
+
+input:checked + .slider {
+  background-color: #3498DB;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #3498DB;
+}
+
+input:checked + .slider:before {
+  transform: translateX(15px);
+  -webkit-transform: translateX(15px);
+  -ms-transform: translateX(15px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
