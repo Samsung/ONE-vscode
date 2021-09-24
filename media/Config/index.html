@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <!--
+            Use a content security policy to only allow loading images from https or from our extension directory,
+            and only allow scripts that have a specific nonce.
+        -->
+        <meta 
+            http-equiv="Content-Security-Policy"
+            content="img-src https: data:;
+                     style-src 'unsafe-inline' ${webview.cspSource};
+                     script-src 'nonce-${nonce}';">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="${stylesResetUri}" rel="stylesheet">
+        <link href="${stylesMainUri}" rel="stylesheet">
+        <title>ONE Configuration Settings</title>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <div class="heading">
+                    <h2>Configuration Settings</h2>
+                </div>
+                <div class="importBtn">
+                    <button id="importBtn">Import Configuration</button>
+                </div>
+            </div>
+            <fieldset class="main">
+                <div class="mainL">
+                    <h2>Tools</h2>
+                    <div class="tools">
+                        <div id="import">one-import</div>
+                        <div id="optimize">one-optimize</div>
+                        <div id="quantize">one-quantize</div>
+                        <div id="pack">one-pack</div>
+                        <div id="codegen">one-codegen</div>
+                        <div id="profile">one-profile</div>
+                    </div>
+                </div>
+                <div class="mainR">
+                    <h2 id="toolName">Options for</h2>
+                    <label class="switch">
+                        <input id="useBtn" type="checkbox">
+                        <span class="slider round"></span>
+                    </label>
+                    <span id="locaForSelect"></span>
+                    <fieldset id="options" class="options">
+                        <div class="twoOpts">
+                            <div id="optionsName" class="optionsName">
+                            </div>
+                            <div id="optionsValue" class="optionsValue">
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </fieldset>
+            <div class="footer">
+                <button id="runBtn">Run</button>
+                <button id="exportBtn">Export Configuration</button>
+            </div>
+        </div>
+        <script src="${scriptUri}" nonce="${nonce}"></script>
+    </body>
+</html>
