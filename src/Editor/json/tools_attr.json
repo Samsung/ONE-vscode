@@ -24,15 +24,17 @@
       },
       {
         "attr_name" : "converter_version",
-        "attr_desc" : "use TensorFlow Lite Converter version"
-      },
-      {
-        "attr_name" : "v1",
-        "attr_desc" : "use TensorFlow Lite Converter 1.x"
-      },
-      {
-        "attr_name" : "v2",
-        "attr_desc" : "use TensorFlow Lite Converter 2.x"
+        "attr_desc" : "use TensorFlow Lite Converter version",
+        "options": [
+          {
+            "option_name": "v1",
+            "option_desc": "use TensorFlow Lite Converter 1.x"
+          },
+          {
+            "option_name": "v2",
+            "option_desc": "use TensorFlow Lite Converter 2.x"
+          }
+        ]
       },
       {
         "attr_name" : "save_intermediate",
@@ -40,23 +42,39 @@
       },
       {
         "attr_name" : "model_format",
-        "attr_desc" : "Select model_format"
-      },
-      {
-        "attr_name" : "graph_def",
-        "attr_desc" : "use graph def file(default)"
-      },
-      {
-        "attr_name" : "saved_model",
-        "attr_desc" : "use saved model"
-      },
-      {
-        "attr_name" : "keras_model",
-        "attr_desc" : "use keras model"
+        "attr_desc" : "Select model_format",
+        "options": [
+          {
+            "option_name": "graph_def",
+            "option_desc": "use graph def file(default)"
+          },
+          {
+            "option_name": "saved_model",
+            "option_desc": "use saved model"
+          },
+          {
+            "option_name" : "keras_model",
+            "option_desc" : "use keras model"
+          }
+        ]
       }
 		],
-		"description" : "command line tool to convert TensorFlow to circle\n"
+		"description" : "command line tool to convert TensorFlow to circle"
 	},
+  {
+    "name" : "[one-import-tflite]",
+    "body" : [
+      {
+        "attr_name" : "input_path",
+        "attr_desc" : "full filepath of the input file"
+      },
+      {
+        "attr_name" : "output_path",
+        "attr_desc" : "full filepath of the output file"
+      }
+    ],
+    "description" : "command line tool to convert TensorFlow lite to circle"
+  },
   {
     "name" : "[one-import-bcq]",
     "body" : [
@@ -82,18 +100,74 @@
       },
       {
         "attr_name" : "converter_version",
-        "attr_desc" : "use TensorFlow Lite Converter version"
-      },
-      {
-        "attr_name" : "v1",
-        "attr_desc" : "use TensorFlow Lite Converter 1.x"
-      },
-      {
-        "attr_name" : "v2",
-        "attr_desc" : "use TensorFlow Lite Converter 2.x"
+        "attr_desc" : "use TensorFlow Lite Converter version",
+        "options": [
+          {
+            "option_name": "v1",
+            "option_desc": "use TensorFlow Lite Converter 1.x"
+          },
+          {
+            "option_name": "v2",
+            "option_desc": "use TensorFlow Lite Converter 2.x"
+          }
+        ]
       }
     ],
     "description" : "command line tool to convert TensorFlow with BCQ to circle"
+  },
+  {
+    "name" : "[one-import-onnx]",
+    "body" : [
+      {
+        "attr_name" : "input_path",
+        "attr_desc" : "full filepath of the input file"
+      },
+      {
+        "attr_name" : "output_path",
+        "attr_desc" : "full filepath of the output file"
+      },
+      {
+        "attr_name" : "input_arrays",
+        "attr_desc" : "names of the input arrays, comma-separated"
+      },
+      {
+        "attr_name" : "output_arrays",
+        "attr_desc" : "names of the output arrays, comma-separated"
+      },
+      {
+        "attr_name" : "converter_version",
+        "attr_desc" : "use TensorFlow Lite Converter version",
+        "options": [
+          {
+            "option_name": "v1",
+            "option_desc": "use TensorFlow Lite Converter 1.x"
+          },
+          {
+            "option_name": "v2",
+            "option_desc": "use TensorFlow Lite Converter 2.x"
+          }
+        ]
+      },
+      {
+        "attr_name" : "model_format",
+        "attr_desc" : "Select model_format",
+        "options": [
+          {
+            "option_name": "graph_def",
+            "option_desc": "use graph def file(default)"
+          },
+          {
+            "option_name": "saved_model",
+            "option_desc": "use saved model"
+          },
+          {
+            "option_name" : "keras_model",
+            "option_desc" : "use keras model"
+          }
+        ]
+      }
+    ],
+    "description" : "command line tool to convert ONNX to circle"
   },
   {
     "name" : "[one-optimize]",
@@ -307,7 +381,7 @@
       {
         "attr_name" : "input_data_format",
         "attr_desc" : "file format of input data.",
-        "option" : [
+        "options" : [
           {
             "option_name": "h5/hdf5",
             "option_desc": "default"
@@ -329,7 +403,7 @@
       {
         "attr_name" : "input_dtype",
         "attr_desc" : "input data type",
-        "option": [
+        "options": [
           {
             "option_name": "float32",
             "option_desc": "default"
@@ -339,7 +413,7 @@
       {
         "attr_name" : "quantized_dtype",
         "attr_desc" : "output quantized data type",
-        "option": [
+        "options": [
           {
             "option_name": "uint8",
             "option_desc": "default"
@@ -353,7 +427,7 @@
       {
         "attr_name" : "granularity",
         "attr_desc" : "quantize granularity",
-        "option": [
+        "options": [
           {
             "option_name": "layer",
             "option_desc": "default"
@@ -375,7 +449,7 @@
       {
         "attr_name" : "mode",
         "attr_desc" : "record mode",
-        "option": [
+        "options": [
           {
             "option_name": "percentile",
             "option_desc": "default"
