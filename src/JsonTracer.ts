@@ -129,9 +129,6 @@ export class Jsontracer {
     const nonce = getNonce();
 
 		// import html
-		// const html = require('../media/Jsontracer/html');
-    // return html(styleUri, webview, scriptUri, nonce);
-
 		const htmlPath: vscode.Uri = vscode.Uri.joinPath(this._extensionUri,'media/Jsontracer','index.html');
 		let html = fs.readFileSync(htmlPath.fsPath, { encoding: "utf-8" });
 
