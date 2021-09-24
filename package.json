@@ -14,6 +14,7 @@
     "onCommand:onevscode.import",
     "onCommand:onevscode.barchart",
     "onCommand:onevscode.configuration-settings",
+    "onCommand:onevscode.show-codelens",
     "onStartupFinished"
   ],
   "main": "./out/extension.js",
@@ -34,6 +35,10 @@
       {
         "command": "onevscode.configuration-settings",
         "title": "one configuration-settings"
+      },
+      {
+        "command": "onevscode.show-codelens",
+        "title": "show codelens"
       }
     ],
     "languages": [
@@ -60,7 +65,15 @@
         "language": "ini",
         "path": "./src/Snippets/tools.json"
       }
-    ]
+    ],
+    "configuration": {
+      "properties": {
+        "one-vscode.enableCodeLens": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
