@@ -57,7 +57,7 @@ loadBtn.addEventListener("click", () => {
 let ratio = 100;
 const slider = document.querySelector("input");
 slider.addEventListener("input", event => {
-  ratio = event.target.value;
+  ratio = event.target.value * 1;
   graph.style.width = `${ratio}%`;
   changeSlider(event.target.value, event.target.max, event.target.min);
   dynamicGraduation();
@@ -65,6 +65,8 @@ slider.addEventListener("input", event => {
 
 const zoomInBtn = document.querySelector(".zoom-in-btn");
 zoomInBtn.addEventListener("click", () => {
+  if (ratio >= 5000) { return; }
+  
   // change ratio
   ratio += 50;
   ratio = ratio > 5000 ? 5000 : ratio;
@@ -83,6 +85,8 @@ zoomInBtn.addEventListener("click", () => {
 
 const zoomOutBtn = document.querySelector(".zoom-out-btn");
 zoomOutBtn.addEventListener("click", () => {
+  if (ratio <= 100) { return; }
+
   // change ratio
   ratio -= 50;
   ratio = ratio < 100 ? 100 : ratio;
