@@ -750,6 +750,7 @@ window.addEventListener("message", (event) => {
   }
 });
 
+// add EventListener to html tags
 document.querySelector("#import").addEventListener("click", showOptions);
 document.querySelector("#optimize").addEventListener("click", showOptions);
 document.querySelector("#quantize").addEventListener("click", showOptions);
