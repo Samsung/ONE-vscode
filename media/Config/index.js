@@ -193,7 +193,7 @@ const oneProfile = {
   ],
 };
 
-// this is entire options for ONE compile
+// these are entire options for ONE compile
 const oneToolList = [
   oneImportBcq,
   oneImportOnnx,
