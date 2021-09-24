@@ -25,13 +25,24 @@ export class HoverProvider implements vscode.HoverProvider {
     let mdfile = new vscode.MarkdownString();
 
     tools_attr.forEach((item) => {
-      if (item.name == word) {
-        mdfile.appendMarkdown(`### ${word}\n${item.description}\n---\nOption List\n\n`);
+      if (item.name === word) {
+        mdfile.appendMarkdown(`### ${word}\n`);
+        mdfile.appendMarkdown(`${item.description}\n`);
+        mdfile.appendMarkdown(`\n --- \n Option List\n\n`);
         item.body.forEach((content) => {
-          for(let i=0;i<content.depth-1;i++) {
-            mdfile.appendMarkdown("\t");
-          }
           mdfile.appendMarkdown(`- ${content.attr_name} : ${content.attr_desc}\n`);
+          
+          if(content.options) {
+            content.options.forEach((option) => {
+              mdfile.appendMarkdown("\t");
+              if (option.option_desc) {
+                mdfile.appendMarkdown(`- ${option.option_name} : ${option.option_desc}\n`);
+              }
+              else {
+                mdfile.appendMarkdown(`- ${option.option_name}\n`);
+              }
+            });
+          }
         });
       }
     });
