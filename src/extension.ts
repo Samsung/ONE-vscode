@@ -17,9 +17,9 @@
 import * as vscode from 'vscode';
 
 import {CodelensProvider} from './Codelens/CodelensProvider';
+import {Jsontracer} from './Jsontracer';
 import {Project} from './Project';
 import {Utils} from './Utils';
-import {Jsontracer} from './Jsontracer';
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('one-vscode activate OK');
