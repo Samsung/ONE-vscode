@@ -93,7 +93,7 @@ const oneImportOptions = [
   oneImportTflite,
 ];
 
-const optimize = {
+const oneOptimize = {
   type: "one-optimize",
   use: true,
   options: [
@@ -147,7 +147,7 @@ const optimize = {
   ],
 };
 
-const quantize = {
+const oneQuantize = {
   type: "one-quantize",
   use: true,
   options: [
@@ -166,7 +166,7 @@ const quantize = {
   ],
 };
 
-const pack = {
+const onePack = {
   type: "one-pack",
   use: true,
   options: [
@@ -175,7 +175,7 @@ const pack = {
   ],
 };
 
-const codegen = {
+const oneCodegen = {
   type: "one-codegen",
   use: false,
   options: [
@@ -184,7 +184,7 @@ const codegen = {
   ],
 };
 
-const profile = {
+const oneProfile = {
   type: "one-profile",
   use: false,
   options: [
@@ -199,9 +199,9 @@ const oneToolList = [
   oneImportOnnx,
   oneImportTf,
   oneImportTflite,
-  optimize,
-  quantize,
-  pack,
-  codegen,
-  profile,
+  oneOptimize,
+  oneQuantize,
+  onePack,
+  oneCodegen,
+  oneProfile,
 ];
