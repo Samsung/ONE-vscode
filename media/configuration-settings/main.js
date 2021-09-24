@@ -773,10 +773,7 @@ window.addEventListener("message", (event) => {
   }
 });
 
-<<<<<<< HEAD
 // add EventListener to html tags
-=======
->>>>>>> c6f3ccc9e970a50ae89130dd26a7555dc889d209
 document.querySelector("#import").addEventListener("click", showOptions);
 document.querySelector("#optimize").addEventListener("click", showOptions);
 document.querySelector("#quantize").addEventListener("click", showOptions);
