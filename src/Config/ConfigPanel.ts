@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
+import * as fs from 'fs';
+import * as path from 'path';
 import * as vscode from 'vscode';
+
+import {getNonce} from './GetNonce';
 
 export class ConfigPanel {
   /**
@@ -44,7 +48,9 @@ export class ConfigPanel {
         ConfigPanel.viewType, 'ConfigurationSettings', column || vscode.ViewColumn.One, {
           // Enable javascript in the webview
           enableScripts: true,
-          localResourceRoots: [],
+          localResourceRoots: [
+            vscode.Uri.joinPath(context.extensionUri, 'media/Config'),
+          ],
         });
 
     ConfigPanel.currentPanel = new ConfigPanel(panel, context);
@@ -87,11 +93,31 @@ export class ConfigPanel {
     webview.html = this._getHtmlForWebview(webview, context);
   }
 
-  private _getHtmlForWebview(webview: vscode.Webview, context: vscode.ExtensionContext) {
-    // TODO Use a nonce to only allow specific scripts to be run
-    // TDOO fill with logics related to html
-    // TODO import html and change html source to fit webview format
+  private getPathToFile(webview: vscode.Webview, fileName: string) {
+    return webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media/Config', fileName));
+  }
 
-    return '';
+  private replaceWord(html: string, re: RegExp, replaceWord: any) {
+    return html.replace(re, `${replaceWord}`);
+  }
+
+  private _getHtmlForWebview(webview: vscode.Webview, context: vscode.ExtensionContext) {
+    const scriptUri = this.getPathToFile(webview, 'index.js');
+    const stylesResetUri = this.getPathToFile(webview, 'reset.css');
+    const stylesMainUri = this.getPathToFile(webview, 'vscode.css');
+
+    // Use a nonce to only allow specific scripts to be run
+    const nonce = getNonce();
+
+    // Get html file for webview
+    const filePath: vscode.Uri =
+        vscode.Uri.file(path.join(context.extensionPath, 'media', 'Config', 'index.html'));
+    let html = fs.readFileSync(filePath.fsPath, 'utf8');
+    html = this.replaceWord(html, /\${webview.cspSource}/gi, webview.cspSource);
+    html = this.replaceWord(html, /\${stylesResetUri}/gi, stylesResetUri);
+    html = this.replaceWord(html, /\${stylesMainUri}/gi, stylesMainUri);
+    html = this.replaceWord(html, /\${scriptUri}/gi, scriptUri);
+    html = this.replaceWord(html, /\${nonce}/gi, nonce);
+    return html;
   }
 }
