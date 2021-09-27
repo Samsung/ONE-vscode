@@ -65,8 +65,11 @@
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
+    "pretest": "npm run compile && npm run lint && npm run lintjs && npm run lintcss && npm run linthtml",
     "lint": "eslint src --ext ts",
+    "lintjs": "eslint media --ext js",
+    "lintcss": "csslint media src",
+    "linthtml": "htmlhint media src",
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
