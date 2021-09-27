@@ -21,7 +21,7 @@ import {getWebviewOptions} from './Jsontracer/GetWebviewOptions';
 
 export class Jsontracer {
   /**
-   * Track the currently panel. Only allow a single panel to exist at a time.
+   * Track the current panel. Only allow a single panel to exist at a time.
    */
   public static currentPanel: Jsontracer|undefined;
 

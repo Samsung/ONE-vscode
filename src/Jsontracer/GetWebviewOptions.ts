@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-// Refer https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/nonce for Nonce
-import * as vscode from 'vscode'
+import * as vscode from 'vscode';
 
 export function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {
   return {
     // Enable javascript in the webview
     enableScripts: true,
 
-    // And restrict the webview to only loading content from our extension's `'media/Jsontracer`
+    // And restrict the webview to only loading content from our extension's `media/Jsontracer`
     // directories.
     localResourceRoots: [vscode.Uri.joinPath(extensionUri, 'media/Jsontracer')]
   };
