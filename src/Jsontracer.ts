@@ -85,7 +85,7 @@ export class Jsontracer {
   }
 
   public doRefactor() {
-    // Send a message to the webview webview.
+    // Send a message to the webview.
     // You can send any JSON serializable data.
     this._panel.webview.postMessage({command: 'refactor'});
   }
