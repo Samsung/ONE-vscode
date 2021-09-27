@@ -110,6 +110,7 @@ const importConfiguration = function () {
   sendMessage("importConfig", "");
 };
 
+// receive message from config panel and do things for command of receivied message
 window.addEventListener("message", (event) => {
   const data = event.data;
   switch (data.command) {
