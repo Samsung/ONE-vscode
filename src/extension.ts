@@ -16,6 +16,7 @@
 
 import * as vscode from 'vscode';
 
+import {ConfigPanel} from './Config/ConfigPanel';
 import {CodelensProvider} from './Editor/CodelensProvider';
 import {Project} from './Project';
 import {Utils} from './Utils';
@@ -47,6 +48,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   let disposableOneConfigurationSettings =
       vscode.commands.registerCommand('onevscode.configuration-settings', () => {
+        ConfigPanel.createOrShow(context);
         console.log('one configuration settings...');
       });
   context.subscriptions.push(disposableOneConfigurationSettings);
