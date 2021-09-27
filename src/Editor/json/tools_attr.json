@@ -9,9 +9,9 @@
     "body": [],
     "description": "Run ONE driver via several commands or configuration file"
   },
-	{
-		"name" : "[one-import-tf]",
-		"body": [
+  {
+    "name" : "[one-import-tf]",
+    "body": [
       {
         "attr_name" : "input_path",
         "attr_desc" : "full filepath of the input file"
@@ -68,9 +68,9 @@
           }
         ]
       }
-		],
-		"description" : "command line tool to convert TensorFlow to circle"
-	},
+    ],
+    "description" : "command line tool to convert TensorFlow to circle"
+  },
   {
     "name" : "[one-import-tflite]",
     "body" : [
