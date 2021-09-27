@@ -40,7 +40,7 @@ export function activate(context: vscode.ExtensionContext) {
   });
   context.subscriptions.push(disposableOneImport);
 
-  let disposableOneBarchart = vscode.commands.registerCommand('onevscode.barchart', () => {
+  let disposableOneBarchart = vscode.commands.registerCommand('onevscode.json-tracer', () => {
     console.log('one barchart...');
   });
   context.subscriptions.push(disposableOneBarchart);
