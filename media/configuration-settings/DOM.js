@@ -1,30 +1,3 @@
-// autoCompletePath copy former output_path to later input_path
-const autoCompletePath = function () {
-    for (let i = 0; i < oneToolList.length; i++) {
-      if (oneToolList[i].use === true) {
-        for (let j = 0; j < oneToolList[i].options.length; j++) {
-          if (
-            oneToolList[i].options[j].optionName === "output_path" &&
-            oneToolList[i].options[j].optionValue.trim() !== ""
-          ) {
-            for (let k = i + 1; k < oneToolList.length; k++) {
-              if (oneToolList[k].use === true) {
-                for (let l = 0; l < oneToolList[k].options.length; l++) {
-                  if (oneToolList[k].options[l].optionName === "input_path") {
-                    oneToolList[k].options[l].optionValue =
-                      oneToolList[i].options[j].optionValue;
-                    break;
-                  }
-                }
-                break;
-              }
-            }
-          }
-        }
-      }
-    }
-};
-
 // one-import options are different from other tools so separate toggle function
 const oneImportToggleFunction = function () {
     const optionFieldset = document.querySelector("#options");
@@ -68,6 +41,59 @@ const emptyOptionBox = function (isImport) {
       optionsValue.removeChild(optionsValue.firstChild);
     }
 };
+
+const makeToggleBtn = function (target, index) {
+  const LabelTag = document.createElement("label");
+  LabelTag.classList.add("switch");
+  const inputTag = document.createElement("input");
+  inputTag.type = "checkbox";
+  if (target.options[index].optionValue === true) {
+    inputTag.checked = true;
+  }
+  inputTag.addEventListener("click", function () {
+    if (target.options[index].optionValue === true) {
+      target.options[index].optionValue = false;
+    } else {
+      target.options[index].optionValue = true;
+    }
+  });
+  const spanTag = document.createElement("span");
+  spanTag.classList.add("slider");
+  spanTag.classList.add("round");
+  LabelTag.appendChild(inputTag);
+  LabelTag.appendChild(spanTag);
+  return LabelTag
+}
+
+const makeInputTag = function (target, index) {
+  const inputTag = document.createElement("input");
+  if (target.options[index].optionValue.trim() !== "") {
+    inputTag.value = target.options[index].optionValue;
+  }
+  inputTag.addEventListener("change", function (event) {
+    target.options[index].optionValue = event.target.value;
+  });
+  return inputTag
+}
+
+const makeSelectTag = function (target, index) {
+  const select = document.createElement("select");
+  for (let j = 0; j < target.options[index].optionType.length; j++) {
+    const option = document.createElement("option");
+    option.value = target.options[index].optionType[j];
+    option.text = target.options[index].optionType[j];
+    if (target.options[index].optionType[j] === target.options[index].optionValue) {
+      option.selected = true;
+    }
+    select.appendChild(option);
+  }
+  select.addEventListener("change", function (event) {
+    target.options[index].optionValue =
+      select[event.target.selectedIndex].value;
+    console.log(target)
+  });
+  return select
+}
 
 // build DOM for selected tool
 const buildOptionDom = function (target) {
@@ -113,46 +139,13 @@ const buildOptionDom = function (target) {
       // case for select tag
       if (target.options[i].optionType) {
         nameLiTag.innerText = target.options[i].optionName;
-        const select = document.createElement("select");
-        select.id = target.options[i].optionName;
-        select.name = target.options[i].optionName;
-        for (let j = 0; j < target.options[i].optionType.length; j++) {
-          const option = document.createElement("option");
-          option.value = target.options[i].optionType[j];
-          option.text = target.options[i].optionType[j];
-          if (target.options[i].optionType[j] === target.options[i].optionValue) {
-            option.selected = true;
-          }
-          select.appendChild(option);
-        }
-        select.addEventListener("change", function (event) {
-          target.options[i].optionValue =
-            select[event.target.selectedIndex].value;
-        });
+        const select = makeSelectTag(target, i)
         valueLiTag.appendChild(select);
       } else {
         // case for toggle button
         if (typeof target.options[i].optionValue === "boolean") {
-          const valueLabelTag = document.createElement("label");
-          valueLabelTag.classList.add("switch");
-          const inputTag = document.createElement("input");
-          inputTag.type = "checkbox";
-          if (target.options[i].optionValue === true) {
-            inputTag.checked = true;
-          }
-          inputTag.addEventListener("click", function () {
-            if (target.options[i].optionValue === true) {
-              target.options[i].optionValue = false;
-            } else {
-              target.options[i].optionValue = true;
-            }
-          });
-          const spanTag = document.createElement("span");
-          spanTag.classList.add("slider");
-          spanTag.classList.add("round");
-          valueLabelTag.appendChild(inputTag);
-          valueLabelTag.appendChild(spanTag);
-          valueLiTag.appendChild(valueLabelTag);
+          const toggleBtn = makeToggleBtn(target, i)
+          valueLiTag.appendChild(toggleBtn);
           nameLiTag.innerText = target.options[i].optionName;
           // case for input tag
         } else if (typeof target.options[i].optionValue === "string") {
@@ -196,13 +189,7 @@ const buildOptionDom = function (target) {
             });
             valueLiTag.appendChild(inputTag);
           } else {
-            const inputTag = document.createElement("input");
-            if (target.options[i].optionValue.trim() !== "") {
-              inputTag.value = target.options[i].optionValue;
-            }
-            inputTag.addEventListener("change", function (event) {
-              target.options[i].optionValue = event.target.value;
-            });
+            const inputTag = makeInputTag(target, i)
             valueLiTag.appendChild(inputTag);
           }
         }
@@ -212,14 +199,6 @@ const buildOptionDom = function (target) {
     }
     optionsValueTag.appendChild(valueUlTag);
     optionsNameTag.appendChild(nameUlTag);
-};
-
-// send message to config panel
-const sendMessage = function (command, payload) {
-    vscode.postMessage({
-      command: command,
-      payload: payload,
-    });
 };
 
 // function for selecting framework
@@ -289,132 +268,4 @@ const changeSelect = function (event) {
       }
     }
   };
-  
-// validator for input_path and output_path, this validator checks only for empty or not
-const pathValidator = function (target) {
-    for (let j = 0; j < target.options.length; j++) {
-      if (
-        target.options[j].optionName === "input_path" &&
-        target.options[j].optionValue.trim() === ""
-      ) {
-        sendMessage(
-          "alert",
-          `If you want to use ${target.type}, then input_path is required`
-        );
-        return true;
-      }
-      if (
-        target.options[j].optionName === "output_path" &&
-        target.options[j].optionValue.trim() === ""
-      ) {
-        sendMessage(
-          "alert",
-          `If you want to use ${target.type}, then output_path is required`
-        );
-        return true;
-      }
-    }
-    return false;
-  };
-  
-  // validator for backend, this validator checks only for empty or not
-  const backendValidator = function (target) {
-    for (let j = 0; j < target.options.length; j++) {
-      if (
-        target.options[j].optionName === "backend" &&
-        target.options[j].optionValue.trim() === ""
-      ) {
-        sendMessage(
-          "alert",
-          `If you want to use ${target.type}, then backend is required`
-        );
-        return true;
-      }
-    }
-    return false;
-  };
 
-// before exprot, checks options whether they are valid or not
-const exportValidation = function () {
-    if (oneImport.use === true) {
-      let chosenModelIndex = -1;
-      for (let i = 0; i < oneImport.options.length; i++) {
-        if (oneImport.options[i].optionValue === true) {
-          chosenModelIndex = i;
-          break;
-        }
-      }
-      if (chosenModelIndex === -1) {
-        sendMessage(
-          "alert",
-          "If you want to use one-import, then you should choose your framework"
-        );
-        return false;
-      } else {
-        if (pathValidator(oneImportOptions[chosenModelIndex])) {
-          return false;
-        }
-      }
-    }
-    if (oneOptimize.use === true) {
-      if (pathValidator(oneOptimize)) {
-        return false;
-      }
-    }
-    if (oneQuantize.use === true) {
-      if (pathValidator(oneQuantize)) {
-        return false;
-      }
-    }
-    if (onePack.use === true) {
-      if (pathValidator(onePack)) {
-        return false;
-      }
-    }
-    if (oneCodegen.use === true) {
-      if (backendValidator(oneCodegen)) {
-        return false;
-      }
-    }
-    if (oneProfile.use === true) {
-      if (backendValidator(oneProfile)) {
-        return false;
-      }
-    }
-    return true;
-};
-
-function oneImportTools(data, importOpt, tool, idx, defaultImportObject) {
-    oneImport.use = true;
-    for (let i = 0; i < defaultImportObject.options.length; i++) {
-      if (importOpt === defaultImportObject.options[i].optionName) {
-        defaultImportObject.options[i].optionValue = data[tool][importOpt];
-      }
-    }
-    for (let i = 0; i < oneImport.options.length; i++) {
-      if (i === idx) {
-        oneImport.options[i].optionValue = true;
-      } else {
-        oneImport.options[i].optionValue = false;
-      }
-    }
-  }
-  
-  function oneOtherTools(data, importOpt, tool, otherTool) {
-    for (let i = 0; i < otherTool.options.length; i++) {
-      if (
-        importOpt === otherTool.options[i].optionName &&
-        data[tool][importOpt] === "False"
-      ) {
-        otherTool.options[i].optionValue = false;
-      } else if (
-        importOpt === otherTool.options[i].optionName &&
-        data[tool][importOpt] === "True"
-      ) {
-        otherTool.options[i].optionValue = true;
-      } else if (importOpt === otherTool.options[i].optionName) {
-        otherTool.options[i].optionValue = data[tool][importOpt];
-      }
-    }
-  }
-  
