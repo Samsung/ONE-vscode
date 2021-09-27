@@ -102,7 +102,7 @@ export class ConfigPanel {
   }
 
   private _getHtmlForWebview(webview: vscode.Webview, context: vscode.ExtensionContext) {
-    const scriptUri = this.getPathToFile(webview, 'index.js');
+    const toolsScriptUri = this.getPathToFile(webview, 'tools.js');
     const stylesResetUri = this.getPathToFile(webview, 'reset.css');
     const stylesMainUri = this.getPathToFile(webview, 'vscode.css');
 
@@ -116,7 +116,7 @@ export class ConfigPanel {
     html = this.replaceWord(html, /\${webview.cspSource}/gi, webview.cspSource);
     html = this.replaceWord(html, /\${stylesResetUri}/gi, stylesResetUri);
     html = this.replaceWord(html, /\${stylesMainUri}/gi, stylesMainUri);
-    html = this.replaceWord(html, /\${scriptUri}/gi, scriptUri);
+    html = this.replaceWord(html, /\${toolsScriptUri}/gi, toolsScriptUri);
     html = this.replaceWord(html, /\${nonce}/gi, nonce);
     return html;
   }
