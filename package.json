@@ -35,6 +35,14 @@
         "title": "one configuration-settings"
       }
     ],
+    "configuration": {
+      "properties": {
+        "one-vscode.enableCodelens": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
     "languages": [
       {
         "id": "ini",
