@@ -24,6 +24,7 @@ import {Logger} from '../Utils/Logger';
 import {BuilderJob} from './BuilderJob';
 import {JobImportTF} from './JobImportTF';
 import {JobOptimize} from './JobOptimize';
+import {JobPack} from './JobPack';
 import {JobQuantize} from './JobQuantize';
 
 var path = require('path');
@@ -38,6 +39,7 @@ const K_IMPORT_ONNX: string = 'one-import-onnx';
 const K_IMPORT_BCQ: string = 'one-import-bcq';
 const K_OPTIMIZE: string = 'one-optimize';
 const K_QUANTIZE: string = 'one-quantize';
+const K_PACK: string = 'one-pack';
 // key for properties
 const K_INPUT_PATH: string = 'input_path';
 const K_OUTPUT_PATH: string = 'output_path';
@@ -106,6 +108,19 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
     console.log('quantize = ', quantize);
     this.jobOwner.addJob(quantize);
     this.logger.outputLine('Add Quantize: ' + inputModel);
+  }
+
+  private cfgPack(prop: any) {
+    let pack = new JobPack();
+    pack.inputPath = prop[K_INPUT_PATH];
+    pack.outputPath = prop[K_OUTPUT_PATH];
+
+    let inputModel = path.basename(pack.inputPath);
+    pack.name = 'Pack ' + inputModel;
+
+    console.log('pack = ', pack);
+    this.jobOwner.addJob(pack);
+    this.logger.outputLine('Add Pack: ' + inputModel);
   }
 
   private isItemTrue(item: string): boolean {
@@ -205,7 +220,11 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
       let prop = cfgIni[K_QUANTIZE];
       this.cfgQuantize(prop);
     }
-    // TODO add one-pack
+    if (this.isItemTrue(cfgOne[K_PACK])) {
+      let prop = cfgIni[K_PACK];
+      this.cfgPack(prop);
+    }
+
     // TODO add one-codegen
 
     this.logger.outputLine('Done import configuration.');
