@@ -109,11 +109,23 @@ export class ConfigurationSettingsPanel {
     const toolsScriptUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'tools.js'));
 
-    const utilsScriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'utils.js'));
+    const DOMScriptUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'DOM.js'));
 
     const mainScriptUri = webview.asWebviewUri(
         vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'main.js'));
+
+    const autoCommpleteScriptUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'autoComplete.js'));
+
+    const sendScriptUri = webview.asWebviewUri(
+          vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'send.js'));
+
+    const validationScriptUri = webview.asWebviewUri(
+            vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'validation.js'));
+    
+    const importScriptUri = webview.asWebviewUri(
+          vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'import.js'));
     // Uri to load styles into webview
     const stylesResetUri = webview.asWebviewUri(
         vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'reset.css'));
@@ -134,13 +146,20 @@ export class ConfigurationSettingsPanel {
     html = html.replace(re, `${stylesMainUri}`);
     re = /\${nonce}/gi;
     html = html.replace(re, `${nonce}`);
-    html = html.replace(re, `${nonce}`);
     re = /\${mainScriptUri}/gi;
     html = html.replace(re, `${mainScriptUri}`);
     re = /\${toolsScriptUri}/gi;
     html = html.replace(re, `${toolsScriptUri}`);
-    re = /\${utilsScriptUri}/gi;
-    html = html.replace(re, `${utilsScriptUri}`);
+    re = /\${autoCompleteScriptUri}/gi;
+    html = html.replace(re, `${autoCommpleteScriptUri}`);
+    re = /\${importScriptUri}/gi;
+    html = html.replace(re, `${importScriptUri}`);
+    re = /\${sendScriptUri}/gi;
+    html = html.replace(re, `${sendScriptUri}`);
+    re = /\${validationScriptUri}/gi;
+    html = html.replace(re, `${validationScriptUri}`);
+    re = /\${DOMScriptUri}/gi;
+    html = html.replace(re, `${DOMScriptUri}`);
     return html
   }
 }
