@@ -106,9 +106,14 @@ export class ConfigurationSettingsPanel {
 
   private _getHtmlForWebview(webview: vscode.Webview, context: vscode.ExtensionContext) {
     // And the uri we use to load this script in the webview
-    const scriptUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'main.js'));
+    const toolsScriptUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'tools.js'));
 
+    const utilsScriptUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'utils.js'));
+
+    const mainScriptUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'main.js'));
     // Uri to load styles into webview
     const stylesResetUri = webview.asWebviewUri(
         vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'reset.css'));
@@ -130,9 +135,12 @@ export class ConfigurationSettingsPanel {
     re = /\${nonce}/gi;
     html = html.replace(re, `${nonce}`);
     html = html.replace(re, `${nonce}`);
-    re = /\${scriptUri}/gi;
-    html = html.replace(re, `${scriptUri}`);
-    console.log(html)
+    re = /\${mainScriptUri}/gi;
+    html = html.replace(re, `${mainScriptUri}`);
+    re = /\${toolsScriptUri}/gi;
+    html = html.replace(re, `${toolsScriptUri}`);
+    re = /\${utilsScriptUri}/gi;
+    html = html.replace(re, `${utilsScriptUri}`);
     return html
   }
 }
