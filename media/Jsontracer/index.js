@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 // Copyright (c) 2012 The Chromium Authors. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -43,12 +42,14 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-// This file referenced REFERENCE_LINK 
+// This file referenced the result of https://github.com/catapult-project/catapult/tree/444aba89e1c30edf348c611a9df79e2376178ba8/tracing
 
 import openFileSelector from "./processData.js";
 import dynamicGraduation from "./dynamicGraduation.js";
 
 const graph = document.querySelector(".graph");
+const sliderMaxLimit = 6400;
+const sliderMinLimit = 100;
 
 const loadBtn = document.querySelector(".load-btn");
 loadBtn.addEventListener("click", () => {
@@ -75,7 +76,6 @@ zoomInBtn.addEventListener("click", () => {
   graph.style.width = `${ratio}%`;
 
   // change slider
-  const slider = document.querySelector("input");
   slider.value = ratio;
   changeSlider(slider.value, slider.max, slider.min);
 
@@ -95,7 +95,6 @@ zoomOutBtn.addEventListener("click", () => {
   graph.style.width = `${ratio}%`;
 
   // change slider
-  const slider = document.querySelector("input");
   slider.value = ratio;
   changeSlider(slider.value, slider.max, slider.min);
 
@@ -112,49 +111,13 @@ captureBtn.addEventListener("click", () => {
 
 function changeSlider(inputValue, inputMax, inputMin) {
   if (inputMax === inputValue) {
-    if (inputMax === "200") {
-      slider.max = "400";
-      slider.value = "200";
-      slider.min = "100";
-    } else if (inputMax === "400") {
-      slider.max = "800";
-      slider.value = "400";
-      slider.min = "200";
-    } else if (inputMax === "800") {
-      slider.max = "1600";
-      slider.value = "800";
-      slider.min = "400";
-    } else if (inputMax === "1600") {
-      slider.max = "3200";
-      slider.value = "1600";
-      slider.min = "800";
-    } else if (inputMax === "3200") {
-      slider.max = "5000";
-      slider.value = "3200";
-      slider.min = "1600";
-    }
+    slider.max = String(Math.min(inputMax*2, sliderMaxLimit));
+    slider.value = String(inputMax);
+    slider.min = String(inputMax*0.5);
   } else if (inputMin === inputValue) {
-    if (inputMin === "100") {
-      slider.max = "200";
-      slider.value = "100";
-      slider.min = "100";
-    } else if (inputMin === "200") {
-      slider.max = "400";
-      slider.value = "200";
-      slider.min = "100";
-    } else if (inputMin === "400") {
-      slider.max = "800";
-      slider.value = "400";
-      slider.min = "200";
-    } else if (inputMin === "800") {
-      slider.max = "1600";
-      slider.value = "800";
-      slider.min = "400";
-    } else if (inputMin === "1600") {
-      slider.max = "3200";
-      slider.value = "1600";
-      slider.min = "800";
-    }
+    slider.max = String(inputMin*2);
+    slider.value = String(inputMin);
+    slider.min = String(Math.max(inputMin*0.5, sliderMinLimit));
   } else {
     return;
   }
@@ -165,16 +128,14 @@ function changeSlider(inputValue, inputMax, inputMin) {
 }
 
 function initData() {
-  const graph = document.querySelector(".graph");
   // init ratio
   ratio = 100;
   graph.style.width = `${ratio}%`;
 
   // init slider
-  const silder = document.querySelector("input");
-  silder.max = "200";
-  silder.min = "100";
-  silder.value = "100";
+  slider.max = "200";
+  slider.min = "100";
+  slider.value = "100";
 
   // init graph
   while (graph.hasChildNodes()) {
