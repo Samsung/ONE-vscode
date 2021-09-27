@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-function oneImportTools(data, importOpt, tool, idx, defaultImportObject) {
+const oneImportTools = function (data, importOpt, tool, idx, defaultImportObject) {
     oneImport.use = true;
     for (let i = 0; i < defaultImportObject.options.length; i++) {
       if (importOpt === defaultImportObject.options[i].optionName) {
@@ -30,7 +30,7 @@ function oneImportTools(data, importOpt, tool, idx, defaultImportObject) {
     }
   }
   
-function oneOtherTools(data, importOpt, tool, otherTool) {
+const oneOtherTools = function(data, importOpt, tool, otherTool) {
     for (let i = 0; i < otherTool.options.length; i++) {
         if (
             importOpt === otherTool.options[i].optionName &&
