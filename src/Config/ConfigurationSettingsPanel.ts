@@ -37,7 +37,7 @@ export class ConfigurationSettingsPanel {
           // And restrict the webview to only loading content from our
           // extension"s `media` directory.
           localResourceRoots: [
-            vscode.Uri.joinPath(extensionUri, 'media/configuration-settings'),
+            vscode.Uri.joinPath(extensionUri, 'media/Config'),
             vscode.Uri.joinPath(extensionUri, 'out/compiled'),
           ],
         });
@@ -105,13 +105,13 @@ export class ConfigurationSettingsPanel {
   private _getHtmlForWebview(webview: vscode.Webview) {
     // And the uri we use to load this script in the webview
     const scriptUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'main.js'));
+        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'main.js'));
 
     // Uri to load styles into webview
     const stylesResetUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'reset.css'));
+        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'reset.css'));
     const stylesMainUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'vscode.css'));
+        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'vscode.css'));
 
     // Use a nonce to only allow specific scripts to be run
     const nonce = getNonce();
