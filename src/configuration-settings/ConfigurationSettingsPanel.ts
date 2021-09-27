@@ -52,7 +52,7 @@ export class ConfigurationSettingsPanel {
     ConfigurationSettingsPanel.currentPanel = undefined;
   }
 
-  public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, context: vscode.ExtensionContext) {
+  public static revive(panel: vscode.WebviewPanel, context: vscode.ExtensionContext) {
     ConfigurationSettingsPanel.currentPanel = new ConfigurationSettingsPanel(panel, context);
   }
 
