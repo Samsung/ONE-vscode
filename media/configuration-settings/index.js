@@ -101,7 +101,7 @@ const exportConfiguration = function () {
 // send message to config panel about run configuration
 const runConfiguration = function () {
   if (exportValidation()) {
-
+    // TODO when one-build extension is completed, use that extension to run one-build with configuration
   }
 };
 
@@ -109,69 +109,6 @@ const runConfiguration = function () {
 const importConfiguration = function () {
   sendMessage("importConfig", "");
 };
-
-// receive message from config panel and do things for command of receivied message
-window.addEventListener("message", (event) => {
-  const data = event.data;
-  switch (data.command) {
-    case "inputPath":
-      for (let i = 0; i < oneToolList.length; i++) {
-        if (oneToolList[i].type === data.selectedTool) {
-          for (let j = 0; j < oneToolList[i].options.length; j++) {
-            if (oneToolList[i].options[j].optionName === "input_path") {
-              oneToolList[i].options[j].optionValue = data.filePath;
-              const inputTag = document.querySelector("#input_path");
-              inputTag.value = data.filePath;
-              break;
-            }
-          }
-          autoCompletePath();
-          emptyOptionBox(true);
-          buildOptionDom(oneToolList[i]);
-          break;
-        }
-      }
-      break;
-    case "importConfig":
-      oneImport.use = false;
-      oneOptimize.use = false;
-      oneQuantize.use = false;
-      onePack.use = false;
-      for (const tool of Object.keys(data.options)) {
-        for (const importOpt in data.options[tool]) {
-          if (tool === "one-import-bcq") {
-            oneImportTools(data.options, importOpt, tool, 0, oneImportBcq);
-          } else if (tool === "one-import-onnx") {
-            oneImportTools(data.options, importOpt, tool, 1, oneImportOnnx);
-          } else if (tool === "one-import-tf") {
-            oneImportTools(data.options, importOpt, tool, 2, oneImportTf);
-          } else if (tool === "one-import-tflite") {
-            oneImportTools(data.options, importOpt, tool, 3, oneImportTflite);
-          } else if (tool === "one-optimize") {
-            oneOptimize.use = true;
-            oneOtherTools(data.options, importOpt, tool, oneOptimize);
-          } else if (tool === "one-quantize") {
-            oneQuantize.use = true;
-            oneOtherTools(data.options, importOpt, tool, oneQuantize);
-          } else if (tool === "one-pack") {
-            onePack.use = true;
-            oneOtherTools(data.options, importOpt, tool, onePack);
-          } else if (tool === "one-codegen") {
-            oneCodegen.use = true;
-            oneOtherTools(data.options, importOpt, tool, oneCodegen);
-          } else if (tool === "one-profile") {
-            oneProfile.use = true;
-            oneOtherTools(data.options, importOpt, tool, oneProfile);
-          }
-        }
-      }
-      const tmpEvent = {
-        target: document.querySelector("#import"),
-      };
-      showOptions(tmpEvent);
-      break;
-  }
-});
 
 // add EventListener to html tags
 document.querySelector("#import").addEventListener("click", showOptions);

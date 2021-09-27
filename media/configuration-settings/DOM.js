@@ -284,4 +284,3 @@ const changeSelect = function (event) {
       }
     }
   };
-
