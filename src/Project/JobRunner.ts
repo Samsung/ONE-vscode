@@ -28,17 +28,14 @@ const K_CLEANUP: string = 'cleanup';
 
 export class JobRunner extends EventEmitter {
   logger: Logger;
-  jobs: WorkJobs;
-  cwd: string;
-  running: boolean;
+  jobs: WorkJobs = [];
+  cwd: string = '';
+  running: boolean = false;
   toolRunner: ToolRunner;
 
   constructor(l: Logger) {
     super();
     this.logger = l;
-    this.jobs = [];
-    this.cwd = '';
-    this.running = false;
     this.toolRunner = new ToolRunner(l);
 
     this.on(K_INVOKE, this.onInvoke);
