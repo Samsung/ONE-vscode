@@ -123,8 +123,8 @@ export class ConfigurationSettingsPanel {
     const sendToPanelScriptUri = webview.asWebviewUri(
         vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'sendToPanel.js'));
 
-    const validationScriptUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'validation.js'));
+    const configValidationScriptUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'configValidation.js'));
 
     const importConfigScriptUri = webview.asWebviewUri(
         vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'importConfig.js'));
@@ -163,8 +163,8 @@ export class ConfigurationSettingsPanel {
     html = html.replace(re, `${importConfigScriptUri}`);
     re = /\${sendToPanelScriptUri}/gi;
     html = html.replace(re, `${sendToPanelScriptUri}`);
-    re = /\${validationScriptUri}/gi;
-    html = html.replace(re, `${validationScriptUri}`);
+    re = /\${configValidationScriptUri}/gi;
+    html = html.replace(re, `${configValidationScriptUri}`);
     re = /\${DOMScriptUri}/gi;
     html = html.replace(re, `${DOMScriptUri}`);
     re = /\${receiveFromPanelScriptUri}/gi;
