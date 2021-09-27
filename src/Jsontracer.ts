@@ -111,7 +111,7 @@ export class Jsontracer {
     return;
   }
 
-  private getMediaPath(file: string) {
+  private _getMediaPath(file: string) {
     return vscode.Uri.joinPath(this._extensionUri, 'media/Jsontracer', file);
   }
 
@@ -120,15 +120,15 @@ export class Jsontracer {
     const nonce = getNonce();
 
     // import js
-    const scriptPathOnDisk = this.getMediaPath('index.js');
+    const scriptPathOnDisk = this._getMediaPath('index.js');
     const scriptUri = scriptPathOnDisk.with({scheme: 'vscode-resource'});
 
     // import css
-    const stylePathOnDisk = this.getMediaPath('style.css');
+    const stylePathOnDisk = this._getMediaPath('style.css');
     const styleUri = stylePathOnDisk.with({scheme: 'vscode-resource'});
 
     // import html
-    const htmlPath = this.getMediaPath('index.html');
+    const htmlPath = this._getMediaPath('index.html');
     let html = fs.readFileSync(htmlPath.fsPath, {encoding: 'utf-8'});
 
     // Apply js and cs to html
