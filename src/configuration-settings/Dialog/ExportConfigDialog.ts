@@ -42,7 +42,7 @@ export function exportConfig(oneToolList: any): void {
       config.write(path);
       console.log(path);
       vscode.window.showInformationMessage('Your configuration file is successfully generated!');
-      vscode.workspace.openTextDocument(vscode.Uri.file(path)).then(doc =>{
+      vscode.workspace.openTextDocument(vscode.Uri.file(path)).then(doc => {
         vscode.window.showTextDocument(doc);
       });
     }
