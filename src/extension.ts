@@ -16,7 +16,7 @@
 
 import * as vscode from 'vscode';
 
-import {CodelensProvider} from './Codelens/CodelensProvider';
+import {CodelensProvider} from './Editor/CodelensProvider';
 import {Project} from './Project';
 import {Utils} from './Utils';
 
