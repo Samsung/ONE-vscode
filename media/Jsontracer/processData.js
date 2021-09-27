@@ -97,6 +97,8 @@ const colorList = [
   "darkmagenta",
 ];
 
+const setData = document.querySelector(".set-data");
+
 export default function openFileSelector() {
   const input = document.createElement("input");
   input.type = "file";
@@ -115,7 +117,6 @@ function processFile(file) {
     processData(data);
 
     // set displayTimeUnit
-    const setData = document.querySelector(".set-data");
     setData.dataset["displayTimeUnit"] = JSON.parse(
       reader.result
     ).displayTimeUnit;
@@ -168,17 +169,11 @@ function processData(data) {
     utility[key] = Math.round((utility[key] * 100) / maxEndTime) / 100;
   });
 
-  // get digit
-  let maxEndTime_ = maxEndTime;
-  let digit = 0;
-  while (maxEndTime_ > 0) {
-    maxEndTime_ = parseInt(maxEndTime_ / 10);
-    digit += 1;
-  }
-
-  // set endTime and digit to DOM
+  // get digit and endTime
+  const digit = parseInt(maxEndTime).toString().length;
   const endTime = Math.ceil(maxEndTime / 10 ** (digit - 1)) * 10 ** (digit - 1);
-  const setData = document.querySelector(".set-data");
+
+  // set data to DOM
   setData.dataset["endTime"] = endTime;
   setData.dataset["digit"] = digit;
 
