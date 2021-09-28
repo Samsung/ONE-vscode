@@ -48,7 +48,6 @@
 import getColorList from "./colorList.js";
 
 const setData = document.querySelector(".set-data");
-const colorList = getColorList();
 
 export default function openFileSelector() {
   const input = document.createElement("input");
@@ -82,6 +81,7 @@ function processData(data) {
   const processedData = {};
   const backgroundColor = {};
   const utility = {};
+  const colorList = getColorList();
   const colorLen = colorList.length;
   let endTime = 0;
   let colorIdx = 0;
