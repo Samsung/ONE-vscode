@@ -49,11 +49,19 @@ This file referenced the result of https://github.com/catapult-project/catapult/
 -->
 <head>
   <meta charset="utf-8">
+  <!--
+    Use a content security policy to only allow styles from our extension directory,
+    and only allow scripts that have a specific nonce.
+  -->
+  <meta 
+      http-equiv="Content-Security-Policy"
+      content="img-src none;
+                style-src 'unsafe-inline' ${webview.cspSource};
+                script-src 'nonce-${nonce}';">
   <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
   <meta name="theme-color" content="#000000">
   <title>json-tracer</title>
-  <link rel="stylesheet" type="text/css" href="styleUri">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src webview.cspSource; img-src webview.cspSource https:; script-src webview.cspSource;;">
+  <link rel="stylesheet" type="text/css" href="${styleUri}">
 </head>
 <body>
   <div id="root">
@@ -84,6 +92,6 @@ This file referenced the result of https://github.com/catapult-project/catapult/
       </article>
     </main>
   </div>
-  <script nonce="nonce" type="module" src="scriptUri"></script>
+  <script nonce="${nonce}" type="module" src="${scriptUri}"></script>
 </body>
 </html>
