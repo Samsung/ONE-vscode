@@ -124,7 +124,7 @@ function changeSlider(inputValue, inputMax, inputMin) {
 
   // set delay
   slider.disabled = true;
-  setTimeout(() => (slider.disabled = false), 100);
+  setTimeout((slider.disabled = false), 100);
 }
 
 function initData() {
