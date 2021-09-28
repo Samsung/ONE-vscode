@@ -21,23 +21,28 @@
     "commands": [
       {
         "command": "onevscode.build",
-        "title": "one build"
+        "title": "build",
+        "category": "ONE"
       },
       {
         "command": "onevscode.import",
-        "title": "one cfg import"
+        "title": "cfg import",
+        "category": "ONE"
       },
       {
         "command": "onevscode.json-tracer",
-        "title": "one json tracer"
+        "title": "json tracer",
+        "category": "ONE"
       },
       {
         "command": "onevscode.configuration-settings",
-        "title": "one configuration-settings"
+        "title": "configuration-settings",
+        "category": "ONE"
       },
       {
         "command": "onevscode.toggle-codelens",
-        "title": "one toggle codelens"
+        "title": "toggle codelens",
+        "category": "ONE"
       }
     ],
     "configuration": {
