@@ -37,6 +37,7 @@ window.addEventListener("message", (event) => {
         }
         break;
       case "importConfig":
+        importConfigPath = data.filePath;
         oneImport.use = false;
         oneOptimize.use = false;
         oneQuantize.use = false;

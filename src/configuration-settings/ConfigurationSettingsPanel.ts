@@ -129,6 +129,9 @@ export class ConfigurationSettingsPanel {
     const importConfigScriptUri = webview.asWebviewUri(
         vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'importConfig.js'));
 
+    const exportConfigScriptUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'exportConfig.js'));
+
     const receiveFromPanelScriptUri = webview.asWebviewUri(vscode.Uri.joinPath(
         this._extensionUri, 'media/configuration-settings', 'receiveFromPanel.js'));
 
@@ -161,6 +164,8 @@ export class ConfigurationSettingsPanel {
     html = html.replace(re, `${pathAutoCommpleteScriptUri}`);
     re = /\${importConfigScriptUri}/gi;
     html = html.replace(re, `${importConfigScriptUri}`);
+    re = /\${exportConfigScriptUri}/gi;
+    html = html.replace(re, `${exportConfigScriptUri}`);
     re = /\${sendToPanelScriptUri}/gi;
     html = html.replace(re, `${sendToPanelScriptUri}`);
     re = /\${configValidationScriptUri}/gi;
