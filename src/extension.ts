@@ -70,7 +70,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(disposableCodelens);
 
   let hover = new HoverProvider();
-  let disposableHover = vscode.languages.registerHoverProvider('ini',hover);
+  let disposableHover = vscode.languages.registerHoverProvider('ini', hover);
   context.subscriptions.push(disposableHover);
 }
 

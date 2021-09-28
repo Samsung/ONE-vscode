@@ -17,7 +17,10 @@
 import * as vscode from 'vscode';
 
 export class HoverProvider implements vscode.HoverProvider {
-  provideHover(_doc: { getWordRangeAtPosition: (arg0: any, arg1: RegExp) => any; getText: (arg0: any) => any; }, _position: any, _token: any) {
+  provideHover(
+      _doc:
+          {getWordRangeAtPosition: (arg0: any, arg1: RegExp) => any; getText: (arg0: any) => any;},
+      _position: any, _token: any) {
     // TODO implement
     return null;
   }
