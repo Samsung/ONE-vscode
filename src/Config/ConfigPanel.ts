@@ -20,11 +20,15 @@ import * as vscode from 'vscode';
 
 import {getNonce} from './GetNonce';
 
-export class ConfigPanel {
+import {exportConfig} from './Dialog/ExportConfigDialog';
+import {importConfig} from './Dialog/ImportConfigDialog';
+import {getInputPath} from './Dialog/InputFileDialog';
+
+export class ConfigurationSettingsPanel {
   /**
-   * Track the current panel. Only allow a single panel to exist at a time.
+   * Track the currently panel. Only allow a single panel to exist at a time.
    */
-  public static currentPanel: ConfigPanel|undefined;
+  public static currentPanel: ConfigurationSettingsPanel|undefined;
 
   public static readonly viewType = 'one-vscode';
 
@@ -37,45 +41,70 @@ export class ConfigPanel {
         vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
 
     // If we already have a panel, show it.
-    if (ConfigPanel.currentPanel) {
-      ConfigPanel.currentPanel._panel.reveal(column);
-      ConfigPanel.currentPanel._update(context);
+    if (ConfigurationSettingsPanel.currentPanel) {
+      ConfigurationSettingsPanel.currentPanel._panel.reveal(column);
+      ConfigurationSettingsPanel.currentPanel._update(context);
       return;
     }
 
     // Otherwise, create a new panel.
     const panel = vscode.window.createWebviewPanel(
-        ConfigPanel.viewType, 'ConfigurationSettings', column || vscode.ViewColumn.One, {
+        ConfigurationSettingsPanel.viewType, 'ConfigurationSettings',
+        column || vscode.ViewColumn.One, {
           // Enable javascript in the webview
           enableScripts: true,
+
+          // And restrict the webview to only loading content from our
+          // extension"s `media` directory.
           localResourceRoots: [
             vscode.Uri.joinPath(context.extensionUri, 'media/Config'),
+            vscode.Uri.joinPath(context.extensionUri, 'out/compiled'),
           ],
         });
 
-    ConfigPanel.currentPanel = new ConfigPanel(panel, context);
+    ConfigurationSettingsPanel.currentPanel = new ConfigurationSettingsPanel(panel, context);
   }
 
   public static kill() {
-    ConfigPanel.currentPanel ?.dispose();
-    ConfigPanel.currentPanel = undefined;
+    ConfigurationSettingsPanel.currentPanel ?.dispose();
+    ConfigurationSettingsPanel.currentPanel = undefined;
   }
 
   public static revive(panel: vscode.WebviewPanel, context: vscode.ExtensionContext) {
-    ConfigPanel.currentPanel = new ConfigPanel(panel, context);
+    ConfigurationSettingsPanel.currentPanel = new ConfigurationSettingsPanel(panel, context);
   }
 
   private constructor(panel: vscode.WebviewPanel, context: vscode.ExtensionContext) {
     this._panel = panel;
     this._extensionUri = context.extensionUri;
 
-    // Set the webview's initial html content
+    // Set the webview"s initial html content
     this._update(context);
+
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
+
+    this._panel.webview.onDidReceiveMessage(async (data) => {
+      switch (data.command) {
+        case 'inputPath':
+          getInputPath(this._panel.webview, data.payload);
+          break;
+        case 'exportConfig':
+          exportConfig(data.payload);
+          break;
+        case 'importConfig':
+          const newWebview = this._panel.webview;
+          newWebview.html = this._getHtmlForWebview(newWebview, context);
+          importConfig(newWebview);
+          break;
+        case 'alert':
+          vscode.window.showErrorMessage(data.payload);
+          break;
+      }
+    });
   }
 
   public dispose() {
-    ConfigPanel.currentPanel = undefined;
+    ConfigurationSettingsPanel.currentPanel = undefined;
 
     // Clean up our resources
     this._panel.dispose();
@@ -93,31 +122,74 @@ export class ConfigPanel {
     webview.html = this._getHtmlForWebview(webview, context);
   }
 
-  private getPathToFile(webview: vscode.Webview, fileName: string) {
-    return webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media/Config', fileName));
-  }
-
-  private replaceWord(html: string, re: RegExp, replaceWord: any) {
-    return html.replace(re, `${replaceWord}`);
-  }
-
   private _getHtmlForWebview(webview: vscode.Webview, context: vscode.ExtensionContext) {
-    const toolsScriptUri = this.getPathToFile(webview, 'tools.js');
-    const stylesResetUri = this.getPathToFile(webview, 'reset.css');
-    const stylesMainUri = this.getPathToFile(webview, 'vscode.css');
+    // And the uri we use to load this script in the webview
+    const toolsScriptUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'tools.js'));
+
+    const DOMScriptUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'DOM.js'));
+
+    const indexScriptUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'index.js'));
+
+    const pathAutoCommpleteScriptUri = webview.asWebviewUri(vscode.Uri.joinPath(
+        this._extensionUri, 'media/Config', 'pathAutoComplete.js'));
+
+    const sendToPanelScriptUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'sendToPanel.js'));
+
+    const configValidationScriptUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'configValidation.js'));
+
+    const importConfigScriptUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'importConfig.js'));
+
+    const exportConfigScriptUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'exportConfig.js'));
+
+    const receiveFromPanelScriptUri = webview.asWebviewUri(vscode.Uri.joinPath(
+        this._extensionUri, 'media/Config', 'receiveFromPanel.js'));
+
+    // Uri to load styles into webview
+    const stylesResetUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'reset.css'));
+    const stylesMainUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'vscode.css'));
 
     // Use a nonce to only allow specific scripts to be run
     const nonce = getNonce();
 
     // Get html file for webview
-    const filePath: vscode.Uri =
-        vscode.Uri.file(path.join(context.extensionPath, 'media', 'Config', 'index.html'));
+    const filePath: vscode.Uri = vscode.Uri.file(
+        path.join(context.extensionPath, 'media', 'Config', 'Config.html'));
     let html = fs.readFileSync(filePath.fsPath, 'utf8');
-    html = this.replaceWord(html, /\${webview.cspSource}/gi, webview.cspSource);
-    html = this.replaceWord(html, /\${stylesResetUri}/gi, stylesResetUri);
-    html = this.replaceWord(html, /\${stylesMainUri}/gi, stylesMainUri);
-    html = this.replaceWord(html, /\${toolsScriptUri}/gi, toolsScriptUri);
-    html = this.replaceWord(html, /\${nonce}/gi, nonce);
+    let re = /\${stylesResetUri}/gi;
+    html = html.replace(re, `${stylesResetUri}`);
+    re = /\${webview.cspSource}/gi;
+    html = html.replace(re, `${webview.cspSource}`);
+    re = /\${stylesMainUri}/gi;
+    html = html.replace(re, `${stylesMainUri}`);
+    re = /\${nonce}/gi;
+    html = html.replace(re, `${nonce}`);
+    re = /\${indexScriptUri}/gi;
+    html = html.replace(re, `${indexScriptUri}`);
+    re = /\${toolsScriptUri}/gi;
+    html = html.replace(re, `${toolsScriptUri}`);
+    re = /\${pathAutoCompleteScriptUri}/gi;
+    html = html.replace(re, `${pathAutoCommpleteScriptUri}`);
+    re = /\${importConfigScriptUri}/gi;
+    html = html.replace(re, `${importConfigScriptUri}`);
+    re = /\${exportConfigScriptUri}/gi;
+    html = html.replace(re, `${exportConfigScriptUri}`);
+    re = /\${sendToPanelScriptUri}/gi;
+    html = html.replace(re, `${sendToPanelScriptUri}`);
+    re = /\${configValidationScriptUri}/gi;
+    html = html.replace(re, `${configValidationScriptUri}`);
+    re = /\${DOMScriptUri}/gi;
+    html = html.replace(re, `${DOMScriptUri}`);
+    re = /\${receiveFromPanelScriptUri}/gi;
+    html = html.replace(re, `${receiveFromPanelScriptUri}`);
     return html;
   }
 }
