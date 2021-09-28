@@ -42,11 +42,11 @@ export function activate(context: vscode.ExtensionContext) {
   });
   context.subscriptions.push(disposableOneImport);
 
-  let disposableOneBarchart = vscode.commands.registerCommand('onevscode.json-tracer', () => {
+  let disposableOneJsontracer = vscode.commands.registerCommand('onevscode.json-tracer', () => {
     console.log('one json tracer...');
     Jsontracer.createOrShow(context.extensionUri);
   });
-  context.subscriptions.push(disposableOneBarchart);
+  context.subscriptions.push(disposableOneJsontracer);
 
   let disposableOneConfigurationSettings =
       vscode.commands.registerCommand('onevscode.configuration-settings', () => {
