@@ -18,11 +18,10 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-import {getNonce} from './GetNonce';
-
 import {exportConfig} from './Dialog/ExportConfigDialog';
 import {importConfig} from './Dialog/ImportConfigDialog';
 import {getInputPath} from './Dialog/InputFileDialog';
+import {getNonce} from './GetNonce';
 
 export class ConfigurationSettingsPanel {
   /**
@@ -124,17 +123,17 @@ export class ConfigurationSettingsPanel {
 
   private _getHtmlForWebview(webview: vscode.Webview, context: vscode.ExtensionContext) {
     // And the uri we use to load this script in the webview
-    const toolsScriptUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'tools.js'));
+    const toolsScriptUri =
+        webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'tools.js'));
 
-    const DOMScriptUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'DOM.js'));
+    const DOMScriptUri =
+        webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'DOM.js'));
 
-    const indexScriptUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'index.js'));
+    const indexScriptUri =
+        webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'index.js'));
 
-    const pathAutoCommpleteScriptUri = webview.asWebviewUri(vscode.Uri.joinPath(
-        this._extensionUri, 'media/Config', 'pathAutoComplete.js'));
+    const pathAutoCommpleteScriptUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'pathAutoComplete.js'));
 
     const sendToPanelScriptUri = webview.asWebviewUri(
         vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'sendToPanel.js'));
@@ -146,23 +145,23 @@ export class ConfigurationSettingsPanel {
         vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'importConfig.js'));
 
     const exportConfigScriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'exportConfig.js'));
+        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'exportConfig.js'));
 
-    const receiveFromPanelScriptUri = webview.asWebviewUri(vscode.Uri.joinPath(
-        this._extensionUri, 'media/Config', 'receiveFromPanel.js'));
+    const receiveFromPanelScriptUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'receiveFromPanel.js'));
 
     // Uri to load styles into webview
-    const stylesResetUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'reset.css'));
-    const stylesMainUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'vscode.css'));
+    const stylesResetUri =
+        webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'reset.css'));
+    const stylesMainUri =
+        webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'vscode.css'));
 
     // Use a nonce to only allow specific scripts to be run
     const nonce = getNonce();
 
     // Get html file for webview
-    const filePath: vscode.Uri = vscode.Uri.file(
-        path.join(context.extensionPath, 'media', 'Config', 'Config.html'));
+    const filePath: vscode.Uri =
+        vscode.Uri.file(path.join(context.extensionPath, 'media', 'Config', 'Config.html'));
     let html = fs.readFileSync(filePath.fsPath, 'utf8');
     let re = /\${stylesResetUri}/gi;
     html = html.replace(re, `${stylesResetUri}`);
