@@ -58,15 +58,13 @@ const K_COMMAND: string = 'command';
 export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector {
   jobOwner: BuilderJob;
   logger: Logger;
-  cfgFilePath: string;
-  cfgFilename: string;
+  cfgFilePath: string = '';
+  cfgFilename: string = '';
 
   constructor(jobOwner: BuilderJob, l: Logger) {
     super();
     this.jobOwner = jobOwner;
     this.logger = l;
-    this.cfgFilePath = '';
-    this.cfgFilename = '';
 
     this.on(K_BEGIN_IMPORT, this.onBeginImport);
   }

@@ -19,8 +19,8 @@ import {JobBase} from './JobBase';
 import {ToolArgs} from './ToolArgs';
 
 export class JobCodegen extends JobBase {
-  backend: string;
-  command?: string;
+  backend: string = '';
+  command?: string = undefined;
   // NOTE codegen inputPath, outputPath are not mandatory
   // TODO revise 'dummy-compile' manual copy somehow
   // NOTE for testing res/samples/cfg/inception_v3.cfg,
@@ -39,8 +39,6 @@ export class JobCodegen extends JobBase {
   constructor() {
     super();
     this.jobType = Job.Type.tPack;
-    this.backend = '';
-    this.command = undefined;
   }
 
   public get valid() {
