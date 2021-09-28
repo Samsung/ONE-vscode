@@ -13,7 +13,8 @@
     "onCommand:onevscode.build",
     "onCommand:onevscode.import",
     "onCommand:onevscode.json-tracer",
-    "onCommand:onevscode.configuration-settings"
+    "onCommand:onevscode.configuration-settings",
+    "onCommand:onevscode.show-codelens"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -33,6 +34,10 @@
       {
         "command": "onevscode.configuration-settings",
         "title": "one configuration-settings"
+      },
+      {
+        "command": "onevscode.show-codelens",
+        "title": "show codelens"
       }
     ],
     "configuration": {
