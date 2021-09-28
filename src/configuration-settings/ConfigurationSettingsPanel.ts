@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import * as path from 'path'
+import * as path from 'path';
 import * as vscode from 'vscode';
 
 import {getNonce} from '../getNonce';
@@ -41,7 +41,7 @@ export class ConfigurationSettingsPanel {
           // And restrict the webview to only loading content from our
           // extension"s `media` directory.
           localResourceRoots: [
-            vscode.Uri.joinPath(context.extensionUri, 'media/configuration-settings'),
+            vscode.Uri.joinPath(context.extensionUri, 'media/Config'),
             vscode.Uri.joinPath(context.extensionUri, 'out/compiled'),
           ],
         });
@@ -109,45 +109,45 @@ export class ConfigurationSettingsPanel {
   private _getHtmlForWebview(webview: vscode.Webview, context: vscode.ExtensionContext) {
     // And the uri we use to load this script in the webview
     const toolsScriptUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'tools.js'));
+        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'tools.js'));
 
     const DOMScriptUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'DOM.js'));
+        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'DOM.js'));
 
     const indexScriptUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'index.js'));
+        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'index.js'));
 
     const pathAutoCommpleteScriptUri = webview.asWebviewUri(vscode.Uri.joinPath(
-        this._extensionUri, 'media/configuration-settings', 'pathAutoComplete.js'));
+        this._extensionUri, 'media/Config', 'pathAutoComplete.js'));
 
     const sendToPanelScriptUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'sendToPanel.js'));
+        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'sendToPanel.js'));
 
     const configValidationScriptUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'configValidation.js'));
+        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'configValidation.js'));
 
     const importConfigScriptUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'importConfig.js'));
+        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'importConfig.js'));
 
     const exportConfigScriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'exportConfig.js'));
+      vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'exportConfig.js'));
 
     const receiveFromPanelScriptUri = webview.asWebviewUri(vscode.Uri.joinPath(
-        this._extensionUri, 'media/configuration-settings', 'receiveFromPanel.js'));
+        this._extensionUri, 'media/Config', 'receiveFromPanel.js'));
 
     // Uri to load styles into webview
     const stylesResetUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'reset.css'));
+        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'reset.css'));
     const stylesMainUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'vscode.css'));
+        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'vscode.css'));
 
     // Use a nonce to only allow specific scripts to be run
     const nonce = getNonce();
 
     // Get html file for webview
     const filePath: vscode.Uri = vscode.Uri.file(
-        path.join(context.extensionPath, 'media', 'configuration-settings', 'Config.html'));
-    let html = fs.readFileSync(filePath.fsPath, 'utf8')
+        path.join(context.extensionPath, 'media', 'Config', 'Config.html'));
+    let html = fs.readFileSync(filePath.fsPath, 'utf8');
     let re = /\${stylesResetUri}/gi;
     html = html.replace(re, `${stylesResetUri}`);
     re = /\${webview.cspSource}/gi;
@@ -174,6 +174,6 @@ export class ConfigurationSettingsPanel {
     html = html.replace(re, `${DOMScriptUri}`);
     re = /\${receiveFromPanelScriptUri}/gi;
     html = html.replace(re, `${receiveFromPanelScriptUri}`);
-    return html
+    return html;
   }
 }

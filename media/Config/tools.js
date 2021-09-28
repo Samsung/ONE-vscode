@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+// This script will be run within the webview itself
+// It cannot access the main VS Code APIs directly.
+
 const oneImport = {
   type: "one-import",
   use: true,
@@ -193,7 +196,7 @@ const oneProfile = {
   ],
 };
 
-// these are entire options for ONE compile
+// this is entire options for ONE compile
 const oneToolList = [
   oneImportBcq,
   oneImportOnnx,
