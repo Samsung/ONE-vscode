@@ -1,6 +1,25 @@
-import * as vscode from 'vscode';
+/*
+ * Copyright (c) 2021 Samsung Electronics Co., Ltd. All Rights Reserved
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-export function exportConfig(oneToolList: any): void {
+import * as vscode from 'vscode';
+import {Balloon} from '../../Utils/Balloon';
+
+export function exportConfig(payLoad: any): void {
+  const oneToolList = payLoad.oneToolList;
+  const fileName = payLoad.fileName;
   const configPareser = require('configparser');
   const config = new configPareser();
 
@@ -25,14 +44,14 @@ export function exportConfig(oneToolList: any): void {
   }
 
   const optionsForExportDialog: vscode.SaveDialogOptions = {
-    defaultUri: vscode.Uri.file('one-build-template.cfg'),
+    defaultUri: vscode.Uri.file(fileName + '.cfg'),
     filters: {
-      allFiles: ['*'],
+      /* eslint-disable-next-line @typescript-eslint/naming-convention */
+      'ONE .cfg Files': ['cfg'],
     },
   };
   vscode.window.showSaveDialog(optionsForExportDialog).then((fileUri) => {
     if (fileUri) {
-      config.write(fileUri.path);
       const os = require('os');
       let path = fileUri.path;
       if (os.platform() === 'win32') {
@@ -40,8 +59,15 @@ export function exportConfig(oneToolList: any): void {
         pathTmp.splice(0, 1);
         path = pathTmp.join('\\');
       }
-      config.write(path);
-      vscode.window.showInformationMessage('Your configuration file is successfully generated!');
+      try {
+        config.write(path);
+        Balloon.info('Your configuration file is successfully generated!');
+        vscode.workspace.openTextDocument(vscode.Uri.file(path)).then(doc => {
+          vscode.window.showTextDocument(doc);
+        });
+      } catch (error) {
+        Balloon.error('Invalid file path');
+      }
     }
   });
 }

@@ -19,9 +19,9 @@ h6,
 p,
 ol,
 ul {
+  font-weight: normal;
   margin: 0;
   padding: 0;
-  font-weight: normal;
 }
 
 img {
