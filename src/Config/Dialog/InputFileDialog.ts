@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2021 Samsung Electronics Co., Ltd. All Rights Reserved
  *
@@ -37,4 +36,3 @@ export function getInputPath(webview: vscode.Webview, selectedTool: string): voi
     }
   });
 }
-

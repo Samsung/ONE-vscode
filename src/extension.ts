@@ -16,7 +16,6 @@
 
 import * as vscode from 'vscode';
 
-
 import {ConfigPanel} from './Config/ConfigPanel';
 import {Project} from './Project';
 import {Utils} from './Utils';
@@ -55,6 +54,5 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
-
   // TODO do cleanup
 }

@@ -48,5 +48,3 @@ export function importConfig(newWebview: vscode.Webview): void {
     }
   });
 }
-
-
