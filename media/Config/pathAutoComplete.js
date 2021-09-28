@@ -16,7 +16,7 @@
 
 // autoCompletePath make output_path based on input_path and copy former output_path to next input_path
 const autoCompletePath = function (tool) {
-  const index = oneToolList.indexOf(tool)
+  const index = oneToolList.indexOf(tool);
   for (let i = index; i < oneToolList.length; i++) {
     if (oneToolList[i].use === true) {
       let input = "";
@@ -28,9 +28,9 @@ const autoCompletePath = function (tool) {
           input = oneToolList[i].options[j].optionValue;
         } else if (oneToolList[i].options[j].optionName === "output_path") {
           if (input.trim() !== "") {
-            let divisor = '/'
+            let divisor = '/';
             if (input.includes('\\')) {
-              divisor = '\\'
+              divisor = '\\';
             }
             switch (oneToolList[i].type) {
               case "one-optimize": {
@@ -59,17 +59,17 @@ const autoCompletePath = function (tool) {
                 while (tmp.length > 1) {
                   tmp.splice(1, 1);
                 }
-                tmp[0] += '_pack'
+                tmp[0] += '_pack';
                 paths[paths.length - 1] = tmp.join(".");
                 oneToolList[i].options[j].optionValue = paths.join(divisor);
                 break;
               }
               default: {
-                let paths = input.split(divisor)
-                let tmp = paths[paths.length-1].split('.')
-                tmp[tmp.length-1] = 'circle'
-                paths[paths.length-1] = tmp.join('.')
-                oneToolList[i].options[j].optionValue = paths.join(divisor)
+                let paths = input.split(divisor);
+                let tmp = paths[paths.length-1].split('.');
+                tmp[tmp.length-1] = 'circle';
+                paths[paths.length-1] = tmp.join('.');
+                oneToolList[i].options[j].optionValue = paths.join(divisor);
               }
             }
           }
