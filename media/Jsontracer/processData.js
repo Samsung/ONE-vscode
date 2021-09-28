@@ -48,7 +48,6 @@ import renderDashboard from "./dashboard.js";
 import getColorList from "./colorList.js";
 
 const setData = document.querySelector(".set-data");
-const colorList = getColorList();
 
 export default function openFileSelector() {
   const input = document.createElement("input");
@@ -82,7 +81,7 @@ function processData(data) {
   const processedData = {};
   const backgroundColor = {};
   const utility = {};
-  const colorLen = colorList.length;
+  const colorList = getColorList();
   let endTime = 0;
   let colorIdx = 0;
 
@@ -93,18 +92,18 @@ function processData(data) {
     }
 
     // set data object
-    processedData[ele.pid] = processedData[ele.pid]
-      ? processedData[ele.pid]
-      : {};
-    processedData[ele.pid][ele.tid] = processedData[ele.pid][ele.tid]
-      ? processedData[ele.pid][ele.tid]
-      : [];
+    if (processedData[ele.pid] === undefined) {
+      processedData[ele.pid] = {};
+    }
+    if (processedData[ele.pid][ele.tid] === undefined) {
+      processedData[ele.pid][ele.tid] = [];
+    }
 
     // set backgroud-color
     if (!backgroundColor[ele.name]) {
       backgroundColor[ele.name] = colorList[colorIdx];
       colorIdx += 1;
-      colorIdx %= colorLen;
+      colorIdx %= colorList.length;
     }
 
     endTime = Math.max(endTime, ele.ts + ele.dur);

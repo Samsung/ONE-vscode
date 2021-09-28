@@ -45,17 +45,18 @@
 // This file referenced the result of https://github.com/catapult-project/catapult/tree/444aba89e1c30edf348c611a9df79e2376178ba8/tracing
 
 export default function dynamicGraduation() {
-  const body = document.querySelector("body");
   const ruler = document.querySelector(".ruler");
 
   if (!ruler) {
     return;
   }
-
+  
+  const graduation = document.querySelector(".graduation");
+  const graduationList = document.querySelectorAll(".graduation");
+  const body = document.querySelector("body");
   const rulerBlank = document.querySelector(".ruler-blank");
-  const graduation = document.querySelector(".ruler .graduation");
-  const cnt = document.querySelectorAll(".ruler .graduation").length;
   const staticRulerWidth = body.clientWidth - rulerBlank.clientWidth;
+
   const setData = document.querySelector(".set-data");
   const timeLimit = setData.dataset["timeLimit"];
   const digit = setData.dataset["digit"];
@@ -63,52 +64,50 @@ export default function dynamicGraduation() {
   const staticGraduationWidth = parseInt(staticRulerWidth / initGraduationCnt);
 
   if (graduation.offsetWidth < staticGraduationWidth - 10) {
-    removeGraduation(ruler, cnt);
+    removeGraduation(ruler, graduationList.length);
   } else if (graduation.offsetWidth < staticGraduationWidth * 2) {
     return;
   } else {
-    addGraduation(ruler, cnt);
+    addGraduation(ruler, graduationList.length);
   }
-  updateGraduation(timeLimit);
+  updateGraduation(ruler, timeLimit);
 }
 
 function removeGraduation(ruler, cnt) {
   for (let i = 0; i < cnt / 2; i++) {
-    const child = document.querySelector(".ruler .graduation");
-    ruler.removeChild(child);
+    const graduation = document.querySelector(".graduation");
+    ruler.removeChild(graduation);
   }
 }
 
 function addGraduation(ruler, cnt) {
   for (let i = 0; i < cnt; i++) {
-    const child = document.createElement("div");
-    child.className = "graduation";
+    const tempGraduation = document.createElement("div");
+    tempGraduation.className = "graduation";
 
     for (let i = 0; i < 5; i++) {
-      const childOfChild = document.createElement("div");
-      childOfChild.className = "small-graduation";
+      const tempSmallGraduation = document.createElement("div");
+      tempSmallGraduation.className = "small-graduation";
 
       if (i === 0) {
         const index = document.createElement("div");
         index.className = "index";
-        childOfChild.append(index);
+        tempSmallGraduation.append(index);
       }
 
-      child.append(childOfChild);
+      tempGraduation.append(tempSmallGraduation);
     }
-    ruler.append(child);
+    ruler.append(tempGraduation);
   }
 }
 
-function updateGraduation(timeLimit) {
-  const rulerWidth = document.querySelector(".ruler").scrollWidth;
-  const allGraduation = document.querySelectorAll(".ruler .graduation");
+function updateGraduation(ruler, timeLimit) {
+  const rulerWidth = ruler.scrollWidth;
+  const allGraduation = document.querySelectorAll(".graduation");
   let left = 0;
 
   allGraduation.forEach(ele => {
-    ele.firstChild.firstChild.innerText = calculateGraduation(
-      (left / rulerWidth) * timeLimit
-    );
+    ele.firstChild.firstChild.innerText = calculateGraduation(left / rulerWidth * timeLimit);
     left += ele.offsetWidth;
   });
 }
