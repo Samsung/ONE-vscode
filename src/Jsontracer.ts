@@ -132,10 +132,10 @@ export class Jsontracer {
     let html = fs.readFileSync(htmlPath.fsPath, {encoding: 'utf-8'});
 
     // Apply js and cs to html
-    html = html.replace(/styleUri/g, `${styleUri}`);
-    html = html.replace(/scriptUri/g, `${scriptUri}`);
-    html = html.replace(/nonce/g, `${nonce}`);
-    html = html.replace(/webview.cspSource/g, `${webview.cspSource}`);
+    html = html.replace(/\${styleUri}/g, `${styleUri}`);
+    html = html.replace(/\${scriptUri}/g, `${scriptUri}`);
+    html = html.replace(/\${nonce}/g, `${nonce}`);
+    html = html.replace(/\${webview.cspSource}/g, `${webview.cspSource}`);
 
     return html;
   }
