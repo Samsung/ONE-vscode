@@ -93,12 +93,12 @@ function processData(data) {
     }
 
     // set data object
-    processedData[ele.pid] = processedData[ele.pid]
-      ? processedData[ele.pid]
-      : {};
-    processedData[ele.pid][ele.tid] = processedData[ele.pid][ele.tid]
-      ? processedData[ele.pid][ele.tid]
-      : [];
+    if (processedData[ele.pid] === undefined) {
+      processedData[ele.pid] = {};
+    }
+    if (processedData[ele.pid][ele.tid] === undefined) {
+      processedData[ele.pid][ele.tid] = [];
+    }
 
     // set backgroud-color
     if (!backgroundColor[ele.name]) {
