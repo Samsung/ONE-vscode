@@ -45,59 +45,10 @@
 // This file referenced the result of https://github.com/catapult-project/catapult/tree/444aba89e1c30edf348c611a9df79e2376178ba8/tracing
 
 import renderDashboard from "./dashboard.js";
-
-const colorList = [
-  "aquamarine",
-  "cornflowerblue",
-  "khaki",
-  "lavender",
-  "lavenderblush",
-  "lawngreen",
-  "lemonchiffon",
-  "lightblue",
-  "lightcoral",
-  "lightcyan",
-  "lightgoldenrodyellow",
-  "lightgreen",
-  "lightpink",
-  "lightsalmon",
-  "lightseagreen",
-  "lightskyblue",
-  "lightsteelblue",
-  "lime",
-  "limegreen",
-  "mediumaquamarine",
-  "mediumorchid",
-  "mediumpurple",
-  "mediumseagreen",
-  "mediumslateblue",
-  "mediumspringgreen",
-  "mediumturquoise",
-  "mediumvioletred",
-  "mistyrose",
-  "olive",
-  "olivedrab",
-  "orange",
-  "orangered",
-  "orchid",
-  "palegreen",
-  "palevioletred",
-  "paleturquoise",
-  "peru",
-  "pink",
-  "plum",
-  "powderblue",
-  "rosybrown",
-  "thistle",
-  "yellowgreen",
-  "firebrick",
-  "dodgerblue",
-  "darkorange",
-  "crimson",
-  "darkmagenta",
-];
+import getColorList from "./colorList.js";
 
 const setData = document.querySelector(".set-data");
+const colorList = getColorList();
 
 export default function openFileSelector() {
   const input = document.createElement("input");
@@ -136,7 +87,8 @@ function processData(data) {
   let colorIdx = 0;
 
   data.forEach((ele, idx) => {
-    if (!ele) {
+    // exception handling
+    if (!ele.name) {
       return;
     }
 
