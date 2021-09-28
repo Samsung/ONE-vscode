@@ -94,7 +94,10 @@ const showOptions = function (event) {
 // send message to config panel about export configuration
 const exportConfiguration = function () {
   if (exportValidation()) {
-    sendMessage("exportConfig", oneToolList);
+    sendMessage("exportConfig", {
+      oneToolList: oneToolList,
+      fileName: getFileName(oneToolList) 
+      });
   }
 };
 
@@ -117,13 +120,9 @@ document.querySelector("#quantize").addEventListener("click", showOptions);
 document.querySelector("#pack").addEventListener("click", showOptions);
 document.querySelector("#codegen").addEventListener("click", showOptions);
 document.querySelector("#profile").addEventListener("click", showOptions);
-document
-  .querySelector("#importBtn")
-  .addEventListener("click", importConfiguration);
+document.querySelector("#importBtn").addEventListener("click", importConfiguration);
 document.querySelector("#runBtn").addEventListener("click", runConfiguration);
-document
-  .querySelector("#exportBtn")
-  .addEventListener("click", exportConfiguration);
+document.querySelector("#exportBtn").addEventListener("click", exportConfiguration);
 const tmpEvent = {
   target: document.querySelector("#import"),
 };
