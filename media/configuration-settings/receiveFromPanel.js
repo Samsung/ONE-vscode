@@ -24,12 +24,13 @@ window.addEventListener("message", (event) => {
             for (let j = 0; j < oneToolList[i].options.length; j++) {
               if (oneToolList[i].options[j].optionName === "input_path") {
                 oneToolList[i].options[j].optionValue = data.filePath;
+                console.log(oneToolList[i].options[j].optionValue)
                 const inputTag = document.querySelector("#input_path");
                 inputTag.value = data.filePath;
                 break;
               }
             }
-            autoCompletePath();
+            autoCompletePath(oneToolList[i]);
             emptyOptionBox(true);
             buildOptionDom(oneToolList[i]);
             break;
