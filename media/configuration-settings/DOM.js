@@ -33,7 +33,7 @@ const oneImportToggleFunction = function () {
       optionFieldset.disabled = false;
       selectTag.disabled = false;
     }
-    autoCompletePath();
+    autoCompletePath(oneImportBcq);
 };
 
 // remove every options on DOM
@@ -131,7 +131,7 @@ const buildOptionDom = function (target) {
           target.use = true;
           optionFieldset.disabled = false;
         }
-        autoCompletePath();
+        autoCompletePath(target);
         emptyOptionBox(false);
         buildOptionDom(target)
       });
@@ -172,24 +172,17 @@ const buildOptionDom = function (target) {
             btnTag.innerText = "+";
             const inputTag = document.createElement("input");
             inputTag.id = target.options[i].optionName;
-            inputTag.placeholder = "Please enter path to your target";
+            inputTag.placeholder = "Please enter path to your ";
             inputTag.addEventListener("change", function (event) {
               target.options[i].optionValue = event.target.value;
-              autoCompletePath();
+              autoCompletePath(target);
             });
             if (target.options[i].optionValue.trim() !== "") {
               inputTag.value = target.options[i].optionValue;
-              btnTag.addEventListener("click", function () {
-                sendMessage(
-                  "alert",
-                  "If your earlier output_path exists, you can't change your input_path"
-                );
-              });
-            } else {
-              btnTag.addEventListener("click", function () {
-                sendMessage("inputPath", target.type);
-              });
-            }
+            } 
+            btnTag.addEventListener("click", function () {
+              sendMessage("inputPath", target.type);
+            });
             valueLiTag.appendChild(inputTag);
             valueLiTag.appendChild(btnTag);
           // output_path option is diffrent from other option because of autocompletion
@@ -201,7 +194,7 @@ const buildOptionDom = function (target) {
             }
             inputTag.addEventListener("change", function (event) {
               target.options[i].optionValue = event.target.value;
-              autoCompletePath();
+              autoCompletePath(target);
             });
             valueLiTag.appendChild(inputTag);
           } else {
@@ -284,4 +277,3 @@ const changeSelect = function (event) {
       }
     }
   };
-

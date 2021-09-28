@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 
-export function exportConfig(oneToolList: any): void {
+export function exportConfig(payLoad: any): void {
+  const oneToolList = payLoad.oneToolList;
+  const fileName = payLoad.fileName;
   const configPareser = require('configparser');
   const config = new configPareser();
 
@@ -25,9 +27,10 @@ export function exportConfig(oneToolList: any): void {
   }
 
   const optionsForExportDialog: vscode.SaveDialogOptions = {
-    defaultUri: vscode.Uri.file('one-build-template.cfg'),
+    defaultUri: vscode.Uri.file(fileName + '.cfg'),
     filters: {
-      allFiles: ['*'],
+      /* eslint-disable-next-line @typescript-eslint/naming-convention */
+      'ONE .cfg Files': ['cfg'],
     },
   };
   vscode.window.showSaveDialog(optionsForExportDialog).then((fileUri) => {
@@ -42,7 +45,7 @@ export function exportConfig(oneToolList: any): void {
       config.write(path);
       console.log(path);
       vscode.window.showInformationMessage('Your configuration file is successfully generated!');
-      vscode.workspace.openTextDocument(vscode.Uri.file(path)).then(doc =>{
+      vscode.workspace.openTextDocument(vscode.Uri.file(path)).then(doc => {
         vscode.window.showTextDocument(doc);
       });
     }

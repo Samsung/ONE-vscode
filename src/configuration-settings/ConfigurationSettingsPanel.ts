@@ -1,7 +1,9 @@
-import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path'
+import * as vscode from 'vscode';
+
 import {getNonce} from '../getNonce';
+
 import {exportConfig} from './Dialog/ExportConfigDialog';
 import {importConfig} from './Dialog/ImportConfigDialog';
 import {getInputPath} from './Dialog/InputFileDialog';
@@ -107,25 +109,32 @@ export class ConfigurationSettingsPanel {
   private _getHtmlForWebview(webview: vscode.Webview, context: vscode.ExtensionContext) {
     // And the uri we use to load this script in the webview
     const toolsScriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'tools.js'));
+        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'tools.js'));
 
     const DOMScriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'DOM.js'));
+        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'DOM.js'));
 
-    const mainScriptUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'main.js'));
+    const indexScriptUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'index.js'));
 
-    const autoCommpleteScriptUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'autoComplete.js'));
+    const pathAutoCommpleteScriptUri = webview.asWebviewUri(vscode.Uri.joinPath(
+        this._extensionUri, 'media/configuration-settings', 'pathAutoComplete.js'));
 
-    const sendScriptUri = webview.asWebviewUri(
-          vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'send.js'));
+    const sendToPanelScriptUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'sendToPanel.js'));
 
-    const validationScriptUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'validation.js'));
-    
-    const importScriptUri = webview.asWebviewUri(
-          vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'import.js'));
+    const configValidationScriptUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'configValidation.js'));
+
+    const importConfigScriptUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'importConfig.js'));
+
+    const exportConfigScriptUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'exportConfig.js'));
+
+    const receiveFromPanelScriptUri = webview.asWebviewUri(vscode.Uri.joinPath(
+        this._extensionUri, 'media/configuration-settings', 'receiveFromPanel.js'));
+
     // Uri to load styles into webview
     const stylesResetUri = webview.asWebviewUri(
         vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'reset.css'));
@@ -134,9 +143,10 @@ export class ConfigurationSettingsPanel {
 
     // Use a nonce to only allow specific scripts to be run
     const nonce = getNonce();
-      
+
     // Get html file for webview
-    const filePath: vscode.Uri = vscode.Uri.file(path.join(context.extensionPath, 'media', 'configuration-settings', 'Config.html'));
+    const filePath: vscode.Uri = vscode.Uri.file(
+        path.join(context.extensionPath, 'media', 'configuration-settings', 'Config.html'));
     let html = fs.readFileSync(filePath.fsPath, 'utf8')
     let re = /\${stylesResetUri}/gi;
     html = html.replace(re, `${stylesResetUri}`);
@@ -146,20 +156,24 @@ export class ConfigurationSettingsPanel {
     html = html.replace(re, `${stylesMainUri}`);
     re = /\${nonce}/gi;
     html = html.replace(re, `${nonce}`);
-    re = /\${mainScriptUri}/gi;
-    html = html.replace(re, `${mainScriptUri}`);
+    re = /\${indexScriptUri}/gi;
+    html = html.replace(re, `${indexScriptUri}`);
     re = /\${toolsScriptUri}/gi;
     html = html.replace(re, `${toolsScriptUri}`);
-    re = /\${autoCompleteScriptUri}/gi;
-    html = html.replace(re, `${autoCommpleteScriptUri}`);
-    re = /\${importScriptUri}/gi;
-    html = html.replace(re, `${importScriptUri}`);
-    re = /\${sendScriptUri}/gi;
-    html = html.replace(re, `${sendScriptUri}`);
-    re = /\${validationScriptUri}/gi;
-    html = html.replace(re, `${validationScriptUri}`);
+    re = /\${pathAutoCompleteScriptUri}/gi;
+    html = html.replace(re, `${pathAutoCommpleteScriptUri}`);
+    re = /\${importConfigScriptUri}/gi;
+    html = html.replace(re, `${importConfigScriptUri}`);
+    re = /\${exportConfigScriptUri}/gi;
+    html = html.replace(re, `${exportConfigScriptUri}`);
+    re = /\${sendToPanelScriptUri}/gi;
+    html = html.replace(re, `${sendToPanelScriptUri}`);
+    re = /\${configValidationScriptUri}/gi;
+    html = html.replace(re, `${configValidationScriptUri}`);
     re = /\${DOMScriptUri}/gi;
     html = html.replace(re, `${DOMScriptUri}`);
+    re = /\${receiveFromPanelScriptUri}/gi;
+    html = html.replace(re, `${receiveFromPanelScriptUri}`);
     return html
   }
 }
