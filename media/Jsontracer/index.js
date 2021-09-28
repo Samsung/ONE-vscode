@@ -44,7 +44,7 @@
 
 // This file referenced the result of https://github.com/catapult-project/catapult/tree/444aba89e1c30edf348c611a9df79e2376178ba8/tracing
 
-// TODO import openFileSelector from "./processData.js";
+import openFileSelector from "./processData.js";
 // TODO import dynamicGraduation from "./dynamicGraduation.js";
 
 const graph = document.querySelector(".graph");
@@ -54,7 +54,7 @@ const sliderMinLimit = 100;
 const loadBtn = document.querySelector(".load-btn");
 loadBtn.addEventListener("click", () => {
   initData();
-  // TODO openFileSelector();
+  openFileSelector();
 });
 
 let ratio = 100;
@@ -124,7 +124,7 @@ function changeSlider(inputValue, inputMax, inputMin) {
 
   // set delay
   slider.disabled = true;
-  setTimeout((slider.disabled = false), 100);
+  setTimeout(() => (slider.disabled = false), 100);
 }
 
 function initData() {
