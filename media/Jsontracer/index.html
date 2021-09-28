@@ -50,12 +50,12 @@ This file referenced the result of https://github.com/catapult-project/catapult/
 <head>
   <meta charset="utf-8">
   <!--
-    Use a content security policy to only allow loading images from https or from our extension directory,
+    Use a content security policy to only allow styles from our extension directory,
     and only allow scripts that have a specific nonce.
   -->
   <meta 
       http-equiv="Content-Security-Policy"
-      content="img-src https: data:;
+      content="img-src none;
                 style-src 'unsafe-inline' ${webview.cspSource};
                 script-src 'nonce-${nonce}';">
   <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
