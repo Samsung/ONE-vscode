@@ -82,7 +82,6 @@ function processData(data) {
   const backgroundColor = {};
   const utility = {};
   const colorList = getColorList();
-  const colorLen = colorList.length;
   let endTime = 0;
   let colorIdx = 0;
 
@@ -104,7 +103,7 @@ function processData(data) {
     if (!backgroundColor[ele.name]) {
       backgroundColor[ele.name] = colorList[colorIdx];
       colorIdx += 1;
-      colorIdx %= colorLen;
+      colorIdx %= colorList.length;
     }
 
     endTime = Math.max(endTime, ele.ts + ele.dur);
