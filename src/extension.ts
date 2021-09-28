@@ -53,7 +53,7 @@ export function activate(context: vscode.ExtensionContext) {
       });
   context.subscriptions.push(disposableOneConfigurationSettings);
 
-  let disposableShowCodelens = vscode.commands.registerCommand('onevscode.show-codelens', () => {
+  let disposableShowCodelens = vscode.commands.registerCommand('onevscode.toggle-codelens', () => {
     let codelensState = vscode.workspace.getConfiguration('one-vscode').get('enableCodelens', true);
     vscode.workspace.getConfiguration('one-vscode').update('enableCodelens', !codelensState, true);
   });
