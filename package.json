@@ -37,7 +37,7 @@
       },
       {
         "command": "onevscode.toggle-codelens",
-        "title": "toggle codelens"
+        "title": "one toggle codelens"
       }
     ],
     "configuration": {
