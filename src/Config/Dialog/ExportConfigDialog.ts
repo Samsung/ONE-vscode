@@ -15,6 +15,7 @@
  */
 
 import * as vscode from 'vscode';
+import {Balloon} from '../../Utils/Balloon';
 
 export function exportConfig(payLoad: any): void {
   const oneToolList = payLoad.oneToolList;
@@ -58,12 +59,15 @@ export function exportConfig(payLoad: any): void {
         pathTmp.splice(0, 1);
         path = pathTmp.join('\\');
       }
-      config.write(path);
-      console.log(path);
-      vscode.window.showInformationMessage('Your configuration file is successfully generated!');
-      vscode.workspace.openTextDocument(vscode.Uri.file(path)).then(doc => {
-        vscode.window.showTextDocument(doc);
-      });
+      try {
+        config.write(path);
+        Balloon.info('Your configuration file is successfully generated!');
+        vscode.workspace.openTextDocument(vscode.Uri.file(path)).then(doc => {
+          vscode.window.showTextDocument(doc);
+        });
+      } catch (error) {
+        Balloon.error('Invalid file path');
+      }
     }
   });
 }
