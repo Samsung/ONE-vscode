@@ -17,12 +17,14 @@
 import * as vscode from 'vscode';
 
 export class CodelensProvider implements vscode.CodeLensProvider {
+  codeLenses: vscode.CodeLens[] = [];
   constructor() {}
 
   public provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken):
       vscode.CodeLens[]|Thenable<vscode.CodeLens[]> {
-    // TODO implement
-    return [];
+    this.codeLenses = [];
+    // TODO Add more
+    return this.codeLenses;
   }
 
   public resolveCodeLens(codeLens: vscode.CodeLens, token: vscode.CancellationToken) {
