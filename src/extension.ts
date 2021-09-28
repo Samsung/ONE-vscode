@@ -18,6 +18,7 @@ import * as vscode from 'vscode';
 
 import {ConfigPanel} from './Config/ConfigPanel';
 import {CodelensProvider} from './Editor/CodelensProvider';
+import {Jsontracer} from './Jsontracer';
 import {Project} from './Project';
 import {Utils} from './Utils';
 
@@ -41,10 +42,11 @@ export function activate(context: vscode.ExtensionContext) {
   });
   context.subscriptions.push(disposableOneImport);
 
-  let disposableOneBarchart = vscode.commands.registerCommand('onevscode.json-tracer', () => {
-    console.log('one barchart...');
+  let disposableOneJsontracer = vscode.commands.registerCommand('onevscode.json-tracer', () => {
+    console.log('one json tracer...');
+    Jsontracer.createOrShow(context.extensionUri);
   });
-  context.subscriptions.push(disposableOneBarchart);
+  context.subscriptions.push(disposableOneJsontracer);
 
   let disposableOneConfigurationSettings =
       vscode.commands.registerCommand('onevscode.configuration-settings', () => {
