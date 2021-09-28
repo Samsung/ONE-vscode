@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-// autoCompletePath copy former output_path to later input_path
-const autoCompletePath = function () {
-  for (let i = 0; i < oneToolList.length; i++) {
+// autoCompletePath make output_path based on input_path and copy former output_path to next input_path
+const autoCompletePath = function (tool) {
+  const index = oneToolList.indexOf(tool)
+  for (let i = index; i < oneToolList.length; i++) {
     if (oneToolList[i].use === true) {
       let input = "";
       for (let j = 0; j < oneToolList[i].options.length; j++) {
@@ -26,49 +27,49 @@ const autoCompletePath = function () {
         ) {
           input = oneToolList[i].options[j].optionValue;
         } else if (oneToolList[i].options[j].optionName === "output_path") {
-          console.log(input)
-          if (oneToolList[i].options[j].optionValue.trim() === "" && input.trim() !== "") {
+          if (input.trim() !== "") {
+            let divisor = '/'
+            if (input.includes('\\')) {
+              divisor = '\\'
+            }
             switch (oneToolList[i].type) {
               case "one-optimize": {
-                let paths = input.split('/');
+                let paths = input.split(divisor);
                 let tmp = paths[paths.length - 1].split(".");
-                tmp.splice(1, 0, "opt");
+                tmp.splice(tmp.length-1, 0, "opt");
                 paths[paths.length - 1] = tmp.join(".");
-                oneToolList[i].options[j].optionValue = paths.join('/');
-                console.log(paths.join('/'))
+                oneToolList[i].options[j].optionValue = paths.join(divisor);
                 break;
               }
               case "one-quantize": {
-                let paths = input.split('/');
+                let paths = input.split(divisor);
                 let tmp = paths[paths.length - 1].split(".");
                 if (tmp.length > 2) {
-                  tmp[1] = "quantized";
+                  tmp[tmp.length-2] = "quantized";
                 } else {
-                  tmp.splice(1, 0, "quantized");
+                  tmp.splice(tmp.length-1, 0, "quantized");
                 }
                 paths[paths.length - 1] = tmp.join(".");
-                oneToolList[i].options[j].optionValue = paths.join('/');
-                console.log(paths.join('/'))
+                oneToolList[i].options[j].optionValue = paths.join(divisor);
                 break;
               }
               case "one-pack": {
-                let paths = input.split('/');
+                let paths = input.split(divisor);
                 let tmp = paths[paths.length - 1].split(".");
                 while (tmp.length > 1) {
                   tmp.splice(1, 1);
                 }
                 tmp[0] += '_pack'
                 paths[paths.length - 1] = tmp.join(".");
-                oneToolList[i].options[j].optionValue = paths.join('/');
-                console.log(paths.join('/'))
+                oneToolList[i].options[j].optionValue = paths.join(divisor);
                 break;
               }
               default: {
-                let paths = input.split('/')
+                let paths = input.split(divisor)
                 let tmp = paths[paths.length-1].split('.')
                 tmp[tmp.length-1] = 'circle'
                 paths[paths.length-1] = tmp.join('.')
-                oneToolList[i].options[j].optionValue = paths.join('/')
+                oneToolList[i].options[j].optionValue = paths.join(divisor)
               }
             }
           }
