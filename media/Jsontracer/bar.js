@@ -46,14 +46,14 @@
 
 import { renderSingleDetail, renderMultipleDetail } from "./detail.js";
 
-export default function renderBar(endTime, data){
+export default function renderBar(timeLimit, data){
   const barLists = document.querySelectorAll(".bar-list");
   const barList = barLists[barLists.length - 1];
 
   const bar = document.createElement("div");
   bar.className = "bar";
-  bar.style.left = `${data.ts/endTime*100}%`;
-  bar.style.width = `${data.dur/endTime*100}%`;
+  bar.style.left = `${data.ts/timeLimit*100}%`;
+  bar.style.width = `${data.dur/timeLimit*100}%`;
   bar.style.backgroundColor = `${data.backgroundColor}`;
 
   Object.keys(data).map(key => {

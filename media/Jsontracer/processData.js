@@ -110,16 +110,19 @@ export default function openFileSelector() {
   input.click();
 }
 
+function setFileName(name) {
+  const fileName = document.querySelector(".file-name");
+  fileName.innerText = name;
+}
+
 function processFile(file) {
   const reader = new FileReader();
   reader.onload = () => {
-    const data = JSON.parse(reader.result).traceEvents;
-    processData(data);
+    const data = JSON.parse(reader.result);
+    processData(data.traceEvents);
 
-    // set displayTimeUnit
-    setData.dataset["displayTimeUnit"] = JSON.parse(
-      reader.result
-    ).displayTimeUnit;
+    // set data to DOM
+    setData.dataset["displayTimeUnit"] = data.displayTimeUnit;
   };
   reader.readAsText(file, "euc-kr");
 }
@@ -129,11 +132,11 @@ function processData(data) {
   const backgroundColor = {};
   const utility = {};
   const colorLen = colorList.length;
-  let maxEndTime = 0;
+  let endTime = 0;
   let colorIdx = 0;
 
   data.forEach((ele, idx) => {
-    if (!ele.pid) {
+    if (!ele) {
       return;
     }
 
@@ -145,43 +148,33 @@ function processData(data) {
       ? processedData[ele.pid][ele.tid]
       : [];
 
-    // select backgroud-color
+    // set backgroud-color
     if (!backgroundColor[ele.name]) {
       backgroundColor[ele.name] = colorList[colorIdx];
       colorIdx += 1;
       colorIdx %= colorLen;
     }
 
-    // set maxEndTime
-    if (ele.ts + ele.dur > maxEndTime) {
-      maxEndTime = ele.ts + ele.dur;
-    }
-
-    // set processedData
-    ele["backgroundColor"] = backgroundColor[ele.name];
-    ele["pk"] = idx;
-    processedData[ele.pid][ele.tid].push(ele);
+    endTime = Math.max(endTime, ele.ts + ele.dur);
     utility[ele.pid] = utility[ele.pid] ? utility[ele.pid] + ele.dur : ele.dur;
+
+    ele["pk"] = idx;
+    ele["backgroundColor"] = backgroundColor[ele.name];
+
+    processedData[ele.pid][ele.tid].push(ele);
   });
 
-  // select utility usage
   Object.keys(utility).forEach(key => {
-    utility[key] = Math.round((utility[key] * 100) / maxEndTime) / 100;
+    utility[key] = Math.round((utility[key] * 100) / endTime) / 100;
   });
 
-  // get digit and endTime
-  const digit = parseInt(maxEndTime).toString().length;
-  const endTime = Math.ceil(maxEndTime / 10 ** (digit - 1)) * 10 ** (digit - 1);
+  const digit = parseInt(endTime).toString().length;
+  const timeLimit = Math.ceil(endTime / 10 ** (digit - 1)) * 10 ** (digit - 1);
 
   // set data to DOM
-  setData.dataset["endTime"] = endTime;
   setData.dataset["digit"] = digit;
+  setData.dataset["timeLimit"] = timeLimit;
 
   // render dashboard
-  renderDashboard(utility, endTime, digit, processedData);
-}
-
-function setFileName(name) {
-  const fileName = document.querySelector(".file-name");
-  fileName.innerText = name;
+  renderDashboard(utility, timeLimit, digit, processedData);
 }

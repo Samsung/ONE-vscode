@@ -44,7 +44,7 @@
 
 // This file referenced the result of https://github.com/catapult-project/catapult/tree/444aba89e1c30edf348c611a9df79e2376178ba8/tracing
 
-export default function renderRuler(endTime, digit) {
+export default function renderRuler(timeLimit, digit) {
   const graph = document.querySelector(".graph");
 
   const rulerContainer = document.createElement("div");
@@ -59,13 +59,13 @@ export default function renderRuler(endTime, digit) {
   rulerContainer.append(rulerBlank, ruler);
   graph.append(rulerContainer);
 
-  mapToRulergraduation(endTime, digit);
+  mapToRulergraduation(timeLimit, digit);
 }
 
-function mapToRulergraduation(endTime, digit) {
+function mapToRulergraduation(timeLimit, digit) {
   const ruler = document.querySelector(".ruler");
 
-  for (let i = 0; i < parseInt(endTime / 10 ** (digit - 1)); i++) {
+  for (let i = 0; i < parseInt(timeLimit / 10 ** (digit - 1)); i++) {
     const graduation = document.createElement("div");
     graduation.className = "graduation";
 

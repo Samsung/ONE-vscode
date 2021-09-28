@@ -57,9 +57,9 @@ export default function dynamicGraduation() {
   const cnt = document.querySelectorAll(".ruler .graduation").length;
   const staticRulerWidth = body.clientWidth - rulerBlank.clientWidth;
   const setData = document.querySelector(".set-data");
-  const endTime = setData.dataset["endTime"];
+  const timeLimit = setData.dataset["timeLimit"];
   const digit = setData.dataset["digit"];
-  const initGraduationCnt = endTime / 10 ** (digit - 1);
+  const initGraduationCnt = timeLimit / 10 ** (digit - 1);
   const staticGraduationWidth = parseInt(staticRulerWidth / initGraduationCnt);
 
   if (graduation.offsetWidth < staticGraduationWidth - 10) {
@@ -69,7 +69,7 @@ export default function dynamicGraduation() {
   } else {
     addGraduation(ruler, cnt);
   }
-  updateGraduation(endTime);
+  updateGraduation(timeLimit);
 }
 
 function removeGraduation(ruler, cnt) {
@@ -100,14 +100,14 @@ function addGraduation(ruler, cnt) {
   }
 }
 
-function updateGraduation(endTime) {
+function updateGraduation(timeLimit) {
   const rulerWidth = document.querySelector(".ruler").scrollWidth;
   const allGraduation = document.querySelectorAll(".ruler .graduation");
   let left = 0;
 
   allGraduation.forEach(ele => {
     ele.firstChild.firstChild.innerText = calculateGraduation(
-      (left / rulerWidth) * endTime
+      (left / rulerWidth) * timeLimit
     );
     left += ele.offsetWidth;
   });

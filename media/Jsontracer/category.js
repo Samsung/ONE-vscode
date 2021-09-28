@@ -46,7 +46,7 @@
 
 import renderBar from './bar.js';
 
-export default function renderCategory(endTime, title, data){
+export default function renderCategory(timeLimit, title, data){
   const levelContainerList = document.querySelectorAll('.level-container');
   const levelContainer = levelContainerList[levelContainerList.length - 1];
 
@@ -68,6 +68,6 @@ export default function renderCategory(endTime, title, data){
   levelContainer.append(categoryContainer);
 
   data.forEach(element => {
-    renderBar(endTime, element);
+    renderBar(timeLimit, element);
   });
 }

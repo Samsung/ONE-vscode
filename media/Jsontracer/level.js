@@ -46,7 +46,7 @@
 
 import renderCategory from "./category.js";
 
-export default function renderLevel(endTime, title, usage, data) {
+export default function renderLevel(timeLimit, title, usage, data) {
   const graph = document.querySelector(".graph");
 
   const levelContainer = document.createElement("section");
@@ -72,6 +72,6 @@ export default function renderLevel(endTime, title, usage, data) {
   graph.append(levelContainer);
 
   Object.keys(data).map(key => {
-    renderCategory(endTime, key, data[key]);
+    renderCategory(timeLimit, key, data[key]);
   });
 }
