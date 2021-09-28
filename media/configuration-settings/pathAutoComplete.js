@@ -36,7 +36,7 @@ const autoCompletePath = function (tool) {
               case "one-optimize": {
                 let paths = input.split(divisor);
                 let tmp = paths[paths.length - 1].split(".");
-                tmp.splice(1, 0, "opt");
+                tmp.splice(tmp.length-1, 0, "opt");
                 paths[paths.length - 1] = tmp.join(".");
                 oneToolList[i].options[j].optionValue = paths.join(divisor);
                 break;
@@ -45,9 +45,9 @@ const autoCompletePath = function (tool) {
                 let paths = input.split(divisor);
                 let tmp = paths[paths.length - 1].split(".");
                 if (tmp.length > 2) {
-                  tmp[1] = "quantized";
+                  tmp[tmp.length-2] = "quantized";
                 } else {
-                  tmp.splice(1, 0, "quantized");
+                  tmp.splice(tmp.length-1, 0, "quantized");
                 }
                 paths[paths.length - 1] = tmp.join(".");
                 oneToolList[i].options[j].optionValue = paths.join(divisor);
