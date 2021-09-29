@@ -129,6 +129,7 @@ const makeInputPathInput = function(tool, index) {
 };
 
 // make button tag for input_path
+// input_path needs path for real file so it needs explorer
 const makeInputPathBtn = function(tool) {
   const btnTag = document.createElement("button");
   btnTag.innerText = "+";
@@ -139,6 +140,7 @@ const makeInputPathBtn = function(tool) {
 };
 
 // make input tag for output_path
+// output_path option is diffrent from other option because of autocompletion
 const makeOutputPathInput = function(tool, index) {
   const inputTag = document.createElement("input");
   inputTag.placeholder = "Next input_path will be changed automatically";
@@ -197,27 +199,25 @@ const buildOptionDom = function (tool) {
     for (let i = 0; i < tool.options.length; i++) {
       const nameLiTag = document.createElement("li");
       const valueLiTag = document.createElement("li");
-      // case for select tag
       if (tool.options[i].optionType) {
+        // case for select tag
         nameLiTag.innerText = tool.options[i].optionName;
         const select = makeSelectTag(tool, i);
         valueLiTag.appendChild(select);
       } else {
-        // case for toggle button
         if (typeof tool.options[i].optionValue === "boolean") {
+          // case for toggle button
           const toggleBtn = makeToggleBtn(tool, i);
           valueLiTag.appendChild(toggleBtn);
           nameLiTag.innerText = tool.options[i].optionName;
-          // case for input tag
         } else if (typeof tool.options[i].optionValue === "string") {
+          // case for input tag
           nameLiTag.innerText = tool.options[i].optionName;
-          // input_path needs path for real file so it needs explorer
           if (tool.options[i].optionName === "input_path") {
             const btnTag = makeInputPathBtn(tool);
             const inputTag = makeInputPathInput(tool, i);
             valueLiTag.appendChild(inputTag);
             valueLiTag.appendChild(btnTag);
-          // output_path option is diffrent from other option because of autocompletion
           } else if (tool.options[i].optionName === "output_path") {
             const inputTag = makeOutputPathInput(tool, i);
             valueLiTag.appendChild(inputTag);
@@ -234,6 +234,7 @@ const buildOptionDom = function (tool) {
     optionsNameTag.appendChild(nameUlTag);
 };
 
+// you can find oneImport and oneImportOptions in tools.js
 const chooseImportOption = function(index) {
   for (let i = 0; i < oneImport.options.length; i++) {
     if (i === index) {
