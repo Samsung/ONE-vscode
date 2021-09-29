@@ -15,13 +15,13 @@
  */
 
 /**
- * @brief oneImportTools will import ONE-import tool of cfg file to webview. so user can update .cfg
+ * @brief oneImportTools will import one-import-xxx of cfg file to webview. so user can update .cfg
  * file comfortably.
- * @param data 2D array that holds all options and values of ONE import tools
- * @param importOpt option names of ONE-import tool
- * @param tool name of ONE-import tool
- * @param idx Integer index of ONE-import tools
- * @param defaultImportObject ONE-import object of tools.js
+ * @param data 2D array that holds all options and values of one-import-xxx
+ * @param importOpt option names of one-import-xxx
+ * @param tool name of one-import-xxx
+ * @param idx Integer index of one-import-xxx
+ * @param defaultImportObject one-import-xxx object of tools.js
  */
 const oneImportTools = function(data, importOpt, tool, idx, defaultImportObject) {
   oneImport.use = true;
@@ -40,12 +40,12 @@ const oneImportTools = function(data, importOpt, tool, idx, defaultImportObject)
 };
 
 /**
- * @brief oneOtherTools will import ONE tools of cfg file to webview execpt ONE-import. so user can
+ * @brief oneOtherTools will import one-xxx of cfg file to webview execpt one-import-xxx. so user can
  * update .cfg file comfortably.
- * @param data 2D array that holds all options and values of ONE tools
- * @param importOpt option names of ONE tools
- * @param tool name of ONE-import tool
- * @param otherTool ONE tool object of tools.js
+ * @param data 2D array that holds all options and values of one-xxx
+ * @param importOpt option names of one-xxx
+ * @param tool name of one-xxx tool
+ * @param otherTool one-xxx object of tools.js
  */
 const oneOtherTools = function(data, importOpt, tool, otherTool) {
   for (let i = 0; i < otherTool.options.length; i++) {
