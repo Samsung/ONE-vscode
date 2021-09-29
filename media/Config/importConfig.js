@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
+/**
+ * @brief oneImportTools will import ONE-import tool of cfg file to webview
+ * @param data 2D array that holds all options and values of ONE import tools
+ * @importOpt option names of ONE-import tool
+ * @tool name of ONE-import tool
+ * @idx Integer index of ONE-import tools
+ * @defaultImportObject ONE-import object of tools.js
+ */
 const oneImportTools = function(data, importOpt, tool, idx, defaultImportObject) {
   oneImport.use = true;
   for (let i = 0; i < defaultImportObject.options.length; i++) {
@@ -30,6 +38,13 @@ const oneImportTools = function(data, importOpt, tool, idx, defaultImportObject)
   }
 };
 
+/**
+ * @brief oneOtherTools will import ONE tools of cfg file to webview execpt ONE-import
+ * @param data 2D array that holds all options and values of ONE tools
+ * @importOpt option names of ONE tools
+ * @tool name of ONE-import tool
+ * @otherTool ONE tool object of tools.js
+ */
 const oneOtherTools = function(data, importOpt, tool, otherTool) {
   for (let i = 0; i < otherTool.options.length; i++) {
     if (importOpt === otherTool.options[i].optionName && data[tool][importOpt] === 'False') {
