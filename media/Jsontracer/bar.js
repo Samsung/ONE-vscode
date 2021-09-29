@@ -45,7 +45,7 @@
 // This file referenced the result of
 // https://github.com/catapult-project/catapult/tree/444aba89e1c30edf348c611a9df79e2376178ba8/tracing
 
-// TODO import {renderMultipleDetail, renderSingleDetail} from './detail.js';
+import {renderMultipleDetail, renderSingleDetail} from './detail.js';
 
 export default function renderBar(timeLimit, data) {
   const barLists = document.querySelectorAll('.bar-list');
@@ -73,12 +73,12 @@ export default function renderBar(timeLimit, data) {
     removeDetail();
     if (event.ctrlKey) {
       addSelectedBar(event.target.className === 'bar' ? event.target : event.target.parentNode);
-      // TODO renderMultipleDetail();
+      renderMultipleDetail();
     } else {
       removeSelectedBar();
-      // TODO renderSingleDetail(
-      //     event.target.className === 'bar' ? event.target.dataset :
-      //                                        event.target.parentNode.dataset);
+      renderSingleDetail(
+          event.target.className === 'bar' ? event.target.dataset :
+                                             event.target.parentNode.dataset);
     }
   });
 
