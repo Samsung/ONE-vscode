@@ -13,7 +13,8 @@
     "onCommand:onevscode.build",
     "onCommand:onevscode.import",
     "onCommand:onevscode.barchart",
-    "onCommand:onevscode.configuration-settings"
+    "onCommand:onevscode.configuration-settings",
+    "*"
   ],
   "main": "./out/extension.js",
   "contributes": {
