@@ -72,6 +72,12 @@ export function activate(context: vscode.ExtensionContext) {
   let hover = new HoverProvider();
   let disposableHover = vscode.languages.registerHoverProvider('ini', hover);
   context.subscriptions.push(disposableHover);
+
+  let disposableOneCircleTracer = vscode.commands.registerCommand('onevscode.circle-tracer', () => {
+    console.log('one circle tracer...');
+    // TODO PROCESS DIALOG
+  });
+  context.subscriptions.push(disposableOneCircleTracer);
 }
 
 export function deactivate() {

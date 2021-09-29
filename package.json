@@ -15,6 +15,7 @@
     "onCommand:onevscode.json-tracer",
     "onCommand:onevscode.configuration-settings",
     "onCommand:onevscode.toggle-codelens",
+    "onCommand:onevscode.circle-tracer",
     "onStartupFinished"
   ],
   "main": "./out/extension.js",
@@ -43,6 +44,11 @@
       {
         "command": "onevscode.toggle-codelens",
         "title": "toggle codelens",
+        "category": "ONE"
+      },
+      {
+        "command": "onevscode.circle-tracer",
+        "title": "circle tracer",
         "category": "ONE"
       }
     ],
