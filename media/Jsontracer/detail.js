@@ -137,8 +137,8 @@ function refinedSelectedOp() {
 
   selectedOpList.forEach(element => {
     const name = element.dataset.name;
-    const ts = element.dataset.ts * 1;
-    const dur = element.dataset.dur * 1;
+    const ts = Number(element.dataset.ts);
+    const dur = Number(element.dataset.dur);
 
     const info = {
       name,
