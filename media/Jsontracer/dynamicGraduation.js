@@ -45,6 +45,8 @@
 // This file referenced the result of
 // https://github.com/catapult-project/catapult/tree/444aba89e1c30edf348c611a9df79e2376178ba8/tracing
 
+import calculateGraduation from './calculateGraduation.js';
+
 export default function dynamicGraduation() {
   const ruler = document.querySelector('.ruler');
 
@@ -111,18 +113,4 @@ function updateGraduation(ruler, timeLimit) {
     ele.firstChild.firstChild.innerText = calculateGraduation(left / rulerWidth * timeLimit);
     left += ele.offsetWidth;
   });
-}
-
-function calculateGraduation(graduation) {
-  if (graduation >= 1000) {
-    return Math.round((graduation / 1000) * 10) / 10 + 'ms';
-  } else if (graduation >= 1) {
-    return Math.round(graduation) + 'us';
-  } else if (graduation > 0) {
-    return Math.round(graduation * 1000 * 10) / 10 + 'ns';
-  } else if (graduation === 0) {
-    return 0;
-  } else {
-    console.log('[WARNING] graduation is negative');
-  }
 }
