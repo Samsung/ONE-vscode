@@ -23,6 +23,8 @@ export class JobImportTF extends JobImport {
   outputArrays?: string = undefined;
   inputShapes?: string = undefined;
   converterVersion?: string = undefined;
+  modelFormat?: string = undefined;
+  saveIntermediate?: boolean = undefined;
 
   constructor() {
     super();
@@ -50,6 +52,10 @@ export class JobImportTF extends JobImport {
     args.add('--output_arrays', this.outputArrays);
     args.add('--input_shapes', this.inputShapes);
     args.add('--converter_version', this.converterVersion);
+    args.add('--model_format', this.modelFormat);
+    if (this.saveIntermediate) {
+      args.push('--save_intermediate');
+    }
 
     return args;
   }
