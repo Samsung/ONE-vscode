@@ -14,28 +14,33 @@
  * limitations under the License.
  */
 
+import {Job} from './Job';
+import {JobBase} from './JobBase';
 import {ToolArgs} from './ToolArgs';
 
-export interface Job {
-  jobType: Job.Type;
-  name: string;
-  valid: boolean;
-  tool: string;
-  toolArgs: ToolArgs;
+export class JobPack extends JobBase {
+  // TODO add pack options
+  constructor() {
+    super();
+    this.jobType = Job.Type.tPack;
+  }
+
+  public get valid() {
+    // TODO validate arguments;
+    return true;
+  }
+
+  public get tool() {
+    return 'one-pack';
+  }
+
+  public get toolArgs() {
+    let args = new ToolArgs();
+
+    // mandatory arguments
+    args.add('--input_path', this.inputPath);
+    args.add('--output_path', this.outputPath);
+
+    return args;
+  }
 }
-
-export namespace Job {
-
-export const enum Type {
-  tUndefined = 0,  // TODO maybe use Job.jobType = undefined?
-  tImportTF = 1,
-  tImportTFLite,
-  tImportONNX,
-  tOptimize,
-  tQuantize,
-  tPack,
-  tCodegen,
-  // TODO add more
-}
-
-}  // namespace Job
