@@ -114,5 +114,3 @@ function updateGraduation(ruler, timeLimit) {
     left += ele.offsetWidth;
   });
 }
-
-
