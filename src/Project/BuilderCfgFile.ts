@@ -49,6 +49,8 @@ const K_INPUT_ARRAYS: string = 'input_arrays';
 const K_OUTPUT_ARRAYS: string = 'output_arrays';
 const K_INPUT_SHAPES: string = 'input_shapes';
 const K_CONVERTER_VERSION: string = 'converter_version';
+const K_MODEL_FORMAT: string = 'model_format';
+const K_SAVE_INTERMEDIATE: string = 'save_intermediate';
 const K_BACKEND: string = 'backend';
 const K_COMMAND: string = 'command';
 
@@ -77,6 +79,8 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
     importTF.outputArrays = prop[K_OUTPUT_ARRAYS];
     importTF.inputShapes = prop[K_INPUT_SHAPES];
     importTF.converterVersion = prop[K_CONVERTER_VERSION];
+    importTF.modelFormat = prop[K_MODEL_FORMAT];
+    importTF.saveIntermediate = prop[K_SAVE_INTERMEDIATE];
 
     let inputModel = path.basename(importTF.inputPath);
     importTF.name = 'ImportTF ' + inputModel;
