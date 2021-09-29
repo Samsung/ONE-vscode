@@ -15,43 +15,25 @@
  */
 
 // validator for input_path and output_path, this validator checks only for empty or not
-const pathValidator = function (target) {
-    for (let j = 0; j < target.options.length; j++) {
-      if (
-        target.options[j].optionName === "input_path" &&
-        target.options[j].optionValue.trim() === ""
-      ) {
-        sendMessage(
-          "alert",
-          `If you want to use ${target.type}, then input_path is required`
-        );
-        return false;
-      }
-      if (
-        target.options[j].optionName === "output_path" &&
-        target.options[j].optionValue.trim() === ""
-      ) {
-        sendMessage(
-          "alert",
-          `If you want to use ${target.type}, then output_path is required`
-        );
-        return false;
-      }
+const pathValidator = function(tool) {
+  for (let j = 0; j < tool.options.length; j++) {
+    if (tool.options[j].optionName === 'input_path' && tool.options[j].optionValue.trim() === '') {
+      sendMessage('alert', `If you want to use ${tool.type}, then input_path is required`);
+      return false;
     }
-    return true;
-  };
-  
+    if (tool.options[j].optionName === 'output_path' && tool.options[j].optionValue.trim() === '') {
+      sendMessage('alert', `If you want to use ${tool.type}, then output_path is required`);
+      return false;
+    }
+  }
+  return true;
+};
+
 // validator for backend, this validator checks only for empty or not
-const backendValidator = function (target) {
-  for (let j = 0; j < target.options.length; j++) {
-    if (
-      target.options[j].optionName === "backend" &&
-      target.options[j].optionValue.trim() === ""
-    ) {
-      sendMessage(
-        "alert",
-        `If you want to use ${target.type}, then backend is required`
-      );
+const backendValidator = function(tool) {
+  for (let j = 0; j < tool.options.length; j++) {
+    if (tool.options[j].optionName === 'backend' && tool.options[j].optionValue.trim() === '') {
+      sendMessage('alert', `If you want to use ${tool.type}, then backend is required`);
       return false;
     }
   }
@@ -59,51 +41,49 @@ const backendValidator = function (target) {
 };
 
 // before exprot, checks options whether they are valid or not
-const exportValidation = function () {
-    if (oneImport.use === true) {
-      let chosenModelIndex = -1;
-      for (let i = 0; i < oneImport.options.length; i++) {
-        if (oneImport.options[i].optionValue === true) {
-          chosenModelIndex = i;
-          break;
-        }
-      }
-      if (chosenModelIndex === -1) {
-        sendMessage(
-          "alert",
-          "If you want to use one-import, then you should choose your framework"
-        );
-        return false;
-      } else {
-        if (!pathValidator(oneImportOptions[chosenModelIndex])) {
-          return false;
-        }
+// you can find variables started with 'one' in tools.js
+const exportValidation = function() {
+  if (oneImport.use === true) {
+    let chosenModelIndex = -1;
+    for (let i = 0; i < oneImport.options.length; i++) {
+      if (oneImport.options[i].optionValue === true) {
+        chosenModelIndex = i;
+        break;
       }
     }
-    if (oneOptimize.use === true) {
-      if (!pathValidator(oneOptimize)) {
+    if (chosenModelIndex === -1) {
+      sendMessage('alert', 'If you want to use one-import, then you should choose your framework');
+      return false;
+    } else {
+      if (!pathValidator(oneImportOptions[chosenModelIndex])) {
         return false;
       }
     }
-    if (oneQuantize.use === true) {
-      if (!pathValidator(oneQuantize)) {
-        return false;
-      }
+  }
+  if (oneOptimize.use === true) {
+    if (!pathValidator(oneOptimize)) {
+      return false;
     }
-    if (onePack.use === true) {
-      if (!pathValidator(onePack)) {
-        return false;
-      }
+  }
+  if (oneQuantize.use === true) {
+    if (!pathValidator(oneQuantize)) {
+      return false;
     }
-    if (oneCodegen.use === true) {
-      if (!backendValidator(oneCodegen)) {
-        return false;
-      }
+  }
+  if (onePack.use === true) {
+    if (!pathValidator(onePack)) {
+      return false;
     }
-    if (oneProfile.use === true) {
-      if (!backendValidator(oneProfile)) {
-        return false;
-      }
+  }
+  if (oneCodegen.use === true) {
+    if (!backendValidator(oneCodegen)) {
+      return false;
     }
-    return true;
+  }
+  if (oneProfile.use === true) {
+    if (!backendValidator(oneProfile)) {
+      return false;
+    }
+  }
+  return true;
 };
