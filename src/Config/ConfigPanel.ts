@@ -23,11 +23,11 @@ import {importConfig} from './Dialog/ImportConfigDialog';
 import {getInputPath} from './Dialog/InputFileDialog';
 import {getNonce} from './GetNonce';
 
-export class ConfigurationSettingsPanel {
+export class ConfigPanel {
   /**
    * Track the currently panel. Only allow a single panel to exist at a time.
    */
-  public static currentPanel: ConfigurationSettingsPanel|undefined;
+  public static currentPanel: ConfigPanel|undefined;
 
   public static readonly viewType = 'one-vscode';
 
@@ -40,15 +40,15 @@ export class ConfigurationSettingsPanel {
         vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
 
     // If we already have a panel, show it.
-    if (ConfigurationSettingsPanel.currentPanel) {
-      ConfigurationSettingsPanel.currentPanel._panel.reveal(column);
-      ConfigurationSettingsPanel.currentPanel._update(context);
+    if (ConfigPanel.currentPanel) {
+      ConfigPanel.currentPanel._panel.reveal(column);
+      ConfigPanel.currentPanel._update(context);
       return;
     }
 
     // Otherwise, create a new panel.
     const panel = vscode.window.createWebviewPanel(
-        ConfigurationSettingsPanel.viewType, 'ConfigurationSettings',
+        ConfigPanel.viewType, 'ConfigurationSettings',
         column || vscode.ViewColumn.One, {
           // Enable javascript in the webview
           enableScripts: true,
@@ -61,16 +61,16 @@ export class ConfigurationSettingsPanel {
           ],
         });
 
-    ConfigurationSettingsPanel.currentPanel = new ConfigurationSettingsPanel(panel, context);
+    ConfigPanel.currentPanel = new ConfigPanel(panel, context);
   }
 
   public static kill() {
-    ConfigurationSettingsPanel.currentPanel ?.dispose();
-    ConfigurationSettingsPanel.currentPanel = undefined;
+    ConfigPanel.currentPanel ?.dispose();
+    ConfigPanel.currentPanel = undefined;
   }
 
   public static revive(panel: vscode.WebviewPanel, context: vscode.ExtensionContext) {
-    ConfigurationSettingsPanel.currentPanel = new ConfigurationSettingsPanel(panel, context);
+    ConfigPanel.currentPanel = new ConfigPanel(panel, context);
   }
 
   private constructor(panel: vscode.WebviewPanel, context: vscode.ExtensionContext) {
@@ -103,7 +103,7 @@ export class ConfigurationSettingsPanel {
   }
 
   public dispose() {
-    ConfigurationSettingsPanel.currentPanel = undefined;
+    ConfigPanel.currentPanel = undefined;
 
     // Clean up our resources
     this._panel.dispose();
