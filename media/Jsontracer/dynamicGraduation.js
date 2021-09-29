@@ -86,11 +86,11 @@ function addGraduation(ruler, cnt) {
     const tempGraduation = document.createElement('div');
     tempGraduation.className = 'graduation';
 
-    for (let i = 0; i < 5; i++) {
+    for (let j = 0; j < 5; j++) {
       const tempSmallGraduation = document.createElement('div');
       tempSmallGraduation.className = 'small-graduation';
 
-      if (i === 0) {
+      if (j === 0) {
         const index = document.createElement('div');
         index.className = 'index';
         tempSmallGraduation.append(index);
@@ -118,9 +118,11 @@ function calculateGraduation(graduation) {
     return Math.round((graduation / 1000) * 10) / 10 + 'ms';
   } else if (graduation >= 1) {
     return Math.round(graduation) + 'us';
+  } else if (graduation > 0) {
+    return Math.round(graduation * 1000 * 10) / 10 + 'ns';
   } else if (graduation === 0) {
     return 0;
   } else {
-    return Math.round(graduation * 1000 * 10) / 10 + 'ns';
+    console.log('[WARNING] graduation is negative');
   }
 }
