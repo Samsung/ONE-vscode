@@ -17,10 +17,10 @@
 import * as vscode from 'vscode';
 
 import {ConfigPanel} from './Config/ConfigPanel';
+import {createStatusBarItem} from './Config/ConfigStatusBar'
 import {CodelensProvider} from './Editor/CodelensProvider';
 import {HoverProvider} from './Editor/HoverProvider';
 import {Jsontracer} from './Jsontracer';
-import {createStatusBarItem} from './Config/ConfigStatusBar'
 import {Project} from './Project';
 import {Utils} from './Utils';
 

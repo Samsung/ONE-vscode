@@ -84,7 +84,7 @@ export class ToolRunner {
     }
     return toolPath;
   }
-  
+
   public getRunner(name: string, tool: string, toolargs: ToolArgs, path: string) {
     return new Promise<string>((resolve, reject) => {
       this.logger.outputWithTime('Running: ' + name);

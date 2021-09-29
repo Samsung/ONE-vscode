@@ -18,11 +18,12 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 
+import {Balloon} from '../Utils/Balloon';
+
 import {exportConfig} from './Dialog/ExportConfigDialog';
 import {importConfig} from './Dialog/ImportConfigDialog';
 import {getInputPath} from './Dialog/InputFileDialog';
 import {getNonce} from './GetNonce';
-import {Balloon} from '../Utils/Balloon';
 
 export class ConfigPanel {
   /**
@@ -131,7 +132,7 @@ export class ConfigPanel {
   private _getHtmlForWebview(webview: vscode.Webview, context: vscode.ExtensionContext) {
     // And the uri we use to load this script in the webview
     const toolsScriptUri = this.getPathToFile(webview, 'tools.js');
-    const DOMScriptUri = this.getPathToFile(webview, 'DOM.js');      
+    const DOMScriptUri = this.getPathToFile(webview, 'DOM.js');
     const indexScriptUri = this.getPathToFile(webview, 'index.js');
     const pathAutoCompleteScriptUri = this.getPathToFile(webview, 'pathAutoComplete.js');
     const sendToPanelScriptUri = this.getPathToFile(webview, 'sendToPanel.js');
