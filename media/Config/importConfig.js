@@ -28,7 +28,7 @@ const oneImportTools = function (data, importOpt, tool, idx, defaultImportObject
         oneImport.options[i].optionValue = false;
       }
     }
-  }
+  };
   
 const oneOtherTools = function(data, importOpt, tool, otherTool) {
     for (let i = 0; i < otherTool.options.length; i++) {
@@ -46,4 +46,4 @@ const oneOtherTools = function(data, importOpt, tool, otherTool) {
             otherTool.options[i].optionValue = data[tool][importOpt];
         }
     }
-}
+};

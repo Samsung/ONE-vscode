@@ -1,12 +1,27 @@
-import * as fs from 'fs';
-import * as path from 'path'
-import * as vscode from 'vscode';
+/*
+ * Copyright (c) 2021 Samsung Electronics Co., Ltd. All Rights Reserved
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-import {getNonce} from '../getNonce';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as vscode from 'vscode';
 
 import {exportConfig} from './Dialog/ExportConfigDialog';
 import {importConfig} from './Dialog/ImportConfigDialog';
 import {getInputPath} from './Dialog/InputFileDialog';
+import {getNonce} from './GetNonce';
 
 export class ConfigurationSettingsPanel {
   /**
@@ -41,7 +56,7 @@ export class ConfigurationSettingsPanel {
           // And restrict the webview to only loading content from our
           // extension"s `media` directory.
           localResourceRoots: [
-            vscode.Uri.joinPath(context.extensionUri, 'media/configuration-settings'),
+            vscode.Uri.joinPath(context.extensionUri, 'media/Config'),
             vscode.Uri.joinPath(context.extensionUri, 'out/compiled'),
           ],
         });
@@ -108,46 +123,46 @@ export class ConfigurationSettingsPanel {
 
   private _getHtmlForWebview(webview: vscode.Webview, context: vscode.ExtensionContext) {
     // And the uri we use to load this script in the webview
-    const toolsScriptUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'tools.js'));
+    const toolsScriptUri =
+        webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'tools.js'));
 
-    const DOMScriptUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'DOM.js'));
+    const DOMScriptUri =
+        webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'DOM.js'));
 
-    const indexScriptUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'index.js'));
+    const indexScriptUri =
+        webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'index.js'));
 
-    const pathAutoCommpleteScriptUri = webview.asWebviewUri(vscode.Uri.joinPath(
-        this._extensionUri, 'media/configuration-settings', 'pathAutoComplete.js'));
+    const pathAutoCommpleteScriptUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'pathAutoComplete.js'));
 
     const sendToPanelScriptUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'sendToPanel.js'));
+        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'sendToPanel.js'));
 
     const configValidationScriptUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'configValidation.js'));
+        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'configValidation.js'));
 
     const importConfigScriptUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'importConfig.js'));
+        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'importConfig.js'));
 
     const exportConfigScriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'exportConfig.js'));
+        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'exportConfig.js'));
 
-    const receiveFromPanelScriptUri = webview.asWebviewUri(vscode.Uri.joinPath(
-        this._extensionUri, 'media/configuration-settings', 'receiveFromPanel.js'));
+    const receiveFromPanelScriptUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'receiveFromPanel.js'));
 
     // Uri to load styles into webview
-    const stylesResetUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'reset.css'));
-    const stylesMainUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/configuration-settings', 'vscode.css'));
+    const stylesResetUri =
+        webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'reset.css'));
+    const stylesMainUri =
+        webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'vscode.css'));
 
     // Use a nonce to only allow specific scripts to be run
     const nonce = getNonce();
 
     // Get html file for webview
-    const filePath: vscode.Uri = vscode.Uri.file(
-        path.join(context.extensionPath, 'media', 'configuration-settings', 'Config.html'));
-    let html = fs.readFileSync(filePath.fsPath, 'utf8')
+    const filePath: vscode.Uri =
+        vscode.Uri.file(path.join(context.extensionPath, 'media', 'Config', 'Config.html'));
+    let html = fs.readFileSync(filePath.fsPath, 'utf8');
     let re = /\${stylesResetUri}/gi;
     html = html.replace(re, `${stylesResetUri}`);
     re = /\${webview.cspSource}/gi;
@@ -174,6 +189,6 @@ export class ConfigurationSettingsPanel {
     html = html.replace(re, `${DOMScriptUri}`);
     re = /\${receiveFromPanelScriptUri}/gi;
     html = html.replace(re, `${receiveFromPanelScriptUri}`);
-    return html
+    return html;
   }
 }
