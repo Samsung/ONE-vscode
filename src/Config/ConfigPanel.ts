@@ -22,6 +22,7 @@ import {exportConfig} from './Dialog/ExportConfigDialog';
 import {importConfig} from './Dialog/ImportConfigDialog';
 import {getInputPath} from './Dialog/InputFileDialog';
 import {getNonce} from './GetNonce';
+import {Balloon} from '../Utils/Balloon';
 
 export class ConfigPanel {
   /**
@@ -94,7 +95,7 @@ export class ConfigPanel {
           importConfig(newWebview);
           break;
         case 'alert':
-          vscode.window.showErrorMessage(data.payload);
+          Balloon.error(data.payload);
           break;
       }
     });
@@ -152,7 +153,7 @@ export class ConfigPanel {
     let html = fs.readFileSync(filePath.fsPath, 'utf8');
     html = this.replaceWord(html, /\${stylesResetUri}/gi, stylesResetUri)
     html = this.replaceWord(html, /\${webview.cspSource}/gi, webview.cspSource)
-    html = this.replaceWord(html,/\${stylesMainUri}/gi, stylesMainUri)
+    html = this.replaceWord(html, /\${stylesMainUri}/gi, stylesMainUri)
     html = this.replaceWord(html, /\${nonce}/gi, nonce)
     html = this.replaceWord(html, /\${indexScriptUri}/gi, indexScriptUri)
     html = this.replaceWord(html, /\${toolsScriptUri}/gi, toolsScriptUri)
