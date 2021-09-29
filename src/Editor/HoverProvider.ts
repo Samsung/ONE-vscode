@@ -22,6 +22,8 @@ export class HoverProvider implements vscode.HoverProvider {
           {getWordRangeAtPosition: (arg0: any, arg1: RegExp) => any; getText: (arg0: any) => any;},
       _position: any, _token: any) {
     let mdfile = new vscode.MarkdownString();
+    const range = _doc.getWordRangeAtPosition(_position, new RegExp(/(.+)/g));
+    const word = _doc.getText(range);
     // TODO Add more
 
     return new vscode.Hover(mdfile);
