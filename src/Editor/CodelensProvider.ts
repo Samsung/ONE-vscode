@@ -21,8 +21,9 @@ export class CodelensProvider implements vscode.CodeLensProvider {
 
   public provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken):
       vscode.CodeLens[]|Thenable<vscode.CodeLens[]> {
-    // TODO implement
-    return [];
+    let codeLenses: vscode.CodeLens[] = [];
+    // TODO Add more
+    return codeLenses;
   }
 
   public resolveCodeLens(codeLens: vscode.CodeLens, token: vscode.CancellationToken) {
