@@ -15,7 +15,8 @@
  */
 
 /**
- * @brief oneImportTools will import ONE-import tool of cfg file to webview. so user can update .cfg file comfortably.
+ * @brief oneImportTools will import ONE-import tool of cfg file to webview. so user can update .cfg
+ * file comfortably.
  * @param data 2D array that holds all options and values of ONE import tools
  * @param importOpt option names of ONE-import tool
  * @param tool name of ONE-import tool
@@ -39,7 +40,8 @@ const oneImportTools = function(data, importOpt, tool, idx, defaultImportObject)
 };
 
 /**
- * @brief oneOtherTools will import ONE tools of cfg file to webview execpt ONE-import. so user can update .cfg file comfortably.
+ * @brief oneOtherTools will import ONE tools of cfg file to webview execpt ONE-import. so user can
+ * update .cfg file comfortably.
  * @param data 2D array that holds all options and values of ONE tools
  * @param importOpt option names of ONE tools
  * @param tool name of ONE-import tool
