@@ -2,3 +2,6 @@ out
 node_modules
 format.patch
 Makefile
+
+# production for react-app
+build
