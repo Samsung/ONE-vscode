@@ -20,6 +20,7 @@ import {ConfigPanel} from './Config/ConfigPanel';
 import {CodelensProvider} from './Editor/CodelensProvider';
 import {HoverProvider} from './Editor/HoverProvider';
 import {Jsontracer} from './Jsontracer';
+import {createStatusBarItem} from './Config/ConfigStatusBar'
 import {Project} from './Project';
 import {Utils} from './Utils';
 
@@ -72,6 +73,7 @@ export function activate(context: vscode.ExtensionContext) {
   let hover = new HoverProvider();
   let disposableHover = vscode.languages.registerHoverProvider('ini', hover);
   context.subscriptions.push(disposableHover);
+  createStatusBarItem(context);
 }
 
 export function deactivate() {
