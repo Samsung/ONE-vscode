@@ -15,7 +15,7 @@
  */
 
 const getInputPath = function(tool) {
-  for (let i=0;i<tool.options.length;i++) {
+  for (let i = 0; i < tool.options.length; i++) {
     if (tool.options[i].optionName === 'input_path') {
       return tool.options[i].optionValue;
     }
@@ -67,7 +67,7 @@ const makeOutputPath = function(tool, input) {
 };
 
 const setOutputPath = function(tool, newOutputPath) {
-  for (let i=0;i<tool.options.length;i++) {
+  for (let i = 0; i < tool.options.length; i++) {
     if (tool.options[i].optionName === 'output_path') {
       tool.options[i].optionValue = newOutputPath;
       break;
@@ -91,12 +91,9 @@ const outputToInput = function(toolIndex, nextInputValue) {
 
 
 
-// autoCompletePath make output_path based on input_path and copy former output_path to next
-// input_path for example, in import if input_path is 'filename.pb', then output_path will be
-// 'filename.circle' automatically and then in optimize output_path will be 'filename.opt.circle`
-// automatically
-// oneToolList come from tools.js it look like [oneImportBcq, oneImportOnnx, ..., oneProfile]
-// each tool has options for ONE-build.
+// autoCompletePath will generate output_path from the input_path for the specific tool.
+// ex) if input_path is 'filename.pb' then 'output_path' will be 'filename.circle' for
+// 'one-import-tf' You can find 'oneToolList' in 'tool.js'
 const autoCompletePath = function(tool) {
   // tool argument decides which location to start
   const index = oneToolList.indexOf(tool);
