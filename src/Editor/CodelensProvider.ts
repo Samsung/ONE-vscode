@@ -27,6 +27,7 @@ export class CodelensProvider implements vscode.CodeLensProvider {
       let regex = new RegExp(/(.+)/g);
       let activatedEditorText = document.getText();
       let matches;
+      // TODO tune performance
       while ((matches = regex.exec(activatedEditorText)) !== null) {
         let line = document.lineAt(document.positionAt(matches.index).line);
         let indexOf = line.text.indexOf(matches[0]);
