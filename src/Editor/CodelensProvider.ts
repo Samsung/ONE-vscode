@@ -22,7 +22,23 @@ export class CodelensProvider implements vscode.CodeLensProvider {
   public provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken):
       vscode.CodeLens[]|Thenable<vscode.CodeLens[]> {
     let codeLenses: vscode.CodeLens[] = [];
-    // TODO Add more
+
+    if (vscode.workspace.getConfiguration('one-vscode').get('enableCodeLens', true)) {
+      let regex = new RegExp(/(.+)/g);
+      let activatedEditorText = document.getText();
+      let matches;
+      // TODO tune performance
+      while ((matches = regex.exec(activatedEditorText)) !== null) {
+        let line = document.lineAt(document.positionAt(matches.index).line);
+        let indexOf = line.text.indexOf(matches[0]);
+        let position = new vscode.Position(line.lineNumber, indexOf);
+        let range = document.getWordRangeAtPosition(position, /(.+)/g) as vscode.Range;
+        let lineStr = line.text;
+
+        // TODO Add more
+      }
+    }
+
     return codeLenses;
   }
 
