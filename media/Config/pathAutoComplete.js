@@ -95,6 +95,8 @@ const outputToInput = function(toolIndex, nextInputValue) {
 // input_path for example, in import if input_path is 'filename.pb', then output_path will be
 // 'filename.circle' automatically and then in optimize output_path will be 'filename.opt.circle`
 // automatically
+// oneToolList come from tools.js it look like [oneImportBcq, oneImportOnnx, ..., oneProfile]
+// each tool has options for ONE-build.
 const autoCompletePath = function(tool) {
   // tool argument decides which location to start
   const index = oneToolList.indexOf(tool);
