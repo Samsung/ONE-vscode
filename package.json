@@ -14,7 +14,8 @@
     "onCommand:onevscode.import",
     "onCommand:onevscode.json-tracer",
     "onCommand:onevscode.configuration-settings",
-    "onCommand:onevscode.toggle-codelens"
+    "onCommand:onevscode.toggle-codelens",
+    "onCommand:onevscode.circle-tracer"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -42,6 +43,11 @@
       {
         "command": "onevscode.toggle-codelens",
         "title": "toggle codelens",
+        "category": "ONE"
+      },
+      {
+        "command": "onevscode.circle-tracer",
+        "title": "circle tracer",
         "category": "ONE"
       }
     ],
@@ -99,6 +105,7 @@
     "@typescript-eslint/parser": "^4.9.0",
     "csslint": "^1.0.5",
     "eslint": "^7.15.0",
+    "flatbuffers": "^2.0.3",
     "glob": "^7.1.6",
     "htmlhint": "^0.15.2",
     "ini": "^2.0.0",

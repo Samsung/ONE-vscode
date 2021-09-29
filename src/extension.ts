@@ -22,6 +22,8 @@ import {HoverProvider} from './Editor/HoverProvider';
 import {Jsontracer} from './Jsontracer';
 import {Project} from './Project';
 import {Utils} from './Utils';
+import { Circletracer } from './Circletracer';
+import { decoder } from './Circlereader/Circlereader';
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('one-vscode activate OK');
@@ -72,6 +74,25 @@ export function activate(context: vscode.ExtensionContext) {
   let hover = new HoverProvider();
   let disposableHover = vscode.languages.registerHoverProvider('ini', hover);
   context.subscriptions.push(disposableHover);
+
+  let disposableOneCircleTracer = vscode.commands.registerCommand('onevscode.circle-tracer', () => {
+    console.log('one circle tracer...');
+    const options: vscode.OpenDialogOptions = {
+      canSelectMany: false,
+      openLabel: 'Open',
+      filters: {
+        'Circle files': ['circle'],
+        'All files': ['*']
+      }
+    }
+    vscode.window.showOpenDialog(options).then(fileUri => {
+      if (fileUri && fileUri[0]) {
+        const circleToJson = decoder(fileUri[0].fsPath);
+        Circletracer.createOrShow(context.extensionUri, circleToJson);
+      }
+    });
+  });
+  context.subscriptions.push(disposableOneCircleTracer);
 }
 
 export function deactivate() {
