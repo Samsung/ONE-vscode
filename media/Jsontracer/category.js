@@ -68,7 +68,8 @@ export default function renderCategory(timeLimit, title, data) {
   categoryContainer.append(categoryHeader, barList);
   levelContainer.append(categoryContainer);
 
-  data.forEach(element => {
-    // TODO renderBar(timeLimit, element);
-  });
+  data.forEach(
+      element => {
+          // TODO renderBar(timeLimit, element);
+      });
 }
