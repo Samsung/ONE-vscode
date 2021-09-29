@@ -33,6 +33,8 @@ export const enum Type {
   tImportONNX,
   tOptimize,
   tQuantize,
+  tPack,
+  tCodegen,
   // TODO add more
 }
 

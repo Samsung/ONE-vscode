@@ -22,13 +22,12 @@ import {WorkJobs} from './WorkJobs';
 
 export class WorkFlow {
   logger: Logger;
-  workspace: string;
+  workspace: string = '';
   jobs: WorkJobs;
   jobRunner: JobRunner;
 
   constructor(logger: Logger) {
     this.logger = logger;
-    this.workspace = '';
     this.jobs = new WorkJobs();
     this.jobRunner = new JobRunner(this.logger);
   }
