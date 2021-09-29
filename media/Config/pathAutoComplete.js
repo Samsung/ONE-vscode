@@ -14,13 +14,73 @@
  * limitations under the License.
  */
 
-const outputToInput = function (toolIndex, nextInputValue) {
+const getInputPath = function(tool) {
+  for (let i=0;i<tool.options.length;i++) {
+    if (tool.options[i].optionName === 'input_path') {
+      return tool.options[i].optionValue;
+    }
+  }
+};
+
+const makeOutputPath = function(tool, input) {
+  // because os maybe win32, divisor can be '\\'
+  let divisor = '/';
+  if (input.includes('\\')) {
+    divisor = '\\';
+  }
+  let paths = input.split(divisor);
+  let filename = paths[paths.length - 1].split('.');
+  let result = '';
+  switch (tool.type) {
+    case 'one-optimize': {
+      filename.splice(filename.length - 1, 0, 'opt');
+      paths[paths.length - 1] = filename.join('.');
+      result = paths.join(divisor);
+      break;
+    }
+    case 'one-quantize': {
+      if (filename.includes('opt')) {
+        filename[filename.indexOf('opt')] = 'quantized';
+      } else {
+        filename.splice(filename.length - 1, 0, 'quantized');
+      }
+      paths[paths.length - 1] = filename.join('.');
+      result = paths.join(divisor);
+      break;
+    }
+    case 'one-pack': {
+      while (filename.length > 1) {
+        filename.splice(1, 1);
+      }
+      filename[0] += '_pack';
+      paths[paths.length - 1] = filename.join('.');
+      result = paths.join(divisor);
+      break;
+    }
+    default: {
+      filename[filename.length - 1] = 'circle';
+      paths[paths.length - 1] = filename.join('.');
+      result = paths.join(divisor);
+    }
+  }
+  return result;
+};
+
+const setOutputPath = function(tool, newOutputPath) {
+  for (let i=0;i<tool.options.length;i++) {
+    if (tool.options[i].optionName === 'output_path') {
+      tool.options[i].optionValue = newOutputPath;
+      break;
+    }
+  }
+};
+
+const outputToInput = function(toolIndex, nextInputValue) {
   for (let k = toolIndex + 1; k < oneToolList.length; k++) {
     if (oneToolList[k].use === true) {
       for (let l = 0; l < oneToolList[k].options.length; l++) {
-        if (oneToolList[k].options[l].optionName === "input_path") {
-          oneToolList[k].options[l].optionValue =
-            nextInputValue
+        if (oneToolList[k].options[l].optionName === 'input_path') {
+          oneToolList[k].options[l].optionValue = nextInputValue;
           break;
         }
       }
@@ -29,80 +89,27 @@ const outputToInput = function (toolIndex, nextInputValue) {
   }
 };
 
-const makeOutputAuto = function (input, toolIndex, optionIndex) {
-  // because os maybe win32, divisor can be '\\'
-  let divisor = "/";
-  if (input.includes("\\")) {
-    divisor = "\\";
-  }
-  let paths = input.split(divisor);
-  let tmp = paths[paths.length - 1].split(".");
-  switch (oneToolList[toolIndex].type) {
-    case "one-optimize": {
-      tmp.splice(tmp.length - 1, 0, "opt");
-      paths[paths.length - 1] = tmp.join(".");
-      oneToolList[toolIndex].options[optionIndex].optionValue = paths.join(divisor);
-      break;
-    }
-    case "one-quantize": {
-      if (tmp.includes('opt')) {
-        tmp[tmp.indexOf('opt')] = "quantized";
-      } else {
-        tmp.splice(tmp.length - 1, 0, "quantized");
-      }
-      paths[paths.length - 1] = tmp.join(".");
-      oneToolList[toolIndex].options[optionIndex].optionValue = paths.join(divisor);
-      break;
-    }
-    case "one-pack": {
-      while (tmp.length > 1) {
-        tmp.splice(1, 1);
-      }
-      tmp[0] += "_pack";
-      paths[paths.length - 1] = tmp.join(".");
-      oneToolList[toolIndex].options[optionIndex].optionValue = paths.join(divisor);
-      break;
-    }
-    default: {
-      tmp[tmp.length - 1] = "circle";
-      paths[paths.length - 1] = tmp.join(".");
-      oneToolList[toolIndex].options[optionIndex].optionValue = paths.join(divisor);
-    }
-  }
-  return oneToolList[toolIndex].options[optionIndex].optionValue
-};
 
-// autoCompletePath make output_path based on input_path and copy former output_path to next input_path
-// for example, in import if input_path is 'filename.pb', then output_path will be 'filename.circle' automatically
-// and then in optimize output_path will be 'filename.opt.circle` automatically
-const autoCompletePath = function (tool) {
+
+// autoCompletePath make output_path based on input_path and copy former output_path to next
+// input_path for example, in import if input_path is 'filename.pb', then output_path will be
+// 'filename.circle' automatically and then in optimize output_path will be 'filename.opt.circle`
+// automatically
+const autoCompletePath = function(tool) {
   // tool argument decides which location to start
   const index = oneToolList.indexOf(tool);
   for (let i = index; i < oneToolList.length; i++) {
     if (oneToolList[i].use === true) {
-      let input = "";
-      for (let j = 0; j < oneToolList[i].options.length; j++) {
-        // if input_path is filled with something, then complete output_path based on input_path
-        if (
-          oneToolList[i].options[j].optionName === "input_path" &&
-          oneToolList[i].options[j].optionValue.trim() !== ""
-        ) {
-          input = oneToolList[i].options[j].optionValue;
-          // complete output path, change ouput_path file name depend on tool(ex) optimize, quantize, pack, import)
-        } else if (oneToolList[i].options[j].optionName === "output_path") {
-          let formerOutput = ''
-          if (input.trim() !== "") {
-              formerOutput = makeOutputAuto(input,i,j)
-          } else {
-            if (oneToolList[i].option[j].optionValue.trim() !== "") {
-              formerOutput = oneToolList[i].option[j].optionValue
-            }
-          }
-          // next input_path has to be same with former output_path, so change next input_path same as former output_path
-          if (formerOutput !== '') {
-            outputToInput(i, formerOutput)
-          }
-        }
+      const inputPath = getInputPath(oneToolList[i]);
+      let outputPath = '';
+      if (inputPath.trim() !== '') {
+        outputPath = makeOutputPath(oneToolList[i], inputPath);
+        setOutputPath(oneToolList[i], outputPath);
+      } else {
+        outputPath = getOutputPath(oneToolList[i]);
+      }
+      if (outputPath.trim() !== '') {
+        outputToInput(i, outputPath);
       }
     }
   }

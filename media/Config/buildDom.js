@@ -60,8 +60,8 @@ const emptyOptionBox = function (isImport) {
 
 // makeToggle button for tool's option
 const makeToggleBtn = function (tool, index) {
-  const LabelTag = document.createElement("label");
-  LabelTag.classList.add("switch");
+  const labelTag = document.createElement("label");
+  labelTag.classList.add("switch");
   const inputTag = document.createElement("input");
   inputTag.type = "checkbox";
   if (tool.options[index].optionValue === true) {
@@ -77,10 +77,10 @@ const makeToggleBtn = function (tool, index) {
   const spanTag = document.createElement("span");
   spanTag.classList.add("slider");
   spanTag.classList.add("round");
-  LabelTag.appendChild(inputTag);
-  LabelTag.appendChild(spanTag);
-  return LabelTag
-}
+  labelTag.appendChild(inputTag);
+  labelTag.appendChild(spanTag);
+  return labelTag;
+};
 
 // make input tag for tool's option
 const makeInputTag = function (tool, index) {
@@ -91,8 +91,8 @@ const makeInputTag = function (tool, index) {
   inputTag.addEventListener("change", function (event) {
     tool.options[index].optionValue = event.target.value;
   });
-  return inputTag
-}
+  return inputTag;
+};
 
 // make select tag for tool's option
 const makeSelectTag = function (tool, index) {
@@ -109,10 +109,9 @@ const makeSelectTag = function (tool, index) {
   select.addEventListener("change", function (event) {
     tool.options[index].optionValue =
       select[event.target.selectedIndex].value;
-    console.log(tool)
   });
-  return select
-}
+  return select;
+};
 
 // make input tag for input_path
 const makeInputPathInput = function(tool, index) {
@@ -126,8 +125,8 @@ const makeInputPathInput = function(tool, index) {
   if (tool.options[index].optionValue.trim() !== "") {
     inputTag.value = tool.options[index].optionValue;
   } 
-  return inputTag
-}
+  return inputTag;
+};
 
 // make button tag for input_path
 const makeInputPathBtn = function(tool) {
@@ -136,8 +135,8 @@ const makeInputPathBtn = function(tool) {
   btnTag.addEventListener("click", function () {
     sendMessage("inputPath", tool.type);
   });
-  return btnTag
-}
+  return btnTag;
+};
 
 // make input tag for output_path
 const makeOutputPathInput = function(tool, index) {
@@ -150,8 +149,8 @@ const makeOutputPathInput = function(tool, index) {
     tool.options[index].optionValue = event.target.value;
     autoCompletePath(tool);
   });
-  return inputTag
-}
+  return inputTag;
+};
 
 const changeCommonTags = function(tool) {
   // change tool name and change toggle button
@@ -174,7 +173,7 @@ const changeCommonTags = function(tool) {
       }
       autoCompletePath(tool);
       emptyOptionBox(false);
-      buildOptionDom(tool)
+      buildOptionDom(tool);
     });
     const optionFieldset = document.querySelector("#options");
     if (tool.use === true) {
@@ -185,11 +184,11 @@ const changeCommonTags = function(tool) {
       optionFieldset.disabled = true;
     }
   }
-}
+};
 
 // build DOM for selected tool
 const buildOptionDom = function (tool) {
-    changeCommonTags(tool)
+    changeCommonTags(tool);
     // make tags for options
     const optionsNameTag = document.querySelector("#optionsName");
     const optionsValueTag = document.querySelector("#optionsValue");
@@ -201,12 +200,12 @@ const buildOptionDom = function (tool) {
       // case for select tag
       if (tool.options[i].optionType) {
         nameLiTag.innerText = tool.options[i].optionName;
-        const select = makeSelectTag(tool, i)
+        const select = makeSelectTag(tool, i);
         valueLiTag.appendChild(select);
       } else {
         // case for toggle button
         if (typeof tool.options[i].optionValue === "boolean") {
-          const toggleBtn = makeToggleBtn(tool, i)
+          const toggleBtn = makeToggleBtn(tool, i);
           valueLiTag.appendChild(toggleBtn);
           nameLiTag.innerText = tool.options[i].optionName;
           // case for input tag
@@ -214,16 +213,16 @@ const buildOptionDom = function (tool) {
           nameLiTag.innerText = tool.options[i].optionName;
           // input_path needs path for real file so it needs explorer
           if (tool.options[i].optionName === "input_path") {
-            const btnTag = makeInputPathBtn(tool)
-            const inputTag = makeInputPathInput(tool, i)
+            const btnTag = makeInputPathBtn(tool);
+            const inputTag = makeInputPathInput(tool, i);
             valueLiTag.appendChild(inputTag);
             valueLiTag.appendChild(btnTag);
           // output_path option is diffrent from other option because of autocompletion
           } else if (tool.options[i].optionName === "output_path") {
-            const inputTag = makeOutputPathInput(tool, i)
+            const inputTag = makeOutputPathInput(tool, i);
             valueLiTag.appendChild(inputTag);
           } else {
-            const inputTag = makeInputTag(tool, i)
+            const inputTag = makeInputTag(tool, i);
             valueLiTag.appendChild(inputTag);
           }
         }
@@ -239,13 +238,13 @@ const chooseImportOption = function(index) {
   for (let i = 0; i < oneImport.options.length; i++) {
     if (i === index) {
       oneImport.options[i].optionValue = true;
-      oneImportOptions[i].use = true
+      oneImportOptions[i].use = true;
     } else {
       oneImport.options[i].optionValue = false;
-      oneImportOptions[i].use = false
+      oneImportOptions[i].use = false;
     }
   }
-}
+};
 
 // function for selecting framework
 const changeSelect = function (event) {
@@ -253,22 +252,22 @@ const changeSelect = function (event) {
     const selectedText = event.target.options[event.target.selectedIndex].text;
     switch (selectedText) {
       case "bcq": {
-        chooseImportOption(0)
+        chooseImportOption(0);
         buildOptionDom(oneImportBcq);
         break;
       }
       case "onnx": {
-        chooseImportOption(1)
+        chooseImportOption(1);
         buildOptionDom(oneImportOnnx);
         break;
       }
       case "tf": {
-        chooseImportOption(2)
+        chooseImportOption(2);
         buildOptionDom(oneImportTf);
         break;
       }
       case "tflite": {
-        chooseImportOption(3)
+        chooseImportOption(3);
         buildOptionDom(oneImportTflite);
         break;
       }
