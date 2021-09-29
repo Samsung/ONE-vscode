@@ -14,28 +14,19 @@
  * limitations under the License.
  */
 
-import {ToolArgs} from './ToolArgs';
+import * as vscode from 'vscode';
 
-export interface Job {
-  jobType: Job.Type;
-  name: string;
-  valid: boolean;
-  tool: string;
-  toolArgs: ToolArgs;
+export class CodelensProvider implements vscode.CodeLensProvider {
+  constructor() {}
+
+  public provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken):
+      vscode.CodeLens[]|Thenable<vscode.CodeLens[]> {
+    // TODO implement
+    return [];
+  }
+
+  public resolveCodeLens(codeLens: vscode.CodeLens, token: vscode.CancellationToken) {
+    // TODO implement
+    return null;
+  }
 }
-
-export namespace Job {
-
-export const enum Type {
-  tUndefined = 0,  // TODO maybe use Job.jobType = undefined?
-  tImportTF = 1,
-  tImportTFLite,
-  tImportONNX,
-  tOptimize,
-  tQuantize,
-  tPack,
-  tCodegen,
-  // TODO add more
-}
-
-}  // namespace Job

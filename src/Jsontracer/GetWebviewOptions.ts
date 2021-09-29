@@ -14,28 +14,15 @@
  * limitations under the License.
  */
 
-import {ToolArgs} from './ToolArgs';
+import * as vscode from 'vscode';
 
-export interface Job {
-  jobType: Job.Type;
-  name: string;
-  valid: boolean;
-  tool: string;
-  toolArgs: ToolArgs;
+export function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {
+  return {
+    // Enable javascript in the webview
+    enableScripts: true,
+
+    // And restrict the webview to only loading content from our extension's `media/Jsontracer`
+    // directories.
+    localResourceRoots: [vscode.Uri.joinPath(extensionUri, 'media/Jsontracer')]
+  };
 }
-
-export namespace Job {
-
-export const enum Type {
-  tUndefined = 0,  // TODO maybe use Job.jobType = undefined?
-  tImportTF = 1,
-  tImportTFLite,
-  tImportONNX,
-  tOptimize,
-  tQuantize,
-  tPack,
-  tCodegen,
-  // TODO add more
-}
-
-}  // namespace Job

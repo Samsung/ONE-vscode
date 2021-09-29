@@ -14,28 +14,13 @@
  * limitations under the License.
  */
 
-import {ToolArgs} from './ToolArgs';
+import * as vscode from 'vscode';
 
-export interface Job {
-  jobType: Job.Type;
-  name: string;
-  valid: boolean;
-  tool: string;
-  toolArgs: ToolArgs;
+export function createStatusBarItem(context: vscode.ExtensionContext) {
+  let myStatusBarItem: vscode.StatusBarItem;
+  myStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+  myStatusBarItem.text = `$(file-add) ONE configuration Settings`;
+  myStatusBarItem.command = 'onevscode.configuration-settings';
+  context.subscriptions.push(myStatusBarItem);
+  myStatusBarItem.show();
 }
-
-export namespace Job {
-
-export const enum Type {
-  tUndefined = 0,  // TODO maybe use Job.jobType = undefined?
-  tImportTF = 1,
-  tImportTFLite,
-  tImportONNX,
-  tOptimize,
-  tQuantize,
-  tPack,
-  tCodegen,
-  // TODO add more
-}
-
-}  // namespace Job

@@ -18,16 +18,18 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 
+import {Balloon} from '../Utils/Balloon';
+
 import {exportConfig} from './Dialog/ExportConfigDialog';
 import {importConfig} from './Dialog/ImportConfigDialog';
 import {getInputPath} from './Dialog/InputFileDialog';
 import {getNonce} from './GetNonce';
 
-export class ConfigurationSettingsPanel {
+export class ConfigPanel {
   /**
    * Track the currently panel. Only allow a single panel to exist at a time.
    */
-  public static currentPanel: ConfigurationSettingsPanel|undefined;
+  public static currentPanel: ConfigPanel|undefined;
 
   public static readonly viewType = 'one-vscode';
 
@@ -40,16 +42,15 @@ export class ConfigurationSettingsPanel {
         vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
 
     // If we already have a panel, show it.
-    if (ConfigurationSettingsPanel.currentPanel) {
-      ConfigurationSettingsPanel.currentPanel._panel.reveal(column);
-      ConfigurationSettingsPanel.currentPanel._update(context);
+    if (ConfigPanel.currentPanel) {
+      ConfigPanel.currentPanel._panel.reveal(column);
+      ConfigPanel.currentPanel._update(context);
       return;
     }
 
     // Otherwise, create a new panel.
     const panel = vscode.window.createWebviewPanel(
-        ConfigurationSettingsPanel.viewType, 'ConfigurationSettings',
-        column || vscode.ViewColumn.One, {
+        ConfigPanel.viewType, 'ConfigurationSettings', column || vscode.ViewColumn.One, {
           // Enable javascript in the webview
           enableScripts: true,
 
@@ -57,27 +58,26 @@ export class ConfigurationSettingsPanel {
           // extension"s `media` directory.
           localResourceRoots: [
             vscode.Uri.joinPath(context.extensionUri, 'media/Config'),
-            vscode.Uri.joinPath(context.extensionUri, 'out/compiled'),
           ],
         });
 
-    ConfigurationSettingsPanel.currentPanel = new ConfigurationSettingsPanel(panel, context);
+    ConfigPanel.currentPanel = new ConfigPanel(panel, context);
   }
 
   public static kill() {
-    ConfigurationSettingsPanel.currentPanel ?.dispose();
-    ConfigurationSettingsPanel.currentPanel = undefined;
+    ConfigPanel.currentPanel ?.dispose();
+    ConfigPanel.currentPanel = undefined;
   }
 
   public static revive(panel: vscode.WebviewPanel, context: vscode.ExtensionContext) {
-    ConfigurationSettingsPanel.currentPanel = new ConfigurationSettingsPanel(panel, context);
+    ConfigPanel.currentPanel = new ConfigPanel(panel, context);
   }
 
   private constructor(panel: vscode.WebviewPanel, context: vscode.ExtensionContext) {
     this._panel = panel;
     this._extensionUri = context.extensionUri;
 
-    // Set the webview"s initial html content
+    // Set the webview's initial html content
     this._update(context);
 
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
@@ -96,14 +96,14 @@ export class ConfigurationSettingsPanel {
           importConfig(newWebview);
           break;
         case 'alert':
-          vscode.window.showErrorMessage(data.payload);
+          Balloon.error(data.payload);
           break;
       }
     });
   }
 
   public dispose() {
-    ConfigurationSettingsPanel.currentPanel = undefined;
+    ConfigPanel.currentPanel = undefined;
 
     // Clean up our resources
     this._panel.dispose();
@@ -121,74 +121,50 @@ export class ConfigurationSettingsPanel {
     webview.html = this._getHtmlForWebview(webview, context);
   }
 
+  private getPathToFile(webview: vscode.Webview, fileName: string) {
+    return webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media/Config', fileName));
+  }
+
+  private replaceWord(html: string, re: RegExp, replaceWord: any) {
+    return html.replace(re, `${replaceWord}`);
+  }
+
   private _getHtmlForWebview(webview: vscode.Webview, context: vscode.ExtensionContext) {
     // And the uri we use to load this script in the webview
-    const toolsScriptUri =
-        webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'tools.js'));
-
-    const DOMScriptUri =
-        webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'DOM.js'));
-
-    const indexScriptUri =
-        webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'index.js'));
-
-    const pathAutoCommpleteScriptUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'pathAutoComplete.js'));
-
-    const sendToPanelScriptUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'sendToPanel.js'));
-
-    const configValidationScriptUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'configValidation.js'));
-
-    const importConfigScriptUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'importConfig.js'));
-
-    const exportConfigScriptUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'exportConfig.js'));
-
-    const receiveFromPanelScriptUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'receiveFromPanel.js'));
+    const toolsScriptUri = this.getPathToFile(webview, 'tools.js');
+    const pathAutoCompleteScriptUri = this.getPathToFile(webview, 'pathAutoComplete.js');
+    const sendToPanelScriptUri = this.getPathToFile(webview, 'sendToPanel.js');
+    const configValidationScriptUri = this.getPathToFile(webview, 'configValidation.js');
+    const importConfigScriptUri = this.getPathToFile(webview, 'importConfig.js');
+    const exportConfigScriptUri = this.getPathToFile(webview, 'exportConfig.js');
+    const receiveFromPanelScriptUri = this.getPathToFile(webview, 'receiveFromPanel.js');
+    const buildDomScriptUri = this.getPathToFile(webview, 'buildDom.js');
+    const indexScriptUri = this.getPathToFile(webview, 'index.js');
 
     // Uri to load styles into webview
-    const stylesResetUri =
-        webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'reset.css'));
-    const stylesMainUri =
-        webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media/Config', 'vscode.css'));
+    const stylesResetUri = this.getPathToFile(webview, 'reset.css');
+    const stylesMainUri = this.getPathToFile(webview, 'vscode.css');
 
     // Use a nonce to only allow specific scripts to be run
     const nonce = getNonce();
 
     // Get html file for webview
     const filePath: vscode.Uri =
-        vscode.Uri.file(path.join(context.extensionPath, 'media', 'Config', 'Config.html'));
+        vscode.Uri.file(path.join(context.extensionPath, 'media', 'Config', 'index.html'));
     let html = fs.readFileSync(filePath.fsPath, 'utf8');
-    let re = /\${stylesResetUri}/gi;
-    html = html.replace(re, `${stylesResetUri}`);
-    re = /\${webview.cspSource}/gi;
-    html = html.replace(re, `${webview.cspSource}`);
-    re = /\${stylesMainUri}/gi;
-    html = html.replace(re, `${stylesMainUri}`);
-    re = /\${nonce}/gi;
-    html = html.replace(re, `${nonce}`);
-    re = /\${indexScriptUri}/gi;
-    html = html.replace(re, `${indexScriptUri}`);
-    re = /\${toolsScriptUri}/gi;
-    html = html.replace(re, `${toolsScriptUri}`);
-    re = /\${pathAutoCompleteScriptUri}/gi;
-    html = html.replace(re, `${pathAutoCommpleteScriptUri}`);
-    re = /\${importConfigScriptUri}/gi;
-    html = html.replace(re, `${importConfigScriptUri}`);
-    re = /\${exportConfigScriptUri}/gi;
-    html = html.replace(re, `${exportConfigScriptUri}`);
-    re = /\${sendToPanelScriptUri}/gi;
-    html = html.replace(re, `${sendToPanelScriptUri}`);
-    re = /\${configValidationScriptUri}/gi;
-    html = html.replace(re, `${configValidationScriptUri}`);
-    re = /\${DOMScriptUri}/gi;
-    html = html.replace(re, `${DOMScriptUri}`);
-    re = /\${receiveFromPanelScriptUri}/gi;
-    html = html.replace(re, `${receiveFromPanelScriptUri}`);
+    html = this.replaceWord(html, /\${stylesResetUri}/gi, stylesResetUri);
+    html = this.replaceWord(html, /\${stylesMainUri}/gi, stylesMainUri);
+    html = this.replaceWord(html, /\${webview.cspSource}/gi, webview.cspSource);
+    html = this.replaceWord(html, /\${nonce}/gi, nonce);
+    html = this.replaceWord(html, /\${toolsScriptUri}/gi, toolsScriptUri);
+    html = this.replaceWord(html, /\${pathAutoCompleteScriptUri}/gi, pathAutoCompleteScriptUri);
+    html = this.replaceWord(html, /\${sendToPanelScriptUri}/gi, sendToPanelScriptUri);
+    html = this.replaceWord(html, /\${configValidationScriptUri}/gi, configValidationScriptUri);
+    html = this.replaceWord(html, /\${importConfigScriptUri}/gi, importConfigScriptUri);
+    html = this.replaceWord(html, /\${exportConfigScriptUri}/gi, exportConfigScriptUri);
+    html = this.replaceWord(html, /\${receiveFromPanelScriptUri}/gi, receiveFromPanelScriptUri);
+    html = this.replaceWord(html, /\${buildDomScriptUri}/gi, buildDomScriptUri);
+    html = this.replaceWord(html, /\${indexScriptUri}/gi, indexScriptUri);
     return html;
   }
 }

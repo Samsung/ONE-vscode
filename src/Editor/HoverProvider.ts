@@ -14,28 +14,14 @@
  * limitations under the License.
  */
 
-import {ToolArgs} from './ToolArgs';
+import * as vscode from 'vscode';
 
-export interface Job {
-  jobType: Job.Type;
-  name: string;
-  valid: boolean;
-  tool: string;
-  toolArgs: ToolArgs;
+export class HoverProvider implements vscode.HoverProvider {
+  provideHover(
+      _doc:
+          {getWordRangeAtPosition: (arg0: any, arg1: RegExp) => any; getText: (arg0: any) => any;},
+      _position: any, _token: any) {
+    // TODO implement
+    return null;
+  }
 }
-
-export namespace Job {
-
-export const enum Type {
-  tUndefined = 0,  // TODO maybe use Job.jobType = undefined?
-  tImportTF = 1,
-  tImportTFLite,
-  tImportONNX,
-  tOptimize,
-  tQuantize,
-  tPack,
-  tCodegen,
-  // TODO add more
-}
-
-}  // namespace Job

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Refer https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/nonce for Nonce
 export function getNonce() {
   let text = '';
   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
