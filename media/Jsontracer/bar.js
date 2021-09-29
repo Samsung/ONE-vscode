@@ -45,30 +45,78 @@
 // This file referenced the result of
 // https://github.com/catapult-project/catapult/tree/444aba89e1c30edf348c611a9df79e2376178ba8/tracing
 
-import renderBar from './bar.js';
+// TODO import {renderMultipleDetail, renderSingleDetail} from './detail.js';
 
-export default function renderCategory(timeLimit, title, data) {
-  const levelContainerList = document.querySelectorAll('.level-container');
-  const levelContainer = levelContainerList[levelContainerList.length - 1];
+export default function renderBar(timeLimit, data) {
+  const barLists = document.querySelectorAll('.bar-list');
+  const barList = barLists[barLists.length - 1];
 
-  const categoryContainer = document.createElement('section');
-  categoryContainer.className = 'category-container';
+  const bar = document.createElement('div');
+  bar.className = 'bar';
+  bar.style.left = `${data.ts / timeLimit * 100}%`;
+  bar.style.width = `${data.dur / timeLimit * 100}%`;
+  bar.style.backgroundColor = `${data.backgroundColor}`;
 
-  const categoryHeader = document.createElement('header');
-  categoryHeader.className = 'category-header';
+  Object.keys(data).map(key => {
+    if (key === 'args') {
+      const args = data[key];
+      const argList = Object.keys(args).map(key => {
+        return `${key} : ${args[key]}`;
+      });
+      bar.dataset['args'] = argList.join('.#/#.');
+    } else {
+      bar.dataset[`${key}`] = data[key];
+    }
+  });
 
-  const categoryTitle = document.createElement('div');
-  categoryTitle.className = 'category-title';
-  categoryTitle.innerText = title;
+  bar.addEventListener('click', event => {
+    removeDetail();
+    if (event.ctrlKey) {
+      addSelectedBar(event.target.className === 'bar' ? event.target : event.target.parentNode);
+      // TODO renderMultipleDetail();
+    } else {
+      removeSelectedBar();
+      // TODO renderSingleDetail(
+      //     event.target.className === 'bar' ? event.target.dataset :
+      //                                        event.target.parentNode.dataset);
+    }
+  });
 
-  const barList = document.createElement('section');
-  barList.className = 'bar-list';
+  const barTitle = document.createElement('div');
+  barTitle.className = 'bar-title';
+  barTitle.innerText = data['name'];
 
-  categoryHeader.append(categoryTitle);
-  categoryContainer.append(categoryHeader, barList);
-  levelContainer.append(categoryContainer);
+  bar.append(barTitle);
+  barList.append(bar);
+}
 
-  data.forEach(element => {
-    renderBar(timeLimit, element);
+function addSelectedBar(ele) {
+  const selectedOpList = document.querySelectorAll('.selected-op');
+  for (const selectedOp of selectedOpList) {
+    if (selectedOp.dataset['pk'] === ele.dataset['pk']) {
+      return;
+    }
+  }
+
+  const selected = document.querySelector('.selected');
+  const op = document.createElement('div');
+  op.className = 'selected-op';
+  Object.keys(ele.dataset).forEach(key => {
+    op.dataset[key] = ele.dataset[key];
+  });
+  selected.append(op);
+}
+
+function removeSelectedBar() {
+  const selected = document.querySelector('.selected');
+  while (selected.hasChildNodes()) {
+    selected.removeChild(selected.firstChild);
+  }
+}
+
+function removeDetail() {
+  const details = document.querySelectorAll('.detail');
+  details.forEach(detail => {
+    detail.remove();
   });
 }
