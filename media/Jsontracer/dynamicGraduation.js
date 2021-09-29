@@ -42,24 +42,25 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-// This file referenced the result of https://github.com/catapult-project/catapult/tree/444aba89e1c30edf348c611a9df79e2376178ba8/tracing
+// This file referenced the result of
+// https://github.com/catapult-project/catapult/tree/444aba89e1c30edf348c611a9df79e2376178ba8/tracing
 
 export default function dynamicGraduation() {
-  const ruler = document.querySelector(".ruler");
+  const ruler = document.querySelector('.ruler');
 
   if (!ruler) {
     return;
   }
-  
-  const graduation = document.querySelector(".graduation");
-  const graduationList = document.querySelectorAll(".graduation");
-  const body = document.querySelector("body");
-  const rulerBlank = document.querySelector(".ruler-blank");
+
+  const graduation = document.querySelector('.graduation');
+  const graduationList = document.querySelectorAll('.graduation');
+  const body = document.querySelector('body');
+  const rulerBlank = document.querySelector('.ruler-blank');
   const staticRulerWidth = body.clientWidth - rulerBlank.clientWidth;
 
-  const setData = document.querySelector(".set-data");
-  const timeLimit = setData.dataset["timeLimit"];
-  const digit = setData.dataset["digit"];
+  const setData = document.querySelector('.set-data');
+  const timeLimit = setData.dataset['timeLimit'];
+  const digit = setData.dataset['digit'];
   const initGraduationCnt = timeLimit / 10 ** (digit - 1);
   const staticGraduationWidth = parseInt(staticRulerWidth / initGraduationCnt);
 
@@ -75,23 +76,23 @@ export default function dynamicGraduation() {
 
 function removeGraduation(ruler, cnt) {
   for (let i = 0; i < cnt / 2; i++) {
-    const graduation = document.querySelector(".graduation");
+    const graduation = document.querySelector('.graduation');
     ruler.removeChild(graduation);
   }
 }
 
 function addGraduation(ruler, cnt) {
   for (let i = 0; i < cnt; i++) {
-    const tempGraduation = document.createElement("div");
-    tempGraduation.className = "graduation";
+    const tempGraduation = document.createElement('div');
+    tempGraduation.className = 'graduation';
 
     for (let i = 0; i < 5; i++) {
-      const tempSmallGraduation = document.createElement("div");
-      tempSmallGraduation.className = "small-graduation";
+      const tempSmallGraduation = document.createElement('div');
+      tempSmallGraduation.className = 'small-graduation';
 
       if (i === 0) {
-        const index = document.createElement("div");
-        index.className = "index";
+        const index = document.createElement('div');
+        index.className = 'index';
         tempSmallGraduation.append(index);
       }
 
@@ -103,7 +104,7 @@ function addGraduation(ruler, cnt) {
 
 function updateGraduation(ruler, timeLimit) {
   const rulerWidth = ruler.scrollWidth;
-  const allGraduation = document.querySelectorAll(".graduation");
+  const allGraduation = document.querySelectorAll('.graduation');
   let left = 0;
 
   allGraduation.forEach(ele => {
@@ -114,12 +115,12 @@ function updateGraduation(ruler, timeLimit) {
 
 function calculateGraduation(graduation) {
   if (graduation >= 1000) {
-    return Math.round((graduation / 1000) * 10) / 10 + "ms";
+    return Math.round((graduation / 1000) * 10) / 10 + 'ms';
   } else if (graduation >= 1) {
-    return Math.round(graduation) + "us";
+    return Math.round(graduation) + 'us';
   } else if (graduation === 0) {
     return 0;
   } else {
-    return Math.round(graduation * 1000 * 10) / 10 + "ns";
+    return Math.round(graduation * 1000 * 10) / 10 + 'ns';
   }
 }

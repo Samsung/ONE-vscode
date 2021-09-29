@@ -42,34 +42,37 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-// This file referenced the result of https://github.com/catapult-project/catapult/tree/444aba89e1c30edf348c611a9df79e2376178ba8/tracing
+// This file referenced the result of
+// https://github.com/catapult-project/catapult/tree/444aba89e1c30edf348c611a9df79e2376178ba8/tracing
 
-import openFileSelector from "./processData.js";
-import dynamicGraduation from "./dynamicGraduation.js";
+import dynamicGraduation from './dynamicGraduation.js';
+import openFileSelector from './processData.js';
 
-const graph = document.querySelector(".graph");
+const graph = document.querySelector('.graph');
 const sliderMaxLimit = 6400;
 const sliderMinLimit = 100;
 
-const loadBtn = document.querySelector(".load-btn");
-loadBtn.addEventListener("click", () => {
+const loadBtn = document.querySelector('.load-btn');
+loadBtn.addEventListener('click', () => {
   initData();
   openFileSelector();
 });
 
 let ratio = 100;
-const slider = document.querySelector("input");
-slider.addEventListener("input", event => {
+const slider = document.querySelector('input');
+slider.addEventListener('input', event => {
   ratio = event.target.value * 1;
   graph.style.width = `${ratio}%`;
   changeSlider(event.target.value, event.target.max, event.target.min);
   dynamicGraduation();
 });
 
-const zoomInBtn = document.querySelector(".zoom-in-btn");
-zoomInBtn.addEventListener("click", () => {
-  if (ratio >= 5000) { return; }
-  
+const zoomInBtn = document.querySelector('.zoom-in-btn');
+zoomInBtn.addEventListener('click', () => {
+  if (ratio >= 5000) {
+    return;
+  }
+
   // change ratio
   ratio += 50;
   ratio = ratio > 5000 ? 5000 : ratio;
@@ -85,9 +88,11 @@ zoomInBtn.addEventListener("click", () => {
   setTimeout(() => (zoomInBtn.disabled = false), 300);
 });
 
-const zoomOutBtn = document.querySelector(".zoom-out-btn");
-zoomOutBtn.addEventListener("click", () => {
-  if (ratio <= 100) { return; }
+const zoomOutBtn = document.querySelector('.zoom-out-btn');
+zoomOutBtn.addEventListener('click', () => {
+  if (ratio <= 100) {
+    return;
+  }
 
   // change ratio
   ratio -= 50;
@@ -104,20 +109,22 @@ zoomOutBtn.addEventListener("click", () => {
   setTimeout(() => (zoomOutBtn.disabled = false), 300);
 });
 
-const captureBtn = document.querySelector(".capture-btn");
-captureBtn.addEventListener("click", () => {
-  // TODO capture inside vscode extension webview
-});
+const captureBtn = document.querySelector('.capture-btn');
+captureBtn.addEventListener(
+    'click',
+    () => {
+        // TODO capture inside vscode extension webview
+    });
 
 function changeSlider(inputValue, inputMax, inputMin) {
   if (inputMax === inputValue) {
-    slider.max = String(Math.min(inputMax*2, sliderMaxLimit));
+    slider.max = String(Math.min(inputMax * 2, sliderMaxLimit));
     slider.value = String(inputMax);
-    slider.min = String(inputMax*0.5);
+    slider.min = String(inputMax * 0.5);
   } else if (inputMin === inputValue) {
-    slider.max = String(inputMin*2);
+    slider.max = String(inputMin * 2);
     slider.value = String(inputMin);
-    slider.min = String(Math.max(inputMin*0.5, sliderMinLimit));
+    slider.min = String(Math.max(inputMin * 0.5, sliderMinLimit));
   } else {
     return;
   }
@@ -133,9 +140,9 @@ function initData() {
   graph.style.width = `${ratio}%`;
 
   // init slider
-  slider.max = "200";
-  slider.min = "100";
-  slider.value = "100";
+  slider.max = '200';
+  slider.min = '100';
+  slider.value = '100';
 
   // init graph
   while (graph.hasChildNodes()) {
@@ -143,13 +150,13 @@ function initData() {
   }
 
   // init selected bar
-  const selected = document.querySelector(".selected");
+  const selected = document.querySelector('.selected');
   while (selected.hasChildNodes()) {
     selected.removeChild(selected.firstChild);
   }
 
   // init detail
-  const detail = document.querySelector(".detail");
+  const detail = document.querySelector('.detail');
   if (detail) {
     detail.remove();
   }

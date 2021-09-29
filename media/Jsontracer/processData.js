@@ -42,17 +42,18 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-// This file referenced the result of https://github.com/catapult-project/catapult/tree/444aba89e1c30edf348c611a9df79e2376178ba8/tracing
+// This file referenced the result of
+// https://github.com/catapult-project/catapult/tree/444aba89e1c30edf348c611a9df79e2376178ba8/tracing
 
-import renderDashboard from "./dashboard.js";
-import getColorList from "./colorList.js";
+import getColorList from './colorList.js';
+import renderDashboard from './dashboard.js';
 
-const setData = document.querySelector(".set-data");
+const setData = document.querySelector('.set-data');
 
 export default function openFileSelector() {
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = "text/plain";
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'text/plain';
   input.onchange = (event) => {
     setFileName(event.target.files[0].name);
     processFile(event.target.files[0]);
@@ -61,7 +62,7 @@ export default function openFileSelector() {
 }
 
 function setFileName(name) {
-  const fileName = document.querySelector(".file-name");
+  const fileName = document.querySelector('.file-name');
   fileName.innerText = name;
 }
 
@@ -72,9 +73,9 @@ function processFile(file) {
     processData(data.traceEvents);
 
     // set data to DOM
-    setData.dataset["displayTimeUnit"] = data.displayTimeUnit;
+    setData.dataset['displayTimeUnit'] = data.displayTimeUnit;
   };
-  reader.readAsText(file, "euc-kr");
+  reader.readAsText(file, 'euc-kr');
 }
 
 function processData(data) {
@@ -109,8 +110,8 @@ function processData(data) {
     endTime = Math.max(endTime, ele.ts + ele.dur);
     utility[ele.pid] = utility[ele.pid] ? utility[ele.pid] + ele.dur : ele.dur;
 
-    ele["pk"] = idx;
-    ele["backgroundColor"] = backgroundColor[ele.name];
+    ele['pk'] = idx;
+    ele['backgroundColor'] = backgroundColor[ele.name];
 
     processedData[ele.pid][ele.tid].push(ele);
   });
@@ -123,8 +124,8 @@ function processData(data) {
   const timeLimit = Math.ceil(endTime / 10 ** (digit - 1)) * 10 ** (digit - 1);
 
   // set data to DOM
-  setData.dataset["digit"] = digit;
-  setData.dataset["timeLimit"] = timeLimit;
+  setData.dataset['digit'] = digit;
+  setData.dataset['timeLimit'] = timeLimit;
 
   // render dashboard
   renderDashboard(utility, timeLimit, digit, processedData);
