@@ -15,7 +15,6 @@
     "onCommand:onevscode.json-tracer",
     "onCommand:onevscode.configuration-settings",
     "onCommand:onevscode.toggle-codelens",
-    "onCommand:onevscode.barchart",
     "*"
   ],
   "main": "./out/extension.js",

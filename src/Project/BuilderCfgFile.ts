@@ -52,7 +52,6 @@ const K_CONVERTER_VERSION: string = 'converter_version';
 const K_BACKEND: string = 'backend';
 const K_COMMAND: string = 'command';
 
-
 /**
  * @brief onecc/one-build cfg importer
  */
