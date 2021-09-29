@@ -17,13 +17,11 @@
 // validator for input_path and output_path, this validator checks only for empty or not
 const pathValidator = function(tool) {
   for (let j = 0; j < tool.options.length; j++) {
-    if (tool.options[j].optionName === 'input_path' &&
-        tool.options[j].optionValue.trim() === '') {
+    if (tool.options[j].optionName === 'input_path' && tool.options[j].optionValue.trim() === '') {
       sendMessage('alert', `If you want to use ${tool.type}, then input_path is required`);
       return false;
     }
-    if (tool.options[j].optionName === 'output_path' &&
-        tool.options[j].optionValue.trim() === '') {
+    if (tool.options[j].optionName === 'output_path' && tool.options[j].optionValue.trim() === '') {
       sendMessage('alert', `If you want to use ${tool.type}, then output_path is required`);
       return false;
     }
