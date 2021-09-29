@@ -51,7 +51,7 @@ import renderLevel from './level.js';
 export default function renderDashboard(utility, timeLimit, digit, data) {
   // TODO renderRuler(timeLimit, digit);
   Object.keys(data).map(
-    key => {
-        renderLevel(timeLimit, key, utility[key], data[key]);
-    });
+      key => {
+          renderLevel(timeLimit, key, utility[key], data[key]);
+      });
 }
