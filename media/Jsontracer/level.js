@@ -42,14 +42,37 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-// This file referenced the result of https://github.com/catapult-project/catapult/tree/444aba89e1c30edf348c611a9df79e2376178ba8/tracing
+// This file referenced the result of
+// https://github.com/catapult-project/catapult/tree/444aba89e1c30edf348c611a9df79e2376178ba8/tracing
 
-// TODO import renderRuler from './ruler.js';
-import renderLevel from './level.js';
+// TODO import renderCategory from './category.js';
 
-export default function renderDashboard(utility, timeLimit, digit, data) {
-  // TODO renderRuler(timeLimit, digit);
+export default function renderLevel(timeLimit, title, usage, data) {
+  const graph = document.querySelector('.graph');
+
+  const levelContainer = document.createElement('section');
+  levelContainer.className = 'level-container';
+
+  const levelHeader = document.createElement('header');
+  levelHeader.className = 'level-header';
+  levelHeader.addEventListener('click', () => {
+    levelHeader.classList.toggle('fold');
+  });
+
+  const levelTitle = document.createElement('div');
+  levelTitle.className = 'level-title';
+  levelTitle.innerText = title;
+
+  const utility = document.createElement('span');
+  utility.className = 'utility';
+  utility.innerText = usage < 1 ? ' (' + usage * 100 + '%)' : '';
+
+  levelTitle.append(utility);
+  levelHeader.append(levelTitle);
+  levelContainer.append(levelHeader);
+  graph.append(levelContainer);
+
   Object.keys(data).map(key => {
-    renderLevel(timeLimit, key, utility[key], data[key]);
+    // TODO renderCategory(timeLimit, key, data[key]);
   });
 }
