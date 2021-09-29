@@ -45,35 +45,30 @@
 // This file referenced the result of
 // https://github.com/catapult-project/catapult/tree/444aba89e1c30edf348c611a9df79e2376178ba8/tracing
 
-import renderCategory from './category.js';
+// TODO import renderBar from './bar.js';
 
-export default function renderLevel(timeLimit, title, usage, data) {
-  const graph = document.querySelector('.graph');
+export default function renderCategory(timeLimit, title, data) {
+  const levelContainerList = document.querySelectorAll('.level-container');
+  const levelContainer = levelContainerList[levelContainerList.length - 1];
 
-  const levelContainer = document.createElement('section');
-  levelContainer.className = 'level-container';
+  const categoryContainer = document.createElement('section');
+  categoryContainer.className = 'category-container';
 
-  const levelHeader = document.createElement('header');
-  levelHeader.className = 'level-header';
-  levelHeader.addEventListener('click', () => {
-    levelHeader.classList.toggle('fold');
+  const categoryHeader = document.createElement('header');
+  categoryHeader.className = 'category-header';
+
+  const categoryTitle = document.createElement('div');
+  categoryTitle.className = 'category-title';
+  categoryTitle.innerText = title;
+
+  const barList = document.createElement('section');
+  barList.className = 'bar-list';
+
+  categoryHeader.append(categoryTitle);
+  categoryContainer.append(categoryHeader, barList);
+  levelContainer.append(categoryContainer);
+
+  data.forEach(element => {
+    // TODO renderBar(timeLimit, element);
   });
-
-  const levelTitle = document.createElement('div');
-  levelTitle.className = 'level-title';
-  levelTitle.innerText = title;
-
-  const utility = document.createElement('span');
-  utility.className = 'utility';
-  utility.innerText = usage < 1 ? ' (' + usage * 100 + '%)' : '';
-
-  levelTitle.append(utility);
-  levelHeader.append(levelTitle);
-  levelContainer.append(levelHeader);
-  graph.append(levelContainer);
-
-  Object.keys(data).map(
-      key => {
-          renderCategory(timeLimit, key, data[key]);
-      });
 }
