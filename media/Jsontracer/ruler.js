@@ -45,7 +45,7 @@
 // This file referenced the result of
 // https://github.com/catapult-project/catapult/tree/444aba89e1c30edf348c611a9df79e2376178ba8/tracing
 
-import calculateGraduation from './calculateGraduation.js'
+import calculateGraduation from './calculateGraduation.js';
 
 export default function renderRuler(timeLimit, digit) {
   const graph = document.querySelector('.graph');
