@@ -134,7 +134,7 @@ export class ConfigPanel {
     const toolsScriptUri = this.getPathToFile(webview, 'tools.js');
     const pathAutoCompleteScriptUri = this.getPathToFile(webview, 'pathAutoComplete.js');
     const sendToPanelScriptUri = this.getPathToFile(webview, 'sendToPanel.js');
-    const configValidationScriptUri = this.getPathToFile(webview, 'configValidation.js');
+    const configValidatorScriptUri = this.getPathToFile(webview, 'configValidator.js');
     const importConfigScriptUri = this.getPathToFile(webview, 'importConfig.js');
     const exportConfigScriptUri = this.getPathToFile(webview, 'exportConfig.js');
     const receiveFromPanelScriptUri = this.getPathToFile(webview, 'receiveFromPanel.js');
@@ -159,7 +159,7 @@ export class ConfigPanel {
     html = this.replaceWord(html, /\${toolsScriptUri}/gi, toolsScriptUri);
     html = this.replaceWord(html, /\${pathAutoCompleteScriptUri}/gi, pathAutoCompleteScriptUri);
     html = this.replaceWord(html, /\${sendToPanelScriptUri}/gi, sendToPanelScriptUri);
-    html = this.replaceWord(html, /\${configValidationScriptUri}/gi, configValidationScriptUri);
+    html = this.replaceWord(html, /\${configValidatorScriptUri}/gi, configValidatorScriptUri);
     html = this.replaceWord(html, /\${importConfigScriptUri}/gi, importConfigScriptUri);
     html = this.replaceWord(html, /\${exportConfigScriptUri}/gi, exportConfigScriptUri);
     html = this.replaceWord(html, /\${receiveFromPanelScriptUri}/gi, receiveFromPanelScriptUri);
