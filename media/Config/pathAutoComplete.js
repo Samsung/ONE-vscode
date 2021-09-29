@@ -90,11 +90,18 @@ const autoCompletePath = function (tool) {
           input = oneToolList[i].options[j].optionValue;
           // complete output path, change ouput_path file name depend on tool(ex) optimize, quantize, pack, import)
         } else if (oneToolList[i].options[j].optionName === "output_path") {
+          let formerOutput = ''
           if (input.trim() !== "") {
               formerOutput = makeOutputAuto(input,i,j)
+          } else {
+            if (oneToolList[i].option[j].optionValue.trim() !== "") {
+              formerOutput = oneToolList[i].option[j].optionValue
+            }
           }
           // next input_path has to be same with former output_path, so change next input_path same as former output_path
-          outputToInput(i, formerOutput)
+          if (formerOutput !== '') {
+            outputToInput(i, formerOutput)
+          }
         }
       }
     }
