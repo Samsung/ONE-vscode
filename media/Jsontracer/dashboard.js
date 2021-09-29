@@ -42,14 +42,16 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-// This file referenced the result of https://github.com/catapult-project/catapult/tree/444aba89e1c30edf348c611a9df79e2376178ba8/tracing
+// This file referenced the result of
+// https://github.com/catapult-project/catapult/tree/444aba89e1c30edf348c611a9df79e2376178ba8/tracing
 
 // TODO import renderRuler from './ruler.js';
 // TODO import renderLevel from './level.js';
 
 export default function renderDashboard(utility, timeLimit, digit, data) {
   // TODO renderRuler(timeLimit, digit);
-  Object.keys(data).map(key => {
-    // TODO renderLevel(timeLimit, key, utility[key], data[key]);
-  });
+  Object.keys(data).map(
+      key => {
+          // TODO renderLevel(timeLimit, key, utility[key], data[key]);
+      });
 }
