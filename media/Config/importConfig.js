@@ -17,10 +17,10 @@
 /**
  * @brief oneImportTools will import ONE-import tool of cfg file to webview
  * @param data 2D array that holds all options and values of ONE import tools
- * @importOpt option names of ONE-import tool
- * @tool name of ONE-import tool
- * @idx Integer index of ONE-import tools
- * @defaultImportObject ONE-import object of tools.js
+ * @param importOpt option names of ONE-import tool
+ * @param tool name of ONE-import tool
+ * @param idx Integer index of ONE-import tools
+ * @param defaultImportObject ONE-import object of tools.js
  */
 const oneImportTools = function(data, importOpt, tool, idx, defaultImportObject) {
   oneImport.use = true;
