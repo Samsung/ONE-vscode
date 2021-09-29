@@ -88,6 +88,7 @@ function mapToRulergraduation(timeLimit, digit) {
   }
 }
 
+// TODO Reduce duplicate function
 function calculateGraduation(graduation) {
   if (graduation >= 1000) {
     return Math.round((graduation / 1000) * 10) / 10 + 'ms';
