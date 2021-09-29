@@ -45,12 +45,57 @@
 // This file referenced the result of
 // https://github.com/catapult-project/catapult/tree/444aba89e1c30edf348c611a9df79e2376178ba8/tracing
 
-import renderLevel from './level.js';
-import renderRuler from './ruler.js';
+export default function renderRuler(timeLimit, digit) {
+  const graph = document.querySelector('.graph');
 
-export default function renderDashboard(utility, timeLimit, digit, data) {
-  renderRuler(timeLimit, digit);
-  Object.keys(data).map(key => {
-    renderLevel(timeLimit, key, utility[key], data[key]);
-  });
+  const rulerContainer = document.createElement('div');
+  rulerContainer.className = 'ruler-container';
+
+  const rulerBlank = document.createElement('div');
+  rulerBlank.className = 'ruler-blank';
+
+  const ruler = document.createElement('div');
+  ruler.className = 'ruler';
+
+  rulerContainer.append(rulerBlank, ruler);
+  graph.append(rulerContainer);
+
+  mapToRulergraduation(timeLimit, digit);
+}
+
+function mapToRulergraduation(timeLimit, digit) {
+  const ruler = document.querySelector('.ruler');
+
+  for (let i = 0; i < parseInt(timeLimit / 10 ** (digit - 1)); i++) {
+    const graduation = document.createElement('div');
+    graduation.className = 'graduation';
+
+    for (let j = 0; j < 5; j++) {
+      const smallGraduation = document.createElement('div');
+      smallGraduation.className = 'small-graduation';
+
+      if (j === 0) {
+        const index = document.createElement('div');
+        index.className = 'index';
+        index.innerText = calculateGraduation(i * 10 ** (digit - 1));
+        smallGraduation.append(index);
+      }
+
+      graduation.append(smallGraduation);
+    }
+
+    ruler.append(graduation);
+  }
+}
+
+function calculateGraduation(graduation) {
+  if (graduation >= 1000) {
+    return Math.round((graduation / 1000) * 10) / 10 + 'ms';
+  } else if (graduation >= 1) {
+    return Math.round(graduation) + 'us';
+  } else if (graduation === 0) {
+    return 0;
+  } else {
+    return Math.round(graduation * 1000 * 10) / 10 + 'ns';
+  }
 }
