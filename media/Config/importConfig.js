@@ -40,8 +40,8 @@ const oneImportTools = function(data, importOpt, tool, idx, defaultImportObject)
 };
 
 /**
- * @brief oneOtherTools will import one-xxx of cfg file to webview execpt one-import-xxx. so user can
- * update .cfg file comfortably.
+ * @brief oneOtherTools will import one-xxx of cfg file to webview execpt one-import-xxx. so user
+ * can update .cfg file comfortably.
  * @param data 2D array that holds all options and values of one-xxx
  * @param importOpt option names of one-xxx
  * @param tool name of one-xxx tool
