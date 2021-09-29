@@ -1,0 +1,3 @@
+# Auto detect *.js, *.ts files and perform LF normalization
+*.js    text eol=lf
+*.ts    text eol=lf
