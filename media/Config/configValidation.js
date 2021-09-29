@@ -41,22 +41,22 @@ const pathValidator = function (target) {
     return false;
   };
   
-  // validator for backend, this validator checks only for empty or not
-  const backendValidator = function (target) {
-    for (let j = 0; j < target.options.length; j++) {
-      if (
-        target.options[j].optionName === "backend" &&
-        target.options[j].optionValue.trim() === ""
-      ) {
-        sendMessage(
-          "alert",
-          `If you want to use ${target.type}, then backend is required`
-        );
-        return true;
-      }
+// validator for backend, this validator checks only for empty or not
+const backendValidator = function (target) {
+  for (let j = 0; j < target.options.length; j++) {
+    if (
+      target.options[j].optionName === "backend" &&
+      target.options[j].optionValue.trim() === ""
+    ) {
+      sendMessage(
+        "alert",
+        `If you want to use ${target.type}, then backend is required`
+      );
+      return true;
     }
-    return false;
-  };
+  }
+  return false;
+};
 
 // before exprot, checks options whether they are valid or not
 const exportValidation = function () {
