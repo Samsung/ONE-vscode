@@ -24,6 +24,7 @@ import {Logger} from '../Utils/Logger';
 import {BuilderJob} from './BuilderJob';
 import {JobCodegen} from './JobCodegen';
 import {JobImportTF} from './JobImportTF';
+import {JobImportTFLite} from './JobImportTFLite';
 import {JobOptimize} from './JobOptimize';
 import {JobPack} from './JobPack';
 import {JobQuantize} from './JobQuantize';
@@ -83,6 +84,19 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
 
     console.log('importTF = ', importTF);
     this.jobOwner.addJob(importTF);
+    this.logger.outputLine('Add Import: ' + inputModel);
+  }
+
+  private cfgImportTflite(prop: any) {
+    let importTFlite = new JobImportTFLite();
+    importTFlite.inputPath = prop[K_INPUT_PATH];
+    importTFlite.outputPath = prop[K_OUTPUT_PATH];
+
+    let inputModel = path.basename(importTFlite.inputPath);
+    importTFlite.name = 'ImportTFlite ' + inputModel;
+
+    console.log('importTFlite = ', importTFlite);
+    this.jobOwner.addJob(importTFlite);
     this.logger.outputLine('Add Import: ' + inputModel);
   }
 
@@ -223,6 +237,9 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
     if (itemJob === K_IMPORT_TF) {
       let prop = cfgIni[itemJob];
       this.cfgImportTf(prop);
+    } else if (itemJob === K_IMPORT_TFLITE) {
+      let prop = cfgIni[itemJob];
+      this.cfgImportTflite(prop);
     }
     // TODO add other import jobs
 
