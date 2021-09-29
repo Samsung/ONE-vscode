@@ -25,7 +25,7 @@ const pathValidator = function (target) {
           "alert",
           `If you want to use ${target.type}, then input_path is required`
         );
-        return true;
+        return false;
       }
       if (
         target.options[j].optionName === "output_path" &&
@@ -35,10 +35,10 @@ const pathValidator = function (target) {
           "alert",
           `If you want to use ${target.type}, then output_path is required`
         );
-        return true;
+        return false;
       }
     }
-    return false;
+    return true;
   };
   
 // validator for backend, this validator checks only for empty or not
@@ -52,10 +52,10 @@ const backendValidator = function (target) {
         "alert",
         `If you want to use ${target.type}, then backend is required`
       );
-      return true;
+      return false;
     }
   }
-  return false;
+  return true;
 };
 
 // before exprot, checks options whether they are valid or not
@@ -75,33 +75,33 @@ const exportValidation = function () {
         );
         return false;
       } else {
-        if (pathValidator(oneImportOptions[chosenModelIndex])) {
+        if (!pathValidator(oneImportOptions[chosenModelIndex])) {
           return false;
         }
       }
     }
     if (oneOptimize.use === true) {
-      if (pathValidator(oneOptimize)) {
+      if (!pathValidator(oneOptimize)) {
         return false;
       }
     }
     if (oneQuantize.use === true) {
-      if (pathValidator(oneQuantize)) {
+      if (!pathValidator(oneQuantize)) {
         return false;
       }
     }
     if (onePack.use === true) {
-      if (pathValidator(onePack)) {
+      if (!pathValidator(onePack)) {
         return false;
       }
     }
     if (oneCodegen.use === true) {
-      if (backendValidator(oneCodegen)) {
+      if (!backendValidator(oneCodegen)) {
         return false;
       }
     }
     if (oneProfile.use === true) {
-      if (backendValidator(oneProfile)) {
+      if (!backendValidator(oneProfile)) {
         return false;
       }
     }
