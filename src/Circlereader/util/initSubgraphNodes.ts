@@ -7,10 +7,8 @@ export function initSubgraphNodes(subgraph: SubGraph): Array<Node> {
   for (let tensorIdx = 0; tensorIdx < subgraph.tensorsLength(); tensorIdx++) {
     let tensor = subgraph.tensors(tensorIdx);
 
-    let hashnode: Node = {
-      name: tensor!.name()!,
-      type: tensor!.shapeArray()!
-    }
+    let hashnode: Node = {name: tensor!.name()!, type: tensor!.shapeArray()!};
+
     nodesArr.push(hashnode);
   }
 
