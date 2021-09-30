@@ -4,11 +4,11 @@ import { Node, ModelOperator, NodeProperties, NodeAttributes, NodeInput, NodeOut
 import * as flatbuffers from 'flatbuffers';
 import { Model } from './circle-analysis/circle/model';
 import { BuiltinOptions } from './circle-analysis/circle/builtin-options'
-import { caseOptions } from './util/case-options';
-import { initBuiltInOperator } from './util/init-builtin-options';
-import { initSubgraphNodes } from './util/init-subgraph-nodes';
-import { getNodeInputs } from './util/get-node-inputs';
-import { getNodeOutputs } from './util/get-node-outputs';
+import { caseOptions } from './util/caseOptions';
+import { initBuiltInOperator } from './util/initBuiltinOptions';
+import { initSubgraphNodes } from './util/initSubgraphNodes';
+import { getNodeInputs } from './util/getNodeInputs';
+import { getNodeOutputs } from './util/getNodeOutputs';
 
 export function decoder(path: string) {    
     const file = readFileSync(path);

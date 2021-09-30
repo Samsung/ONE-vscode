@@ -1,4 +1,4 @@
-import { OptionsAttribute } from './options-attribute'
+import { OptionsAttribute } from './optionsAttribute'
 import { Operator } from '../circle-analysis/circle/operator';
 import { NodeAttributes } from '../type/types';
 
