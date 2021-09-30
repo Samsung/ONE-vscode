@@ -2,11 +2,11 @@
 
 import * as flatbuffers from 'flatbuffers';
 
-import { ActivationFunctionType } from './activation-function-type';
+import {ActivationFunctionType} from './activation-function-type';
 
 
 export class AddOptions {
-  bb: flatbuffers.ByteBuffer | null = null;
+  bb: flatbuffers.ByteBuffer|null = null;
   bb_pos = 0;
   __init(i: number, bb: flatbuffers.ByteBuffer): AddOptions {
     this.bb_pos = i;
@@ -32,7 +32,8 @@ export class AddOptions {
     builder.startObject(1);
   }
 
-  static addFusedActivationFunction(builder: flatbuffers.Builder, fusedActivationFunction: ActivationFunctionType) {
+  static addFusedActivationFunction(
+      builder: flatbuffers.Builder, fusedActivationFunction: ActivationFunctionType) {
     builder.addFieldInt8(0, fusedActivationFunction, ActivationFunctionType.NONE);
   }
 
@@ -41,7 +42,9 @@ export class AddOptions {
     return offset;
   }
 
-  static createAddOptions(builder: flatbuffers.Builder, fusedActivationFunction: ActivationFunctionType): flatbuffers.Offset {
+  static createAddOptions(
+      builder: flatbuffers.Builder,
+      fusedActivationFunction: ActivationFunctionType): flatbuffers.Offset {
     AddOptions.startAddOptions(builder);
     AddOptions.addFusedActivationFunction(builder, fusedActivationFunction);
     return AddOptions.endAddOptions(builder);

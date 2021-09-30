@@ -5,32 +5,34 @@ import * as flatbuffers from 'flatbuffers';
 export class HardSwishOptions {
   bb: flatbuffers.ByteBuffer|null = null;
   bb_pos = 0;
-__init(i:number, bb:flatbuffers.ByteBuffer):HardSwishOptions {
-  this.bb_pos = i;
-  this.bb = bb;
-  return this;
-}
+  __init(i: number, bb: flatbuffers.ByteBuffer): HardSwishOptions {
+    this.bb_pos = i;
+    this.bb = bb;
+    return this;
+  }
 
-static getRootAsHardSwishOptions(bb:flatbuffers.ByteBuffer, obj?:HardSwishOptions):HardSwishOptions {
-  return (obj || new HardSwishOptions()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
-}
+  static getRootAsHardSwishOptions(bb: flatbuffers.ByteBuffer, obj?: HardSwishOptions):
+      HardSwishOptions {
+    return (obj || new HardSwishOptions()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+  }
 
-static getSizePrefixedRootAsHardSwishOptions(bb:flatbuffers.ByteBuffer, obj?:HardSwishOptions):HardSwishOptions {
-  bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
-  return (obj || new HardSwishOptions()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
-}
+  static getSizePrefixedRootAsHardSwishOptions(bb: flatbuffers.ByteBuffer, obj?: HardSwishOptions):
+      HardSwishOptions {
+    bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
+    return (obj || new HardSwishOptions()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+  }
 
-static startHardSwishOptions(builder:flatbuffers.Builder) {
-  builder.startObject(0);
-}
+  static startHardSwishOptions(builder: flatbuffers.Builder) {
+    builder.startObject(0);
+  }
 
-static endHardSwishOptions(builder:flatbuffers.Builder):flatbuffers.Offset {
-  const offset = builder.endObject();
-  return offset;
-}
+  static endHardSwishOptions(builder: flatbuffers.Builder): flatbuffers.Offset {
+    const offset = builder.endObject();
+    return offset;
+  }
 
-static createHardSwishOptions(builder:flatbuffers.Builder):flatbuffers.Offset {
-  HardSwishOptions.startHardSwishOptions(builder);
-  return HardSwishOptions.endHardSwishOptions(builder);
-}
+  static createHardSwishOptions(builder: flatbuffers.Builder): flatbuffers.Offset {
+    HardSwishOptions.startHardSwishOptions(builder);
+    return HardSwishOptions.endHardSwishOptions(builder);
+  }
 }

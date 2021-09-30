@@ -5,32 +5,33 @@ import * as flatbuffers from 'flatbuffers';
 export class TopKV2Options {
   bb: flatbuffers.ByteBuffer|null = null;
   bb_pos = 0;
-__init(i:number, bb:flatbuffers.ByteBuffer):TopKV2Options {
-  this.bb_pos = i;
-  this.bb = bb;
-  return this;
-}
+  __init(i: number, bb: flatbuffers.ByteBuffer): TopKV2Options {
+    this.bb_pos = i;
+    this.bb = bb;
+    return this;
+  }
 
-static getRootAsTopKV2Options(bb:flatbuffers.ByteBuffer, obj?:TopKV2Options):TopKV2Options {
-  return (obj || new TopKV2Options()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
-}
+  static getRootAsTopKV2Options(bb: flatbuffers.ByteBuffer, obj?: TopKV2Options): TopKV2Options {
+    return (obj || new TopKV2Options()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+  }
 
-static getSizePrefixedRootAsTopKV2Options(bb:flatbuffers.ByteBuffer, obj?:TopKV2Options):TopKV2Options {
-  bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
-  return (obj || new TopKV2Options()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
-}
+  static getSizePrefixedRootAsTopKV2Options(bb: flatbuffers.ByteBuffer, obj?: TopKV2Options):
+      TopKV2Options {
+    bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
+    return (obj || new TopKV2Options()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+  }
 
-static startTopKV2Options(builder:flatbuffers.Builder) {
-  builder.startObject(0);
-}
+  static startTopKV2Options(builder: flatbuffers.Builder) {
+    builder.startObject(0);
+  }
 
-static endTopKV2Options(builder:flatbuffers.Builder):flatbuffers.Offset {
-  const offset = builder.endObject();
-  return offset;
-}
+  static endTopKV2Options(builder: flatbuffers.Builder): flatbuffers.Offset {
+    const offset = builder.endObject();
+    return offset;
+  }
 
-static createTopKV2Options(builder:flatbuffers.Builder):flatbuffers.Offset {
-  TopKV2Options.startTopKV2Options(builder);
-  return TopKV2Options.endTopKV2Options(builder);
-}
+  static createTopKV2Options(builder: flatbuffers.Builder): flatbuffers.Offset {
+    TopKV2Options.startTopKV2Options(builder);
+    return TopKV2Options.endTopKV2Options(builder);
+  }
 }
