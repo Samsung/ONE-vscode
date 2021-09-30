@@ -56,7 +56,7 @@ export function activate(context: vscode.ExtensionContext) {
         console.log('one configuration settings...');
       });
   context.subscriptions.push(disposableOneConfigurationSettings);
-  
+
   createStatusBarItem(context);
 
   let disposableToggleCodelens =
