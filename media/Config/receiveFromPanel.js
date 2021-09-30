@@ -46,12 +46,16 @@ window.addEventListener("message", (event) => {
         for (const tool of Object.keys(data.options)) {
           for (const importOpt in data.options[tool]) {
             if (tool === "one-import-bcq") {
+              oneImportBcq.use = true;
               oneImportTools(data.options, importOpt, tool, 0, oneImportBcq);
             } else if (tool === "one-import-onnx") {
+              oneImportOnnx.use = true;
               oneImportTools(data.options, importOpt, tool, 1, oneImportOnnx);
             } else if (tool === "one-import-tf") {
+              oneImportTf.use = true;
               oneImportTools(data.options, importOpt, tool, 2, oneImportTf);
             } else if (tool === "one-import-tflite") {
+              oneImportTflite.use = true;
               oneImportTools(data.options, importOpt, tool, 3, oneImportTflite);
             } else if (tool === "one-optimize") {
               oneOptimize.use = true;
