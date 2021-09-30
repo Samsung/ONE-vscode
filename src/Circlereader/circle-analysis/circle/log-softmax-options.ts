@@ -5,32 +5,34 @@ import * as flatbuffers from 'flatbuffers';
 export class LogSoftmaxOptions {
   bb: flatbuffers.ByteBuffer|null = null;
   bb_pos = 0;
-__init(i:number, bb:flatbuffers.ByteBuffer):LogSoftmaxOptions {
-  this.bb_pos = i;
-  this.bb = bb;
-  return this;
-}
+  __init(i: number, bb: flatbuffers.ByteBuffer): LogSoftmaxOptions {
+    this.bb_pos = i;
+    this.bb = bb;
+    return this;
+  }
 
-static getRootAsLogSoftmaxOptions(bb:flatbuffers.ByteBuffer, obj?:LogSoftmaxOptions):LogSoftmaxOptions {
-  return (obj || new LogSoftmaxOptions()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
-}
+  static getRootAsLogSoftmaxOptions(bb: flatbuffers.ByteBuffer, obj?: LogSoftmaxOptions):
+      LogSoftmaxOptions {
+    return (obj || new LogSoftmaxOptions()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+  }
 
-static getSizePrefixedRootAsLogSoftmaxOptions(bb:flatbuffers.ByteBuffer, obj?:LogSoftmaxOptions):LogSoftmaxOptions {
-  bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
-  return (obj || new LogSoftmaxOptions()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
-}
+  static getSizePrefixedRootAsLogSoftmaxOptions(
+      bb: flatbuffers.ByteBuffer, obj?: LogSoftmaxOptions): LogSoftmaxOptions {
+    bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
+    return (obj || new LogSoftmaxOptions()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+  }
 
-static startLogSoftmaxOptions(builder:flatbuffers.Builder) {
-  builder.startObject(0);
-}
+  static startLogSoftmaxOptions(builder: flatbuffers.Builder) {
+    builder.startObject(0);
+  }
 
-static endLogSoftmaxOptions(builder:flatbuffers.Builder):flatbuffers.Offset {
-  const offset = builder.endObject();
-  return offset;
-}
+  static endLogSoftmaxOptions(builder: flatbuffers.Builder): flatbuffers.Offset {
+    const offset = builder.endObject();
+    return offset;
+  }
 
-static createLogSoftmaxOptions(builder:flatbuffers.Builder):flatbuffers.Offset {
-  LogSoftmaxOptions.startLogSoftmaxOptions(builder);
-  return LogSoftmaxOptions.endLogSoftmaxOptions(builder);
-}
+  static createLogSoftmaxOptions(builder: flatbuffers.Builder): flatbuffers.Offset {
+    LogSoftmaxOptions.startLogSoftmaxOptions(builder);
+    return LogSoftmaxOptions.endLogSoftmaxOptions(builder);
+  }
 }

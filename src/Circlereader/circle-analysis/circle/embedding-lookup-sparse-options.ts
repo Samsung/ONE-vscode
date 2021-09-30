@@ -2,11 +2,11 @@
 
 import * as flatbuffers from 'flatbuffers';
 
-import { CombinerType } from './combiner-type';
+import {CombinerType} from './combiner-type';
 
 
 export class EmbeddingLookupSparseOptions {
-  bb: flatbuffers.ByteBuffer | null = null;
+  bb: flatbuffers.ByteBuffer|null = null;
   bb_pos = 0;
   __init(i: number, bb: flatbuffers.ByteBuffer): EmbeddingLookupSparseOptions {
     this.bb_pos = i;
@@ -14,13 +14,19 @@ export class EmbeddingLookupSparseOptions {
     return this;
   }
 
-  static getRootAsEmbeddingLookupSparseOptions(bb: flatbuffers.ByteBuffer, obj?: EmbeddingLookupSparseOptions): EmbeddingLookupSparseOptions {
-    return (obj || new EmbeddingLookupSparseOptions()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+  static getRootAsEmbeddingLookupSparseOptions(
+      bb: flatbuffers.ByteBuffer,
+      obj?: EmbeddingLookupSparseOptions): EmbeddingLookupSparseOptions {
+    return (obj || new EmbeddingLookupSparseOptions())
+        .__init(bb.readInt32(bb.position()) + bb.position(), bb);
   }
 
-  static getSizePrefixedRootAsEmbeddingLookupSparseOptions(bb: flatbuffers.ByteBuffer, obj?: EmbeddingLookupSparseOptions): EmbeddingLookupSparseOptions {
+  static getSizePrefixedRootAsEmbeddingLookupSparseOptions(
+      bb: flatbuffers.ByteBuffer,
+      obj?: EmbeddingLookupSparseOptions): EmbeddingLookupSparseOptions {
     bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
-    return (obj || new EmbeddingLookupSparseOptions()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+    return (obj || new EmbeddingLookupSparseOptions())
+        .__init(bb.readInt32(bb.position()) + bb.position(), bb);
   }
 
   combiner(): CombinerType {
@@ -41,7 +47,8 @@ export class EmbeddingLookupSparseOptions {
     return offset;
   }
 
-  static createEmbeddingLookupSparseOptions(builder: flatbuffers.Builder, combiner: CombinerType): flatbuffers.Offset {
+  static createEmbeddingLookupSparseOptions(builder: flatbuffers.Builder, combiner: CombinerType):
+      flatbuffers.Offset {
     EmbeddingLookupSparseOptions.startEmbeddingLookupSparseOptions(builder);
     EmbeddingLookupSparseOptions.addCombiner(builder, combiner);
     return EmbeddingLookupSparseOptions.endEmbeddingLookupSparseOptions(builder);

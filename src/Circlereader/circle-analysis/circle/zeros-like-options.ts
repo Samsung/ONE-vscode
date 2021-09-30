@@ -5,32 +5,34 @@ import * as flatbuffers from 'flatbuffers';
 export class ZerosLikeOptions {
   bb: flatbuffers.ByteBuffer|null = null;
   bb_pos = 0;
-__init(i:number, bb:flatbuffers.ByteBuffer):ZerosLikeOptions {
-  this.bb_pos = i;
-  this.bb = bb;
-  return this;
-}
+  __init(i: number, bb: flatbuffers.ByteBuffer): ZerosLikeOptions {
+    this.bb_pos = i;
+    this.bb = bb;
+    return this;
+  }
 
-static getRootAsZerosLikeOptions(bb:flatbuffers.ByteBuffer, obj?:ZerosLikeOptions):ZerosLikeOptions {
-  return (obj || new ZerosLikeOptions()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
-}
+  static getRootAsZerosLikeOptions(bb: flatbuffers.ByteBuffer, obj?: ZerosLikeOptions):
+      ZerosLikeOptions {
+    return (obj || new ZerosLikeOptions()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+  }
 
-static getSizePrefixedRootAsZerosLikeOptions(bb:flatbuffers.ByteBuffer, obj?:ZerosLikeOptions):ZerosLikeOptions {
-  bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
-  return (obj || new ZerosLikeOptions()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
-}
+  static getSizePrefixedRootAsZerosLikeOptions(bb: flatbuffers.ByteBuffer, obj?: ZerosLikeOptions):
+      ZerosLikeOptions {
+    bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
+    return (obj || new ZerosLikeOptions()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+  }
 
-static startZerosLikeOptions(builder:flatbuffers.Builder) {
-  builder.startObject(0);
-}
+  static startZerosLikeOptions(builder: flatbuffers.Builder) {
+    builder.startObject(0);
+  }
 
-static endZerosLikeOptions(builder:flatbuffers.Builder):flatbuffers.Offset {
-  const offset = builder.endObject();
-  return offset;
-}
+  static endZerosLikeOptions(builder: flatbuffers.Builder): flatbuffers.Offset {
+    const offset = builder.endObject();
+    return offset;
+  }
 
-static createZerosLikeOptions(builder:flatbuffers.Builder):flatbuffers.Offset {
-  ZerosLikeOptions.startZerosLikeOptions(builder);
-  return ZerosLikeOptions.endZerosLikeOptions(builder);
-}
+  static createZerosLikeOptions(builder: flatbuffers.Builder): flatbuffers.Offset {
+    ZerosLikeOptions.startZerosLikeOptions(builder);
+    return ZerosLikeOptions.endZerosLikeOptions(builder);
+  }
 }

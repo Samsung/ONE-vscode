@@ -5,32 +5,33 @@ import * as flatbuffers from 'flatbuffers';
 export class DensifyOptions {
   bb: flatbuffers.ByteBuffer|null = null;
   bb_pos = 0;
-__init(i:number, bb:flatbuffers.ByteBuffer):DensifyOptions {
-  this.bb_pos = i;
-  this.bb = bb;
-  return this;
-}
+  __init(i: number, bb: flatbuffers.ByteBuffer): DensifyOptions {
+    this.bb_pos = i;
+    this.bb = bb;
+    return this;
+  }
 
-static getRootAsDensifyOptions(bb:flatbuffers.ByteBuffer, obj?:DensifyOptions):DensifyOptions {
-  return (obj || new DensifyOptions()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
-}
+  static getRootAsDensifyOptions(bb: flatbuffers.ByteBuffer, obj?: DensifyOptions): DensifyOptions {
+    return (obj || new DensifyOptions()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+  }
 
-static getSizePrefixedRootAsDensifyOptions(bb:flatbuffers.ByteBuffer, obj?:DensifyOptions):DensifyOptions {
-  bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
-  return (obj || new DensifyOptions()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
-}
+  static getSizePrefixedRootAsDensifyOptions(bb: flatbuffers.ByteBuffer, obj?: DensifyOptions):
+      DensifyOptions {
+    bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
+    return (obj || new DensifyOptions()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+  }
 
-static startDensifyOptions(builder:flatbuffers.Builder) {
-  builder.startObject(0);
-}
+  static startDensifyOptions(builder: flatbuffers.Builder) {
+    builder.startObject(0);
+  }
 
-static endDensifyOptions(builder:flatbuffers.Builder):flatbuffers.Offset {
-  const offset = builder.endObject();
-  return offset;
-}
+  static endDensifyOptions(builder: flatbuffers.Builder): flatbuffers.Offset {
+    const offset = builder.endObject();
+    return offset;
+  }
 
-static createDensifyOptions(builder:flatbuffers.Builder):flatbuffers.Offset {
-  DensifyOptions.startDensifyOptions(builder);
-  return DensifyOptions.endDensifyOptions(builder);
-}
+  static createDensifyOptions(builder: flatbuffers.Builder): flatbuffers.Offset {
+    DensifyOptions.startDensifyOptions(builder);
+    return DensifyOptions.endDensifyOptions(builder);
+  }
 }

@@ -5,32 +5,33 @@ import * as flatbuffers from 'flatbuffers';
 export class EqualOptions {
   bb: flatbuffers.ByteBuffer|null = null;
   bb_pos = 0;
-__init(i:number, bb:flatbuffers.ByteBuffer):EqualOptions {
-  this.bb_pos = i;
-  this.bb = bb;
-  return this;
-}
+  __init(i: number, bb: flatbuffers.ByteBuffer): EqualOptions {
+    this.bb_pos = i;
+    this.bb = bb;
+    return this;
+  }
 
-static getRootAsEqualOptions(bb:flatbuffers.ByteBuffer, obj?:EqualOptions):EqualOptions {
-  return (obj || new EqualOptions()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
-}
+  static getRootAsEqualOptions(bb: flatbuffers.ByteBuffer, obj?: EqualOptions): EqualOptions {
+    return (obj || new EqualOptions()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+  }
 
-static getSizePrefixedRootAsEqualOptions(bb:flatbuffers.ByteBuffer, obj?:EqualOptions):EqualOptions {
-  bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
-  return (obj || new EqualOptions()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
-}
+  static getSizePrefixedRootAsEqualOptions(bb: flatbuffers.ByteBuffer, obj?: EqualOptions):
+      EqualOptions {
+    bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
+    return (obj || new EqualOptions()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+  }
 
-static startEqualOptions(builder:flatbuffers.Builder) {
-  builder.startObject(0);
-}
+  static startEqualOptions(builder: flatbuffers.Builder) {
+    builder.startObject(0);
+  }
 
-static endEqualOptions(builder:flatbuffers.Builder):flatbuffers.Offset {
-  const offset = builder.endObject();
-  return offset;
-}
+  static endEqualOptions(builder: flatbuffers.Builder): flatbuffers.Offset {
+    const offset = builder.endObject();
+    return offset;
+  }
 
-static createEqualOptions(builder:flatbuffers.Builder):flatbuffers.Offset {
-  EqualOptions.startEqualOptions(builder);
-  return EqualOptions.endEqualOptions(builder);
-}
+  static createEqualOptions(builder: flatbuffers.Builder): flatbuffers.Offset {
+    EqualOptions.startEqualOptions(builder);
+    return EqualOptions.endEqualOptions(builder);
+  }
 }

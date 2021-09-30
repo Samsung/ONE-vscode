@@ -15,7 +15,8 @@
     "onCommand:onevscode.json-tracer",
     "onCommand:onevscode.configuration-settings",
     "onCommand:onevscode.toggle-codelens",
-    "onCommand:onevscode.circle-tracer"
+    "onCommand:onevscode.circle-tracer",
+    "onStartupFinished"
   ],
   "main": "./out/extension.js",
   "contributes": {

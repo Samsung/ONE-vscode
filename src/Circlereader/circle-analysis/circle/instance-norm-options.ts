@@ -2,11 +2,11 @@
 
 import * as flatbuffers from 'flatbuffers';
 
-import { ActivationFunctionType } from './activation-function-type';
+import {ActivationFunctionType} from './activation-function-type';
 
 
 export class InstanceNormOptions {
-  bb: flatbuffers.ByteBuffer | null = null;
+  bb: flatbuffers.ByteBuffer|null = null;
   bb_pos = 0;
   __init(i: number, bb: flatbuffers.ByteBuffer): InstanceNormOptions {
     this.bb_pos = i;
@@ -14,13 +14,17 @@ export class InstanceNormOptions {
     return this;
   }
 
-  static getRootAsInstanceNormOptions(bb: flatbuffers.ByteBuffer, obj?: InstanceNormOptions): InstanceNormOptions {
-    return (obj || new InstanceNormOptions()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+  static getRootAsInstanceNormOptions(bb: flatbuffers.ByteBuffer, obj?: InstanceNormOptions):
+      InstanceNormOptions {
+    return (obj || new InstanceNormOptions())
+        .__init(bb.readInt32(bb.position()) + bb.position(), bb);
   }
 
-  static getSizePrefixedRootAsInstanceNormOptions(bb: flatbuffers.ByteBuffer, obj?: InstanceNormOptions): InstanceNormOptions {
+  static getSizePrefixedRootAsInstanceNormOptions(
+      bb: flatbuffers.ByteBuffer, obj?: InstanceNormOptions): InstanceNormOptions {
     bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
-    return (obj || new InstanceNormOptions()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+    return (obj || new InstanceNormOptions())
+        .__init(bb.readInt32(bb.position()) + bb.position(), bb);
   }
 
   epsilon(): number {
@@ -41,7 +45,8 @@ export class InstanceNormOptions {
     builder.addFieldFloat32(0, epsilon, 0.0);
   }
 
-  static addFusedActivationFunction(builder: flatbuffers.Builder, fusedActivationFunction: ActivationFunctionType) {
+  static addFusedActivationFunction(
+      builder: flatbuffers.Builder, fusedActivationFunction: ActivationFunctionType) {
     builder.addFieldInt8(1, fusedActivationFunction, ActivationFunctionType.NONE);
   }
 
@@ -50,7 +55,9 @@ export class InstanceNormOptions {
     return offset;
   }
 
-  static createInstanceNormOptions(builder: flatbuffers.Builder, epsilon: number, fusedActivationFunction: ActivationFunctionType): flatbuffers.Offset {
+  static createInstanceNormOptions(
+      builder: flatbuffers.Builder, epsilon: number,
+      fusedActivationFunction: ActivationFunctionType): flatbuffers.Offset {
     InstanceNormOptions.startInstanceNormOptions(builder);
     InstanceNormOptions.addEpsilon(builder, epsilon);
     InstanceNormOptions.addFusedActivationFunction(builder, fusedActivationFunction);

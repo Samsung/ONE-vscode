@@ -2,48 +2,51 @@
 
 import * as flatbuffers from 'flatbuffers';
 
-import { MirrorPadMode } from '../circle/mirror-pad-mode';
+import {MirrorPadMode} from '../circle/mirror-pad-mode';
 
 
 export class MirrorPadOptions {
   bb: flatbuffers.ByteBuffer|null = null;
   bb_pos = 0;
-__init(i:number, bb:flatbuffers.ByteBuffer):MirrorPadOptions {
-  this.bb_pos = i;
-  this.bb = bb;
-  return this;
-}
+  __init(i: number, bb: flatbuffers.ByteBuffer): MirrorPadOptions {
+    this.bb_pos = i;
+    this.bb = bb;
+    return this;
+  }
 
-static getRootAsMirrorPadOptions(bb:flatbuffers.ByteBuffer, obj?:MirrorPadOptions):MirrorPadOptions {
-  return (obj || new MirrorPadOptions()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
-}
+  static getRootAsMirrorPadOptions(bb: flatbuffers.ByteBuffer, obj?: MirrorPadOptions):
+      MirrorPadOptions {
+    return (obj || new MirrorPadOptions()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+  }
 
-static getSizePrefixedRootAsMirrorPadOptions(bb:flatbuffers.ByteBuffer, obj?:MirrorPadOptions):MirrorPadOptions {
-  bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
-  return (obj || new MirrorPadOptions()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
-}
+  static getSizePrefixedRootAsMirrorPadOptions(bb: flatbuffers.ByteBuffer, obj?: MirrorPadOptions):
+      MirrorPadOptions {
+    bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
+    return (obj || new MirrorPadOptions()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+  }
 
-mode():MirrorPadMode {
-  const offset = this.bb!.__offset(this.bb_pos, 4);
-  return offset ? this.bb!.readInt8(this.bb_pos + offset) : MirrorPadMode.REFLECT;
-}
+  mode(): MirrorPadMode {
+    const offset = this.bb!.__offset(this.bb_pos, 4);
+    return offset ? this.bb!.readInt8(this.bb_pos + offset) : MirrorPadMode.REFLECT;
+  }
 
-static startMirrorPadOptions(builder:flatbuffers.Builder) {
-  builder.startObject(1);
-}
+  static startMirrorPadOptions(builder: flatbuffers.Builder) {
+    builder.startObject(1);
+  }
 
-static addMode(builder:flatbuffers.Builder, mode:MirrorPadMode) {
-  builder.addFieldInt8(0, mode, MirrorPadMode.REFLECT);
-}
+  static addMode(builder: flatbuffers.Builder, mode: MirrorPadMode) {
+    builder.addFieldInt8(0, mode, MirrorPadMode.REFLECT);
+  }
 
-static endMirrorPadOptions(builder:flatbuffers.Builder):flatbuffers.Offset {
-  const offset = builder.endObject();
-  return offset;
-}
+  static endMirrorPadOptions(builder: flatbuffers.Builder): flatbuffers.Offset {
+    const offset = builder.endObject();
+    return offset;
+  }
 
-static createMirrorPadOptions(builder:flatbuffers.Builder, mode:MirrorPadMode):flatbuffers.Offset {
-  MirrorPadOptions.startMirrorPadOptions(builder);
-  MirrorPadOptions.addMode(builder, mode);
-  return MirrorPadOptions.endMirrorPadOptions(builder);
-}
+  static createMirrorPadOptions(builder: flatbuffers.Builder, mode: MirrorPadMode):
+      flatbuffers.Offset {
+    MirrorPadOptions.startMirrorPadOptions(builder);
+    MirrorPadOptions.addMode(builder, mode);
+    return MirrorPadOptions.endMirrorPadOptions(builder);
+  }
 }
