@@ -14,28 +14,6 @@
  * limitations under the License.
  */
 
-// one-import options are different from other tools so separate toggle function
-const oneImportToggleFunction = function () {
-    const optionFieldset = document.querySelector("#options");
-    const selectTag = document.querySelector("#framework");
-    if (oneImport.use === true) {
-      oneImport.use = false;
-      for (let i = 0; i < oneImport.options.length; i++) {
-        oneImport.options[i].optionValue = false;
-      }
-      for (let j = 0; j < oneImportOptions.length; j++) {
-        oneImportOptions[j].use = false;
-      }
-      optionFieldset.disabled = true;
-      selectTag.disabled = true;
-    } else {
-      oneImport.use = true;
-      optionFieldset.disabled = false;
-      selectTag.disabled = false;
-    }
-    autoCompletePath(oneImportBcq);
-};
-
 // remove every options on DOM
 const emptyOptionBox = function (isImport) {
     if (!isImport) {
@@ -154,8 +132,8 @@ const makeOutputPathInput = function(tool, index) {
   return inputTag;
 };
 
+// change tool name and change toggle button
 const changeCommonTags = function(tool) {
-  // change tool name and change toggle button
   const h2Tag = document.querySelector("#toolName");
   h2Tag.innerText = `Options for ${tool.type}`;
   const tmpBtn = document.querySelector("#useBtn");
@@ -177,14 +155,14 @@ const changeCommonTags = function(tool) {
       emptyOptionBox(false);
       buildOptionDom(tool);
     });
-    const optionFieldset = document.querySelector("#options");
-    if (tool.use === true) {
-      useBtn.checked = true;
-      optionFieldset.disabled = false;
-    } else {
-      useBtn.checked = false;
-      optionFieldset.disabled = true;
-    }
+  }
+  const optionFieldset = document.querySelector("#options");
+  if (tool.use === true) {
+    useBtn.checked = true;
+    optionFieldset.disabled = false;
+  } else {
+    useBtn.checked = false;
+    optionFieldset.disabled = true;
   }
 };
 
@@ -233,44 +211,3 @@ const buildOptionDom = function (tool) {
     optionsValueTag.appendChild(valueUlTag);
     optionsNameTag.appendChild(nameUlTag);
 };
-
-// you can find oneImport and oneImportOptions in tools.js
-const chooseImportOption = function(index) {
-  for (let i = 0; i < oneImport.options.length; i++) {
-    if (i === index) {
-      oneImport.options[i].optionValue = true;
-      oneImportOptions[i].use = true;
-    } else {
-      oneImport.options[i].optionValue = false;
-      oneImportOptions[i].use = false;
-    }
-  }
-};
-
-// function for selecting framework
-const changeSelect = function (event) {
-    emptyOptionBox(true);
-    const selectedText = event.target.options[event.target.selectedIndex].text;
-    switch (selectedText) {
-      case "bcq": {
-        chooseImportOption(0);
-        buildOptionDom(oneImportBcq);
-        break;
-      }
-      case "onnx": {
-        chooseImportOption(1);
-        buildOptionDom(oneImportOnnx);
-        break;
-      }
-      case "tf": {
-        chooseImportOption(2);
-        buildOptionDom(oneImportTf);
-        break;
-      }
-      case "tflite": {
-        chooseImportOption(3);
-        buildOptionDom(oneImportTflite);
-        break;
-      }
-    }
-  };

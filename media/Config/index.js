@@ -20,36 +20,11 @@ const showOptions = function (event) {
   event.target.classList.add("selected");
   switch (event.target.id) {
     case "import": {
-      const h2Tag = document.querySelector("#toolName");
-      h2Tag.innerText = "Options for import";
+      changeCommonTags(oneImport);
       const locaForSelect = document.querySelector("#locaForSelect");
-      const select = document.createElement("select");
-      select.id = "framework";
-      select.name = "framework";
-      const defaultOption = document.createElement("option");
-      defaultOption.value = "beforeDecision";
-      defaultOption.text = "Choose your framework";
-      select.appendChild(defaultOption);
-      for (let i = 0; i < oneImport.options.length; i++) {
-        const option = document.createElement("option");
-        option.value = oneImport.options[i].optionName;
-        option.text = oneImport.options[i].optionName;
-        select.appendChild(option);
-      }
-      select.addEventListener("change", changeSelect);
+      const select = makeSelectTagForImport();
       locaForSelect.appendChild(select);
-      const tmpBtn = document.querySelector("#useBtn");
-      const useBtn = tmpBtn.cloneNode(true);
-      tmpBtn.parentNode.replaceChild(useBtn, tmpBtn);
-      const optionFieldset = document.querySelector("#options");
-      if (oneImport.use === true) {
-        useBtn.checked = true;
-        optionFieldset.disabled = false;
-      } else {
-        useBtn.checked = false;
-        optionFieldset.disabled = true;
-      }
-      useBtn.addEventListener("click", oneImportToggleFunction);
+      // if framework like tensorflow has already been chosen, then bring it
       let chosenOptionIndex = -1;
       for (let i = 0; i < oneImport.options.length; i++) {
         if (oneImport.options[i].optionValue === true) {
@@ -127,3 +102,4 @@ const tmpEvent = {
   target: document.querySelector("#import"),
 };
 showOptions(tmpEvent);
+console.log(showOptions);
