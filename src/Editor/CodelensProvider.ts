@@ -20,7 +20,7 @@ import toolsAttr from './json/tools_attr.json';
 export class CodelensProvider implements vscode.CodeLensProvider {
   showTool: Array<string> = [];
   eventGenerator: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
-  onDidChangeCodeLenses: vscode.Event<void> = this.eventGenerator.event;
+  public readonly onDidChangeCodeLenses: vscode.Event<void> = this.eventGenerator.event;
 
   constructor() {
     vscode.commands.registerCommand('onevscode.toggleAttrCodelens', (toolName: string) => {
