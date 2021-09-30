@@ -36,7 +36,6 @@ export class CodelensProvider implements vscode.CodeLensProvider {
         let range = document.getWordRangeAtPosition(position, /(.+)/g) as vscode.Range;
         let lineStr = line.text;
 
-
         if (lineStr.indexOf('=') === -1) {
           toolsAttr.forEach((tool) => {
             if (tool.name === lineStr) {
