@@ -15,7 +15,7 @@
  */
 
 import * as flatbuffers from 'flatbuffers';
-import {ActivationFunctionType} from '../circle-analysis/circle/activation-function-type'
+import {ActivationFunctionType} from '../circle-analysis/circle/activation-function-type';
 import {AddOptions} from '../circle-analysis/circle/add-options';
 import {ArgMaxOptions} from '../circle-analysis/circle/arg-max-options';
 import {ArgMinOptions} from '../circle-analysis/circle/arg-min-options';
@@ -26,7 +26,7 @@ import {BidirectionalSequenceLSTMOptions} from '../circle-analysis/circle/bidire
 import {BidirectionalSequenceRNNOptions} from '../circle-analysis/circle/bidirectional-sequence-r-n-n-options';
 import {CallOptions} from '../circle-analysis/circle/call-options';
 import {CastOptions} from '../circle-analysis/circle/cast-options';
-import {ConcatEmbeddingsOptions} from '../circle-analysis/circle/concat-embeddings-options'
+import {ConcatEmbeddingsOptions} from '../circle-analysis/circle/concat-embeddings-options';
 import {ConcatenationOptions} from '../circle-analysis/circle/concatenation-options';
 import {Conv2DOptions} from '../circle-analysis/circle/conv2-d-options';
 import {DepthToSpaceOptions} from '../circle-analysis/circle/depth-to-space-options';
@@ -34,7 +34,7 @@ import {DepthwiseConv2DOptions} from '../circle-analysis/circle/depthwise-conv2-
 import {DivOptions} from '../circle-analysis/circle/div-options';
 import {FakeQuantOptions} from '../circle-analysis/circle/fake-quant-options';
 import {FullyConnectedOptions} from '../circle-analysis/circle/fully-connected-options';
-import {FullyConnectedOptionsWeightsFormat} from '../circle-analysis/circle/fully-connected-options-weights-format'
+import {FullyConnectedOptionsWeightsFormat} from '../circle-analysis/circle/fully-connected-options-weights-format';
 import {IfOptions} from '../circle-analysis/circle/if-options';
 import {InstanceNormOptions} from '../circle-analysis/circle/instance-norm-options';
 import {LSHProjectionOptions} from '../circle-analysis/circle/l-s-h-projection-options';
