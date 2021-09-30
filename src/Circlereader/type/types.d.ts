@@ -49,6 +49,4 @@ declare type ModelOperator = {
   outputs: Array<NodeOutput>
 };
 
-export {
-  Node, NodeAttributes, NodeInput, NodeOutput, NodeProperties, ModelOperator
-};
+export {Node, NodeAttributes, NodeInput, NodeOutput, NodeProperties, ModelOperator};
