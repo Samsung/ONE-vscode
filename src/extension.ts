@@ -17,7 +17,7 @@
 import * as vscode from 'vscode';
 
 import {ConfigPanel} from './Config/ConfigPanel';
-import {createStatusBarItem} from './Config/ConfigStatusBar'
+import {createStatusBarItem} from './Config/ConfigStatusBar';
 import {CodelensProvider} from './Editor/CodelensProvider';
 import {HoverProvider} from './Editor/HoverProvider';
 import {Jsontracer} from './Jsontracer';
