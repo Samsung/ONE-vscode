@@ -22,6 +22,14 @@ const getInputPath = function(tool) {
   }
 };
 
+const getOutputPath = function(tool) {
+  for (let i = 0; i < tool.options.length; i++) {
+    if (tool.options[i].optionName === 'output_path') {
+      return tool.options[i].optionValue;
+    }
+  }
+};
+
 const makeOutputPath = function(tool, input) {
   // because os maybe win32, divisor can be '\\'
   let divisor = '/';
