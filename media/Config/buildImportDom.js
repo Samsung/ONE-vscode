@@ -31,6 +31,7 @@ const chooseImportOption = function(index) {
   
 // one-import options are different from other tools so separate toggle function
 // you can find oneImport in tools.js
+// you can find autoCompletePath in pathAutoComplete.js
 const oneImportToggleFunction = function () {
     const optionFieldset = document.querySelector("#options");
     const selectTag = document.querySelector("#framework");
@@ -44,6 +45,7 @@ const oneImportToggleFunction = function () {
         optionFieldset.disabled = false;
         selectTag.disabled = false;
     }
+    // you can find autoCompletePath in pathAutoComplete.js
     autoCompletePath(oneImportBcq);
 };
 

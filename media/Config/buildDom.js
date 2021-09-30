@@ -44,6 +44,7 @@ const changeCommonTags = function(tool) {
   const useBtn = tmpBtn.cloneNode(true);
   tmpBtn.parentNode.replaceChild(useBtn, tmpBtn);
   if (tool.type.startsWith("one-import")) {
+    // you can find oneImportToggleFunction in buildImportDom.js
     useBtn.addEventListener("click", oneImportToggleFunction);
   } else {
     useBtn.addEventListener("click", function () {
@@ -55,9 +56,8 @@ const changeCommonTags = function(tool) {
         tool.use = true;
         optionFieldset.disabled = false;
       }
+      // you can find autoCompletePath in pathAutoComplete.js
       autoCompletePath(tool);
-      emptyOptionBox(false);
-      buildOptionDom(tool);
     });
   }
   const optionFieldset = document.querySelector("#options");
@@ -81,6 +81,7 @@ const changeCommonTags = function(tool) {
 };
 
 // build DOM for selected tool
+// const is recommanded but 
 const buildOptionDom = function (tool) {
     changeCommonTags(tool);
     // make tags for options
@@ -128,6 +129,7 @@ const buildOptionDom = function (tool) {
 
 // function for selecting framework
 // you can find oneImportBcq, Onnx, Tf, Tflite in tools.js
+// you can find chooseImportOption in buildImportDom.js
 const changeSelect = function (event) {
   emptyOptionBox(true);
   const selectedText = event.target.options[event.target.selectedIndex].text;
