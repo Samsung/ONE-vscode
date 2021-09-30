@@ -15,6 +15,7 @@
  */
 
 import * as vscode from 'vscode';
+import toolsAttr from './json/tools_attr.json';
 
 export class CodelensProvider implements vscode.CodeLensProvider {
   constructor() {}
@@ -35,7 +36,17 @@ export class CodelensProvider implements vscode.CodeLensProvider {
         let range = document.getWordRangeAtPosition(position, /(.+)/g) as vscode.Range;
         let lineStr = line.text;
 
-        // TODO Add more
+
+        if (lineStr.indexOf('=') === -1) {
+          toolsAttr.forEach((tool) => {
+            if (tool.name === lineStr) {
+              codeLenses.push(new vscode.CodeLens(range));
+            }
+            // TODO Add more
+          });
+        } else {
+          // TODO Add more
+        }
       }
     }
 
