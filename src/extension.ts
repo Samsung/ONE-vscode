@@ -16,14 +16,14 @@
 
 import * as vscode from 'vscode';
 
+import {decoder} from './Circlereader/Circlereader';
+import {Circletracer} from './Circletracer';
 import {ConfigPanel} from './Config/ConfigPanel';
 import {CodelensProvider} from './Editor/CodelensProvider';
 import {HoverProvider} from './Editor/HoverProvider';
 import {Jsontracer} from './Jsontracer';
 import {Project} from './Project';
 import {Utils} from './Utils';
-import { Circletracer } from './Circletracer';
-import { decoder } from './Circlereader/Circlereader';
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('one-vscode activate OK');
@@ -80,11 +80,8 @@ export function activate(context: vscode.ExtensionContext) {
     const options: vscode.OpenDialogOptions = {
       canSelectMany: false,
       openLabel: 'Open',
-      filters: {
-        'Circle files': ['circle'],
-        'All files': ['*']
-      }
-    }
+      filters: {'Circle files': ['circle'], 'All files': ['*']}
+    };
     vscode.window.showOpenDialog(options).then(fileUri => {
       if (fileUri && fileUri[0]) {
         const circleToJson = decoder(fileUri[0].fsPath);
