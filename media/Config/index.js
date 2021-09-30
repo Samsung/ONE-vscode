@@ -102,4 +102,3 @@ const tmpEvent = {
   target: document.querySelector("#import"),
 };
 showOptions(tmpEvent);
-console.log(showOptions);

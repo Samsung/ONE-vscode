@@ -139,6 +139,7 @@ export class ConfigPanel {
     const exportConfigScriptUri = this.getPathToFile(webview, 'exportConfig.js');
     const receiveFromPanelScriptUri = this.getPathToFile(webview, 'receiveFromPanel.js');
     const buildImportDomScriptUri = this.getPathToFile(webview, 'buildImportDom.js');
+    const makeTagsScriptUri = this.getPathToFile(webview, 'makeTags.js');
     const buildDomScriptUri = this.getPathToFile(webview, 'buildDom.js');
     const indexScriptUri = this.getPathToFile(webview, 'index.js');
 
@@ -164,7 +165,8 @@ export class ConfigPanel {
     html = this.replaceWord(html, /\${importConfigScriptUri}/gi, importConfigScriptUri);
     html = this.replaceWord(html, /\${exportConfigScriptUri}/gi, exportConfigScriptUri);
     html = this.replaceWord(html, /\${receiveFromPanelScriptUri}/gi, receiveFromPanelScriptUri);
-    html = this.replaceWord(html, /\${buildImportDomScriptUri}/gi, buildImportDomScriptUri)
+    html = this.replaceWord(html, /\${buildImportDomScriptUri}/gi, buildImportDomScriptUri);
+    html = this.replaceWord(html, /\${makeTagsScriptUri}/gi, makeTagsScriptUri);
     html = this.replaceWord(html, /\${buildDomScriptUri}/gi, buildDomScriptUri);
     html = this.replaceWord(html, /\${indexScriptUri}/gi, indexScriptUri);
     return html;

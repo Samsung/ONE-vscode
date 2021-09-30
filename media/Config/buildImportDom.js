@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// function for deciding which importOption is used
+// function for deciding which importOption(ex, one-import-tf) is used
 // if index is out of range, then it means not using import 
 // you can find oneImport and oneImportOptions in tools.js
 const chooseImportOption = function(index) {
@@ -47,21 +47,4 @@ const oneImportToggleFunction = function () {
     autoCompletePath(oneImportBcq);
 };
 
-// you can find oneImport in tools.js
-const makeSelectTagForImport = function() {
-    const select = document.createElement('select');
-    select.id = "framework";
-    select.name = "framework";
-    const defaultOption = document.createElement("option");
-    defaultOption.value = "beforeDecision";
-    defaultOption.text = "Choose your framework";
-    select.appendChild(defaultOption);
-    for (let i = 0; i < oneImport.options.length; i++) {
-        const option = document.createElement("option");
-        option.value = oneImport.options[i].optionName;
-        option.text = oneImport.options[i].optionName;
-        select.appendChild(option);
-    }
-    select.addEventListener("change", changeSelect);
-    return select;
-};
+
