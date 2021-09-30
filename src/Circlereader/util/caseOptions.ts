@@ -1,158 +1,160 @@
-import { OptionsAttribute } from './optionsAttribute'
-import { Operator } from '../circle-analysis/circle/operator';
-import { NodeAttributes } from '../type/types';
+import {Operator} from '../circle-analysis/circle/operator';
+import {NodeAttributes} from '../type/types';
 
-export function caseOptions(opt_name: string, operator: Operator, model_attribute: Array<NodeAttributes>) {
-    switch (opt_name) {
-        case 'AddOptions':
-            OptionsAttribute.getAddAttr(operator, model_attribute);
-            break;
-        case 'ArgMaxOptions':
-            OptionsAttribute.getArgMaxAttr(operator, model_attribute);
-            break;
-        case 'ArgMinOptions':
-            OptionsAttribute.getArgMinAttr(operator, model_attribute);
-            break;
-        case 'BCQFullyConnectedOptions':
-            OptionsAttribute.getBCQFullyConnectedAttr(operator, model_attribute);
-            break;
-        case 'BCQGatherOptions':
-            OptionsAttribute.getBCQGatherAttr(operator, model_attribute);
-            break;
-        case 'BatchMatMulOptions':
-            OptionsAttribute.getBatchMatMulAttr(operator, model_attribute);
-            break;
-        case 'BidirectionalSequenceLSTMOptions':
-            OptionsAttribute.getBidirectionalSequenceLSTMAttr(operator, model_attribute);
-            break;
-        case 'BidirectionalSequenceRNNOptions':
-            OptionsAttribute.getBidirectionalSequenceRNNAttr(operator, model_attribute);
-            break;
-        case 'CallOptions':
-            OptionsAttribute.getCallAttr(operator, model_attribute);
-            break;
-        case 'CastOptions':
-            OptionsAttribute.getCastAttr(operator, model_attribute);
-            break;
-        case 'ConcatenationOptions':
-            OptionsAttribute.getConcatenationAttr(operator, model_attribute);
-            break;
-        case 'Conv2DOptions':
-            OptionsAttribute.getConv2DAttr(operator, model_attribute);
-            break;
-        case 'DepthToSpaceOptions':
-            OptionsAttribute.getDepthToSpaceAttr(operator, model_attribute);
-            break;
-        case 'DepthwiseConv2DOptions':
-            OptionsAttribute.getDepthWiseConv2DAttr(operator, model_attribute);
-            break;
-        case 'DivOptions':
-            OptionsAttribute.getDivAttr(operator, model_attribute);
-            break;
-        case 'FakeQuantOptions':
-            OptionsAttribute.getFakeQuantAttr(operator, model_attribute);
-            break;
-        case 'FullyConnectedOptions':
-            OptionsAttribute.getFullyConnectedAttr(operator, model_attribute);
-            break;
-        case 'IfOptions':
-            OptionsAttribute.getIFAttr(operator, model_attribute);
-            break;
-        case 'InstanceNormOptions':
-            OptionsAttribute.getInstanceNormAttr(operator, model_attribute);
-            break;
-        case 'L2NormOptions':
-            OptionsAttribute.getL2NormAttr(operator, model_attribute);
-            break;
-        case 'LSHProjectionOptions':
-            OptionsAttribute.getLSHProjectionAttr(operator, model_attribute);
-            break;
-        case 'LSTMOptions':
-            OptionsAttribute.getLSTMAttr(operator, model_attribute);
-            break;
-        case 'LeakyReluOptions':
-            OptionsAttribute.getLeakyReluAttr(operator, model_attribute);
-            break;
-        case 'LocalResponseNormalizationOptions':
-            OptionsAttribute.getLocalResponseNormalizationAttr(operator, model_attribute);
-            break;
-        case 'MirrorPadOptions':
-            OptionsAttribute.getMirrorPadAttr(operator, model_attribute);
-            break;
-        case 'OneHotOptions':
-            OptionsAttribute.getOneHotAttr(operator, model_attribute);
-            break;
-        case 'PackOptions':
-            OptionsAttribute.getPackAttr(operator, model_attribute);
-            break;
-        case 'Pool2DOptions':
-            OptionsAttribute.getPool2DAttr(operator, model_attribute);
-            break;
-        case 'RNNOptions':
-            OptionsAttribute.getRNNAttr(operator, model_attribute);
-            break;
-        case 'ReducerOptions':
-            OptionsAttribute.getReducerAttr(operator, model_attribute);
-            break;
-        case 'ReshapeOptions':
-            OptionsAttribute.getReshapeAttr(operator, model_attribute);
-            break;
-        case 'ResizeBilinearOptions':
-            OptionsAttribute.getResizeBilinearAttr(operator, model_attribute);
-            break;
-        case 'ResizeNearestNeighborOptions':
-            OptionsAttribute.getResizeNearestNeighborAttr(operator, model_attribute);
-            break;
-        case 'ReverseSequenceOptions':
-            OptionsAttribute.getReverseSequenceAttr(operator, model_attribute);
-            break;
-        case 'SVDFOptions':
-            OptionsAttribute.getSVDFAttr(operator, model_attribute);
-            break;
-        case 'SequenceRNNOptions':
-            OptionsAttribute.getSequenceRNNAttr(operator, model_attribute);
-            break;
-        case 'ShapeOptions':
-            OptionsAttribute.getShapeAttr(operator, model_attribute);
-            break;
-        case 'SkipGramOptions':
-            OptionsAttribute.getSkipGramAttr(operator, model_attribute);
-            break;
-        case 'SoftmaxOptions':
-            OptionsAttribute.getSoftMaxAttr(operator, model_attribute);
-            break;
-        case 'SpaceToDepthOptions':
-            OptionsAttribute.getSpaceToDepth(operator, model_attribute);
-            break;
-        case 'SparseToDenseOptions':
-            OptionsAttribute.getSparseToDenseAttr(operator, model_attribute);
-            break;
-        case 'SplitOptions':
-            OptionsAttribute.getSplitAttr(operator, model_attribute);
-            break;
-        case 'SqueezeOptions':
-            OptionsAttribute.getSqueezeAttr(operator, model_attribute);
-            break;
-        case 'StridedSliceOptions':
-            OptionsAttribute.getStridedSliceAttr(operator, model_attribute);
-            break;
-        case 'SubOptions':
-            OptionsAttribute.getSubAttr(operator, model_attribute);
-            break;
-        case 'TransposeConvOptions':
-            OptionsAttribute.getTransposeConvAttr(operator, model_attribute);
-            break;
-        case 'UnidirectionalSequenceLSTMOptions':
-            OptionsAttribute.getUnidirectionalSequenceLSTMAttr(operator, model_attribute);
-            break;
-        case 'UniqueOptions':
-            OptionsAttribute.getUniqueAttr(operator, model_attribute);
-            break;
-        case 'UnpackOptions':
-            OptionsAttribute.getUnpackAttr(operator, model_attribute);
-            break;
-        case 'WhileOptions':
-            OptionsAttribute.getWhileAttr(operator, model_attribute);
-            break;
-    }
+import {OptionsAttribute} from './optionsAttribute'
+
+export function caseOptions(
+    opt_name: string, operator: Operator, modelAttribute: Array<NodeAttributes>) {
+  switch (opt_name) {
+    case 'AddOptions':
+      OptionsAttribute.getAddAttr(operator, modelAttribute);
+      break;
+    case 'ArgMaxOptions':
+      OptionsAttribute.getArgMaxAttr(operator, modelAttribute);
+      break;
+    case 'ArgMinOptions':
+      OptionsAttribute.getArgMinAttr(operator, modelAttribute);
+      break;
+    case 'BCQFullyConnectedOptions':
+      OptionsAttribute.getBCQFullyConnectedAttr(operator, modelAttribute);
+      break;
+    case 'BCQGatherOptions':
+      OptionsAttribute.getBCQGatherAttr(operator, modelAttribute);
+      break;
+    case 'BatchMatMulOptions':
+      OptionsAttribute.getBatchMatMulAttr(operator, modelAttribute);
+      break;
+    case 'BidirectionalSequenceLSTMOptions':
+      OptionsAttribute.getBidirectionalSequenceLSTMAttr(operator, modelAttribute);
+      break;
+    case 'BidirectionalSequenceRNNOptions':
+      OptionsAttribute.getBidirectionalSequenceRNNAttr(operator, modelAttribute);
+      break;
+    case 'CallOptions':
+      OptionsAttribute.getCallAttr(operator, modelAttribute);
+      break;
+    case 'CastOptions':
+      OptionsAttribute.getCastAttr(operator, modelAttribute);
+      break;
+    case 'ConcatenationOptions':
+      OptionsAttribute.getConcatenationAttr(operator, modelAttribute);
+      break;
+    case 'Conv2DOptions':
+      OptionsAttribute.getConv2DAttr(operator, modelAttribute);
+      break;
+    case 'DepthToSpaceOptions':
+      OptionsAttribute.getDepthToSpaceAttr(operator, modelAttribute);
+      break;
+    case 'DepthwiseConv2DOptions':
+      OptionsAttribute.getDepthWiseConv2DAttr(operator, modelAttribute);
+      break;
+    case 'DivOptions':
+      OptionsAttribute.getDivAttr(operator, modelAttribute);
+      break;
+    case 'FakeQuantOptions':
+      OptionsAttribute.getFakeQuantAttr(operator, modelAttribute);
+      break;
+    case 'FullyConnectedOptions':
+      OptionsAttribute.getFullyConnectedAttr(operator, modelAttribute);
+      break;
+    case 'IfOptions':
+      OptionsAttribute.getIFAttr(operator, modelAttribute);
+      break;
+    case 'InstanceNormOptions':
+      OptionsAttribute.getInstanceNormAttr(operator, modelAttribute);
+      break;
+    case 'L2NormOptions':
+      OptionsAttribute.getL2NormAttr(operator, modelAttribute);
+      break;
+    case 'LSHProjectionOptions':
+      OptionsAttribute.getLSHProjectionAttr(operator, modelAttribute);
+      break;
+    case 'LSTMOptions':
+      OptionsAttribute.getLSTMAttr(operator, modelAttribute);
+      break;
+    case 'LeakyReluOptions':
+      OptionsAttribute.getLeakyReluAttr(operator, modelAttribute);
+      break;
+    case 'LocalResponseNormalizationOptions':
+      OptionsAttribute.getLocalResponseNormalizationAttr(operator, modelAttribute);
+      break;
+    case 'MirrorPadOptions':
+      OptionsAttribute.getMirrorPadAttr(operator, modelAttribute);
+      break;
+    case 'OneHotOptions':
+      OptionsAttribute.getOneHotAttr(operator, modelAttribute);
+      break;
+    case 'PackOptions':
+      OptionsAttribute.getPackAttr(operator, modelAttribute);
+      break;
+    case 'Pool2DOptions':
+      OptionsAttribute.getPool2DAttr(operator, modelAttribute);
+      break;
+    case 'RNNOptions':
+      OptionsAttribute.getRNNAttr(operator, modelAttribute);
+      break;
+    case 'ReducerOptions':
+      OptionsAttribute.getReducerAttr(operator, modelAttribute);
+      break;
+    case 'ReshapeOptions':
+      OptionsAttribute.getReshapeAttr(operator, modelAttribute);
+      break;
+    case 'ResizeBilinearOptions':
+      OptionsAttribute.getResizeBilinearAttr(operator, modelAttribute);
+      break;
+    case 'ResizeNearestNeighborOptions':
+      OptionsAttribute.getResizeNearestNeighborAttr(operator, modelAttribute);
+      break;
+    case 'ReverseSequenceOptions':
+      OptionsAttribute.getReverseSequenceAttr(operator, modelAttribute);
+      break;
+    case 'SVDFOptions':
+      OptionsAttribute.getSVDFAttr(operator, modelAttribute);
+      break;
+    case 'SequenceRNNOptions':
+      OptionsAttribute.getSequenceRNNAttr(operator, modelAttribute);
+      break;
+    case 'ShapeOptions':
+      OptionsAttribute.getShapeAttr(operator, modelAttribute);
+      break;
+    case 'SkipGramOptions':
+      OptionsAttribute.getSkipGramAttr(operator, modelAttribute);
+      break;
+    case 'SoftmaxOptions':
+      OptionsAttribute.getSoftMaxAttr(operator, modelAttribute);
+      break;
+    case 'SpaceToDepthOptions':
+      OptionsAttribute.getSpaceToDepth(operator, modelAttribute);
+      break;
+    case 'SparseToDenseOptions':
+      OptionsAttribute.getSparseToDenseAttr(operator, modelAttribute);
+      break;
+    case 'SplitOptions':
+      OptionsAttribute.getSplitAttr(operator, modelAttribute);
+      break;
+    case 'SqueezeOptions':
+      OptionsAttribute.getSqueezeAttr(operator, modelAttribute);
+      break;
+    case 'StridedSliceOptions':
+      OptionsAttribute.getStridedSliceAttr(operator, modelAttribute);
+      break;
+    case 'SubOptions':
+      OptionsAttribute.getSubAttr(operator, modelAttribute);
+      break;
+    case 'TransposeConvOptions':
+      OptionsAttribute.getTransposeConvAttr(operator, modelAttribute);
+      break;
+    case 'UnidirectionalSequenceLSTMOptions':
+      OptionsAttribute.getUnidirectionalSequenceLSTMAttr(operator, modelAttribute);
+      break;
+    case 'UniqueOptions':
+      OptionsAttribute.getUniqueAttr(operator, modelAttribute);
+      break;
+    case 'UnpackOptions':
+      OptionsAttribute.getUnpackAttr(operator, modelAttribute);
+      break;
+    case 'WhileOptions':
+      OptionsAttribute.getWhileAttr(operator, modelAttribute);
+      break;
+  }
 }
