@@ -32,8 +32,8 @@ export class HoverProvider implements vscode.HoverProvider {
 
     toolsAttr.forEach((item) => {
       if (item.name === word) {
-        mdfile.appendMarkdown(`### ${item.name}\n`);
-        mdfile.appendMarkdown(`${item.description}\n`);
+        markdownString.appendMarkdown(`### ${item.name}\n`);
+        markdownString.appendMarkdown(`${item.description}\n`);
 
         // TODO Add more
       }
