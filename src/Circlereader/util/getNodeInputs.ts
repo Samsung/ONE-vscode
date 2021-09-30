@@ -14,7 +14,7 @@ export function getNodeInputs(
             location: inputArr[inputIdx],
             name: nodesArr[inputArr[inputIdx]]['name'],
             type: nodesArr[inputArr[inputIdx]]['type'],
-            edge: model.buffers(subgraph.tensors(inputArr[inputIdx])?.buffer()!)?.dataLength() == 0 ? true : false
+            edge: model.buffers(subgraph.tensors(inputArr[inputIdx])?.buffer()!)?.dataLength() === 0 ? true : false
         };
         nodeInputs.push(nodeInput);
   }
