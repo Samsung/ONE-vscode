@@ -15,6 +15,7 @@
  */
 
 import * as vscode from 'vscode';
+import toolsAttr from './json/tools_attr.json';
 
 export class HoverProvider implements vscode.HoverProvider {
   provideHover(
@@ -28,7 +29,15 @@ export class HoverProvider implements vscode.HoverProvider {
       return new vscode.Hover(markdownString);
     }
     const word = _doc.getText(range);
-    // TODO Add more
+
+    toolsAttr.forEach((item) => {
+      if (item.name === word) {
+        mdfile.appendMarkdown(`### ${item.name}\n`);
+        mdfile.appendMarkdown(`${item.description}\n`);
+
+        // TODO Add more
+      }
+    });
 
     return new vscode.Hover(markdownString);
   }
