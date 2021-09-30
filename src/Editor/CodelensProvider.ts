@@ -18,12 +18,19 @@ import * as vscode from 'vscode';
 import toolsAttr from './json/tools_attr.json';
 
 export class CodelensProvider implements vscode.CodeLensProvider {
+  showTool: Array<string> = [];
+
   constructor() {
-    vscode.commands.registerCommand(
-        'onevscode.toggleAttrCodelens',
-        (toolName: string) => {
-            // TODO Implement
-        });
+    vscode.commands.registerCommand('onevscode.toggleAttrCodelens', (toolName: string) => {
+      let findToolIdx = this.showTool.findIndex((tool) => tool === toolName);
+
+      if (findToolIdx === -1) {
+        this.showTool.push(toolName);
+      } else {
+        this.showTool.splice(findToolIdx, 1);
+      }
+      // TODO Add more
+    });
   }
 
   public provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken):
