@@ -157,12 +157,22 @@ const changeCommonTags = function(tool) {
     });
   }
   const optionFieldset = document.querySelector("#options");
-  if (tool.use === true) {
-    useBtn.checked = true;
-    optionFieldset.disabled = false;
+  if (tool.type.startsWith("one-import")) {
+    if (oneImport.use === true) {
+      useBtn.checked = true;
+      optionFieldset.disabled = false;
+    } else {
+      useBtn.checked = false;
+      optionFieldset.disabled = true;
+    }
   } else {
-    useBtn.checked = false;
-    optionFieldset.disabled = true;
+    if (tool.use === true) {
+      useBtn.checked = true;
+      optionFieldset.disabled = false;
+    } else {
+      useBtn.checked = false;
+      optionFieldset.disabled = true;
+    }
   }
 };
 
