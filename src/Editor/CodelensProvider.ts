@@ -61,7 +61,6 @@ export class CodelensProvider implements vscode.CodeLensProvider {
   public resolveCodeLens(codeLens: vscode.CodeLens, token: vscode.CancellationToken) {
     // TODO implement
     let lineStr = vscode.window.activeTextEditor ?.document.getText(codeLens.range);
-    let nowToolName = '';
 
     if (lineStr?.indexOf('=') === -1) {
       toolsAttr.forEach((tool) => {
