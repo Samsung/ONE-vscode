@@ -18,11 +18,11 @@
 const pathValidator = function(tool) {
   for (let j = 0; j < tool.options.length; j++) {
     if (tool.options[j].optionName === 'input_path' && tool.options[j].optionValue.trim() === '') {
-      sendMessage('alert', `If you want to use ${tool.type}, then input_path is required`);
+      sendMessage('alert', `input_path is required to use ${tool.type}`);
       return false;
     }
     if (tool.options[j].optionName === 'output_path' && tool.options[j].optionValue.trim() === '') {
-      sendMessage('alert', `If you want to use ${tool.type}, then output_path is required`);
+      sendMessage('alert', `output_path is required to use ${tool.type}`);
       return false;
     }
   }
@@ -33,7 +33,7 @@ const pathValidator = function(tool) {
 const backendValidator = function(tool) {
   for (let j = 0; j < tool.options.length; j++) {
     if (tool.options[j].optionName === 'backend' && tool.options[j].optionValue.trim() === '') {
-      sendMessage('alert', `If you want to use ${tool.type}, then backend is required`);
+      sendMessage('alert', `backend is required to use ${tool.type}`);
       return false;
     }
   }
@@ -52,7 +52,7 @@ const exportValidation = function() {
       }
     }
     if (chosenModelIndex === -1) {
-      sendMessage('alert', 'If you want to use one-import, then you should choose your framework');
+      sendMessage('alert', 'You need to choose the framework(ex. TensorFlow) to use one-import');
       return false;
     } else {
       if (!pathValidator(oneImportOptions[chosenModelIndex])) {
