@@ -211,3 +211,32 @@ const buildOptionDom = function (tool) {
     optionsValueTag.appendChild(valueUlTag);
     optionsNameTag.appendChild(nameUlTag);
 };
+
+// function for selecting framework
+// you can find oneImportBcq, Onnx, Tf, Tflite in tools.js
+const changeSelect = function (event) {
+  emptyOptionBox(true);
+  const selectedText = event.target.options[event.target.selectedIndex].text;
+  switch (selectedText) {
+  case "bcq": {
+      chooseImportOption(0);
+      buildOptionDom(oneImportBcq);
+      break;
+  }
+  case "onnx": {
+      chooseImportOption(1);
+      buildOptionDom(oneImportOnnx);
+      break;
+  }
+  case "tf": {
+      chooseImportOption(2);
+      buildOptionDom(oneImportTf);
+      break;
+  }
+  case "tflite": {
+      chooseImportOption(3);
+      buildOptionDom(oneImportTflite);
+      break;
+  }
+  }
+};

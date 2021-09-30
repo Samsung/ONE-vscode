@@ -30,6 +30,7 @@ const chooseImportOption = function(index) {
   };
   
 // one-import options are different from other tools so separate toggle function
+// you can find oneImport in tools.js
 const oneImportToggleFunction = function () {
     const optionFieldset = document.querySelector("#options");
     const selectTag = document.querySelector("#framework");
@@ -45,35 +46,8 @@ const oneImportToggleFunction = function () {
     }
     autoCompletePath(oneImportBcq);
 };
-  
-// function for selecting framework
-const changeSelect = function (event) {
-    emptyOptionBox(true);
-    const selectedText = event.target.options[event.target.selectedIndex].text;
-    switch (selectedText) {
-    case "bcq": {
-        chooseImportOption(0);
-        buildOptionDom(oneImportBcq);
-        break;
-    }
-    case "onnx": {
-        chooseImportOption(1);
-        buildOptionDom(oneImportOnnx);
-        break;
-    }
-    case "tf": {
-        chooseImportOption(2);
-        buildOptionDom(oneImportTf);
-        break;
-    }
-    case "tflite": {
-        chooseImportOption(3);
-        buildOptionDom(oneImportTflite);
-        break;
-    }
-    }
-};
-  
+
+// you can find oneImport in tools.js
 const makeSelectTagForImport = function() {
     const select = document.createElement('select');
     select.id = "framework";
