@@ -18,7 +18,13 @@ import * as vscode from 'vscode';
 import toolsAttr from './json/tools_attr.json';
 
 export class CodelensProvider implements vscode.CodeLensProvider {
-  constructor() {}
+  constructor() {
+    vscode.commands.registerCommand(
+        'onevscode.toggleAttrCodelens',
+        (toolName: string) => {
+            // TODO Implement
+        });
+  }
 
   public provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken):
       vscode.CodeLens[]|Thenable<vscode.CodeLens[]> {
@@ -53,7 +59,22 @@ export class CodelensProvider implements vscode.CodeLensProvider {
   }
 
   public resolveCodeLens(codeLens: vscode.CodeLens, token: vscode.CancellationToken) {
-    // TODO implement
-    return null;
+    let lineStr = vscode.window.activeTextEditor ?.document.getText(codeLens.range);
+
+    if (lineStr?.indexOf('=') === -1) {
+      toolsAttr.forEach((tool) => {
+        if (tool.name === lineStr) {
+          codeLens.command = {
+            title: tool.description,
+            command: 'onevscode.toggleAttrCodelens',
+            arguments: [lineStr],
+          };
+        }
+      });
+    } else {
+      // TODO Add more
+    }
+
+    return codeLens;
   }
 }
