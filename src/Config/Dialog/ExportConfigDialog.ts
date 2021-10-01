@@ -52,17 +52,11 @@ export function exportConfig(payLoad: any): void {
   };
   vscode.window.showSaveDialog(optionsForExportDialog).then((fileUri) => {
     if (fileUri) {
-      const os = require('os');
-      let path = fileUri.path;
-      if (os.platform() === 'win32') {
-        const pathTmp = path.split('/');
-        pathTmp.splice(0, 1);
-        path = pathTmp.join('\\');
-      }
+      let filePath = fileUri.fsPath;
       try {
-        config.write(path);
+        config.write(filePath);
         Balloon.info('Your configuration file is successfully generated!');
-        vscode.workspace.openTextDocument(vscode.Uri.file(path)).then(doc => {
+        vscode.workspace.openTextDocument(vscode.Uri.file(filePath)).then(doc => {
           vscode.window.showTextDocument(doc);
         });
       } catch (error) {
