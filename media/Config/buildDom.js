@@ -135,11 +135,11 @@ const buildOptionDom = function(tool) {
 
         if (tool.options[i].optionName === 'input_path') {
           // case for input_path
-          const btnTag = makeInputPathBtn(tool);
-          valueLiTag.appendChild(btnTag);
-
           const inputTag = makeInputPathInput(tool, i);
           valueLiTag.appendChild(inputTag);
+
+          const btnTag = makeInputPathBtn(tool);
+          valueLiTag.appendChild(btnTag);
         } else if (tool.options[i].optionName === 'output_path') {
           // case for output_path
           const inputTag = makeOutputPathInput(tool, i);
