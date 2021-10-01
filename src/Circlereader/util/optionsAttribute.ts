@@ -131,7 +131,7 @@ export class OptionsAttribute {
     let lshProjectionOpt = new LSHProjectionOptions();
     lshProjectionOpt = operator.builtinOptions<flatbuffers.Table>(lshProjectionOpt);
 
-    attributes.push({attribute: 'filterHeight', value: LSHProjectionType[lshProjectionOpt.type()]});
+    attributes.push({attribute: 'type', value: LSHProjectionType[lshProjectionOpt.type()]});
   }
 
   static getPool2DAttr(operator: Operator, attributes: Array<NodeAttributes>) {
@@ -276,7 +276,7 @@ export class OptionsAttribute {
     let reshapeOpt = new ReshapeOptions();
     reshapeOpt = operator.builtinOptions<flatbuffers.Table>(reshapeOpt);
 
-    attributes.push({attribute: 'newShape', value: reshapeOpt.newShapeArray()});
+    attributes.push({attribute: 'newShapeArray', value: reshapeOpt.newShapeArray()});
   }
 
   static getSkipGramAttr(operator: Operator, attributes: Array<NodeAttributes>) {
