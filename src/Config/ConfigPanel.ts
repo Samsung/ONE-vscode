@@ -55,7 +55,7 @@ export class ConfigPanel {
           enableScripts: true,
 
           // And restrict the webview to only loading content from our
-          // extension"s `media` directory.
+          // extension"s `media/Config` directory.
           localResourceRoots: [
             vscode.Uri.joinPath(context.extensionUri, 'media/Config'),
           ],
