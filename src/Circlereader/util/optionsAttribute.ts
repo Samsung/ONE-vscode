@@ -121,7 +121,7 @@ export class OptionsAttribute {
 
     for (let i = 0; i < numChannelLength; i++) {
       attributes.push({
-        attribute: 'num_column_per_channel_' + i,
+        attribute: 'num_columns_per_channel_' + i,
         value: concatEmbaddingOpt.numColumnsPerChannel(i)
       });
     }
