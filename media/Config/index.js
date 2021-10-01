@@ -31,8 +31,8 @@ const showOptions = function (event) {
         select.disabled = false;
       }
 
-      const locaForSelect = document.querySelector("#locaForSelect");
-      locaForSelect.appendChild(select);
+      const spanTagForSelect = document.querySelector("#spanTagForSelect");
+      spanTagForSelect.appendChild(select);
 
       // if framework like tensorflow has already been chosen, then bring it
       let chosenOptionIndex = -1;

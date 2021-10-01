@@ -18,9 +18,9 @@
 const emptyOptionBox = function(isImport) {
   if (!isImport) {
     // erase select tag for choosing framework
-    const locaForSelect = document.querySelector('#locaForSelect');
-    while (locaForSelect.hasChildNodes()) {
-      locaForSelect.removeChild(locaForSelect.firstChild);
+    const spanTagForSelect = document.querySelector('#spanTagForSelect');
+    while (spanTagForSelect.hasChildNodes()) {
+      spanTagForSelect.removeChild(spanTagForSelect.firstChild);
     }
 
     const toolList = document.querySelectorAll('.tools div');
