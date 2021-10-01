@@ -19,6 +19,7 @@ import toolsAttr from './json/tools_attr.json';
 
 export class CodelensProvider implements vscode.CodeLensProvider {
   showTool: Array<string> = [];
+  notShowAttr: Array<string> = [];
   eventGenerator: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
   public readonly onDidChangeCodeLenses: vscode.Event<void> = this.eventGenerator.event;
 
@@ -43,6 +44,7 @@ export class CodelensProvider implements vscode.CodeLensProvider {
       let regex = new RegExp(/(.+)/g);
       let activatedEditorText = document.getText();
       let matches;
+      let nowToolName = '';
       // TODO tune performance
       while ((matches = regex.exec(activatedEditorText)) !== null) {
         let line = document.lineAt(document.positionAt(matches.index).line);
@@ -55,11 +57,31 @@ export class CodelensProvider implements vscode.CodeLensProvider {
           toolsAttr.forEach((tool) => {
             if (tool.name === lineStr) {
               codeLenses.push(new vscode.CodeLens(range));
+              
+              if (this.showTool.includes(lineStr)) {
+                nowToolName = lineStr;
+              } else {
+                nowToolName = '';
+              }
             }
-            // TODO Add more
           });
         } else {
-          // TODO Add more
+          if (nowToolName !== '') {
+            let attrName = lineStr.split('=')[0];
+            let toolAttr = nowToolName + '.' + attrName;
+
+            if (this.notShowAttr.indexOf(toolAttr) === -1) {
+              toolsAttr.forEach((tool) => {
+                if (tool.name === nowToolName) {
+                  tool.body.forEach((attr) => {
+                    if (attr.attr_name === attrName) {
+                      codeLenses.push(new vscode.CodeLens(range));
+                    }
+                  });
+                }
+              });
+            }
+          }
         }
       }
     }
