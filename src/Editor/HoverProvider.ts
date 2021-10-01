@@ -38,7 +38,16 @@ export class HoverProvider implements vscode.HoverProvider {
         item.body.forEach((content) => {
           markdownString.appendMarkdown(`- ${content.attr_name} : ${content.attr_desc}\n`);
 
-          // TODO Add more
+          if (content.options) {
+            content.options.forEach((option) => {
+              markdownString.appendMarkdown('\t');
+              if (option.option_desc) {
+                markdownString.appendMarkdown(`- ${option.option_name} : ${option.option_desc}\n`);
+              } else {
+                markdownString.appendMarkdown(`- ${option.option_name}\n`);
+              }
+            });
+          }
         });
       }
     });
