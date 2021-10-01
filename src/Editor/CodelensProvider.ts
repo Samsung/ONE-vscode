@@ -72,7 +72,7 @@ export class CodelensProvider implements vscode.CodeLensProvider {
         let line = document.lineAt(document.positionAt(matches.index).line);
         let indexOf = line.text.indexOf(matches[0]);
         let position = new vscode.Position(line.lineNumber, indexOf);
-        const range = document.getWordRangeAtPosition(position, this.regex);
+        let range = document.getWordRangeAtPosition(position, this.regex) as vscode.Range;
         let lineStr = line.text;
 
         if (range) {
