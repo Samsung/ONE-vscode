@@ -19,7 +19,7 @@ import {NodeAttributes} from '../type/types';
 
 import {OptionsAttribute} from './optionsAttribute';
 
-export function caseOptions(
+export function setAttributesByOption(
     optName: string, operator: Operator, modelAttribute: Array<NodeAttributes>) {
   switch (optName) {
     case 'AddOptions':
