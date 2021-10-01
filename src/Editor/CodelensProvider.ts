@@ -44,7 +44,7 @@ export class CodelensProvider implements vscode.CodeLensProvider {
       let regex = new RegExp(/(.+)/g);
       let activatedEditorText = document.getText();
       let matches;
-      let nowToolName = '';
+      let currentToolName = '';
       // TODO tune performance
       while ((matches = regex.exec(activatedEditorText)) !== null) {
         let line = document.lineAt(document.positionAt(matches.index).line);
@@ -59,20 +59,20 @@ export class CodelensProvider implements vscode.CodeLensProvider {
               codeLenses.push(new vscode.CodeLens(range));
 
               if (this.showTool.includes(lineStr)) {
-                nowToolName = lineStr;
+                currentToolName = lineStr;
               } else {
-                nowToolName = '';
+                currentToolName = '';
               }
             }
           });
         } else {
-          if (nowToolName !== '') {
+          if (currentToolName !== '') {
             let attrName = lineStr.split('=')[0];
-            let toolAttr = nowToolName + '.' + attrName;
+            let toolAttr = currentToolName + '.' + attrName;
 
             if (this.notShowAttr.indexOf(toolAttr) === -1) {
               toolsAttr.forEach((tool) => {
-                if (tool.name === nowToolName) {
+                if (tool.name === currentToolName) {
                   tool.body.forEach((attr) => {
                     if (attr.attr_name === attrName) {
                       codeLenses.push(new vscode.CodeLens(range));
