@@ -172,5 +172,8 @@ export function caseOptions(
     case 'WhileOptions':
       OptionsAttribute.getWhileAttr(operator, modelAttribute);
       break;
+    default:
+      console.log('This option is not supported yet.');
+      break;
   }
 }
