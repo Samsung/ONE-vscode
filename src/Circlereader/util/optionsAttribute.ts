@@ -83,8 +83,8 @@ export class OptionsAttribute {
     let conv2DOpt = new Conv2DOptions();
     conv2DOpt = operator.builtinOptions<flatbuffers.Table>(conv2DOpt);
 
-    attributes.push({attribute: 'dialtaion_h_factor', value: conv2DOpt.dilationHFactor()});
-    attributes.push({attribute: 'dialtaion_w_factor', value: conv2DOpt.dilationWFactor()});
+    attributes.push({attribute: 'dilation_h_factor', value: conv2DOpt.dilationHFactor()});
+    attributes.push({attribute: 'dilation_w_factor', value: conv2DOpt.dilationWFactor()});
     attributes.push({
       attribute: 'fused_activation_function',
       value: ActivationFunctionType[conv2DOpt.fusedActivationFunction()]
@@ -98,8 +98,8 @@ export class OptionsAttribute {
     let depthWiseConv2DOpt = new DepthwiseConv2DOptions();
     depthWiseConv2DOpt = operator.builtinOptions<flatbuffers.Table>(depthWiseConv2DOpt);
 
-    attributes.push({attribute: 'dialtaion_h_factor', value: depthWiseConv2DOpt.dilationHFactor()});
-    attributes.push({attribute: 'dialtaion_w_factor', value: depthWiseConv2DOpt.dilationWFactor()});
+    attributes.push({attribute: 'dilation_h_factor', value: depthWiseConv2DOpt.dilationHFactor()});
+    attributes.push({attribute: 'dilation_w_factor', value: depthWiseConv2DOpt.dilationWFactor()});
     attributes.push({attribute: 'depth_multiplier', value: depthWiseConv2DOpt.depthMultiplier()});
     attributes.push({
       attribute: 'fused_activation_function',
