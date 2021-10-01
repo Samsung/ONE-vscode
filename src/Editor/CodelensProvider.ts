@@ -18,7 +18,10 @@ import * as vscode from 'vscode';
 import toolsAttr from './json/tools_attr.json';
 
 export class CodelensProvider implements vscode.CodeLensProvider {
+  // Save the name of the tool to view the description of the attribute.
   showTool: Array<string> = [];
+  // Save attributes to hide.
+  hideAttr: Array<string> = [];
   eventGenerator: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
   public readonly onDidChangeCodeLenses: vscode.Event<void> = this.eventGenerator.event;
 
@@ -43,6 +46,7 @@ export class CodelensProvider implements vscode.CodeLensProvider {
       let regex = new RegExp(/(.+)/g);
       let activatedEditorText = document.getText();
       let matches;
+      let currentToolName = '';
       // TODO tune performance
       while ((matches = regex.exec(activatedEditorText)) !== null) {
         let line = document.lineAt(document.positionAt(matches.index).line);
@@ -55,11 +59,31 @@ export class CodelensProvider implements vscode.CodeLensProvider {
           toolsAttr.forEach((tool) => {
             if (tool.name === lineStr) {
               codeLenses.push(new vscode.CodeLens(range));
+
+              if (this.showTool.includes(lineStr)) {
+                currentToolName = lineStr;
+              } else {
+                currentToolName = '';
+              }
             }
-            // TODO Add more
           });
         } else {
-          // TODO Add more
+          if (currentToolName !== '') {
+            let attrName = lineStr.split('=')[0];
+            let toolAttr = currentToolName + '.' + attrName;
+
+            if (this.hideAttr.indexOf(toolAttr) === -1) {
+              toolsAttr.forEach((tool) => {
+                if (tool.name === currentToolName) {
+                  tool.body.forEach((attr) => {
+                    if (attr.attr_name === attrName) {
+                      codeLenses.push(new vscode.CodeLens(range));
+                    }
+                  });
+                }
+              });
+            }
+          }
         }
       }
     }
