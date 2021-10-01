@@ -15,6 +15,7 @@
  */
 
 // before building DOM, this function guide which tool will be built
+// you can find makeSelectTagForImport and buildOptionDom in buildDom.js
 const showOptions = function (event) {
   emptyOptionBox(false);
   event.target.classList.add("selected");
@@ -67,6 +68,7 @@ const showOptions = function (event) {
 };
 
 // send message to config panel about export configuration
+// you can find sendMessage in sednToPanel.js 
 const exportConfiguration = function () {
   if (exportValidation()) {
     sendMessage("exportConfig", {
@@ -84,6 +86,7 @@ const runConfiguration = function () {
 };
 
 // send message to config panel about import configuration
+// you can find sendMessage in sednToPanel.js 
 const importConfiguration = function () {
   sendMessage("importConfig", "");
 };
