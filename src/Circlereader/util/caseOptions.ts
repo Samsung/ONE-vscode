@@ -52,6 +52,9 @@ export function caseOptions(
     case 'CastOptions':
       OptionsAttribute.getCastAttr(operator, modelAttribute);
       break;
+    case 'ConcatEmbeddingsOptions':
+      OptionsAttribute.getConcatEmbeddingAttr(operator, modelAttribute);
+      break;
     case 'ConcatenationOptions':
       OptionsAttribute.getConcatenationAttr(operator, modelAttribute);
       break;
