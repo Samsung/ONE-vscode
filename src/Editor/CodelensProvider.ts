@@ -57,7 +57,7 @@ export class CodelensProvider implements vscode.CodeLensProvider {
           toolsAttr.forEach((tool) => {
             if (tool.name === lineStr) {
               codeLenses.push(new vscode.CodeLens(range));
-              
+
               if (this.showTool.includes(lineStr)) {
                 nowToolName = lineStr;
               } else {
