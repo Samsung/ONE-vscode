@@ -15,40 +15,81 @@
  */
 
 // remove every options on DOM
-const emptyOptionBox = function (isImport) {
-    if (!isImport) {
-      const locaForSelect = document.querySelector("#locaForSelect");
-      while (locaForSelect.hasChildNodes()) {
-        locaForSelect.removeChild(locaForSelect.firstChild);
-      }
-      const toolList = document.querySelectorAll(".tools div");
-      for (let i = 0; i < toolList.length; i++) {
-        toolList[i].classList.remove("selected");
-      }
+const emptyOptionBox = function(isImport) {
+  if (!isImport) {
+    // erase select tag for choosing framework
+    const locaForSelect = document.querySelector('#locaForSelect');
+    while (locaForSelect.hasChildNodes()) {
+      locaForSelect.removeChild(locaForSelect.firstChild);
     }
-    const optionsName = document.querySelector("#optionsName");
-    while (optionsName.hasChildNodes()) {
-      optionsName.removeChild(optionsName.firstChild);
+
+    const toolList = document.querySelectorAll('.tools div');
+    for (let i = 0; i < toolList.length; i++) {
+      toolList[i].classList.remove('selected');
     }
-    const optionsValue = document.querySelector("#optionsValue");
-    while (optionsValue.hasChildNodes()) {
-      optionsValue.removeChild(optionsValue.firstChild);
+  }
+
+  // erase option names
+  const optionsName = document.querySelector('#optionsName');
+  while (optionsName.hasChildNodes()) {
+    optionsName.removeChild(optionsName.firstChild);
+  }
+
+  // erase option values
+  const optionsValue = document.querySelector('#optionsValue');
+  while (optionsValue.hasChildNodes()) {
+    optionsValue.removeChild(optionsValue.firstChild);
+  }
+};
+
+// make DOM disable depends on tool.use
+const chooseDisable = function(tool) {
+  const useBtn = document.querySelector('#useBtn');
+  const optionFieldset = document.querySelector('#options');
+
+  // when tools are related with one-import
+  if (tool.type.startsWith('one-import')) {
+    if (oneImport.use === true) {
+      useBtn.checked = true;
+      optionFieldset.disabled = false;
+
+    } else {
+      useBtn.checked = false;
+      optionFieldset.disabled = true;
     }
+
+    // when tool are not related with one-import
+  } else {
+    if (tool.use === true) {
+      useBtn.checked = true;
+      optionFieldset.disabled = false;
+
+    } else {
+      useBtn.checked = false;
+      optionFieldset.disabled = true;
+    }
+  }
 };
 
 // change tool name and change toggle button
+// you can find oneImportToggleFunction in buildImportDom.js
+// you can find autoCompletePath in pathAutoComplete.js
 const changeCommonTags = function(tool) {
-  const h2Tag = document.querySelector("#toolName");
+  const h2Tag = document.querySelector('#toolName');
   h2Tag.innerText = `Options for ${tool.type}`;
-  const tmpBtn = document.querySelector("#useBtn");
+
+  // erase event listeners in useBtn
+  const tmpBtn = document.querySelector('#useBtn');
   const useBtn = tmpBtn.cloneNode(true);
   tmpBtn.parentNode.replaceChild(useBtn, tmpBtn);
-  if (tool.type.startsWith("one-import")) {
-    // you can find oneImportToggleFunction in buildImportDom.js
-    useBtn.addEventListener("click", oneImportToggleFunction);
+
+  // add event listener to useBtn
+  if (tool.type.startsWith('one-import')) {
+    useBtn.addEventListener('click', oneImportToggleFunction);
   } else {
-    useBtn.addEventListener("click", function () {
-      const optionFieldset = document.querySelector("#options");
+    useBtn.addEventListener('click', function() {
+      const optionFieldset = document.querySelector('#options');
+
       if (tool.use === true) {
         tool.use = false;
         optionFieldset.disabled = true;
@@ -56,104 +97,97 @@ const changeCommonTags = function(tool) {
         tool.use = true;
         optionFieldset.disabled = false;
       }
-      // you can find autoCompletePath in pathAutoComplete.js
+
       autoCompletePath(tool);
     });
   }
-  const optionFieldset = document.querySelector("#options");
-  if (tool.type.startsWith("one-import")) {
-    if (oneImport.use === true) {
-      useBtn.checked = true;
-      optionFieldset.disabled = false;
-    } else {
-      useBtn.checked = false;
-      optionFieldset.disabled = true;
-    }
-  } else {
-    if (tool.use === true) {
-      useBtn.checked = true;
-      optionFieldset.disabled = false;
-    } else {
-      useBtn.checked = false;
-      optionFieldset.disabled = true;
-    }
-  }
+  chooseDisable(tool);
 };
 
 // build DOM for selected tool
-// const is recommanded but 
-const buildOptionDom = function (tool) {
-    changeCommonTags(tool);
-    // make tags for options
-    const optionsNameTag = document.querySelector("#optionsName");
-    const optionsValueTag = document.querySelector("#optionsValue");
-    const nameUlTag = document.createElement("ul");
-    const valueUlTag = document.createElement("ul");
-    for (let i = 0; i < tool.options.length; i++) {
-      const nameLiTag = document.createElement("li");
-      const valueLiTag = document.createElement("li");
-      if (tool.options[i].optionType) {
-        // case for select tag
+// make tags for options
+const buildOptionDom = function(tool) {
+  changeCommonTags(tool);
+
+  const optionsNameTag = document.querySelector('#optionsName');
+  const optionsValueTag = document.querySelector('#optionsValue');
+  const nameUlTag = document.createElement('ul');
+  const valueUlTag = document.createElement('ul');
+
+  for (let i = 0; i < tool.options.length; i++) {
+    const nameLiTag = document.createElement('li');
+    const valueLiTag = document.createElement('li');
+
+    if (tool.options[i].optionType) {
+      // case for select tag
+      nameLiTag.innerText = tool.options[i].optionName;
+
+      const select = makeSelectTag(tool, i);
+      valueLiTag.appendChild(select);
+
+    } else {
+      if (typeof tool.options[i].optionValue === 'boolean') {
+        // case for toggle button
         nameLiTag.innerText = tool.options[i].optionName;
-        const select = makeSelectTag(tool, i);
-        valueLiTag.appendChild(select);
-      } else {
-        if (typeof tool.options[i].optionValue === "boolean") {
-          // case for toggle button
-          const toggleBtn = makeToggleBtn(tool, i);
-          valueLiTag.appendChild(toggleBtn);
-          nameLiTag.innerText = tool.options[i].optionName;
-        } else if (typeof tool.options[i].optionValue === "string") {
-          // case for input tag
-          nameLiTag.innerText = tool.options[i].optionName;
-          if (tool.options[i].optionName === "input_path") {
-            const btnTag = makeInputPathBtn(tool);
-            const inputTag = makeInputPathInput(tool, i);
-            valueLiTag.appendChild(inputTag);
-            valueLiTag.appendChild(btnTag);
-          } else if (tool.options[i].optionName === "output_path") {
-            const inputTag = makeOutputPathInput(tool, i);
-            valueLiTag.appendChild(inputTag);
-          } else {
-            const inputTag = makeInputTag(tool, i);
-            valueLiTag.appendChild(inputTag);
-          }
+
+        const toggleBtn = makeToggleBtn(tool, i);
+        valueLiTag.appendChild(toggleBtn);
+      } else if (typeof tool.options[i].optionValue === 'string') {
+        nameLiTag.innerText = tool.options[i].optionName;
+
+        if (tool.options[i].optionName === 'input_path') {
+          // case for input_path
+          const btnTag = makeInputPathBtn(tool);
+          valueLiTag.appendChild(btnTag);
+
+          const inputTag = makeInputPathInput(tool, i);
+          valueLiTag.appendChild(inputTag);
+        } else if (tool.options[i].optionName === 'output_path') {
+          // case for output_path
+          const inputTag = makeOutputPathInput(tool, i);
+          valueLiTag.appendChild(inputTag);
+
+        } else {
+          // case for normalt input tag
+          const inputTag = makeInputTag(tool, i);
+          valueLiTag.appendChild(inputTag);
         }
       }
-      valueUlTag.appendChild(valueLiTag);
-      nameUlTag.appendChild(nameLiTag);
     }
-    optionsValueTag.appendChild(valueUlTag);
-    optionsNameTag.appendChild(nameUlTag);
+    valueUlTag.appendChild(valueLiTag);
+    nameUlTag.appendChild(nameLiTag);
+  }
+  optionsValueTag.appendChild(valueUlTag);
+  optionsNameTag.appendChild(nameUlTag);
 };
 
 // function for selecting framework
 // you can find oneImportBcq, Onnx, Tf, Tflite in tools.js
 // you can find chooseImportOption in buildImportDom.js
-const changeSelect = function (event) {
+const changeSelect = function(event) {
   emptyOptionBox(true);
   const selectedText = event.target.options[event.target.selectedIndex].text;
   switch (selectedText) {
-  case "bcq": {
+    case 'bcq': {
       chooseImportOption(0);
       buildOptionDom(oneImportBcq);
       break;
-  }
-  case "onnx": {
+    }
+    case 'onnx': {
       chooseImportOption(1);
       buildOptionDom(oneImportOnnx);
       break;
-  }
-  case "tf": {
+    }
+    case 'tf': {
       chooseImportOption(2);
       buildOptionDom(oneImportTf);
       break;
-  }
-  case "tflite": {
+    }
+    case 'tflite': {
       chooseImportOption(3);
       buildOptionDom(oneImportTflite);
       break;
-  }
+    }
   }
 };
 
@@ -161,18 +195,22 @@ const changeSelect = function (event) {
 // you can find oneImport in tools.js
 const makeSelectTagForImport = function() {
   const select = document.createElement('select');
-  select.id = "framework";
-  select.name = "framework";
-  const defaultOption = document.createElement("option");
-  defaultOption.value = "beforeDecision";
-  defaultOption.text = "Choose your framework";
+  select.id = 'framework';
+  select.name = 'framework';
+
+  const defaultOption = document.createElement('option');
+  defaultOption.value = 'beforeDecision';
+  defaultOption.text = 'Choose your framework';
   select.appendChild(defaultOption);
+
   for (let i = 0; i < oneImport.options.length; i++) {
-      const option = document.createElement("option");
-      option.value = oneImport.options[i].optionName;
-      option.text = oneImport.options[i].optionName;
-      select.appendChild(option);
+    const option = document.createElement('option');
+    option.value = oneImport.options[i].optionName;
+    option.text = oneImport.options[i].optionName;
+    select.appendChild(option);
   }
-  select.addEventListener("change", changeSelect);
+
+  select.addEventListener('change', changeSelect);
+  
   return select;
 };
