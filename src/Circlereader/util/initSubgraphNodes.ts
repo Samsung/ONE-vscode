@@ -22,7 +22,7 @@ export function initSubgraphNodes(subgraph: SubGraph): Array<Node> {
 
   for (let tensorIdx = 0; tensorIdx < subgraph.tensorsLength(); tensorIdx++) {
     let tensor = subgraph.tensors(tensorIdx);
-    
+
     // TODO A function to distinguish types like int8 and float32 should be added.
     let hashnode: Node = {name: tensor!.name()!, type: tensor!.shapeArray()!};
 
