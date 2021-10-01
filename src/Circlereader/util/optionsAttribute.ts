@@ -183,7 +183,7 @@ export class OptionsAttribute {
       value: ActivationFunctionType[fullyConnectedOpt.fusedActivationFunction()]
     });
     attributes.push({
-      attribute: 'fullyConnectedOptionsWeightsFormat',
+      attribute: 'weightsFormat',
       value: FullyConnectedOptionsWeightsFormat[fullyConnectedOpt.weightsFormat()]
     });
     attributes.push({attribute: 'keepNumDims', value: fullyConnectedOpt.keepNumDims()});
