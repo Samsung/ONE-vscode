@@ -192,7 +192,7 @@ export class OptionsAttribute {
       value: ActivationFunctionType[rnnOpt.fusedActivationFunction()]
     });
     attributes.push(
-        {attribute: 'asymmetric_quantize_input', value: rnnOpt.asymmetricQuantizeInputs()});
+        {attribute: 'asymmetric_quantize_inputs', value: rnnOpt.asymmetricQuantizeInputs()});
   }
 
   static getFullyConnectedAttr(operator: Operator, attributes: Array<NodeAttributes>) {
