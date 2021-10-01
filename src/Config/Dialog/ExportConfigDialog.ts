@@ -59,18 +59,11 @@ export function exportConfig(payload: any): void {
   // Save '.cfg' file and open it.
   vscode.window.showSaveDialog(optionsForExportDialog).then((fileUri) => {
     if (fileUri) {
-      let path = fileUri.path;
-      const os = require('os');
-      // Trim the path to fit Window format
-      if (os.platform() === 'win32') {
-        const temp = path.split('/');
-        temp.splice(0, 1);
-        path = temp.join('\\');
-      }
       try {
-        config.write(path);
+        let filePath = fileUri.fsPath;
+        config.write(filePath);
         Balloon.info('Your configuration file is successfully generated!');
-        vscode.workspace.openTextDocument(vscode.Uri.file(path)).then(doc => {
+        vscode.workspace.openTextDocument(vscode.Uri.file(filePath)).then(doc => {
           vscode.window.showTextDocument(doc);
         });
       } catch (error) {
