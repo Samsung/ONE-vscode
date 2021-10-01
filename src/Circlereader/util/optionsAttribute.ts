@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
+// Some of operators is not compatible with naming convention.
+// To prevent this, let's disable eslint for this file.
 /* eslint-disable @typescript-eslint/naming-convention */
+
+// TODO Add empty options as comment
+
 import * as flatbuffers from 'flatbuffers';
 import {ActivationFunctionType} from '../circle-analysis/circle/activation-function-type';
 import {AddOptions} from '../circle-analysis/circle/add-options';
