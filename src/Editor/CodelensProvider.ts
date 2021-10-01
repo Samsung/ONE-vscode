@@ -18,7 +18,9 @@ import * as vscode from 'vscode';
 import toolsAttr from './json/tools_attr.json';
 
 export class CodelensProvider implements vscode.CodeLensProvider {
+  // Save the name of the tool to view the description of the attribute.
   showTool: Array<string> = [];
+  // Save attributes to hide.
   hideAttr: Array<string> = [];
   eventGenerator: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
   public readonly onDidChangeCodeLenses: vscode.Event<void> = this.eventGenerator.event;
