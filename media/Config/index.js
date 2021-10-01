@@ -15,41 +15,26 @@
  */
 
 // before building DOM, this function guide which tool will be built
+// you can find makeSelectTagForImport and buildOptionDom in buildDom.js
 const showOptions = function (event) {
   emptyOptionBox(false);
   event.target.classList.add("selected");
   switch (event.target.id) {
     case "import": {
-      const h2Tag = document.querySelector("#toolName");
-      h2Tag.innerText = "Options for import";
-      const locaForSelect = document.querySelector("#locaForSelect");
-      const select = document.createElement("select");
-      select.id = "framework";
-      select.name = "framework";
-      const defaultOption = document.createElement("option");
-      defaultOption.value = "beforeDecision";
-      defaultOption.text = "Choose your framework";
-      select.appendChild(defaultOption);
-      for (let i = 0; i < oneImport.options.length; i++) {
-        const option = document.createElement("option");
-        option.value = oneImport.options[i].optionName;
-        option.text = oneImport.options[i].optionName;
-        select.appendChild(option);
-      }
-      select.addEventListener("change", changeSelect);
-      locaForSelect.appendChild(select);
-      const tmpBtn = document.querySelector("#useBtn");
-      const useBtn = tmpBtn.cloneNode(true);
-      tmpBtn.parentNode.replaceChild(useBtn, tmpBtn);
-      const optionFieldset = document.querySelector("#options");
-      if (oneImport.use === true) {
-        useBtn.checked = true;
-        optionFieldset.disabled = false;
+      changeCommonTags(oneImport);
+
+      const select = makeSelectTagForImport();
+
+      if (oneImport.use === false) {
+        select.disabled = true;
       } else {
-        useBtn.checked = false;
-        optionFieldset.disabled = true;
+        select.disabled = false;
       }
-      useBtn.addEventListener("click", oneImportToggleFunction);
+
+      const locaForSelect = document.querySelector("#locaForSelect");
+      locaForSelect.appendChild(select);
+
+      // if framework like tensorflow has already been chosen, then bring it
       let chosenOptionIndex = -1;
       for (let i = 0; i < oneImport.options.length; i++) {
         if (oneImport.options[i].optionValue === true) {
@@ -60,12 +45,7 @@ const showOptions = function (event) {
       if (chosenOptionIndex !== -1) {
         select.options[chosenOptionIndex + 1].selected = true;
         buildOptionDom(oneImportOptions[chosenOptionIndex]);
-      }
-      if (oneImport.use === false) {
-        select.disabled = true;
-      } else {
-        select.disabled = false;
-      }
+      }      
       break;
     }
     case "optimize": {
@@ -92,6 +72,7 @@ const showOptions = function (event) {
 };
 
 // send message to config panel about export configuration
+// you can find sendMessage in sednToPanel.js 
 const exportConfiguration = function () {
   if (exportValidation()) {
     sendMessage("exportConfig", {
@@ -109,6 +90,7 @@ const runConfiguration = function () {
 };
 
 // send message to config panel about import configuration
+// you can find sendMessage in sednToPanel.js 
 const importConfiguration = function () {
   sendMessage("importConfig", "");
 };
