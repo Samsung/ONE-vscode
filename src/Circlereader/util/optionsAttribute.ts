@@ -15,7 +15,7 @@
  */
 
 import * as flatbuffers from 'flatbuffers';
-import {ActivationFunctionType} from '../circle-analysis/circle/activation-function-type'
+import {ActivationFunctionType} from '../circle-analysis/circle/activation-function-type';
 import {AddOptions} from '../circle-analysis/circle/add-options';
 import {ArgMaxOptions} from '../circle-analysis/circle/arg-max-options';
 import {ArgMinOptions} from '../circle-analysis/circle/arg-min-options';
@@ -26,7 +26,7 @@ import {BidirectionalSequenceLSTMOptions} from '../circle-analysis/circle/bidire
 import {BidirectionalSequenceRNNOptions} from '../circle-analysis/circle/bidirectional-sequence-r-n-n-options';
 import {CallOptions} from '../circle-analysis/circle/call-options';
 import {CastOptions} from '../circle-analysis/circle/cast-options';
-import {ConcatEmbeddingsOptions} from '../circle-analysis/circle/concat-embeddings-options'
+import {ConcatEmbeddingsOptions} from '../circle-analysis/circle/concat-embeddings-options';
 import {ConcatenationOptions} from '../circle-analysis/circle/concatenation-options';
 import {Conv2DOptions} from '../circle-analysis/circle/conv2-d-options';
 import {DepthToSpaceOptions} from '../circle-analysis/circle/depth-to-space-options';
@@ -34,7 +34,7 @@ import {DepthwiseConv2DOptions} from '../circle-analysis/circle/depthwise-conv2-
 import {DivOptions} from '../circle-analysis/circle/div-options';
 import {FakeQuantOptions} from '../circle-analysis/circle/fake-quant-options';
 import {FullyConnectedOptions} from '../circle-analysis/circle/fully-connected-options';
-import {FullyConnectedOptionsWeightsFormat} from '../circle-analysis/circle/fully-connected-options-weights-format'
+import {FullyConnectedOptionsWeightsFormat} from '../circle-analysis/circle/fully-connected-options-weights-format';
 import {IfOptions} from '../circle-analysis/circle/if-options';
 import {InstanceNormOptions} from '../circle-analysis/circle/instance-norm-options';
 import {LSHProjectionOptions} from '../circle-analysis/circle/l-s-h-projection-options';
@@ -49,7 +49,7 @@ import {MirrorPadOptions} from '../circle-analysis/circle/mirror-pad-options';
 import {OneHotOptions} from '../circle-analysis/circle/one-hot-options';
 import {Operator} from '../circle-analysis/circle/operator';
 import {PackOptions} from '../circle-analysis/circle/pack-options';
-import {Padding} from '../circle-analysis/circle/padding'
+import {Padding} from '../circle-analysis/circle/padding';
 import {Pool2DOptions} from '../circle-analysis/circle/pool2-d-options';
 import {RNNOptions} from '../circle-analysis/circle/r-n-n-options';
 import {ReducerOptions} from '../circle-analysis/circle/reducer-options';
@@ -146,11 +146,11 @@ export class OptionsAttribute {
   }
 
   static getLSHProjectionAttr(operator: Operator, attributes: Array<NodeAttributes>) {
-    let LSHProjectionOpt = new LSHProjectionOptions();
-    LSHProjectionOpt = operator.builtinOptions<flatbuffers.Table>(LSHProjectionOpt);
+    let lshProjectionOpt = new LSHProjectionOptions();
+    lshProjectionOpt = operator.builtinOptions<flatbuffers.Table>(lshProjectionOpt);
 
     attributes.push(
-        {attribute: 'filter_height', value: LSHProjectionType[LSHProjectionOpt.type()]});
+        {attribute: 'filter_height', value: LSHProjectionType[lshProjectionOpt.type()]});
   }
 
   static getPool2DAttr(operator: Operator, attributes: Array<NodeAttributes>) {
@@ -169,28 +169,28 @@ export class OptionsAttribute {
   }
 
   static getSVDFAttr(operator: Operator, attributes: Array<NodeAttributes>) {
-    let SVDFOpt = new SVDFOptions();
-    SVDFOpt = operator.builtinOptions<flatbuffers.Table>(SVDFOpt);
+    let svdfOpt = new SVDFOptions();
+    svdfOpt = operator.builtinOptions<flatbuffers.Table>(svdfOpt);
 
-    attributes.push({attribute: 'rank', value: SVDFOpt.rank()});
+    attributes.push({attribute: 'rank', value: svdfOpt.rank()});
     attributes.push({
       attribute: 'fused_activation_function',
-      value: ActivationFunctionType[SVDFOpt.fusedActivationFunction()]
+      value: ActivationFunctionType[svdfOpt.fusedActivationFunction()]
     });
     attributes.push(
-        {attribute: 'asymmetric_quantize_input', value: SVDFOpt.asymmetricQuantizeInputs()});
+        {attribute: 'asymmetric_quantize_input', value: svdfOpt.asymmetricQuantizeInputs()});
   }
 
   static getRNNAttr(operator: Operator, attributes: Array<NodeAttributes>) {
-    let RNNOpt = new RNNOptions();
-    RNNOpt = operator.builtinOptions<flatbuffers.Table>(RNNOpt);
+    let rnnOpt = new RNNOptions();
+    rnnOpt = operator.builtinOptions<flatbuffers.Table>(rnnOpt);
 
     attributes.push({
       attribute: 'fused_activation_function',
-      value: ActivationFunctionType[RNNOpt.fusedActivationFunction()]
+      value: ActivationFunctionType[rnnOpt.fusedActivationFunction()]
     });
     attributes.push(
-        {attribute: 'asymmetric_quantize_input', value: RNNOpt.asymmetricQuantizeInputs()});
+        {attribute: 'asymmetric_quantize_input', value: rnnOpt.asymmetricQuantizeInputs()});
   }
 
   static getFullyConnectedAttr(operator: Operator, attributes: Array<NodeAttributes>) {
@@ -241,12 +241,12 @@ export class OptionsAttribute {
   }
 
   static getL2NormAttr(operator: Operator, attributes: Array<NodeAttributes>) {
-    let L2NormOpt = new L2NormOptions();
-    L2NormOpt = operator.builtinOptions<flatbuffers.Table>(L2NormOpt);
+    let l2NormOpt = new L2NormOptions();
+    l2NormOpt = operator.builtinOptions<flatbuffers.Table>(l2NormOpt);
 
     attributes.push({
       attribute: 'fused_activation_function',
-      value: ActivationFunctionType[L2NormOpt.fusedActivationFunction()]
+      value: ActivationFunctionType[l2NormOpt.fusedActivationFunction()]
     });
   }
 
@@ -262,18 +262,18 @@ export class OptionsAttribute {
   }
 
   static getLSTMAttr(operator: Operator, attributes: Array<NodeAttributes>) {
-    let LSTMOpt = new LSTMOptions();
-    LSTMOpt = operator.builtinOptions<flatbuffers.Table>(LSTMOpt);
+    let lstmOpt = new LSTMOptions();
+    lstmOpt = operator.builtinOptions<flatbuffers.Table>(lstmOpt);
 
     attributes.push({
       attribute: 'fused_activation_function',
-      value: ActivationFunctionType[LSTMOpt.fusedActivationFunction()]
+      value: ActivationFunctionType[lstmOpt.fusedActivationFunction()]
     });
-    attributes.push({attribute: 'cell_clip', value: LSTMOpt.cellClip()});
-    attributes.push({attribute: 'proj_clip', value: LSTMOpt.projClip()});
-    attributes.push({attribute: 'kernel_type', value: LSTMKernelType[LSTMOpt.projClip()]});
+    attributes.push({attribute: 'cell_clip', value: lstmOpt.cellClip()});
+    attributes.push({attribute: 'proj_clip', value: lstmOpt.projClip()});
+    attributes.push({attribute: 'kernel_type', value: LSTMKernelType[lstmOpt.projClip()]});
     attributes.push(
-        {attribute: 'asymmetric_quantize_inputs', value: LSTMOpt.asymmetricQuantizeInputs()});
+        {attribute: 'asymmetric_quantize_inputs', value: lstmOpt.asymmetricQuantizeInputs()});
   }
 
   static getResizeBilinearAttr(operator: Operator, attributes: Array<NodeAttributes>) {
@@ -302,7 +302,7 @@ export class OptionsAttribute {
       attributes.push({attribute: 'new_shape_' + i, value: reshapeOpt.newShape(i)});
     }
 
-    attributes.push({attribute: 'new_shape_array', value: reshapeOpt.newShapeArray()})
+    attributes.push({attribute: 'new_shape_array', value: reshapeOpt.newShapeArray()});
   }
 
   static getSkipGramAttr(operator: Operator, attributes: Array<NodeAttributes>) {
@@ -359,7 +359,7 @@ export class OptionsAttribute {
       attributes.push({attribute: 'squeeze_dims_' + i, value: squeezeOpt.squeezeDims(i)});
     }
 
-    attributes.push({attribute: 'squeeze_dims_array', value: squeezeOpt.squeezeDimsArray()})
+    attributes.push({attribute: 'squeeze_dims_array', value: squeezeOpt.squeezeDimsArray()});
   }
 
   static getSequenceRNNAttr(operator: Operator, attributes: Array<NodeAttributes>) {
@@ -597,22 +597,22 @@ export class OptionsAttribute {
   }
 
   static getBCQGatherAttr(operator: Operator, attributes: Array<NodeAttributes>) {
-    let BCQGatherOpt = new BCQGatherOptions();
-    BCQGatherOpt = operator.builtinOptions<flatbuffers.Table>(BCQGatherOpt);
+    let bcqGatherOpt = new BCQGatherOptions();
+    bcqGatherOpt = operator.builtinOptions<flatbuffers.Table>(bcqGatherOpt);
 
-    attributes.push({attribute: 'input_hidden_size', value: BCQGatherOpt.inputHiddenSize()});
-    attributes.push({attribute: 'axis', value: BCQGatherOpt.axis()});
+    attributes.push({attribute: 'input_hidden_size', value: bcqGatherOpt.inputHiddenSize()});
+    attributes.push({attribute: 'axis', value: bcqGatherOpt.axis()});
   }
 
   static getBCQFullyConnectedAttr(operator: Operator, attributes: Array<NodeAttributes>) {
-    let BCQFullyConnectedOpt = new BCQFullyConnectedOptions();
-    BCQFullyConnectedOpt = operator.builtinOptions<flatbuffers.Table>(BCQFullyConnectedOpt);
+    let bcqFullyConnectedOpt = new BCQFullyConnectedOptions();
+    bcqFullyConnectedOpt = operator.builtinOptions<flatbuffers.Table>(bcqFullyConnectedOpt);
 
     attributes.push(
-        {attribute: 'weights_hidden_size', value: BCQFullyConnectedOpt.weightsHiddenSize()});
+        {attribute: 'weights_hidden_size', value: bcqFullyConnectedOpt.weightsHiddenSize()});
     attributes.push({
       attribute: 'fused_activation_function',
-      value: ActivationFunctionType[BCQFullyConnectedOpt.fusedActivationFunction()]
+      value: ActivationFunctionType[bcqFullyConnectedOpt.fusedActivationFunction()]
     });
   }
 
