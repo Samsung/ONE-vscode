@@ -40,5 +40,5 @@ const getFirstInputFilePath = function(oneToolList){
             }
         }
     }
-    return "one-build-template";
+    return "Untitled";
 };
