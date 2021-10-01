@@ -131,7 +131,7 @@ export class Circletracer {
     const makeDataOnDisk = this.getMediaPath('makeData.js');
     const makeDataUri = makeDataOnDisk.with({'scheme': 'vscode-resource'});
 
-    const dagreOnDisk = this.getMediaPath('ext/dagre-d3.min.js');
+    const dagreOnDisk = this.getMediaPath('external/dagre-d3.min.js');
     const dagreUri = dagreOnDisk.with({'scheme': 'vscode-resource'});
 
     // Local path to css styles
