@@ -180,7 +180,7 @@ export class OptionsAttribute {
       value: ActivationFunctionType[svdfOpt.fusedActivationFunction()]
     });
     attributes.push(
-        {attribute: 'asymmetric_quantize_input', value: svdfOpt.asymmetricQuantizeInputs()});
+        {attribute: 'asymmetric_quantize_inputs', value: svdfOpt.asymmetricQuantizeInputs()});
   }
 
   static getRNNAttr(operator: Operator, attributes: Array<NodeAttributes>) {
