@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// TODO Add empty options as comment
+
 import * as flatbuffers from 'flatbuffers';
 import {ActivationFunctionType} from '../circle-analysis/circle/activation-function-type';
 import {AddOptions} from '../circle-analysis/circle/add-options';
