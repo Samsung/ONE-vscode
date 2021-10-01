@@ -303,7 +303,7 @@ export class OptionsAttribute {
       attributes.push({attribute: 'new_shape_' + i, value: reshapeOpt.newShape(i)});
     }
 
-    attributes.push({attribute: 'new_shape_array', value: reshapeOpt.newShapeArray()})
+    attributes.push({attribute: 'new_shape_array', value: reshapeOpt.newShapeArray()});
   }
 
   static getSkipGramAttr(operator: Operator, attributes: Array<NodeAttributes>) {
@@ -360,7 +360,7 @@ export class OptionsAttribute {
       attributes.push({attribute: 'squeeze_dims_' + i, value: squeezeOpt.squeezeDims(i)});
     }
 
-    attributes.push({attribute: 'squeeze_dims_array', value: squeezeOpt.squeezeDimsArray()})
+    attributes.push({attribute: 'squeeze_dims_array', value: squeezeOpt.squeezeDimsArray()});
   }
 
   static getSequenceRNNAttr(operator: Operator, attributes: Array<NodeAttributes>) {
@@ -629,4 +629,3 @@ export class OptionsAttribute {
   }
 }
 /* eslint-enable @typescript-eslint/naming-convention */
-
