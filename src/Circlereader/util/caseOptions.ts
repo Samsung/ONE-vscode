@@ -17,11 +17,11 @@
 import {Operator} from '../circle-analysis/circle/operator';
 import {NodeAttributes} from '../type/types';
 
-import {OptionsAttribute} from './optionsAttribute'
+import {OptionsAttribute} from './optionsAttribute';
 
 export function caseOptions(
-    opt_name: string, operator: Operator, modelAttribute: Array<NodeAttributes>) {
-  switch (opt_name) {
+    optName: string, operator: Operator, modelAttribute: Array<NodeAttributes>) {
+  switch (optName) {
     case 'AddOptions':
       OptionsAttribute.getAddAttr(operator, modelAttribute);
       break;
