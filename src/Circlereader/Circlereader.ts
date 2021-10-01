@@ -19,7 +19,7 @@ import {readFileSync} from 'fs';
 import {BuiltinOptions} from './circle-analysis/circle/builtin-options'
 import {Model} from './circle-analysis/circle/model';
 import {ModelOperator, Node, NodeAttributes, NodeInput, NodeOutput, NodeProperties} from './type/types'
-import {caseOptions} from './util/caseOptions';
+import {setAttributesByOption} from './util/setAttributesByOption';
 import {getNodeInputs} from './util/getNodeInputs';
 import {getNodeOutputs} from './util/getNodeOutputs';
 import {initBuiltInOperator} from './util/initBuiltinOptions';
@@ -56,7 +56,7 @@ export function decoder(path: string) {
         let option = BuiltinOptions[operator.builtinOptionsType()];
         let modelAttribute: Array<NodeAttributes> = [];
 
-        caseOptions(option, operator, modelAttribute);
+        setAttributesByOption(option, operator, modelAttribute);
 
         // get node inputs
         let nodeInputs: Array<NodeInput> = getNodeInputs(model, subgraph, operator, nodesArr);
