@@ -4,5 +4,5 @@ node_modules/
 # Automatically generated files by the FlatBuffers compiler.
 src/Circlereader/circle-analysis/circle/
 
-# This is the folder containing the compressed minjs.
+# External open source project files which are not modified.
 media/Circletracer/external/
