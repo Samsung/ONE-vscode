@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/* eslint-disable @typescript-eslint/naming-convention */
 import * as flatbuffers from 'flatbuffers';
 import {ActivationFunctionType} from '../circle-analysis/circle/activation-function-type';
 import {AddOptions} from '../circle-analysis/circle/add-options';
@@ -49,7 +50,7 @@ import {MirrorPadOptions} from '../circle-analysis/circle/mirror-pad-options';
 import {OneHotOptions} from '../circle-analysis/circle/one-hot-options';
 import {Operator} from '../circle-analysis/circle/operator';
 import {PackOptions} from '../circle-analysis/circle/pack-options';
-import {Padding} from '../circle-analysis/circle/padding'
+import {Padding} from '../circle-analysis/circle/padding';
 import {Pool2DOptions} from '../circle-analysis/circle/pool2-d-options';
 import {RNNOptions} from '../circle-analysis/circle/r-n-n-options';
 import {ReducerOptions} from '../circle-analysis/circle/reducer-options';
@@ -627,3 +628,5 @@ export class OptionsAttribute {
     });
   }
 }
+/* eslint-enable @typescript-eslint/naming-convention */
+
