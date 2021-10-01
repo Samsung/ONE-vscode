@@ -276,7 +276,7 @@ export class OptionsAttribute {
     let reshapeOpt = new ReshapeOptions();
     reshapeOpt = operator.builtinOptions<flatbuffers.Table>(reshapeOpt);
 
-    attributes.push({attribute: 'newShapeArray', value: reshapeOpt.newShapeArray()});
+    attributes.push({attribute: 'newShape', value: reshapeOpt.newShapeArray()});
   }
 
   static getSkipGramAttr(operator: Operator, attributes: Array<NodeAttributes>) {
