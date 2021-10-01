@@ -47,23 +47,21 @@ const chooseDisable = function(tool) {
   const useBtn = document.querySelector('#useBtn');
   const optionFieldset = document.querySelector('#options');
 
-  // when tools are related with one-import
   if (tool.type.startsWith('one-import')) {
+    // when tools are related with one-import
     if (oneImport.use === true) {
       useBtn.checked = true;
       optionFieldset.disabled = false;
-
     } else {
       useBtn.checked = false;
       optionFieldset.disabled = true;
     }
 
-    // when tool are not related with one-import
   } else {
+    // when tool are not related with one-import
     if (tool.use === true) {
       useBtn.checked = true;
       optionFieldset.disabled = false;
-
     } else {
       useBtn.checked = false;
       optionFieldset.disabled = true;
@@ -211,6 +209,6 @@ const makeSelectTagForImport = function() {
   }
 
   select.addEventListener('change', changeSelect);
-  
+
   return select;
 };

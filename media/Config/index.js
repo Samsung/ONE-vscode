@@ -22,9 +22,18 @@ const showOptions = function (event) {
   switch (event.target.id) {
     case "import": {
       changeCommonTags(oneImport);
-      const locaForSelect = document.querySelector("#locaForSelect");
+
       const select = makeSelectTagForImport();
+
+      if (oneImport.use === false) {
+        select.disabled = true;
+      } else {
+        select.disabled = false;
+      }
+
+      const locaForSelect = document.querySelector("#locaForSelect");
       locaForSelect.appendChild(select);
+
       // if framework like tensorflow has already been chosen, then bring it
       let chosenOptionIndex = -1;
       for (let i = 0; i < oneImport.options.length; i++) {
@@ -36,12 +45,7 @@ const showOptions = function (event) {
       if (chosenOptionIndex !== -1) {
         select.options[chosenOptionIndex + 1].selected = true;
         buildOptionDom(oneImportOptions[chosenOptionIndex]);
-      }
-      if (oneImport.use === false) {
-        select.disabled = true;
-      } else {
-        select.disabled = false;
-      }
+      }      
       break;
     }
     case "optimize": {
