@@ -19,7 +19,7 @@ import toolsAttr from './json/tools_attr.json';
 
 export class CodelensProvider implements vscode.CodeLensProvider {
   showTool: Array<string> = [];
-  notShowAttr: Array<string> = [];
+  hideAttr: Array<string> = [];
   eventGenerator: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
   public readonly onDidChangeCodeLenses: vscode.Event<void> = this.eventGenerator.event;
 
@@ -70,7 +70,7 @@ export class CodelensProvider implements vscode.CodeLensProvider {
             let attrName = lineStr.split('=')[0];
             let toolAttr = currentToolName + '.' + attrName;
 
-            if (this.notShowAttr.indexOf(toolAttr) === -1) {
+            if (this.hideAttr.indexOf(toolAttr) === -1) {
               toolsAttr.forEach((tool) => {
                 if (tool.name === currentToolName) {
                   tool.body.forEach((attr) => {
