@@ -182,15 +182,15 @@ export class OptionsAttribute {
   }
 
   static getRNNAttr(operator: Operator, attributes: Array<NodeAttributes>) {
-    let RNNOpt = new RNNOptions();
-    RNNOpt = operator.builtinOptions<flatbuffers.Table>(RNNOpt);
+    let rnnOpt = new RNNOptions();
+    rnnOpt = operator.builtinOptions<flatbuffers.Table>(rnnOpt);
 
     attributes.push({
       attribute: 'fused_activation_function',
-      value: ActivationFunctionType[RNNOpt.fusedActivationFunction()]
+      value: ActivationFunctionType[rnnOpt.fusedActivationFunction()]
     });
     attributes.push(
-        {attribute: 'asymmetric_quantize_input', value: RNNOpt.asymmetricQuantizeInputs()});
+        {attribute: 'asymmetric_quantize_input', value: rnnOpt.asymmetricQuantizeInputs()});
   }
 
   static getFullyConnectedAttr(operator: Operator, attributes: Array<NodeAttributes>) {
@@ -241,12 +241,12 @@ export class OptionsAttribute {
   }
 
   static getL2NormAttr(operator: Operator, attributes: Array<NodeAttributes>) {
-    let L2NormOpt = new L2NormOptions();
-    L2NormOpt = operator.builtinOptions<flatbuffers.Table>(L2NormOpt);
+    let l2NormOpt = new L2NormOptions();
+    l2NormOpt = operator.builtinOptions<flatbuffers.Table>(l2NormOpt);
 
     attributes.push({
       attribute: 'fused_activation_function',
-      value: ActivationFunctionType[L2NormOpt.fusedActivationFunction()]
+      value: ActivationFunctionType[l2NormOpt.fusedActivationFunction()]
     });
   }
 
@@ -262,18 +262,18 @@ export class OptionsAttribute {
   }
 
   static getLSTMAttr(operator: Operator, attributes: Array<NodeAttributes>) {
-    let LSTMOpt = new LSTMOptions();
-    LSTMOpt = operator.builtinOptions<flatbuffers.Table>(LSTMOpt);
+    let lstmOpt = new LSTMOptions();
+    lstmOpt = operator.builtinOptions<flatbuffers.Table>(lstmOpt);
 
     attributes.push({
       attribute: 'fused_activation_function',
-      value: ActivationFunctionType[LSTMOpt.fusedActivationFunction()]
+      value: ActivationFunctionType[lstmOpt.fusedActivationFunction()]
     });
-    attributes.push({attribute: 'cell_clip', value: LSTMOpt.cellClip()});
-    attributes.push({attribute: 'proj_clip', value: LSTMOpt.projClip()});
-    attributes.push({attribute: 'kernel_type', value: LSTMKernelType[LSTMOpt.projClip()]});
+    attributes.push({attribute: 'cell_clip', value: lstmOpt.cellClip()});
+    attributes.push({attribute: 'proj_clip', value: lstmOpt.projClip()});
+    attributes.push({attribute: 'kernel_type', value: LSTMKernelType[lstmOpt.projClip()]});
     attributes.push(
-        {attribute: 'asymmetric_quantize_inputs', value: LSTMOpt.asymmetricQuantizeInputs()});
+        {attribute: 'asymmetric_quantize_inputs', value: lstmOpt.asymmetricQuantizeInputs()});
   }
 
   static getResizeBilinearAttr(operator: Operator, attributes: Array<NodeAttributes>) {
@@ -597,22 +597,22 @@ export class OptionsAttribute {
   }
 
   static getBCQGatherAttr(operator: Operator, attributes: Array<NodeAttributes>) {
-    let BCQGatherOpt = new BCQGatherOptions();
-    BCQGatherOpt = operator.builtinOptions<flatbuffers.Table>(BCQGatherOpt);
+    let bcqGatherOpt = new BCQGatherOptions();
+    bcqGatherOpt = operator.builtinOptions<flatbuffers.Table>(bcqGatherOpt);
 
-    attributes.push({attribute: 'input_hidden_size', value: BCQGatherOpt.inputHiddenSize()});
-    attributes.push({attribute: 'axis', value: BCQGatherOpt.axis()});
+    attributes.push({attribute: 'input_hidden_size', value: bcqGatherOpt.inputHiddenSize()});
+    attributes.push({attribute: 'axis', value: bcqGatherOpt.axis()});
   }
 
   static getBCQFullyConnectedAttr(operator: Operator, attributes: Array<NodeAttributes>) {
-    let BCQFullyConnectedOpt = new BCQFullyConnectedOptions();
-    BCQFullyConnectedOpt = operator.builtinOptions<flatbuffers.Table>(BCQFullyConnectedOpt);
+    let bcqFullyConnectedOpt = new BCQFullyConnectedOptions();
+    bcqFullyConnectedOpt = operator.builtinOptions<flatbuffers.Table>(bcqFullyConnectedOpt);
 
     attributes.push(
-        {attribute: 'weights_hidden_size', value: BCQFullyConnectedOpt.weightsHiddenSize()});
+        {attribute: 'weights_hidden_size', value: bcqFullyConnectedOpt.weightsHiddenSize()});
     attributes.push({
       attribute: 'fused_activation_function',
-      value: ActivationFunctionType[BCQFullyConnectedOpt.fusedActivationFunction()]
+      value: ActivationFunctionType[bcqFullyConnectedOpt.fusedActivationFunction()]
     });
   }
 
