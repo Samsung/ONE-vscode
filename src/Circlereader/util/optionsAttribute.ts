@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable @typescript-eslint/naming-convention */
 import * as flatbuffers from 'flatbuffers';
 import {ActivationFunctionType} from '../circle-analysis/circle/activation-function-type';
 import {AddOptions} from '../circle-analysis/circle/add-options';
@@ -147,11 +146,11 @@ export class OptionsAttribute {
   }
 
   static getLSHProjectionAttr(operator: Operator, attributes: Array<NodeAttributes>) {
-    let LSHProjectionOpt = new LSHProjectionOptions();
-    LSHProjectionOpt = operator.builtinOptions<flatbuffers.Table>(LSHProjectionOpt);
+    let lshProjectionOpt = new LSHProjectionOptions();
+    lshProjectionOpt = operator.builtinOptions<flatbuffers.Table>(lshProjectionOpt);
 
     attributes.push(
-        {attribute: 'filter_height', value: LSHProjectionType[LSHProjectionOpt.type()]});
+        {attribute: 'filter_height', value: LSHProjectionType[lshProjectionOpt.type()]});
   }
 
   static getPool2DAttr(operator: Operator, attributes: Array<NodeAttributes>) {
@@ -170,16 +169,16 @@ export class OptionsAttribute {
   }
 
   static getSVDFAttr(operator: Operator, attributes: Array<NodeAttributes>) {
-    let SVDFOpt = new SVDFOptions();
-    SVDFOpt = operator.builtinOptions<flatbuffers.Table>(SVDFOpt);
+    let svdfOpt = new SVDFOptions();
+    svdfOpt = operator.builtinOptions<flatbuffers.Table>(svdfOpt);
 
-    attributes.push({attribute: 'rank', value: SVDFOpt.rank()});
+    attributes.push({attribute: 'rank', value: svdfOpt.rank()});
     attributes.push({
       attribute: 'fused_activation_function',
-      value: ActivationFunctionType[SVDFOpt.fusedActivationFunction()]
+      value: ActivationFunctionType[svdfOpt.fusedActivationFunction()]
     });
     attributes.push(
-        {attribute: 'asymmetric_quantize_input', value: SVDFOpt.asymmetricQuantizeInputs()});
+        {attribute: 'asymmetric_quantize_input', value: svdfOpt.asymmetricQuantizeInputs()});
   }
 
   static getRNNAttr(operator: Operator, attributes: Array<NodeAttributes>) {
@@ -628,4 +627,3 @@ export class OptionsAttribute {
     });
   }
 }
-/* eslint-enable @typescript-eslint/naming-convention */
