@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// TODO Add empty options as comment
+
 import * as flatbuffers from 'flatbuffers';
 import {ActivationFunctionType} from '../circle-analysis/circle/activation-function-type';
 import {AddOptions} from '../circle-analysis/circle/add-options';
@@ -81,66 +83,46 @@ export class OptionsAttribute {
     let conv2DOpt = new Conv2DOptions();
     conv2DOpt = operator.builtinOptions<flatbuffers.Table>(conv2DOpt);
 
-    attributes.push({attribute: 'dialtaion_h_factor', value: conv2DOpt.dilationHFactor()});
-    attributes.push({attribute: 'dialtaion_w_factor', value: conv2DOpt.dilationWFactor()});
+    attributes.push({attribute: 'dilationHFactor', value: conv2DOpt.dilationHFactor()});
+    attributes.push({attribute: 'dilationWFactor', value: conv2DOpt.dilationWFactor()});
     attributes.push({
-      attribute: 'fused_activation_function',
+      attribute: 'fusedActivationFunction',
       value: ActivationFunctionType[conv2DOpt.fusedActivationFunction()]
     });
     attributes.push({attribute: 'padding', value: Padding[conv2DOpt.padding()]});
-    attributes.push({attribute: 'stride_h', value: conv2DOpt.strideH()});
-    attributes.push({attribute: 'stride_w', value: conv2DOpt.strideW()});
+    attributes.push({attribute: 'strideH', value: conv2DOpt.strideH()});
+    attributes.push({attribute: 'strideW', value: conv2DOpt.strideW()});
   }
 
   static getDepthWiseConv2DAttr(operator: Operator, attributes: Array<NodeAttributes>) {
     let depthWiseConv2DOpt = new DepthwiseConv2DOptions();
     depthWiseConv2DOpt = operator.builtinOptions<flatbuffers.Table>(depthWiseConv2DOpt);
 
-    attributes.push({attribute: 'dialtaion_h_factor', value: depthWiseConv2DOpt.dilationHFactor()});
-    attributes.push({attribute: 'dialtaion_w_factor', value: depthWiseConv2DOpt.dilationWFactor()});
-    attributes.push({attribute: 'depth_multiplier', value: depthWiseConv2DOpt.depthMultiplier()});
+    attributes.push({attribute: 'dilationHFactor', value: depthWiseConv2DOpt.dilationHFactor()});
+    attributes.push({attribute: 'dilationWFactor', value: depthWiseConv2DOpt.dilationWFactor()});
+    attributes.push({attribute: 'depthMultiplier', value: depthWiseConv2DOpt.depthMultiplier()});
     attributes.push({
-      attribute: 'fused_activation_function',
+      attribute: 'fusedActivationFunction',
       value: ActivationFunctionType[depthWiseConv2DOpt.fusedActivationFunction()]
     });
     attributes.push({attribute: 'padding', value: Padding[depthWiseConv2DOpt.padding()]});
-    attributes.push({attribute: 'stride_h', value: depthWiseConv2DOpt.strideH()});
-    attributes.push({attribute: 'stride_w', value: depthWiseConv2DOpt.strideW()});
+    attributes.push({attribute: 'strideH', value: depthWiseConv2DOpt.strideH()});
+    attributes.push({attribute: 'strideW', value: depthWiseConv2DOpt.strideW()});
   }
 
   static getConcatEmbeddingAttr(operator: Operator, attributes: Array<NodeAttributes>) {
     let concatEmbaddingOpt = new ConcatEmbeddingsOptions();
     concatEmbaddingOpt = operator.builtinOptions<flatbuffers.Table>(concatEmbaddingOpt);
 
-    let numChannelLength = concatEmbaddingOpt.numChannels();
-    let embeddingDimPerChannelLength = concatEmbaddingOpt.embeddingDimPerChannelLength();
-
-    attributes.push({attribute: 'num_channel_length', value: numChannelLength});
-
-    for (let i = 0; i < numChannelLength; i++) {
-      attributes.push({
-        attribute: 'num_column_per_channel_' + i,
-        value: concatEmbaddingOpt.numColumnsPerChannel(i)
-      });
-    }
+    attributes.push({attribute: 'numChannels', value: concatEmbaddingOpt.numChannels()});
 
     attributes.push({
-      attribute: 'num_columns_per_channel_array',
+      attribute: 'numColumnsPerChannelArray',
       value: concatEmbaddingOpt.numColumnsPerChannelArray()
     });
 
-    attributes.push(
-        {attribute: 'embedding_dim_per_channel_length', value: embeddingDimPerChannelLength});
-
-    for (let i = 0; i < embeddingDimPerChannelLength; i++) {
-      attributes.push({
-        attribute: 'embedding_dim_per_channel_' + i,
-        value: concatEmbaddingOpt.embeddingDimPerChannel(i)
-      });
-    }
-
     attributes.push({
-      attribute: 'embedding_dim_per_channel_array',
+      attribute: 'embeddingDimPerChannelArray',
       value: concatEmbaddingOpt.embeddingDimPerChannelArray()
     });
   }
@@ -149,23 +131,22 @@ export class OptionsAttribute {
     let lshProjectionOpt = new LSHProjectionOptions();
     lshProjectionOpt = operator.builtinOptions<flatbuffers.Table>(lshProjectionOpt);
 
-    attributes.push(
-        {attribute: 'filter_height', value: LSHProjectionType[lshProjectionOpt.type()]});
+    attributes.push({attribute: 'type', value: LSHProjectionType[lshProjectionOpt.type()]});
   }
 
   static getPool2DAttr(operator: Operator, attributes: Array<NodeAttributes>) {
     let pool2DOpt = new Pool2DOptions();
     pool2DOpt = operator.builtinOptions<flatbuffers.Table>(pool2DOpt);
 
-    attributes.push({attribute: 'filter_height', value: pool2DOpt.filterHeight()});
-    attributes.push({attribute: 'filter_width', value: pool2DOpt.filterWidth()});
+    attributes.push({attribute: 'filterHeight', value: pool2DOpt.filterHeight()});
+    attributes.push({attribute: 'filterWidth', value: pool2DOpt.filterWidth()});
     attributes.push({
-      attribute: 'fused_activation_function',
+      attribute: 'fusedActivationFunction',
       value: ActivationFunctionType[pool2DOpt.fusedActivationFunction()]
     });
     attributes.push({attribute: 'padding', value: Padding[pool2DOpt.padding()]});
-    attributes.push({attribute: 'stride_h', value: pool2DOpt.strideH()});
-    attributes.push({attribute: 'stride_w', value: pool2DOpt.strideW()});
+    attributes.push({attribute: 'strideH', value: pool2DOpt.strideH()});
+    attributes.push({attribute: 'strideW', value: pool2DOpt.strideW()});
   }
 
   static getSVDFAttr(operator: Operator, attributes: Array<NodeAttributes>) {
@@ -174,11 +155,11 @@ export class OptionsAttribute {
 
     attributes.push({attribute: 'rank', value: svdfOpt.rank()});
     attributes.push({
-      attribute: 'fused_activation_function',
+      attribute: 'fusedActivationFunction',
       value: ActivationFunctionType[svdfOpt.fusedActivationFunction()]
     });
     attributes.push(
-        {attribute: 'asymmetric_quantize_input', value: svdfOpt.asymmetricQuantizeInputs()});
+        {attribute: 'asymmetricQuantizeInputs', value: svdfOpt.asymmetricQuantizeInputs()});
   }
 
   static getRNNAttr(operator: Operator, attributes: Array<NodeAttributes>) {
@@ -186,11 +167,11 @@ export class OptionsAttribute {
     rnnOpt = operator.builtinOptions<flatbuffers.Table>(rnnOpt);
 
     attributes.push({
-      attribute: 'fused_activation_function',
+      attribute: 'fusedActivationFunction',
       value: ActivationFunctionType[rnnOpt.fusedActivationFunction()]
     });
     attributes.push(
-        {attribute: 'asymmetric_quantize_input', value: rnnOpt.asymmetricQuantizeInputs()});
+        {attribute: 'asymmetricQuantizeInputs', value: rnnOpt.asymmetricQuantizeInputs()});
   }
 
   static getFullyConnectedAttr(operator: Operator, attributes: Array<NodeAttributes>) {
@@ -198,16 +179,16 @@ export class OptionsAttribute {
     fullyConnectedOpt = operator.builtinOptions<flatbuffers.Table>(fullyConnectedOpt);
 
     attributes.push({
-      attribute: 'fused_activation_function',
+      attribute: 'fusedActivationFunction',
       value: ActivationFunctionType[fullyConnectedOpt.fusedActivationFunction()]
     });
     attributes.push({
-      attribute: 'fully_connected_options_weights_format',
-      value: FullyConnectedOptionsWeightsFormat[fullyConnectedOpt.fusedActivationFunction()]
+      attribute: 'weightsFormat',
+      value: FullyConnectedOptionsWeightsFormat[fullyConnectedOpt.weightsFormat()]
     });
-    attributes.push({attribute: 'keep_num_dims', value: fullyConnectedOpt.keepNumDims()});
+    attributes.push({attribute: 'keepNumDims', value: fullyConnectedOpt.keepNumDims()});
     attributes.push({
-      attribute: 'asymmetric_quantize_inputs',
+      attribute: 'asymmetricQuantizeInputs',
       value: fullyConnectedOpt.asymmetricQuantizeInputs()
     });
   }
@@ -225,7 +206,7 @@ export class OptionsAttribute {
 
     attributes.push({attribute: 'axis', value: concatenationOpt.axis()});
     attributes.push({
-      attribute: 'fused_activation_function',
+      attribute: 'fusedActivationFunction',
       value: ActivationFunctionType[concatenationOpt.fusedActivationFunction()]
     });
   }
@@ -235,7 +216,7 @@ export class OptionsAttribute {
     addOpt = operator.builtinOptions<flatbuffers.Table>(addOpt);
 
     attributes.push({
-      attribute: 'fused_activation_function',
+      attribute: 'fusedActivationFunction',
       value: ActivationFunctionType[addOpt.fusedActivationFunction()]
     });
   }
@@ -245,7 +226,7 @@ export class OptionsAttribute {
     l2NormOpt = operator.builtinOptions<flatbuffers.Table>(l2NormOpt);
 
     attributes.push({
-      attribute: 'fused_activation_function',
+      attribute: 'fusedActivationFunction',
       value: ActivationFunctionType[l2NormOpt.fusedActivationFunction()]
     });
   }
@@ -266,22 +247,22 @@ export class OptionsAttribute {
     lstmOpt = operator.builtinOptions<flatbuffers.Table>(lstmOpt);
 
     attributes.push({
-      attribute: 'fused_activation_function',
+      attribute: 'fusedActivationFunction',
       value: ActivationFunctionType[lstmOpt.fusedActivationFunction()]
     });
-    attributes.push({attribute: 'cell_clip', value: lstmOpt.cellClip()});
-    attributes.push({attribute: 'proj_clip', value: lstmOpt.projClip()});
-    attributes.push({attribute: 'kernel_type', value: LSTMKernelType[lstmOpt.projClip()]});
+    attributes.push({attribute: 'cellClip', value: lstmOpt.cellClip()});
+    attributes.push({attribute: 'projClip', value: lstmOpt.projClip()});
+    attributes.push({attribute: 'kernelType', value: LSTMKernelType[lstmOpt.kernelType()]});
     attributes.push(
-        {attribute: 'asymmetric_quantize_inputs', value: lstmOpt.asymmetricQuantizeInputs()});
+        {attribute: 'asymmetricQuantizeInputs', value: lstmOpt.asymmetricQuantizeInputs()});
   }
 
   static getResizeBilinearAttr(operator: Operator, attributes: Array<NodeAttributes>) {
     let resizeBilinearOpt = new ResizeBilinearOptions();
     resizeBilinearOpt = operator.builtinOptions<flatbuffers.Table>(resizeBilinearOpt);
 
-    attributes.push({attribute: 'align_corners', value: resizeBilinearOpt.alignCorners()});
-    attributes.push({attribute: 'half_pixel_centers', value: resizeBilinearOpt.halfPixelCenters()});
+    attributes.push({attribute: 'alignCorners', value: resizeBilinearOpt.alignCorners()});
+    attributes.push({attribute: 'halfPixelCenters', value: resizeBilinearOpt.halfPixelCenters()});
   }
 
   static getCallAttr(operator: Operator, attributes: Array<NodeAttributes>) {
@@ -295,37 +276,30 @@ export class OptionsAttribute {
     let reshapeOpt = new ReshapeOptions();
     reshapeOpt = operator.builtinOptions<flatbuffers.Table>(reshapeOpt);
 
-    let newShapeLength = reshapeOpt.newShapeLength();
-    attributes.push({attribute: 'new_shape_length', value: newShapeLength});
-
-    for (let i = 0; i < newShapeLength; i++) {
-      attributes.push({attribute: 'new_shape_' + i, value: reshapeOpt.newShape(i)});
-    }
-
-    attributes.push({attribute: 'new_shape_array', value: reshapeOpt.newShapeArray()});
+    attributes.push({attribute: 'newShapeArray', value: reshapeOpt.newShapeArray()});
   }
 
   static getSkipGramAttr(operator: Operator, attributes: Array<NodeAttributes>) {
     let skipGramOpt = new SkipGramOptions();
     skipGramOpt = operator.builtinOptions<flatbuffers.Table>(skipGramOpt);
 
-    attributes.push({attribute: 'ngram_size', value: skipGramOpt.ngramSize()});
-    attributes.push({attribute: 'max_skip_size', value: skipGramOpt.maxSkipSize()});
-    attributes.push({attribute: 'include_all_ngrams', value: skipGramOpt.includeAllNgrams()});
+    attributes.push({attribute: 'ngramSize', value: skipGramOpt.ngramSize()});
+    attributes.push({attribute: 'maxSkipSize', value: skipGramOpt.maxSkipSize()});
+    attributes.push({attribute: 'includeAllNgrams', value: skipGramOpt.includeAllNgrams()});
   }
 
   static getSpaceToDepth(operator: Operator, attributes: Array<NodeAttributes>) {
     let spaceToDepthOpt = new SpaceToDepthOptions();
     spaceToDepthOpt = operator.builtinOptions<flatbuffers.Table>(spaceToDepthOpt);
 
-    attributes.push({attribute: 'block_size', value: spaceToDepthOpt.blockSize()});
+    attributes.push({attribute: 'blockSize', value: spaceToDepthOpt.blockSize()});
   }
 
   static getReducerAttr(operator: Operator, attributes: Array<NodeAttributes>) {
     let reducerOpt = new ReducerOptions();
     reducerOpt = operator.builtinOptions<flatbuffers.Table>(reducerOpt);
 
-    attributes.push({attribute: 'keep_dims', value: reducerOpt.keepDims()});
+    attributes.push({attribute: 'keepDims', value: reducerOpt.keepDims()});
   }
 
   static getSubAttr(operator: Operator, attributes: Array<NodeAttributes>) {
@@ -333,7 +307,7 @@ export class OptionsAttribute {
     subOpt = operator.builtinOptions<flatbuffers.Table>(subOpt);
 
     attributes.push({
-      attribute: 'fused_activation_function',
+      attribute: 'fusedActivationFunction',
       value: ActivationFunctionType[subOpt.fusedActivationFunction()]
     });
   }
@@ -343,7 +317,7 @@ export class OptionsAttribute {
     divOpt = operator.builtinOptions<flatbuffers.Table>(divOpt);
 
     attributes.push({
-      attribute: 'fused_activation_function',
+      attribute: 'fusedActivationFunction',
       value: ActivationFunctionType[divOpt.fusedActivationFunction()]
     });
   }
@@ -352,62 +326,53 @@ export class OptionsAttribute {
     let squeezeOpt = new SqueezeOptions();
     squeezeOpt = operator.builtinOptions<flatbuffers.Table>(squeezeOpt);
 
-    let squeezeDimsLength = squeezeOpt.squeezeDimsLength();
-    attributes.push({attribute: 'squeeze_dims_length', value: squeezeDimsLength});
-
-    for (let i = 0; i < squeezeDimsLength; i++) {
-      attributes.push({attribute: 'squeeze_dims_' + i, value: squeezeOpt.squeezeDims(i)});
-    }
-
-    attributes.push({attribute: 'squeeze_dims_array', value: squeezeOpt.squeezeDimsArray()});
+    attributes.push({attribute: 'squeezeDimsArray', value: squeezeOpt.squeezeDimsArray()});
   }
 
   static getSequenceRNNAttr(operator: Operator, attributes: Array<NodeAttributes>) {
     let sequenceRNNOpt = new SequenceRNNOptions();
     sequenceRNNOpt = operator.builtinOptions<flatbuffers.Table>(sequenceRNNOpt);
 
-    attributes.push({attribute: 'time_major', value: sequenceRNNOpt.timeMajor()});
+    attributes.push({attribute: 'timeMajor', value: sequenceRNNOpt.timeMajor()});
     attributes.push({
-      attribute: 'fused_activation_function',
+      attribute: 'fusedActivationFunction',
       value: ActivationFunctionType[sequenceRNNOpt.fusedActivationFunction()]
     });
-    attributes.push({
-      attribute: 'asymmetric_quantize_inputs',
-      value: sequenceRNNOpt.asymmetricQuantizeInputs()
-    });
+    attributes.push(
+        {attribute: 'asymmetricQuantizeInputs', value: sequenceRNNOpt.asymmetricQuantizeInputs()});
   }
 
   static getStridedSliceAttr(operator: Operator, attributes: Array<NodeAttributes>) {
     let strideSliceOpt = new StridedSliceOptions();
     strideSliceOpt = operator.builtinOptions<flatbuffers.Table>(strideSliceOpt);
 
-    attributes.push({attribute: 'begin_mask', value: strideSliceOpt.beginMask()});
-    attributes.push({attribute: 'end_mask', value: strideSliceOpt.endMask()});
-    attributes.push({attribute: 'ellipsis_mask', value: strideSliceOpt.ellipsisMask()});
-    attributes.push({attribute: 'new_axis_mask', value: strideSliceOpt.newAxisMask()});
-    attributes.push({attribute: 'shrink_axis_mask', value: strideSliceOpt.shrinkAxisMask()});
+    attributes.push({attribute: 'beginMask', value: strideSliceOpt.beginMask()});
+    attributes.push({attribute: 'endMask', value: strideSliceOpt.endMask()});
+    attributes.push({attribute: 'ellipsisMask', value: strideSliceOpt.ellipsisMask()});
+    attributes.push({attribute: 'newAxisMask', value: strideSliceOpt.newAxisMask()});
+    attributes.push({attribute: 'shrinkAxisMask', value: strideSliceOpt.shrinkAxisMask()});
   }
 
   static getSplitAttr(operator: Operator, attributes: Array<NodeAttributes>) {
     let splitOptions = new SplitOptions();
     splitOptions = operator.builtinOptions<flatbuffers.Table>(splitOptions);
 
-    attributes.push({attribute: 'num_splits', value: splitOptions.numSplits()});
+    attributes.push({attribute: 'numSplits', value: splitOptions.numSplits()});
   }
 
   static getCastAttr(operator: Operator, attributes: Array<NodeAttributes>) {
     let castOpt = new CastOptions();
     castOpt = operator.builtinOptions<flatbuffers.Table>(castOpt);
 
-    attributes.push({attribute: 'in_data_type', value: TensorType[castOpt.inDataType()]});
-    attributes.push({attribute: 'out_data_type', value: TensorType[castOpt.outDataType()]});
+    attributes.push({attribute: 'inDataType', value: TensorType[castOpt.inDataType()]});
+    attributes.push({attribute: 'outDataType', value: TensorType[castOpt.outDataType()]});
   }
 
   static getArgMaxAttr(operator: Operator, attributes: Array<NodeAttributes>) {
     let argMaxOpt = new ArgMaxOptions();
     argMaxOpt = operator.builtinOptions<flatbuffers.Table>(argMaxOpt);
 
-    attributes.push({attribute: 'output_type', value: TensorType[argMaxOpt.outputType()]});
+    attributes.push({attribute: 'outputType', value: TensorType[argMaxOpt.outputType()]});
   }
 
   static getTransposeConvAttr(operator: Operator, attributes: Array<NodeAttributes>) {
@@ -415,29 +380,29 @@ export class OptionsAttribute {
     transposeConvOpt = operator.builtinOptions<flatbuffers.Table>(transposeConvOpt);
 
     attributes.push({attribute: 'padding', value: Padding[transposeConvOpt.padding()]});
-    attributes.push({attribute: 'stride_h', value: transposeConvOpt.strideH()});
-    attributes.push({attribute: 'stride_w', value: transposeConvOpt.strideW()});
+    attributes.push({attribute: 'strideH', value: transposeConvOpt.strideH()});
+    attributes.push({attribute: 'strideW', value: transposeConvOpt.strideW()});
   }
 
   static getSparseToDenseAttr(operator: Operator, attributes: Array<NodeAttributes>) {
     let sparseToDenseOpt = new SparseToDenseOptions();
     sparseToDenseOpt = operator.builtinOptions<flatbuffers.Table>(sparseToDenseOpt);
 
-    attributes.push({attribute: 'validate_indices', value: sparseToDenseOpt.validateIndices()});
+    attributes.push({attribute: 'validateIndices', value: sparseToDenseOpt.validateIndices()});
   }
 
   static getShapeAttr(operator: Operator, attributes: Array<NodeAttributes>) {
     let shapeOpt = new ShapeOptions();
     shapeOpt = operator.builtinOptions<flatbuffers.Table>(shapeOpt);
 
-    attributes.push({attribute: 'out_type', value: TensorType[shapeOpt.outType()]});
+    attributes.push({attribute: 'outType', value: TensorType[shapeOpt.outType()]});
   }
 
   static getArgMinAttr(operator: Operator, attributes: Array<NodeAttributes>) {
     let argMinOpt = new ArgMinOptions();
     argMinOpt = operator.builtinOptions<flatbuffers.Table>(argMinOpt);
 
-    attributes.push({attribute: 'output_type', value: TensorType[argMinOpt.outputType()]});
+    attributes.push({attribute: 'outputType', value: TensorType[argMinOpt.outputType()]});
   }
 
   static getFakeQuantAttr(operator: Operator, attributes: Array<NodeAttributes>) {
@@ -446,15 +411,15 @@ export class OptionsAttribute {
 
     attributes.push({attribute: 'min', value: fakeQuanOpt.min()});
     attributes.push({attribute: 'max', value: fakeQuanOpt.max()});
-    attributes.push({attribute: 'num_bits', value: fakeQuanOpt.numBits()});
-    attributes.push({attribute: 'narrow_range', value: fakeQuanOpt.narrowRange()});
+    attributes.push({attribute: 'numBits', value: fakeQuanOpt.numBits()});
+    attributes.push({attribute: 'narrowRange', value: fakeQuanOpt.narrowRange()});
   }
 
   static getPackAttr(operator: Operator, attributes: Array<NodeAttributes>) {
     let packOpt = new PackOptions();
     packOpt = operator.builtinOptions<flatbuffers.Table>(packOpt);
 
-    attributes.push({attribute: 'values_count', value: packOpt.valuesCount()});
+    attributes.push({attribute: 'valuesCount', value: packOpt.valuesCount()});
     attributes.push({attribute: 'axis', value: packOpt.axis()});
   }
 
@@ -479,16 +444,16 @@ export class OptionsAttribute {
         operator.builtinOptions<flatbuffers.Table>(bidirectionalSequenceLSTMOpt);
 
     attributes.push({
-      attribute: 'fused_activation_function',
+      attribute: 'fusedActivationFunction',
       value: ActivationFunctionType[bidirectionalSequenceLSTMOpt.fusedActivationFunction()]
     });
-    attributes.push({attribute: 'cell_clip', value: bidirectionalSequenceLSTMOpt.cellClip()});
-    attributes.push({attribute: 'proj_clip', value: bidirectionalSequenceLSTMOpt.projClip()});
+    attributes.push({attribute: 'cellClip', value: bidirectionalSequenceLSTMOpt.cellClip()});
+    attributes.push({attribute: 'projClip', value: bidirectionalSequenceLSTMOpt.projClip()});
     attributes.push(
-        {attribute: 'merge_outputs', value: bidirectionalSequenceLSTMOpt.mergeOutputs()});
-    attributes.push({attribute: 'time_major', value: bidirectionalSequenceLSTMOpt.timeMajor()});
+        {attribute: 'mergeOutputs', value: bidirectionalSequenceLSTMOpt.mergeOutputs()});
+    attributes.push({attribute: 'timeMajor', value: bidirectionalSequenceLSTMOpt.timeMajor()});
     attributes.push({
-      attribute: 'asymmetric_quantize_inputs',
+      attribute: 'asymmetricQuantizeInputs',
       value: bidirectionalSequenceLSTMOpt.asymmetricQuantizeInputs()
     });
   }
@@ -499,14 +464,13 @@ export class OptionsAttribute {
         operator.builtinOptions<flatbuffers.Table>(bidirectionalSequenceRNNOpt);
 
     attributes.push({
-      attribute: 'fused_activation_function',
+      attribute: 'fusedActivationFunction',
       value: ActivationFunctionType[bidirectionalSequenceRNNOpt.fusedActivationFunction()]
     });
-    attributes.push(
-        {attribute: 'merge_outputs', value: bidirectionalSequenceRNNOpt.mergeOutputs()});
-    attributes.push({attribute: 'time_major', value: bidirectionalSequenceRNNOpt.timeMajor()});
+    attributes.push({attribute: 'mergeOutputs', value: bidirectionalSequenceRNNOpt.mergeOutputs()});
+    attributes.push({attribute: 'timeMajor', value: bidirectionalSequenceRNNOpt.timeMajor()});
     attributes.push({
-      attribute: 'asymmetric_quantize_inputs',
+      attribute: 'asymmetricQuantizeInputs',
       value: bidirectionalSequenceRNNOpt.asymmetricQuantizeInputs()
     });
   }
@@ -517,14 +481,14 @@ export class OptionsAttribute {
         operator.builtinOptions<flatbuffers.Table>(unidirectionalSequenceLSTMOpt);
 
     attributes.push({
-      attribute: 'fused_activation_function',
+      attribute: 'fusedActivationFunction',
       value: ActivationFunctionType[unidirectionalSequenceLSTMOpt.fusedActivationFunction()]
     });
-    attributes.push({attribute: 'cell_clip', value: unidirectionalSequenceLSTMOpt.cellClip()});
-    attributes.push({attribute: 'proj_clip', value: unidirectionalSequenceLSTMOpt.projClip()});
-    attributes.push({attribute: 'time_major', value: unidirectionalSequenceLSTMOpt.timeMajor()});
+    attributes.push({attribute: 'cellClip', value: unidirectionalSequenceLSTMOpt.cellClip()});
+    attributes.push({attribute: 'projClip', value: unidirectionalSequenceLSTMOpt.projClip()});
+    attributes.push({attribute: 'timeMajor', value: unidirectionalSequenceLSTMOpt.timeMajor()});
     attributes.push({
-      attribute: 'asymmetric_quantize_inputs',
+      attribute: 'asymmetricQuantizeInputs',
       value: unidirectionalSequenceLSTMOpt.asymmetricQuantizeInputs()
     });
   }
@@ -533,7 +497,7 @@ export class OptionsAttribute {
     let resizeNearesNeighborOpt = new ResizeNearestNeighborOptions();
     resizeNearesNeighborOpt = operator.builtinOptions<flatbuffers.Table>(resizeNearesNeighborOpt);
 
-    attributes.push({attribute: 'align_corners', value: resizeNearesNeighborOpt.alignCorners()});
+    attributes.push({attribute: 'alignCorners', value: resizeNearesNeighborOpt.alignCorners()});
   }
 
   static getLeakyReluAttr(operator: Operator, attributes: Array<NodeAttributes>) {
@@ -554,53 +518,53 @@ export class OptionsAttribute {
     let uniqueOpt = new UniqueOptions();
     uniqueOpt = operator.builtinOptions<flatbuffers.Table>(uniqueOpt);
 
-    attributes.push({attribute: 'idx_out_type', value: uniqueOpt.idxOutType()});
+    attributes.push({attribute: 'idxOutType', value: uniqueOpt.idxOutType()});
   }
 
   static getReverseSequenceAttr(operator: Operator, attributes: Array<NodeAttributes>) {
     let reverseSequenceOpt = new ReverseSequenceOptions();
     reverseSequenceOpt = operator.builtinOptions<flatbuffers.Table>(reverseSequenceOpt);
 
-    attributes.push({attribute: 'seq_dim', value: reverseSequenceOpt.seqDim()});
-    attributes.push({attribute: 'batch_bim', value: reverseSequenceOpt.batchDim()});
+    attributes.push({attribute: 'seqDim', value: reverseSequenceOpt.seqDim()});
+    attributes.push({attribute: 'batchBim', value: reverseSequenceOpt.batchDim()});
   }
 
   static getIFAttr(operator: Operator, attributes: Array<NodeAttributes>) {
     let ifOpt = new IfOptions();
     ifOpt = operator.builtinOptions<flatbuffers.Table>(ifOpt);
 
-    attributes.push({attribute: 'then_subgraph_index', value: ifOpt.thenSubgraphIndex()});
-    attributes.push({attribute: 'else_subgraph_index', value: ifOpt.elseSubgraphIndex()});
+    attributes.push({attribute: 'thenSubgraphIndex', value: ifOpt.thenSubgraphIndex()});
+    attributes.push({attribute: 'elseSubgraphIndex', value: ifOpt.elseSubgraphIndex()});
   }
 
   static getWhileAttr(operator: Operator, attributes: Array<NodeAttributes>) {
     let whileOpt = new WhileOptions();
     whileOpt = operator.builtinOptions<flatbuffers.Table>(whileOpt);
 
-    attributes.push({attribute: 'cond_subgraph_index', value: whileOpt.condSubgraphIndex()});
-    attributes.push({attribute: 'body_subgraph_index', value: whileOpt.bodySubgraphIndex()});
+    attributes.push({attribute: 'condSubgraphIndex', value: whileOpt.condSubgraphIndex()});
+    attributes.push({attribute: 'bodySubgraphIndex', value: whileOpt.bodySubgraphIndex()});
   }
 
   static getDepthToSpaceAttr(operator: Operator, attributes: Array<NodeAttributes>) {
     let depthToSpaceOpt = new DepthToSpaceOptions();
     depthToSpaceOpt = operator.builtinOptions<flatbuffers.Table>(depthToSpaceOpt);
 
-    attributes.push({attribute: 'block_size', value: depthToSpaceOpt.blockSize()});
+    attributes.push({attribute: 'blockSize', value: depthToSpaceOpt.blockSize()});
   }
 
   static getBatchMatMulAttr(operator: Operator, attributes: Array<NodeAttributes>) {
     let batchMatMulOpt = new BatchMatMulOptions();
     batchMatMulOpt = operator.builtinOptions<flatbuffers.Table>(batchMatMulOpt);
 
-    attributes.push({attribute: 'adjoint_lhs', value: batchMatMulOpt.adjointLhs()});
-    attributes.push({attribute: 'adjoint_rhs', value: batchMatMulOpt.adjointRhs()});
+    attributes.push({attribute: 'adjointLhs', value: batchMatMulOpt.adjointLhs()});
+    attributes.push({attribute: 'adjointRhs', value: batchMatMulOpt.adjointRhs()});
   }
 
   static getBCQGatherAttr(operator: Operator, attributes: Array<NodeAttributes>) {
     let bcqGatherOpt = new BCQGatherOptions();
     bcqGatherOpt = operator.builtinOptions<flatbuffers.Table>(bcqGatherOpt);
 
-    attributes.push({attribute: 'input_hidden_size', value: bcqGatherOpt.inputHiddenSize()});
+    attributes.push({attribute: 'inputHiddenSize', value: bcqGatherOpt.inputHiddenSize()});
     attributes.push({attribute: 'axis', value: bcqGatherOpt.axis()});
   }
 
@@ -609,9 +573,9 @@ export class OptionsAttribute {
     bcqFullyConnectedOpt = operator.builtinOptions<flatbuffers.Table>(bcqFullyConnectedOpt);
 
     attributes.push(
-        {attribute: 'weights_hidden_size', value: bcqFullyConnectedOpt.weightsHiddenSize()});
+        {attribute: 'weightsHiddenSize', value: bcqFullyConnectedOpt.weightsHiddenSize()});
     attributes.push({
-      attribute: 'fused_activation_function',
+      attribute: 'fusedActivationFunction',
       value: ActivationFunctionType[bcqFullyConnectedOpt.fusedActivationFunction()]
     });
   }
@@ -622,7 +586,7 @@ export class OptionsAttribute {
 
     attributes.push({attribute: 'epsilon', value: instanceNormOpt.epsilon()});
     attributes.push({
-      attribute: 'fused_activation_function',
+      attribute: 'fusedActivationFunction',
       value: ActivationFunctionType[instanceNormOpt.fusedActivationFunction()]
     });
   }
