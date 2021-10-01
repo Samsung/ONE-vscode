@@ -36,6 +36,12 @@ export class CodelensProvider implements vscode.CodeLensProvider {
       }
       this.eventGenerator.fire();
     });
+
+    vscode.commands.registerCommand(
+        'onevscode.hideAttrCodelens',
+        (toolName: any, attrName: any) => {
+            // TODO implement
+        });
   }
 
   public provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken):
@@ -93,6 +99,7 @@ export class CodelensProvider implements vscode.CodeLensProvider {
 
   public resolveCodeLens(codeLens: vscode.CodeLens, token: vscode.CancellationToken) {
     let lineStr = vscode.window.activeTextEditor ?.document.getText(codeLens.range);
+    let currentToolName = '';
 
     if (lineStr?.indexOf('=') === -1) {
       toolsAttr.forEach((tool) => {
@@ -102,10 +109,21 @@ export class CodelensProvider implements vscode.CodeLensProvider {
             command: 'onevscode.toggleAttrCodelens',
             arguments: [lineStr],
           };
+          currentToolName = lineStr;
         }
       });
     } else {
-      // TODO Add more
+      toolsAttr.forEach((tool) => {
+        tool.body.forEach((attr) => {
+          if (attr.attr_name === lineStr?.split('=')[0]) {
+            codeLens.command = {
+              title: attr.attr_desc,
+              command: 'onevscode.hideAttrCodelens',
+              arguments: [currentToolName, attr.attr_name]
+            };
+          }
+        });
+      });
     }
 
     return codeLens;
