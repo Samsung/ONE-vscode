@@ -16,14 +16,15 @@
 
 import * as flatbuffers from 'flatbuffers';
 import {readFileSync} from 'fs';
-import { BuiltinOptions } from './circle-analysis/circle/builtin-options';
+
+import {BuiltinOptions} from './circle-analysis/circle/builtin-options';
 import {Model} from './circle-analysis/circle/model';
-import { ModelOperator, Node, NodeAttributes, NodeInput, NodeOutput, NodeProperties } from './type/types';
-import {setAttributesByOption} from './util/setAttributesByOption';
+import {ModelOperator, Node, NodeAttributes, NodeInput, NodeOutput, NodeProperties} from './type/types';
 import {getNodeInputs} from './util/getNodeInputs';
 import {getNodeOutputs} from './util/getNodeOutputs';
 import {initBuiltInOperator} from './util/initBuiltinOptions';
 import {initSubgraphNodes} from './util/initSubgraphNodes';
+import {setAttributesByOption} from './util/setAttributesByOption';
 
 export function decoder(path: string) {
   const file = readFileSync(path);
