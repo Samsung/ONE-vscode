@@ -37,45 +37,43 @@ export function decoder(path: string) {
   let builtInOperatorArr: Array<String> = initBuiltInOperator(model);
 
   // init subgraphs
-  let subgraph = model.subgraphs(0);
+  let subgraph = model.subgraphs(0)!;
 
-  if (subgraph !== null) {
-    for (let subgraphIdx = 0; subgraphIdx < subgraphsLength; subgraphIdx++) {
-      // indirect bb_pos to next subgraph index
-      model.subgraphs(subgraphIdx, subgraph);
+  for (let subgraphIdx = 0; subgraphIdx < subgraphsLength; subgraphIdx++) {
+    // indirect bb_pos to next subgraph index
+    model.subgraphs(subgraphIdx, subgraph);
 
-      let nodesArr: Array<Node> = initSubgraphNodes(subgraph);  // init node array
+    let nodesArr: Array<Node> = initSubgraphNodes(subgraph);  // init node array
 
-      // The inputs and outputs from the operator mean the location of the tensor
-      for (let operatorIdx = 0; operatorIdx < subgraph.operatorsLength(); operatorIdx++) {
-        let operator = subgraph.operators(operatorIdx)!;
-        let operatorType = builtInOperatorArr[operator.opcodeIndex()];
-        let operatorLocation = operatorIdx;
-        let operatorProp: NodeProperties = {type: operatorType, location: operatorLocation};
+    // The inputs and outputs from the operator mean the location of the tensor
+    for (let operatorIdx = 0; operatorIdx < subgraph.operatorsLength(); operatorIdx++) {
+      let operator = subgraph.operators(operatorIdx)!;
+      let operatorType = builtInOperatorArr[operator.opcodeIndex()];
+      let operatorLocation = operatorIdx;
+      let operatorProp: NodeProperties = {type: operatorType, location: operatorLocation};
 
-        // get node attribute
-        let option = BuiltinOptions[operator.builtinOptionsType()];
-        let operatorAttribute: Array<NodeAttributes> = [];
+      // get node attribute
+      let option = BuiltinOptions[operator.builtinOptionsType()];
+      let operatorAttribute: Array<NodeAttributes> = [];
 
-        setAttributesByOption(option, operator, operatorAttribute);
+      setAttributesByOption(option, operator, operatorAttribute);
 
-        // get node inputs
-        let nodeInputs: Array<NodeInput> = getNodeInputs(model, subgraph, operator, nodesArr);
-        // get node outputs
-        let nodeOutputs: Array<NodeOutput> = getNodeOutputs(operator, nodesArr);
-        // get builtin-option of node
-        let builtinoptions = BuiltinOptions[operator.builtinOptionsType()];
+      // get node inputs
+      let nodeInputs: Array<NodeInput> = getNodeInputs(model, subgraph, operator, nodesArr);
+      // get node outputs
+      let nodeOutputs: Array<NodeOutput> = getNodeOutputs(operator, nodesArr);
+      // get builtin-option of node
+      let builtinoptions = BuiltinOptions[operator.builtinOptionsType()];
 
-        let modelOper: ModelOperator = {
-          builtinoptions: builtinoptions,
-          properties: operatorProp,
-          attributes: operatorAttribute,
-          inputs: nodeInputs,
-          outputs: nodeOutputs
-        };
+      let modelOper: ModelOperator = {
+        builtinoptions: builtinoptions,
+        properties: operatorProp,
+        attributes: operatorAttribute,
+        inputs: nodeInputs,
+        outputs: nodeOutputs
+      };
 
-        resultArr.push(modelOper);
-      }
+      resultArr.push(modelOper);
     }
   }
 
