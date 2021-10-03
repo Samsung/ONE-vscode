@@ -1,2 +1,5 @@
 out/
 node_modules/
+
+# Automatically generated files by the FlatBuffers compiler.
+src/Circlereader/circle-analysis/circle/
