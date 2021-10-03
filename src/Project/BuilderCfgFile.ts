@@ -189,8 +189,13 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
     return undefined;
   }
 
-  private onBeginImport() {
-    let cfgIni = helpers.loadCfgFile(this.cfgFilePath);
+  public onBeginImport(parsedCfg: any) {
+    // parsedCfg is came from 'Configuration-Settings'
+    // If parsedCfg is undefined, it means 'ONE: cfg import' was executed instead.
+    let cfgIni = parsedCfg;
+    if (parsedCfg === undefined) {
+      cfgIni = helpers.loadCfgFile(this.cfgFilePath);
+    }
     if (cfgIni === undefined) {
       Balloon.error('Invalid cfg file');
       return;

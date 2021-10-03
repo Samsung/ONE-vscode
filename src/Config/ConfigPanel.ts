@@ -24,6 +24,7 @@ import {exportConfig} from './Dialog/ExportConfigDialog';
 import {importConfig} from './Dialog/ImportConfigDialog';
 import {getInputPath} from './Dialog/InputFileDialog';
 import {getNonce} from './GetNonce';
+import {runConfig} from './RunConfig';
 
 export class ConfigPanel {
   /**
@@ -87,13 +88,16 @@ export class ConfigPanel {
         case 'inputPath':
           getInputPath(this._panel.webview, data.payload);
           break;
-        case 'exportConfig':
-          exportConfig(data.payload);
-          break;
         case 'importConfig':
           const newWebview = this._panel.webview;
           newWebview.html = this._getHtmlForWebview(newWebview, context);
           importConfig(newWebview);
+          break;
+        case 'exportConfig':
+          exportConfig(data.payload);
+          break;
+        case 'runConfig':
+          runConfig(data.payload);
           break;
         case 'alert':
           Balloon.error(data.payload);
