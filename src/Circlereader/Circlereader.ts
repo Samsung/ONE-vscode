@@ -49,15 +49,15 @@ export function decoder(path: string) {
       // The inputs and outputs from the operator mean the location of the tensor
       for (let operatorIdx = 0; operatorIdx < subgraph.operatorsLength(); operatorIdx++) {
         let operator = subgraph.operators(operatorIdx)!;
-        let modelType = builtInOperatorArr[operator.opcodeIndex()];
-        let modelLocation = operatorIdx;
-        let modelProp: NodeProperties = {type: modelType, location: modelLocation};
+        let operatorType = builtInOperatorArr[operator.opcodeIndex()];
+        let operatorLocation = operatorIdx;
+        let operatorProp: NodeProperties = {type: operatorType, location: operatorLocation};
 
         // get node attribute
         let option = BuiltinOptions[operator.builtinOptionsType()];
-        let modelAttribute: Array<NodeAttributes> = [];
+        let operatorAttribute: Array<NodeAttributes> = [];
 
-        setAttributesByOption(option, operator, modelAttribute);
+        setAttributesByOption(option, operator, operatorAttribute);
 
         // get node inputs
         let nodeInputs: Array<NodeInput> = getNodeInputs(model, subgraph, operator, nodesArr);
@@ -68,8 +68,8 @@ export function decoder(path: string) {
 
         let modelOper: ModelOperator = {
           builtinoptions: builtinoptions,
-          properties: modelProp,
-          attributes: modelAttribute,
+          properties: operatorProp,
+          attributes: operatorAttribute,
           inputs: nodeInputs,
           outputs: nodeOutputs
         };
