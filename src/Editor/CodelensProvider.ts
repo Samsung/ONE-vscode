@@ -39,7 +39,7 @@ export class CodelensProvider implements vscode.CodeLensProvider {
 
     vscode.commands.registerCommand(
         'onevscode.hideAttrCodelens',
-        (toolName: any, attrName: any) => {
+        (toolName: string, attrName: string) => {
             // TODO implement
         });
   }
