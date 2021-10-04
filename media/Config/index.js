@@ -72,7 +72,7 @@ const showOptions = function (event) {
 };
 
 // send message to config panel about export configuration
-// you can find sendMessage in sednToPanel.js 
+// you can find sendMessage in sendToPanel.js 
 const exportConfiguration = function () {
   if (exportValidation()) {
     sendMessage("exportConfig", {
@@ -85,7 +85,7 @@ const exportConfiguration = function () {
 // send message to config panel about run configuration
 const runConfiguration = function () {
   if (exportValidation()) {
-    // TODO when one-build extension is completed, use that extension to run one-build with configuration
+    sendMessage("runConfig", oneToolList);
   }
 };
 
