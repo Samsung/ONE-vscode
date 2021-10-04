@@ -20,6 +20,7 @@ const getInputPath = function(tool) {
       return tool.options[i].optionValue;
     }
   }
+  return '';
 };
 
 const getOutputPath = function(tool) {
@@ -28,6 +29,7 @@ const getOutputPath = function(tool) {
       return tool.options[i].optionValue;
     }
   }
+  return '';
 };
 
 const makeOutputPath = function(tool, input) {
