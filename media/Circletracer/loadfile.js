@@ -26,9 +26,9 @@ function openFileSelector(flag) {
 }
 
 function setFileName(name, flag) {
-  if (flag === 1) {
+  if (flag === '#first-json-btn') {
     document.querySelector('#first-json-btn').innerHTML = name;
-  } else if (flag === 2) {
+  } else if (flag === '#second-json-btn') {
     document.querySelector('#second-json-btn').innerHTML = name;
   }
 }
@@ -43,9 +43,9 @@ function processFile(file, flag) {
 }
 
 function processData(timeUnit, traceEvents, flag) {
-  if (flag === 1) {
+  if (flag === '#first-json-btn') {
     document.querySelector('#first-json-btn').disabled = true;
-  } else if (flag === 2) {
+  } else if (flag === '#second-json-btn') {
     document.querySelector('#second-json-btn').disabled = true;
   }
 
@@ -62,9 +62,9 @@ function processData(timeUnit, traceEvents, flag) {
             durCircleJson[nodeId].duration = {timeUnit: timeUnit, dur1: 0, dur2: 0};
           }
 
-          if (flag === 1) {
+          if (flag === '#first-json-btn') {
             durCircleJson[nodeId].duration.dur1 += elem.dur / size;
-          } else {
+          } else if (flag === '#second-json-btn') {
             durCircleJson[nodeId].duration.dur2 += elem.dur / size;
           }
         }
