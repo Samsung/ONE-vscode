@@ -50,6 +50,10 @@ export class CodelensProvider implements vscode.CodeLensProvider {
 
           this.eventGenerator.fire();
         });
+
+    vscode.workspace.onDidChangeConfiguration(() => {
+      this.eventGenerator.fire();
+    });
   }
 
   public provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken):
