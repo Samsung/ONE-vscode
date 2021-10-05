@@ -34,7 +34,9 @@ export class HoverProvider implements vscode.HoverProvider {
       if (item.name === word) {
         markdownString.appendMarkdown(`### ${item.name}\n`);
         markdownString.appendMarkdown(`${item.description}\n`);
-        markdownString.appendMarkdown(`\n --- \n Option List\n\n`);
+        if (item.body.length) {
+          markdownString.appendMarkdown(`\n --- \n Option List\n\n`);
+        }
         item.body.forEach((content) => {
           markdownString.appendMarkdown(`- ${content.attr_name} : ${content.attr_desc}\n`);
 
