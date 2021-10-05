@@ -12,7 +12,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
+ */
+
+/*
  * MIT License
  *
  * Copyright (c) Lutz Roeder
@@ -34,12 +36,14 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
+ */
+
+/*
  * This file referenced the result of
  * https://github.com/lutzroeder/netron/tree/50083007d427fa0c03eda4ea0e62de373ec89c9b
  */
 
-text {
+ text {
     font-weight: 300;
     font-family: var(--vscode-font-family);
     font-size: 14px;
