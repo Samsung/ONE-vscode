@@ -36,17 +36,11 @@ https://github.com/lutzroeder/netron/tree/50083007d427fa0c03eda4ea0e62de373ec89c
     -->
     <meta 
         http-equiv="Content-Security-Policy"
-        content="https: data:;
+        content="img-src none;
                     style-src 'unsafe-inline' _webview.cspSource;
                     script-src 'nonce-_nonce';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link href="_styleUri" rel="stylesheet">
-    <script src="_dagreUri" nonce="_nonce"></script>
-    <script src="_loadFileUri" nonce="_nonce"></script>
-    <script src="_treeMapUri" nonce="_nonce"></script>
-    <script src="_makeDataUri" nonce="_nonce"></script>
-    <script src="https://d3js.org/d3.v5.min.js" nonce="_nonce"></script>
+    <link nonce="_nonce" href="_styleUri" rel="stylesheet">
     <title>Circle Tracer</title>
 </head>
 
@@ -57,18 +51,18 @@ https://github.com/lutzroeder/netron/tree/50083007d427fa0c03eda4ea0e62de373ec89c
             <div id="main">
                 <nav>
                     <div class="left-btns">
-                        <button id="first-json-btn" class="json-load-btn" onclick="openFileSelector(1);">Load First
+                        <button id="first-json-btn" class="json-load-btn">Load First
                             Json File</button>
-                        <button id="second-json-btn" class="json-load-btn" onclick="openFileSelector(2);">Load Second
+                        <button id="second-json-btn" class="json-load-btn">Load Second
                             Json File</button>
-                        <button id="reset-btn" class="json-load-btn" onclick="reset();">Json Reset</button>
+                        <button id="reset-btn" class="json-load-btn">Json Reset</button>
                     </div>
                 </nav>
                 <div id="wrapper"></div>
             </div>
             <div class="sidebar sidebar-block card animate-right" id="detail">
                 <h1 class="detail-title">NODE PROPERTIES</h1>
-                <a class="close-button" onclick="closeDetail()">x</a>
+                <a id="detail-close" class="close-button">x</a>
                 <div id="node-properties-content" class="detail-content"></div>
                 <div class="detail-header">ATTRIBUTES</div>
                 <div id="attributes-content" class="detail-content"></div>
@@ -79,6 +73,12 @@ https://github.com/lutzroeder/netron/tree/50083007d427fa0c03eda4ea0e62de373ec89c
             </div>
         </main>
     </div>
+    <script src="_loadFileUri" nonce="_nonce"></script>
+    <script src="_treeMapUri" nonce="_nonce"></script>
+    <script src="_makeDataUri" nonce="_nonce"></script>
+    <script src="_utilsUri" nonce="_nonce"></script>
+    <script src="_dagreUri" nonce="_nonce"></script>
+    <script src="https://d3js.org/d3.v5.min.js" nonce="_nonce"></script>
     <script nonce="_nonce">
         treeMap(_Circletracer._circleToJsonData);
     </script>
