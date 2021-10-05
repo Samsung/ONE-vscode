@@ -205,3 +205,6 @@ const oneToolList = [
   oneCodegen,
   oneProfile,
 ];
+
+// this is index number to divide one-import-xxx and other one-xxx tools
+const oneImportToolDivision = 4;
