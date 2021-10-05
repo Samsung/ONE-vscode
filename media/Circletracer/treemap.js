@@ -32,7 +32,9 @@ function treeMap(json) {
     let inputs = element.inputs;
     let outputs = element.outputs;
     inputs.forEach(input => {
-      if (input.edge === true) parentsIndex.push(input);
+      if (input.edge === true) {
+        parentsIndex.push(input);
+      }
     });
 
     let node = {
