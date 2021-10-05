@@ -129,7 +129,10 @@ export class Circletracer {
     const treeMapUri = treeMapOnDisk.with({'scheme': 'vscode-resource'});
 
     const makeDataOnDisk = this.getMediaPath('makedata.js');
-    const makeDataUri = makeDataOnDisk.with({'scheme': 'vscode-resource'});
+    const makeDataUri = makeDataOnDisk.with({ 'scheme': 'vscode-resource' });
+    
+    const utilsOnDisk = this.getMediaPath('utils.js');
+    const utilsUri = utilsOnDisk.with({'scheme': 'vscode-resource'});
 
     const dagreOnDisk = this.getMediaPath('external/dagre-d3.min.js');
     const dagreUri = dagreOnDisk.with({'scheme': 'vscode-resource'});
@@ -145,12 +148,13 @@ export class Circletracer {
 
     // Apply js and css to html
     html = html.replace(/_nonce/g, `${nonce}`);
-    html = html.replace(/_styleUri/g, `${styleUri}`);
     html = html.replace(/_webview.cspSource/g, `${webview.cspSource}`);
     html = html.replace(/_loadFileUri/g, `${loadFileUri}`);
     html = html.replace(/_treeMapUri/g, `${treeMapUri}`);
-    html = html.replace(/_dagreUri/g, `${dagreUri}`);
     html = html.replace(/_makeDataUri/g, `${makeDataUri}`);
+    html = html.replace(/_utilsUri/g, `${utilsUri}`);
+    html = html.replace(/_dagreUri/g, `${dagreUri}`);
+    html = html.replace(/_styleUri/g, `${styleUri}`);
     html =
         html.replace(/_Circletracer._circleToJsonData/g, `${`${Circletracer._circleToJsonData}`}`);
 

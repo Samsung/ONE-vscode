@@ -9,7 +9,7 @@
     -->
     <meta 
         http-equiv="Content-Security-Policy"
-        content="img-src https: data:;
+        content="img-src none;
                     style-src 'unsafe-inline' _webview.cspSource;
                     script-src 'nonce-_nonce';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -35,7 +35,7 @@
             </div>
             <div class="sidebar sidebar-block card animate-right" id="detail">
                 <h1 class="detail-title">NODE PROPERTIES</h1>
-                <a class="close-button" onclick="closeDetail()">x</a>
+                <a id="detail-close" class="close-button">x</a>
                 <div id="node-properties-content" class="detail-content"></div>
                 <div class="detail-header">ATTRIBUTES</div>
                 <div id="attributes-content" class="detail-content"></div>
@@ -46,10 +46,11 @@
             </div>
         </main>
     </div>
-    <script src="_dagreUri" nonce="_nonce"></script>
     <script src="_loadFileUri" nonce="_nonce"></script>
     <script src="_treeMapUri" nonce="_nonce"></script>
     <script src="_makeDataUri" nonce="_nonce"></script>
+    <script src="_utilsUri" nonce="_nonce"></script>
+    <script src="_dagreUri" nonce="_nonce"></script>
     <script src="https://d3js.org/d3.v5.min.js" nonce="_nonce"></script>
     <script nonce="_nonce">
         treeMap(_Circletracer._circleToJsonData);

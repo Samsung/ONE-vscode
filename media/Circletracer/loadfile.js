@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 const firstLoadBtn = document.getElementById('first-json-btn');
 const secondLoadBtn = document.getElementById('second-json-btn');
 const resetBtn = document.getElementById('reset-btn');
