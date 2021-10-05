@@ -72,10 +72,8 @@ function processData(timeUnit, traceEvents, flag) {
     }
   });
 
-  let jsonLoadCheck = loadedJsonCnt();
-
   // graph reset
-  if (jsonLoadCheck === 2) {
+  if (loadedJsonCnt() === 2) {
     let graphWrapper = document.querySelector('#wrapper');
 
     while (graphWrapper.hasChildNodes()) {
