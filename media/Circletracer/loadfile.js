@@ -99,13 +99,11 @@ function reset() {
   firstJsonBtn.innerHTML = 'Load First Json File';
   secondJsonBtn.innerHTML = 'Load Second Json File';
 
-  if (jsonLoadCheck === 2) {
-    let graphWrapper = document.querySelector('#wrapper');
+  let graphWrapper = document.querySelector('#wrapper');
 
-    while (graphWrapper.hasChildNodes()) {
-      graphWrapper.removeChild(graphWrapper.firstChild);
-    }
-
-    treeMap(circleJson);
+  while (graphWrapper.hasChildNodes()) {
+    graphWrapper.removeChild(graphWrapper.firstChild);
   }
+
+  treeMap(circleJson);
 }

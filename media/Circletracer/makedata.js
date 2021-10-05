@@ -63,3 +63,34 @@ function createDetailContent(nodes, id, g) {
   });
   openDetail();
 }
+
+function removeElementsByClass(className) {
+  const elements = document.getElementsByClassName(className);
+  while (elements.length > 0) {
+    elements[0].parentNode.removeChild(elements[0]);
+  }
+}
+
+function getTypeArray(delimeter, type) {
+  let result = '';
+  for (key in type) {
+    result = result + type[key] + delimeter;
+  }
+  result = result.slice(0, -1);
+  return result;
+}
+
+function createDetailItem(key, inputValue, selector) {
+  let name = document.createElement('div');
+  name.setAttribute('class', 'detail-content-name detail-content-list');
+  let label = document.createElement('label');
+  label.innerHTML = key;
+  name.appendChild(label);
+
+  let value = document.createElement('div');
+  value.setAttribute('class', 'detail-content-item detail-content-list');
+  value.innerHTML = inputValue;
+
+  document.querySelector(selector).appendChild(name);
+  document.querySelector(selector).appendChild(value);
+}
