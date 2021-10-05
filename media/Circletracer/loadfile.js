@@ -18,7 +18,7 @@ let jsonLoadCheck = 0;
 function openFileSelector(flag) {
   const input = document.createElement('input');
   input.type = 'file';
-  input.accept = 'text/plain';
+  input.accept = 'application/json';
   input.onchange = (event) => {
     setFileName(event.target.files[0].name, flag);
     processFile(event.target.files[0], flag);
