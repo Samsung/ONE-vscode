@@ -55,6 +55,8 @@ function processFile(file, flag) {
 }
 
 function processData(timeUnit, traceEvents, flag) {
+  let instance = singleton.getInstance();
+
   document.querySelector(flag).disabled = true;
 
   traceEvents.forEach((elem) => {
@@ -65,15 +67,15 @@ function processData(timeUnit, traceEvents, flag) {
         let nodeId = origin.split(':')[0];
         let nodeName = origin.split(':')[1];
 
-        if (durCircleJson[nodeId] !== undefined && nodeName !== 'Unknown') {
-          if (durCircleJson[nodeId].duration === undefined) {
-            durCircleJson[nodeId].duration = {timeUnit: timeUnit, dur1: 0, dur2: 0};
+        if (instance.durCircleJson[nodeId] !== undefined && nodeName !== 'Unknown') {
+          if (instance.durCircleJson[nodeId].duration === undefined) {
+            instance.durCircleJson[nodeId].duration = {timeUnit: timeUnit, dur1: 0, dur2: 0};
           }
 
           if (flag === '#first-json-btn') {
-            durCircleJson[nodeId].duration.dur1 += elem.dur / size;
+            instance.durCircleJson[nodeId].duration.dur1 += elem.dur / size;
           } else {
-            durCircleJson[nodeId].duration.dur2 += elem.dur / size;
+            instance.durCircleJson[nodeId].duration.dur2 += elem.dur / size;
           }
         }
       });
@@ -88,12 +90,13 @@ function processData(timeUnit, traceEvents, flag) {
       graphWrapper.removeChild(graphWrapper.firstChild);
     }
 
-    treeMap(durCircleJson);
+    treeMap(instance.durCircleJson);
   }
 }
 
 function reset() {
   // button reset
+  let instance = singleton.getInstance();
   let firstJsonBtn = document.querySelector('#first-json-btn');
   let secondJsonBtn = document.querySelector('#second-json-btn');
   firstJsonBtn.disabled = false;
@@ -108,11 +111,11 @@ function reset() {
     graphWrapper.removeChild(graphWrapper.firstChild);
   }
 
-  durCircleJson.forEach((elem) => {
+  instance.durCircleJson.forEach((elem) => {
     delete elem.duration;
   });
 
-  treeMap(durCircleJson);
+  treeMap(instance.durCircleJson);
 }
 
 function loadedJsonCnt() {
