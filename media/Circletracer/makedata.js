@@ -114,7 +114,7 @@ function createDetailItem(key, inputValue, selector) {
   name.appendChild(label);
 
   let value = document.createElement('div');
-  value.setAttribute('class', 'detail-content-item detail-content-list');
+  value.setAttribute('class', 'detail-content-value detail-content-list');
   value.innerHTML = inputValue;
 
   document.querySelector(selector).appendChild(name);
