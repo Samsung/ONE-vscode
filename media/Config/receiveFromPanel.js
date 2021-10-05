@@ -45,34 +45,16 @@ window.addEventListener("message", (event) => {
         onePack.use = false;
         for (const tool of Object.keys(data.options)) {
           for (const importOpt in data.options[tool]) {
-            if (tool === "one-import-bcq") {
-              oneImportBcq.use = true;
-              oneImportTools(data.options, importOpt, tool, 0, oneImportBcq);
-            } else if (tool === "one-import-onnx") {
-              oneImportOnnx.use = true;
-              oneImportTools(data.options, importOpt, tool, 1, oneImportOnnx);
-            } else if (tool === "one-import-tf") {
-              oneImportTf.use = true;
-              oneImportTools(data.options, importOpt, tool, 2, oneImportTf);
-            } else if (tool === "one-import-tflite") {
-              oneImportTflite.use = true;
-              oneImportTools(data.options, importOpt, tool, 3, oneImportTflite);
-            } else if (tool === "one-optimize") {
-              oneOptimize.use = true;
-              oneOtherTools(data.options, importOpt, tool, oneOptimize);
-            } else if (tool === "one-quantize") {
-              oneQuantize.use = true;
-              oneOtherTools(data.options, importOpt, tool, oneQuantize);
-            } else if (tool === "one-pack") {
-              onePack.use = true;
-              oneOtherTools(data.options, importOpt, tool, onePack);
-            } else if (tool === "one-codegen") {
-              oneCodegen.use = true;
-              oneOtherTools(data.options, importOpt, tool, oneCodegen);
-            } else if (tool === "one-profile") {
-              oneProfile.use = true;
-              oneOtherTools(data.options, importOpt, tool, oneProfile);
+            if (tool === 'one-build' || tool === 'onecc') {
+              oneToolToggle(data.options[tool], importOpt);
             }
+            for (let i = 0; i < oneToolList.length; i++) {
+              if (tool === oneToolList[i].type && i <= 3) {
+                oneImportTools(data.options[tool], importOpt, oneToolList[i].options);
+              } else if (tool ===oneToolList[i].type && i > 3) {
+                oneOtherTools(data.options[tool], importOpt, oneToolList[i].options);
+            }
+          }
           }
         }
         const tmpEvent = {

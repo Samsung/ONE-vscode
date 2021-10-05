@@ -69,6 +69,10 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
     this.on(K_BEGIN_IMPORT, this.onBeginImport);
   }
 
+  public importCfg(parsedCfg:any){
+    this.onBeginImport(parsedCfg);
+  }
+
   private cfgImportTf(prop: any) {
     let importTF = new JobImportTF();
     importTF.inputPath = prop[K_INPUT_PATH];
