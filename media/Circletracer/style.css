@@ -57,7 +57,7 @@ text {
 }
 
 .edgePath path {
-    stroke: var(--vscode-foreground, gray)k;
+    stroke: var(--vscode-foreground, gray);
     stroke-width: 1.5px;
 }
 
