@@ -38,9 +38,17 @@ export class CodelensProvider implements vscode.CodeLensProvider {
     });
 
     vscode.commands.registerCommand(
-        'onevscode.hideAttrCodelens',
-        (toolName: string, attrName: string) => {
-            // TODO implement
+        'onevscode.hideAttrCodelens', (toolName: string, attrName: string) => {
+          let toolAttr = toolName + '.' + attrName;
+          let findToolAttrIdx = this.hideAttr.findIndex((tool) => tool === toolAttr);
+
+          if (findToolAttrIdx === -1) {
+            this.hideAttr.push(toolAttr);
+          } else {
+            this.hideAttr.splice(findToolAttrIdx, 1);
+          }
+
+          this.eventGenerator.fire();
         });
   }
 
