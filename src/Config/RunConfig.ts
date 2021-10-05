@@ -17,15 +17,13 @@
 import {Project} from '../Project';
 import {BuilderCfgFile} from '../Project/BuilderCfgFile';
 import {Utils} from '../Utils';
-import {Balloon} from '../Utils/Balloon';
 
 export function runConfig(payload: any): void {
   let logger = new Utils.Logger();
   let projectBuilder = new Project.Builder(logger);
   let builderCfgFile = new BuilderCfgFile(projectBuilder, logger);
-  builderCfgFile.onBeginImport(parseCfg(payload));
+  builderCfgFile.importCfg(parseCfg(payload));
   projectBuilder.build(payload);
-  Balloon.info('Successfully finished one-build');
 }
 
 interface ToolsType {
