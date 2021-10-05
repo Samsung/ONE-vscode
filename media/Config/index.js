@@ -16,11 +16,11 @@
 
 // before building DOM, this function guide which tool will be built
 // you can find makeSelectTagForImport and buildOptionDom in buildDom.js
-const showOptions = function (event) {
+const showOptions = function(event) {
   emptyOptionBox(false);
-  event.target.classList.add("selected");
+  event.target.classList.add('selected');
   switch (event.target.id) {
-    case "import": {
+    case 'import': {
       changeCommonTags(oneImport);
 
       const select = makeSelectTagForImport();
@@ -31,7 +31,7 @@ const showOptions = function (event) {
         select.disabled = false;
       }
 
-      const spanTagForSelect = document.querySelector("#spanTagForSelect");
+      const spanTagForSelect = document.querySelector('#spanTagForSelect');
       spanTagForSelect.appendChild(select);
 
       // if framework like tensorflow has already been chosen, then bring it
@@ -42,29 +42,31 @@ const showOptions = function (event) {
           break;
         }
       }
+
       if (chosenOptionIndex !== -1) {
+        // select.options has 'beforeDecision' at index 0
         select.options[chosenOptionIndex + 1].selected = true;
         buildOptionDom(oneImportOptions[chosenOptionIndex]);
-      }      
+      }
       break;
     }
-    case "optimize": {
+    case 'optimize': {
       buildOptionDom(oneOptimize);
       break;
     }
-    case "quantize": {
+    case 'quantize': {
       buildOptionDom(oneQuantize);
       break;
     }
-    case "pack": {
+    case 'pack': {
       buildOptionDom(onePack);
       break;
     }
-    case "codegen": {
+    case 'codegen': {
       buildOptionDom(oneCodegen);
       break;
     }
-    case "profile": {
+    case 'profile': {
       buildOptionDom(oneProfile);
       break;
     }
@@ -72,41 +74,40 @@ const showOptions = function (event) {
 };
 
 // send message to config panel about export configuration
-// you can find sendMessage in sendToPanel.js 
-const exportConfiguration = function () {
+// you can find sendMessage in sendToPanel.js
+// you can finde exportValidation in configValidator.js
+const exportConfiguration = function() {
   if (exportValidation()) {
-    sendMessage("exportConfig", {
-      oneToolList: oneToolList,
-      fileName: getFileName(oneToolList) 
-      });
+    sendMessage('exportConfig', {oneToolList: oneToolList, fileName: getFileName(oneToolList)});
   }
 };
 
 // send message to config panel about run configuration
-const runConfiguration = function () {
+// you can finde exportValidation in configValidator.js
+const runConfiguration = function() {
   if (exportValidation()) {
-    sendMessage("runConfig", oneToolList);
+    sendMessage('runConfig', oneToolList);
   }
 };
 
 // send message to config panel about import configuration
-// you can find sendMessage in sednToPanel.js 
-const importConfiguration = function () {
-  sendMessage("importConfig", "");
+// you can find sendMessage in sednToPanel.js
+const importConfiguration = function() {
+  sendMessage('importConfig', '');
 };
 
 // add EventListener to html tags
-document.querySelector("#import").addEventListener("click", showOptions);
-document.querySelector("#optimize").addEventListener("click", showOptions);
-document.querySelector("#quantize").addEventListener("click", showOptions);
-document.querySelector("#pack").addEventListener("click", showOptions);
-document.querySelector("#codegen").addEventListener("click", showOptions);
-document.querySelector("#profile").addEventListener("click", showOptions);
-document.querySelector("#importBtn").addEventListener("click", importConfiguration);
-document.querySelector("#runBtn").addEventListener("click", runConfiguration);
-document.querySelector("#exportBtn").addEventListener("click", exportConfiguration);
+document.querySelector('#import').addEventListener('click', showOptions);
+document.querySelector('#optimize').addEventListener('click', showOptions);
+document.querySelector('#quantize').addEventListener('click', showOptions);
+document.querySelector('#pack').addEventListener('click', showOptions);
+document.querySelector('#codegen').addEventListener('click', showOptions);
+document.querySelector('#profile').addEventListener('click', showOptions);
+document.querySelector('#importBtn').addEventListener('click', importConfiguration);
+document.querySelector('#runBtn').addEventListener('click', runConfiguration);
+document.querySelector('#exportBtn').addEventListener('click', exportConfiguration);
 
 const tmpEvent = {
-  target: document.querySelector("#import"),
+  target: document.querySelector('#import'),
 };
 showOptions(tmpEvent);
