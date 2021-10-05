@@ -102,8 +102,6 @@ function reset() {
     graphWrapper.removeChild(graphWrapper.firstChild);
   }
 
-  delete durCircleJson.duration;
-
   durCircleJson.forEach((elem) => {
     delete elem.duration;
   });
