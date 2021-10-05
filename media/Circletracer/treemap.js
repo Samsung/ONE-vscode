@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-let circleJson, durCircleJson;
 function treeMap(json) {
-  circleJson = json;
-  durCircleJson = json;
+  singleton.setInstance(json);
   let g = new dagreD3.graphlib.Graph().setGraph({});
   let nodes = [];
   let inputNode, outputNode;
