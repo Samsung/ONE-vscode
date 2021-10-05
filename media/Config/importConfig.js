@@ -20,21 +20,15 @@
  * @param importOpt option name of one-build or onecc
  */
 const oneToolToggle = function(data, importOpt) {
-  for (let i = 0; i < oneToolList.length; i++) {
-    if (data[importOpt] === 'True') {
-      if (importOpt === oneToolList[i].type && i === 0) {
+  if (data[importOpt] === 'True') {
+    for (let i = 0; i < 3; i++) {
+      if (importOpt === oneToolList[i].type) {
         oneImport.use = true;
-        chooseImportOption(0);
-      } else if (importOpt === oneToolList[i].type && i === 1) {
-        oneImport.use = true;
-        chooseImportOption(1);
-      } else if (importOpt === oneToolList[i].type && i === 2) {
-        oneImport.use = true;
-        chooseImportOption(2);
-      } else if (importOpt === oneToolList[i].type && i === 3) {
-        oneImport.use = true;
-        chooseImportOption(3);
-      } else if (importOpt === oneToolList[i].type && i > 3) {
+        chooseImportOption(i);
+      }
+    }
+    for (let i = 3; i < oneToolList.length; i++) {
+      if (importOpt === oneToolList[i].type) {
         oneToolList[i].use = true;
       }
     }
