@@ -22,7 +22,6 @@ function treeMap(json) {
   let nodes = [];
   let inputNode, outputNode;
 
-  g.setNode(0, {label: 'input', class: 'type-input'});
   json.forEach((element, idx) => {
     let type = element.properties.type;
     let myIndex = element.outputs[0].location;
