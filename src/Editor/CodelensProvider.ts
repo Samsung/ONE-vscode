@@ -22,6 +22,7 @@ export class CodelensProvider implements vscode.CodeLensProvider {
   showTool: Array<string> = [];
   // Save attributes to hide.
   hideAttr: Array<string> = [];
+  currentToolName: string = '';
   eventGenerator: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
   public readonly onDidChangeCodeLenses: vscode.Event<void> = this.eventGenerator.event;
 
@@ -64,7 +65,7 @@ export class CodelensProvider implements vscode.CodeLensProvider {
       let regex = new RegExp(/(.+)/g);
       let activatedEditorText = document.getText();
       let matches;
-      let currentToolName = '';
+      this.currentToolName = '';
       // TODO tune performance
       while ((matches = regex.exec(activatedEditorText)) !== null) {
         let line = document.lineAt(document.positionAt(matches.index).line);
@@ -79,20 +80,20 @@ export class CodelensProvider implements vscode.CodeLensProvider {
               codeLenses.push(new vscode.CodeLens(range));
 
               if (this.showTool.includes(lineStr)) {
-                currentToolName = lineStr;
+                this.currentToolName = lineStr;
               } else {
-                currentToolName = '';
+                this.currentToolName = '';
               }
             }
           });
         } else {
-          if (currentToolName !== '') {
+          if (this.currentToolName !== '') {
             let attrName = lineStr.split('=')[0];
-            let toolAttr = currentToolName + '.' + attrName;
+            let toolAttr = this.currentToolName + '.' + attrName;
 
             if (this.hideAttr.indexOf(toolAttr) === -1) {
               toolsAttr.forEach((tool) => {
-                if (tool.name === currentToolName) {
+                if (tool.name === this.currentToolName) {
                   tool.body.forEach((attr) => {
                     if (attr.attr_name === attrName) {
                       codeLenses.push(new vscode.CodeLens(range));
@@ -111,7 +112,6 @@ export class CodelensProvider implements vscode.CodeLensProvider {
 
   public resolveCodeLens(codeLens: vscode.CodeLens, token: vscode.CancellationToken) {
     let lineStr = vscode.window.activeTextEditor ?.document.getText(codeLens.range);
-    let currentToolName = '';
 
     if (lineStr?.indexOf('=') === -1) {
       toolsAttr.forEach((tool) => {
@@ -121,7 +121,7 @@ export class CodelensProvider implements vscode.CodeLensProvider {
             command: 'onevscode.toggleAttrCodelens',
             arguments: [lineStr],
           };
-          currentToolName = lineStr;
+          this.currentToolName = lineStr;
         }
       });
     } else {
@@ -131,7 +131,7 @@ export class CodelensProvider implements vscode.CodeLensProvider {
             codeLens.command = {
               title: attr.attr_desc,
               command: 'onevscode.hideAttrCodelens',
-              arguments: [currentToolName, attr.attr_name]
+              arguments: [this.currentToolName, attr.attr_name]
             };
           }
         });
