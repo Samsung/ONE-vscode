@@ -42,7 +42,9 @@ const showOptions = function(event) {
           break;
         }
       }
+
       if (chosenOptionIndex !== -1) {
+        // select.options has 'beforeDecision' at index 0
         select.options[chosenOptionIndex + 1].selected = true;
         buildOptionDom(oneImportOptions[chosenOptionIndex]);
       }
