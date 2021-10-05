@@ -1,17 +1,15 @@
 let singleton = (function() {
   let instance;
 
-  function setter(json){
-    return {
-      durCircleJson: json
-    };
+  function setter(json) {
+    return {durCircleJson: json};
   };
 
   return {
-    setInstance: function (json) {
+    setInstance: function(json) {
       instance = setter(json);
     },
-    getInstance: function () {
+    getInstance: function() {
       if (!instance) {
         instance = foo(json);
       }
