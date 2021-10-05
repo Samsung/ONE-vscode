@@ -83,7 +83,7 @@ function processData(timeUnit, traceEvents, flag) {
       graphWrapper.removeChild(graphWrapper.firstChild);
     }
 
-    TreeMap(durCircleJson);
+    treeMap(durCircleJson);
   }
 }
 
@@ -106,6 +106,6 @@ function reset() {
       graphWrapper.removeChild(graphWrapper.firstChild);
     }
 
-    TreeMap(circleJson);
+    treeMap(circleJson);
   }
 }

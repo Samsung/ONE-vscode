@@ -128,7 +128,7 @@ export class Circletracer {
     const treeMapOnDisk = this.getMediaPath('treemap.js');
     const treeMapUri = treeMapOnDisk.with({'scheme': 'vscode-resource'});
 
-    const makeDataOnDisk = this.getMediaPath('makeData.js');
+    const makeDataOnDisk = this.getMediaPath('makedata.js');
     const makeDataUri = makeDataOnDisk.with({'scheme': 'vscode-resource'});
 
     const dagreOnDisk = this.getMediaPath('external/dagre-d3.min.js');
