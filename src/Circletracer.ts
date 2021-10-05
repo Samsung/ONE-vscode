@@ -129,8 +129,8 @@ export class Circletracer {
     const treeMapUri = treeMapOnDisk.with({'scheme': 'vscode-resource'});
 
     const makeDataOnDisk = this.getMediaPath('makedata.js');
-    const makeDataUri = makeDataOnDisk.with({ 'scheme': 'vscode-resource' });
-    
+    const makeDataUri = makeDataOnDisk.with({'scheme': 'vscode-resource'});
+
     const utilsOnDisk = this.getMediaPath('utils.js');
     const utilsUri = utilsOnDisk.with({'scheme': 'vscode-resource'});
 
