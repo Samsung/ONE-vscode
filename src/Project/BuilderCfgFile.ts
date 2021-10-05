@@ -23,6 +23,7 @@ import {Logger} from '../Utils/Logger';
 
 import {BuilderJob} from './BuilderJob';
 import {JobCodegen} from './JobCodegen';
+import {JobImportONNX} from './JobImportONNX';
 import {JobImportTF} from './JobImportTF';
 import {JobImportTFLite} from './JobImportTFLite';
 import {JobOptimize} from './JobOptimize';
@@ -101,6 +102,21 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
 
     console.log('importTFlite = ', importTFlite);
     this.jobOwner.addJob(importTFlite);
+    this.logger.outputLine('Add Import: ' + inputModel);
+  }
+
+  private cfgImportOnnx(prop: any) {
+    let importONNX = new JobImportONNX();
+    importONNX.inputPath = prop[K_INPUT_PATH];
+    importONNX.outputPath = prop[K_OUTPUT_PATH];
+    importONNX.inputArrays = prop[K_INPUT_ARRAYS];
+    importONNX.outputArrays = prop[K_OUTPUT_ARRAYS];
+
+    let inputModel = path.basename(importONNX.inputPath);
+    importONNX.name = 'Import ' + inputModel;
+
+    console.log('importOnnx = ', importONNX);
+    this.jobOwner.addJob(importONNX);
     this.logger.outputLine('Add Import: ' + inputModel);
   }
 
@@ -244,6 +260,9 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
     } else if (itemJob === K_IMPORT_TFLITE) {
       let prop = cfgIni[itemJob];
       this.cfgImportTflite(prop);
+    } else if (itemJob === K_IMPORT_ONNX) {
+      let prop = cfgIni[itemJob];
+      this.cfgImportOnnx(prop);
     }
     // TODO add other import jobs
 
