@@ -131,7 +131,7 @@ button:hover:enabled {
 g.node {
     cursor: pointer;
 }
-/* slidebar */
+/* sidebar */
 .sidebar {
     height: 100%;
     width: 200px;
