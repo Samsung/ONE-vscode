@@ -21,13 +21,13 @@
  */
 const oneToolToggle = function(data, importOpt) {
   if (data[importOpt] === 'True') {
-    for (let i = 0; i < oneImportToolDivision; i++) {
+    for (let i = 0; i < oneImportToolSeparation; i++) {
       if (importOpt === oneToolList[i].type) {
         oneImport.use = true;
         chooseImportOption(i);
       }
     }
-    for (let i = oneImportToolDivision; i < oneToolList.length; i++) {
+    for (let i = oneImportToolSeparation; i < oneToolList.length; i++) {
       if (importOpt === oneToolList[i].type) {
         oneToolList[i].use = true;
       }

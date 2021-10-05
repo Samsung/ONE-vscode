@@ -206,5 +206,5 @@ const oneToolList = [
   oneProfile,
 ];
 
-// this is index number to divide one-import-xxx and other one-xxx tools
-const oneImportToolDivision = 4;
+// this is index number to seperate one-import-xxx and other one-xxx tools
+const oneImportToolSeparation = 4; 
