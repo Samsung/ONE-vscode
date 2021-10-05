@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-let jsonLoadCheck = 0;
 function openFileSelector(flag) {
   const input = document.createElement('input');
   input.type = 'file';
@@ -27,9 +26,9 @@ function openFileSelector(flag) {
 }
 
 function setFileName(name, flag) {
-  if (flag === '1') {
+  if (flag === 1) {
     document.querySelector('#first-json-btn').innerHTML = name;
-  } else if (flag === '2') {
+  } else if (flag === 2) {
     document.querySelector('#second-json-btn').innerHTML = name;
   }
 }
@@ -44,11 +43,9 @@ function processFile(file, flag) {
 }
 
 function processData(timeUnit, traceEvents, flag) {
-  if (flag === '1') {
-    ++jsonLoadCheck;
+  if (flag === 1) {
     document.querySelector('#first-json-btn').disabled = true;
-  } else if (flag === '2') {
-    ++jsonLoadCheck;
+  } else if (flag === 2) {
     document.querySelector('#second-json-btn').disabled = true;
   }
 
@@ -65,7 +62,7 @@ function processData(timeUnit, traceEvents, flag) {
             durCircleJson[nodeId].duration = {timeUnit: timeUnit, dur1: 0, dur2: 0};
           }
 
-          if (flag === '1') {
+          if (flag === 1) {
             durCircleJson[nodeId].duration.dur1 += elem.dur / size;
           } else {
             durCircleJson[nodeId].duration.dur2 += elem.dur / size;
@@ -74,6 +71,8 @@ function processData(timeUnit, traceEvents, flag) {
       });
     }
   });
+
+  let jsonLoadCheck = loadedJsonCnt();
 
   // graph reset
   if (jsonLoadCheck === 2) {
@@ -88,8 +87,6 @@ function processData(timeUnit, traceEvents, flag) {
 }
 
 function reset() {
-  jsonLoadCheck = 0;
-
   // button reset
   let firstJsonBtn = document.querySelector('#first-json-btn');
   let secondJsonBtn = document.querySelector('#second-json-btn');
@@ -99,13 +96,29 @@ function reset() {
   firstJsonBtn.innerHTML = 'Load First Json File';
   secondJsonBtn.innerHTML = 'Load Second Json File';
 
-  if (jsonLoadCheck === 2) {
-    let graphWrapper = document.querySelector('#wrapper');
+  let graphWrapper = document.querySelector('#wrapper');
 
-    while (graphWrapper.hasChildNodes()) {
-      graphWrapper.removeChild(graphWrapper.firstChild);
-    }
-
-    treeMap(circleJson);
+  while (graphWrapper.hasChildNodes()) {
+    graphWrapper.removeChild(graphWrapper.firstChild);
   }
+
+  durCircleJson.forEach((elem) => {
+    delete elem.duration;
+  });
+
+  treeMap(durCircleJson);
+}
+
+function loadedJsonCnt() {
+  let cnt = 0;
+
+  if (document.querySelector('#first-json-btn').disabled === true) {
+    ++cnt;
+  }
+    
+  if (document.querySelector('#second-json-btn').disabled === true) {
+    ++cnt;
+  }
+    
+  return cnt;
 }
