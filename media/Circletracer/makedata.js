@@ -39,6 +39,12 @@
 // This file referenced the result of
 // https://github.com/lutzroeder/netron/tree/50083007d427fa0c03eda4ea0e62de373ec89c9b
 
+const detailClose = document.getElementById('detail-close');
+
+detailClose.addEventListener('click', () => {
+  closeDetail();
+})
+
 function openDetail() {
   document.querySelector('#main').style.marginRight = '35%';
   document.querySelector('#detail').style.width = '35%';
@@ -85,7 +91,6 @@ function createDetailContent(nodes, id, g) {
           });
         }
       }
-      break;
     }
   });
   openDetail();
@@ -96,15 +101,6 @@ function removeElementsByClass(className) {
   while (elements.length > 0) {
     elements[0].parentNode.removeChild(elements[0]);
   }
-}
-
-function getTypeArray(delimeter, type) {
-  let result = '';
-  for (key in type) {
-    result = result + type[key] + delimeter;
-  }
-  result = result.slice(0, -1);
-  return result;
 }
 
 function createDetailItem(key, inputValue, selector) {
