@@ -56,6 +56,7 @@ function createDetailContent(nodes, id, g) {
   removeElementsByClass('detail-content-list');
   nodes.forEach(node => {
     if (node.index === id) {
+      // TODO reduce time complexity
       for (let key in node) {
         if (key === 'type' || key === 'location') {
           createDetailItem(key, node[key], '#node-properties-content');
