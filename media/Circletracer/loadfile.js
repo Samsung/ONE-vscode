@@ -113,10 +113,10 @@ function loadedJsonCnt() {
   if (document.querySelector('#first-json-btn').disabled === true) {
     ++cnt;
   }
-    
+
   if (document.querySelector('#second-json-btn').disabled === true) {
     ++cnt;
   }
-    
+
   return cnt;
 }
