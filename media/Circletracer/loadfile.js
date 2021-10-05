@@ -13,6 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+const firstLoadBtn = document.getElementById('first-json-btn');
+const secondLoadBtn = document.getElementById('second-json-btn');
+const resetBtn = document.getElementById('reset-btn');
+
+firstLoadBtn.addEventListener('click', () => {
+  openFileSelector('#first-json-btn');
+});
+
+secondLoadBtn.addEventListener('click', () => {
+  openFileSelector('#second-json-btn');
+});
+
+resetBtn.addEventListener('click', () => {
+  reset();
+});
 
 function openFileSelector(flag) {
   const input = document.createElement('input');
@@ -54,7 +69,7 @@ function processData(timeUnit, traceEvents, flag) {
             durCircleJson[nodeId].duration = {timeUnit: timeUnit, dur1: 0, dur2: 0};
           }
 
-          if (flag === 1) {
+          if (flag === '#first-json-btn') {
             durCircleJson[nodeId].duration.dur1 += elem.dur / size;
           } else {
             durCircleJson[nodeId].duration.dur2 += elem.dur / size;
