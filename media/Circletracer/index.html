@@ -29,20 +29,22 @@ https://github.com/lutzroeder/netron/tree/50083007d427fa0c03eda4ea0e62de373ec89c
 <head>
     <meta charset="UTF-8">
     <!--
-					Use a content security policy to only allow loading images from https or from our extension directory,
-					and only allow scripts that have a specific nonce.
-				-->
-    <meta http-equiv="Content-Security-Policy"
-        content="default-src 'none'; style-src _webview.cspSource; img-src _webview.cspSource https: http: data: blob:; script-src 'unsafe-inline' data: blob: http: https:; connect-src _webview.cspSource https:">
-
+        Use a content security policy to only allow loading images from https or from our extension directory,
+        and only allow scripts that have a specific nonce.
+    -->
+    <meta 
+        http-equiv="Content-Security-Policy"
+        content="img-src https: data:;
+                    style-src 'unsafe-inline' _webview.cspSource;
+                    script-src 'nonce-_nonce';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link nonce="_nonce" href="_styleUri" rel="stylesheet">
-    <script src="_dagreUri"></script>
-    <script src="_loadFileUri"></script>
-    <script src="_treeMapUri"></script>
-    <script src="_makeDataUri"></script>
-    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="_dagreUri" nonce="_nonce"></script>
+    <script src="_loadFileUri" nonce="_nonce"></script>
+    <script src="_treeMapUri" nonce="_nonce"></script>
+    <script src="_makeDataUri" nonce="_nonce"></script>
+    <script src="https://d3js.org/d3.v5.min.js" nonce="_nonce"></script>
     <title>Circle Tracer</title>
 </head>
 
@@ -75,7 +77,7 @@ https://github.com/lutzroeder/netron/tree/50083007d427fa0c03eda4ea0e62de373ec89c
             </div>
         </main>
     </div>
-    <script>
+    <script nonce="_nonce">
         treeMap(_Circletracer._circleToJsonData);
     </script>
 </body>
