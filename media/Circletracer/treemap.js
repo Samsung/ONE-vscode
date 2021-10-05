@@ -15,7 +15,7 @@
  */
 
 let circleJson, durCircleJson;
-function TreeMap(json) {
+function treeMap(json) {
   circleJson = json;
   durCircleJson = json;
   let g = new dagreD3.graphlib.Graph().setGraph({});
