@@ -76,7 +76,7 @@ function processData(timeUnit, traceEvents, flag) {
   });
 
   // graph reset
-  if (jsonLoadCheck == 2) {
+  if (jsonLoadCheck === 2) {
     let graphWrapper = document.querySelector('#wrapper');
 
     while (graphWrapper.hasChildNodes()) {
@@ -99,7 +99,7 @@ function reset() {
   firstJsonBtn.innerHTML = 'Load First Json File';
   secondJsonBtn.innerHTML = 'Load Second Json File';
 
-  if (jsonLoadCheck == 2) {
+  if (jsonLoadCheck === 2) {
     let graphWrapper = document.querySelector('#wrapper');
 
     while (graphWrapper.hasChildNodes()) {
