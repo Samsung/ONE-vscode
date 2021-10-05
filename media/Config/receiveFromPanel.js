@@ -24,7 +24,7 @@ window.addEventListener('message', (event) => {
           for (let j = 0; j < oneToolList[i].options.length; j++) {
             if (oneToolList[i].options[j].optionName === 'input_path') {
               oneToolList[i].options[j].optionValue = data.filePath;
-              console.log(oneToolList[i].options[j].optionValue);
+              console.log('message inputPath: ', oneToolList[i].options[j].optionValue);
               const inputTag = document.querySelector('#input_path');
               inputTag.value = data.filePath;
               break;
@@ -49,9 +49,11 @@ window.addEventListener('message', (event) => {
             oneToolToggle(data.options[tool], importOpt);
           }
           for (let i = 0; i < oneToolList.length; i++) {
-            if (tool === oneToolList[i].type && i <= 3) {
+            // if index is less than 'oneImportToolSeparation', tool name will be 'one-import-xxx'
+            // if index is more than 'oneImportToolSeparation', tool name will be 'one-xxx'
+            if (tool === oneToolList[i].type && i < oneImportToolSeparation) {
               oneImportTools(data.options[tool], importOpt, oneToolList[i].options);
-            } else if (tool === oneToolList[i].type && i > 3) {
+            } else if (tool === oneToolList[i].type && i >= oneImportToolSeparation) {
               oneOtherTools(data.options[tool], importOpt, oneToolList[i].options);
             }
           }
