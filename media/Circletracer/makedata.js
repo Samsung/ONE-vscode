@@ -21,8 +21,8 @@ function openDetail() {
 }
 
 function closeDetail() {
-    document.querySelector('#main').style.marginRight = '0%';
-    document.querySelector('#detail').style.display = 'none';
+  document.querySelector('#main').style.marginRight = '0%';
+  document.querySelector('#detail').style.display = 'none';
 }
 
 function createDetailContent(nodes, id, g) {
