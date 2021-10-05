@@ -27,41 +27,40 @@ function closeDetail() {
 
 function createDetailContent(nodes, id, g) {
   var _node = g.node(id);
-  console.log('Clicked ' + id, _node);
 
   removeElementsByClass('detail-content-list');
   nodes.forEach(node => {
-    if (node.index == id) {
+    if (String(node.index) === id) {
       for (let key in node) {
         if (key === 'type' || key === 'location') {
           createDetailItem(key, node[key], '#node-properties-content');
         }
 
-        if (key == 'attributes') {
+        else if (key === 'attributes') {
           node[key].forEach(element => {
             createDetailItem(element['attribute'], element['value'], '#attributes-content');
-          })
+          });
         }
 
-        if (key == 'inputs') {
+        else if (key === 'inputs') {
           node[key].forEach((input, idx) => {
             createDetailItem(`input ${idx}`, `name: ${input['name']}`, '#inputs-content');
             createDetailItem('', `type: [${getTypeArray(',', input['type'])}]`, '#inputs-content');
             createDetailItem('', `location: ${input['location']}`, '#inputs-content');
-          })
+          });
         }
 
-        if (key == 'outputs') {
+        else if (key === 'outputs') {
           node[key].forEach((output, idx) => {
             createDetailItem(`output ${idx}`, `name: ${output['name']}`, '#outputs-content');
             createDetailItem(
                 '', `type: [${getTypeArray(',', output['type'])}]`, '#outputs-content');
             createDetailItem('', `location: ${output['location']}`, '#outputs-content');
-          })
+          });
         }
       }
     }
-  })
+  });
   openDetail();
 }
 
