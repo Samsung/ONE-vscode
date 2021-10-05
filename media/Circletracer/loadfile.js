@@ -26,11 +26,7 @@ function openFileSelector(flag) {
 }
 
 function setFileName(name, flag) {
-  if (flag === 1) {
-    document.querySelector('#first-json-btn').innerHTML = name;
-  } else if (flag === 2) {
-    document.querySelector('#second-json-btn').innerHTML = name;
-  }
+  document.querySelector(flag).innerHTML = name;
 }
 
 function processFile(file, flag) {
@@ -43,11 +39,7 @@ function processFile(file, flag) {
 }
 
 function processData(timeUnit, traceEvents, flag) {
-  if (flag === 1) {
-    document.querySelector('#first-json-btn').disabled = true;
-  } else if (flag === 2) {
-    document.querySelector('#second-json-btn').disabled = true;
-  }
+  document.querySelector(flag).disabled = true;
 
   traceEvents.forEach((elem) => {
     if (elem.args !== undefined && elem.args.origin !== undefined) {
