@@ -14,36 +14,65 @@
  * limitations under the License.
  */
 
-const oneImportTools = function (data, importOpt, tool, idx, defaultImportObject) {
-    oneImport.use = true;
-    for (let i = 0; i < defaultImportObject.options.length; i++) {
-      if (importOpt === defaultImportObject.options[i].optionName) {
-        defaultImportObject.options[i].optionValue = data[tool][importOpt];
-      }
+/**
+ * @brief oneToolToggle will toggle one-import-xxx and one-xxx of webview.
+ * @param data array that holds all options and values of one-build or onecc
+ * @param importOpt option name of one-build or onecc
+ */
+const oneToolToggle = function(data, importOpt) {
+  for (let i = 0; i < oneToolList.length; i++) {
+    if (data[importOpt] === 'True') {
+    if (importOpt === oneToolList[i].type && i === 0) {
+      oneImport.use = true;
+      chooseImportOption(0);
+    } else if (importOpt === oneToolList[i].type && i === 1) {
+      oneImport.use = true;
+      chooseImportOption(1);
+    } else if (importOpt === oneToolList[i].type && i === 2) {
+      oneImport.use = true;
+      chooseImportOption(2);
+    } else if (importOpt === oneToolList[i].type && i === 3) {
+      oneImport.use = true;
+      chooseImportOption(3);
+    } 
+    else if (importOpt ===oneToolList[i].type && i > 3) {
+      oneToolList[i].use = true;
+  }
+}
+}
+};
+
+/**
+ * @brief oneImportTools will import one-import-xxx of cfg file to webview. so user can update .cfg
+ * file comfortably.
+ * @param data array that holds all options and values of one-import-xxx
+ * @param importOpt option name of one-import-xxx
+ * @param defaultImportObject one-import-xxx object of tools.js
+ */
+ const oneImportTools = function(data, importOpt, defaultImportObject) {
+  for (let i = 0; i < defaultImportObject.length; i++) {
+    if 
+    (importOpt === defaultImportObject[i].optionName) {
+      defaultImportObject[i].optionValue = data[importOpt];
     }
-    for (let i = 0; i < oneImport.options.length; i++) {
-      if (i === idx) {
-        oneImport.options[i].optionValue = true;
-      } else {
-        oneImport.options[i].optionValue = false;
-      }
+  }
+};
+
+/**
+ * @brief oneOtherTools will import one-xxx of cfg file to webview execpt one-import-xxx. so user
+ * can update .cfg file comfortably.
+ * @param data array that holds all options and values of one-xxx
+ * @param importOpt option name of one-xxx
+ * @param defaultOtherObject one-xxx object of tools.js
+ */
+const oneOtherTools = function(data, importOpt, defaultOtherObject) {
+  for (let i = 0; i < defaultOtherObject.length; i++) {
+    if (importOpt === defaultOtherObject[i].optionName && data[importOpt] === 'False') {
+      defaultOtherObject[i].optionValue = false;
+    } else if (importOpt === defaultOtherObject[i].optionName && data[importOpt] === 'True') {
+      defaultOtherObject[i].optionValue = true;
+    } else if (importOpt === defaultOtherObject[i].optionName) {
+      defaultOtherObject[i].optionValue = data[importOpt];
     }
-  };
-  
-const oneOtherTools = function(data, importOpt, tool, otherTool) {
-    for (let i = 0; i < otherTool.options.length; i++) {
-        if (
-            importOpt === otherTool.options[i].optionName &&
-            data[tool][importOpt] === "False"
-        ) {
-            otherTool.options[i].optionValue = false;
-        } else if (
-            importOpt === otherTool.options[i].optionName &&
-            data[tool][importOpt] === "True"
-        ) {
-            otherTool.options[i].optionValue = true;
-        } else if (importOpt === otherTool.options[i].optionName) {
-            otherTool.options[i].optionValue = data[tool][importOpt];
-        }
-    }
+  }
 };
