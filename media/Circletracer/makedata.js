@@ -43,7 +43,7 @@ const detailClose = document.getElementById('detail-close');
 
 detailClose.addEventListener('click', () => {
   closeDetail();
-})
+});
 
 function openDetail() {
   document.querySelector('#main').style.marginRight = '35%';
