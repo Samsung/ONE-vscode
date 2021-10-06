@@ -35,6 +35,7 @@ export class CodelensProvider implements vscode.CodeLensProvider {
       } else {
         this.showTool.splice(findToolIdx, 1);
       }
+      this.hideAttr = this.hideAttr.filter((toolAttr) => !toolAttr.includes(toolName));
       this.eventGenerator.fire();
     });
 
