@@ -52,17 +52,16 @@ export class JobOptimize extends JobBase {
   oResolveCustomopAdd?: boolean = undefined;             // resolve_customop_add
   oResolveCustomopBatchmatmul?: boolean = undefined;     // resolve_customop_batchmatmul
   oResolveCustomopMatmul?: boolean = undefined;          // resolve_customop_matmul
-  oRresolveCustomopMaxPoolWithArgmax?: boolean =
-      undefined;                                           // resolve_customop_max_pool_with_argmax
-  oShuffleWeightTo16x1float32?: boolean = undefined;       // shuffle_weight_to_16x1float32
-  oSubstitutePackToReshape?: boolean = undefined;          // substitute_pack_to_reshape
-  oSubstitutePadv2ToPad?: boolean = undefined;             // substitute_padv2_to_pad
-  oSubstituteSplitvToSplit?: boolean = undefined;          // substitute_splitv_to_split
-  oSubstituteSqueezeToReshape?: boolean = undefined;       // substitute_squeeze_to_reshape
-  oSubstituteStridedSliceToReshape?: boolean = undefined;  // substitute_strided_slice_to_reshape
-  oSubstituteTransposeToReshape?: boolean = undefined;     // substitute_transpose_to_reshape
-  oTransformMinMaxToRelu6?: boolean = undefined;           // transform_min_max_to_relu6
-  oTransformMinReluToRelu6?: boolean = undefined;          // transform_min_relu_to_relu6
+  oResolveCustomopMaxPoolWithArgmax?: boolean = undefined;  // resolve_customop_max_pool_with_argmax
+  oShuffleWeightTo16x1float32?: boolean = undefined;        // shuffle_weight_to_16x1float32
+  oSubstitutePackToReshape?: boolean = undefined;           // substitute_pack_to_reshape
+  oSubstitutePadv2ToPad?: boolean = undefined;              // substitute_padv2_to_pad
+  oSubstituteSplitvToSplit?: boolean = undefined;           // substitute_splitv_to_split
+  oSubstituteSqueezeToReshape?: boolean = undefined;        // substitute_squeeze_to_reshape
+  oSubstituteStridedSliceToReshape?: boolean = undefined;   // substitute_strided_slice_to_reshape
+  oSubstituteTransposeToReshape?: boolean = undefined;      // substitute_transpose_to_reshape
+  oTransformMinMaxToRelu6?: boolean = undefined;            // transform_min_max_to_relu6
+  oTransformMinReluToRelu6?: boolean = undefined;           // transform_min_relu_to_relu6
   // TODO sync with one-optimize options
 
   constructor() {
