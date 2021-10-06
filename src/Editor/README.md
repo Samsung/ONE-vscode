@@ -11,14 +11,7 @@ It provides convenience to users who create cfg files using vscode (text editor)
 ## Demo
  - CodeLens
  
-   ![codelens](https://user-images.githubusercontent.com/44386047/132448474-f836b467-e5c0-4b0b-af71-6154943a6be8.gif)
+   ![codelens_subattr](https://user-images.githubusercontent.com/60142959/136141746-953bb9be-45e0-42ec-8d4b-cfb07b7f7a78.gif)
  - Hover
  
    ![hover](https://user-images.githubusercontent.com/60142959/135982753-a5b09506-e554-4efa-a537-f70afc6e861f.gif)
-
-## Reference
-- CodeLens
-  - user guide : https://code.visualstudio.com/blogs/2017/02/12/code-lens-roundup
-  - example : https://github.com/microsoft/vscode-extension-samples/tree/main/codelens-sample
-- Hover
-  - user guide : https://code.visualstudio.com/api/language-extensions/programmatic-language-features#show-hovers
