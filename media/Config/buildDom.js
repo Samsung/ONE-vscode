@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
+const eraseChildTags = function(tagId) {
+  const tag = document.querySelector('#' + tagId);
+  while (tag.hasChildNodes()) {
+    tag.removeChild(tag.firstChild);
+  }
+};
+
 // remove every options on DOM
 const emptyOptionBox = function(isImport) {
   if (!isImport) {
     // erase select tag for choosing framework
-    const spanTagForSelect = document.querySelector('#spanTagForSelect');
-    while (spanTagForSelect.hasChildNodes()) {
-      spanTagForSelect.removeChild(spanTagForSelect.firstChild);
-    }
+    eraseChildTags('spanTagForSelect');
 
     const toolList = document.querySelectorAll('.tools div');
     for (let i = 0; i < toolList.length; i++) {
@@ -30,16 +34,10 @@ const emptyOptionBox = function(isImport) {
   }
 
   // erase option names
-  const optionsName = document.querySelector('#optionsName');
-  while (optionsName.hasChildNodes()) {
-    optionsName.removeChild(optionsName.firstChild);
-  }
+  eraseChildTags('optionsName');
 
   // erase option values
-  const optionsValue = document.querySelector('#optionsValue');
-  while (optionsValue.hasChildNodes()) {
-    optionsValue.removeChild(optionsValue.firstChild);
-  }
+  eraseChildTags('optionsValue');
 };
 
 // make DOM disable depends on tool.use
@@ -56,7 +54,6 @@ const chooseDisable = function(tool) {
       useBtn.checked = false;
       optionFieldset.disabled = true;
     }
-
   } else {
     // when tool are not related with one-import
     if (tool.use === true) {
@@ -146,7 +143,7 @@ const buildOptionDom = function(tool) {
           valueLiTag.appendChild(inputTag);
 
         } else {
-          // case for normalt input tag
+          // case for normal input tag
           const inputTag = makeInputTag(tool, i);
           valueLiTag.appendChild(inputTag);
         }
