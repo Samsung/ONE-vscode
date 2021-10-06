@@ -1,4 +1,4 @@
-let singleton = (function() {
+let circleInfo = (function() {
   let instance;
 
   function setter(json) {
@@ -11,7 +11,7 @@ let singleton = (function() {
     },
     getInstance: function() {
       if (!instance) {
-        instance = foo(json);
+        instance = setter(json);
       }
       return instance;
     }
