@@ -222,7 +222,7 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
     optimize.oResolveCustomopAdd = prop[K_OPT_resolve_customop_add];
     optimize.oResolveCustomopBatchmatmul = prop[K_OPT_resolve_customop_batchmatmul];
     optimize.oResolveCustomopMatmul = prop[K_OPT_resolve_customop_matmul];
-    optimize.oRresolveCustomopMaxPoolWithArgmax = prop[K_OPT_resolve_customop_max_pool_with_argmax];
+    optimize.oResolveCustomopMaxPoolWithArgmax = prop[K_OPT_resolve_customop_max_pool_with_argmax];
     optimize.oShuffleWeightTo16x1float32 = prop[K_OPT_shuffle_weight_to_16x1float32];
     optimize.oSubstitutePackToReshape = prop[K_OPT_substitute_pack_to_reshape];
     optimize.oSubstitutePadv2ToPad = prop[K_OPT_substitute_padv2_to_pad];

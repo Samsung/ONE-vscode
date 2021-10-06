@@ -119,7 +119,7 @@ export class JobOptimize extends JobBase {
     if (this.oResolveCustomopAdd) { args.push('--resolve_customop_add'); }
     if (this.oResolveCustomopBatchmatmul) { args.push('--resolve_customop_batchmatmul'); }
     if (this.oResolveCustomopMatmul) { args.push('--resolve_customop_matmul'); }
-    if (this.oRresolveCustomopMaxPoolWithArgmax) { args.push('--resolve_customop_max_pool_with_argmax'); }
+    if (this.oResolveCustomopMaxPoolWithArgmax) { args.push('--resolve_customop_max_pool_with_argmax'); }
     if (this.oShuffleWeightTo16x1float32) { args.push('--shuffle_weight_to_16x1float32'); }
     if (this.oSubstitutePackToReshape) { args.push('--substitute_pack_to_reshape'); }
     if (this.oSubstitutePadv2ToPad) { args.push('--substitute_padv2_to_pad'); }
