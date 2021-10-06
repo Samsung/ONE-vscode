@@ -31,6 +31,7 @@ export const enum Type {
   tImportTF = 1,
   tImportTFLite,
   tImportONNX,
+  tImportBCQ,
   tOptimize,
   tQuantize,
   tPack,
