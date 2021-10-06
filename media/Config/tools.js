@@ -101,7 +101,7 @@ const oneOptimize = {
     { optionName: "output_path", optionValue: "" },
     { optionName: "generate_profile_data", optionValue: false },
     { optionName: "change_outputs", optionValue: false },
-    { optionName: "01", optionValue: false },
+    { optionName: "O1", optionValue: false },
     { optionName: "conver_nchw_to_nhwd", optionValue: false },
     { optionName: "nchw_to_nhwc_input_shape", optionValue: false },
     { optionName: "nchw_to_nhwc_output_shape", optionValue: false },
