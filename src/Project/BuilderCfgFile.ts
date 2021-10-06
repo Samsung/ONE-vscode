@@ -23,6 +23,7 @@ import {Logger} from '../Utils/Logger';
 
 import {BuilderJob} from './BuilderJob';
 import {JobCodegen} from './JobCodegen';
+import {JobImportBCQ} from './JobImportBCQ';
 import {JobImportONNX} from './JobImportONNX';
 import {JobImportTF} from './JobImportTF';
 import {JobImportTFLite} from './JobImportTFLite';
@@ -117,6 +118,23 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
 
     console.log('importOnnx = ', importONNX);
     this.jobOwner.addJob(importONNX);
+    this.logger.outputLine('Add Import: ' + inputModel);
+  }
+
+  private cfgImportBcq(prop: any) {
+    let importBCQ = new JobImportBCQ();
+    importBCQ.inputPath = prop[K_INPUT_PATH];
+    importBCQ.outputPath = prop[K_OUTPUT_PATH];
+    importBCQ.inputArrays = prop[K_INPUT_ARRAYS];
+    importBCQ.outputArrays = prop[K_OUTPUT_ARRAYS];
+    importBCQ.inputShapes = prop[K_INPUT_SHAPES];
+    importBCQ.converterVersion = prop[K_CONVERTER_VERSION];
+
+    let inputModel = path.basename(importBCQ.inputPath);
+    importBCQ.name = 'ImportBCQ ' + inputModel;
+
+    console.log('importTF = ', importBCQ);
+    this.jobOwner.addJob(importBCQ);
     this.logger.outputLine('Add Import: ' + inputModel);
   }
 
@@ -263,6 +281,9 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
     } else if (itemJob === K_IMPORT_ONNX) {
       let prop = cfgIni[itemJob];
       this.cfgImportOnnx(prop);
+    } else if (itemJob === K_IMPORT_BCQ) {
+      let prop = cfgIni[itemJob];
+      this.cfgImportBcq(prop);
     }
     // TODO add other import jobs
 
