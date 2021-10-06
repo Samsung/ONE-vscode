@@ -120,7 +120,7 @@ const oneOptimize = {
     { optionName: "fuse_transpose_with_mean", optionValue: false },
     { optionName: "make_batchnorm_gamma_positive", optionValue: false },
     { optionName: "fuse_activation_function", optionValue: false },
-    { optionName: "fuse_instnorm ", optionValue: false },
+    { optionName: "fuse_instnorm", optionValue: false },
     {
       optionName: "replace_cw_mul_add_with_depthwise_conv",
       optionValue: false,
