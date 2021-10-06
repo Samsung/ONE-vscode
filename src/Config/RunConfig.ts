@@ -47,7 +47,9 @@ const parseCfg = function(oneToolList: any) {
         if (optionValue === false || optionValue === '') {
           continue;
         }
-        if (optionValue === true) optionValue = 'True';
+        if (optionValue === true) {
+          optionValue = 'True';
+        }
         tool[oneToolList[i].options[j].optionName] = optionValue;
       }
       tools[oneToolList[i].type] = tool;
@@ -55,4 +57,4 @@ const parseCfg = function(oneToolList: any) {
   }
   tools['one-build'] = oneBuild;
   return tools;
-}
+};
