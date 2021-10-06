@@ -55,7 +55,7 @@ function processFile(file, flag) {
 }
 
 function processData(timeUnit, traceEvents, flag) {
-  let instance = singleton.getInstance();
+  let instance = circleInfo.getInstance();
 
   document.querySelector(flag).disabled = true;
 
@@ -96,7 +96,7 @@ function processData(timeUnit, traceEvents, flag) {
 
 function reset() {
   // button reset
-  let instance = singleton.getInstance();
+  let instance = circleInfo.getInstance();
   let firstJsonBtn = document.querySelector('#first-json-btn');
   let secondJsonBtn = document.querySelector('#second-json-btn');
   firstJsonBtn.disabled = false;

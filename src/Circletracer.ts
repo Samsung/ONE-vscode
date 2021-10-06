@@ -134,8 +134,8 @@ export class Circletracer {
     const utilsOnDisk = this.getMediaPath('utils.js');
     const utilsUri = utilsOnDisk.with({'scheme': 'vscode-resource'});
 
-    const singletonOnDisk = this.getMediaPath('singleton.js');
-    const singletonUri = singletonOnDisk.with({'scheme': 'vscode-resource'});
+    const circleInfoOnDisk = this.getMediaPath('circleinfo.js');
+    const circleInfoUri = circleInfoOnDisk.with({'scheme': 'vscode-resource'});
 
     const dagreOnDisk = this.getMediaPath('external/dagre-d3.min.js');
     const dagreUri = dagreOnDisk.with({'scheme': 'vscode-resource'});
@@ -156,7 +156,7 @@ export class Circletracer {
     html = html.replace(/_treeMapUri/g, `${treeMapUri}`);
     html = html.replace(/_makeDataUri/g, `${makeDataUri}`);
     html = html.replace(/_utilsUri/g, `${utilsUri}`);
-    html = html.replace(/_singletonUri/g, `${singletonUri}`);
+    html = html.replace(/_circleInfoUri/g, `${circleInfoUri}`);
     html = html.replace(/_dagreUri/g, `${dagreUri}`);
     html = html.replace(/_styleUri/g, `${styleUri}`);
     html =

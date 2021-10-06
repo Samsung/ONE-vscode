@@ -15,7 +15,7 @@
  */
 
 function treeMap(json) {
-  singleton.setInstance(json);
+  circleInfo.setInstance(json);
   let g = new dagreD3.graphlib.Graph().setGraph({});
   let nodes = [];
   let inputNode, outputNode;
