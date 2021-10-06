@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-let circleInfo = (function () {
+let circleInfo = (function() {
   let instance;
 
   function setter(json) {
