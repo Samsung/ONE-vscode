@@ -15,7 +15,7 @@
  */
 
 const eraseChildTags = function(tagId) {
-  const tag = querySelector('#' + tagId);
+  const tag = document.querySelector('#' + tagId);
   while (tag.hasChildNodes()) {
     tag.removeChild(tag.firstChild);
   }
