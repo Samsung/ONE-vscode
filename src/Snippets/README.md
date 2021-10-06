@@ -1,9 +1,8 @@
 # Snippet
-It provides convenience to users who create `.cfg` files using vscode (text editor).
+Snippet provides convenience to users who create `.cfg` files using vscode (text editor).
 
-It is automatically completed by creating a prefix for each tool in `.cfg` file.
+Keywords are auto completed by the prefix of each tool of `.cfg` file.
 
-## Demo
 - one-build
 ![snippet](https://user-images.githubusercontent.com/60142959/135967755-b4741473-62f1-4065-9d47-43b58724cf18.gif)
 - onecc
