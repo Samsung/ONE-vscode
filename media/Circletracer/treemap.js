@@ -104,7 +104,7 @@ async function treeMap(json) {
 
   g.nodes().forEach(function(v) {
     let node = g.node(v);
-    //  Round the corners of the nodes
+    // Round the corners of the nodes
     node.rx = node.ry = 5;
   });
 
