@@ -75,15 +75,14 @@ async function treeMap(json) {
           dur2.toFixed(4)} ${timeUnit}</p>`;
     }
 
-    for (let i = 0; i < inputs.length; i++) {
-      let input = inputs[i];
-      if (input.edge === true && isPushedMap.get(element.inputs[i].location) === undefined) {
-        let index = element.inputs[i].location;
+    inputs.forEach(input => {
+      if (input.edge === true && isPushedMap.get(input.location) === undefined) {
+        let index = input.location;
         let name = input.name + ' ' + index;
         let inputNode = {
           'index': index,
           'class': 'type-' + name,
-          'inputs': [element.inputs[i]],
+          'inputs': [input],
           'outputs': [],
           'parents': []
         };
@@ -92,7 +91,7 @@ async function treeMap(json) {
         nodes.push(inputNode);
         headNodes.push(inputNode);
       }
-    }
+    });
 
     // TODO A function to connect output node should be added.
 
