@@ -16,6 +16,8 @@
 
 import * as vscode from 'vscode';
 
+import {decoder} from './Circlereader/Circlereader';
+import {Circletracer} from './Circletracer';
 import {ConfigPanel} from './Config/ConfigPanel';
 import {createStatusBarItem} from './Config/ConfigStatusBar';
 import {CodelensProvider} from './Editor/CodelensProvider';
@@ -78,7 +80,17 @@ export function activate(context: vscode.ExtensionContext) {
 
   let disposableOneCircleTracer = vscode.commands.registerCommand('onevscode.circle-tracer', () => {
     console.log('one circle tracer...');
-    // TODO PROCESS DIALOG
+    const options: vscode.OpenDialogOptions = {
+      canSelectMany: false,
+      openLabel: 'Open',
+      filters: {'Circle files': ['circle'], 'All files': ['*']}
+    };
+    vscode.window.showOpenDialog(options).then(fileUri => {
+      if (fileUri && fileUri[0]) {
+        const circleToJson = decoder(fileUri[0].fsPath);
+        Circletracer.createOrShow(context.extensionUri, circleToJson);
+      }
+    });
   });
   context.subscriptions.push(disposableOneCircleTracer);
 }
