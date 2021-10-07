@@ -1,0 +1,6 @@
+# This directory includes EXTERNAL open source project files,
+# which are not modified.
+# So we will not fix any warnings for them.
+
+DisableFormat: true
+SortIncludes: false

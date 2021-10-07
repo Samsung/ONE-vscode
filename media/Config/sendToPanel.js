@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-function getTypeArray(delimeter, type) {
-  let result = '';
-  for (key in type) {
-    result = result + type[key] + delimeter;
-  }
-  result = result.slice(0, -1);
-  return result;
-}
+const vscode = acquireVsCodeApi();
+
+// send message to config panel
+const sendMessage = function(command, payload) {
+  vscode.postMessage({
+    command: command,
+    payload: payload,
+  });
+};

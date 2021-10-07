@@ -43,7 +43,7 @@
  * https://github.com/lutzroeder/netron/tree/50083007d427fa0c03eda4ea0e62de373ec89c9b
  */
 
- text {
+text {
     font-weight: 300;
     font-family: var(--vscode-font-family);
     font-size: 14px;
@@ -57,7 +57,7 @@
 }
 
 .edgePath path {
-    stroke: var(--vscode-foreground, gray)k;
+    stroke: var(--vscode-foreground, gray);
     stroke-width: 1.5px;
 }
 
@@ -131,7 +131,7 @@ button:hover:enabled {
 g.node {
     cursor: pointer;
 }
-/* slidebar */
+/* sidebar */
 .sidebar {
     height: 100%;
     width: 200px;

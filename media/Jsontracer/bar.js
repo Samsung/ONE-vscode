@@ -45,12 +45,78 @@
 // This file referenced the result of
 // https://github.com/catapult-project/catapult/tree/444aba89e1c30edf348c611a9df79e2376178ba8/tracing
 
-import renderLevel from './level.js';
-import renderRuler from './ruler.js';
+import {renderMultipleDetail, renderSingleDetail} from './detail.js';
 
-export default function renderDashboard(utility, timeLimit, digit, data) {
-  renderRuler(timeLimit, digit);
+export default function renderBar(timeLimit, data) {
+  const barLists = document.querySelectorAll('.bar-list');
+  const barList = barLists[barLists.length - 1];
+
+  const bar = document.createElement('div');
+  bar.className = 'bar';
+  bar.style.left = `${data.ts / timeLimit * 100}%`;
+  bar.style.width = `${data.dur / timeLimit * 100}%`;
+  bar.style.backgroundColor = `${data.backgroundColor}`;
+
   Object.keys(data).map(key => {
-    renderLevel(timeLimit, key, utility[key], data[key]);
+    if (key === 'args') {
+      const args = data[key];
+      const argList = Object.keys(args).map(key => {
+        return `${key} : ${args[key]}`;
+      });
+      bar.dataset['args'] = argList.join('.#/#.');
+    } else {
+      bar.dataset[`${key}`] = data[key];
+    }
+  });
+
+  bar.addEventListener('click', event => {
+    removeDetail();
+    if (event.ctrlKey) {
+      addSelectedBar(event.target.className === 'bar' ? event.target : event.target.parentNode);
+      renderMultipleDetail();
+    } else {
+      removeSelectedBar();
+      renderSingleDetail(
+          event.target.className === 'bar' ? event.target.dataset :
+                                             event.target.parentNode.dataset);
+    }
+  });
+
+  const barTitle = document.createElement('div');
+  barTitle.className = 'bar-title';
+  barTitle.innerText = data['name'];
+
+  bar.append(barTitle);
+  barList.append(bar);
+}
+
+function addSelectedBar(ele) {
+  const selectedOpList = document.querySelectorAll('.selected-op');
+  for (const selectedOp of selectedOpList) {
+    if (selectedOp.dataset['pk'] === ele.dataset['pk']) {
+      return;
+    }
+  }
+
+  const selected = document.querySelector('.selected');
+  const op = document.createElement('div');
+  op.className = 'selected-op';
+  Object.keys(ele.dataset).forEach(key => {
+    op.dataset[key] = ele.dataset[key];
+  });
+  selected.append(op);
+}
+
+function removeSelectedBar() {
+  const selected = document.querySelector('.selected');
+  while (selected.hasChildNodes()) {
+    selected.removeChild(selected.firstChild);
+  }
+}
+
+function removeDetail() {
+  const details = document.querySelectorAll('.detail');
+  details.forEach(detail => {
+    detail.remove();
   });
 }

@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-function getTypeArray(delimeter, type) {
-  let result = '';
-  for (key in type) {
-    result = result + type[key] + delimeter;
-  }
-  result = result.slice(0, -1);
-  return result;
+import * as vscode from 'vscode';
+
+export function createStatusBarItem(context: vscode.ExtensionContext) {
+  let cfgStatusBarItem: vscode.StatusBarItem;
+  cfgStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+  cfgStatusBarItem.text = `$(file-add) ONE configuration Settings`;
+  cfgStatusBarItem.command = 'onevscode.configuration-settings';
+  context.subscriptions.push(cfgStatusBarItem);
+  cfgStatusBarItem.show();
 }

@@ -3,3 +3,6 @@ node_modules/
 
 # Automatically generated files by the FlatBuffers compiler.
 src/Circlereader/circle-analysis/circle/
+
+# External open source project files which are not modified.
+media/Circletracer/external/

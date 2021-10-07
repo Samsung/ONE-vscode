@@ -15,13 +15,45 @@
  */
 
 import * as vscode from 'vscode';
+import toolsAttr from './json/tools_attr.json';
 
 export class HoverProvider implements vscode.HoverProvider {
   provideHover(
       _doc:
           {getWordRangeAtPosition: (arg0: any, arg1: RegExp) => any; getText: (arg0: any) => any;},
       _position: any, _token: any) {
-    // TODO implement
-    return null;
+    let markdownString = new vscode.MarkdownString();
+    const range = _doc.getWordRangeAtPosition(_position, new RegExp(/(.+)/g));
+    if (range === undefined) {
+      console.log('getWordRangeAtPosition return undefined');
+      return new vscode.Hover(markdownString);
+    }
+    const word = _doc.getText(range);
+
+    toolsAttr.forEach((item) => {
+      if (item.name === word) {
+        markdownString.appendMarkdown(`### ${item.name}\n`);
+        markdownString.appendMarkdown(`${item.description}\n`);
+        if (item.body.length) {
+          markdownString.appendMarkdown(`\n --- \n Option List\n\n`);
+        }
+        item.body.forEach((content) => {
+          markdownString.appendMarkdown(`- ${content.attr_name} : ${content.attr_desc}\n`);
+
+          if (content.options) {
+            content.options.forEach((option) => {
+              markdownString.appendMarkdown('\t');
+              if (option.option_desc) {
+                markdownString.appendMarkdown(`- ${option.option_name} : ${option.option_desc}\n`);
+              } else {
+                markdownString.appendMarkdown(`- ${option.option_name}\n`);
+              }
+            });
+          }
+        });
+      }
+    });
+
+    return new vscode.Hover(markdownString);
   }
 }

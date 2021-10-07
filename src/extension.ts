@@ -19,6 +19,7 @@ import * as vscode from 'vscode';
 import {decoder} from './Circlereader/Circlereader';
 import {Circletracer} from './Circletracer';
 import {ConfigPanel} from './Config/ConfigPanel';
+import {createStatusBarItem} from './Config/ConfigStatusBar';
 import {CodelensProvider} from './Editor/CodelensProvider';
 import {HoverProvider} from './Editor/HoverProvider';
 import {Jsontracer} from './Jsontracer';
@@ -57,6 +58,8 @@ export function activate(context: vscode.ExtensionContext) {
         console.log('one configuration settings...');
       });
   context.subscriptions.push(disposableOneConfigurationSettings);
+
+  createStatusBarItem(context);
 
   let disposableToggleCodelens =
       vscode.commands.registerCommand('onevscode.toggle-codelens', () => {

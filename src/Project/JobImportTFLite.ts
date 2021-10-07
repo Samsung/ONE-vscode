@@ -18,17 +18,13 @@ import {Job} from './Job';
 import {JobImport} from './JobImport';
 import {ToolArgs} from './ToolArgs';
 
-export class JobImportTF extends JobImport {
+export class JobImportTFLite extends JobImport {
   inputArrays?: string = undefined;
   outputArrays?: string = undefined;
-  inputShapes?: string = undefined;
-  converterVersion?: string = undefined;
-  modelFormat?: string = undefined;
-  saveIntermediate?: boolean = undefined;
 
   constructor() {
     super();
-    this.jobType = Job.Type.tImportTF;
+    this.jobType = Job.Type.tImportTFLite;
   }
 
   public get valid() {
@@ -37,7 +33,7 @@ export class JobImportTF extends JobImport {
   }
 
   public get tool() {
-    return 'one-import-tf';
+    return 'one-import-tflite';
   }
 
   public get toolArgs() {
@@ -47,15 +43,7 @@ export class JobImportTF extends JobImport {
     args.add('--input_path', this.inputPath);
     args.add('--output_path', this.outputPath);
 
-    // optional arguments
-    args.add('--input_arrays', this.inputArrays);
-    args.add('--output_arrays', this.outputArrays);
-    args.add('--input_shapes', this.inputShapes);
-    args.add('--converter_version', this.converterVersion);
-    args.add('--model_format', this.modelFormat);
-    if (this.saveIntermediate) {
-      args.push('--save_intermediate');
-    }
+    console.log('args = ', args);
 
     return args;
   }

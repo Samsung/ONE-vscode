@@ -23,13 +23,13 @@ export function getNodeOutputs(operator: Operator, nodesArr: Array<Node>): Array
   let outputLength = operator.outputsLength();
 
   for (let outputIdx = 0; outputIdx < outputLength; outputIdx++) {
-    let nodeInput: NodeOutput = {
+    let nodeOutput: NodeOutput = {
       location: outputArr[outputIdx],
       name: nodesArr[outputArr[outputIdx]]['name'],
       type: nodesArr[outputArr[outputIdx]]['type']
     };
 
-    nodeOutputs.push(nodeInput);
+    nodeOutputs.push(nodeOutput);
   }
 
   return nodeOutputs;

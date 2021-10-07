@@ -1,8 +1,8 @@
 body {
-  background-color: #263238;
+  background-color: #252526;
   color: white;
-  font-size: 1.125vw;
-  padding: 20px;
+  font-size: 16px;
+  padding-left: 20px;
 }
 
 h2 {
@@ -21,8 +21,8 @@ li {
 }
 
 .container {
-  height: 90vh;
-  width: 80vw;
+  height: 680px;
+  width: 1200px;
 }
 
 .main,
@@ -34,20 +34,20 @@ li {
 .header {
   display: table;
   height: 10%;
-  width: 80vw;
+  width: 1226px;
 }
 
 .heading {
   display: table-cell;
   vertical-align: bottom;
-  width: 50%;
+  width: 613px;
 }
 
 .importBtn {
   display: table-cell;
   text-align: end;
   vertical-align: bottom;
-  width: 50%;
+  width: 613px;
 }
 
 .main {
@@ -55,36 +55,34 @@ li {
   height: 80%;
   justify-content: space-between;
   margin-top: 10px;
-  width: 80vw;
+  width: 1200px;
 }
 
 .mainL {
   margin-top: 10px;
   padding-left: 20px;
-  width: 30%;
+  width: 360px;
 }
 
 .mainR {
   margin-top: 10px;
   padding-right: 20px;
-  width: 70%;
+  width: 840px;
 }
 
 .tools {
-  height: 50%;
+  height: 340px;
   margin-top: 10px;
   padding: 20px;
-  width: 80%;
-  font-size: 100%;
+  width: 300px;
 }
 
 .tools div {
-  margin-bottom: 5px;
+  margin-bottom: 15px;
 }
 
 .tools div:hover {
   cursor: pointer;
-  margin-bottom: 5px;
 }
 
 .options {
@@ -93,7 +91,7 @@ li {
   overflow: scroll;
   padding-right: 10px;
   padding-top: 20px;
-  width: 100%;
+  width: 800px;
 }
 
 .twoOpts {
@@ -102,28 +100,27 @@ li {
 }
 
 .optionsName {
-  padding-left: 20px;
-  width: 50%;
+  width: 400px;
 }
 
 .optionsValue {
-  width: 50%;
+  width: 400px;
 }
 
 .footer {
   margin-top: 10px;
   text-align: end;
-  width: 80vw;
+  width: 1226px;
 }
 
 .selected {
-  color: #3498DB;
+  color: #005BA4;
   font-weight: bold;
 }
 
-#locaForSelect {
+#spanTagForSelect {
   position: absolute;
-  right: 22%;
+  left: 1050px;
 }
 
 select {
@@ -145,16 +142,19 @@ form > * {
 }
 
 button {
-  background: #3498DB;
-  border-color:#3498DB;
+  background: #005BA4;
+  border-color:#005BA4;
   border-width: 1px;
   color: white;
-  font-size: 100%;
-  margin-left: 10px;
+  margin-left: 3%;
   outline: 1px solid transparent;
   outline-offset: 2px !important;
-  padding: 7px 10px;
+  padding: 0.3em 0.5em;
   text-align: center;
+}
+
+#exportBtn {
+  margin-left: 1%;
 }
 
 button:hover {
@@ -169,7 +169,7 @@ textarea {
   color: black;
   display: inline-block;
   padding: 6px 4px;
-  width: 85%;
+  width: 330px;
 }
 
 input::placeholder,
@@ -179,6 +179,10 @@ textarea::placeholder {
 
 fieldset:disabled input {
   background-color: #6E6E6E;
+}
+
+fieldset:disabled input::placeholder {
+  color: #888888;
 }
 
 /* The switch - the box around the slider */
@@ -222,11 +226,11 @@ fieldset:disabled input {
 }
 
 input:checked + .slider {
-  background-color: #3498DB;
+  background-color: #005BA4;
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #3498DB;
+  box-shadow: 0 0 1px #005BA4;
 }
 
 input:checked + .slider:before {

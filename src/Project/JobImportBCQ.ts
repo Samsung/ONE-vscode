@@ -18,17 +18,15 @@ import {Job} from './Job';
 import {JobImport} from './JobImport';
 import {ToolArgs} from './ToolArgs';
 
-export class JobImportTF extends JobImport {
+export class JobImportBCQ extends JobImport {
   inputArrays?: string = undefined;
   outputArrays?: string = undefined;
   inputShapes?: string = undefined;
   converterVersion?: string = undefined;
-  modelFormat?: string = undefined;
-  saveIntermediate?: boolean = undefined;
 
   constructor() {
     super();
-    this.jobType = Job.Type.tImportTF;
+    this.jobType = Job.Type.tImportBCQ;
   }
 
   public get valid() {
@@ -37,7 +35,7 @@ export class JobImportTF extends JobImport {
   }
 
   public get tool() {
-    return 'one-import-tf';
+    return 'one-import-onnx';
   }
 
   public get toolArgs() {
@@ -52,10 +50,8 @@ export class JobImportTF extends JobImport {
     args.add('--output_arrays', this.outputArrays);
     args.add('--input_shapes', this.inputShapes);
     args.add('--converter_version', this.converterVersion);
-    args.add('--model_format', this.modelFormat);
-    if (this.saveIntermediate) {
-      args.push('--save_intermediate');
-    }
+
+    console.log('args = ', args);
 
     return args;
   }
