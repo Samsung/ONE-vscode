@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-function treeMap(json) {
+async function treeMap(json) {
   circleInfo.setInstance(json);
   let g = new dagreD3.graphlib.Graph().setGraph({});
   let nodes = [];
-  let inputNode, outputNode;
-
+  let headNodes = [], tailNode=[];
+  
   json.forEach((element, idx) => {
     let type = element.properties.type;
     let myIndex = element.outputs[0].location;
@@ -76,39 +76,47 @@ function treeMap(json) {
 
     // First node logic
     if (idx === 0) {
-      inputNode = {
-        'index': 0,
-        'class': 'type-input',
-        'inputs': [element.inputs[0]],
-        'outputs': [],
-        'parents': []
-      };
-      g.setNode(0, {label: 'input', class: 'type-input'});
+      for(let i = 0;i<inputs.length;i++){
+        let input = inputs[i];
+        if (input.edge === true) {
+          let index = element.inputs[i].location;
+          let name = input.name+" "+index;
+          let inputNode = {
+            'index': index,
+            'class': 'type-'+name,
+            'inputs': [element.inputs[i]],
+            'outputs': [],
+            'parents': []
+          };
+          g.setNode(inputNode.index, {label: name, class: inputNode.class});
+          nodes.push(inputNode);
+          headNodes.push(inputNode);
+        }
+      }
     }
-
     // Last node logic
-    if (idx === json.length - 1) {
-      let outputParentIndex = [];
-      let name = outputs[0].name;
-
-      outputParentIndex.push({location: myIndex});
-
-      inputNode.outputs.push(outputs[0]);
-
-      outputNode = {
-        'label': name,
-        'class': 'type-' + name,
-        'parents': outputParentIndex,
-        'inputs': inputNode.inputs,
-        'outputs': [outputs[0]],
-        'index': myIndex + 1
-      };
-
-      nodes.push(inputNode);
-      nodes.push(outputNode);
-      g.setNode(
-          outputNode.index, {labelType: 'html', label: outputNode.label, class: outputNode.class});
-    }
+    // if (idx === json.length - 1) {
+    //   let outputParentIndex = [];
+    //   let name = outputs[0].name;
+    //   outputParentIndex.push({location: myIndex});
+    //   for(let i =0;i<headNodes.length;i++){
+    //     headNodes[i].outputs.push(outputs[0]);
+    //     nodes.push(headNodes[i]);
+    //     g.setNode(headNodes[i].index, {label: name, class: headNodes[i].class});
+    //   }
+    //   let outputNode = {
+    //     'label': name,
+    //     'class': 'type-' + name,
+    //     'parents': outputParentIndex,
+    //     'inputs': headNodes,
+    //     'outputs': [outputs[0]],
+    //     'index': myIndex
+    //   };
+    //   tailNode.push(outputNode);
+      
+    //   nodes.push(outputNode);
+    //   g.setNode(-1, {labelType: 'html', label: outputNode.label, class: outputNode.class});
+    // }
 
     nodes.push(node);
     g.setNode(node.index, {labelType: 'html', label: label, class: node.class});
@@ -123,13 +131,11 @@ function treeMap(json) {
   nodes.forEach(node => {
     let index = node.index;
     let parents = node.parents;
-    parents.forEach(parent => {
+    for(let i = 0;i<parents.length;i++){
+      let parent = parents[i];
       let label = `<p class="edge-label">${getTypeArray('x', parent.type)}</p>`;
-
-      g.setEdge(
-          parent.location, index,
-          {labelType: 'html', label: label, curve: d3.curveBasis, arrowheadClass: 'arrowhead'});
-    });
+      g.setEdge(parent.location, index,{labelType: 'html', label: label, curve: d3.curveBasis, arrowheadClass: 'arrowhead'});
+    }
   });
 
   let render = new dagreD3.render();
@@ -141,11 +147,12 @@ function treeMap(json) {
   d3.select('#wrapper')
       .on('scroll', scrolled)
       .call(d3.zoom().scaleExtent([0.1, 10]).on('zoom', () => zoomed(inner, g)));
-
+  console.log(inner);
+  console.log(g);
   render(inner, g);
 
-  svg.attr('width', g.graph().width + 300);
-  svg.attr('height', g.graph().height);
+  svg.attr('width', screen.width);
+  svg.attr('height', screen.height);
   svg.selectAll('g.node').on('click', (id) => createDetailContent(nodes, id, g));
 }
 
@@ -155,8 +162,8 @@ function zoomed(inner, g) {
   // Graph resizing
   inner.attr('transform', d3.event.transform);
 
-  const scaledWidth = (g.graph().width + 300) * scale;
-  const scaledHeight = (g.graph().height) * scale;
+  const scaledWidth = (screen.width) * scale;
+  const scaledHeight = (screen.height) * scale;
 
   // Change SVG dimensions.
   d3.select('svg').attr('width', scaledWidth).attr('height', scaledHeight);
