@@ -31,7 +31,8 @@ export class Circletracer {
   private static _originalCirclePath: string;
   private _disposables: vscode.Disposable[] = [];
 
-  public static createOrShow(extensionUri: vscode.Uri, circleToJson: string, originalCirclePath: string) {
+  public static createOrShow(
+      extensionUri: vscode.Uri, circleToJson: string, originalCirclePath: string) {
     this._circleToJsonData = circleToJson;
     this._originalCirclePath = originalCirclePath;
 
