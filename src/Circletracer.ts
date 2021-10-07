@@ -19,7 +19,7 @@ import * as vscode from 'vscode';
 
 export class Circletracer {
   /**
-   * Track the currently panel. Only allow a single panel to exist at a time.
+   * Track the current panel. Only allow a single panel to exist at a time.
    */
   public static currentPanel: Circletracer|undefined;
 
