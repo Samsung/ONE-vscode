@@ -19,7 +19,7 @@ async function treeMap(json) {
   let g = new dagreD3.graphlib.Graph().setGraph({});
   let nodes = [];
   let headNodes = [];
-  
+
   json.forEach((element, idx) => {
     let type = element.properties.type;
     let myIndex = element.outputs[0].location;
@@ -76,14 +76,14 @@ async function treeMap(json) {
 
     // First node logic
     if (idx === 0) {
-      for(let i = 0;i<inputs.length;i++){
+      for (let i = 0; i < inputs.length; i++) {
         let input = inputs[i];
         if (input.edge === true) {
           let index = element.inputs[i].location;
-          let name = input.name+" "+index;
+          let name = input.name + ' ' + index;
           let inputNode = {
             'index': index,
-            'class': 'type-'+name,
+            'class': 'type-' + name,
             'inputs': [element.inputs[i]],
             'outputs': [],
             'parents': []
@@ -111,10 +111,12 @@ async function treeMap(json) {
   nodes.forEach(node => {
     let index = node.index;
     let parents = node.parents;
-    for(let i = 0;i<parents.length;i++){
+    for (let i = 0; i < parents.length; i++) {
       let parent = parents[i];
       let label = `<p class="edge-label">${getTypeArray('x', parent.type)}</p>`;
-      g.setEdge(parent.location, index,{labelType: 'html', label: label, curve: d3.curveBasis, arrowheadClass: 'arrowhead'});
+      g.setEdge(
+          parent.location, index,
+          {labelType: 'html', label: label, curve: d3.curveBasis, arrowheadClass: 'arrowhead'});
     }
   });
 
