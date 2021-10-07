@@ -96,7 +96,7 @@ async function treeMap(json) {
     }
 
     // Last node logic
-    // TODO
+    // TODO A function to connect output node should be added.
 
     nodes.push(node);
     g.setNode(node.index, {labelType: 'html', label: label, class: node.class});
