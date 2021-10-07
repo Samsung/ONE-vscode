@@ -22,7 +22,7 @@ async function treeMap(json) {
 
   json.forEach((element, idx) => {
     let type = element.properties.type;
-    let myIndex = element.outputs[0].location;
+    let curIndex = element.outputs[0].location;
     let parentsIndex = [];
     let location = element.properties.location;
     let attributes = element.attributes;
@@ -35,7 +35,7 @@ async function treeMap(json) {
     });
 
     let node = {
-      'index': myIndex,
+      'index': curIndex,
       'type': type,
       'class': 'type-' + type,
       'parents': parentsIndex,
