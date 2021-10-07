@@ -75,7 +75,6 @@ async function treeMap(json) {
           dur2.toFixed(4)} ${timeUnit}</p>`;
     }
 
-    // First node logic
     for (let i = 0; i < inputs.length; i++) {
       let input = inputs[i];
       if (input.edge === true && isPushedMap.get(element.inputs[i].location) === undefined) {
