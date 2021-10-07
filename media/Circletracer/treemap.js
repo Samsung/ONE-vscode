@@ -129,8 +129,6 @@ async function treeMap(json) {
   d3.select('#wrapper')
       .on('scroll', scrolled)
       .call(d3.zoom().scaleExtent([0.1, 10]).on('zoom', () => zoomed(inner, g)));
-  console.log(inner);
-  console.log(g);
   render(inner, g);
 
   svg.attr('width', screen.width);
