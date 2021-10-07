@@ -23,6 +23,7 @@ async function treeMap(json) {
 
   json.forEach((element, idx) => {
     let type = element.properties.type;
+    // TODO A logic to connect output node should be added.
     let curIndex = element.outputs[0].location;
     let parentsIndex = [];
     let location = element.properties.location;
@@ -93,7 +94,7 @@ async function treeMap(json) {
       }
     });
 
-    // TODO A function to connect output node should be added.
+    // TODO A logic to connect output node should be added.
 
     nodes.push(node);
     isPushedMap.set(node.index, true);
