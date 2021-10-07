@@ -28,10 +28,12 @@ export class Circletracer {
   private readonly _panel: vscode.WebviewPanel;
   private readonly _extensionUri: vscode.Uri;
   private static _circleToJsonData: string;
+  private static _originalCirclePath: string;
   private _disposables: vscode.Disposable[] = [];
 
-  public static createOrShow(extensionUri: vscode.Uri, circleToJson: string) {
+  public static createOrShow(extensionUri: vscode.Uri, circleToJson: string, originalCirclePath: string) {
     this._circleToJsonData = circleToJson;
+    this._originalCirclePath = originalCirclePath;
 
     const column =
         vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
@@ -140,6 +142,9 @@ export class Circletracer {
     const dagreOnDisk = this.getMediaPath('external/dagre-d3.min.js');
     const dagreUri = dagreOnDisk.with({'scheme': 'vscode-resource'});
 
+    const selectNodesOnDisk = this.getMediaPath('select_nodes.js');
+    const selectNodesUri = selectNodesOnDisk.with({'scheme': 'vscode-resource'});
+
     // Local path to css styles
     // Uri to load styles into webview
     const stylePath = this.getMediaPath('style.css');
@@ -159,6 +164,8 @@ export class Circletracer {
     html = html.replace(/_circleInfoUri/g, `${circleInfoUri}`);
     html = html.replace(/_dagreUri/g, `${dagreUri}`);
     html = html.replace(/_styleUri/g, `${styleUri}`);
+    html = html.replace(/_selectNodesUri/g, `${selectNodesUri}`);
+    html = html.replace(/_Circletracer._originalCirclePath/g, Circletracer._originalCirclePath);
     html =
         html.replace(/_Circletracer._circleToJsonData/g, `${`${Circletracer._circleToJsonData}`}`);
 
