@@ -83,7 +83,9 @@ export function activate(context: vscode.ExtensionContext) {
     const options: vscode.OpenDialogOptions = {
       canSelectMany: false,
       openLabel: 'Open',
-      filters: {'Circle files': ['circle'], 'All files': ['*']}
+      /* eslint-disable */
+      filters: {'Circle files': ['circle'], 'All files': ['*']}      
+      /* eslint-enable */
     };
     vscode.window.showOpenDialog(options).then(fileUri => {
       if (fileUri && fileUri[0]) {
