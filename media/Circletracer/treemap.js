@@ -19,7 +19,8 @@ async function treeMap(json) {
   let g = new dagreD3.graphlib.Graph().setGraph({});
   let nodes = [];
   let headNodes = [], tailNode=[];
-  
+  const isPushedMap = new Map();
+
   json.forEach((element, idx) => {
     let type = element.properties.type;
     let myIndex = element.outputs[0].location;
@@ -75,25 +76,25 @@ async function treeMap(json) {
     }
 
     // First node logic
-    if (idx === 0) {
-      for(let i = 0;i<inputs.length;i++){
-        let input = inputs[i];
-        if (input.edge === true) {
-          let index = element.inputs[i].location;
-          let name = input.name+" "+index;
-          let inputNode = {
-            'index': index,
-            'class': 'type-'+name,
-            'inputs': [element.inputs[i]],
-            'outputs': [],
-            'parents': []
-          };
-          g.setNode(inputNode.index, {label: name, class: inputNode.class});
-          nodes.push(inputNode);
-          headNodes.push(inputNode);
-        }
+    for(let i = 0;i<inputs.length;i++){
+      let input = inputs[i];
+      if (input.edge === true && isPushedMap.get(element.inputs[i].location) === undefined) {
+        let index = element.inputs[i].location;
+        let name = input.name+" "+index;
+        let inputNode = {
+          'index': index,
+          'class': 'type-'+name,
+          'inputs': [element.inputs[i]],
+          'outputs': [],
+          'parents': []
+        };
+        
+        g.setNode(inputNode.index, {label: name, class: inputNode.class});
+        nodes.push(inputNode);
+        headNodes.push(inputNode);
       }
     }
+
     // Last node logic
     // if (idx === json.length - 1) {
     //   let outputParentIndex = [];
@@ -119,6 +120,7 @@ async function treeMap(json) {
     // }
 
     nodes.push(node);
+    isPushedMap.set(node.index, true);
     g.setNode(node.index, {labelType: 'html', label: label, class: node.class});
   });
 
