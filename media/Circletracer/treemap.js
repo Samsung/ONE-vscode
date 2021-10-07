@@ -23,7 +23,7 @@ async function treeMap(json) {
 
   json.forEach((element, idx) => {
     let type = element.properties.type;
-    // TODO A logic to connect output node should be added.
+    // TODO Check that only accessing to first output is fine
     let curIndex = element.outputs[0].location;
     let parentsIndex = [];
     let location = element.properties.location;
