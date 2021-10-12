@@ -18,6 +18,10 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 
+import {Balloon} from '../Utils/Balloon';
+import {exportConfig} from './Dialog/ExportConfigDialog';
+import {importConfig} from './Dialog/ImportConfigDialog';
+import {getInputPath} from './Dialog/InputFileDialog';
 import {getNonce} from './GetNonce';
 
 export class ConfigPanel {
@@ -72,6 +76,26 @@ export class ConfigPanel {
     // Set the webview's initial html content
     this._update(context);
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
+
+    // Get data from webview content
+    this._panel.webview.onDidReceiveMessage(async (data) => {
+      switch (data.command) {
+        case 'inputPath':
+          getInputPath(this._panel.webview, data.payload);
+          break;
+        case 'importConfig':
+          const newWebview = this._panel.webview;
+          newWebview.html = this._getHtmlForWebview(newWebview, context);
+          importConfig(newWebview);
+          break;
+        case 'exportConfig':
+          exportConfig(data.payload);
+          break;
+        case 'alert':
+          Balloon.error(data.payload);
+          break;
+      }
+    });
   }
 
   public dispose() {
