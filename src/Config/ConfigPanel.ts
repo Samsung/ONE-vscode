@@ -29,7 +29,7 @@ export class ConfigPanel {
   public static readonly viewType = 'one-vscode';
 
   private readonly _panel: vscode.WebviewPanel;
-  private readonly _extensionUri: vscode.Uri;
+  private readonly _extensionURI: vscode.Uri;
   private _disposables: vscode.Disposable[] = [];
 
   public static createOrShow(context: vscode.ExtensionContext) {
@@ -67,7 +67,7 @@ export class ConfigPanel {
 
   private constructor(panel: vscode.WebviewPanel, context: vscode.ExtensionContext) {
     this._panel = panel;
-    this._extensionUri = context.extensionUri;
+    this._extensionURI = context.extensionUri;
 
     // Set the webview's initial html content
     this._update(context);
@@ -94,7 +94,7 @@ export class ConfigPanel {
   }
 
   private getPathToFile(webview: vscode.Webview, fileName: string) {
-    return webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media/Config', fileName));
+    return webview.asWebviewUri(vscode.Uri.joinPath(this._extensionURI, 'media/Config', fileName));
   }
 
   private replaceWord(html: string, re: RegExp, replaceWord: any) {
@@ -102,22 +102,22 @@ export class ConfigPanel {
   }
 
   private _getHtmlForWebview(webview: vscode.Webview, context: vscode.ExtensionContext) {
-    // And the uri we use to load this script in the webview
-    const toolsScriptUri = this.getPathToFile(webview, 'tools.js');
-    const pathAutoCompleteScriptUri = this.getPathToFile(webview, 'pathAutoComplete.js');
-    const sendToPanelScriptUri = this.getPathToFile(webview, 'sendToPanel.js');
-    const configValidatorScriptUri = this.getPathToFile(webview, 'configValidator.js');
-    const importConfigScriptUri = this.getPathToFile(webview, 'importConfig.js');
-    const exportConfigScriptUri = this.getPathToFile(webview, 'exportConfig.js');
-    const receiveFromPanelScriptUri = this.getPathToFile(webview, 'receiveFromPanel.js');
-    const buildImportDomScriptUri = this.getPathToFile(webview, 'buildImportDom.js');
-    const makeTagsScriptUri = this.getPathToFile(webview, 'makeTags.js');
-    const buildDomScriptUri = this.getPathToFile(webview, 'buildDom.js');
-    const indexScriptUri = this.getPathToFile(webview, 'index.js');
+    // And the URI we use to load this script in the webview
+    const toolsScriptURI = this.getPathToFile(webview, 'tools.js');
+    const pathAutoCompleteScriptURI = this.getPathToFile(webview, 'pathAutoComplete.js');
+    const sendToPanelScriptURI = this.getPathToFile(webview, 'sendToPanel.js');
+    const configValidatorScriptURI = this.getPathToFile(webview, 'configValidator.js');
+    const importConfigScriptURI = this.getPathToFile(webview, 'importConfig.js');
+    const exportConfigScriptURI = this.getPathToFile(webview, 'exportConfig.js');
+    const receiveFromPanelScriptURI = this.getPathToFile(webview, 'receiveFromPanel.js');
+    const buildImportDomScriptURI = this.getPathToFile(webview, 'buildImportDom.js');
+    const makeTagsScriptURI = this.getPathToFile(webview, 'makeTags.js');
+    const buildDomScriptURI = this.getPathToFile(webview, 'buildDom.js');
+    const indexScriptURI = this.getPathToFile(webview, 'index.js');
 
-    // Uri to load styles into webview
-    const stylesResetUri = this.getPathToFile(webview, 'reset.css');
-    const stylesMainUri = this.getPathToFile(webview, 'vscode.css');
+    // URI to load styles into webview
+    const stylesResetURI = this.getPathToFile(webview, 'reset.css');
+    const stylesMainURI = this.getPathToFile(webview, 'vscode.css');
 
     // Use a nonce to only allow specific scripts to be run
     const nonce = getNonce();
@@ -127,19 +127,19 @@ export class ConfigPanel {
         vscode.Uri.file(path.join(context.extensionPath, 'media', 'Config', 'index.html'));
     let html = fs.readFileSync(filePath.fsPath, 'utf8');
     html = this.replaceWord(html, /\${webview.cspSource}/gi, webview.cspSource);
-    html = this.replaceWord(html, /\${stylesResetUri}/gi, stylesResetUri);
-    html = this.replaceWord(html, /\${stylesMainUri}/gi, stylesMainUri);
-    html = this.replaceWord(html, /\${toolsScriptUri}/gi, toolsScriptUri);
-    html = this.replaceWord(html, /\${pathAutoCompleteScriptUri}/gi, pathAutoCompleteScriptUri);
-    html = this.replaceWord(html, /\${sendToPanelScriptUri}/gi, sendToPanelScriptUri);
-    html = this.replaceWord(html, /\${configValidatorScriptUri}/gi, configValidatorScriptUri);
-    html = this.replaceWord(html, /\${importConfigScriptUri}/gi, importConfigScriptUri);
-    html = this.replaceWord(html, /\${exportConfigScriptUri}/gi, exportConfigScriptUri);
-    html = this.replaceWord(html, /\${receiveFromPanelScriptUri}/gi, receiveFromPanelScriptUri);
-    html = this.replaceWord(html, /\${buildImportDomScriptUri}/gi, buildImportDomScriptUri);
-    html = this.replaceWord(html, /\${makeTagsScriptUri}/gi, makeTagsScriptUri);
-    html = this.replaceWord(html, /\${buildDomScriptUri}/gi, buildDomScriptUri);
-    html = this.replaceWord(html, /\${indexScriptUri}/gi, indexScriptUri);
+    html = this.replaceWord(html, /\${stylesResetURI}/gi, stylesResetURI);
+    html = this.replaceWord(html, /\${stylesMainURI}/gi, stylesMainURI);
+    html = this.replaceWord(html, /\${toolsScriptURI}/gi, toolsScriptURI);
+    html = this.replaceWord(html, /\${pathAutoCompleteScriptURI}/gi, pathAutoCompleteScriptURI);
+    html = this.replaceWord(html, /\${sendToPanelScriptURI}/gi, sendToPanelScriptURI);
+    html = this.replaceWord(html, /\${configValidatorScriptURI}/gi, configValidatorScriptURI);
+    html = this.replaceWord(html, /\${importConfigScriptURI}/gi, importConfigScriptURI);
+    html = this.replaceWord(html, /\${exportConfigScriptURI}/gi, exportConfigScriptURI);
+    html = this.replaceWord(html, /\${receiveFromPanelScriptURI}/gi, receiveFromPanelScriptURI);
+    html = this.replaceWord(html, /\${buildImportDomScriptURI}/gi, buildImportDomScriptURI);
+    html = this.replaceWord(html, /\${makeTagsScriptURI}/gi, makeTagsScriptURI);
+    html = this.replaceWord(html, /\${buildDomScriptURI}/gi, buildDomScriptURI);
+    html = this.replaceWord(html, /\${indexScriptURI}/gi, indexScriptURI);
     html = this.replaceWord(html, /\${nonce}/gi, nonce);
     return html;
   }
