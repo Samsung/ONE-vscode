@@ -104,6 +104,7 @@
     "@types/vscode": "^1.46.0",
     "@typescript-eslint/eslint-plugin": "^4.9.0",
     "@typescript-eslint/parser": "^4.9.0",
+    "configparser": "^0.3.9",
     "csslint": "^1.0.5",
     "eslint": "^7.15.0",
     "flatbuffers": "^2.0.3",
