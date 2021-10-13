@@ -52,6 +52,9 @@ export class ConfigPanel {
         ConfigPanel.viewType, 'ConfigurationSettings', column || vscode.ViewColumn.One, {
           // Enable javascript in the webview
           enableScripts: true,
+
+          // And restrict the webview to only loading content from our
+          // extension"s `media/Config` directory.
           localResourceRoots: [
             vscode.Uri.joinPath(context.extensionUri, 'media/Config'),
           ],
@@ -75,6 +78,7 @@ export class ConfigPanel {
 
     // Set the webview's initial html content
     this._update(context);
+
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
     // Get data from webview content
@@ -126,6 +130,13 @@ export class ConfigPanel {
   }
 
   private _getHtmlForWebview(webview: vscode.Webview, context: vscode.ExtensionContext) {
+    // Use a nonce to only allow specific scripts to be run
+    const nonce = getNonce();
+
+    // URI to load styles into webview
+    const stylesResetURI = this.getPathToFile(webview, 'reset.css');
+    const stylesMainURI = this.getPathToFile(webview, 'vscode.css');
+
     // And the URI we use to load this script in the webview
     const toolsScriptURI = this.getPathToFile(webview, 'tools.js');
     const pathAutoCompleteScriptURI = this.getPathToFile(webview, 'pathAutoComplete.js');
@@ -139,20 +150,20 @@ export class ConfigPanel {
     const buildDomScriptURI = this.getPathToFile(webview, 'buildDom.js');
     const indexScriptURI = this.getPathToFile(webview, 'index.js');
 
-    // URI to load styles into webview
-    const stylesResetURI = this.getPathToFile(webview, 'reset.css');
-    const stylesMainURI = this.getPathToFile(webview, 'vscode.css');
-
-    // Use a nonce to only allow specific scripts to be run
-    const nonce = getNonce();
-
     // Get html file for webview
     const filePath: vscode.Uri =
         vscode.Uri.file(path.join(context.extensionPath, 'media', 'Config', 'index.html'));
     let html = fs.readFileSync(filePath.fsPath, 'utf8');
+
+    // replace path to webview.cspSource and nonce
     html = this.replaceWord(html, /\${webview.cspSource}/gi, webview.cspSource);
+    html = this.replaceWord(html, /\${nonce}/gi, nonce);
+
+    // replace path to css styles
     html = this.replaceWord(html, /\${stylesResetURI}/gi, stylesResetURI);
     html = this.replaceWord(html, /\${stylesMainURI}/gi, stylesMainURI);
+
+    // replace path to js files
     html = this.replaceWord(html, /\${toolsScriptURI}/gi, toolsScriptURI);
     html = this.replaceWord(html, /\${pathAutoCompleteScriptURI}/gi, pathAutoCompleteScriptURI);
     html = this.replaceWord(html, /\${sendToPanelScriptURI}/gi, sendToPanelScriptURI);
@@ -164,7 +175,7 @@ export class ConfigPanel {
     html = this.replaceWord(html, /\${makeTagsScriptURI}/gi, makeTagsScriptURI);
     html = this.replaceWord(html, /\${buildDomScriptURI}/gi, buildDomScriptURI);
     html = this.replaceWord(html, /\${indexScriptURI}/gi, indexScriptURI);
-    html = this.replaceWord(html, /\${nonce}/gi, nonce);
+
     return html;
   }
 }
