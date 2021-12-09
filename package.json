@@ -16,7 +16,8 @@
     "onCommand:onevscode.configuration-settings",
     "onCommand:onevscode.toggle-codelens",
     "onCommand:onevscode.circle-tracer",
-    "onStartupFinished"
+    "onStartupFinished",
+    "onView:onevscode.viewProject"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -49,6 +50,11 @@
       {
         "command": "onevscode.circle-tracer",
         "title": "circle tracer",
+        "category": "ONE"
+      },
+      {
+        "command": "onevscode.viewProject.editEntry",
+        "title": "toggle check",
         "category": "ONE"
       }
     ],
@@ -84,7 +90,15 @@
         "language": "ini",
         "path": "./src/Snippets/tools.json"
       }
-    ]
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "onevscode.viewProject",
+          "name": "ONE Project View"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

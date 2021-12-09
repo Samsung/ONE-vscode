@@ -14,15 +14,7 @@
  * limitations under the License.
  */
 
-import {Builder as _Builder} from './Project/Builder';
-import {ViewProject as _ViewProject} from './Project/ViewProject';
-
-export namespace Project {
-
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export const Builder = _Builder;
-
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export const ViewProject = _ViewProject;
-
-}  // namespace Project
+export interface BuilderListener {
+  builderInit(): void;
+  builderFinish(): void;
+}

@@ -361,6 +361,10 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
       Balloon.error('Invalid \'' + K_ONECC + '\' or \'' + K_ONE_BUILD + '\' section');
       return;
     }
+    // Clean existing
+    this.jobOwner.clearJobs();
+
+    // Start importing
     console.log('Import: ', itemJob);
     if (itemJob === K_IMPORT_TF) {
       let prop = cfgIni[itemJob];

@@ -18,50 +18,94 @@ import {Job} from './Job';
 import {JobBase} from './JobBase';
 import {ToolArgs} from './ToolArgs';
 
+export enum OptimizeId {
+  oO1 = 1,                            // O1
+  oConvertNchwToNhwc,                 // convert_nchw_to_nhwc
+  oExpandBroadcastConst,              // expand_broadcast_const
+  oNchwToNhwcInputShape,              // nchw_to_nhwc_input_shape
+  oNchwToNhwcOutputShape,             // nchw_to_nhwc_output_shape
+  oFoldAddV2,                         // fold_add_v2
+  oFoldCast,                          // fold_cast
+  oFoldDequantize,                    // fold_dequantize
+  oFoldDwconv,                        // fold_dwconv
+  oFoldSparseToDense,                 // fold_sparse_to_dense
+  oForwardReshapeToUnaryop,           // forward_reshape_to_unaryop
+  oFuseAddWithTconv,                  // fuse_add_with_tconv
+  oFuseBatchnormWithConv,             // fuse_batchnorm_with_conv
+  oFuseBatchnormWithDwconv,           // fuse_batchnorm_with_dwconv
+  oFuseBatchnormWithTconv,            // fuse_batchnorm_with_tconv
+  oFuseBcq,                           // fuse_bcq
+  oFusePreactivationBatchnorm,        // fuse_preactivation_batchnorm
+  oFuseMeanWithMean,                  // fuse_mean_with_mean
+  oFuseTransposeWithMean,             // fuse_transpose_with_mean
+  oMakeBatchnormGammaPositive,        // make_batchnorm_gamma_positive
+  oFuseActivationFunction,            // fuse_activation_function
+  oReplaceCwMulAddWithDepthwiseConv,  // replace_cw_mul_add_with_depthwise_conv
+  oRemoveQuantdequant,                // remove_quantdequant
+  oRemoveRedundantReshape,            // remove_redundant_reshape
+  oRemoveRedundantTranspose,          // remove_redundant_transpose
+  oRemoveUnnecessaryReshape,          // remove_unnecessary_reshape
+  oRemoveUnnecessarySlice,            // remove_unnecessary_slice
+  oRemoveUnnecessaryStridedSlice,     // remove_unnecessary_strided_slice
+  oRemoveUnnecessarySplit,            // remove_unnecessary_split
+  oResolveCustomopAdd,                // resolve_customop_add
+  oResolveCustomopBatchmatmul,        // resolve_customop_batchmatmul
+  oResolveCustomopMatmul,             // resolve_customop_matmul
+  oResolveCustomopMaxPoolWithArgmax,  // resolve_customop_max_pool_with_argmax
+  oShuffleWeightTo16x1float32,        // shuffle_weight_to_16x1float32
+  oSubstitutePackToReshape,           // substitute_pack_to_reshape
+  oSubstitutePadv2ToPad,              // substitute_padv2_to_pad
+  oSubstituteSplitvToSplit,           // substitute_splitv_to_split
+  oSubstituteSqueezeToReshape,        // substitute_squeeze_to_reshape
+  oSubstituteStridedSliceToReshape,   // substitute_strided_slice_to_reshape
+  oSubstituteTransposeToReshape,      // substitute_transpose_to_reshape
+  oTransformMinMaxToRelu6,            // transform_min_max_to_relu6
+  oTransformMinReluToRelu6,           // transform_min_relu_to_relu6
+}
+
 export class JobOptimize extends JobBase {
-  oO1?: boolean = undefined;                          // O1
-  oConvertNchwToNhwc?: boolean = undefined;           // convert_nchw_to_nhwc
-  oExpandBroadcastConst?: boolean = undefined;        // expand_broadcast_const
-  oNchwToNhwcInputShape?: boolean = undefined;        // nchw_to_nhwc_input_shape
-  oNchwToNhwcOutputShape?: boolean = undefined;       // nchw_to_nhwc_output_shape
-  oFoldAddV2?: boolean = undefined;                   // fold_add_v2
-  oFoldCast?: boolean = undefined;                    // fold_cast
-  oFoldDequantize?: boolean = undefined;              // fold_dequantize
-  oFoldDwconv?: boolean = undefined;                  // fold_dwconv
-  oFoldSparseToDense?: boolean = undefined;           // fold_sparse_to_dense
-  oForwardReshapeToUnaryop?: boolean = undefined;     // forward_reshape_to_unaryop
-  oFuseAddWithTconv?: boolean = undefined;            // fuse_add_with_tconv
-  oFuseBatchnormWithConv?: boolean = undefined;       // fuse_batchnorm_with_conv
-  oFuseBatchnormWithDwconv?: boolean = undefined;     // fuse_batchnorm_with_dwconv
-  oFuseBatchnormWithTconv?: boolean = undefined;      // fuse_batchnorm_with_tconv
-  oFuseBcq?: boolean = undefined;                     // fuse_bcq
-  oFusePreactivationBatchnorm?: boolean = undefined;  // fuse_preactivation_batchnorm
-  oFuseMeanWithMean?: boolean = undefined;            // fuse_mean_with_mean
-  oFuseTransposeWithMean?: boolean = undefined;       // fuse_transpose_with_mean
-  oMakeBatchnormGammaPositive?: boolean = undefined;  // make_batchnorm_gamma_positive
-  oFuseActivationFunction?: boolean = undefined;      // fuse_activation_function
-  oReplaceCwMulAddWithDepthwiseConv?: boolean =
-      undefined;                                         // replace_cw_mul_add_with_depthwise_conv
-  oRemoveQuantdequant?: boolean = undefined;             // remove_quantdequant
-  oRemoveRedundantReshape?: boolean = undefined;         // remove_redundant_reshape
-  oRemoveRedundantTranspose?: boolean = undefined;       // remove_redundant_transpose
-  oRemoveUnnecessaryReshape?: boolean = undefined;       // remove_unnecessary_reshape
-  oRemoveUnnecessarySlice?: boolean = undefined;         // remove_unnecessary_slice
-  oRemoveUnnecessaryStridedSlice?: boolean = undefined;  // remove_unnecessary_strided_slice
-  oRemoveUnnecessarySplit?: boolean = undefined;         // remove_unnecessary_split
-  oResolveCustomopAdd?: boolean = undefined;             // resolve_customop_add
-  oResolveCustomopBatchmatmul?: boolean = undefined;     // resolve_customop_batchmatmul
-  oResolveCustomopMatmul?: boolean = undefined;          // resolve_customop_matmul
-  oResolveCustomopMaxPoolWithArgmax?: boolean = undefined;  // resolve_customop_max_pool_with_argmax
-  oShuffleWeightTo16x1float32?: boolean = undefined;        // shuffle_weight_to_16x1float32
-  oSubstitutePackToReshape?: boolean = undefined;           // substitute_pack_to_reshape
-  oSubstitutePadv2ToPad?: boolean = undefined;              // substitute_padv2_to_pad
-  oSubstituteSplitvToSplit?: boolean = undefined;           // substitute_splitv_to_split
-  oSubstituteSqueezeToReshape?: boolean = undefined;        // substitute_squeeze_to_reshape
-  oSubstituteStridedSliceToReshape?: boolean = undefined;   // substitute_strided_slice_to_reshape
-  oSubstituteTransposeToReshape?: boolean = undefined;      // substitute_transpose_to_reshape
-  oTransformMinMaxToRelu6?: boolean = undefined;            // transform_min_max_to_relu6
-  oTransformMinReluToRelu6?: boolean = undefined;           // transform_min_relu_to_relu6
+  oO1?: boolean = undefined;
+  oConvertNchwToNhwc?: boolean = undefined;
+  oExpandBroadcastConst?: boolean = undefined;
+  oNchwToNhwcInputShape?: boolean = undefined;
+  oNchwToNhwcOutputShape?: boolean = undefined;
+  oFoldAddV2?: boolean = undefined;
+  oFoldCast?: boolean = undefined;
+  oFoldDequantize?: boolean = undefined;
+  oFoldDwconv?: boolean = undefined;
+  oFoldSparseToDense?: boolean = undefined;
+  oForwardReshapeToUnaryop?: boolean = undefined;
+  oFuseAddWithTconv?: boolean = undefined;
+  oFuseBatchnormWithConv?: boolean = undefined;
+  oFuseBatchnormWithDwconv?: boolean = undefined;
+  oFuseBatchnormWithTconv?: boolean = undefined;
+  oFuseBcq?: boolean = undefined;
+  oFusePreactivationBatchnorm?: boolean = undefined;
+  oFuseMeanWithMean?: boolean = undefined;
+  oFuseTransposeWithMean?: boolean = undefined;
+  oMakeBatchnormGammaPositive?: boolean = undefined;
+  oFuseActivationFunction?: boolean = undefined;
+  oReplaceCwMulAddWithDepthwiseConv?: boolean = undefined;
+  oRemoveQuantdequant?: boolean = undefined;
+  oRemoveRedundantReshape?: boolean = undefined;
+  oRemoveRedundantTranspose?: boolean = undefined;
+  oRemoveUnnecessaryReshape?: boolean = undefined;
+  oRemoveUnnecessarySlice?: boolean = undefined;
+  oRemoveUnnecessaryStridedSlice?: boolean = undefined;
+  oRemoveUnnecessarySplit?: boolean = undefined;
+  oResolveCustomopAdd?: boolean = undefined;
+  oResolveCustomopBatchmatmul?: boolean = undefined;
+  oResolveCustomopMatmul?: boolean = undefined;
+  oResolveCustomopMaxPoolWithArgmax?: boolean = undefined;
+  oShuffleWeightTo16x1float32?: boolean = undefined;
+  oSubstitutePackToReshape?: boolean = undefined;
+  oSubstitutePadv2ToPad?: boolean = undefined;
+  oSubstituteSplitvToSplit?: boolean = undefined;
+  oSubstituteSqueezeToReshape?: boolean = undefined;
+  oSubstituteStridedSliceToReshape?: boolean = undefined;
+  oSubstituteTransposeToReshape?: boolean = undefined;
+  oTransformMinMaxToRelu6?: boolean = undefined;
+  oTransformMinReluToRelu6?: boolean = undefined;
   // TODO sync with one-optimize options
 
   constructor() {

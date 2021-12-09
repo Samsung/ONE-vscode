@@ -22,6 +22,7 @@ import {Logger} from '../Utils/Logger';
 
 import {BuilderCfgFile} from './BuilderCfgFile';
 import {BuilderJob} from './BuilderJob';
+import {BuilderListener} from './BuilderListener';
 import {Job} from './Job';
 import {WorkFlow} from './WorkFlow';
 
@@ -30,15 +31,20 @@ export class Builder implements BuilderJob {
   workFlow: WorkFlow;  // our build WorkFlow
   currentWorkspace: string = '';
   builderCfgFile: BuilderCfgFile;
+  listeners: Array<BuilderListener>;
 
   constructor(l: Logger) {
     this.logger = l;
     this.workFlow = new WorkFlow(l);
     this.builderCfgFile = new BuilderCfgFile(this, l);
+    this.listeners = [];
   }
 
   public init() {
     this.workFlow.clearJobs();
+    for (var listener of this.listeners) {
+      listener.builderInit();
+    }
   }
 
   // BuilderJob implements
@@ -53,6 +59,9 @@ export class Builder implements BuilderJob {
   public finishAdd(): void {
     console.log('Done building WorkFlow.');
     console.log(this.workFlow.jobs);
+    for (var listener of this.listeners) {
+      listener.builderFinish();
+    }
   }
 
   // called from user interface
@@ -75,5 +84,9 @@ export class Builder implements BuilderJob {
   // called from user interface
   public import(context: vscode.ExtensionContext) {
     helpers.getImportCfgFilepath(this.builderCfgFile);
+  }
+
+  public addListener(listener: BuilderListener) {
+    this.listeners.push(listener);
   }
 }

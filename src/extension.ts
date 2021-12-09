@@ -46,6 +46,8 @@ export function activate(context: vscode.ExtensionContext) {
   });
   context.subscriptions.push(disposableOneImport);
 
+  let viewPrj = new Project.ViewProject(context, projectBuilder);
+
   let disposableOneJsontracer = vscode.commands.registerCommand('onevscode.json-tracer', () => {
     console.log('one json tracer...');
     Jsontracer.createOrShow(context.extensionUri);
