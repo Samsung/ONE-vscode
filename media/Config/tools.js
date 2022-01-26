@@ -111,6 +111,7 @@ const oneOptimize = {
     {optionName: 'fold_sparse_to_dense', optionValue: false},
     {optionName: 'forward_reshape_to_unaryop', optionValue: false},
     {optionName: 'fuse_add_with_tconv', optionValue: false},
+    {optionName: 'fuse_add_with_fully_connected', optionValue: false},
     {optionName: 'fuse_batchnorm_with_conv', optionValue: false},
     {optionName: 'fuse_batchnorm_with_dwconv', optionValue: false},
     {optionName: 'fuse_batchnorm_with_tconv', optionValue: false},
