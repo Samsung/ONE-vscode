@@ -71,6 +71,7 @@ const K_OPT_fold_dwconv: string = 'fold_dwconv';
 const K_OPT_fold_sparse_to_dense: string = 'fold_sparse_to_dense';
 const K_OPT_forward_reshape_to_unaryop: string = 'forward_reshape_to_unaryop';
 const K_OPT_fuse_add_with_tconv: string = 'fuse_add_with_tconv';
+const K_OPT_fuse_add_with_fully_connected: string = 'fuse_add_with_fully_connected';
 const K_OPT_fuse_batchnorm_with_conv: string = 'fuse_batchnorm_with_conv';
 const K_OPT_fuse_batchnorm_with_dwconv: string = 'fuse_batchnorm_with_dwconv';
 const K_OPT_fuse_batchnorm_with_tconv: string = 'fuse_batchnorm_with_tconv';
@@ -80,8 +81,10 @@ const K_OPT_fuse_mean_with_mean: string = 'fuse_mean_with_mean';
 const K_OPT_fuse_transpose_with_mean: string = 'fuse_transpose_with_mean';
 const K_OPT_make_batchnorm_gamma_positive: string = 'make_batchnorm_gamma_positive';
 const K_OPT_fuse_activation_function: string = 'fuse_activation_function';
+const K_OPT_fuse_instnorm: string = 'fuse_instnorm';
 const K_OPT_replace_cw_mul_add_with_depthwise_conv: string =
     'replace_cw_mul_add_with_depthwise_conv';
+const K_OPT_remove_fakequant: string = 'remove_fakequant';
 const K_OPT_remove_quantdequant: string = 'remove_quantdequant';
 const K_OPT_remove_redundant_reshape: string = 'remove_redundant_reshape';
 const K_OPT_remove_redundant_transpose: string = 'remove_redundant_transpose';
@@ -202,6 +205,7 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
     optimize.oFoldSparseToDense = prop[K_OPT_fold_sparse_to_dense];
     optimize.oForwardReshapeToUnaryop = prop[K_OPT_forward_reshape_to_unaryop];
     optimize.oFuseAddWithTconv = prop[K_OPT_fuse_add_with_tconv];
+    optimize.oFuseAddWithFullyConnected = prop[K_OPT_fuse_add_with_fully_connected];
     optimize.oFuseBatchnormWithConv = prop[K_OPT_fuse_batchnorm_with_conv];
     optimize.oFuseBatchnormWithDwconv = prop[K_OPT_fuse_batchnorm_with_dwconv];
     optimize.oFuseBatchnormWithTconv = prop[K_OPT_fuse_batchnorm_with_tconv];
@@ -211,7 +215,9 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
     optimize.oFuseTransposeWithMean = prop[K_OPT_fuse_transpose_with_mean];
     optimize.oMakeBatchnormGammaPositive = prop[K_OPT_make_batchnorm_gamma_positive];
     optimize.oFuseActivationFunction = prop[K_OPT_fuse_activation_function];
+    optimize.oFuseInstnorm = prop[K_OPT_fuse_instnorm];
     optimize.oReplaceCwMulAddWithDepthwiseConv = prop[K_OPT_replace_cw_mul_add_with_depthwise_conv];
+    optimize.oRemoveFakequant = prop[K_OPT_remove_fakequant];
     optimize.oRemoveQuantdequant = prop[K_OPT_remove_quantdequant];
     optimize.oRemoveRedundantReshape = prop[K_OPT_remove_redundant_reshape];
     optimize.oRemoveRedundantTranspose = prop[K_OPT_remove_redundant_transpose];

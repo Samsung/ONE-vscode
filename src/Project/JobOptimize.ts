@@ -31,6 +31,7 @@ export class JobOptimize extends JobBase {
   oFoldSparseToDense?: boolean = undefined;           // fold_sparse_to_dense
   oForwardReshapeToUnaryop?: boolean = undefined;     // forward_reshape_to_unaryop
   oFuseAddWithTconv?: boolean = undefined;            // fuse_add_with_tconv
+  oFuseAddWithFullyConnected?: boolean = undefined;   // fuse_add_with_fully_connected
   oFuseBatchnormWithConv?: boolean = undefined;       // fuse_batchnorm_with_conv
   oFuseBatchnormWithDwconv?: boolean = undefined;     // fuse_batchnorm_with_dwconv
   oFuseBatchnormWithTconv?: boolean = undefined;      // fuse_batchnorm_with_tconv
@@ -40,8 +41,10 @@ export class JobOptimize extends JobBase {
   oFuseTransposeWithMean?: boolean = undefined;       // fuse_transpose_with_mean
   oMakeBatchnormGammaPositive?: boolean = undefined;  // make_batchnorm_gamma_positive
   oFuseActivationFunction?: boolean = undefined;      // fuse_activation_function
+  oFuseInstnorm?: boolean = undefined;                // fuse_instnorm
   oReplaceCwMulAddWithDepthwiseConv?: boolean =
       undefined;                                         // replace_cw_mul_add_with_depthwise_conv
+  oRemoveFakequant?: boolean = undefined;                // remove_fakequant
   oRemoveQuantdequant?: boolean = undefined;             // remove_quantdequant
   oRemoveRedundantReshape?: boolean = undefined;         // remove_redundant_reshape
   oRemoveRedundantTranspose?: boolean = undefined;       // remove_redundant_transpose
@@ -99,6 +102,7 @@ export class JobOptimize extends JobBase {
     if (this.oFoldSparseToDense) { args.push('--fold_sparse_to_dense'); }
     if (this.oForwardReshapeToUnaryop) { args.push('--forward_reshape_to_unaryop'); }
     if (this.oFuseAddWithTconv) { args.push('--fuse_add_with_tconv'); }
+    if (this.oFuseAddWithFullyConnected) { args.push('--fuse_add_with_fully_connected'); }
     if (this.oFuseBatchnormWithConv) { args.push('--fuse_batchnorm_with_conv'); }
     if (this.oFuseBatchnormWithDwconv) { args.push('--fuse_batchnorm_with_dwconv'); }
     if (this.oFuseBatchnormWithTconv) { args.push('--fuse_batchnorm_with_tconv'); }
@@ -107,8 +111,10 @@ export class JobOptimize extends JobBase {
     if (this.oFuseMeanWithMean) { args.push('--fuse_mean_with_mean'); }
     if (this.oFuseTransposeWithMean) { args.push('--fuse_transpose_with_mean'); }
     if (this.oMakeBatchnormGammaPositive) { args.push('--make_batchnorm_gamma_positive'); }
+    if (this.oFuseInstnorm) { args.push('--fuse_instnorm'); }
     if (this.oFuseActivationFunction) { args.push('--fuse_activation_function'); }
     if (this.oReplaceCwMulAddWithDepthwiseConv) { args.push('--replace_cw_mul_add_with_depthwise_conv'); }
+    if (this.oRemoveFakequant) { args.push('--remove_fakequant'); }
     if (this.oRemoveQuantdequant) { args.push('--remove_quantdequant'); }
     if (this.oRemoveRedundantReshape) { args.push('--remove_redundant_reshape'); }
     if (this.oRemoveRedundantTranspose) { args.push('--remove_redundant_transpose'); }
