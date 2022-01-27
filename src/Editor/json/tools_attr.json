@@ -243,6 +243,10 @@
         "attr_desc" : "fuse Add op to Transposed"
       },
       {
+        "attr_name" : "fuse_add_with_fully_connected",
+        "attr_desc" : "fuse Add op to FullyConnected op"
+      },
+      {
         "attr_name" : "fuse_batchnorm_with_conv",
         "attr_desc" : "fuse BatchNorm op to Convolution op"
       },
