@@ -39,7 +39,8 @@
       {
         "command": "onevscode.configuration-settings",
         "title": "configuration-settings",
-        "category": "ONE"
+        "category": "ONE",
+        "icon": "$(play-circle)"
       },
       {
         "command": "onevscode.toggle-codelens",
@@ -49,7 +50,8 @@
       {
         "command": "onevscode.circle-tracer",
         "title": "circle tracer",
-        "category": "ONE"
+        "category": "ONE",
+        "icon": "$(play-circle)"
       }
     ],
     "configuration": {
@@ -69,8 +71,28 @@
         "extensions": [
           ".cfg"
         ]
+      },
+      {
+        "id": "circle",
+        "extensions": [
+          ".circle"
+        ]
       }
     ],
+    "menus": {
+      "editor/title": [
+        {
+          "when": "resourceLangId == ini",
+          "command": "onevscode.configuration-settings",
+          "group": "navigation"
+        },
+        {
+          "when": "resourceLangId == circle",
+          "command": "onevscode.circle-tracer",
+          "group": "navigation"
+        }
+      ]
+    },
     "snippets": [
       {
         "language": "ini",
