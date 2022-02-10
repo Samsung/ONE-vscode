@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as fs from 'fs';
+import {readFileSync} from 'fs';
 import * as vscode from 'vscode';
 
 export class Circletracer {
@@ -147,7 +147,7 @@ export class Circletracer {
 
     // import html
     const htmlPath = this.getMediaPath('index.html');
-    let html = fs.readFileSync(htmlPath.fsPath, {encoding: 'utf-8'});
+    let html = readFileSync(htmlPath.fsPath, {encoding: 'utf-8'});
 
     // Apply js and css to html
     html = html.replace(/_nonce/g, `${nonce}`);
