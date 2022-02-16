@@ -1,0 +1,38 @@
+{
+    "one-vscode@0.0.1": {
+      "licenses": "Apache-2.0",
+      "repository": "https://github.com/Samsung/ONE-vscode",
+      "ONE_permitted": "yes"
+    },
+
+    "chainsaw@0.1.0": {
+      "licenses": "MIT",
+      "repository": "https://github.com/substack/node-chainsaw",
+      "ONE_permitted": "yes"
+    },
+
+    "flatbuffers@2.0.4": {
+      "licenses": "Apache-2.0",
+      "repository": "https://github.com/google/flatbuffers",
+      "ONE_permitted": "yes"
+    },
+
+    "traverse@0.3.9": {
+      "licenses": "MIT",
+      "repository": "https://github.com/substack/js-traverse",
+      "ONE_permitted": "yes"
+    },
+
+    "buffers@0.1.1": {
+      "licenses": "MIT",
+      "repository": "https://github.com/substack/node-buffers",
+      "ONE_permitted": "yes"
+    },
+
+    "argparse@2.0.1": {
+      "licenses": "Python-2.0",
+      "repository": "https://github.com/nodeca/argparse",
+      "ONE_permitted": "conditional",
+      "ONE_caution": "Could be conflict with GPL2, LGPL license"
+    }
+}

@@ -1,0 +1,77 @@
+name: Check License
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  license_check:
+    runs-on: ${{ matrix.os }}
+
+    outputs:
+      ubuntu-latest: ${{ steps.self_verification.outputs.ubuntu-latest }}
+      windows-latest: ${{ steps.self_verification.outputs.windows-latest }}
+      macos-latest: ${{ steps.self_verification.outputs.macos-latest }}
+
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npx license-checker --unknown --json --out check.json
+      - id: self_verification
+        run: |
+          npx ts-node infra/license/license_self_verify.ts check.json verify.json ${{ matrix.os }}
+          RESULT=$(cat verify.json)
+          RESULT="${RESULT//'%'/$'%25'}"
+          RESULT="${RESULT//$'\n'/$'%0A'}"
+          RESULT="${RESULT//$'\r'/$'%0D'}"
+          echo "::set-output name=${{ matrix.os }}::$RESULT"
+          echo $RESULT
+        shell: bash
+  
+  report_license_check:
+    runs-on: ubuntu-latest
+
+    needs: [ license_check ]
+
+    steps:
+      - id: result_integration
+        run: |
+          echo "## License Self Verification (DRAFT / NOT OFFICIAL)" > result
+          echo "" >> result
+          echo "${{ needs.license_check.outputs.ubuntu-latest }}" >> result
+          echo "" >> result
+          echo "---" >> result
+          echo "" >> result
+          echo "${{ needs.license_check.outputs.windows-latest }}" >> result
+          echo "" >> result
+          echo "---" >> result
+          echo "" >> result
+          echo "${{ needs.license_check.outputs.macos-latest }}" >> result
+
+          RESULT=$(cat result)
+          RESULT="${RESULT//'%'/$'%25'}"
+          RESULT="${RESULT//$'\n'/$'%0A'}"
+          RESULT="${RESULT//$'\r'/$'%0D'}"
+          
+          echo "::set-output name=body::$RESULT"
+
+          echo $RESULT
+
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `${{ steps.result_integration.outputs.body }}`
+            })
