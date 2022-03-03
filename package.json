@@ -3,6 +3,7 @@
   "displayName": "one-vscode",
   "description": "ONE compiler for VSCode",
   "version": "0.0.1",
+  "publisher": "Samsung",
   "engines": {
     "vscode": "^1.46.0"
   },
@@ -115,5 +116,9 @@
     "typescript": "^4.1.2",
     "vscode-test": "^1.4.1",
     "which": "^2.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Samsung/ONE-vscode.git"
   }
 }
