@@ -32,6 +32,7 @@ export function activate(context: vscode.ExtensionContext) {
   let logger = new Utils.Logger();
   let projectBuilder = new Project.Builder(logger);
 
+  console.log('init...');
   projectBuilder.init();
 
   let disposableOneBuild = vscode.commands.registerCommand('onevscode.build', () => {
@@ -98,5 +99,6 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
+  console.log('deactivate');
   // TODO do cleanup
 }
