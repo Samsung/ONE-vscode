@@ -1,0 +1,35 @@
+name: Check Copyright
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  check-format:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npx ts-node infra/copyright/copyright-checker.ts
+
+      - uses: actions/github-script@v6
+        if: ${{ hashFiles('copyright-checker.fail') }}
+        with:
+          script: |
+            var fs = require('fs');
+            var body_content = fs.readFileSync('copyright-checker.fail', 'utf-8');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body_content
+            })
+
+      - run: exit 1
+        if: ${{ hashFiles('copyright-checker.fail') }}
