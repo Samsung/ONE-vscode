@@ -54,6 +54,7 @@
       }
     ],
     "configuration": {
+      "title": "ONE",
       "properties": {
         "one-vscode.enableCodelens": {
           "type": "boolean",
