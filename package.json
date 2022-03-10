@@ -120,7 +120,7 @@
     "lintjs": "eslint media --ext js",
     "lintcss": "csslint media src",
     "linthtml": "htmlhint media src",
-    "test": "node ./out/test/runTest.js"
+    "test": "mocha ./out/**/*.test.js"
   },
   "devDependencies": {
     "@types/glob": "^7.1.3",

@@ -29,6 +29,19 @@
 				"${workspaceFolder}/out/test/**/*.js"
 			],
 			"preLaunchTask": "${defaultBuildTask}"
+		},
+		// Ref: https://github.com/microsoft/vscode-recipes/tree/master/debugging-mocha-tests
+		{
+			"name": "Mocha All",
+			"type": "node",
+			"request": "launch",
+			"program": "${workspaceFolder}/node_modules/mocha/bin/mocha",
+			"args": [
+				"--colors",
+				"${workspaceFolder}/out/**/*.test.js"
+			],
+			"console": "integratedTerminal",
+			"internalConsoleOptions": "neverOpen",
 		}
 	]
 }
