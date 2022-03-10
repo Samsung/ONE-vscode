@@ -20,11 +20,13 @@ import {readFileSync, writeFileSync} from 'fs';
 
 const copyrightRegex = new RegExp('Copyright \\(c\\) [0-9]{4} Samsung Electronics Co\\., Ltd\\. All Rights Reserved');
 
-const fileFormatsToCheck = "ts,js";
+// Formats should be comma-separated
+const fileFormatsToCheck = "ts,js,css,html";
+
 const ignorePathList = [
-    // Pattern of path/file to ignore copyright check
-    // ex) '**/src/Utils/**'
-] as string[];
+    "**/node_modules/**",
+    "**/media/Circletracer/external/**"
+];
 
 glob("**/*.{" + fileFormatsToCheck + "}",
     {"ignore" : ignorePathList},
@@ -43,7 +45,7 @@ glob("**/*.{" + fileFormatsToCheck + "}",
             var resultMsg = "### Copyright Checker" + EOL;
             resultMsg += ":no_entry: Please check following files whose copyright statement is missing or invalid" + EOL;
             resultMsg += failedFiles.join(EOL);
-            writeFileSync('copyright-check.log', resultMsg);
+            writeFileSync('copyright-checker.fail', resultMsg);
         }
     }
 )
