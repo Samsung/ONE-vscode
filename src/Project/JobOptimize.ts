@@ -118,7 +118,7 @@ export class JobOptimize extends JobBase {
     if (this.oRemoveQuantdequant) { args.push('--remove_quantdequant'); }
     if (this.oRemoveRedundantReshape) { args.push('--remove_redundant_reshape'); }
     if (this.oRemoveRedundantTranspose) { args.push('--remove_redundant_transpose'); }
-    if (this.oRemoveUnnecessaryReshape) { args.push('--remove_unnecessary_reshape '); }
+    if (this.oRemoveUnnecessaryReshape) { args.push('--remove_unnecessary_reshape'); }
     if (this.oRemoveUnnecessarySlice) { args.push('--remove_unnecessary_slice'); }
     if (this.oRemoveUnnecessaryStridedSlice) { args.push('--remove_unnecessary_strided_slice'); }
     if (this.oRemoveUnnecessarySplit) { args.push('--remove_unnecessary_split'); }
