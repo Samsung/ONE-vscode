@@ -21,21 +21,21 @@ import {EOL} from 'os';
  * Argument List
  *  - Input paths for each of license verification results
  */
-var args = process.argv.slice(2)
+const args = process.argv.slice(2);
 const resultPaths = args;
 
-var commentBody = [] as string[];
-var totalWarnCount = 0;
-var totalDenialCount = 0;
+let commentBody = [] as string[];
+let totalWarnCount = 0;
+let totalDenialCount = 0;
 for (let i = 0; i < resultPaths.length; ++i) {
   const result = JSON.parse(readFileSync(resultPaths[i], 'utf-8'));
 
-  commentBody.push(result['resultMsg']);
+  commentBody.push(result['resultComment']);
   totalWarnCount += Number(result['warnCount']);
   totalDenialCount += Number(result['denialCount']);
 }
 
-var resultComment = '### License Verification' + EOL + EOL;
+let resultComment = '### License Verification' + EOL + EOL;
 if (totalWarnCount + totalDenialCount > 0) {
   resultComment += ':warning: Total ' + totalWarnCount.toString() + ' Warnings Found' + EOL;
   resultComment += ':no_entry: Total ' + totalDenialCount.toString() + ' Denials Found' + EOL;
@@ -47,6 +47,6 @@ commentBody.forEach((comment) => {
   resultComment += EOL + '---' + EOL;
   resultComment += comment + EOL;
 })
-resultComment += '</details>'
+resultComment += '</details>';
 
 writeFileSync('license_check_result.md', resultComment);
