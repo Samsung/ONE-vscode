@@ -78,7 +78,7 @@
           "type": "boolean",
           "default": true
         },
-        "one-vscode.projectRootDir": {
+        "one-vscode.projectRootPath": {
           "type": "string",
           "description": "The directory path where model files are managed.",
           "default": ""
