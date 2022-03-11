@@ -21,6 +21,24 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "ONE-Compiler",
+          "title": "ONE Compiler",
+          "icon": "media/icon/viewContainer.svg"
+        }
+      ]
+    },
+    "views": {
+      "ONE-Compiler": [
+        {
+          "id": "FileTreeView",
+          "name": "Files",
+          "contextualTitle": "ONE compiler: Files"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "onevscode.build",
