@@ -75,7 +75,7 @@ const showOptions = function(event) {
 
 // send message to config panel about export configuration
 // you can find sendMessage in sendToPanel.js
-// you can finde exportValidation in configValidator.js
+// you can find exportValidation in configValidator.js
 const exportConfiguration = function() {
   if (exportValidation()) {
     sendMessage('exportConfig', {oneToolList: oneToolList, fileName: getFileName(oneToolList)});
@@ -83,7 +83,7 @@ const exportConfiguration = function() {
 };
 
 // send message to config panel about run configuration
-// you can finde exportValidation in configValidator.js
+// you can find exportValidation in configValidator.js
 const runConfiguration = function() {
   if (exportValidation()) {
     sendMessage('runConfig', oneToolList);
@@ -91,7 +91,7 @@ const runConfiguration = function() {
 };
 
 // send message to config panel about import configuration
-// you can find sendMessage in sednToPanel.js
+// you can find sendMessage in sendToPanel.js
 const importConfiguration = function() {
   sendMessage('importConfig', '');
 };
