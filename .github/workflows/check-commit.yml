@@ -18,6 +18,7 @@ jobs:
         with:
           node-version: '16'
       - run: npm install
+      - run: echo ${{ toJSON(github.event) }}
       - run: |
           ROLL_BACK_COUNT=$(( ${{github.event.pull_request.commits}} - 1 ))
           git log --format=%B -n 1 ${{ github.event.after }}~${ROLL_BACK_COUNT} > main_commit_msg
