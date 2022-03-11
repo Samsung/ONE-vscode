@@ -1,0 +1,70 @@
+name: License Verification
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  license_verification:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npx license-checker --unknown --json --out license_list.json
+      - shell: bash
+        run: npx ts-node infra/license/license-checker.ts license_list.json ${{ matrix.os }}
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.os }}.json
+          path: ${{ matrix.os }}.json
+          retention-days: 1
+  
+  report_verification_result:
+    runs-on: ubuntu-latest
+
+    needs: [ license_verification ]
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: ubuntu-latest.json
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: macos-latest.json
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: windows-latest.json
+  
+      - run: npm install
+      - run: npx ts-node infra/license/check-result-formatter.ts ubuntu-latest.json windows-latest.json macos-latest.json
+
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            var fs = require('fs');
+            var body_content = fs.readFileSync('license_check_result.md', 'utf-8');
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body_content
+            })
