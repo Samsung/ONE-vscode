@@ -77,6 +77,11 @@
         "one-vscode.enableCodelens": {
           "type": "boolean",
           "default": true
+        },
+        "one-vscode.projectRootDir": {
+          "type": "string",
+          "description": "The directory path where model files are managed.",
+          "default": ""
         }
       }
     },
