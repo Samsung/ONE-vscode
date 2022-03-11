@@ -24,18 +24,18 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "ONE-Compiler",
-          "title": "ONE Compiler",
+          "id": "ONE-Views",
+          "title": "ONE",
           "icon": "media/icon/viewContainer.svg"
         }
       ]
     },
     "views": {
-      "ONE-Compiler": [
+      "ONE-Views": [
         {
           "id": "FileTreeView",
           "name": "Files",
-          "contextualTitle": "ONE compiler: Files"
+          "contextualTitle": "ONE: Files"
         }
       ]
     },
