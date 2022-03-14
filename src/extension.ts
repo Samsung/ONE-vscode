@@ -29,6 +29,12 @@ import {Utils} from './Utils';
 export function activate(context: vscode.ExtensionContext) {
   console.log('one-vscode activate OK');
 
+  // TODO Add the following commands, which are called from WelcomeView
+  //
+  // "onCommand:onevscode.fileTreeView-open",
+  // "onCommand:onevscode.register-installed-toolchain",
+  // "onCommand:onevscode.install-new-toolchain",
+
   let logger = new Utils.Logger();
   let projectBuilder = new Project.Builder(logger);
 
