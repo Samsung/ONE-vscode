@@ -120,7 +120,8 @@
     "lintjs": "eslint media --ext js",
     "lintcss": "csslint media src",
     "linthtml": "htmlhint media src",
-    "test": "mocha ./out/Tests/**/*.test.js"
+    "tddtest": "mocha -u 'tdd' ./out/Tests/**/*.test.js",
+    "test": "npm run tddtest"
   },
   "devDependencies": {
     "@types/chai": "^4.3.0",
