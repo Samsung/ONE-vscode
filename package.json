@@ -46,7 +46,7 @@
     "viewsWelcome": [
       {
         "view": "FileTreeView",
-        "contents": "Open folder where model files are stored. Models files are one of the following format:\n- *.tflite or saved model for Tensorflow​\n- *.onnx or *.pth for PyTorch\n[Open Folder](Command:onevscode.fileTreeView-open)\nNext, register already-installed toolchain or install a new toolchain. You can do this later.\n[Register Installed Toolchain](Command:onevscode.register-installed-toolchain)\nor\n[Install New Toolchain](Command:onevscode.install-new-toolchain)\n",
+        "contents": "Open folder where model files are stored. Models files are one of the following format:\n- *.tflite, *.pb or saved model for Tensorflow​\n- *.onnx or *.pth for PyTorch\n[Open Folder](Command:onevscode.fileTreeView-open)\nNext, register already-installed toolchain or install a new toolchain. You can do this later.\n[Register Installed Toolchain](Command:onevscode.register-installed-toolchain)\nor\n[Install New Toolchain](Command:onevscode.install-new-toolchain)\n",
         "when": "config.one-vscode.projectRootDirectory == ''"
       }
     ],
