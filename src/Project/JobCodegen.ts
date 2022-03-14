@@ -38,7 +38,7 @@ export class JobCodegen extends JobBase {
   //
   constructor() {
     super();
-    this.jobType = Job.Type.tPack;
+    this.jobType = Job.Type.tCodegen;
   }
 
   public get valid() {
