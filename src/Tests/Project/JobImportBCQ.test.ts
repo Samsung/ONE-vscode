@@ -16,50 +16,58 @@
 
 import * as chai from 'chai';
 import {Job} from '../../Project/Job';
-import {JobCodegen} from '../../Project/JobCodegen';
+import {JobImportBCQ} from '../../Project/JobImportBCQ';
 
 let assert = chai.assert;
 
-suite('JobCodegen', function() {
+suite('JobImportBCQ', function() {
   suite('#contructor()', function() {
     test('is contructed with jobtype', function() {
-      let job = new JobCodegen();
-      assert.strictEqual(job.jobType, Job.Type.tCodegen);
+      let job = new JobImportBCQ();
+      assert.strictEqual(job.jobType, Job.Type.tImportBCQ);
     });
   });
 
   suite('#valid()', function() {
-    test('returns false when backend is null', function() {
-      let job = new JobCodegen();
-      assert.isFalse(job.valid);
-    });
-    test('returns true when backend is not null', function() {
-      let job = new JobCodegen();
-      job.backend = 'dummy';
+    test('returns true always', function() {
+      let job = new JobImportBCQ();
       assert.isTrue(job.valid);
     });
   });
 
   suite('#tool()', function() {
     test('returns toolname as string', function() {
-      let job = new JobCodegen();
-      let toolName = 'one-codegen';
+      let job = new JobImportBCQ();
+      let toolName = 'one-import-bcq';
       assert.strictEqual(job.tool, toolName);
     });
   });
 
   suite('#toolArgs()', function() {
     test('returns args as ToolArgs', function() {
-      let backend = 'dummy';
-      let arg0 = 'arg0';
-      let arg1 = 'arg1';
+      let inputPath = 'input_path';
+      let outputPath = 'output_path';
+      let inputArrays = 'input_arrays';
+      let outputArrays = 'output_arrays';
+      let inputShapes = 'input_shapes';
+      let converterVersion = 'converter_version';
 
-      let job = new JobCodegen();
-      job.backend = backend;
-      job.command = arg0 + ' ' + arg1;
+      let job = new JobImportBCQ();
+      // mandatory
+      job.inputPath = inputPath;
+      job.outputPath = outputPath;
+      // optional
+      job.inputArrays = inputArrays;
+      job.outputArrays = outputArrays;
+      job.inputShapes = inputShapes;
+      job.converterVersion = converterVersion;
       assert.isTrue(job.valid);
 
-      let expected: Array<string> = ['--backend', backend, '--', arg0, arg1];
+      let expected: Array<string> = [
+        '--input_path', inputPath, '--output_path', outputPath, '--input_arrays', inputArrays,
+        '--output_arrays', outputArrays, '--input_shapes', inputShapes, '--converter_version',
+        converterVersion
+      ];
       let args = job.toolArgs;
       assert.includeOrderedMembers(args, expected);
     });

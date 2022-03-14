@@ -13,3 +13,8 @@ or
 ```
 ONE-vscode$ ./node_modules/mocha/bin/mocha ./out/**/*.test.js
 ```
+
+## How to add tests?
+
+https://www.chaijs.com/api/assert/
+
