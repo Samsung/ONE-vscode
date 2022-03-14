@@ -1,7 +1,7 @@
 {
   "name": "one-vscode",
   "displayName": "one-vscode",
-  "description": "ONE compiler for VSCode",
+  "description": "ONE for VSCode",
   "version": "0.0.1",
   "publisher": "Samsung",
   "engines": {
