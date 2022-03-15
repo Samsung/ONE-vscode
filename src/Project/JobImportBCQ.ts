@@ -35,7 +35,7 @@ export class JobImportBCQ extends JobImport {
   }
 
   public get tool() {
-    return 'one-import-onnx';
+    return 'one-import-bcq';
   }
 
   public get toolArgs() {
