@@ -23,10 +23,17 @@ const assert = chai.assert;
 
 suite('Utils', function() {
   suite('Helpers', function() {
-    const workspaceRoot: string = obtainWorkspaceRoot();
-    const cfgFile = path.join(workspaceRoot, 'res', 'samples', 'cfg', 'inception_v3.cfg');
+    suite('#obtainWorkspaceRoot()', function() {
+      test('returns workspaceRoot as string', function() {
+        const workspaceRoot: string = obtainWorkspaceRoot();
+        assert.isNotNull(workspaceRoot);
+        assert.isString(workspaceRoot);
+      });
+    });
     suite('#loadCfgFile()', function() {
       test('returns cfgIni object', function() {
+        const workspaceRoot: string = obtainWorkspaceRoot();
+        const cfgFile = path.join(workspaceRoot, 'res', 'samples', 'cfg', 'inception_v3.cfg');
         const cfgIni = loadCfgFile(cfgFile);
         assert.isNotNull(cfgIni);
         assert.strictEqual(cfgIni['one-codegen']['backend'], 'dummy');
