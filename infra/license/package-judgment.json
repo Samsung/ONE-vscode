@@ -18,6 +18,12 @@
       "ONE_permitted": "yes"
     },
 
+    "expand-template@2.0.3": {
+      "licenses": "(MIT OR WTFPL)",
+      "repository": "https://github.com/ralphtheninja/expand-template",
+      "ONE_permitted": "yes"
+    },
+
     "flatbuffers@2.0.4": {
       "licenses": "Apache-2.0",
       "repository": "https://github.com/google/flatbuffers",
@@ -27,6 +33,12 @@
     "one-vscode@0.0.1": {
       "licenses": "Apache-2.0",
       "repository": "https://github.com/Samsung/ONE-vscode",
+      "ONE_permitted": "yes"
+    },
+
+    "rc@1.2.8": {
+      "licenses": "(BSD-2-Clause OR MIT OR Apache-2.0)",
+      "repository": "https://github.com/dominictarr/rc",
       "ONE_permitted": "yes"
     },
 
@@ -45,18 +57,6 @@
     "type-fest@0.20.2": {
       "licenses": "(MIT OR CC0-1.0)",
       "repository": "https://github.com/sindresorhus/type-fest",
-      "ONE_permitted": "yes"
-    },
-
-    "expand-template@2.0.3": {
-      "licenses": "(MIT OR WTFPL)",
-      "repository": "https://github.com/ralphtheninja/expand-template",
-      "ONE_permitted": "yes"
-    },
-
-    "rc@1.2.8": {
-      "licenses": "(BSD-2-Clause OR MIT OR Apache-2.0)",
-      "repository": "https://github.com/dominictarr/rc",
       "ONE_permitted": "yes"
     }
 }
