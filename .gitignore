@@ -2,6 +2,7 @@ out
 node_modules
 format.patch
 Makefile
+.vscode-test/**
 
 # production for react-app
 build

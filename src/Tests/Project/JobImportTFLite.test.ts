@@ -20,43 +20,45 @@ import {JobImportTFLite} from '../../Project/JobImportTFLite';
 
 let assert = chai.assert;
 
-suite('JobImportTFLite', function() {
-  suite('#contructor()', function() {
-    test('is contructed with jobtype', function() {
-      let job = new JobImportTFLite();
-      assert.strictEqual(job.jobType, Job.Type.tImportTFLite);
+suite('Project', function() {
+  suite('JobImportTFLite', function() {
+    suite('#contructor()', function() {
+      test('is contructed with jobtype', function() {
+        let job = new JobImportTFLite();
+        assert.strictEqual(job.jobType, Job.Type.tImportTFLite);
+      });
     });
-  });
 
-  suite('#valid()', function() {
-    test('returns true always', function() {
-      let job = new JobImportTFLite();
-      assert.isTrue(job.valid);
+    suite('#valid()', function() {
+      test('returns true always', function() {
+        let job = new JobImportTFLite();
+        assert.isTrue(job.valid);
+      });
     });
-  });
 
-  suite('#tool()', function() {
-    test('returns toolname as string', function() {
-      let job = new JobImportTFLite();
-      let toolName = 'one-import-tflite';
-      assert.strictEqual(job.tool, toolName);
+    suite('#tool()', function() {
+      test('returns toolname as string', function() {
+        let job = new JobImportTFLite();
+        let toolName = 'one-import-tflite';
+        assert.strictEqual(job.tool, toolName);
+      });
     });
-  });
 
-  suite('#toolArgs()', function() {
-    test('returns args as ToolArgs', function() {
-      let inputPath = 'input_path';
-      let outputPath = 'output_path';
+    suite('#toolArgs()', function() {
+      test('returns args as ToolArgs', function() {
+        let inputPath = 'input_path';
+        let outputPath = 'output_path';
 
-      let job = new JobImportTFLite();
-      // mandatory
-      job.inputPath = inputPath;
-      job.outputPath = outputPath;
-      assert.isTrue(job.valid);
+        let job = new JobImportTFLite();
+        // mandatory
+        job.inputPath = inputPath;
+        job.outputPath = outputPath;
+        assert.isTrue(job.valid);
 
-      let expected: Array<string> = ['--input_path', inputPath, '--output_path', outputPath];
-      let args = job.toolArgs;
-      assert.includeOrderedMembers(args, expected);
+        let expected: Array<string> = ['--input_path', inputPath, '--output_path', outputPath];
+        let args = job.toolArgs;
+        assert.includeOrderedMembers(args, expected);
+      });
     });
   });
 });

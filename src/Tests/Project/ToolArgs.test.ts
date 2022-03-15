@@ -19,27 +19,29 @@ import {ToolArgs} from '../../Project/ToolArgs';
 
 let assert = chai.assert;
 
-suite('ToolArgs', function() {
-  suite('#add()', function() {
-    test('adds option without value', function() {
-      let option = 'option';
-      let value = undefined;
+suite('Project', function() {
+  suite('ToolArgs', function() {
+    suite('#add()', function() {
+      test('adds option without value', function() {
+        let option = 'option';
+        let value = undefined;
 
-      let toolArgs = new ToolArgs();
-      toolArgs.add(option, value);
+        let toolArgs = new ToolArgs();
+        toolArgs.add(option, value);
 
-      let expected: Array<string> = [option];
-      assert.includeOrderedMembers(toolArgs, expected);
-    });
-    test('adds option and then value', function() {
-      let option = 'option';
-      let value = 'value';
+        let expected: Array<string> = [option];
+        assert.includeOrderedMembers(toolArgs, expected);
+      });
+      test('adds option and then value', function() {
+        let option = 'option';
+        let value = 'value';
 
-      let toolArgs = new ToolArgs();
-      toolArgs.add(option, value);
+        let toolArgs = new ToolArgs();
+        toolArgs.add(option, value);
 
-      let expected: Array<string> = [option, value];
-      assert.includeOrderedMembers(toolArgs, expected);
+        let expected: Array<string> = [option, value];
+        assert.includeOrderedMembers(toolArgs, expected);
+      });
     });
   });
 });

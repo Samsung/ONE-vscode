@@ -20,43 +20,45 @@ import {JobPack} from '../../Project/JobPack';
 
 let assert = chai.assert;
 
-suite('JobPack', function() {
-  suite('#contructor()', function() {
-    test('is contructed with jobtype', function() {
-      let job = new JobPack();
-      assert.strictEqual(job.jobType, Job.Type.tPack);
+suite('Project', function() {
+  suite('JobPack', function() {
+    suite('#contructor()', function() {
+      test('is contructed with jobtype', function() {
+        let job = new JobPack();
+        assert.strictEqual(job.jobType, Job.Type.tPack);
+      });
     });
-  });
 
-  suite('#valid()', function() {
-    test('returns true always', function() {
-      let job = new JobPack();
-      assert.isTrue(job.valid);
+    suite('#valid()', function() {
+      test('returns true always', function() {
+        let job = new JobPack();
+        assert.isTrue(job.valid);
+      });
     });
-  });
 
-  suite('#tool()', function() {
-    test('returns toolname as string', function() {
-      let job = new JobPack();
-      let toolName = 'one-pack';
-      assert.strictEqual(job.tool, toolName);
+    suite('#tool()', function() {
+      test('returns toolname as string', function() {
+        let job = new JobPack();
+        let toolName = 'one-pack';
+        assert.strictEqual(job.tool, toolName);
+      });
     });
-  });
 
-  suite('#toolArgs()', function() {
-    test('returns args as ToolArgs', function() {
-      let inputPath = 'input_path';
-      let outputPath = 'output_path';
+    suite('#toolArgs()', function() {
+      test('returns args as ToolArgs', function() {
+        let inputPath = 'input_path';
+        let outputPath = 'output_path';
 
-      let job = new JobPack();
-      // mandatory
-      job.inputPath = inputPath;
-      job.outputPath = outputPath;
-      assert.isTrue(job.valid);
+        let job = new JobPack();
+        // mandatory
+        job.inputPath = inputPath;
+        job.outputPath = outputPath;
+        assert.isTrue(job.valid);
 
-      let expected: Array<string> = ['--input_path', inputPath, '--output_path', outputPath];
-      let args = job.toolArgs;
-      assert.includeOrderedMembers(args, expected);
+        let expected: Array<string> = ['--input_path', inputPath, '--output_path', outputPath];
+        let args = job.toolArgs;
+        assert.includeOrderedMembers(args, expected);
+      });
     });
   });
 });

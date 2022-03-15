@@ -20,53 +20,55 @@ import {JobImportONNX} from '../../Project/JobImportONNX';
 
 let assert = chai.assert;
 
-suite('JobImportONNX', function() {
-  suite('#contructor()', function() {
-    test('is contructed with jobtype', function() {
-      let job = new JobImportONNX();
-      assert.strictEqual(job.jobType, Job.Type.tImportONNX);
+suite('Project', function() {
+  suite('JobImportONNX', function() {
+    suite('#contructor()', function() {
+      test('is contructed with jobtype', function() {
+        let job = new JobImportONNX();
+        assert.strictEqual(job.jobType, Job.Type.tImportONNX);
+      });
     });
-  });
 
-  suite('#valid()', function() {
-    test('returns true always', function() {
-      let job = new JobImportONNX();
-      assert.isTrue(job.valid);
+    suite('#valid()', function() {
+      test('returns true always', function() {
+        let job = new JobImportONNX();
+        assert.isTrue(job.valid);
+      });
     });
-  });
 
-  suite('#tool()', function() {
-    test('returns toolname as string', function() {
-      let job = new JobImportONNX();
-      let toolName = 'one-import-onnx';
-      assert.strictEqual(job.tool, toolName);
+    suite('#tool()', function() {
+      test('returns toolname as string', function() {
+        let job = new JobImportONNX();
+        let toolName = 'one-import-onnx';
+        assert.strictEqual(job.tool, toolName);
+      });
     });
-  });
 
-  suite('#toolArgs()', function() {
-    test('returns args as ToolArgs', function() {
-      let inputPath = 'input_path';
-      let outputPath = 'output_path';
-      let inputArrays = 'input_arrays';
-      let outputArrays = 'output_arrays';
-      let saveIntermediate: boolean = true;
+    suite('#toolArgs()', function() {
+      test('returns args as ToolArgs', function() {
+        let inputPath = 'input_path';
+        let outputPath = 'output_path';
+        let inputArrays = 'input_arrays';
+        let outputArrays = 'output_arrays';
+        let saveIntermediate: boolean = true;
 
-      let job = new JobImportONNX();
-      // mandatory
-      job.inputPath = inputPath;
-      job.outputPath = outputPath;
-      // optional
-      job.inputArrays = inputArrays;
-      job.outputArrays = outputArrays;
-      job.saveIntermediate = saveIntermediate;
-      assert.isTrue(job.valid);
+        let job = new JobImportONNX();
+        // mandatory
+        job.inputPath = inputPath;
+        job.outputPath = outputPath;
+        // optional
+        job.inputArrays = inputArrays;
+        job.outputArrays = outputArrays;
+        job.saveIntermediate = saveIntermediate;
+        assert.isTrue(job.valid);
 
-      let expected: Array<string> = [
-        '--input_path', inputPath, '--output_path', outputPath, '--input_arrays', inputArrays,
-        '--output_arrays', outputArrays, '--save_intermediate'
-      ];
-      let args = job.toolArgs;
-      assert.includeOrderedMembers(args, expected);
+        let expected: Array<string> = [
+          '--input_path', inputPath, '--output_path', outputPath, '--input_arrays', inputArrays,
+          '--output_arrays', outputArrays, '--save_intermediate'
+        ];
+        let args = job.toolArgs;
+        assert.includeOrderedMembers(args, expected);
+      });
     });
   });
 });

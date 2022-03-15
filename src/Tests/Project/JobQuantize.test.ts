@@ -20,44 +20,46 @@ import {JobQuantize} from '../../Project/JobQuantize';
 
 let assert = chai.assert;
 
-suite('JobQuantize', function() {
-  suite('#contructor()', function() {
-    test('is contructed with jobtype', function() {
-      let job = new JobQuantize();
-      assert.strictEqual(job.jobType, Job.Type.tQuantize);
+suite('Project', function() {
+  suite('JobQuantize', function() {
+    suite('#contructor()', function() {
+      test('is contructed with jobtype', function() {
+        let job = new JobQuantize();
+        assert.strictEqual(job.jobType, Job.Type.tQuantize);
+      });
     });
-  });
 
-  suite('#valid()', function() {
-    test('returns true always', function() {
-      let job = new JobQuantize();
-      assert.isTrue(job.valid);
+    suite('#valid()', function() {
+      test('returns true always', function() {
+        let job = new JobQuantize();
+        assert.isTrue(job.valid);
+      });
     });
-  });
 
-  suite('#tool()', function() {
-    test('returns toolname as string', function() {
-      let job = new JobQuantize();
-      let toolName = 'one-quantize';
-      assert.strictEqual(job.tool, toolName);
+    suite('#tool()', function() {
+      test('returns toolname as string', function() {
+        let job = new JobQuantize();
+        let toolName = 'one-quantize';
+        assert.strictEqual(job.tool, toolName);
+      });
     });
-  });
 
-  suite('#toolArgs()', function() {
-    test('returns args as ToolArgs', function() {
-      let inputPath = 'input_path';
-      let outputPath = 'output_path';
+    suite('#toolArgs()', function() {
+      test('returns args as ToolArgs', function() {
+        let inputPath = 'input_path';
+        let outputPath = 'output_path';
 
-      let job = new JobQuantize();
-      // mandatory
-      job.inputPath = inputPath;
-      job.outputPath = outputPath;
-      assert.isTrue(job.valid);
-      // TODO quantize options
+        let job = new JobQuantize();
+        // mandatory
+        job.inputPath = inputPath;
+        job.outputPath = outputPath;
+        assert.isTrue(job.valid);
+        // TODO quantize options
 
-      let expected: Array<string> = ['--input_path', inputPath, '--output_path', outputPath];
-      let args = job.toolArgs;
-      assert.includeOrderedMembers(args, expected);
+        let expected: Array<string> = ['--input_path', inputPath, '--output_path', outputPath];
+        let args = job.toolArgs;
+        assert.includeOrderedMembers(args, expected);
+      });
     });
   });
 });
