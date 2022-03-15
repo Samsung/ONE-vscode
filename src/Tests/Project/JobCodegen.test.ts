@@ -18,7 +18,7 @@ import * as chai from 'chai';
 import {Job} from '../../Project/Job';
 import {JobCodegen} from '../../Project/JobCodegen';
 
-let assert = chai.assert;
+const assert = chai.assert;
 
 suite('Project', function() {
   suite('JobCodegen', function() {
@@ -28,7 +28,6 @@ suite('Project', function() {
         assert.strictEqual(job.jobType, Job.Type.tCodegen);
       });
     });
-
     suite('#valid()', function() {
       test('returns false when backend is null', function() {
         let job = new JobCodegen();
@@ -40,7 +39,6 @@ suite('Project', function() {
         assert.isTrue(job.valid);
       });
     });
-
     suite('#tool()', function() {
       test('returns toolname as string', function() {
         let job = new JobCodegen();
@@ -48,7 +46,6 @@ suite('Project', function() {
         assert.strictEqual(job.tool, toolName);
       });
     });
-
     suite('#toolArgs()', function() {
       test('returns args as ToolArgs', function() {
         let backend = 'dummy';

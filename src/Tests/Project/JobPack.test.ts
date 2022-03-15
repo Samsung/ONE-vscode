@@ -18,7 +18,7 @@ import * as chai from 'chai';
 import {Job} from '../../Project/Job';
 import {JobPack} from '../../Project/JobPack';
 
-let assert = chai.assert;
+const assert = chai.assert;
 
 suite('Project', function() {
   suite('JobPack', function() {
@@ -28,14 +28,12 @@ suite('Project', function() {
         assert.strictEqual(job.jobType, Job.Type.tPack);
       });
     });
-
     suite('#valid()', function() {
       test('returns true always', function() {
         let job = new JobPack();
         assert.isTrue(job.valid);
       });
     });
-
     suite('#tool()', function() {
       test('returns toolname as string', function() {
         let job = new JobPack();
@@ -43,7 +41,6 @@ suite('Project', function() {
         assert.strictEqual(job.tool, toolName);
       });
     });
-
     suite('#toolArgs()', function() {
       test('returns args as ToolArgs', function() {
         let inputPath = 'input_path';

@@ -17,7 +17,7 @@
 import * as chai from 'chai';
 import {ToolArgs} from '../../Project/ToolArgs';
 
-let assert = chai.assert;
+const assert = chai.assert;
 
 suite('Project', function() {
   suite('ToolArgs', function() {

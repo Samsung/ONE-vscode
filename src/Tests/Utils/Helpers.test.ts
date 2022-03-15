@@ -36,7 +36,8 @@ suite('Utils', function() {
         const cfgFile = path.join(workspaceRoot, 'res', 'samples', 'cfg', 'inception_v3.cfg');
         const cfgIni = loadCfgFile(cfgFile);
         assert.isNotNull(cfgIni);
-        assert.strictEqual(cfgIni['one-codegen']['backend'], 'dummy');
+        assert.strictEqual(cfgIni['onecc']['one-import-tf'], 'True');
+        assert.strictEqual(cfgIni['onecc']['one-import-tflite'], 'False');
       });
     });
   });
