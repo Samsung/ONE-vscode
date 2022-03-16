@@ -11,12 +11,16 @@
     "Other"
   ],
   "activationEvents": [
+    "onView:FileTreeView",
     "onCommand:onevscode.build",
     "onCommand:onevscode.import",
     "onCommand:onevscode.json-tracer",
     "onCommand:onevscode.configuration-settings",
     "onCommand:onevscode.toggle-codelens",
     "onCommand:onevscode.circle-tracer",
+    "onCommand:onevscode.fileTreeView-open",
+    "onCommand:onevscode.register-installed-toolchain",
+    "onCommand:onevscode.install-new-toolchain",
     "onStartupFinished"
   ],
   "main": "./out/extension.js",
@@ -39,6 +43,13 @@
         }
       ]
     },
+    "viewsWelcome": [
+      {
+        "view": "FileTreeView",
+        "contents": "Open folder where model files are stored. Models files are one of the following format:\n- *.tflite, *.pb, Keras model or saved model for Tensorflow​\n- *.onnx or *.pth for PyTorch\n[Open Folder](Command:onevscode.fileTreeView-open)\nNext, register already-installed toolchain or install a new toolchain. You can do this later.\n[Register Installed Toolchain](Command:onevscode.register-installed-toolchain)\nor\n[Install New Toolchain](Command:onevscode.install-new-toolchain)\n",
+        "when": "config.one-vscode.projectRootDirectory == ''"
+      }
+    ],
     "commands": [
       {
         "command": "onevscode.build",
