@@ -25,6 +25,7 @@ import {CodelensProvider} from './Editor/CodelensProvider';
 import {HoverProvider} from './Editor/HoverProvider';
 import {Jsontracer} from './Jsontracer';
 import {Project} from './Project';
+import * as ToolchainRegistrationActivator from './Toolchain/RegistrationActivator';
 import {Utils} from './Utils';
 
 /**
@@ -48,7 +49,19 @@ function setGlobalContext() {
 }
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log('one-vscode activate OK');
+  console.log('one-vscode is up!');
+
+  setGlobalContext();
+
+  // TODO Validate all settings are correct
+
+  ToolchainRegistrationActivator.activate('onevscode.register-installed-toolchain', context);
+
+  let registerInstaelledToolchainCmd = vscode.commands.registerCommand(
+      'onevscode.register-installed-toolchain', () => {/* TODO Implement */});
+
+  let installNewToolchainCmd = vscode.commands.registerCommand(
+      'onevscode.install-new-toolchain', () => {/* TODO Implement */});
 
   setGlobalContext();
 
