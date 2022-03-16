@@ -13,6 +13,7 @@ jobs:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
 
     steps:
+      - run: exit 1
       - uses: actions/checkout@v2
         with:
           ref: refs/pull/${{ github.event.number }}/merge
