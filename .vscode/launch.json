@@ -17,7 +17,7 @@
 			],
 			"preLaunchTask": "${defaultBuildTask}"
 		},
-		{		
+		{
 			"name": "Run Extension Tests",
 			"type": "extensionHost",
 			"request": "launch",
@@ -30,6 +30,6 @@
 			"preLaunchTask": "${defaultBuildTask}",
 			"console": "integratedTerminal",
 			"internalConsoleOptions": "neverOpen"
-		}		
+		}
 	]
 }
