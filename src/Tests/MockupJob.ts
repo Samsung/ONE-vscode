@@ -18,7 +18,7 @@ import {JobBase} from '../Project/JobBase';
 import {ToolArgs} from '../Project/ToolArgs';
 
 // Job for mock-up
-export class JobMockup extends JobBase {
+export class MockupJob extends JobBase {
   constructor(name: string) {
     super();
     this.name = name;

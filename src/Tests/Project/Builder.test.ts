@@ -19,7 +19,7 @@ import * as chai from 'chai';
 
 import {Builder} from '../../Project/Builder';
 import {Logger} from '../../Utils/Logger';
-import {JobMockup} from '../JobMockup';
+import {MockupJob} from '../MockupJob';
 
 const assert = chai.assert;
 
@@ -46,7 +46,7 @@ suite('Project', function() {
         let builder = new Builder(logger);
         builder.init();
         assert.equal(builder.workFlow.jobs.length, 0);
-        let job = new JobMockup('job0');
+        let job = new MockupJob('job0');
         builder.addJob(job);
         assert.equal(builder.workFlow.jobs.length, 1);
       });
@@ -57,7 +57,7 @@ suite('Project', function() {
         let builder = new Builder(logger);
         builder.init();
         assert.equal(builder.workFlow.jobs.length, 0);
-        let job = new JobMockup('job0');
+        let job = new MockupJob('job0');
         builder.addJob(job);
         assert.equal(builder.workFlow.jobs.length, 1);
         builder.clearJobs();

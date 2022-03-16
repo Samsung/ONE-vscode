@@ -17,7 +17,7 @@
 import * as chai from 'chai';
 import {WorkFlow} from '../../Project/WorkFlow';
 import {Logger} from '../../Utils/Logger';
-import {JobMockup} from '../JobMockup';
+import {MockupJob} from '../MockupJob';
 
 const assert = chai.assert;
 
@@ -38,8 +38,8 @@ suite('Project', function() {
         const name0 = 'job0';
         const name1 = 'job1';
         let workFlow = new WorkFlow(logger);
-        let job0 = new JobMockup(name0);
-        let job1 = new JobMockup(name1);
+        let job0 = new MockupJob(name0);
+        let job1 = new MockupJob(name1);
         workFlow.addJob(job0);
         workFlow.addJob(job1);
         assert.strictEqual(workFlow.jobs.length, 2);
@@ -52,8 +52,8 @@ suite('Project', function() {
         const name0 = 'job0';
         const name1 = 'job1';
         let workFlow = new WorkFlow(logger);
-        let job0 = new JobMockup(name0);
-        let job1 = new JobMockup(name1);
+        let job0 = new MockupJob(name0);
+        let job1 = new MockupJob(name1);
         workFlow.addJob(job0);
         workFlow.addJob(job1);
         assert.strictEqual(workFlow.jobs.length, 2);

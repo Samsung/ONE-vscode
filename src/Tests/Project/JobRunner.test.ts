@@ -20,7 +20,7 @@ import {JobRunner} from '../../Project/JobRunner';
 import {WorkJobs} from '../../Project/WorkJobs';
 import {obtainWorkspaceRoot} from '../../Utils/Helpers';
 import {Logger} from '../../Utils/Logger';
-import {JobMockup} from '../JobMockup';
+import {MockupJob} from '../MockupJob';
 
 const assert = chai.assert;
 
@@ -32,8 +32,8 @@ suite('Project', function() {
         let jobRunner = new JobRunner(logger);
         const workspaceRoot: string = obtainWorkspaceRoot();
         let workJobs = new WorkJobs();
-        workJobs.push(new JobMockup('mockup'));
-        workJobs.push(new JobMockup('mockup'));
+        workJobs.push(new MockupJob('mockup'));
+        workJobs.push(new MockupJob('mockup'));
         assert.strictEqual(workJobs.length, 2);
 
         // overwrite events so that multiple events will be emitted

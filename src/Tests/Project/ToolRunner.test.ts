@@ -20,7 +20,7 @@ import * as path from 'path';
 import {ToolRunner} from '../../Project/ToolRunner';
 import {obtainWorkspaceRoot} from '../../Utils/Helpers';
 import {Logger} from '../../Utils/Logger';
-import {JobMockup} from '../JobMockup';
+import {MockupJob} from '../MockupJob';
 
 const assert = chai.assert;
 
@@ -30,7 +30,7 @@ suite('Project', function() {
     suite('#getToolPath()', function() {
       test('returns tool path as string', function() {
         let toolRunner = new ToolRunner(logger);
-        let job = new JobMockup('mockup');
+        let job = new MockupJob('mockup');
         let tool = job.tool;
         let toolPath = path.join('/usr/share/one/bin', tool);
         assert.strictEqual(toolRunner.getToolPath(tool), toolPath);
@@ -39,7 +39,7 @@ suite('Project', function() {
     suite('#getRunner()', function() {
       test('returns runner as Promise<string>', function(done) {
         let toolRunner = new ToolRunner(logger);
-        let job = new JobMockup('mockup');
+        let job = new MockupJob('mockup');
         let tool = job.tool;
         const toolPath = toolRunner.getToolPath(tool);
         // toolPath could be string or undefined. Avoid compiling error
