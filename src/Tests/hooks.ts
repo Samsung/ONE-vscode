@@ -16,6 +16,7 @@
 
 import * as vscode from 'vscode';
 
+// if some stuffs are needed before/after starting tests,
 export const mochaHooks = {
   suiteSetup() {
     const msg = 'All tests start!';

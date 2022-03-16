@@ -12,7 +12,7 @@ export function run(): Promise<void> {
 
   // adds hooks first
   const hooks = 'hooks.js';
-  mocha.addFile(path.resolve(testsRoot, hooks));
+  mocha.addFile(path.join(testsRoot, hooks));
 
   return new Promise((c, e) => {
     glob('**/**.test.js', {cwd: testsRoot}, (err: Error|null, files: Array<string>) => {
