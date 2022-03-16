@@ -67,7 +67,7 @@ function exclude_symbolic_links() {
 }
 
 function check_ts_files() {
-  CLANG_FORMAT_CANDIDATES+=("clang-format-8")
+  CLANG_FORMAT_CANDIDATES+=("clang-format-14")
   for CLANG_FORMAT_CANDIDATE in ${CLANG_FORMAT_CANDIDATES[@]}; do
     if command_exists ${CLANG_FORMAT_CANDIDATE} ; then
       CLANG_FORMAT="${CLANG_FORMAT_CANDIDATE}"
@@ -90,6 +90,9 @@ function check_ts_files() {
       FILES_TO_CHECK_TS+=("${f}")
     fi
     if [[ ${f} == +(*.js) ]]; then
+      FILES_TO_CHECK_TS+=("${f}")
+    fi
+    if [[ ${f} == +(*.json) ]]; then
       FILES_TO_CHECK_TS+=("${f}")
     fi
   done
