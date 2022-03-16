@@ -8,7 +8,9 @@ ONE-vscode's unittests are based on [mocha](https://mochajs.org/) and [@vscode/t
 
 ## structure
 
-Tests are placed in `src/Tests`. The structure follows `src/`.
+Tests are placed in `src/Tests`. The structure under `src/Tests` follows `src/`.
+
+For example, there is `src/`.
 ```
 src/
   ...
@@ -20,6 +22,8 @@ src/
     Helpers.ts
     ...
 ```
+
+`src/Tests` should be structed following `src/` with each test file.
 ```
 src/
   ...
@@ -32,12 +36,12 @@ src/
     ...
   Tests/
     ...
-    Project/
-      Builder.test.ts
-      Job.test.ts
+    Project/           // tests for src/Project/
+      Builder.test.ts  // tests for src/Project/Builder.ts
+      Job.test.ts      // tests for src/Project/Job.ts
       ...
-    Utils/
-      Helpers.test.ts
+    Utils/             // tests for src/Utils/
+      Helpers.test.ts  // tests for src/Utils/Helpers.ts
       ...
 ```
 
