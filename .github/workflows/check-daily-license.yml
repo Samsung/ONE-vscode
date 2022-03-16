@@ -1,8 +1,9 @@
 name: License Verification
 
 on:
-  pull_request_target:
-    branches: [ main ]
+  schedule:
+    # 00:00 AM (KST) Mon-Fri
+    - cron: '00 15 * * 0-4'
 
 jobs:
   license_verification:
@@ -14,9 +15,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-        with:
-          ref: refs/pull/${{ github.event.number }}/merge
-
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
@@ -38,8 +36,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-        with:
-          ref: refs/pull/${{ github.event.number }}/merge
+
+      - id: get_commit_id
+        run: |
+          COMMIT_ID=$(git log -1 --format='%H')
+          echo "::set-output name=commit_id::${COMMIT_ID}"
 
       - uses: actions/setup-node@v2
         with:
@@ -61,14 +62,18 @@ jobs:
       - run: npx ts-node infra/license/check-result-formatter.ts ubuntu-latest.json windows-latest.json macos-latest.json
 
       - uses: actions/github-script@v6
+        if: ${{ hashFiles('license_check_result.fail') }}
         with:
           script: |
             var fs = require('fs');
-            var body_content = fs.readFileSync('license_check_result.md', 'utf-8');
 
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
+            var body_content = 'Verified with ${{ steps.get_commit_id.outputs.commit_id }}\n\n---\n\n';
+            body_content += fs.readFileSync('license_check_result.md', 'utf-8');
+
+            github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: body_content
+              title: '[CI] License Verification Warning/Failure',
+              body: body_content,
+              labels: ['Bug/Issue']
             });

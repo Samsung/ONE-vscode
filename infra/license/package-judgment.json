@@ -2,61 +2,61 @@
     "argparse@2.0.1": {
       "licenses": "Python-2.0",
       "repository": "https://github.com/nodeca/argparse",
-      "ONE_permitted": "conditional",
-      "ONE_caution": "Could be conflict with GPL2, LGPL license"
+      "permitted": "conditional",
+      "caution": "Could be conflict with GPL2, LGPL license"
     },
 
     "buffers@0.1.1": {
       "licenses": "MIT",
       "repository": "https://github.com/substack/node-buffers",
-      "ONE_permitted": "yes"
+      "permitted": "yes"
     },
 
     "chainsaw@0.1.0": {
       "licenses": "MIT",
       "repository": "https://github.com/substack/node-chainsaw",
-      "ONE_permitted": "yes"
+      "permitted": "yes"
     },
 
     "expand-template@2.0.3": {
       "licenses": "(MIT OR WTFPL)",
       "repository": "https://github.com/ralphtheninja/expand-template",
-      "ONE_permitted": "yes"
+      "permitted": "yes"
     },
 
     "flatbuffers@2.0.4": {
       "licenses": "Apache-2.0",
       "repository": "https://github.com/google/flatbuffers",
-      "ONE_permitted": "yes"
+      "permitted": "yes"
     },
 
     "one-vscode@0.0.1": {
       "licenses": "Apache-2.0",
       "repository": "https://github.com/Samsung/ONE-vscode",
-      "ONE_permitted": "yes"
+      "permitted": "yes"
     },
 
     "rc@1.2.8": {
       "licenses": "(BSD-2-Clause OR MIT OR Apache-2.0)",
       "repository": "https://github.com/dominictarr/rc",
-      "ONE_permitted": "yes"
+      "permitted": "yes"
     },
 
     "spdx-ranges@2.1.1": {
       "licenses": "(MIT AND CC-BY-3.0)",
       "repository": "https://github.com/kemitchell/spdx-ranges.js",
-      "ONE_permitted": "yes"
+      "permitted": "yes"
     },
 
     "traverse@0.3.9": {
       "licenses": "MIT",
       "repository": "https://github.com/substack/js-traverse",
-      "ONE_permitted": "yes"
+      "permitted": "yes"
     },
 
     "type-fest@0.20.2": {
       "licenses": "(MIT OR CC0-1.0)",
       "repository": "https://github.com/sindresorhus/type-fest",
-      "ONE_permitted": "yes"
+      "permitted": "yes"
     }
 }
