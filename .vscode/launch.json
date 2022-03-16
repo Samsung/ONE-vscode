@@ -19,14 +19,14 @@
 		},
 		{		
 			"name": "Run Extension Tests",
-      "type": "extensionHost",
-      "request": "launch",
-      "runtimeExecutable": "${execPath}",
-      "args": [
+			"type": "extensionHost",
+			"request": "launch",
+			"runtimeExecutable": "${execPath}",
+			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}",
-        "--extensionTestsPath=${workspaceFolder}/out/Tests/index"
-      ],
-      "outFiles": ["${workspaceFolder}/out/Tests/**/*.js"],
+				"--extensionTestsPath=${workspaceFolder}/out/Tests/index"
+			],
+			"outFiles": ["${workspaceFolder}/out/Tests/**/*.js"],
 			"preLaunchTask": "${defaultBuildTask}",
 			"console": "integratedTerminal",
 			"internalConsoleOptions": "neverOpen"
