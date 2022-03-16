@@ -2,7 +2,7 @@ name: Check Commit
 
 on:
   pull_request_target:
-    branches: [ main ]
+    branches: [ draft_bugfix_base ]
 
 jobs:
   check-signed-off-by:
@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-          ref: refs/pull/${{ github.event.number }}/merge
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - uses: actions/setup-node@v2
         with:
