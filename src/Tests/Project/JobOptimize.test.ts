@@ -181,7 +181,7 @@ suite('Project', function() {
           '--remove_quantdequant',
           '--remove_redundant_reshape',
           '--remove_redundant_transpose',
-          '--remove_unnecessary_reshape ',
+          '--remove_unnecessary_reshape',
           '--remove_unnecessary_slice',
           '--remove_unnecessary_strided_slice',
           '--remove_unnecessary_split',
