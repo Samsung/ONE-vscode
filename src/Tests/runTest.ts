@@ -36,6 +36,12 @@
  * limitations under the License.
  */
 
+// clang-format off
+//
+// This file comes from
+// https://github.com/microsoft/vscode-extension-samples/blob/main/helloworld-test-sample/src/test/runTest.ts
+//
+// clang-format on
 import {runTests} from '@vscode/test-electron';
 import * as path from 'path';
 

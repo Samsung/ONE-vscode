@@ -36,6 +36,12 @@
  * limitations under the License.
  */
 
+// clang-format off
+//
+// This file comes from
+// https://github.com/microsoft/vscode-extension-samples/blob/main/helloworld-test-sample/src/test/suite/index.ts
+//
+// clang-format on
 import glob from 'glob';
 import Mocha from 'mocha';
 import * as path from 'path';
