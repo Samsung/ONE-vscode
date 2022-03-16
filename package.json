@@ -120,8 +120,8 @@
     "lintjs": "eslint media --ext js",
     "lintcss": "csslint media src",
     "linthtml": "htmlhint media src",
-    "vscodetest": "node ./out/Tests/runTest.js",
-    "test": "npm run vscodetest"
+    "unittest": "node ./out/Tests/runTest.js",
+    "test": "npm run unittest"
   },
   "devDependencies": {
     "@types/chai": "^4.3.0",
