@@ -64,7 +64,7 @@ ONE-vscode$ npm test
 
 OR
 
-Click F5 or run the `Extension Tests` with breaking points for debug.
+Select `Extension Tests` in debug configuration and then run. (e.g., by pressing F5 and with breaking points for debug if you need to debug tests.)
 
 # Limitation
 
