@@ -36,13 +36,12 @@
  * limitations under the License.
  */
 
-// clang-format off
-//
-// This file comes from
-// https://github.com/microsoft/vscode-extension-samples/blob/main/helloworld-test-sample/src/test/suite/index.ts
-//
-// clang-format on
-import glob from 'glob';
+/*
+ * This file comes from
+ * https://github.com/microsoft/vscode-extension-samples/blob/ba9a56e68277b6ba0ae3ee4593b6a864ba158b1f/helloworld-test-sample/src/test/suite/index.ts
+ */
+
+import {glob} from 'glob';
 import Mocha from 'mocha';
 import * as path from 'path';
 

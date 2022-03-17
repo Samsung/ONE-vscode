@@ -36,12 +36,11 @@
  * limitations under the License.
  */
 
-// clang-format off
-//
-// This file comes from
-// https://github.com/microsoft/vscode-extension-samples/blob/main/helloworld-test-sample/src/test/runTest.ts
-//
-// clang-format on
+/*
+ * This file comes from
+ * https://github.com/microsoft/vscode-extension-samples/blob/af8c35e1fdea41feb11cd5d5e9782a97346be9c8/helloworld-test-sample/src/test/runTest.ts
+ */
+
 import {runTests} from '@vscode/test-electron';
 import * as path from 'path';
 
