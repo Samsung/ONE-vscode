@@ -29,7 +29,7 @@ jobs:
           cat signed_off_by_checker.fail
           exit 1
 
-  check-no-doby:
+  check-no-body:
     runs-on: ubuntu-latest
 
     steps:
@@ -45,7 +45,7 @@ jobs:
 
       - run: |
           ROLL_BACK_COUNT=$(( ${{ github.event.pull_request.commits }} - 1 ))
-          git log --format=%B -n 1 ${{ github.event.after }}~${ROLL_BACK_COUNT} > main_commit_msg
+          git log --format=%B -n 1 ${{ github.event.pull_request.head.sha }}~${ROLL_BACK_COUNT} > main_commit_msg
 
       - run: npx ts-node infra/commit/no-body-checker.ts main_commit_msg
 
