@@ -56,7 +56,8 @@
         "title": "Set model directory",
         "category": "ONE",
         "_comment": "Call this command to set the model directory of local machine."
-      },      {
+      },
+      {
         "command": "onevscode.build",
         "title": "build",
         "category": "ONE"
