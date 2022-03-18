@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import * as chai from 'chai';
+import {assert} from 'chai';
 import {Job} from '../../Project/Job';
 import {JobQuantize} from '../../Project/JobQuantize';
-
-const assert = chai.assert;
 
 suite('Project', function() {
   suite('JobQuantize', function() {
