@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import * as chai from 'chai';
-import * as path from 'path';
+import {assert} from 'chai';
+import {join} from 'path';
 
 import {loadCfgFile, obtainWorkspaceRoot} from '../../Utils/Helpers';
-
-const assert = chai.assert;
 
 suite('Utils', function() {
   suite('Helpers', function() {
@@ -33,7 +31,7 @@ suite('Utils', function() {
     suite('#loadCfgFile()', function() {
       test('returns cfgIni object', function() {
         const workspaceRoot: string = obtainWorkspaceRoot();
-        const cfgFile = path.join(workspaceRoot, 'res', 'samples', 'cfg', 'inception_v3.cfg');
+        const cfgFile = join(workspaceRoot, 'res', 'samples', 'cfg', 'inception_v3.cfg');
         const cfgIni = loadCfgFile(cfgFile);
         assert.isNotNull(cfgIni);
         assert.strictEqual(cfgIni['onecc']['one-import-tf'], 'True');
