@@ -369,7 +369,17 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry>,
       };
 
       const filePath = element.uri.fsPath;
-      if (filePath.endsWith('.tflite') || filePath.endsWith('.pth') || filePath.endsWith('.onnx')) {
+
+      const isCompilableFile = (filePath: string) => {
+        const compilableExts: Array<string> = ['.tflite', '.pth', '.onnx', '.pb'];
+        const res = compilableExts.filter(ext => filePath.endsWith(ext));
+        return res.length === 1;
+      };
+
+      // TODO Handle Keras Model and Saved Model
+      // TODO Handle circle file
+      // TODO Handle extensions for backend-specific files
+      if (isCompilableFile(filePath)) {
         treeItem.contextValue = 'compilableFile';
       } else {
         treeItem.contextValue = 'file';
