@@ -3,6 +3,7 @@ name: License Verification
 on:
   pull_request_target:
     branches: [ main ]
+    paths: [ 'package.json' ]
 
 jobs:
   license_verification:
