@@ -18,7 +18,7 @@ import {JobBase} from '../Project/JobBase';
 import {ToolArgs} from '../Project/ToolArgs';
 
 // Job for mock-up
-export class MockupJob extends JobBase {
+export class MockJob extends JobBase {
   constructor(name: string) {
     super();
     this.name = name;
@@ -29,12 +29,12 @@ export class MockupJob extends JobBase {
   }
 
   public get tool() {
-    // Just `onecc -h` as dummy
+    // Just use `onecc` as dummy
     return 'onecc';
   }
 
   public get toolArgs() {
-    // Just `onecc -h` as dummy
+    // Just use `-h` of `onecc` as dummy
     let args = new ToolArgs();
     args.push('-h');
     return args;
