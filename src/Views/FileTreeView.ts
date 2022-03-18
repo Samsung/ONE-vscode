@@ -380,6 +380,8 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry>,
       // TODO Handle circle file
       // TODO Handle extensions for backend-specific files
       if (isCompilableFile(filePath)) {
+        // note: In UI, when right click is pressed on the name of file,
+        //       a popup menu will be generated based on the contextValue
         treeItem.contextValue = 'compilableFile';
       } else {
         treeItem.contextValue = 'file';
