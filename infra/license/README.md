@@ -17,10 +17,17 @@ To reduce such risk and labor, automatic license checker would be good solution.
 
 - license-judgment.json
   - Each of license names are got from the result of `license-checker`
-  - Each license is classfied to following categories
-    - `Allowed` : Allowed to use
-    - `Warning` : Manual review for each package is needed
-    - `Denied` : Not allowed to use
+  - Each judgment for a license consists of following information
+    ```json
+    "License Name": {
+        "permitted": "yes / conditional / no",
+        "caution": "(Optional field) Why permitted is conditional or no"
+    },
+    ```
+    - `permitted` : Whether a license is allowed in ONE-vscode
+      - `yes` : Allowed to use
+      - `conditional` : Allowed to use under specific conditions. Each package with this should be judged manually.
+      - `no` : Not allowed to use
 - package-judgment.json
   - Each judgment for a package consists of following information
     ```json
