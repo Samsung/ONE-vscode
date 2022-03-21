@@ -50,3 +50,10 @@ commentBody.forEach((comment) => {
 resultComment += '</details>';
 
 writeFileSync('license_check_result.md', resultComment);
+
+if (totalWarnCount + totalFailCount === 0) {
+  writeFileSync('license_check_result.pass',"");
+}
+else {
+  writeFileSync('license_check_result.fail',"");
+}
