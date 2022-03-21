@@ -27,15 +27,14 @@ To reduce such risk and labor, automatic license checker would be good solution.
     "pkgname@version": {
       "licenses": "License name",
       "repository": "URL for package repository",
-      "ONE_permitted": "yes / conditional / no",
-      "ONE_caution": "(Optional field) Cautions when package is used"
+      "permitted": "yes / conditional / no",
+      "caution": "(Optional field) Cautions when package is used"
     },
     ```
-    - `ONE_permitted` : Whether the package is allowed in ONE-vscode
+    - `permitted` : Whether a package is allowed in ONE-vscode
       - `yes` : Allowed to use
       - `conditional` : Allowed to use under specific conditions. Needed to be checked manually when release is progressed.
       - `no` : Not allowed to use
-    - `ONE_caution` : Comment about why `ONE_permitted` is `conditional` or `no`.
 
 ### Guideline
 
@@ -58,7 +57,7 @@ To reduce such risk and labor, automatic license checker would be good solution.
   - As a result, `package-judgment.json` includes judgments for each of packages which cannot be judged by `license-judgment.json`
 - `PASS` and `FAIL` in the flowchart is the result of verification, not a result of Github Action
   - Even verification result is `FAIL`, it does not mean Github Action is failed.
-  - This is because we may need to merge pull request even there are some `Warning` or `Denied`
+  - This is because we may need to merge pull request even there are some `Warning` or `Failure`
     - When verification result has `Warning` and the package is under manual review, we cannot merge any pull requests until the manual reivew is finished. But the manual review may take more than 2~3 days.
     - When verification result was recognized and related updates are not yet applied, we cannot merge any pull requests until the updates are applied.
 - `license-checker` can deduce for some unknown licenses. However, we do not use this function because we cannot assure it is always correctly deduced.

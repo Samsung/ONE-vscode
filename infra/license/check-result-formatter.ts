@@ -26,19 +26,19 @@ const resultPaths = args;
 
 let commentBody = [] as string[];
 let totalWarnCount = 0;
-let totalDenialCount = 0;
+let totalFailCount = 0;
 for (let i = 0; i < resultPaths.length; ++i) {
   const result = JSON.parse(readFileSync(resultPaths[i], 'utf-8'));
 
   commentBody.push(result['resultComment']);
   totalWarnCount += Number(result['warnCount']);
-  totalDenialCount += Number(result['denialCount']);
+  totalFailCount += Number(result['failCount']);
 }
 
 let resultComment = '### License Verification' + EOL + EOL;
-if (totalWarnCount + totalDenialCount > 0) {
-  resultComment += ':warning: Total ' + totalWarnCount.toString() + ' Warnings Found' + EOL;
-  resultComment += ':no_entry: Total ' + totalDenialCount.toString() + ' Denials Found' + EOL;
+if (totalWarnCount + totalFailCount > 0) {
+  resultComment += ':warning: Total ' + totalWarnCount.toString() + ' Warning(s) Found' + EOL;
+  resultComment += ':no_entry: Total ' + totalFailCount.toString() + ' Failure(s) Found' + EOL;
 } else {
   resultComment += ':heavy_check_mark: No License Issues Found' + EOL;
 }
@@ -46,7 +46,7 @@ resultComment += '<details><summary>Detailed Result</summary>' + EOL;
 commentBody.forEach((comment) => {
   resultComment += EOL + '---' + EOL;
   resultComment += comment + EOL;
-})
+});
 resultComment += '</details>';
 
 writeFileSync('license_check_result.md', resultComment);
