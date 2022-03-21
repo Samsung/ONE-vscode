@@ -36,16 +36,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// TODO Modify code inside comment and uncomment
-
 /*
 This code refers to
 https://github.com/microsoft/vscode-extension-samples/blob/9a2eb8ba5f781edb847e8c3eb563af96334fa534/tree-view-sample/src/fileExplorer.ts
-
+*/
 import * as fs from 'fs';
 import * as mkdirp from 'mkdirp';
 import * as path from 'path';
 import * as rimraf from 'rimraf';
+import * as vscode from 'vscode';
 
 //#region Utilities
 
@@ -134,13 +133,13 @@ export function exists(path: string): Promise<boolean> {
 
 export function rmrf(path: string): Promise<void> {
   return new Promise<void>((resolve, reject) => {
-    rimraf(path, error => handleResult(resolve, reject, error, void 0));
+    rimraf.default(path, error => handleResult(resolve, reject, error, void 0));
   });
 }
 
 export function mkdir(path: string): Promise<void> {
   return new Promise<void>((resolve, reject) => {
-    mkdirp(path, error => handleResult(resolve, reject, error, void 0));
+    mkdirp.default(path);
   });
 }
 
@@ -330,10 +329,19 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry>,
           ([name, type]) => ({uri: vscode.Uri.file(path.join(element.uri.fsPath, name)), type}));
     }
 
-    const workspaceFolder =
-        vscode.workspace.workspaceFolders.filter(folder => folder.uri.scheme === 'file')[0];
-    if (workspaceFolder) {
-      const children = await this.readDirectory(workspaceFolder.uri);
+    // When this method is called right after constructing FileSystemProvider,
+    // element is undefined. In that case, let's show project root directory.
+    const projectRootDir =
+        vscode.workspace.getConfiguration().get<string>('one-vscode.projectRootDirectory');
+
+    if (projectRootDir === undefined) {
+      throw new Error('projectRootDir should not be undefined');
+    }
+
+    const rootUri = vscode.Uri.parse(projectRootDir);
+
+    if (rootUri) {
+      const children = await this.readDirectory(rootUri);
       children.sort((a, b) => {
         if (a[1] === b[1]) {
           return a[0].localeCompare(b[0]);
@@ -341,8 +349,7 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry>,
         return a[1] === vscode.FileType.Directory ? -1 : 1;
       });
       return children.map(
-          ([name, type]) =>
-              ({uri: vscode.Uri.file(path.join(workspaceFolder.uri.fsPath, name)), type}));
+          ([name, type]) => ({uri: vscode.Uri.file(path.join(rootUri.fsPath, name)), type}));
     }
 
     return [];
@@ -354,23 +361,39 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry>,
         element.type === vscode.FileType.Directory ? vscode.TreeItemCollapsibleState.Collapsed :
                                                      vscode.TreeItemCollapsibleState.None);
     if (element.type === vscode.FileType.File) {
+      // TODO Change command to proper command, considering file types
       treeItem.command = {
-        command: 'fileExplorer.openFile',
+        command: 'vscode.open',
         title: 'Open File',
         arguments: [element.uri],
       };
-      treeItem.contextValue = 'file';
+
+      const filePath = element.uri.fsPath;
+
+      const isCompilableFile = (filePath: string) => {
+        const compilableExts: Array<string> = ['.tflite', '.pth', '.onnx', '.pb'];
+        const res = compilableExts.filter(ext => filePath.endsWith(ext));
+        return res.length === 1;
+      };
+
+      // TODO Handle Keras Model and Saved Model
+      // TODO Handle circle file
+      // TODO Handle extensions for backend-specific files
+      if (isCompilableFile(filePath)) {
+        // note: In UI, when right click is pressed on the name of file,
+        //       a popup menu will be generated based on the contextValue
+        treeItem.contextValue = 'compilableFile';
+      } else {
+        treeItem.contextValue = 'file';
+      }
     }
     return treeItem;
   }
 }
 
-*/
-import * as vscode from 'vscode';
-
 export class FileExplorer {
   constructor(context: vscode.ExtensionContext) {
-    // TODO Read the list of dirs and files into 'FileTreeView'
-    vscode.window.showInformationMessage('NYI: Filling FileTreeView with dirs and files');
+    const treeDataProvider = new FileSystemProvider();
+    context.subscriptions.push(vscode.window.createTreeView('FileTreeView', {treeDataProvider}));
   }
 }
