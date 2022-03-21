@@ -87,15 +87,15 @@ for (const pkg in usedLicenseList) {
   if (packageJudgment.hasOwnProperty(pkg)) {
     const pkgKey = pkg as keyof typeof packageJudgment;
 
-    if (packageJudgment[pkgKey].ONE_permitted === 'no') {
+    if (packageJudgment[pkgKey].permitted === 'no') {
       deniedList.DeniedCount++;
       deniedList.ONEForbidden.push(pkg + EOL);
-    } else if (packageJudgment[pkgKey].ONE_permitted === 'yes') {
+    } else if (packageJudgment[pkgKey].permitted === 'yes') {
       // Verification PASS, do nothing
-    } else if (packageJudgment[pkgKey].ONE_permitted === 'conditional') {
+    } else if (packageJudgment[pkgKey].permitted === 'conditional') {
       // Verification PASS, check manually when release
     } else {
-      throw new Error('Not implemented ONE_permitted type');
+      throw new Error('Not implemented permitted type');
     }
   } else if (licenseJudgment.Denied.includes(pkgInfo.licenses)) {
     deniedList.DeniedCount++;
@@ -173,7 +173,7 @@ if (issueFound === false) {
 var resultZip = {
   'resultComment': resultComment,
   'warnCount': warningList.WarningCount.toString(),
-  'denialCount': deniedList.DeniedCount.toString()
+  'failCount': deniedList.DeniedCount.toString()
 };
 
 writeFileSync(verificationTag + '.json', JSON.stringify(resultZip));
