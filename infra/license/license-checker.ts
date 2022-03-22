@@ -97,14 +97,19 @@ for (const pkg in usedLicenseList) {
     } else {
       throw new Error('Not implemented permitted type');
     }
-  } else if (licenseJudgment.Denied.includes(pkgInfo.licenses)) {
-    deniedList.DeniedCount++;
-    deniedList.DeniedLicenseUsed.push(pkg + ' : ' + pkgInfo.licenses + EOL);
-  } else if (licenseJudgment.Warning.includes(pkgInfo.licenses)) {
-    warningList.WarningCount++;
-    warningList.WarnedLicenseUsed.push(pkg + ' : ' + pkgInfo.licenses + EOL);
-  } else if (licenseJudgment.Allowed.includes(pkgInfo.licenses)) {
-    // Verification PASS, do nothing
+  } else if (licenseJudgment.hasOwnProperty(pkgInfo.licenses)) {
+    const licenseKey = pkgInfo.licenses as keyof typeof licenseJudgment;
+    if (licenseJudgment[licenseKey].permitted === 'no') {
+      deniedList.DeniedCount++;
+      deniedList.DeniedLicenseUsed.push(pkg + ' : ' + pkgInfo.licenses + EOL);
+    } else if (licenseJudgment[licenseKey].permitted === 'conditional') {
+      warningList.WarningCount++;
+      warningList.WarnedLicenseUsed.push(pkg + ' : ' + pkgInfo.licenses + EOL);
+    } else if (licenseJudgment[licenseKey].permitted === 'yes') {
+      // Verification PASS, do nothing
+    } else {
+      throw new Error('Not implemented permitted type');
+    }
   } else if (pkgInfo.licenses === 'UNKNOWN') {
     warningList.WarningCount++;
     warningList.UnknownLicense.push(pkg + EOL);
