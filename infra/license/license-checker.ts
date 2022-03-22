@@ -31,6 +31,134 @@ var args = process.argv.slice(2)
 const inputPathOfLicenseList = args[0];
 const verificationTag = args[1];
 
+namespace Verification {
+
+const resultTypeDescription = {
+  pass: 'No license issue found',
+
+  warnConditionalLicense: 'Additional manual verification is needed',
+  warnNeverChecked: 'Never checked license is detected',
+  warnUnknownLicense: 'License is not found',
+
+  failForbiddenLicense: 'Forbidden license is found',
+  failForbiddenPackage: 'Forbidden package is used'
+} as const ;
+
+type ResultType = keyof typeof resultTypeDescription;
+
+type Result = {
+  pkgName: string; pkgLicense: string; resultType: ResultType;
+};
+
+export class ResultSet {
+  private results: Result[];
+
+  constructor() {
+    this.results = [] as Result[];
+  };
+
+  public add(result: Result) {
+    this.results.push(result);
+  };
+
+  public warnCount(): number {
+    let count = 0;
+    this.results.forEach((result) => {
+      if (result.resultType.startsWith('warn')) {
+        count++;
+      }
+    });
+    return count;
+  };
+
+  public failCount(): number {
+    let count = 0;
+    this.results.forEach((result) => {
+      if (result.resultType.startsWith('fail')) {
+        count++;
+      }
+    });
+    return count;
+  };
+
+  public createComment(): string {
+    const title = '#### ' + verificationTag + EOL + EOL;
+
+    let body = '';
+    if (this.warnCount() + this.failCount() === 0) {
+      body += (':heavy_check_mark: No license issue found' + EOL);
+    }
+    if (this.warnCount() > 0) {
+      body += (':warning: **Warning** :warning:' + EOL);
+      for (const rtype in resultTypeDescription) {
+        if (rtype.startsWith('warn')) {
+          body += this.createDetailedComment(rtype as ResultType);
+        }
+      }
+    }
+    if (this.failCount() > 0) {
+      body += (':no_entry: **Failure** :no_entry:' + EOL);
+      for (const rtype in resultTypeDescription) {
+        if (rtype.startsWith('fail')) {
+          body += this.createDetailedComment(rtype as ResultType);
+        }
+      }
+    }
+
+    return title + body;
+  };
+
+  private createDetailedComment(rtype: ResultType): string {
+    let title = '';
+    let body = '';
+
+    this.results.forEach((result) => {
+      if (result.resultType === rtype) {
+        title = '- ' + resultTypeDescription[rtype] + EOL;
+        body += ('    - ' + result.pkgName + ' : ' + result.pkgLicense + EOL);
+      }
+    });
+
+    return title + body;
+  };
+};
+
+export function verify(pkgName: string, pkgLicense: string): ResultType {
+  if (packageJudgment.hasOwnProperty(pkgName)) {
+    switch (packageJudgment[pkgName as keyof typeof packageJudgment].permitted) {
+      case 'yes':
+        return 'pass';
+      case 'conditional':
+        return 'pass';
+      case 'no':
+        return 'failForbiddenPackage';
+      default:
+        throw new Error('Not implemented permitted type');
+    }
+  }
+
+  if (licenseJudgment.hasOwnProperty(pkgLicense)) {
+    switch (licenseJudgment[pkgLicense as keyof typeof licenseJudgment].permitted) {
+      case 'yes':
+        return 'pass';
+      case 'conditional':
+        return 'warnConditionalLicense';
+      case 'no':
+        return 'failForbiddenLicense';
+      default:
+        throw new Error('Not implemented permitted type');
+    }
+  }
+
+  if (pkgLicense === 'UNKNOWN') {
+    return 'warnUnknownLicense';
+  }
+
+  return 'warnNeverChecked';
+};
+
+}
+
 /**
  * - WarningCount : The total number of warnings
  *
@@ -175,10 +303,17 @@ if (issueFound === false) {
   resultComment += (':heavy_check_mark: No license issue found' + EOL);
 }
 
-var resultZip = {
-  'resultComment': resultComment,
-  'warnCount': warningList.WarningCount.toString(),
-  'failCount': deniedList.DeniedCount.toString()
+let resultSet = new Verification.ResultSet();
+for (const pkgName in usedLicenseList) {
+  const pkgLicense = usedLicenseList[pkgName].licenses;
+  let result = Verification.verify(pkgName, pkgLicense);
+  resultSet.add({pkgName: pkgName, pkgLicense: pkgLicense, resultType: result});
+};
+
+let resultZip = {
+  'resultComment': resultSet.createComment(),
+  'warnCount': resultSet.warnCount(),
+  'failCount': resultSet.failCount()
 };
 
 writeFileSync(verificationTag + '.json', JSON.stringify(resultZip));
