@@ -412,6 +412,7 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
     }
     console.log('Selected file: ' + fileUri.fsPath);
 
+    this.jobOwner.clearJobs();
     this.cfgFilePath = fileUri.fsPath;
     this.emit(K_BEGIN_IMPORT);
   }
