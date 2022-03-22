@@ -88,6 +88,14 @@
         "category": "ONE"
       }
     ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "onevscode.fileTreeView-open",
+          "when": "view == FileTreeView"
+        }
+      ]
+    },
     "configuration": {
       "title": "ONE",
       "properties": {
