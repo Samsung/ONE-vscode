@@ -22,6 +22,11 @@ import {MockJob} from '../MockJob';
 suite('Project', function() {
   suite('WorkFlow', function() {
     const logger = new Logger();
+    // jobs for WorkFlow
+    const name0 = 'job0';
+    const name1 = 'job1';
+    const job0 = new MockJob(name0);
+    const job1 = new MockJob(name1);
     suite('#contructor()', function() {
       test('is constructed as WorkFlow', function() {
         let workFlow = new WorkFlow(logger);
@@ -33,11 +38,7 @@ suite('Project', function() {
     });
     suite('#addJob()', function() {
       test('adds jobs', function() {
-        const name0 = 'job0';
-        const name1 = 'job1';
         let workFlow = new WorkFlow(logger);
-        let job0 = new MockJob(name0);
-        let job1 = new MockJob(name1);
         workFlow.addJob(job0);
         workFlow.addJob(job1);
         assert.strictEqual(workFlow.jobs.length, 2);
@@ -47,16 +48,9 @@ suite('Project', function() {
     });
     suite('#clearJobs()', function() {
       test('clears jobs', function() {
-        const name0 = 'job0';
-        const name1 = 'job1';
         let workFlow = new WorkFlow(logger);
-        let job0 = new MockJob(name0);
-        let job1 = new MockJob(name1);
         workFlow.addJob(job0);
         workFlow.addJob(job1);
-        assert.strictEqual(workFlow.jobs.length, 2);
-        assert.strictEqual(workFlow.jobs[0].name, name0);
-        assert.strictEqual(workFlow.jobs[1].name, name1);
         workFlow.clearJobs();
         assert.strictEqual(workFlow.jobs.length, 0);
       });
