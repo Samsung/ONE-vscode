@@ -39,7 +39,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-        ref: main
+        with:
+          ref: main
 
       - id: get_commit_id
         run: |
