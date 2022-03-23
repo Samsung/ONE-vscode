@@ -149,6 +149,7 @@ done
 
 exclude_symbolic_links
 check_ts_files
+check_json_files
 
 DIFF=$(git diff | tee ${PATCH_FILE})
 
