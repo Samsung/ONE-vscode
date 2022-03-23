@@ -32,6 +32,12 @@ export function activate(context: vscode.ExtensionContext) {
 
   FileTreeViewActivator.activate('onevscode.fileTreeView-open', context);
 
+  let showCompileWebViewCmd =
+      vscode.commands.registerCommand('onevscode.show-compile-webview', () => {
+        vscode.window.showInformationMessage('NYI');
+      });
+  context.subscriptions.push(showCompileWebViewCmd);
+
   let registerInstaelledToolchainCmd = vscode.commands.registerCommand(
       'onevscode.register-installed-toolchain', () => {/* TODO Implement */});
 

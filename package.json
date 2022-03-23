@@ -18,6 +18,7 @@
     "onCommand:onevscode.configuration-settings",
     "onCommand:onevscode.toggle-codelens",
     "onCommand:onevscode.circle-tracer",
+    "onCommand:onevscode.show-compile-webview",
     "onCommand:onevscode.fileTreeView-open",
     "onCommand:onevscode.register-installed-toolchain",
     "onCommand:onevscode.install-new-toolchain",
@@ -58,6 +59,12 @@
         "_comment": "Call this command to set the model directory of local machine."
       },
       {
+        "command": "onevscode.show-compile-webview",
+        "title": "compile",
+        "category": "ONE",
+        "_comment": "call this when compiling *.tflite, *.onnx, *.pth, etc"
+      },
+      {
         "command": "onevscode.build",
         "title": "build",
         "category": "ONE"
@@ -89,6 +96,13 @@
       }
     ],
     "menus": {
+      "view/item/context": [
+        {
+          "_comment": "When model file is right-cliched, [Compile] menu will be shown.",
+          "command": "onevscode.show-compile-webview",
+          "when": "view == FileTreeView && viewItem == compilableFile"
+        }
+      ],
       "view/title": [
         {
           "command": "onevscode.fileTreeView-open",
