@@ -157,7 +157,7 @@ export function verify(pkgName: string, pkgLicense: string): ResultType {
   return 'warnNeverChecked';
 };
 
-}
+}  // namespace Verification
 
 /**
  * - WarningCount : The total number of warnings
