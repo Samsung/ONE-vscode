@@ -1,40 +1,40 @@
 [
   {
-    "name" : "[one-build]",
+    "name": "[one-build]",
     "body": [],
     "description": "command line tool to run ONE drivers in customized order"
   },
   {
-    "name" : "[onecc]",
+    "name": "[onecc]",
     "body": [],
     "description": "Run ONE driver via several commands or configuration file"
   },
   {
-    "name" : "[one-import-tf]",
+    "name": "[one-import-tf]",
     "body": [
       {
-        "attr_name" : "input_path",
-        "attr_desc" : "full filepath of the input file"
+        "attr_name": "input_path",
+        "attr_desc": "full filepath of the input file"
       },
       {
-        "attr_name" : "output_path",
-        "attr_desc" : "full filepath of the output file"
+        "attr_name": "output_path",
+        "attr_desc": "full filepath of the output file"
       },
       {
-        "attr_name" : "input_arrays",
-        "attr_desc" : "names of the input arrays, comma-separated"
+        "attr_name": "input_arrays",
+        "attr_desc": "names of the input arrays, comma-separated"
       },
       {
-        "attr_name" : "input_shapes",
-        "attr_desc" : "shapes corresponding to --input_arrays, colon-separated (ex:\"1,4,4,3:1,20,20,3\")"
+        "attr_name": "input_shapes",
+        "attr_desc": "shapes corresponding to --input_arrays, colon-separated (ex:\"1,4,4,3:1,20,20,3\")"
       },
       {
-        "attr_name" : "output_arrays",
-        "attr_desc" : "names of the output arrays, comma-separated"
+        "attr_name": "output_arrays",
+        "attr_desc": "names of the output arrays, comma-separated"
       },
       {
-        "attr_name" : "converter_version",
-        "attr_desc" : "use TensorFlow Lite Converter version",
+        "attr_name": "converter_version",
+        "attr_desc": "use TensorFlow Lite Converter version",
         "options": [
           {
             "option_name": "v1",
@@ -47,12 +47,12 @@
         ]
       },
       {
-        "attr_name" : "save_intermediate",
-        "attr_desc" : "Save intermediate files to output folder"
+        "attr_name": "save_intermediate",
+        "attr_desc": "Save intermediate files to output folder"
       },
       {
-        "attr_name" : "model_format",
-        "attr_desc" : "Select model_format",
+        "attr_name": "model_format",
+        "attr_desc": "Select model_format",
         "options": [
           {
             "option_name": "graph_def",
@@ -63,54 +63,54 @@
             "option_desc": "use saved model"
           },
           {
-            "option_name" : "keras_model",
-            "option_desc" : "use keras model"
+            "option_name": "keras_model",
+            "option_desc": "use keras model"
           }
         ]
       }
     ],
-    "description" : "command line tool to convert TensorFlow to circle"
+    "description": "command line tool to convert TensorFlow to circle"
   },
   {
-    "name" : "[one-import-tflite]",
-    "body" : [
+    "name": "[one-import-tflite]",
+    "body": [
       {
-        "attr_name" : "input_path",
-        "attr_desc" : "full filepath of the input file"
+        "attr_name": "input_path",
+        "attr_desc": "full filepath of the input file"
       },
       {
-        "attr_name" : "output_path",
-        "attr_desc" : "full filepath of the output file"
+        "attr_name": "output_path",
+        "attr_desc": "full filepath of the output file"
       }
     ],
-    "description" : "command line tool to convert TensorFlow lite to circle"
+    "description": "command line tool to convert TensorFlow lite to circle"
   },
   {
-    "name" : "[one-import-bcq]",
-    "body" : [
+    "name": "[one-import-bcq]",
+    "body": [
       {
-        "attr_name" : "input_path",
-        "attr_desc" : "full filepath of the input file"
+        "attr_name": "input_path",
+        "attr_desc": "full filepath of the input file"
       },
       {
-        "attr_name" : "output_path",
-        "attr_desc" : "full filepath of the output file"
+        "attr_name": "output_path",
+        "attr_desc": "full filepath of the output file"
       },
       {
-        "attr_name" : "input_arrays",
-        "attr_desc" : "names of the input arrays, comma-separated"
+        "attr_name": "input_arrays",
+        "attr_desc": "names of the input arrays, comma-separated"
       },
       {
-        "attr_name" : "input_shapes",
-        "attr_desc" : "shapes corresponding to --input_arrays, colon-separated (ex:\"1,4,4,3:1,20,20,3\")"
+        "attr_name": "input_shapes",
+        "attr_desc": "shapes corresponding to --input_arrays, colon-separated (ex:\"1,4,4,3:1,20,20,3\")"
       },
       {
-        "attr_name" : "output_arrays",
-        "attr_desc" : "names of the output arrays, comma-separated"
+        "attr_name": "output_arrays",
+        "attr_desc": "names of the output arrays, comma-separated"
       },
       {
-        "attr_name" : "converter_version",
-        "attr_desc" : "use TensorFlow Lite Converter version",
+        "attr_name": "converter_version",
+        "attr_desc": "use TensorFlow Lite Converter version",
         "options": [
           {
             "option_name": "v1",
@@ -123,30 +123,30 @@
         ]
       }
     ],
-    "description" : "command line tool to convert TensorFlow with BCQ to circle"
+    "description": "command line tool to convert TensorFlow with BCQ to circle"
   },
   {
-    "name" : "[one-import-onnx]",
-    "body" : [
+    "name": "[one-import-onnx]",
+    "body": [
       {
-        "attr_name" : "input_path",
-        "attr_desc" : "full filepath of the input file"
+        "attr_name": "input_path",
+        "attr_desc": "full filepath of the input file"
       },
       {
-        "attr_name" : "output_path",
-        "attr_desc" : "full filepath of the output file"
+        "attr_name": "output_path",
+        "attr_desc": "full filepath of the output file"
       },
       {
-        "attr_name" : "input_arrays",
-        "attr_desc" : "names of the input arrays, comma-separated"
+        "attr_name": "input_arrays",
+        "attr_desc": "names of the input arrays, comma-separated"
       },
       {
-        "attr_name" : "output_arrays",
-        "attr_desc" : "names of the output arrays, comma-separated"
+        "attr_name": "output_arrays",
+        "attr_desc": "names of the output arrays, comma-separated"
       },
       {
-        "attr_name" : "converter_version",
-        "attr_desc" : "use TensorFlow Lite Converter version",
+        "attr_name": "converter_version",
+        "attr_desc": "use TensorFlow Lite Converter version",
         "options": [
           {
             "option_name": "v1",
@@ -159,8 +159,8 @@
         ]
       },
       {
-        "attr_name" : "model_format",
-        "attr_desc" : "Select model_format",
+        "attr_name": "model_format",
+        "attr_desc": "Select model_format",
         "options": [
           {
             "option_name": "graph_def",
@@ -171,231 +171,231 @@
             "option_desc": "use saved model"
           },
           {
-            "option_name" : "keras_model",
-            "option_desc" : "use keras model"
+            "option_name": "keras_model",
+            "option_desc": "use keras model"
           }
         ]
       }
     ],
-    "description" : "command line tool to convert ONNX to circle"
+    "description": "command line tool to convert ONNX to circle"
   },
   {
-    "name" : "[one-optimize]",
-    "body" : [
+    "name": "[one-optimize]",
+    "body": [
       {
-        "attr_name" : "input_path",
-        "attr_desc" : "full filepath of the input file"
+        "attr_name": "input_path",
+        "attr_desc": "full filepath of the input file"
       },
       {
-        "attr_name" : "output_path",
-        "attr_desc" : "full filepath of the output file"
+        "attr_name": "output_path",
+        "attr_desc": "full filepath of the output file"
       },
       {
-        "attr_name" : "generate_profile_data",
-        "attr_desc" : "generate profiling data"
+        "attr_name": "generate_profile_data",
+        "attr_desc": "generate profiling data"
       },
       {
-        "attr_name" : "change_outputs",
-        "attr_desc" : "Experimental: Change first subgraph output nodes to CSV names"
+        "attr_name": "change_outputs",
+        "attr_desc": "Experimental: Change first subgraph output nodes to CSV names"
       },
       {
-        "attr_name" : "O1",
-        "attr_desc" : "enable O1 optimization pass"
+        "attr_name": "O1",
+        "attr_desc": "enable O1 optimization pass"
       },
       {
-        "attr_name" : "convert_nchw_to_nhwc",
-        "attr_desc" : "Experimental: This will convert NCHW operators to NHWC under the assumption that input model is NCHW."
+        "attr_name": "convert_nchw_to_nhwc",
+        "attr_desc": "Experimental: This will convert NCHW operators to NHWC under the assumption that input model is NCHW."
       },
       {
-        "attr_name" : "nchw_to_nhwc_input_shape",
-        "attr_desc" : "convert the input shape of the model (argument for convert_nchw_to_nhwc)"
+        "attr_name": "nchw_to_nhwc_input_shape",
+        "attr_desc": "convert the input shape of the model (argument for convert_nchw_to_nhwc)"
       },
       {
-        "attr_name" : "nchw_to_nhwc_output_shape",
-        "attr_desc" : "convert the output shape of the model (argument for convert_nchw_to_nhwc)"
+        "attr_name": "nchw_to_nhwc_output_shape",
+        "attr_desc": "convert the output shape of the model (argument for convert_nchw_to_nhwc)"
       },
       {
-        "attr_name" : "fold_add_v2",
-        "attr_desc" : "fold AddV2 op with constant inputs"
+        "attr_name": "fold_add_v2",
+        "attr_desc": "fold AddV2 op with constant inputs"
       },
       {
-        "attr_name" : "fold_cast",
-        "attr_desc" : "fold Cast op with constant input"
+        "attr_name": "fold_cast",
+        "attr_desc": "fold Cast op with constant input"
       },
       {
-        "attr_name" : "fold_dequantize",
-        "attr_desc" : "fold Dequantize op"
+        "attr_name": "fold_dequantize",
+        "attr_desc": "fold Dequantize op"
       },
       {
-        "attr_name" : "fold_dwconv",
-        "attr_desc" : "fold Depthwise Convolution op with constant inputs"
+        "attr_name": "fold_dwconv",
+        "attr_desc": "fold Depthwise Convolution op with constant inputs"
       },
       {
-        "attr_name" : "fold_sparse_to_dense",
-        "attr_desc" : "fold SparseToDense op"
+        "attr_name": "fold_sparse_to_dense",
+        "attr_desc": "fold SparseToDense op"
       },
       {
-        "attr_name" : "forward_reshape_to_unaryop",
-        "attr_desc" : "Forward Reshape op"
+        "attr_name": "forward_reshape_to_unaryop",
+        "attr_desc": "Forward Reshape op"
       },
       {
-        "attr_name" : "fuse_add_with_tconv",
-        "attr_desc" : "fuse Add op to Transposed"
+        "attr_name": "fuse_add_with_tconv",
+        "attr_desc": "fuse Add op to Transposed"
       },
       {
-        "attr_name" : "fuse_add_with_fully_connected",
-        "attr_desc" : "fuse Add op to FullyConnected op"
+        "attr_name": "fuse_add_with_fully_connected",
+        "attr_desc": "fuse Add op to FullyConnected op"
       },
       {
-        "attr_name" : "fuse_batchnorm_with_conv",
-        "attr_desc" : "fuse BatchNorm op to Convolution op"
+        "attr_name": "fuse_batchnorm_with_conv",
+        "attr_desc": "fuse BatchNorm op to Convolution op"
       },
       {
-        "attr_name" : "fuse_batchnorm_with_dwconv",
-        "attr_desc" : "fuse BatchNorm op to Depthwise Convolution op"
+        "attr_name": "fuse_batchnorm_with_dwconv",
+        "attr_desc": "fuse BatchNorm op to Depthwise Convolution op"
       },
       {
-        "attr_name" : "fuse_batchnorm_with_tconv",
-        "attr_desc" : "fuse BatchNorm op to Transposed Convolution op"
+        "attr_name": "fuse_batchnorm_with_tconv",
+        "attr_desc": "fuse BatchNorm op to Transposed Convolution op"
       },
       {
-        "attr_name" : "fuse_bcq",
-        "attr_desc" : "apply Binary Coded Quantization"
+        "attr_name": "fuse_bcq",
+        "attr_desc": "apply Binary Coded Quantization"
       },
       {
-        "attr_name" : "fuse_preactivation_batchnorm",
-        "attr_desc" : "fuse BatchNorm operators of pre-activations to Convolution op"
+        "attr_name": "fuse_preactivation_batchnorm",
+        "attr_desc": "fuse BatchNorm operators of pre-activations to Convolution op"
       },
       {
-        "attr_name" : "fuse_mean_with_mean",
-        "attr_desc" : "fuse two consecutive Mean ops"
+        "attr_name": "fuse_mean_with_mean",
+        "attr_desc": "fuse two consecutive Mean ops"
       },
       {
-        "attr_name" : "fuse_transpose_with_mean",
-        "attr_desc" : "fuse Mean with a preceding Transpose under certain conditions"
+        "attr_name": "fuse_transpose_with_mean",
+        "attr_desc": "fuse Mean with a preceding Transpose under certain conditions"
       },
       {
-        "attr_name" : "make_batchnorm_gamma_positive",
-        "attr_desc" : "make negative gamma of BatchNorm to a small positive value (1e-10). Note that this pass can change the execution result of the model. So, use it only when the impact is known to be acceptable.')"
+        "attr_name": "make_batchnorm_gamma_positive",
+        "attr_desc": "make negative gamma of BatchNorm to a small positive value (1e-10). Note that this pass can change the execution result of the model. So, use it only when the impact is known to be acceptable.')"
       },
       {
-        "attr_name" : "fuse_activation_function",
-        "attr_desc" : "fuse Activation function to a preceding operator"
+        "attr_name": "fuse_activation_function",
+        "attr_desc": "fuse Activation function to a preceding operator"
       },
       {
-        "attr_name" : "fuse_instnorm",
-        "attr_desc" : "fuse ops to InstanceNorm operator"
+        "attr_name": "fuse_instnorm",
+        "attr_desc": "fuse ops to InstanceNorm operator"
       },
       {
-        "attr_name" : "replace_cw_mul_add_with_depthwise_conv",
-        "attr_desc" : "replace channel-wise Mul/Add with DepthwiseConv2D"
+        "attr_name": "replace_cw_mul_add_with_depthwise_conv",
+        "attr_desc": "replace channel-wise Mul/Add with DepthwiseConv2D"
       },
       {
-        "attr_name" : "remove_fakequant",
-        "attr_desc" : "remove FakeQuant ops"
+        "attr_name": "remove_fakequant",
+        "attr_desc": "remove FakeQuant ops"
       },
       {
-        "attr_name" : "remove_quantdequant",
-        "attr_desc" : "remove Quantize-Dequantize sequence"
+        "attr_name": "remove_quantdequant",
+        "attr_desc": "remove Quantize-Dequantize sequence"
       },
       {
-        "attr_name" : "remove_redundant_reshape",
-        "attr_desc" : "fuse or remove subsequent Reshape ops"
+        "attr_name": "remove_redundant_reshape",
+        "attr_desc": "fuse or remove subsequent Reshape ops"
       },
       {
-        "attr_name" : "remove_redundant_transpose",
-        "attr_desc" : "fuse or remove subsequent Transpose ops"
+        "attr_name": "remove_redundant_transpose",
+        "attr_desc": "fuse or remove subsequent Transpose ops"
       },
       {
-        "attr_name" : "remove_unnecessary_reshape",
-        "attr_desc" : "remove unnecessary reshape ops"
+        "attr_name": "remove_unnecessary_reshape",
+        "attr_desc": "remove unnecessary reshape ops"
       },
       {
-        "attr_name" : "remove_unnecessary_slice",
-        "attr_desc" : "remove unnecessary slice ops"
+        "attr_name": "remove_unnecessary_slice",
+        "attr_desc": "remove unnecessary slice ops"
       },
       {
-        "attr_name" : "remove_unnecessary_strided_slice",
-        "attr_desc" : "remove unnecessary strided slice ops"
+        "attr_name": "remove_unnecessary_strided_slice",
+        "attr_desc": "remove unnecessary strided slice ops"
       },
       {
-        "attr_name" : "remove_unnecessary_split",
-        "attr_desc" : "remove unnecessary split ops"
+        "attr_name": "remove_unnecessary_split",
+        "attr_desc": "remove unnecessary split ops"
       },
       {
-        "attr_name" : "resolve_customop_add",
-        "attr_desc" : "convert Custom(Add) op to Add op"
+        "attr_name": "resolve_customop_add",
+        "attr_desc": "convert Custom(Add) op to Add op"
       },
       {
-        "attr_name" : "resolve_customop_batchmatmul",
-        "attr_desc" : "convert Custom(BatchMatmul) op to BatchMatmul op"
+        "attr_name": "resolve_customop_batchmatmul",
+        "attr_desc": "convert Custom(BatchMatmul) op to BatchMatmul op"
       },
       {
-        "attr_name" : "resolve_customop_matmul",
-        "attr_desc" : "convert Custom(Matmul) op to Matmul op"
+        "attr_name": "resolve_customop_matmul",
+        "attr_desc": "convert Custom(Matmul) op to Matmul op"
       },
       {
-        "attr_name" : "resolve_customop_max_pool_with_argmax",
-        "attr_desc" : "convert Custom(MaxPoolWithArgmax) to net of builtin operators"
+        "attr_name": "resolve_customop_max_pool_with_argmax",
+        "attr_desc": "convert Custom(MaxPoolWithArgmax) to net of builtin operators"
       },
       {
-        "attr_name" : "shuffle_weight_to_16x1float32",
-        "attr_desc" : "convert weight format of FullyConnected op to SHUFFLED16x1FLOAT32. Note that it only converts weights whose row is a multiple of 16"
+        "attr_name": "shuffle_weight_to_16x1float32",
+        "attr_desc": "convert weight format of FullyConnected op to SHUFFLED16x1FLOAT32. Note that it only converts weights whose row is a multiple of 16"
       },
       {
-        "attr_name" : "substitute_pack_to_reshape",
-        "attr_desc" : "convert single input Pack op to Reshape op"
+        "attr_name": "substitute_pack_to_reshape",
+        "attr_desc": "convert single input Pack op to Reshape op"
       },
       {
-        "attr_name" : "substitute_padv2_to_pad",
-        "attr_desc" : "convert certain condition PadV2 to Pad"
+        "attr_name": "substitute_padv2_to_pad",
+        "attr_desc": "convert certain condition PadV2 to Pad"
       },
       {
-        "attr_name" : "substitute_splitv_to_split",
-        "attr_desc" : "convert certain condition SplitV to Split"
+        "attr_name": "substitute_splitv_to_split",
+        "attr_desc": "convert certain condition SplitV to Split"
       },
       {
-        "attr_name" : "substitute_squeeze_to_reshape",
-        "attr_desc" : "convert certain condition Squeeze to Reshape"
+        "attr_name": "substitute_squeeze_to_reshape",
+        "attr_desc": "convert certain condition Squeeze to Reshape"
       },
       {
-        "attr_name" : "substitute_strided_slice_to_reshape",
-        "attr_desc" : "convert certain condition StridedSlice to Reshape"
+        "attr_name": "substitute_strided_slice_to_reshape",
+        "attr_desc": "convert certain condition StridedSlice to Reshape"
       },
       {
-        "attr_name" : "substitute_transpose_to_reshape",
-        "attr_desc" : "convert certain condition Transpose to Reshape"
+        "attr_name": "substitute_transpose_to_reshape",
+        "attr_desc": "convert certain condition Transpose to Reshape"
       },
       {
-        "attr_name" : "transform_min_max_to_relu6",
-        "attr_desc" : "transform Minimum-Maximum pattern to Relu6 op"
+        "attr_name": "transform_min_max_to_relu6",
+        "attr_desc": "transform Minimum-Maximum pattern to Relu6 op"
       },
       {
-        "attr_name" : "transform_min_relu_to_relu6",
-        "attr_desc" : "transform Minimum(6)-Relu pattern to Relu6 op"
+        "attr_name": "transform_min_relu_to_relu6",
+        "attr_desc": "transform Minimum(6)-Relu pattern to Relu6 op"
       }
     ],
-    "description" : "command line tool to optimize circle model"
+    "description": "command line tool to optimize circle model"
   },
   {
-    "name" : "[one-quantize]",
-    "body" : [
+    "name": "[one-quantize]",
+    "body": [
       {
-        "attr_name" : "input_path",
-        "attr_desc" : "full filepath of the input file"
+        "attr_name": "input_path",
+        "attr_desc": "full filepath of the input file"
       },
       {
-        "attr_name" : "output_path",
-        "attr_desc" : "full filepath of the output file"
+        "attr_name": "output_path",
+        "attr_desc": "full filepath of the output file"
       },
       {
-        "attr_name" : "input_data",
-        "attr_desc" : "full filepath of the input data file. if not specified, run with random input data."
+        "attr_name": "input_data",
+        "attr_desc": "full filepath of the input data file. if not specified, run with random input data."
       },
       {
-        "attr_name" : "input_data_format",
-        "attr_desc" : "file format of input data.",
-        "options" : [
+        "attr_name": "input_data_format",
+        "attr_desc": "file format of input data.",
+        "options": [
           {
             "option_name": "h5/hdf5",
             "option_desc": "default"
@@ -411,12 +411,12 @@
         ]
       },
       {
-        "attr_name" : "generate_profile_data",
-        "attr_desc" : "generate profiling data"
+        "attr_name": "generate_profile_data",
+        "attr_desc": "generate profiling data"
       },
       {
-        "attr_name" : "input_dtype",
-        "attr_desc" : "input data type",
+        "attr_name": "input_dtype",
+        "attr_desc": "input data type",
         "options": [
           {
             "option_name": "float32",
@@ -425,8 +425,8 @@
         ]
       },
       {
-        "attr_name" : "quantized_dtype",
-        "attr_desc" : "output quantized data type",
+        "attr_name": "quantized_dtype",
+        "attr_desc": "output quantized data type",
         "options": [
           {
             "option_name": "uint8",
@@ -439,8 +439,8 @@
         ]
       },
       {
-        "attr_name" : "granularity",
-        "attr_desc" : "quantize granularity",
+        "attr_name": "granularity",
+        "attr_desc": "quantize granularity",
         "options": [
           {
             "option_name": "layer",
@@ -453,16 +453,16 @@
         ]
       },
       {
-        "attr_name" : "min_percentile",
-        "attr_desc" : "minimum percentile (0.0~100.0, default=1.0)"
+        "attr_name": "min_percentile",
+        "attr_desc": "minimum percentile (0.0~100.0, default=1.0)"
       },
       {
-        "attr_name" : "max_percentile",
-        "attr_desc" : "maximum percentile (0.0~100.0, default=99.0)"
+        "attr_name": "max_percentile",
+        "attr_desc": "maximum percentile (0.0~100.0, default=99.0)"
       },
       {
-        "attr_name" : "mode",
-        "attr_desc" : "record mode",
+        "attr_name": "mode",
+        "attr_desc": "record mode",
         "options": [
           {
             "option_name": "percentile",
@@ -475,48 +475,48 @@
         ]
       }
     ],
-    "description" : "command line tool to quantize circle model"
+    "description": "command line tool to quantize circle model"
   },
   {
-    "name" : "[one-pack]",
-    "body" : [
+    "name": "[one-pack]",
+    "body": [
       {
-        "attr_name" : "input_path",
-        "attr_desc" : "full filepath of the input file"
+        "attr_name": "input_path",
+        "attr_desc": "full filepath of the input file"
       },
       {
-        "attr_name" : "output_path",
-        "attr_desc" : "full filepath of the output file"
+        "attr_name": "output_path",
+        "attr_desc": "full filepath of the output file"
       }
     ],
-    "description" : "command line tool to package circle and metadata into nnpackage"
+    "description": "command line tool to package circle and metadata into nnpackage"
   },
   {
-    "name" : "[one-codegen]",
-    "body" : [
+    "name": "[one-codegen]",
+    "body": [
       {
-        "attr_name" : "backend",
-        "attr_desc" : "backend name to use backend_name_message"
+        "attr_name": "backend",
+        "attr_desc": "backend name to use backend_name_message"
       },
       {
-        "attr_name" : "command",
-        "attr_desc" : "make a command to run given backend driver"
+        "attr_name": "command",
+        "attr_desc": "make a command to run given backend driver"
       }
     ],
-    "description" : "command line tool for code generation"
+    "description": "command line tool for code generation"
   },
   {
-    "name" : "[one-profile]",
-    "body" : [
+    "name": "[one-profile]",
+    "body": [
       {
-        "attr_name" : "backend",
-        "attr_desc" : "backend name to use backend_name_message"
+        "attr_name": "backend",
+        "attr_desc": "backend name to use backend_name_message"
       },
       {
-        "attr_name" : "command",
-        "attr_desc" : "make a command to run given backend driver"
+        "attr_name": "command",
+        "attr_desc": "make a command to run given backend driver"
       }
     ],
-    "description" : "command line tool for profiling backend model"
+    "description": "command line tool for profiling backend model"
   }
 ]
