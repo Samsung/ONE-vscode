@@ -109,6 +109,31 @@ function check_ts_files() {
   fi
 }
 
+function check_json_files()
+{
+  if ! command_exists jq; then
+    echo "[ERROR] jq is unavailable"
+    echo
+    echo "        Please install jq before running format check"
+    exit 1
+  fi
+
+  # Check .json files
+  FILES_TO_CHECK_JSON=()
+  for f in ${FILES_TO_CHECK[@]}; do
+    # File extension to check
+    if [[ ${f} == +(*.json) ]]; then
+      FILES_TO_CHECK_JSON+=("${f}")
+    fi
+  done
+  
+  for f in ${FILES_TO_CHECK_JSON[@]}; do
+    jq . ${f} > ${f}.temp
+    rm ${f} && mv ${f}.temp ${f}
+  done
+
+}
+
 pushd ${THIS_PROJECT_PATH}
 
 if [[ -n "$(git diff)" ]]; then
