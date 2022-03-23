@@ -98,7 +98,7 @@
     "menus": {
       "view/item/context": [
         {
-          "_comment": "When model file is right-cliched, [Compile] menu will be shown.",
+          "_comment": "When model file is right-clicked, [Compile] menu will be shown.",
           "command": "onevscode.show-compile-webview",
           "when": "view == FileTreeView && viewItem == compilableFile"
         }
