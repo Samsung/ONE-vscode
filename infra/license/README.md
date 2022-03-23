@@ -12,6 +12,11 @@ To reduce such risk and labor, automatic license checker would be good solution.
 ### Flowchart
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'darkmode': 'true',
+  'lineColor': '#ECECFF'
+}}}%%
+
 flowchart TD;
   Start([PR Creation]);
   Pass([PASS]);
