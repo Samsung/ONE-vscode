@@ -31,7 +31,7 @@ export class JobQuantize extends JobBase {
   }
 
   public get tool() {
-    return 'one-quantize';
+    return 'quantize';
   }
 
   public get toolArgs() {

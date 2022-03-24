@@ -40,7 +40,7 @@ suite('Project', function() {
     suite('#tool()', function() {
       test('returns toolname as string', function() {
         let job = new JobCodegen();
-        let toolName = 'one-codegen';
+        let toolName = 'codegen';
         assert.strictEqual(job.tool, toolName);
       });
     });

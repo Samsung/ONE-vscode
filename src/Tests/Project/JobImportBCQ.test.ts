@@ -35,7 +35,7 @@ suite('Project', function() {
     suite('#tool()', function() {
       test('returns toolname as string', function() {
         let job = new JobImportBCQ();
-        let toolName = 'one-import-bcq';
+        let toolName = 'import';
         assert.strictEqual(job.tool, toolName);
       });
     });
@@ -61,9 +61,9 @@ suite('Project', function() {
         assert.isTrue(job.valid);
 
         let expected: Array<string> = [
-          '--input_path', inputPath, '--output_path', outputPath, '--input_arrays', inputArrays,
-          '--output_arrays', outputArrays, '--input_shapes', inputShapes, '--converter_version',
-          converterVersion
+          'bcq', '--input_path', inputPath, '--output_path', outputPath, '--input_arrays',
+          inputArrays, '--output_arrays', outputArrays, '--input_shapes', inputShapes,
+          '--converter_version', converterVersion
         ];
         let args = job.toolArgs;
         assert.includeOrderedMembers(args, expected);

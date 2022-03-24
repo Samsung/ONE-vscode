@@ -78,7 +78,7 @@ export class JobOptimize extends JobBase {
   }
 
   public get tool() {
-    return 'one-optimize';
+    return 'optimize';
   }
 
   public get toolArgs() {

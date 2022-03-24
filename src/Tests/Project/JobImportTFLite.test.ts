@@ -35,7 +35,7 @@ suite('Project', function() {
     suite('#tool()', function() {
       test('returns toolname as string', function() {
         let job = new JobImportTFLite();
-        let toolName = 'one-import-tflite';
+        let toolName = 'import';
         assert.strictEqual(job.tool, toolName);
       });
     });
@@ -51,7 +51,8 @@ suite('Project', function() {
         job.outputPath = outputPath;
         assert.isTrue(job.valid);
 
-        let expected: Array<string> = ['--input_path', inputPath, '--output_path', outputPath];
+        let expected: Array<string> =
+            ['tflite', '--input_path', inputPath, '--output_path', outputPath];
         let args = job.toolArgs;
         assert.includeOrderedMembers(args, expected);
       });

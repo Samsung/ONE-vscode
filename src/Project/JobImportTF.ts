@@ -31,17 +31,9 @@ export class JobImportTF extends JobImport {
     this.jobType = Job.Type.tImportTF;
   }
 
-  public get valid() {
-    // TODO validate arguments;
-    return true;
-  }
-
-  public get tool() {
-    return 'one-import-tf';
-  }
-
   public get toolArgs() {
     let args = new ToolArgs();
+    args.push('tf');
 
     // mandatory arguments
     args.add('--input_path', this.inputPath);

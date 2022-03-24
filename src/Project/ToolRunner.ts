@@ -60,7 +60,7 @@ export class ToolRunner {
     });
   }
 
-  public getToolPath(tool: string): string|undefined {
+  public getOneccPath(): string|undefined {
     let oneccPath = which.sync('onecc', {nothrow: true});
     if (oneccPath === null) {
       // Use fixed installation path
@@ -75,21 +75,20 @@ export class ToolRunner {
     // onecc maybe symbolic link: use fs.realpathSync to convert to real path
     let oneccRealPath = fs.realpathSync(oneccPath);
     console.log('onecc real path: ', oneccRealPath);
-    let toolFolder = path.dirname(oneccRealPath);
-    let toolPath = path.format({root: '/', dir: toolFolder, base: tool});
-    // check if this tool exist
-    if (!fs.existsSync(toolPath)) {
-      console.log('Tool not exist: ', toolPath);
+    // check if this onecc exist
+    if (!fs.existsSync(oneccRealPath)) {
+      console.log('Failed to find onecc file');
       return undefined;
     }
-    return toolPath;
+    return oneccRealPath;
   }
 
-  public getRunner(name: string, tool: string, toolargs: ToolArgs, path: string) {
+  public getRunner(name: string, onecc: string, tool: string, toolargs: ToolArgs, path: string) {
     return new Promise<string>((resolve, reject) => {
       this.logger.outputWithTime('Running: ' + name);
-
-      let cmd = cp.spawn(tool, toolargs, {cwd: path});
+      // place tool to the front of toolargs
+      toolargs.unshift(tool);
+      let cmd = cp.spawn(onecc, toolargs, {cwd: path});
       this.handlePromise(resolve, reject, cmd);
     });
   }

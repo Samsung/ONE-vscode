@@ -27,17 +27,9 @@ export class JobImportTFLite extends JobImport {
     this.jobType = Job.Type.tImportTFLite;
   }
 
-  public get valid() {
-    // TODO validate arguments;
-    return true;
-  }
-
-  public get tool() {
-    return 'one-import-tflite';
-  }
-
   public get toolArgs() {
     let args = new ToolArgs();
+    args.push('tflite');
 
     // mandatory arguments
     args.add('--input_path', this.inputPath);

@@ -43,16 +43,16 @@ export class JobRunner extends EventEmitter {
   }
 
   private invoke(name: string, tool: string, toolArgs: ToolArgs, path: string) {
-    const toolPath = this.toolRunner.getToolPath(tool);
-    if (toolPath === undefined) {
-      Balloon.error('Failed to find tool: ' + tool);
-      this.logger.outputLine('Failed to find tool: ' + tool);
+    const onecc = this.toolRunner.getOneccPath();
+    if (onecc === undefined) {
+      Balloon.error('Failed to find onecc: ' + onecc);
+      this.logger.outputLine('Failed to find tool: ' + onecc);
       this.emit(K_CLEANUP);
       return;
     }
-    console.log('Found tool:', tool, 'as', toolPath);
-    console.log('Run tool:', tool, 'args', toolArgs, 'cwd:', path);
-    const runner = this.toolRunner.getRunner(name, toolPath, toolArgs, path);
+    console.log('Found onecc: ', onecc);
+    console.log('Run onecc: ', onecc, ' tool: ', tool, ' args: ', toolArgs, ' cwd: ', path);
+    const runner = this.toolRunner.getRunner(name, onecc, tool, toolArgs, path);
 
     runner
         .then(() => {
