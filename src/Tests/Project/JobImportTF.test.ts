@@ -35,7 +35,7 @@ suite('Project', function() {
     suite('#tool()', function() {
       test('returns toolname as string', function() {
         let job = new JobImportTF();
-        let toolName = 'one-import-tf';
+        let toolName = 'import';
         assert.strictEqual(job.tool, toolName);
       });
     });
@@ -65,9 +65,10 @@ suite('Project', function() {
         assert.isTrue(job.valid);
 
         let expected: Array<string> = [
-          '--input_path', inputPath, '--output_path', outputPath, '--input_arrays', inputArrays,
-          '--output_arrays', outputArrays, '--input_shapes', inputShapes, '--converter_version',
-          converterVersion, '--model_format', modelFormat, '--save_intermediate'
+          'tf', '--input_path', inputPath, '--output_path', outputPath, '--input_arrays',
+          inputArrays, '--output_arrays', outputArrays, '--input_shapes', inputShapes,
+          '--converter_version', converterVersion, '--model_format', modelFormat,
+          '--save_intermediate'
         ];
         let args = job.toolArgs;
         assert.includeOrderedMembers(args, expected);

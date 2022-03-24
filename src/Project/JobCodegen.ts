@@ -50,7 +50,7 @@ export class JobCodegen extends JobBase {
   }
 
   public get tool() {
-    return 'one-codegen';
+    return 'codegen';
   }
 
   public get toolArgs() {

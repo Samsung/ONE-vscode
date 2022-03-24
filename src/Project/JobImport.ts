@@ -16,4 +16,13 @@
 
 import {JobBase} from './JobBase';
 
-export class JobImport extends JobBase {}
+export class JobImport extends JobBase {
+  public get valid() {
+    // TODO validate arguments;
+    return true;
+  }
+
+  public get tool() {
+    return 'import';
+  }
+}

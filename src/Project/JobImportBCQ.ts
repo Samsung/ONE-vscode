@@ -29,17 +29,9 @@ export class JobImportBCQ extends JobImport {
     this.jobType = Job.Type.tImportBCQ;
   }
 
-  public get valid() {
-    // TODO validate arguments;
-    return true;
-  }
-
-  public get tool() {
-    return 'one-import-bcq';
-  }
-
   public get toolArgs() {
     let args = new ToolArgs();
+    args.push('bcq');
 
     // mandatory arguments
     args.add('--input_path', this.inputPath);

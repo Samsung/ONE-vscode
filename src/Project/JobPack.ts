@@ -31,7 +31,7 @@ export class JobPack extends JobBase {
   }
 
   public get tool() {
-    return 'one-pack';
+    return 'pack';
   }
 
   public get toolArgs() {

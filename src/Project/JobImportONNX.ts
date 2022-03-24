@@ -28,17 +28,9 @@ export class JobImportONNX extends JobImport {
     this.jobType = Job.Type.tImportONNX;
   }
 
-  public get valid() {
-    // TODO validate arguments;
-    return true;
-  }
-
-  public get tool() {
-    return 'one-import-onnx';
-  }
-
   public get toolArgs() {
     let args = new ToolArgs();
+    args.push('onnx');
 
     // mandatory arguments
     args.add('--input_path', this.inputPath);

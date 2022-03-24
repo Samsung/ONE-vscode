@@ -35,7 +35,7 @@ suite('Project', function() {
     suite('#tool()', function() {
       test('returns toolname as string', function() {
         let job = new JobOptimize();
-        let toolName = 'one-optimize';
+        let toolName = 'optimize';
         assert.strictEqual(job.tool, toolName);
       });
     });

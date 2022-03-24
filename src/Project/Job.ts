@@ -16,6 +16,18 @@
 
 import {ToolArgs} from './ToolArgs';
 
+// Currently `Job`s should be used by `onecc`
+// Ex1) JobCodegen
+// `onecc codegen arg0 arg1`
+// `onecc`: driver
+// `codegen`: tool
+// `arg0 arg1`: toolArgs
+// Ex1) JobImportTF
+// `onecc import tf arg0 arg1`
+// `onecc`: driver
+// `import`: tool
+// `tf arg0 arg1`: toolArgs
+// TODO: Introduce `driver` if other drivers(not `onecc`) is necessary
 export interface Job {
   jobType: Job.Type;
   name: string;

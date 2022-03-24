@@ -35,7 +35,7 @@ suite('Project', function() {
     suite('#tool()', function() {
       test('returns toolname as string', function() {
         let job = new JobQuantize();
-        let toolName = 'one-quantize';
+        let toolName = 'quantize';
         assert.strictEqual(job.tool, toolName);
       });
     });
