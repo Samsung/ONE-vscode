@@ -19,6 +19,7 @@ jobs:
       - run: npm run lintcss
       - run: npm run linthtml
       - run: sudo apt-get install clang-format-8
+      - run: sudo apt-get install jq
       - run: bash infra/format
 
       - name: Upload format.patch
