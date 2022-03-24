@@ -29,9 +29,9 @@ flowchart TD;
   LicensePermitted{permitted?};
   AllChecked{All packages are\nchecked?};
   LicenseUnknown{License is\nUNKNOWN?};
-  AddLicenseInfo[\Add license information to\nlicense-judgment.json/];
-  CheckWarning[\Check\nWarnings/];
-  AddPackageInfo[\Add package information to\npackage-judgment.json/];
+  AddLicenseInfo[\Add license information to\nlicense-judgment.json\n**Manually**/];
+  CheckWarning[\Check\nWarnings\n**Manually**/];
+  AddPackageInfo[\Add package information to\npackage-judgment.json\n**Manually**/];
 
   Start-->PackageJson;
   PackageJson-->|yes|AllChecked;
