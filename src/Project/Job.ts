@@ -22,7 +22,7 @@ import {ToolArgs} from './ToolArgs';
 // `onecc`: driver
 // `codegen`: tool
 // `arg0 arg1`: toolArgs
-// Ex1) JobImportTF
+// Ex2) JobImportTF
 // `onecc import tf arg0 arg1`
 // `onecc`: driver
 // `import`: tool
