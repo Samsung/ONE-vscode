@@ -131,7 +131,6 @@ function check_json_files()
     jq . ${f} > ${f}.temp
     rm ${f} && mv ${f}.temp ${f}
   done
-
 }
 
 pushd ${THIS_PROJECT_PATH}
