@@ -20,17 +20,6 @@ import {EOL} from 'os';
 import * as licenseJudgment from './license-judgment.json';
 import * as packageJudgment from './package-judgment.json';
 
-
-/**
- * Argument List
- *  - Input path for list of used licenses
- *  - Name of OS.
- *    Currently, latest version of Winodws, Ubuntu, MacOS are used.
- */
-var args = process.argv.slice(2)
-const inputPathOfLicenseList = args[0];
-const verificationTag = args[1];
-
 namespace Verification {
 
 const resultTypeDescription = {
@@ -160,41 +149,16 @@ export function verify(pkgName: string, pkgLicense: string): ResultType {
 }  // namespace Verification
 
 /**
- * - WarningCount : The total number of warnings
- *
- * - WarnnedLicenseUsed
- *   - Licenses which are classified as WARN in license-judgment.json
- * - NeverChecked
- *   - Licenses which are not found in license-judgment.json
- * - UnknownLicense
- *   - Licenses which package are not found.
+ * Argument List
+ *  - Input path for list of used licenses
+ *  - Name of OS.
+ *    Currently, latest version of Winodws, Ubuntu, MacOS are used.
  */
-var warningList = {
-  'WarningCount': 0,
-
-  'WarnedLicenseUsed': [] as string[],
-  'NeverChecked': [] as string[],
-  'UnknownLicense': [] as string[]
-};
+var args = process.argv.slice(2)
+const inputPathOfLicenseList = args[0];
+const verificationTag = args[1];
 
 /**
- * - DeniedCount : The total number of denials
- *
- * - ONEForbidden
- *   - Licenses which are classified as not permitted at ONE in package-judgment.json
- * - DeniedLicenseUsed
- *   - Licenses which are denied by license-judgment.json
- */
-var deniedList = {
-  'DeniedCount': 0,
-
-  'ONEForbidden': [] as string[],
-  'DeniedLicenseUsed': [] as string[]
-};
-
-/**
- * License Verification start
- *
  * NOTE : "inputPathOfLicenseList" includes following JSON content,
  *        which is result of 'license-checker'
  * {
@@ -210,98 +174,6 @@ var deniedList = {
  * }
  */
 const usedLicenseList = JSON.parse(readFileSync(inputPathOfLicenseList, 'utf-8'));
-for (const pkg in usedLicenseList) {
-  var pkgInfo = usedLicenseList[pkg];
-  if (packageJudgment.hasOwnProperty(pkg)) {
-    const pkgKey = pkg as keyof typeof packageJudgment;
-
-    if (packageJudgment[pkgKey].permitted === 'no') {
-      deniedList.DeniedCount++;
-      deniedList.ONEForbidden.push(pkg + EOL);
-    } else if (packageJudgment[pkgKey].permitted === 'yes') {
-      // Verification PASS, do nothing
-    } else if (packageJudgment[pkgKey].permitted === 'conditional') {
-      // Verification PASS, check manually when release
-    } else {
-      throw new Error('Not implemented permitted type');
-    }
-  } else if (licenseJudgment.hasOwnProperty(pkgInfo.licenses)) {
-    const licenseKey = pkgInfo.licenses as keyof typeof licenseJudgment;
-    if (licenseJudgment[licenseKey].permitted === 'no') {
-      deniedList.DeniedCount++;
-      deniedList.DeniedLicenseUsed.push(pkg + ' : ' + pkgInfo.licenses + EOL);
-    } else if (licenseJudgment[licenseKey].permitted === 'conditional') {
-      warningList.WarningCount++;
-      warningList.WarnedLicenseUsed.push(pkg + ' : ' + pkgInfo.licenses + EOL);
-    } else if (licenseJudgment[licenseKey].permitted === 'yes') {
-      // Verification PASS, do nothing
-    } else {
-      throw new Error('Not implemented permitted type');
-    }
-  } else if (pkgInfo.licenses === 'UNKNOWN') {
-    warningList.WarningCount++;
-    warningList.UnknownLicense.push(pkg + EOL);
-  } else {
-    warningList.WarningCount++;
-    warningList.NeverChecked.push(pkg + ' : ' + pkgInfo.licenses + EOL);
-  }
-}
-
-/**
- * Create result comment
- */
-var resultComment = '#### ' + verificationTag + EOL + EOL;
-var issueFound = false;
-
-if (warningList.WarningCount > 0) {
-  issueFound = true;
-  resultComment += (':warning: **Warning** :warning:' + EOL);
-
-  if (warningList.NeverChecked.length > 0) {
-    resultComment += ('- Following licenses are never checked' + EOL);
-    warningList.NeverChecked.forEach(msg => {
-      resultComment += ('    - ' + msg);
-    });
-  }
-  if (warningList.WarnedLicenseUsed.length > 0) {
-    resultComment += ('- Further verification is needed for following licenses' + EOL);
-    warningList.WarnedLicenseUsed.forEach(msg => {
-      resultComment += ('    - ' + msg);
-    });
-  }
-  if (warningList.UnknownLicense.length > 0) {
-    resultComment += ('- License is not found for following packages' + EOL);
-    warningList.UnknownLicense.forEach(msg => {
-      resultComment += ('    - ' + msg);
-    });
-  }
-
-  resultComment += EOL;
-}
-
-if (deniedList.DeniedCount > 0) {
-  issueFound = true;
-  resultComment += (':no_entry: **Denied** :no_entry:' + EOL);
-
-  if (deniedList.ONEForbidden.length > 0) {
-    resultComment += ('- Following packages are forbidden in ONE' + EOL);
-    deniedList.ONEForbidden.forEach(msg => {
-      resultComment += ('    - ' + msg);
-    });
-  }
-  if (deniedList.DeniedLicenseUsed.length > 0) {
-    resultComment += ('- Following packages use denied licenses' + EOL);
-    deniedList.DeniedLicenseUsed.forEach(msg => {
-      resultComment += ('    - ' + msg);
-    });
-  }
-
-  resultComment += EOL;
-}
-
-if (issueFound === false) {
-  resultComment += (':heavy_check_mark: No license issue found' + EOL);
-}
 
 let resultSet = new Verification.ResultSet();
 for (const pkgName in usedLicenseList) {
