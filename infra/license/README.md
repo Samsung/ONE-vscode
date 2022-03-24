@@ -11,7 +11,49 @@ To reduce such risk and labor, automatic license checker would be good solution.
 
 ### Flowchart
 
-![flowchart](flowchart.png)
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'darkmode': 'true',
+  'lineColor': '#ECECFF'
+}}}%%
+
+flowchart TD;
+  Start([PR Creation]);
+  Pass([PASS]);
+  Fail([FAIL]);
+  Choose(Choose\nunchecked\npackage);
+  PackageJson{package.json is\nmodified?};
+  PackageJudgment{Package information\nis found in\npackage-judgment.json?};
+  LicenseJudgment{License information\nis found in\nlicense-judgment.json?};
+  PackagePermitted{permitted?};
+  LicensePermitted{permitted?};
+  AllChecked{All packages are\nchecked?};
+  LicenseUnknown{License is\nUNKNOWN?};
+  AddLicenseInfo[\Add license information to\nlicense-judgment.json\n**Manually**/];
+  CheckWarning[\Check\nWarnings\n**Manually**/];
+  AddPackageInfo[\Add package information to\npackage-judgment.json\n**Manually**/];
+
+  Start-->PackageJson;
+  PackageJson-->|yes|AllChecked;
+  PackageJson-->|no|Pass;
+  Choose-->PackageJudgment;
+  PackageJudgment-->|yes|PackagePermitted;
+  PackageJudgment-->|no|LicenseJudgment;
+  LicenseJudgment-->|yes|LicensePermitted;
+  LicenseJudgment-->|no|LicenseUnknown;
+  LicenseUnknown-->|yes|AddPackageInfo;
+  LicenseUnknown-->|no|AddLicenseInfo;
+  AddLicenseInfo-->LicenseJudgment;
+  AddPackageInfo-->PackageJudgment;
+  PackagePermitted-->|no|Fail;
+  PackagePermitted-->|yes/conditional|AllChecked;
+  LicensePermitted-->|no|Fail;
+  LicensePermitted-->|yes|AllChecked;
+  LicensePermitted-->|conditional|CheckWarning;
+  CheckWarning-->AddPackageInfo;
+  AllChecked-->|yes|Pass;
+  AllChecked-->|no|Choose;
+```
 
 ### Terminology
 
