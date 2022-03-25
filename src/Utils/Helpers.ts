@@ -74,6 +74,29 @@ export function getImportCfgFilepath(selector: FileSelector): void {
 }
 
 /**
+ * @brief Get model file path using file open dialog
+ */
+export function getModelFilepath(selector: FileSelector, modelType: string): void {
+  const options: vscode.OpenDialogOptions = {
+    canSelectMany: false,
+    openLabel: 'Run',
+    filters: {
+      /* eslint-disable */
+      'model files': [modelType]
+      /* eslint-enable */
+    }
+  };
+
+  vscode.window.showOpenDialog(options).then(fileUri => {
+    if (fileUri && fileUri[0]) {
+      selector.onFileSelected(fileUri[0]);
+    } else {
+      selector.onFileSelected(undefined);
+    }
+  });
+}
+
+/**
  * @brief Load cfg file and return Object
  */
 export function loadCfgFile(filePath: string): any {
