@@ -42,7 +42,6 @@ suite('Project', function() {
         // oneccPath could be string or undefined. Avoid compiling error
         if (oneccPath === undefined) {
           assert.fail('oneccPath should be string type');
-          return;  // for successful ts-compiling
         }
         const workspaceRoot: string = obtainWorkspaceRoot();
         const runner =
