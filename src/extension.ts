@@ -24,6 +24,7 @@ import {CodelensProvider} from './Editor/CodelensProvider';
 import {HoverProvider} from './Editor/HoverProvider';
 import {Jsontracer} from './Jsontracer';
 import {Project} from './Project';
+import {Runner} from './Runner'
 import {Utils} from './Utils';
 import * as FileTreeViewActivator from './Views/FileTreeViewActivator';
 
@@ -39,6 +40,17 @@ export function activate(context: vscode.ExtensionContext) {
       'onevscode.install-new-toolchain', () => {/* TODO Implement */});
 
   let logger = new Utils.Logger();
+  // Start of draft to run source models
+
+  // let modelRunner = new Runner(logger, 'tflite');
+  let TFLiteRunner = new Runner.TFLite(logger);
+  let runTFLiteModelCmd = vscode.commands.registerCommand('onevscode.run-test-model', () => {
+    console.log('run TFLite model')
+    TFLiteRunner.loadModel();
+  });
+
+  // End of draft to run source models
+
   let projectBuilder = new Project.Builder(logger);
 
   projectBuilder.init();
