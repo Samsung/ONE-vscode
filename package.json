@@ -146,7 +146,8 @@
     "lintcss": "csslint media src",
     "linthtml": "htmlhint media src",
     "unittest": "node ./out/Tests/runTest.js",
-    "test": "npm run unittest"
+    "test": "npm run unittest",
+    "clean": "rm -rf out"
   },
   "devDependencies": {
     "@types/chai": "^4.3.0",
