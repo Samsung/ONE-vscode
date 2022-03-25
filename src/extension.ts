@@ -25,18 +25,9 @@ import {HoverProvider} from './Editor/HoverProvider';
 import {Jsontracer} from './Jsontracer';
 import {Project} from './Project';
 import {Utils} from './Utils';
-import * as FileTreeViewActivator from './Views/FileTreeViewActivator';
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('one-vscode activate OK');
-
-  FileTreeViewActivator.activate('onevscode.fileTreeView-open', context);
-
-  let registerInstaelledToolchainCmd = vscode.commands.registerCommand(
-      'onevscode.register-installed-toolchain', () => {/* TODO Implement */});
-
-  let installNewToolchainCmd = vscode.commands.registerCommand(
-      'onevscode.install-new-toolchain', () => {/* TODO Implement */});
 
   let logger = new Utils.Logger();
   let projectBuilder = new Project.Builder(logger);

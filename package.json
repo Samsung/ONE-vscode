@@ -11,16 +11,12 @@
     "Other"
   ],
   "activationEvents": [
-    "onView:FileTreeView",
     "onCommand:onevscode.build",
     "onCommand:onevscode.import",
     "onCommand:onevscode.json-tracer",
     "onCommand:onevscode.configuration-settings",
     "onCommand:onevscode.toggle-codelens",
     "onCommand:onevscode.circle-tracer",
-    "onCommand:onevscode.fileTreeView-open",
-    "onCommand:onevscode.register-installed-toolchain",
-    "onCommand:onevscode.install-new-toolchain",
     "onStartupFinished"
   ],
   "main": "./out/extension.js",
@@ -36,27 +32,9 @@
     },
     "views": {
       "ONE-Views": [
-        {
-          "id": "FileTreeView",
-          "name": "Files",
-          "contextualTitle": "ONE: Files"
-        }
       ]
     },
-    "viewsWelcome": [
-      {
-        "view": "FileTreeView",
-        "contents": "Open folder where model files are stored. Models files are one of the following format:\n- *.tflite, *.pb, Keras model or saved model for Tensorflow​\n- *.onnx or *.pth for PyTorch\n[Open Folder](Command:onevscode.fileTreeView-open)\nNext, register already-installed toolchain or install a new toolchain. You can do this later.\n[Register Installed Toolchain](Command:onevscode.register-installed-toolchain)\nor\n[Install New Toolchain](Command:onevscode.install-new-toolchain)\n",
-        "when": "config.one-vscode.projectRootDirectory == ''"
-      }
-    ],
     "commands": [
-      {
-        "command": "onevscode.fileTreeView-open",
-        "title": "Set model directory",
-        "category": "ONE",
-        "_comment": "Call this command to set the model directory of local machine."
-      },
       {
         "command": "onevscode.build",
         "title": "build",
@@ -89,12 +67,6 @@
       }
     ],
     "menus": {
-      "view/title": [
-        {
-          "command": "onevscode.fileTreeView-open",
-          "when": "view == FileTreeView"
-        }
-      ]
     },
     "configuration": {
       "title": "ONE",
@@ -102,11 +74,6 @@
         "one-vscode.enableCodelens": {
           "type": "boolean",
           "default": true
-        },
-        "one-vscode.projectRootDirectory": {
-          "type": "string",
-          "description": "The directory path where model files are managed.",
-          "default": ""
         }
       }
     },
@@ -151,10 +118,8 @@
   "devDependencies": {
     "@types/chai": "^4.3.0",
     "@types/glob": "^7.1.3",
-    "@types/mkdirp": "^1.0.2",
     "@types/mocha": "^9.1.0",
     "@types/node": "^12.11.7",
-    "@types/rimraf": "^3.0.2",
     "@types/vscode": "^1.46.0",
     "@typescript-eslint/eslint-plugin": "^4.9.0",
     "@typescript-eslint/parser": "^4.9.0",
