@@ -35,7 +35,7 @@ for (let i = 0; i < resultPaths.length; ++i) {
   totalFailCount += Number(result['failCount']);
 }
 
-let resultComment = '### License Verification' + EOL + EOL;
+let resultComment = '';
 if (totalWarnCount + totalFailCount > 0) {
   resultComment += ':warning: Total ' + totalWarnCount.toString() + ' Warning(s) Found' + EOL;
   resultComment += ':no_entry: Total ' + totalFailCount.toString() + ' Failure(s) Found' + EOL;
