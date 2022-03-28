@@ -14,4 +14,6 @@ jobs:
         with:
           node-version: '16'
       - run: npm install
-      - run: npm test
+      - run: sudo apt install xvfb
+      - run: export DISPLAY=:44
+      - run: xvfb-run --server-num 44 npm test
