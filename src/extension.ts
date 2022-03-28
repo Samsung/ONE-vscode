@@ -24,10 +24,25 @@ import {CodelensProvider} from './Editor/CodelensProvider';
 import {HoverProvider} from './Editor/HoverProvider';
 import {Jsontracer} from './Jsontracer';
 import {Project} from './Project';
+import {CompilableFile} from './Support/CompilableFile';
 import {Utils} from './Utils';
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('one-vscode activate OK');
+
+  // Thses context is used to show "Compile" menu in Explorer view
+  //
+  // 1. When a file is right-clicked (e.g., .pb, .tflite, etc)
+  // 2. When a dir is right-clicked (e.g., Keras model or saved model)
+  CompilableFile.setFileExtContext('onevscode.compilableExtList');
+  CompilableFile.setDirContext('onevscode.compilableDirList');
+
+  // show compilation page
+  let compileWebView =
+      vscode.commands.registerCommand('onevscode.show-compile-webview', () => {
+        console.log('NYI');
+      });
+  context.subscriptions.push(compileWebView);
 
   let logger = new Utils.Logger();
   let projectBuilder = new Project.Builder(logger);
