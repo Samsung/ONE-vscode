@@ -18,6 +18,7 @@ import * as vscode from 'vscode';
 
 import {decoder} from './Circlereader/Circlereader';
 import {Circletracer} from './Circletracer';
+import {CompilePanel} from './Compile/CompilePanel';
 import {ConfigPanel} from './Config/ConfigPanel';
 import {createStatusBarItem} from './Config/ConfigStatusBar';
 import {CodelensProvider} from './Editor/CodelensProvider';
@@ -53,7 +54,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   // show compilation page
   let compileWebView = vscode.commands.registerCommand('onevscode.show-compile-webview', () => {
-    console.log('NYI');
+    CompilePanel.render(context.extensionUri);
   });
   context.subscriptions.push(compileWebView);
 
