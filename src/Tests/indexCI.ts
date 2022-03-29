@@ -46,8 +46,8 @@ import Mocha from 'mocha';
 import * as path from 'path';
 
 // TODO: if there is a way to pass from runTest to this file's run(), we could merge to one file.
-// NOTE: indexCI.ts is copied from index.ts. On CI, some tests have limitations so they have to be excluded.
-// This function does it.
+// NOTE: indexCI.ts is copied from index.ts. On CI, some tests have limitations so they have to be
+// excluded. This function does it.
 export function run(): Promise<void> {
   const mocha = new Mocha({ui: 'tdd', color: true, fgrep: '@Use-onecc', invert: true});
 
