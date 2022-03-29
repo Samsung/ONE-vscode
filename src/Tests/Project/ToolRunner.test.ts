@@ -26,33 +26,35 @@ suite('Project', function() {
   suite('ToolRunner', function() {
     const logger = new Logger();
     let job = new MockJob('mockup');
-    suite('#getOneccPath()', function() {
-      test('returns onecc path as string', function() {
-        let toolRunner = new ToolRunner(logger);
-        let actual = toolRunner.getOneccPath();  // string or undefined
-        // Note. `onecc` path could be changed by user
+    suite('@Use-onecc', function() {
+      suite('#getOneccPath()', function() {
+        test('returns onecc path as string', function() {
+          let toolRunner = new ToolRunner(logger);
+          let actual = toolRunner.getOneccPath();  // string or undefined
+          // Note. `onecc` path could be changed by user
         assert.isTrue((actual === '/usr/share/one/bin/onecc') ||
                       (actual?.endsWith('onecc')));
+        });
       });
-    });
-    suite('#getRunner()', function() {
-      test('returns runner as Promise<string>', function(done) {
-        let toolRunner = new ToolRunner(logger);
-        const oneccPath = toolRunner.getOneccPath();
-        // oneccPath could be string or undefined. Avoid compiling error
-        if (oneccPath === undefined) {
-          assert.fail('oneccPath should be string type');
-        }
-        const workspaceRoot: string = obtainWorkspaceRoot();
-        const runner =
-            toolRunner.getRunner(job.name, oneccPath, job.tool, job.toolArgs, workspaceRoot);
-        assert.isNotNull(runner);
-        runner
-            .then(function(str) {
-              assert.ok(str);
-              done();
-            })
-            .catch(done);
+      suite('#getRunner()', function() {
+        test('returns runner as Promise<string>', function(done) {
+          let toolRunner = new ToolRunner(logger);
+          const oneccPath = toolRunner.getOneccPath();
+          // oneccPath could be string or undefined. Avoid compiling error
+          if (oneccPath === undefined) {
+            assert.fail('oneccPath should be string type');
+          }
+          const workspaceRoot: string = obtainWorkspaceRoot();
+          const runner =
+              toolRunner.getRunner(job.name, oneccPath, job.tool, job.toolArgs, workspaceRoot);
+          assert.isNotNull(runner);
+          runner
+              .then(function(str) {
+                assert.ok(str);
+                done();
+              })
+              .catch(done);
+        });
       });
     });
   });

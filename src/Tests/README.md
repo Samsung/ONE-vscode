@@ -45,6 +45,18 @@ src/
       ...
 ```
 
+## Misc in tests
+
+Some names are used to filter specific tests.
+
+```ts
+suite('@Use-onecc', function() {
+  // ...
+});
+```
+
+Like `@Use-onecc` is expressing that these tests use `onecc` commands.
+
 ## scripts
 
 There are three scripts for tests.
