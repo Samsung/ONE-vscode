@@ -37,6 +37,12 @@
     },
     "commands": [
       {
+        "command": "onevscode.show-compile-webview",
+        "title": "Compile",
+        "category": "ONE",
+        "_comment": "Call this when compiling compilable model(e.g., *.tflite, *.onnx, etc.)"
+      },
+      {
         "command": "onevscode.build",
         "title": "build",
         "category": "ONE"
@@ -68,6 +74,12 @@
       }
     ],
     "menus": {
+      "explorer/context": [
+        {
+          "command": "onevscode.show-compile-webview",
+          "when": "resourceExtname in onevscode.compilableExtList || resourcePath in onevscode.compilableDirList"
+        }
+      ]
     },
     "configuration": {
       "title": "ONE",
