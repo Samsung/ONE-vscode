@@ -43,11 +43,25 @@
 
 import {runTests} from '@vscode/test-electron';
 import * as path from 'path';
+import {argv} from 'process';
 
 async function main() {
+  let ci: boolean = false;
+  if (argv.length > 2) {
+    // front of two args
+    let args = argv.splice(2);
+    args.forEach((str) => {
+      if (str === 'ci') {
+        ci = true;
+      }
+    });
+  }
+
   try {
     const extensionDevelopmentPath = path.resolve(__dirname, '../../');
-    const extensionTestsPath = path.resolve(extensionDevelopmentPath, 'out', 'Tests', 'index');
+    const extensionTestsPath = (ci) ?
+        path.resolve(extensionDevelopmentPath, 'out', 'Tests', 'indexCI') :
+        path.resolve(extensionDevelopmentPath, 'out', 'Tests', 'index');
     const testWorkspace = path.resolve(extensionDevelopmentPath);
     await runTests({
       extensionDevelopmentPath,
