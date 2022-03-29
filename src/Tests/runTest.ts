@@ -46,16 +46,7 @@ import * as path from 'path';
 import {argv} from 'process';
 
 async function main() {
-  let ci: boolean = false;
-  if (argv.length > 2) {
-    // front of two args
-    let args = argv.splice(2);
-    args.forEach((str) => {
-      if (str === 'ci') {
-        ci = true;
-      }
-    });
-  }
+  let ci: boolean = argv.length > 2 && argv.slice(2).includes('ci');
 
   try {
     const extensionDevelopmentPath = path.resolve(__dirname, '../../');
