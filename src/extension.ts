@@ -52,6 +52,12 @@ export function activate(context: vscode.ExtensionContext) {
 
   setGlobalContext();
 
+  // ONE view
+  let connectRemote = vscode.commands.registerCommand('onevscode.connect-remote', () => {
+    console.log('connect-remote: NYI');
+  });
+  context.subscriptions.push(connectRemote);
+
   // show compilation page
   let compileWebView = vscode.commands.registerCommand('onevscode.show-compile-webview', () => {
     CompilePanel.render(context.extensionUri);
