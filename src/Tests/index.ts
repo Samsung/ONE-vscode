@@ -46,7 +46,6 @@ import Mocha from 'mocha';
 import * as path from 'path';
 
 export function run(): Promise<void> {
-  // fgrep: 'str' if we need to filter
   const mocha = new Mocha({ui: 'tdd', color: true});
 
   const testsRoot = path.resolve(__dirname, '.');

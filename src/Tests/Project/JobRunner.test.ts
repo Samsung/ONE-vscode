@@ -22,24 +22,26 @@ import {obtainWorkspaceRoot} from '../../Utils/Helpers';
 import {Logger} from '../../Utils/Logger';
 import {MockJob} from '../MockJob';
 
-suite('Project', function() {
-  suite('JobRunner', function() {
-    const logger = new Logger();
-    suite('#start()', function() {
-      test('jobs are done', function(done) {
-        let jobRunner = new JobRunner(logger);
-        const workspaceRoot: string = obtainWorkspaceRoot();
-        let workJobs = new WorkJobs();
-        workJobs.push(new MockJob('mockup'));
-        workJobs.push(new MockJob('mockup'));
-        assert.strictEqual(workJobs.length, 2);
+suite('@Use-onecc', function() {
+  suite('Project', function() {
+    suite('JobRunner', function() {
+      const logger = new Logger();
+      suite('#start()', function() {
+        test('jobs are done', function(done) {
+          let jobRunner = new JobRunner(logger);
+          const workspaceRoot: string = obtainWorkspaceRoot();
+          let workJobs = new WorkJobs();
+          workJobs.push(new MockJob('mockup'));
+          workJobs.push(new MockJob('mockup'));
+          assert.strictEqual(workJobs.length, 2);
 
-        // overwrite events so that multiple events will be emitted
-        jobRunner.on('cleanup', function() {
-          assert.strictEqual(workJobs.length, 0);
-          done();
+          // overwrite events so that multiple events will be emitted
+          jobRunner.on('cleanup', function() {
+            assert.strictEqual(workJobs.length, 0);
+            done();
+          });
+          jobRunner.start(workspaceRoot, workJobs);
         });
-        jobRunner.start(workspaceRoot, workJobs);
       });
     });
   });

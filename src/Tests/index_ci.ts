@@ -38,40 +38,46 @@
 
 /*
  * This file comes from
- * https://github.com/microsoft/vscode-extension-samples/blob/af8c35e1fdea41feb11cd5d5e9782a97346be9c8/helloworld-test-sample/src/test/runTest.ts
+ * https://github.com/microsoft/vscode-extension-samples/blob/ba9a56e68277b6ba0ae3ee4593b6a864ba158b1f/helloworld-test-sample/src/test/suite/index.ts
  */
 
-import {runTests} from '@vscode/test-electron';
+import {glob} from 'glob';
+import Mocha from 'mocha';
 import * as path from 'path';
-import {argv} from 'process';
 
-async function main() {
-  let ci: boolean = false;
-  if (argv.length > 2) {
-    // front of two args
-    let args = argv.splice(2);
-    args.forEach((str) => {
-      if (str === 'ci') {
-        ci = true;
+// TODO: if there is a way to pass from runTest to this file's run(), we could merge to one file.
+// index_ci.ts is copied from index.ts
+// On CI, some tests have limitations so they have to be excluded.
+// This function does it.
+export function run(): Promise<void> {
+  const mocha = new Mocha({ui: 'tdd', color: true, fgrep: '@Use-onecc', invert: true});
+
+  const testsRoot = path.resolve(__dirname, '.');
+
+  // adds hooks first
+  const hooks = 'hooks.js';
+  mocha.addFile(path.join(testsRoot, hooks));
+
+  return new Promise((c, e) => {
+    glob('**/**.test.js', {cwd: testsRoot}, (err: Error|null, files: Array<string>) => {
+      if (err) {
+        return e(err);
+      }
+
+      files.forEach(f => mocha.addFile(path.resolve(testsRoot, f)));
+
+      try {
+        mocha.run(failures => {
+          if (failures > 0) {
+            e(new Error(`${failures} tests failed.`));
+          } else {
+            c();
+          }
+        });
+      } catch (err) {
+        console.error(err);
+        e(err);
       }
     });
-  }
-
-  try {
-    const extensionDevelopmentPath = path.resolve(__dirname, '../../');
-    const extensionTestsPath = (ci) ?
-        path.resolve(extensionDevelopmentPath, 'out', 'Tests', 'index_ci') :
-        path.resolve(extensionDevelopmentPath, 'out', 'Tests', 'index');
-    const testWorkspace = path.resolve(extensionDevelopmentPath);
-    await runTests({
-      extensionDevelopmentPath,
-      extensionTestsPath: extensionTestsPath,
-      launchArgs: [testWorkspace]
-    });
-  } catch (err) {
-    console.error('Failed to run tests');
-    process.exit(1);
-  }
+  });
 }
-
-main();
