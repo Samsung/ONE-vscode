@@ -24,24 +24,37 @@ import {CodelensProvider} from './Editor/CodelensProvider';
 import {HoverProvider} from './Editor/HoverProvider';
 import {Jsontracer} from './Jsontracer';
 import {Project} from './Project';
-import {CompilableFile} from './Support/CompilableFile';
 import {Utils} from './Utils';
+
+/**
+ * Set vscode context that is used globally
+ */
+function setGlobalContext() {
+  // These contexts are used to show "Compile" menu in File Explorer view
+  //
+  // 1. When a file is right-clicked (e.g., .pb, .tflite, etc)
+  // 2. When a dir is right-clicked (e.g., Keras model or saved model)
+
+  let compilableFileExts = ['.pb', '.tflite', '.onnx'];
+  vscode.commands.executeCommand('setContext', 'onevscode.compilableExtList', compilableFileExts);
+
+  // TODO Search directories containing Keras model or saved model
+  //
+  // Refer to https://github.com/Samsung/ONE-vscode/issues/331#issuecomment-1081295299 for
+  // experience with directory path format.
+  let dirList: string[] = [/* NYI */];
+  vscode.commands.executeCommand('setContext', 'onevscode.compilableDirList', dirList);
+}
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('one-vscode activate OK');
 
-  // Thses context is used to show "Compile" menu in Explorer view
-  //
-  // 1. When a file is right-clicked (e.g., .pb, .tflite, etc)
-  // 2. When a dir is right-clicked (e.g., Keras model or saved model)
-  CompilableFile.setFileExtContext('onevscode.compilableExtList');
-  CompilableFile.setDirContext('onevscode.compilableDirList');
+  setGlobalContext();
 
   // show compilation page
-  let compileWebView =
-      vscode.commands.registerCommand('onevscode.show-compile-webview', () => {
-        console.log('NYI');
-      });
+  let compileWebView = vscode.commands.registerCommand('onevscode.show-compile-webview', () => {
+    console.log('NYI');
+  });
   context.subscriptions.push(compileWebView);
 
   let logger = new Utils.Logger();
