@@ -10,6 +10,7 @@
   "categories": [
     "Other"
   ],
+  "extensionKind ": "workspace",
   "activationEvents": [
     "onCommand:onevscode.build",
     "onCommand:onevscode.import",
