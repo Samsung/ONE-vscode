@@ -32,8 +32,7 @@
       ]
     },
     "views": {
-      "ONE-Views": [
-      ]
+      "ONE-Views": []
     },
     "commands": [
       {
@@ -144,7 +143,7 @@
     "eslint": "^7.15.0",
     "flatbuffers": "^2.0.3",
     "glob": "^7.1.6",
-    "htmlhint": "^0.15.2",
+    "htmlhint": "^1.1.3",
     "ini": "^2.0.0",
     "license-checker": "^25.0.1",
     "mocha": "^9.2.1",
