@@ -58,7 +58,7 @@ export class CompilePanel {
   private readonly _extensionUri: vscode.Uri;
   private _disposables: vscode.Disposable[] = [];
 
-  public static readonly viewType = 'Comile';
+  public static readonly viewType = 'Compile';
 
   public static render(extensionUri: vscode.Uri) {
     const column =
