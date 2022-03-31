@@ -97,7 +97,7 @@
       "view/title": [
         {
           "command": "onevscode.connect-remote",
-          "when": "view == CompilerView",
+          "when": "view == CompilationEnvView",
           "group": "navigation"
         }
       ]
