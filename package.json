@@ -37,6 +37,11 @@
           "id": "CompilerToolchainView",
           "name": "Compiler Toolchain",
           "contextualTitle": "ONE"
+        },
+        {
+          "id": "ExecutionEnvView",
+          "name": "Execution Environment",
+          "contextualTitle": "ONE"
         }
       ]
     },
