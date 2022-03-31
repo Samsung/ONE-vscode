@@ -1,7 +1,7 @@
 name: Check Copyright
 
 on:
-  pull_request:
+  pull_request_target:
     branches: [ main ]
 
 jobs:
@@ -10,6 +10,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: refs/pull/${{ github.event.number }}/merge
+
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
