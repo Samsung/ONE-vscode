@@ -16,6 +16,7 @@
 
 import * as vscode from 'vscode';
 
+import {Backend} from './Backends/Backend';
 import {decoder} from './Circlereader/Circlereader';
 import {Circletracer} from './Circletracer';
 import {CompilePanel} from './Compile/CompilePanel';
@@ -26,6 +27,32 @@ import {HoverProvider} from './Editor/HoverProvider';
 import {Jsontracer} from './Jsontracer';
 import {Project} from './Project';
 import {Utils} from './Utils';
+
+async function loadBackend(backendName: string) {
+  let modulePath = `./Backends/${backendName}Backend`;
+
+  let backendModule = await import(modulePath);
+
+  let backendClass = backendModule[`${backendName}Backend`];
+
+  let backend = (new backendClass() as Backend);
+
+  return backend;
+}
+
+async function testBackendAction() {
+  let backend = await loadBackend('NPU');
+  backend.download();
+  backend.install();
+  backend.runValueTest();
+  backend.runLatencyTest();
+
+  backend = await loadBackend('ONERT');
+  backend.download();
+  backend.install();
+  backend.runValueTest();
+  backend.runLatencyTest();
+}
 
 /**
  * Set vscode context that is used globally
@@ -49,6 +76,8 @@ function setGlobalContext() {
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('one-vscode activate OK');
+
+  testBackendAction();
 
   setGlobalContext();
 
