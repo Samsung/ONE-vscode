@@ -12,6 +12,7 @@
   ],
   "extensionKind ": "workspace",
   "activationEvents": [
+    "onCommand:onevscode.refresh-compiler",
     "onCommand:onevscode.build",
     "onCommand:onevscode.import",
     "onCommand:onevscode.json-tracer",
@@ -51,6 +52,11 @@
         "title": "Compile",
         "category": "ONE",
         "_comment": "Call this when compiling compilable model(e.g., *.tflite, *.onnx, etc.)"
+      },
+      {
+        "command": "onevscode.refresh-compiler",
+        "title": "Refresh compiler",
+        "category": "ONE"
       },
       {
         "command": "onevscode.connect-remote",

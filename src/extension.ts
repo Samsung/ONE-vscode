@@ -52,7 +52,16 @@ export function activate(context: vscode.ExtensionContext) {
 
   setGlobalContext();
 
+  let logger = new Utils.Logger();
+
   // ONE view
+  let projectCompiler = new Project.Compiler(logger);
+  
+  let refreshCompiler = vscode.commands.registerCommand('onevscode.refresh-compiler', () => {
+    console.log('one refresh compiler');
+    projectCompiler.refresh();
+  });
+  
   let connectRemote = vscode.commands.registerCommand('onevscode.connect-remote', () => {
     console.log('connect-remote: NYI');
   });
@@ -64,7 +73,6 @@ export function activate(context: vscode.ExtensionContext) {
   });
   context.subscriptions.push(compileWebView);
 
-  let logger = new Utils.Logger();
   let projectBuilder = new Project.Builder(logger);
 
   projectBuilder.init();

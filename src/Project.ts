@@ -15,10 +15,13 @@
  */
 
 import {Builder as _Builder} from './Project/Builder';
+import {Compiler as _Compiler} from './Project/Compiler';
 
 export namespace Project {
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const Builder = _Builder;
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const Compiler = _Compiler;
 
 }  // namespace Project
