@@ -21,5 +21,15 @@ window.addEventListener('load', main);
 
 // Main function that gets executed once the webview DOM loads
 function main() {
-  /* NYI */
+  const showDetailedOptions = document.getElementById('show-detailed-options');
+  showDetailedOptions.addEventListener('click', handleShowDetailedOptionClick);
+}
+
+function handleShowDetailedOptionClick() {
+  const showDetailedOptions = document.getElementById('detailed-options');
+  if (showDetailedOptions.style.display === 'none') {
+    showDetailedOptions.style.display = 'block';
+  } else if (showDetailedOptions.style.display === 'block') {
+    showDetailedOptions.style.display = 'none';
+  }
 }

@@ -142,8 +142,20 @@ export class CompilePanel {
   }
 
   private _getHtmlForWebview() {
+    const toolkitUri = getUri(this._panel.webview, this._extensionUri, [
+      'node_modules',
+      '@vscode',
+      'webview-ui-toolkit',
+      'dist',
+      'toolkit.js',
+    ]);
     const jsUri =
         getUri(this._panel.webview, this._extensionUri, ['media', 'Compile', 'compile.js']);
+
+    const cssUri =
+        getUri(this._panel.webview, this._extensionUri, ['media', 'Compile', 'compile.css']);
+
+    // TODO Make each component work by writing code in media/Compile/compile.js
 
     // TODO Extract html file into a separate file
 
@@ -154,12 +166,114 @@ export class CompilePanel {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="module" src="${toolkitUri}"></script>
         <script type="module" src="${jsUri}"></script>
+        <link rel="stylesheet" href="${cssUri}">
         <title>Compile</title>
       </head>
       <body>
         <h1>Compile</h1>
-        WIP
+        <div class='left-margin-24'>
+          <div class='compile-selections-container'>
+            <div class='text-row'>
+              <span class='two-column-text-left'>
+                    <span>&#8226;</span> Target Code:
+              </span>
+              <span class='two-column-text-right'>
+                <vscode-dropdown id='target-code'>
+                  <vscode-option>NPU2</vscode-option>
+                  <vscode-option>ONERT (TBD)</vscode-option>
+                </vscode-dropdown>
+              </span>
+            </div> <!-- text-row -->
+
+            <div class='text-row'>
+              <span class='two-column-text-left'>
+                <span>&#8226;</span> Output Directory:
+              </span>
+              <span class='two-column-text-right'>
+                <vscode-link id='output-dir' href="#">Not set yet</vscode-link>
+              </span>
+            </div> <!-- text-row -->
+
+            <div class='text-row'>
+              <span class='two-column-text-left'>
+                <span>&#8226;</span> Compiling Env version
+              </span>
+              <span class='two-column-text-right'>
+                <vscode-dropdown id='compiling-env-ver'>
+                  <vscode-option>Official 1.1.0</vscode-option>
+                  <vscode-option>Nightly 220321</vscode-option>
+                </vscode-dropdown>
+              </span>
+            </div> <!-- text-row -->
+
+            <div class='text-row'>
+              <span class='two-column-text-left'>
+                <span>&#8226;</span> Options
+              </span>
+              <span class='two-column-text-right'>
+                <vscode-link id="show-detailed-options" href="#">Set to default</vscode-link>
+              </span>
+            </div> <!-- text-row -->
+
+          </div>  <!-- compile-selections -->
+        </div> <!-- left-margin-24 -->
+
+          <!-- detailed options. Initially this is not visible. -->
+          <div id="detailed-options" class="left-margin-24" style="display:none">
+            <h2>Detailed options</h2>
+            <div class='sub-panel'>
+              <h3>circle_optimizer</h3>
+              <div class="left-margin-24">
+                <div class='text-row'>
+                  <span class='two-column-text-long-left'>
+                    --fold_add_v2
+                  </span>
+                  <span class='two-column-text-right'>
+                    <vscode-radio-group id='fold_add_v2'>
+                      <vscode-radio value='on' checked>on</vscode-radio>
+                      <vscode-radio value='off'>off</vscode-radio>
+                    </vscode-radio-group>
+                  </span>
+                </div> <!-- text-row -->
+
+                <div class='text-row'>
+                  <span class='two-column-text-long-left'>
+                    --fuse_activation_function
+                  </span>
+                  <span class='two-column-text-right'>
+                    <vscode-radio-group id='fuse_activation_function'>
+                    <vscode-radio value='on' checked>on</vscode-radio>
+                    <vscode-radio value='off'>off</vscode-radio>
+                  </vscode-radio-group>
+                  </span>
+                </div> <!-- text-row -->
+              </div> <!-- left-margin-24 -->
+            </div> <!-- sub-panel -->
+
+            <div class='sub-panel'>
+              <h3>circle_quantizer</h3>
+              <div class="left-margin-24">
+                <div class='text-row'>
+                  <span class='two-column-text-long-left'>
+                    --quantize_dequantize_weights
+                  </span>
+                  <span class='two-column-text-right'>
+                    <vscode-radio-group id='quantize_dequantize_weights'>
+                      <vscode-radio value='on' checked>on</vscode-radio>
+                      <vscode-radio value='off'>off</vscode-radio>
+                    </vscode-radio-group>
+                  </span>
+                </div> <!-- text-row -->
+              </div> <!-- left-margin-24 -->
+            </div> <!-- sub-panel -->
+          </div>  <!-- detailedOptions -->
+
+        </div>
+        <div style="margin-left:24px; margin-top:24px">
+          <vscode-button id="compile-button">Compile</vscode-button>
+        </div>
       </body>
     </html>
       `;
