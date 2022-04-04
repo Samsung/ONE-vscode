@@ -140,7 +140,7 @@ export class CompilePanel {
       const text = message.text;
 
       switch (command) {
-        case 'compile-completed':  // Called when [Compile] button was pressed
+        case 'request-compile':  // Called when [Compile] button was pressed
           //
           // TODO Run ONE compile command
           //

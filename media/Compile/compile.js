@@ -89,7 +89,7 @@ function handleCompileClick() {
 
   // Ask vscode extension to compile model file
   vscode.postMessage({
-    command: 'compile-completed',
+    command: 'request-compile',
     // TODO Revise this message in a way that these params can be handled easily by ONE
     text: `Compilation is finished for ${targetCode}. || ` +
         `- Output dir: ${outputDir} || ` +
