@@ -32,7 +32,13 @@
       ]
     },
     "views": {
-      "ONE-Views": []
+      "ONE-Views": [
+        {
+          "id": "CompilerToolchainView",
+          "name": "Compiler Toolchain",
+          "contextualTitle": "ONE"
+        }
+      ]
     },
     "commands": [
       {
