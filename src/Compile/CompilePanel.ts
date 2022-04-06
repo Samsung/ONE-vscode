@@ -132,13 +132,34 @@ export class CompilePanel {
   /**
    * Sets up an event listener to listen for messages passed from the webview context and
    * executes code based on the message that is recieved.
-   *
-   * @param webview A reference to the extension webview
-   * @param context A reference to the extension context
    */
   private _setWebviewMessageListener() {
-    /* NYI */
-    vscode.window.showInformationMessage('NYI');
+    const webview = this._panel.webview;
+    webview.onDidReceiveMessage((message: any) => {
+      const command = message.command;
+      const text = message.text;
+
+      switch (command) {
+        case 'request-compile':  // Called when [Compile] button was pressed
+          //
+          // TODO Run ONE compile command
+          //
+          vscode.window.showInformationMessage(text);
+          return;
+        case 'set-output-dir':  // Called to set output directory
+          const options = {canSelectMany: false, canSelectFiles: false, canSelectFolders: true};
+
+          vscode.window.showOpenDialog(options).then((val: vscode.Uri[]|undefined) => {
+            if (val !== undefined) {
+              this._panel.webview.postMessage({command: 'set-output-dir', data: val[0].fsPath});
+            }
+            //
+            // TODO handle directory user entered
+            //
+          });
+          return;
+      }
+    }, undefined, this._disposables);
   }
 
   private _getHtmlForWebview() {
@@ -154,8 +175,6 @@ export class CompilePanel {
 
     const cssUri =
         getUri(this._panel.webview, this._extensionUri, ['media', 'Compile', 'compile.css']);
-
-    // TODO Make each component work by writing code in media/Compile/compile.js
 
     // TODO Extract html file into a separate file
 
