@@ -16,17 +16,6 @@
 
 import * as vscode from 'vscode';
 
-import {decoder} from './Circlereader/Circlereader';
-import {Circletracer} from './Circletracer';
-import {CompilePanel} from './Compile/CompilePanel';
-import {ConfigPanel} from './Config/ConfigPanel';
-import {createStatusBarItem} from './Config/ConfigStatusBar';
-import {CodelensProvider} from './Editor/CodelensProvider';
-import {HoverProvider} from './Editor/HoverProvider';
-import {Jsontracer} from './Jsontracer';
-import {Project} from './Project';
-import {Utils} from './Utils';
-
 /**
  * Set vscode context that is used globally
  */
@@ -41,89 +30,74 @@ function setGlobalContext() {
 
   // TODO Search directories containing Keras model or saved model
   //
-  // Refer to https://github.com/Samsung/ONE-vscode/issues/331#issuecomment-1081295299 for
+  // Refer to https://github.com/Samsung/FOO-vscode/issues/331#issuecomment-1081295299 for
   // experience with directory path format.
   let dirList: string[] = [/* NYI */];
   vscode.commands.executeCommand('setContext', 'onevscode.compilableDirList', dirList);
 }
 
+function showMsg(msg: string) {
+  console.log(msg);
+  vscode.window.showInformationMessage(msg);
+}
+
+class Tool
+{
+  public name: string;
+  public version: string;
+  constructor (n:string, v: string) {
+    this.name = n;
+    this.version = v;
+  }
+}
+
+interface BackendAPI
+{
+  name(): string;
+  install(): Tool[];
+  valueTest(): void;
+};
+
+class FooBackend implements BackendAPI {
+  public name() { return "FooBackend"; }
+
+  public install(): Tool[] {
+    let msg = `From ${this.name()}: installation started`;
+    showMsg(msg);
+
+    msg = `From ${this.name()}: installation completed`;
+    showMsg(msg);
+
+    let tool1 = new Tool("a", "1.0");
+    let tool2 = new Tool("b", "1.1");
+    let tools: Tool[] = [ tool1, tool2 ];
+
+    return tools;
+  }
+
+  public valueTest(): void {
+    let msg = `From ${this.name()}: value test started`;
+    showMsg(msg);
+
+    msg = `From ${this.name()}: value test completed`;
+    showMsg(msg);
+  }
+};
+
 export function activate(context: vscode.ExtensionContext) {
-  console.log('one-vscode activate OK');
 
-  setGlobalContext();
+  let onevscode = vscode.extensions.getExtension('Samsung.one-vscode');
 
-  // show compilation page
-  let compileWebView = vscode.commands.registerCommand('onevscode.show-compile-webview', () => {
-    CompilePanel.render(context.extensionUri);
-  });
-  context.subscriptions.push(compileWebView);
+  if (onevscode === undefined) {
+    vscode.window.showErrorMessage("Cannot find Samsung.one-vscode Extension");
+    return;
+  }
 
-  let logger = new Utils.Logger();
-  let projectBuilder = new Project.Builder(logger);
+  let onevscodeAPI = onevscode.exports;
 
-  projectBuilder.init();
+  onevscodeAPI.registerBackend(new FooBackend());
 
-  let disposableOneBuild = vscode.commands.registerCommand('onevscode.build', () => {
-    console.log('one build...');
-    projectBuilder.build(context);
-  });
-  context.subscriptions.push(disposableOneBuild);
-
-  let disposableOneImport = vscode.commands.registerCommand('onevscode.import', () => {
-    console.log('one import...');
-    projectBuilder.import(context);
-  });
-  context.subscriptions.push(disposableOneImport);
-
-  let disposableOneJsontracer = vscode.commands.registerCommand('onevscode.json-tracer', () => {
-    console.log('one json tracer...');
-    Jsontracer.createOrShow(context.extensionUri);
-  });
-  context.subscriptions.push(disposableOneJsontracer);
-
-  let disposableOneConfigurationSettings =
-      vscode.commands.registerCommand('onevscode.configuration-settings', () => {
-        ConfigPanel.createOrShow(context);
-        console.log('one configuration settings...');
-      });
-  context.subscriptions.push(disposableOneConfigurationSettings);
-
-  createStatusBarItem(context);
-
-  let disposableToggleCodelens =
-      vscode.commands.registerCommand('onevscode.toggle-codelens', () => {
-        let codelensState =
-            vscode.workspace.getConfiguration('one-vscode').get('enableCodelens', true);
-        vscode.workspace.getConfiguration('one-vscode')
-            .update('enableCodelens', !codelensState, true);
-      });
-  context.subscriptions.push(disposableToggleCodelens);
-
-  let codelens = new CodelensProvider();
-  let disposableCodelens = vscode.languages.registerCodeLensProvider('ini', codelens);
-  context.subscriptions.push(disposableCodelens);
-
-  let hover = new HoverProvider();
-  let disposableHover = vscode.languages.registerHoverProvider('ini', hover);
-  context.subscriptions.push(disposableHover);
-
-  let disposableOneCircleTracer = vscode.commands.registerCommand('onevscode.circle-tracer', () => {
-    console.log('one circle tracer...');
-    const options: vscode.OpenDialogOptions = {
-      canSelectMany: false,
-      openLabel: 'Open',
-      /* eslint-disable */
-      filters: {'Circle files': ['circle'], 'All files': ['*']}
-      /* eslint-enable */
-    };
-    vscode.window.showOpenDialog(options).then(fileUri => {
-      if (fileUri && fileUri[0]) {
-        const circleToJson = decoder(fileUri[0].fsPath);
-        Circletracer.createOrShow(context.extensionUri, circleToJson);
-      }
-    });
-  });
-  context.subscriptions.push(disposableOneCircleTracer);
+  showMsg(`From FooBackend: Backend registered`);
 }
 
 export function deactivate() {

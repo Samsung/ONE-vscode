@@ -162,14 +162,14 @@ const verificationTag = args[1];
  * NOTE : "inputPathOfLicenseList" includes following JSON content,
  *        which is result of 'license-checker'
  * {
- *   "one-vscode@0.0.1": {
+ *   "foo-backend@0.0.1": {
  *     "licenses": "UNKNOWN",
- *     "repository": "https://github.com/Samsung/ONE-vscode",
- *     "dependencyPath": "/path/to/ONE-vscode/",
- *     "path": "/path/to/ONE-vscode/",
- *     "licenseFile": "ONE-vscode/LICENSE"
+ *     "repository": "https://github.com/Samsung/FOO-vscode",
+ *     "dependencyPath": "/path/to/FOO-vscode/",
+ *     "path": "/path/to/FOO-vscode/",
+ *     "licenseFile": "FOO-vscode/LICENSE"
  *   },
- *   "one-vscode@0.0.2": {
+ *   "foo-backend@0.0.2": {
  *   ...
  * }
  */

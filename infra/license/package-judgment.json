@@ -30,9 +30,9 @@
       "permitted": "yes"
     },
 
-    "one-vscode@0.0.1": {
+    "foo-backend@0.0.1": {
       "licenses": "Apache-2.0",
-      "repository": "https://github.com/Samsung/ONE-vscode",
+      "repository": "https://github.com/Samsung/FOO-vscode",
       "permitted": "yes"
     },
 

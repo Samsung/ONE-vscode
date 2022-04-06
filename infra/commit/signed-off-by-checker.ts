@@ -23,11 +23,11 @@ import {readFileSync, writeFileSync} from 'fs';
 var args = process.argv.slice(2)
 const commitMsgFilePath = args[0];
 
-// "ONE-vscode-DCO-1.0-Signed-off-by" should be found at least once.
+// "FOO-vscode-DCO-1.0-Signed-off-by" should be found at least once.
 var hasSignedOffBy = false;
 var messages = readFileSync(commitMsgFilePath, 'utf-8').split(/\r\n|\r|\n/);
 for (let lineNum = 0; lineNum < messages.length; ++lineNum) {
-  if (messages[lineNum].includes('ONE-vscode-DCO-1.0-Signed-off-by')) {
+  if (messages[lineNum].includes('FOO-vscode-DCO-1.0-Signed-off-by')) {
     hasSignedOffBy = true;
     break;
   }
@@ -38,7 +38,7 @@ if (hasSignedOffBy == false) {
   var logMessage = 'Signed-off-by is missing or invalid. ';
   logMessage += 'For detailed information, please refer to ';
   logMessage +=
-      'https://github.com/Samsung/ONE-vscode/wiki/ONE-vscode-Developer\'s-Certificate-of-Origin';
+      'https://github.com/Samsung/FOO-vscode/wiki/FOO-vscode-Developer\'s-Certificate-of-Origin';
 
   writeFileSync('signed_off_by_checker.fail', logMessage);
 }

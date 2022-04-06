@@ -2,7 +2,7 @@
 
 ## Background
 
-Numerous kinds of Node packages are needed to build and use ONE-vscode but some packages may have unacceptable license for both ONE and ONE-vscode.
+Numerous kinds of Node packages are needed to build and use FOO-vscode but some packages may have unacceptable license for both FOO and FOO-vscode.
 Therefore we should review whether licenses of each package can be used or not.
 However, if we check all of them manually, we may mistake or miss something.
 To reduce such risk and labor, automatic license checker would be good solution.
@@ -66,7 +66,7 @@ flowchart TD;
         "caution": "(Optional field) Why permitted is conditional or no"
     },
     ```
-    - `permitted` : Whether a license is allowed in ONE-vscode
+    - `permitted` : Whether a license is allowed in FOO-vscode
       - `yes` : Allowed to use
       - `conditional` : Allowed to use under specific conditions. Each package with this should be judged manually.
       - `no` : Not allowed to use
@@ -80,7 +80,7 @@ flowchart TD;
       "caution": "(Optional field) Cautions when package is used"
     },
     ```
-    - `permitted` : Whether a package is allowed in ONE-vscode
+    - `permitted` : Whether a package is allowed in FOO-vscode
       - `yes` : Allowed to use
       - `conditional` : Allowed to use under specific conditions. Needed to be checked manually when release is progressed.
       - `no` : Not allowed to use

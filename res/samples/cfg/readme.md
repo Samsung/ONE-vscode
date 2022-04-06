@@ -16,6 +16,6 @@ TensorFlow lite model used in `inception_v3_tflite.cfg` is also found in `incept
 `test_onnx_model.cfg` file is prepared as a test sample.
 
 ONNX model `test_onnx_model.onnx` used in `test_onnx_model.cfg` can be downloaded from
-[here](https://github.com/Samsung/ONE/files/5768243/test_onnx_model.zip)
+[here](https://github.com/Samsung/FOO/files/5768243/test_onnx_model.zip)
 
-Please refer https://github.com/Samsung/ONE/issues/5548#issuecomment-754373360 for more information.
+Please refer https://github.com/Samsung/FOO/issues/5548#issuecomment-754373360 for more information.

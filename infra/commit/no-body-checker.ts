@@ -31,7 +31,7 @@ for (let lineNum = 1; lineNum < messages.length; ++lineNum) {
   var msg = messages[lineNum];
 
   // Signed-off-by is not body
-  if (msg.includes('ONE-vscode-DCO-1.0-Signed-off-by')) continue;
+  if (msg.includes('FOO-vscode-DCO-1.0-Signed-off-by')) continue;
 
   // If body only consists of blank, consider as empty line
   if (msg.split(' ').join('').length > 0) {

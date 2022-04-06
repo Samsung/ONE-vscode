@@ -1,9 +1,10 @@
 {
-  "name": "one-vscode",
-  "displayName": "one-vscode",
-  "description": "ONE for VSCode",
+  "name": "foo-backend",
+  "displayName": "FooBackend",
+  "description": "FooBackend for ONE",
   "version": "0.0.1",
   "publisher": "Samsung",
+  "extensionDependencies": ["Samsung.one-vscode"],
   "engines": {
     "vscode": "^1.46.0"
   },
@@ -25,18 +26,18 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "ONE-Views",
-          "title": "ONE",
+          "id": "FOO-Views",
+          "title": "FOO",
           "icon": "media/icon/viewContainer.svg"
         }
       ]
     },
     "views": {
-      "ONE-Views": [
+      "FOO-Views": [
         {
           "id": "CompilerToolchainView",
           "name": "Compiler Toolchain",
-          "contextualTitle": "ONE"
+          "contextualTitle": "FOO"
         }
       ]
     },
@@ -44,38 +45,38 @@
       {
         "command": "onevscode.show-compile-webview",
         "title": "Compile",
-        "category": "ONE",
+        "category": "FOO",
         "_comment": "Call this when compiling compilable model(e.g., *.tflite, *.onnx, etc.)"
       },
       {
         "command": "onevscode.build",
         "title": "build",
-        "category": "ONE"
+        "category": "FOO"
       },
       {
         "command": "onevscode.import",
         "title": "cfg import",
-        "category": "ONE"
+        "category": "FOO"
       },
       {
         "command": "onevscode.json-tracer",
         "title": "json tracer",
-        "category": "ONE"
+        "category": "FOO"
       },
       {
         "command": "onevscode.configuration-settings",
         "title": "configuration-settings",
-        "category": "ONE"
+        "category": "FOO"
       },
       {
         "command": "onevscode.toggle-codelens",
         "title": "toggle codelens",
-        "category": "ONE"
+        "category": "FOO"
       },
       {
         "command": "onevscode.circle-tracer",
         "title": "circle tracer",
-        "category": "ONE"
+        "category": "FOO"
       }
     ],
     "menus": {
@@ -87,9 +88,9 @@
       ]
     },
     "configuration": {
-      "title": "ONE",
+      "title": "FOO",
       "properties": {
-        "one-vscode.enableCodelens": {
+        "foo-backend.enableCodelens": {
           "type": "boolean",
           "default": true
         }
@@ -161,6 +162,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Samsung/ONE-vscode.git"
+    "url": "https://github.com/Samsung/FOO-vscode.git"
   }
 }
