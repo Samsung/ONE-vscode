@@ -16,85 +16,65 @@
 
 import * as vscode from 'vscode';
 
-import {decoder} from './Circlereader/Circlereader';
-import {Circletracer} from './Circletracer';
-import {ConfigPanel} from './Config/ConfigPanel';
-import {createStatusBarItem} from './Config/ConfigStatusBar';
-import {CodelensProvider} from './Editor/CodelensProvider';
-import {HoverProvider} from './Editor/HoverProvider';
-import {Jsontracer} from './Jsontracer';
-import {Project} from './Project';
-import {Utils} from './Utils';
+function showMsg(msg: string) {
+  console.log(msg);
+  vscode.window.showInformationMessage(msg);
+}
+
+class Tool
+{
+  public name: string;
+  public version: string;
+  constructor (n:string, v: string) {
+    this.name = n;
+    this.version = v;
+  }
+}
+
+interface BackendAPI
+{
+  name(): string;
+  install(): Tool[];
+  valueTest(): void;
+};
+
+let backends: BackendAPI[] = [];
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log('one-vscode activate OK');
 
-  let logger = new Utils.Logger();
-  let projectBuilder = new Project.Builder(logger);
+  let api =
+  {
+    registerBackend(backendAPI: BackendAPI) {
+      showMsg(`registerBackend@ONE-vscode: ${backendAPI.name()} will be registered`);
+      backends.push(backendAPI);
+      showMsg(`registerBackend@ONE-vscode: ${backendAPI.name()} was registered`);
+    }
+  };
 
-  projectBuilder.init();
+  let disposableInstall = vscode.commands.registerCommand('onevscode.install', () => {
+    let msg: string = "No backend was registered.";
+    if (backends.length === 0) {
+      msg = "No backend was registered.";
+      showMsg(msg);
+      return;
+    }
+    else {
+      showMsg(`installing ${backends[0].name()}...`);
 
-  let disposableOneBuild = vscode.commands.registerCommand('onevscode.build', () => {
-    console.log('one build...');
-    projectBuilder.build(context);
+      let tools = backends[0].install();
+
+      showMsg(`${tools.length} tools were installed.`);
+
+      let toolMsg: string = '';
+      tools.forEach(tool=>{ toolMsg = toolMsg + ` / ${tool.name} : ${tool.version}`; });
+      showMsg(toolMsg);
+    }
+
   });
-  context.subscriptions.push(disposableOneBuild);
+  context.subscriptions.push(disposableInstall);
 
-  let disposableOneImport = vscode.commands.registerCommand('onevscode.import', () => {
-    console.log('one import...');
-    projectBuilder.import(context);
-  });
-  context.subscriptions.push(disposableOneImport);
-
-  let disposableOneJsontracer = vscode.commands.registerCommand('onevscode.json-tracer', () => {
-    console.log('one json tracer...');
-    Jsontracer.createOrShow(context.extensionUri);
-  });
-  context.subscriptions.push(disposableOneJsontracer);
-
-  let disposableOneConfigurationSettings =
-      vscode.commands.registerCommand('onevscode.configuration-settings', () => {
-        ConfigPanel.createOrShow(context);
-        console.log('one configuration settings...');
-      });
-  context.subscriptions.push(disposableOneConfigurationSettings);
-
-  createStatusBarItem(context);
-
-  let disposableToggleCodelens =
-      vscode.commands.registerCommand('onevscode.toggle-codelens', () => {
-        let codelensState =
-            vscode.workspace.getConfiguration('one-vscode').get('enableCodelens', true);
-        vscode.workspace.getConfiguration('one-vscode')
-            .update('enableCodelens', !codelensState, true);
-      });
-  context.subscriptions.push(disposableToggleCodelens);
-
-  let codelens = new CodelensProvider();
-  let disposableCodelens = vscode.languages.registerCodeLensProvider('ini', codelens);
-  context.subscriptions.push(disposableCodelens);
-
-  let hover = new HoverProvider();
-  let disposableHover = vscode.languages.registerHoverProvider('ini', hover);
-  context.subscriptions.push(disposableHover);
-
-  let disposableOneCircleTracer = vscode.commands.registerCommand('onevscode.circle-tracer', () => {
-    console.log('one circle tracer...');
-    const options: vscode.OpenDialogOptions = {
-      canSelectMany: false,
-      openLabel: 'Open',
-      /* eslint-disable */
-      filters: {'Circle files': ['circle'], 'All files': ['*']}
-      /* eslint-enable */
-    };
-    vscode.window.showOpenDialog(options).then(fileUri => {
-      if (fileUri && fileUri[0]) {
-        const circleToJson = decoder(fileUri[0].fsPath);
-        Circletracer.createOrShow(context.extensionUri, circleToJson);
-      }
-    });
-  });
-  context.subscriptions.push(disposableOneCircleTracer);
+  // DON'T FORGET TO RETURN THIS
+  return api;
 }
 
 export function deactivate() {

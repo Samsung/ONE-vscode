@@ -11,45 +11,15 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:onevscode.build",
-    "onCommand:onevscode.import",
-    "onCommand:onevscode.json-tracer",
-    "onCommand:onevscode.configuration-settings",
-    "onCommand:onevscode.toggle-codelens",
-    "onCommand:onevscode.circle-tracer",
+    "onCommand:onevscode.install",
     "onStartupFinished"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "onevscode.build",
-        "title": "build",
-        "category": "ONE"
-      },
-      {
-        "command": "onevscode.import",
-        "title": "cfg import",
-        "category": "ONE"
-      },
-      {
-        "command": "onevscode.json-tracer",
-        "title": "json tracer",
-        "category": "ONE"
-      },
-      {
-        "command": "onevscode.configuration-settings",
-        "title": "configuration-settings",
-        "category": "ONE"
-      },
-      {
-        "command": "onevscode.toggle-codelens",
-        "title": "toggle codelens",
-        "category": "ONE"
-      },
-      {
-        "command": "onevscode.circle-tracer",
-        "title": "circle tracer",
+        "command": "onevscode.install",
+        "title": "install",
         "category": "ONE"
       }
     ],
@@ -73,18 +43,6 @@
       }
     ],
     "snippets": [
-      {
-        "language": "ini",
-        "path": "./src/Snippets/one-build.json"
-      },
-      {
-        "language": "ini",
-        "path": "./src/Snippets/onecc.json"
-      },
-      {
-        "language": "ini",
-        "path": "./src/Snippets/tools.json"
-      }
     ]
   },
   "scripts": {
