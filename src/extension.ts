@@ -52,6 +52,12 @@ export function activate(context: vscode.ExtensionContext) {
 
   setGlobalContext();
 
+  // ONE view
+  let refreshCompiler = vscode.commands.registerCommand('onevscode.refresh-compiler', () => {
+    console.log('refresh-compiler: NYI');
+  });
+  context.subscriptions.push(refreshCompiler);
+
   // show compilation page
   let compileWebView = vscode.commands.registerCommand('onevscode.show-compile-webview', () => {
     CompilePanel.render(context.extensionUri);
