@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "segments": [
+    {
+      "name": "Segment1",
+      "allocations": [
+        { "offset": 41984, "size": 41984, "alive_from": 825, "alive_till": 831, "origin": "Node1" },
+        { "offset": 0, "size": 41984, "alive_from": 825, "alive_till": 831, "origin": "Node2" },
+        { "offset": 122016, "size": 15744, "alive_from": 817, "alive_till": 818 },
+        { "offset": 83968, "size": 41984, "alive_from": 831, "alive_till": 832 },
+        { "offset": 41984, "size": 41984, "alive_from": 818, "alive_till": 824 },
+        { "offset": 0, "size": 41984, "alive_from": 818, "alive_till": 824 },
+        { "offset": 103648, "size": 15744, "alive_from": 800, "alive_till": 814 },
+        { "offset": 83968, "size": 41984, "alive_from": 824, "alive_till": 825 },
+        { "offset": 0, "size": 38048, "alive_from": 814, "alive_till": 817 },
+        { "offset": 38048, "size": 38048, "alive_from": 814, "alive_till": 817 },
+        { "offset": 0, "size": 41472, "alive_from": 578, "alive_till": 582 },
+        { "offset": 83968, "size": 38048, "alive_from": 817, "alive_till": 818 },
+        { "offset": 67936, "size": 8192, "alive_from": 582, "alive_till": 587 },
+        { "offset": 94368, "size": 12800, "alive_from": 568, "alive_till": 573 },
+        { "offset": 107168, "size": 8192, "alive_from": 577, "alive_till": 582 },
+        { "offset": 0, "size": 41472, "alive_from": 573, "alive_till": 577 },
+        { "offset": 55136, "size": 12800, "alive_from": 556, "alive_till": 568 },
+        { "offset": 67936, "size": 8192, "alive_from": 572, "alive_till": 577 },
+        { "offset": 0, "size": 41472, "alive_from": 568, "alive_till": 572 },
+        { "offset": 67936, "size": 9600, "alive_from": 551, "alive_till": 556 },
+        { "offset": 110752, "size": 6656, "alive_from": 567, "alive_till": 572 },
+        { "offset": 0, "size": 32256, "alive_from": 556, "alive_till": 567 },
+        { "offset": 55136, "size": 11520, "alive_from": 546, "alive_till": 551 },
+        { "offset": 102560, "size": 8192, "alive_from": 555, "alive_till": 567 },
+        { "offset": 0, "size": 39168, "alive_from": 551, "alive_till": 555 },
+        { "offset": 43008, "size": 43008, "alive_from": 894, "alive_till": 900 }
+      ]
+    }
+  ]
+}
