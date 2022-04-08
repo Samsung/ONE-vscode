@@ -18,7 +18,17 @@ import * as vscode from 'vscode';
 
 export class MondrianEditorProvider implements vscode.CustomTextEditorProvider {
 
+  public static register(context: vscode.ExtensionContext): vscode.Disposable {
+    const provider = new MondrianEditorProvider(context);
+    const providerRegistration = vscode.window.registerCustomEditorProvider(MondrianEditorProvider.viewType, provider);
+    return providerRegistration;
+  }
+
   private static readonly viewType = 'onevscode.mondrianViewer';
+
+  constructor(
+    private readonly context: vscode.ExtensionContext
+  ) {}
 
   /**
    * Called when custom editor is opened.
@@ -29,5 +39,32 @@ export class MondrianEditorProvider implements vscode.CustomTextEditorProvider {
       _token: vscode.CancellationToken
     ): Promise<void>
   {
+    webviewPanel.webview.options = {
+      enableScripts: true,
+    };
+    webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview);
   }
+  
+  /**
+  * Get the static html used for the editor webviews.
+  */
+  private getHtmlForWebview(webview: vscode.Webview): string {
+    const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(
+			this.context.extensionUri, 'media', 'mondrianViewer.js'));
+    
+	  return /* html */`
+			<!DOCTYPE html>
+			<html lang="en">
+			<head>
+				<meta charset="UTF-8">
+				<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+				<title>Mondrian Viewer</title>
+			</head>
+			<body>
+        <h1>Mondrian Viewer</h1>
+        <script src="${scriptUri}"></script>
+			</body>
+			</html>`;
+	}
 }

@@ -25,6 +25,7 @@ import {createStatusBarItem} from './Config/ConfigStatusBar';
 import {CodelensProvider} from './Editor/CodelensProvider';
 import {HoverProvider} from './Editor/HoverProvider';
 import {Jsontracer} from './Jsontracer';
+import {MondrianEditorProvider} from './Mondrian/MondrianEditor';
 import {Project} from './Project';
 import {Utils} from './Utils';
 
@@ -150,6 +151,8 @@ export function activate(context: vscode.ExtensionContext) {
     });
   });
   context.subscriptions.push(disposableOneCircleTracer);
+
+  context.subscriptions.push(MondrianEditorProvider.register(context));
 
   // returning backend registration function that will be called by backend extensions
   return backendRegistrationApi();
