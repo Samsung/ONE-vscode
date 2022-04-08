@@ -232,6 +232,18 @@
         "language": "ini",
         "path": "./src/Snippets/tools.json"
       }
+    ],
+    "customEditors": [
+      {
+        "viewType": "onevscode.mondrianViewer",
+        "displayName": "Mondrian",
+        "selector": [
+          {
+            "filenamePattern": "*.tracealloc.json"
+          }
+        ],
+        "priority": "default"
+      }
     ]
   },
   "scripts": {
