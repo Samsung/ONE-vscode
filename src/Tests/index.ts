@@ -47,7 +47,7 @@ import * as path from 'path';
 
 export function run(): Promise<void> {
   // fgrep: 'str' if we need to filter
-  const mocha = new Mocha({ui: 'tdd', color: true, fgrep: 'Ssh'});
+  const mocha = new Mocha({ui: 'tdd', color: true, fgrep: 'Remote'});
 
   const testsRoot = path.resolve(__dirname, '.');
 
