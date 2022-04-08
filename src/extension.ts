@@ -16,6 +16,7 @@
 
 import * as vscode from 'vscode';
 
+import {Backend} from './Backend/API';
 import {decoder} from './Circlereader/Circlereader';
 import {Circletracer} from './Circletracer';
 import {CompilePanel} from './Compile/CompilePanel';
@@ -26,6 +27,21 @@ import {HoverProvider} from './Editor/HoverProvider';
 import {Jsontracer} from './Jsontracer';
 import {Project} from './Project';
 import {Utils} from './Utils';
+
+// List of backend extensions registered
+let backends: Backend[] = [];
+
+function backendRegistrationApi() {
+  let registrationAPI = {
+    registerBackend(backend: Backend) {
+      backends.push(backend);
+
+      console.log(`Backend ${backend.name()} was registered into ONE-vscode.`);
+    }
+  };
+
+  return registrationAPI;
+}
 
 /**
  * Set vscode context that is used globally
@@ -130,6 +146,9 @@ export function activate(context: vscode.ExtensionContext) {
     });
   });
   context.subscriptions.push(disposableOneCircleTracer);
+
+  // returning backend registration function that will be called by backend extensions
+  return backendRegistrationApi();
 }
 
 export function deactivate() {
