@@ -36,6 +36,10 @@
         {
           "id": "CompilerToolchainView",
           "name": "Compiler Toolchain"
+        },
+        {
+          "id": "ExecutorView",
+          "name": "Executor"
         }
       ]
     },
