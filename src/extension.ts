@@ -48,6 +48,14 @@ function setGlobalContext() {
   vscode.commands.executeCommand('setContext', 'onevscode.compilableDirList', dirList);
 }
 
+export async function showQuickPick() {
+  let i = 0;
+  const result = await vscode.window.showQuickPick(['eins', 'zwei', 'drai'], {
+    placeHolder: 'eins, zwei or drei',
+    onDidSelectItem: item => vscode.window.showInformationMessage(`Focus ${++i}: ${item}`)
+  });
+}
+
 export function activate(context: vscode.ExtensionContext) {
   console.log('one-vscode activate OK');
 
@@ -59,7 +67,22 @@ export function activate(context: vscode.ExtensionContext) {
   });
   context.subscriptions.push(refreshCompiler);
   let installCompiler = vscode.commands.registerCommand('onevscode.install-compiler', () => {
-    console.log('install-compiler: NYI');
+    console.log('install-compiler: running');
+    
+    const testList: { [key: string]: (context: vscode.ExtensionContext) => Promise<void> } = {
+      showQuickPick,
+    };
+    const quickPick = vscode.window.createQuickPick();
+    quickPick.title = 'Install compiler toolchain';
+    quickPick.items = Object.keys(testList).map(label => ({ label }));
+    quickPick.onDidChangeSelection(selection => {
+      if (selection[0]) {
+        testList[selection[0].label](context)
+          .catch(console.error);
+      }
+    });
+    quickPick.onDidHide(() => quickPick.dispose());
+    quickPick.show();
   });
   context.subscriptions.push(installCompiler);
 
