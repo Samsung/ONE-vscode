@@ -73,6 +73,10 @@ export function activate(context: vscode.ExtensionContext) {
     console.log('refresh-compiler: NYI');
   });
   context.subscriptions.push(refreshCompiler);
+  let installCompiler = vscode.commands.registerCommand('onevscode.install-compiler', () => {
+    console.log('install-compiler: NYI');
+  });
+  context.subscriptions.push(installCompiler);
 
   // show compilation page
   let compileWebView = vscode.commands.registerCommand('onevscode.show-compile-webview', () => {
