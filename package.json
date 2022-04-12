@@ -35,8 +35,7 @@
       "ONE-Views": [
         {
           "id": "CompilerToolchainView",
-          "name": "Compiler Toolchain",
-          "contextualTitle": "ONE"
+          "name": "Compiler Toolchain"
         }
       ]
     },
