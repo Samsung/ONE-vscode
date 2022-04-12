@@ -54,7 +54,10 @@ async function main() {
         path.resolve(extensionDevelopmentPath, 'out', 'Tests', 'indexCI') :
         path.resolve(extensionDevelopmentPath, 'out', 'Tests', 'index');
     const testWorkspace = path.resolve(extensionDevelopmentPath);
+    // NOTE: Fix the version to 1.64.0 to avoid some errors by the latest version
+    // TODO: Remove the limitation of the version
     await runTests({
+      version: '1.64.0',
       extensionDevelopmentPath,
       extensionTestsPath: extensionTestsPath,
       launchArgs: [testWorkspace]
