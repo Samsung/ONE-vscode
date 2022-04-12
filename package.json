@@ -57,6 +57,15 @@
         }
       },
       {
+        "command": "onevscode.install-compiler",
+        "title": "Install",
+        "category": "ONE",
+        "icon": {
+          "light": "media/icon/light/install.svg",
+          "dark": "media/icon/dark/install.svg"
+        }
+      },
+      {
         "command": "onevscode.build",
         "title": "build",
         "category": "ONE"
@@ -97,6 +106,11 @@
       "view/title": [
         {
           "command": "onevscode.refresh-compiler",
+          "when": "view == CompilerToolchainView",
+          "group": "navigation"
+        },
+        {
+          "command": "onevscode.install-compiler",
           "when": "view == CompilerToolchainView",
           "group": "navigation"
         }
