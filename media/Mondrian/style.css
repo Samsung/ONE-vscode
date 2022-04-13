@@ -1,0 +1,31 @@
+div.mondrian-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    height: calc(100vh - 20px);
+}
+
+div.mondrian-scrollbar {
+    background-color: #777;
+    min-height: 36px;
+    flex: 0;
+}
+
+div.mondrian-viewer-area {
+    background-color: #333;
+    flex: 1;
+}
+
+div.mondrian-statusbar {
+    flex: 0;
+    display: flex;
+}
+
+div.mondrian-segment-picker {
+    flex: 1;
+}
+
+div.mondrian-info {
+    flex: 0;
+    white-space: nowrap;
+}

@@ -15,6 +15,7 @@
  */
 
 import * as vscode from 'vscode';
+import { getNonce } from '../Config/GetNonce';
 
 export class MondrianEditorProvider implements vscode.CustomTextEditorProvider {
 
@@ -44,27 +45,46 @@ export class MondrianEditorProvider implements vscode.CustomTextEditorProvider {
     };
     webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview);
   }
-  
+
   /**
   * Get the static html used for the editor webviews.
   */
   private getHtmlForWebview(webview: vscode.Webview): string {
-    const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(
-			this.context.extensionUri, 'media', 'mondrianViewer.js'));
-    
-	  return /* html */`
-			<!DOCTYPE html>
-			<html lang="en">
-			<head>
-				<meta charset="UTF-8">
-				<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    const prefix = 'media/Mondrian';
+    const nonce = getNonce();
 
-				<title>Mondrian Viewer</title>
-			</head>
-			<body>
-        <h1>Mondrian Viewer</h1>
-        <script src="${scriptUri}"></script>
-			</body>
-			</html>`;
-	}
+    const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(
+      this.context.extensionUri, prefix, 'mondrianViewer.js'));
+
+    const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(
+      this.context.extensionUri, prefix, 'style.css'));
+
+    return /* html */`
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource};
+          style-src ${webview.cspSource}; script-src 'nonce-${nonce}';" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link href="${styleUri}" rel="stylesheet" />
+        <title>Mondrian Viewer</title>
+      </head>
+      <body>
+        <div class="mondrian-layout">
+          <div class="mondrian-scrollbar"></div>
+          <div class="mondrian-viewer-area"></div>
+          <div class="mondrian-statusbar">
+            <div class="mondrian-segment-picker">Segment: DLA</div>
+            <div class="mondrian-info">
+              Memory: <span class="mondrian-info-memory-size">0</span> |
+              Cycle count: <span class="mondrian-info-cycle-count">0</span>
+            </div>
+          </div>
+        </div>
+
+        <script nonce="${nonce}" src="${scriptUri}"></script>
+      </body>
+      </html>`;
+  }
 }
