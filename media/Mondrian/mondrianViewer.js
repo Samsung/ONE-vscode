@@ -34,6 +34,14 @@
     }
   }
 
+  const boxColors = [
+    "#ffbc8f",
+    "#fff061",
+    "#0952b1",
+    "#0aa296",
+    "#04ec81",
+  ];
+
   // Handle messages sent from the extension to the webview
   window.addEventListener('message', event => {
     const message = event.data; // The json data that the extension sent
@@ -140,6 +148,7 @@
       box.style.height = (alloc.size / viewportMemory * 100) + '%';
       box.style.left = (alloc.alive_from / viewportCycles * 100) + '%';
       box.style.right = ((viewportCycles - alloc.alive_till) / viewportCycles * 100) + '%';
+      box.style.backgroundColor = boxColors[i % boxColors.length];
       viewerContainer.appendChild(box);
     }
   }

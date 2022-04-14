@@ -21,8 +21,7 @@ div.mondrian-allocation-box {
     font-size: 70%;
     position: absolute;
     overflow: hidden;
-    background-color: red;
-    border-radius: 4px;
+    border-radius: 2px;
 }
 
 div.mondrian-statusbar {
