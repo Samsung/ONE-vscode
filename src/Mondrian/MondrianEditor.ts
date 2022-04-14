@@ -44,6 +44,11 @@ export class MondrianEditorProvider implements vscode.CustomTextEditorProvider {
       enableScripts: true,
     };
     webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview);
+
+    webviewPanel.webview.postMessage({
+      type: 'update',
+      text: document.getText(),
+    });
   }
 
   /**
@@ -78,7 +83,7 @@ export class MondrianEditorProvider implements vscode.CustomTextEditorProvider {
             <div class="mondrian-segment-picker">Segment: DLA</div>
             <div class="mondrian-info">
               Memory: <span class="mondrian-info-memory-size">0</span> |
-              Cycle count: <span class="mondrian-info-cycle-count">0</span>
+              Cycles: <span class="mondrian-info-cycle-count">0</span>
             </div>
           </div>
         </div>

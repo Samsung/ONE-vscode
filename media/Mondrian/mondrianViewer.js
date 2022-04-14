@@ -14,3 +14,68 @@
  * limitations under the License.
  */
 
+(function () {
+  const vscode = acquireVsCodeApi();
+  const memorySizeContainer = /** @type {HTMLElement} */ document.querySelector('.mondrian-info-memory-size');
+  const cycleCountContainer = /** @type {HTMLElement} */ document.querySelector('.mondrian-info-cycle-count');
+
+  // Handle messages sent from the extension to the webview
+  window.addEventListener('message', event => {
+    const message = event.data; // The json data that the extension sent
+    switch (message.type) {
+      case 'update':
+      {
+        const data = message.text;
+
+        // Update our webview's content
+        updateContent(data);
+
+        // Persist state information.
+        // This state is returned in the call to `vscode.getState` below when a webview is reloaded.
+        vscode.setState({ data });
+
+        return;
+      }
+    }
+  });
+
+  function updateContent(/** @type {string} */ data) {
+    if (!data) {
+      data = '{}';
+    }
+    let json;
+    try {
+      json = JSON.parse(data);
+    } catch {
+      /* notesContainer.style.display = 'none';
+      errorContainer.innerText = 'Error: Document is not valid json';
+      errorContainer.style.display = '';
+      */
+      return;
+    }
+
+    /* Check schema version */
+    if (json.schema_version != 1) {
+      console.log(`Invalid schema version: ${json.schema_version}`);
+      return;
+    }
+
+    console.log(`Segments: ${json.segments.length}`);
+
+    let max_cycle = 0;
+    let max_memory = 0;
+    for (alloc of json.segments[0].allocations) {
+      if (alloc.alive_till > max_cycle) {
+        max_cycle = alloc.alive_till;
+      }
+
+      if (alloc.offset + alloc.size > max_memory) {
+        max_memory = alloc.offset + alloc.size;
+      }
+    }
+
+    memorySizeContainer.innerText = `${max_memory}`;
+    cycleCountContainer.innerText = `${max_cycle}`;
+  }
+
+})();
