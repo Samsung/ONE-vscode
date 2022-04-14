@@ -13,7 +13,16 @@ div.mondrian-scrollbar {
 
 div.mondrian-viewer-area {
     background-color: rgba(127, 127, 127, 0.2);
+    position: relative;
     flex: 1;
+}
+
+div.mondrian-allocation-box {
+    font-size: 70%;
+    position: absolute;
+    overflow: hidden;
+    background-color: red;
+    border-radius: 4px;
 }
 
 div.mondrian-statusbar {

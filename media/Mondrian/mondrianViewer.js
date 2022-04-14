@@ -17,10 +17,14 @@
 (function () {
   const vscode = acquireVsCodeApi();
 
+  const viewerContainer = /** @type {HTMLElement} */ document.querySelector('.mondrian-viewer-area');
   const statusLineContainer = /** @type {HTMLElement} */ document.querySelector('.mondrian-statusline');
   const memorySizeContainer = /** @type {HTMLElement} */ document.querySelector('.mondrian-info-memory-size');
   const cycleCountContainer = /** @type {HTMLElement} */ document.querySelector('.mondrian-info-cycle-count');
   const segmentSelect = /** @type {HTMLElement} */ document.querySelector('.mondrian-segment-picker');
+
+  let viewportCycles = 0;
+  let viewportMemory = 0;
 
   class Viewer {
     constructor() {
@@ -119,6 +123,25 @@
 
     let loadMs = (performance.now() - loadTs).toFixed(2);
     statusLineContainer.innerText = `Document loaded in ${loadMs}ms`;
+
+    viewportCycles = totalCycles;
+    viewportMemory = totalMemory;
+
+    updateViewport(data, viewer);
+  }
+
+  function updateViewport(data, viewer) {
+    viewerContainer.replaceChildren();
+    for (const [i, alloc] of data.segments[viewer.activeSegment].allocations.entries()) {
+      let box = document.createElement('div');
+      box.innerText = alloc.size;
+      box.classList.add('mondrian-allocation-box');
+      box.style.top = (alloc.offset / viewportMemory * 100) + '%';
+      box.style.height = (alloc.size / viewportMemory * 100) + '%';
+      box.style.left = (alloc.alive_from / viewportCycles * 100) + '%';
+      box.style.right = ((viewportCycles - alloc.alive_till) / viewportCycles * 100) + '%';
+      viewerContainer.appendChild(box);
+    }
   }
 
   const state = vscode.getState();
