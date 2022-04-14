@@ -20,6 +20,7 @@
   const statusLineContainer = /** @type {HTMLElement} */ document.querySelector('.mondrian-statusline');
   const memorySizeContainer = /** @type {HTMLElement} */ document.querySelector('.mondrian-info-memory-size');
   const cycleCountContainer = /** @type {HTMLElement} */ document.querySelector('.mondrian-info-cycle-count');
+  const segmentSelect = /** @type {HTMLElement} */ document.querySelector('.mondrian-segment-picker');
 
   class Viewer {
     constructor() {
@@ -52,6 +53,14 @@
         return;
       }
     }
+  });
+
+  segmentSelect.addEventListener('change', event => {
+    let state = vscode.getState();
+    state.viewer.activeSegment = parseInt(segmentSelect.value);
+
+    updateContent(state.data, state.viewer);
+    vscode.setState(state);
   });
 
   function parseText(/** @type (string) */ text) {
@@ -88,6 +97,12 @@
 
     let totalCycles = 0;
     let totalMemory = 0;
+
+    segmentSelect.replaceChildren();
+    for (const [index, segment] of data.segments.entries()) {
+      segmentSelect.appendChild(new Option(segment.name, index));
+    }
+    segmentSelect.value = viewer.activeSegment;
 
     for (alloc of data.segments[viewer.activeSegment].allocations) {
       if (alloc.alive_till > totalCycles) {
