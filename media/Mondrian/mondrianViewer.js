@@ -16,8 +16,18 @@
 
 (function () {
   const vscode = acquireVsCodeApi();
+
+  const statusLineContainer = /** @type {HTMLElement} */ document.querySelector('.mondrian-statusline');
   const memorySizeContainer = /** @type {HTMLElement} */ document.querySelector('.mondrian-info-memory-size');
   const cycleCountContainer = /** @type {HTMLElement} */ document.querySelector('.mondrian-info-cycle-count');
+
+  class Viewer {
+    constructor() {
+      this.activeSegment = 0;
+      this.viewportMinCycle = 0;
+      this.viewportMaxCycle = 0;
+    }
+  }
 
   // Handle messages sent from the extension to the webview
   window.addEventListener('message', event => {
@@ -25,57 +35,80 @@
     switch (message.type) {
       case 'update':
       {
-        const data = message.text;
+        const data = parseText(message.text);
+        if (!data) {
+          return;
+        }
+
+        const viewer = new Viewer();
 
         // Update our webview's content
-        updateContent(data);
+        updateContent(data, viewer);
 
         // Persist state information.
         // This state is returned in the call to `vscode.getState` below when a webview is reloaded.
-        vscode.setState({ data });
+        vscode.setState({ data, viewer });
 
         return;
       }
     }
   });
 
-  function updateContent(/** @type {string} */ data) {
-    if (!data) {
-      data = '{}';
+  function parseText(/** @type (string) */ text) {
+    if (!text) {
+      text = '{}';
     }
-    let json;
+    let data;
+
+    /* Parse data JSON */
     try {
-      json = JSON.parse(data);
+      data = JSON.parse(text);
     } catch {
-      /* notesContainer.style.display = 'none';
-      errorContainer.innerText = 'Error: Document is not valid json';
-      errorContainer.style.display = '';
-      */
-      return;
+      statusLineContainer.innerText = 'Error: Document is not a valid JSON';
+      return null;
     }
 
     /* Check schema version */
-    if (json.schema_version != 1) {
-      console.log(`Invalid schema version: ${json.schema_version}`);
-      return;
+    if (data.schema_version !== 1) {
+      statusLineContainer.innerText = 'Error: Invalid JSON schema version';
+      return null;
     }
 
-    console.log(`Segments: ${json.segments.length}`);
+    /* Check if data has any memory segments */
+    if (data.segments === undefined || data.segments.length === 0) {
+      statusLineContainer.innerText = 'Error: Document has no memory segments';
+      return null;
+    }
 
-    let max_cycle = 0;
-    let max_memory = 0;
-    for (alloc of json.segments[0].allocations) {
-      if (alloc.alive_till > max_cycle) {
-        max_cycle = alloc.alive_till;
+    return data;
+  }
+
+  function updateContent(data, viewer) {
+    let loadTs = performance.now();
+
+    let totalCycles = 0;
+    let totalMemory = 0;
+
+    for (alloc of data.segments[viewer.activeSegment].allocations) {
+      if (alloc.alive_till > totalCycles) {
+        totalCycles = alloc.alive_till;
       }
 
-      if (alloc.offset + alloc.size > max_memory) {
-        max_memory = alloc.offset + alloc.size;
+      if (alloc.offset + alloc.size > totalMemory) {
+        totalMemory = alloc.offset + alloc.size;
       }
     }
 
-    memorySizeContainer.innerText = `${max_memory}`;
-    cycleCountContainer.innerText = `${max_cycle}`;
+    memorySizeContainer.innerText = `${totalMemory}`;
+    cycleCountContainer.innerText = `${totalCycles}`;
+
+    let loadMs = (performance.now() - loadTs).toFixed(2);
+    statusLineContainer.innerText = `Document loaded in ${loadMs}ms`;
+  }
+
+  const state = vscode.getState();
+  if (state) {
+    updateContent(state.data, state.viewer);
   }
 
 })();

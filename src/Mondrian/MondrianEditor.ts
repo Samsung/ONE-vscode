@@ -80,10 +80,11 @@ export class MondrianEditorProvider implements vscode.CustomTextEditorProvider {
           <div class="mondrian-scrollbar"></div>
           <div class="mondrian-viewer-area"></div>
           <div class="mondrian-statusbar">
-            <div class="mondrian-segment-picker">Segment: DLA</div>
+            <div class="mondrian-statusline"></div>
             <div class="mondrian-info">
               Memory: <span class="mondrian-info-memory-size">0</span> |
-              Cycles: <span class="mondrian-info-cycle-count">0</span>
+              Cycles: <span class="mondrian-info-cycle-count">0</span> |
+              Segment: <span class="mondrian-segment-picker">DLA</div>
             </div>
           </div>
         </div>

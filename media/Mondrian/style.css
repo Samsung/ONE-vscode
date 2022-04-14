@@ -6,13 +6,13 @@ div.mondrian-layout {
 }
 
 div.mondrian-scrollbar {
-    background-color: #777;
+    background-color: rgba(96, 96, 96, 0.2);
     min-height: 36px;
     flex: 0;
 }
 
 div.mondrian-viewer-area {
-    background-color: #333;
+    background-color: rgba(127, 127, 127, 0.2);
     flex: 1;
 }
 
@@ -21,8 +21,10 @@ div.mondrian-statusbar {
     display: flex;
 }
 
-div.mondrian-segment-picker {
+div.mondrian-statusline {
     flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 div.mondrian-info {
