@@ -54,19 +54,13 @@
         "command": "onevscode.refresh-compiler",
         "title": "Refresh",
         "category": "ONE",
-        "icon": {
-          "light": "media/icon/light/refresh.svg",
-          "dark": "media/icon/dark/refresh.svg"
-        }
+        "icon": "$(refresh)"
       },
       {
         "command": "onevscode.install-compiler",
         "title": "Install",
         "category": "ONE",
-        "icon": {
-          "light": "media/icon/light/install.svg",
-          "dark": "media/icon/dark/install.svg"
-        }
+        "icon": "$(desktop-download)"
       },
       {
         "command": "onevscode.build",
