@@ -14,18 +14,25 @@
  * limitations under the License.
  */
 
-import {Compiler} from './Compiler';
-import {Executor} from './Executor';
+export class Command extends Array<string> {
+  readonly cmd: string;
+  options?: string[];
 
-// ** The scope of Backend is defined by each backend supporter **
-// A kind of proxy. Backend doesn't know where it-self is (local? remote? it doesn't know.)
-export interface Backend {
-  // backend's name. this doesn't mean the name of the toolchain
-  name(): string;
+  constructor(cmd: string, options?: string[]) {
+    super();
+    this.cmd = cmd;
+    this.options = options;
+  }
 
-  // compiler specs by being filled by impl
-  compiler(): Compiler|undefined;
+  strs(): string[] {
+    let ret: string[] = [this.cmd];
+    if (this.options !== undefined) {
+      ret.concat(this.options);
+    }
+    return ret;
+  }
 
-  // executor specs by being filled by impl
-  executor(): Executor|undefined;
-}
+  str(): string {
+    return this.strs().join(' ');
+  }
+};

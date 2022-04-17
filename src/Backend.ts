@@ -14,18 +14,25 @@
  * limitations under the License.
  */
 
-import {Compiler} from './Compiler';
-import {Executor} from './Executor';
+import {Backend} from './Backend/API';
+import {DummyBackend} from './BackendDummy/BackendDummy';
 
-// ** The scope of Backend is defined by each backend supporter **
-// A kind of proxy. Backend doesn't know where it-self is (local? remote? it doesn't know.)
-export interface Backend {
-  // backend's name. this doesn't mean the name of the toolchain
-  name(): string;
+// List of backend extensions registered
+let globalBackends: Backend[] = [];
 
-  // compiler specs by being filled by impl
-  compiler(): Compiler|undefined;
+function backendRegistrationApi() {
+  let registrationAPI = {
+    registerBackend(backend: Backend) {
+      globalBackends.push(backend);
 
-  // executor specs by being filled by impl
-  executor(): Executor|undefined;
+      console.log(`Backend ${backend.name()} was registered into ONE-vscode.`);
+    }
+  };
+
+  // dummy
+  registrationAPI.registerBackend(new DummyBackend());
+
+  return registrationAPI;
 }
+
+export {globalBackends, backendRegistrationApi};

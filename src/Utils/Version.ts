@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-import {Compiler} from './Compiler';
-import {Executor} from './Executor';
+// TODO: Add operator <, <=, ==, >, >=
+export class Version {
+  major: number;
+  minor: number;
+  patch: number;
+  option: string = '';
 
-// ** The scope of Backend is defined by each backend supporter **
-// A kind of proxy. Backend doesn't know where it-self is (local? remote? it doesn't know.)
-export interface Backend {
-  // backend's name. this doesn't mean the name of the toolchain
-  name(): string;
+  constructor(major: number = 0, minor: number = 0, patch: number = 0, option: string = '') {
+    this.major = major;
+    this.minor = minor;
+    this.patch = patch;
+    this.option = option;
+  }
 
-  // compiler specs by being filled by impl
-  compiler(): Compiler|undefined;
-
-  // executor specs by being filled by impl
-  executor(): Executor|undefined;
-}
+  str(): string {
+    let ret: string = `${this.major}.${this.minor}.${this.patch}${this.option}`;
+    return ret;
+  }
+};

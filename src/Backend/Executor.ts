@@ -14,18 +14,28 @@
  * limitations under the License.
  */
 
-import {Compiler} from './Compiler';
-import {Executor} from './Executor';
+import {Command} from '../Project/Command';
 
-// ** The scope of Backend is defined by each backend supporter **
-// A kind of proxy. Backend doesn't know where it-self is (local? remote? it doesn't know.)
-export interface Backend {
-  // backend's name. this doesn't mean the name of the toolchain
-  name(): string;
+import {Toolchains} from './Toolchain';
 
-  // compiler specs by being filled by impl
-  compiler(): Compiler|undefined;
+// NOTE: This designs by feedback from kideuk.bang
+// Tools to execute -> Exactly commands to execute tools
+interface Executor {
+  // defined/available toolchains
+  toolchains(): Toolchains;
 
-  // executor specs by being filled by impl
-  executor(): Executor|undefined;
+  inference(): Command;
 }
+
+// General excutor uses onecc so default jobs can be used
+class ExecutorBase implements Executor {
+  toolchains(): Toolchains {
+    throw Error('Invalid toolchains call');
+  }
+
+  inference(): Command {
+    throw Error('Invalid inference call');
+  }
+};
+
+export {Executor, ExecutorBase};
