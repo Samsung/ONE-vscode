@@ -14,18 +14,7 @@
  * limitations under the License.
  */
 
-import {Compiler} from './Compiler';
-import {Executor} from './Executor';
+import {ExecutorBase} from '../Backend/Executor';
 
-// ** The scope of Backend is defined by each backend supporter **
-// A kind of proxy. Backend doesn't know where it-self is (local? remote? it doesn't know.)
-export interface Backend {
-  // backend's name. this doesn't mean the name of the toolchain
-  name(): string;
-
-  // compiler specs by being filled by impl
-  compiler(): Compiler|undefined;
-
-  // executor specs by being filled by impl
-  executor(): Executor|undefined;
-}
+// ExecuteEnv can have general env as default
+export class ExecutorTFLite extends ExecutorBase {};

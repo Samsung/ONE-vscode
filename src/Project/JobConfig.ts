@@ -14,30 +14,35 @@
  * limitations under the License.
  */
 
+import {Command} from './Command';
 import {Job} from './Job';
-import {MixinInOutPaths} from './JobMixins';
+import {JobBase} from './JobBase';
 import {ToolArgs} from './ToolArgs';
 
-export class JobBase implements Job, MixinInOutPaths {
-  jobType: Job.Type = Job.Type.tUndefined;
-  name: string = '(noname)';
-  inputPath: string = '';
-  outputPath: string = '';
-  cb?: ((job: Job, ret: boolean) => void) = undefined;
-
-  public get valid(): boolean {
-    throw Error('Invalid valid call');
+export class JobConfig extends JobBase {
+  cmd: Command;
+  constructor(cmd: Command) {
+    super();
+    this.jobType = Job.Type.tConfig;
+    this.cmd = cmd;
   }
 
-  public get driver(): string {
-    throw Error('Invalid driver call');
+  public get valid() {
+    // TODO validate arguments;
+    return true;
   }
 
-  public get tool(): string {
-    throw Error('Invalid tool call');
+  public get driver() {
+    return this.cmd.strs()[0];
   }
 
-  public get toolArgs(): ToolArgs {
-    throw Error('Invalid toolArgs call');
+  public get tool() {
+    return '';
   }
-}
+
+  public get toolArgs() {
+    let args = new ToolArgs();
+    args.concat(this.cmd.strs().slice(1));
+    return args;
+  }
+};

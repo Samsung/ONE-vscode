@@ -32,8 +32,10 @@ export interface Job {
   jobType: Job.Type;
   name: string;
   valid: boolean;
+  driver: string;  // NYI for general jobs
   tool: string;
   toolArgs: ToolArgs;
+  cb?: (job: Job, ret: boolean) => void;
 }
 
 export namespace Job {
@@ -48,6 +50,12 @@ export const enum Type {
   tQuantize,
   tPack,
   tCodegen,
+  // TODO: define precisely
+  tInstall,
+  tUninstall,
+  tInstalled,
+  tImport,
+  tConfig,
   // TODO add more
 }
 

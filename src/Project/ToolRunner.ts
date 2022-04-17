@@ -16,7 +16,11 @@
 
 import * as cp from 'child_process';
 import * as fs from 'fs';
+import {InlineValueEvaluatableExpression} from 'vscode';
+
 import {Logger} from '../Utils/Logger';
+
+import {Job} from './Job';
 import {ToolArgs} from './ToolArgs';
 
 const path = require('path');
@@ -33,8 +37,13 @@ export class ToolRunner {
   }
 
   private handlePromise(
-      resolve: (value: string|PromiseLike<string>) => void,
-      reject: (value: string|PromiseLike<string>) => void, cmd: cp.ChildProcessWithoutNullStreams) {
+      resolve: (value: Job|PromiseLike<Job>) => void, reject: (value: Job|PromiseLike<Job>) => void,
+      job: Job, path: string) {
+    // place tool to the front of toolargs
+    let toolargs: ToolArgs = job.toolArgs;
+    toolargs.unshift(job.tool);
+    let cmd = cp.spawn(job.driver, toolargs, {cwd: path});
+
     // stdout
     cmd.stdout.on(K_DATA, (data: any) => {
       this.logger.output(data.toString());
@@ -50,12 +59,11 @@ export class ToolRunner {
       if (codestr === '0') {
         this.logger.outputWithTime('Build Success.');
         this.logger.outputLine('');
-        resolve(codestr);
+        resolve(job);
       } else {
         this.logger.outputWithTime('Build Failed:' + codestr);
         this.logger.outputLine('');
-        let errorMsg = 'Failed with exit code: ' + codestr;
-        reject(errorMsg);
+        reject(job);
       }
     });
   }
@@ -83,13 +91,10 @@ export class ToolRunner {
     return oneccRealPath;
   }
 
-  public getRunner(name: string, onecc: string, tool: string, toolargs: ToolArgs, path: string) {
-    return new Promise<string>((resolve, reject) => {
-      this.logger.outputWithTime('Running: ' + name);
-      // place tool to the front of toolargs
-      toolargs.unshift(tool);
-      let cmd = cp.spawn(onecc, toolargs, {cwd: path});
-      this.handlePromise(resolve, reject, cmd);
+  public getRunner(job: Job, path: string) {
+    return new Promise<Job>((resolve, reject) => {
+      this.logger.outputWithTime('Running: ' + job.name);
+      this.handlePromise(resolve, reject, job, path);
     });
   }
 }

@@ -40,7 +40,11 @@ Some part of this code refers to
 https://github.com/microsoft/vscode-webview-ui-toolkit-samples/blob/b807107df40271e83ea6d36828357fdb10d71f12/default/hello-world/src/panels/HelloWorldPanel.ts
 */
 import * as vscode from 'vscode';
+
+import {globalBackends} from '../Backend';
 import {getUri} from '../Utils/Uri';
+
+import {CompileEnv} from './CompileEnv';
 
 function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {
   return {
@@ -48,6 +52,25 @@ function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {
     enableScripts: true,
   };
 }
+
+// TODO: This should be multiple envs in the future
+// let gCompileEnvs: CompileEnv[] = [];
+// TODO: Where to take this
+let gCompileEnv: CompileEnv;
+
+// Init
+// backend // Backend be choosen
+// gCompileEnvs.push(new CompileEnv(new Logger(), backend.compiler()));
+
+// Install
+// i = 0;
+// t_list = gCompileEnvs[i].listAvailable();
+// gCompileEnvs[0].install(t_list[i]);
+
+// Compile
+// cfg = '...';
+// ti = gCompileEnvs[i].listInstalled();
+// gCompileEnvs[i].compile(cfg, ti);
 
 export class CompilePanel {
   /**

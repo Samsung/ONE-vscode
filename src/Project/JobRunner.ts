@@ -18,6 +18,7 @@ import {EventEmitter} from 'events';
 
 import {Balloon} from '../Utils/Balloon';
 import {Logger} from '../Utils/Logger';
+import {Job} from './Job';
 
 import {ToolArgs} from './ToolArgs';
 import {ToolRunner} from './ToolRunner';
@@ -42,7 +43,7 @@ export class JobRunner extends EventEmitter {
     this.on(K_CLEANUP, this.onCleanup);
   }
 
-  private invoke(name: string, tool: string, toolArgs: ToolArgs, path: string) {
+  private invoke(job: Job, path: string) {
     const onecc = this.toolRunner.getOneccPath();
     if (onecc === undefined) {
       Balloon.error('Failed to find onecc: ' + onecc);
@@ -51,15 +52,47 @@ export class JobRunner extends EventEmitter {
       return;
     }
     console.log('Found onecc: ', onecc);
-    console.log('Run onecc: ', onecc, ' tool: ', tool, ' args: ', toolArgs, ' cwd: ', path);
-    const runner = this.toolRunner.getRunner(name, onecc, tool, toolArgs, path);
+    job.driver = onecc;
+
+    console.log(
+        'Run driver: ', job.driver, ' tool: ', job.tool, ' args: ', job.toolArgs, ' cwd: ', path);
+    const runner = this.toolRunner.getRunner(job, path);
 
     runner
-        .then(() => {
+        .then((job: Job) => {
+          if (job.cb !== undefined) {
+            job.cb(job, true);
+          }
           // Move on to next job
           this.emit(K_INVOKE);
         })
-        .catch(() => {
+        .catch((job: Job) => {
+          if (job.cb !== undefined) {
+            job.cb(job, false);
+          }
+          Balloon.error('Running ONE failed');
+          this.emit(K_CLEANUP);
+        });
+  }
+
+  // TODO: Design again
+  private invokeToolchainJobs(job: Job, path: string) {
+    console.log(
+        'Run driver: ', job.driver, ' tool: ', job.tool, ' args: ', job.toolArgs, ' cwd: ', path);
+    const runner = this.toolRunner.getRunner(job, path);
+
+    runner
+        .then((job: Job) => {
+          if (job.cb !== undefined) {
+            job.cb(job, true);
+          }
+          // Move on to next job
+          this.emit(K_INVOKE);
+        })
+        .catch((job: Job) => {
+          if (job.cb !== undefined) {
+            job.cb(job, false);
+          }
           Balloon.error('Running ONE failed');
           this.emit(K_CLEANUP);
         });
@@ -71,8 +104,11 @@ export class JobRunner extends EventEmitter {
       this.logger.outputWithTime('Finish Running ONE compilers.');
       this.emit(K_CLEANUP);
       return;
+    } else if (job.jobType >= Job.Type.tInstall && job.jobType >= Job.Type.tInstalled) {
+      this.invokeToolchainJobs(job, this.cwd);
+    } else {
+      this.invoke(job, this.cwd);
     }
-    this.invoke(job.name, job.tool, job.toolArgs, this.cwd);
   }
 
   private onCleanup() {
