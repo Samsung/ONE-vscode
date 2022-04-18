@@ -27,6 +27,7 @@ import {HoverProvider} from './Editor/HoverProvider';
 import {Jsontracer} from './Jsontracer';
 import {Project} from './Project';
 import {Utils} from './Utils';
+import {ContextExplorer} from './contextExplorer';
 
 // List of backend extensions registered
 let backends: Backend[] = [];
@@ -67,6 +68,8 @@ export function activate(context: vscode.ExtensionContext) {
   console.log('one-vscode activate OK');
 
   setGlobalContext();
+
+  new ContextExplorer(context);
 
   // ONE view
   let refreshCompiler = vscode.commands.registerCommand('onevscode.refresh-compiler', () => {
