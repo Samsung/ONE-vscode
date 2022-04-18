@@ -48,6 +48,8 @@ var host = {};
 
 const vscode = acquireVsCodeApi();
 
+console.log('This is index.js');
+
 host.BrowserHost = class {
     constructor() {
         this._document = window.document;
@@ -128,6 +130,7 @@ host.BrowserHost = class {
         this._menu.add(
             {label: 'Find...', accelerator: 'CmdOrCtrl+F', click: () => this._view.find()});
         this._menu.add({});
+        this._menu.add({label: 'Get selection', click: () => this._view.getSelection()});
         this._menu.add({label: 'Clear selection', click: () => this._view.clearSelection()});
         this._menu.add({});
         this._menu.add({
@@ -199,6 +202,7 @@ host.BrowserHost = class {
     }
 
     require(id) {
+        console.log('[view.js require]', id);
         const url = this._url(id + '.js');
         this.window.__modules__ = this.window.__modules__ || {};
         if (this.window.__modules__[url]) {
@@ -232,6 +236,7 @@ host.BrowserHost = class {
     }
 
     request(file, encoding, base) {
+        console.log('request:', file, encoding, base);
         const url = base ? (base + '/' + file) : this._url(file);
         return this._request(url, null, encoding);
     }
@@ -286,6 +291,8 @@ host.BrowserHost = class {
 
     _request(url, headers, encoding, timeout) {
         return new Promise((resolve, reject) => {
+            console.log('_request: ', url, headers, encoding, timeout);
+
             if (url.startsWith('vscode-webview://')) {
                 const messageHandler = (event) => {
                     // remove this temporary handler
@@ -293,6 +300,7 @@ host.BrowserHost = class {
 
                     const message = event.data;
                     if (message.command === 'response') {
+                        console.log('response from extension...');
                         resolve(message.response);
                     } else if (message.command === 'error') {
                         const err = new Error('Failed to get response \'' + url + '\'.');
@@ -304,6 +312,7 @@ host.BrowserHost = class {
                 // add temporary handler for this request
                 this.window.addEventListener('message', messageHandler);
 
+                console.log('postMessage request to extension ', url, encoding);
                 vscode.postMessage({command: 'request', url: url, encoding: encoding});
                 return;
             }
@@ -412,24 +421,40 @@ host.BrowserHost = class {
     _msgLoadModel(message) {
         if (message.type === 'modelpath') {
             // 'modelpath' should be received before last model packet
+            console.log('!!!! message.modelpath', message.value);
             this._modelPath = message.value;
         } else if (message.type === 'uint8array') {
             // model content is in Uint8Array data, store it in this._modelData
             const offset = parseInt(message.offset);
             const length = parseInt(message.length);
             const total = parseInt(message.total);
+            console.log('uint8array in index.js', offset, length, total);
             this._modelData.push(message.responseArray);
 
             if (offset + length >= total) {
                 // this is the last packet
+                console.log('view loadModel done:', this._modelPath);
                 const file1 = new File(this._modelData, this._modelPath, {type: ''});
                 this._view._host._open(file1, [file1]);
                 this._loadingModelArray = [];
                 this._view.show('default');
             } else {
                 // request next packet
+                console.log('view loadModel continue ', offset + length);
                 vscode.postMessage({command: 'loadmodel', offset: offset + length});
+                console.log('view loadModel: ask more done');
             }
+            // const arrayBuffer = new Uint8Array(arrayData);
+            // console.log("Uint8Array:", arrayBuffer);
+            // const file1 = new File([arrayBuffer], "model.circle", {type: ''});
+            // this._view._host._open(file1, [file1]);
+        } else if (message.type === 'json') {
+            const arrayObj = this._window.atob(message.responseJson);
+            const arrayBuffer = Uint8Array.from(arrayObj, c => c.charCodeAt(0));
+            console.log('model from base64 done:', this._modelPath);
+            const file1 = new File([arrayBuffer], this._modelPath, {type: ''});
+            this._view._host._open(file1, [file1]);
+            this._view.show('default');
         } else if (message.type === 'error') {
             // TODO revise to something like 'Failed to load'
             this._view.show('welcome');

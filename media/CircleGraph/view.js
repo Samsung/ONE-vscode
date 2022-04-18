@@ -65,11 +65,14 @@ view.View = class {
             direction: 'vertical',
             mousewheel: 'scroll'
         };
+
+        console.log('view.View::constructor');
+
         this._host.initialize(this)
             .then(() => {
                 this._model = null;
                 this._graphs = [];
-                this._selection = [];
+                this._selection = [];       // selection of element
                 this._selectionNodes = [];  // selection of view.Node
                 this._sidebar = new sidebar.Sidebar(this._host, id);
                 this._searchText = '';
@@ -380,6 +383,10 @@ view.View = class {
         }
     }
 
+    selected(query) {
+        return this._selection.find(element => element === query);
+    }
+
     select(selection) {
         if (selection && selection.length > 0) {
             const container = this._getElementById('graph');
@@ -449,6 +456,33 @@ view.View = class {
                 this._selection.push(element);
             }
         }
+    }
+
+    /**
+     * @brief getSelection returns array of circle.Node that are selected
+     */
+    getSelection() {
+        var selectionNodes = [];
+        var selectionTensors = [];
+        var index;
+        for (index = 0; index < this._selectionNodes.length; index++) {
+            var obj = {};
+            var node = this._selectionNodes[index];
+            // console.log("selection node ", index, node);
+            // console.log("selection circle", index, node.value);
+            node.value._outputs.forEach((output) => {
+                const args = output._arguments;
+                args.forEach((arg) => {
+                    const name = arg._name;
+                    // NOTE name is tensor_name + tensor_index, in circle.js
+                    const mixed = arg._name.split(/\n/);
+                    selectionNodes.push(mixed[0]);
+                    selectionTensors.push(arg._location);
+                });
+            });
+        }
+        console.log('selected: ', {names: selectionNodes, tensors: selectionTensors});
+        return {names: selectionNodes, tensors: selectionTensors};
     }
 
     clearSelection() {

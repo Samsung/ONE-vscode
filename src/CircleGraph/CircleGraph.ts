@@ -45,6 +45,7 @@ export class CircleGraphPanel {
 
   private _disposables: vscode.Disposable[] = [];
 
+  // NOTE this maybe changed to 'create' to show multiple instance of graph view
   public static createOrShow(extensionUri: vscode.Uri, modelPath: string|undefined) {
     // if modelPath is undefined, let's show file open dialog and get the model path from the user
     if (modelPath === undefined) {
@@ -117,9 +118,11 @@ export class CircleGraphPanel {
           Balloon.error(message.text);
           return;
         case MessageDefs.request:
+          console.log('request from web-view:', message.url);
           this.handleRequest(message.url, message.encoding);
           return;
         case MessageDefs.loadmodel:
+          console.log('loadmodel from web-view:');
           this.handleLoadModel(parseInt(message.offset));  // to number
           return;
       }
@@ -215,6 +218,7 @@ export class CircleGraphPanel {
       filePath = vscode.Uri.joinPath(
           this._extensionUri, CircleGraphPanel.folderMediaCircleGraphExt, reqUrl.pathname);
     }
+    console.log('handleRequest ', filePath.fsPath);
 
     try {
       const fileData = fs.readFileSync(filePath.fsPath, {encoding: encoding, flag: 'r'});
@@ -289,6 +293,7 @@ export class CircleGraphPanel {
   private sendModelMulti(packetSize: number, offset: number) {
     fs.open(this._modelToLoad, 'r', (err, fd) => {
       if (err) {
+        console.log('open file error', this._modelToLoad);
         this._panel.webview.postMessage(
             {command: MessageDefs.loadmodel, type: MessageDefs.error, responseErr: err.message});
         Balloon.error(err.message);
@@ -307,6 +312,7 @@ export class CircleGraphPanel {
         responseArray: modelData
       });
       fs.close(fd, (err) => {});
+      console.log('postMessage packet', offset, 'length', packetSize, 'total', this._modelLength);
     });
   }
 
