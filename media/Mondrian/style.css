@@ -15,43 +15,53 @@
  */
 
 div.mondrian-layout {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    height: calc(100vh - 20px);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  height: calc(100vh - 20px);
 }
 
 div.mondrian-scrollbar {
-    background-color: rgba(96, 96, 96, 0.2);
-    min-height: 36px;
-    flex: 0;
+  background-color: rgba(96, 96, 96, 0.2);
+  min-height: 36px;
+  flex: 0;
 }
 
 div.mondrian-viewer-area {
-    background-color: rgba(127, 127, 127, 0.2);
-    position: relative;
-    flex: 1;
+  background-color: rgba(127, 127, 127, 0.2);
+  position: relative;
+  flex: 1;
 }
 
 div.mondrian-allocation-box {
-    font-size: 70%;
-    position: absolute;
-    overflow: hidden;
-    border-radius: 2px;
+  overflow: hidden;
+  position: absolute;
+  border-radius: 2px;
+}
+
+div.mondrian-allocation-label {
+  overflow: hidden;
+  white-space: nowrap;
+  border-radius: 2px;
+  border: solid rgba(0, 0, 0, 0.2) 2px;
+  height: calc(100% - 12px);
+  color: rgb(225, 225, 225);
+  text-shadow: 1px 1px 1px #000;
+  padding: 4px;
 }
 
 div.mondrian-statusbar {
-    flex: 0;
-    display: flex;
+  flex: 0;
+  display: flex;
 }
 
 div.mondrian-statusline {
-    flex: 1;
-    overflow: hidden;
-    white-space: nowrap;
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 div.mondrian-info {
-    flex: 0;
-    white-space: nowrap;
+  flex: 0;
+  white-space: nowrap;
 }

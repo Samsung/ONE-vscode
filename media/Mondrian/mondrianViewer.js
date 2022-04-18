@@ -35,11 +35,13 @@
   }
 
   const boxColors = [
-    "#ffbc8f",
-    "#fff061",
-    "#0952b1",
-    "#0aa296",
-    "#04ec81",
+    "#e25935",
+    "#ee7a0b",
+    "#facb35",
+    "#56571b",
+    "#1791c2",
+    "#5453b1",
+    "#77455e",
   ];
 
   // Handle messages sent from the extension to the webview
@@ -108,7 +110,11 @@
     let loadTs = performance.now();
 
     let totalCycles = 0;
-    let totalMemory = 0;
+    let totalMemory = data.segments[viewer.activeSegment].size;
+
+    if (totalMemory === undefined) {
+      totalMemory = 0;
+    }
 
     segmentSelect.replaceChildren();
     for (const [index, segment] of data.segments.entries()) {
@@ -140,10 +146,18 @@
 
   function updateViewport(data, viewer) {
     viewerContainer.replaceChildren();
+
+    let boxTemplate = document.createElement('div');
+    boxTemplate.classList.add('mondrian-allocation-box');
+
+    let boxTemplateLabel = document.createElement('div');
+    boxTemplateLabel.classList.add('mondrian-allocation-label');
+
+    boxTemplate.appendChild(boxTemplateLabel);
+
     for (const [i, alloc] of data.segments[viewer.activeSegment].allocations.entries()) {
-      let box = document.createElement('div');
-      box.innerText = alloc.size;
-      box.classList.add('mondrian-allocation-box');
+      let box = boxTemplate.cloneNode(true);
+      box.firstChild.innerText = `Origin: ${alloc.origin}\nSize: ${alloc.size}\nOffset: ${alloc.offset}`;
       box.style.top = (alloc.offset / viewportMemory * 100) + '%';
       box.style.height = (alloc.size / viewportMemory * 100) + '%';
       box.style.left = (alloc.alive_from / viewportCycles * 100) + '%';
