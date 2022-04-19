@@ -30,12 +30,12 @@ div.mondrian-scrollbar {
 div.mondrian-viewer-area {
   contain: content;
   overflow: auto;
-  background-color: rgba(127, 127, 127, 0.2);
+  background-color: rgba(127, 127, 127, 0.1);
   flex: 1;
 }
 
 div.mondrian-viewer-bounds {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 0, 0, 0.05);
   position: relative;
   margin: 0px;
 }
