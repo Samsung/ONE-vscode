@@ -21,7 +21,7 @@ import {stringify} from 'querystring';
 import * as vscode from 'vscode';
 
 interface DirNode {
-  dir: boolean, name: string, childs: DirNode[],
+  dir: boolean, name: string, childs: DirNode[], uri: vscode.Uri
 }
 
 export class ContextNode extends vscode.TreeItem {
@@ -33,9 +33,13 @@ export class ContextNode extends vscode.TreeItem {
     super(label, collapsibleState);
 
     this.tooltip = `${this.label}`;
-  }
 
-  iconPath = vscode.ThemeIcon.File;
+    if (dirnode.dir) {
+      this.iconPath = vscode.ThemeIcon.Folder;
+    } else {
+      this.iconPath = new vscode.ThemeIcon('gear');
+    }
+  }
 }
 
 export class ContextTreeDataProvider implements vscode.TreeDataProvider<ContextNode> {
@@ -46,7 +50,7 @@ export class ContextTreeDataProvider implements vscode.TreeDataProvider<ContextN
 
   private cfgMap: DirNode|undefined;
 
-  constructor(private workspaceRoot: string|undefined) {
+  constructor(private workspaceRoot: vscode.Uri|undefined) {
     if (workspaceRoot !== undefined) {
       this.cfgMap = this.getConfigMap(workspaceRoot);
     }
@@ -57,6 +61,9 @@ export class ContextTreeDataProvider implements vscode.TreeDataProvider<ContextN
   }
 
   getTreeItem(element: ContextNode): vscode.TreeItem {
+    if (element.dirnode.dir === false) {
+      element.command = { command: 'contextExplorer.openConfigFile', title: "Open File", arguments: [element.dirnode] };
+    }
     return element;
   }
 
@@ -85,9 +92,9 @@ export class ContextTreeDataProvider implements vscode.TreeDataProvider<ContextN
     return node.childs.map(node => toContext(node));
   }
 
-  private getConfigMap(rootPath: string): DirNode {
-    const node = {name: path.parse(rootPath).base, dir: true, childs: []};
-    this.searchConfigs(node, path.dirname(rootPath));
+  private getConfigMap(rootPath: vscode.Uri): DirNode {
+    const node = {name: path.parse(rootPath.fsPath).base, dir: true, childs: [], uri: rootPath};
+    this.searchConfigs(node, path.dirname(rootPath.fsPath));
     return node;
   }
 
@@ -99,7 +106,7 @@ export class ContextTreeDataProvider implements vscode.TreeDataProvider<ContextN
       const fstat = fs.statSync(fpath);
 
       if (fstat.isDirectory()) {
-        const dirnode = {name: fn, dir: true, childs: []};
+        const dirnode = {name: fn, dir: true, childs: [], uri: vscode.Uri.file(fpath)};
 
         this.searchConfigs(dirnode, dirpath);
         if (dirnode.childs.length > 0) {
@@ -107,7 +114,7 @@ export class ContextTreeDataProvider implements vscode.TreeDataProvider<ContextN
         }
       }
       if (fstat.isFile() && fn.endsWith('.cfg')) {
-        const dirnode = {name: fn, dir: false, childs: []};
+        const dirnode = {name: fn, dir: false, childs: [], uri: vscode.Uri.file(fpath)};
         node.childs.push(dirnode);
       }
     }
@@ -118,11 +125,16 @@ export class ContextExplorer {
   constructor(context: vscode.ExtensionContext) {
     const rootPath =
         (vscode.workspace.workspaceFolders && (vscode.workspace.workspaceFolders.length > 0)) ?
-        vscode.workspace.workspaceFolders[0].uri.fsPath :
+        vscode.workspace.workspaceFolders[0].uri :
         undefined;
 
     const contextProvider = new ContextTreeDataProvider(rootPath);
     context.subscriptions.push(
         vscode.window.registerTreeDataProvider('ContextExplorerView', contextProvider));
+    vscode.commands.registerCommand('contextExplorer.openConfigFile', (file) => this.openConfigFile(file));
+  }
+
+  private openConfigFile(node: DirNode) {
+    vscode.window.showTextDocument(node.uri);
   }
 }
