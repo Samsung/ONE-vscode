@@ -78,7 +78,9 @@ export class MondrianEditorProvider implements vscode.CustomTextEditorProvider {
       <body>
         <div class="mondrian-layout">
           <div class="mondrian-scrollbar"></div>
-          <div class="mondrian-viewer-area"></div>
+          <div class="mondrian-viewer-area">
+            <div class="mondrian-viewer-bounds"></div>
+          </div>
           <div class="mondrian-statusbar">
             <div class="mondrian-statusline"></div>
             <div class="mondrian-info">

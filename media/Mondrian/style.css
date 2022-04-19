@@ -31,8 +31,12 @@ div.mondrian-viewer-area {
   contain: content;
   overflow: auto;
   background-color: rgba(127, 127, 127, 0.2);
-  position: relative;
   flex: 1;
+}
+
+div.mondrian-viewer-bounds {
+  position: relative;
+  margin: 0px;
 }
 
 div.mondrian-allocation-box {
