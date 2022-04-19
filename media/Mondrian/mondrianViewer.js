@@ -23,7 +23,8 @@
   const cycleCountContainer = /** @type {HTMLElement} */ document.querySelector('.mondrian-info-cycle-count');
   const segmentSelect = /** @type {HTMLElement} */ document.querySelector('.mondrian-segment-picker');
 
-  let viewportCycles = 0;
+  let viewportCyclesFrom = 0;
+  let viewportCyclesTill = 75;
   let viewportMemory = 0;
 
   class Viewer {
@@ -138,7 +139,6 @@
     let loadMs = (performance.now() - loadTs).toFixed(2);
     statusLineContainer.innerText = `Document loaded in ${loadMs}ms`;
 
-    viewportCycles = totalCycles;
     viewportMemory = totalMemory;
 
     updateViewport(data, viewer);
@@ -155,9 +155,14 @@
 
     boxTemplate.appendChild(boxTemplateLabel);
 
+    let viewportCycles = viewportCyclesTill - viewportCyclesFrom;
     for (const [i, alloc] of data.segments[viewer.activeSegment].allocations.entries()) {
+      if (alloc.alive_from > viewportCyclesTill) { continue; }
+
+      let size = alloc.size > 1024 ? (alloc.size / 1024).toFixed(1) + 'K' : alloc.size;
       let box = boxTemplate.cloneNode(true);
-      box.firstChild.innerText = `Origin: ${alloc.origin}\nSize: ${alloc.size}\nOffset: ${alloc.offset}`;
+
+      box.firstChild.innerText = size;
       box.style.top = (alloc.offset / viewportMemory * 100) + '%';
       box.style.height = (alloc.size / viewportMemory * 100) + '%';
       box.style.left = (alloc.alive_from / viewportCycles * 100) + '%';

@@ -28,26 +28,28 @@ div.mondrian-scrollbar {
 }
 
 div.mondrian-viewer-area {
+  contain: content;
+  overflow: auto;
   background-color: rgba(127, 127, 127, 0.2);
   position: relative;
   flex: 1;
 }
 
 div.mondrian-allocation-box {
-  overflow: hidden;
+  overflow: visible;
   position: absolute;
   border-radius: 2px;
 }
 
 div.mondrian-allocation-label {
-  overflow: hidden;
-  white-space: nowrap;
+  overflow: visible;
   border-radius: 2px;
-  border: solid rgba(0, 0, 0, 0.2) 2px;
-  height: calc(100% - 12px);
-  color: rgb(225, 225, 225);
+  border: solid rgba(0, 0, 0, 0.2) 1px;
+  height: calc(100% - 8px);
+  color: rgb(255, 255, 255);
   text-shadow: 1px 1px 1px #000;
-  padding: 4px;
+  padding: 2px 4px;
+  margin: 1px;
 }
 
 div.mondrian-statusbar {
