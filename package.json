@@ -34,6 +34,15 @@
     "views": {
       "ONE-Views": [
         {
+          "id": "ContextExplorerView",
+          "name": "Context Explorer"
+        },
+        {
+          "id": "DetailExplorerView",
+          "name": "Detail Explorer",
+          "visibility": "collapsed"
+        },
+        {
           "id": "CompilerToolchainView",
           "name": "Compiler Toolchain"
         },
