@@ -91,6 +91,17 @@ export class MondrianEditorProvider implements vscode.CustomTextEditorProvider {
           </div>
         </div>
 
+        <div class="mondrian-viewer-controls mondrian-viewer-v-scale">
+          <button>+</button>
+          <input type="range" min="-5" max="15" value="5" />
+          <button>-</button>
+        </div>
+        <div class="mondrian-viewer-controls mondrian-viewer-h-scale">
+          <button>-</button>
+          <input type="range" min="-5" max="15" value="5" />
+          <button>+</button>
+        </div>
+
         <script nonce="${nonce}" src="${scriptUri}"></script>
       </body>
       </html>`;

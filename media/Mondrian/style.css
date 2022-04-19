@@ -35,8 +35,45 @@ div.mondrian-viewer-area {
 }
 
 div.mondrian-viewer-bounds {
+  background-color: rgba(0, 0, 0, 0.1);
   position: relative;
   margin: 0px;
+}
+
+div.mondrian-viewer-controls {
+  display: flex;
+  position: fixed;
+  z-index: 1;
+}
+
+div.mondrian-viewer-h-scale {
+  max-height: 32px;
+  bottom: 64px;
+  left: 64px;
+}
+
+div.mondrian-viewer-v-scale {
+  max-width: 32px;
+  bottom: 96px;
+  left: 32px;
+  flex-direction: column;
+}
+
+div.mondrian-viewer-controls > button {
+  border-radius: 50%;
+  border: none;
+  width: 32px;
+  height: 32px;
+  overflow: hidden;
+}
+
+div.mondrian-viewer-h-scale > input[type=range] {
+  max-width: 96px;
+}
+
+div.mondrian-viewer-v-scale > input[type=range] {
+  max-height: 96px;
+  -webkit-appearance: slider-vertical;
 }
 
 div.mondrian-allocation-box {
