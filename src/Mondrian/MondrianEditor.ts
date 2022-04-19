@@ -15,31 +15,26 @@
  */
 
 import * as vscode from 'vscode';
-import { getNonce } from '../Config/GetNonce';
+import {getNonce} from '../Config/GetNonce';
 
 export class MondrianEditorProvider implements vscode.CustomTextEditorProvider {
-
   public static register(context: vscode.ExtensionContext): vscode.Disposable {
     const provider = new MondrianEditorProvider(context);
-    const providerRegistration = vscode.window.registerCustomEditorProvider(MondrianEditorProvider.viewType, provider);
+    const providerRegistration =
+        vscode.window.registerCustomEditorProvider(MondrianEditorProvider.viewType, provider);
     return providerRegistration;
   }
 
   private static readonly viewType = 'onevscode.mondrianViewer';
 
-  constructor(
-    private readonly context: vscode.ExtensionContext
-  ) {}
+  constructor(private readonly context: vscode.ExtensionContext) {}
 
   /**
    * Called when custom editor is opened.
    */
   public async resolveCustomTextEditor(
-      document: vscode.TextDocument,
-      webviewPanel: vscode.WebviewPanel,
-      _token: vscode.CancellationToken
-    ): Promise<void>
-  {
+      document: vscode.TextDocument, webviewPanel: vscode.WebviewPanel,
+      _token: vscode.CancellationToken): Promise<void> {
     webviewPanel.webview.options = {
       enableScripts: true,
     };
@@ -52,24 +47,25 @@ export class MondrianEditorProvider implements vscode.CustomTextEditorProvider {
   }
 
   /**
-  * Get the static html used for the editor webviews.
-  */
+   * Get the static html used for the editor webviews.
+   */
   private getHtmlForWebview(webview: vscode.Webview): string {
     const prefix = 'media/Mondrian';
     const nonce = getNonce();
 
-    const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(
-      this.context.extensionUri, prefix, 'mondrianViewer.js'));
+    const scriptUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(this.context.extensionUri, prefix, 'mondrianViewer.js'));
 
-    const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(
-      this.context.extensionUri, prefix, 'style.css'));
+    const styleUri =
+        webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, prefix, 'style.css'));
 
-    return /* html */`
+    return /* html */ `
       <!DOCTYPE html>
       <html lang="en">
       <head>
         <meta charset="UTF-8">
-        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource};
+        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${
+        webview.cspSource};
           style-src ${webview.cspSource}; script-src 'nonce-${nonce}';" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link href="${styleUri}" rel="stylesheet" />
