@@ -93,6 +93,10 @@ div.mondrian-allocation-label {
   margin: 1px;
 }
 
+div.mondrian-viewer-bounds-no-label div.mondrian-allocation-label {
+  display: none;
+}
+
 div.mondrian-statusbar {
   flex: 0;
   display: flex;

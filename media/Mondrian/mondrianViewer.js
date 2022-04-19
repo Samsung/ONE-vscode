@@ -152,6 +152,13 @@
     const viewportCycles = viewer.viewportMaxCycle - viewer.viewportMinCycle;
     viewerContainer.style.width = viewportCycles * Math.pow(2, viewer.viewportHScale) + 'px';
     viewerContainer.style.height = viewportMemory * Math.pow(2, viewer.viewportVScale) / 8192 + 'px';
+
+    if (viewer.viewportHScale < 3) {
+      viewerContainer.classList.add('mondrian-viewer-bounds-no-label');
+    }
+    else {
+      viewerContainer.classList.remove('mondrian-viewer-bounds-no-label');
+    }
   }
 
   function updateViewport(data, viewer) {
