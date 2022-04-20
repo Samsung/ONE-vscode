@@ -202,11 +202,20 @@ function changeScale(h, v) {
   viewerHScale.children[1].value = state.viewer.viewportHScale;
   viewerVScale.children[1].value = state.viewer.viewportVScale;
 
-  let viewportCycles = state.viewer.viewportMaxCycle - state.viewer.viewportMinCycle;
-  viewerContainer.style.width = (viewportCycles * Math.pow(2, state.viewer.viewportHScale)) + 'px';
-  viewerContainer.style.height =
-      (viewportMemory * Math.pow(2, state.viewer.viewportVScale) / 8192) + 'px';
+  scaleViewport(state.viewer);
+  vscode.setState(state);
+}
 
+function changeVScale(v) {
+  let state = vscode.getState();
+  state.viewer.viewportVScale = v;
+  scaleViewport(state.viewer);
+  vscode.setState(state);
+}
+
+function changeHScale(h) {
+  let state = vscode.getState();
+  state.viewer.viewportHScale = h;
   scaleViewport(state.viewer);
   vscode.setState(state);
 }
@@ -219,11 +228,17 @@ if (state) {
 viewerVScale.children[0].addEventListener('click', () => {
   changeScale(0, 1);
 });
+viewerVScale.children[1].addEventListener('input', (event) => {
+  changeVScale(parseInt(event.target.value));
+});
 viewerVScale.children[2].addEventListener('click', () => {
   changeScale(0, -1);
 });
 viewerHScale.children[0].addEventListener('click', () => {
   changeScale(-1, 0);
+});
+viewerHScale.children[1].addEventListener('input', (event) => {
+  changeHScale(parseInt(event.target.value));
 });
 viewerHScale.children[2].addEventListener('click', () => {
   changeScale(1, 0);
