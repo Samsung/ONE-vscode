@@ -152,9 +152,15 @@ function updateContent(data, viewer) {
 }
 
 function scaleViewport(viewer) {
+  const scrollContainer = viewerContainer.parentElement;
+  const scrollH = scrollContainer.scrollLeft / scrollContainer.scrollWidth;
+  const scrollV = scrollContainer.scrollTop / scrollContainer.scrollHeight;
+
   const viewportCycles = viewer.viewportMaxCycle - viewer.viewportMinCycle;
   viewerContainer.style.width = viewportCycles * Math.pow(2, viewer.viewportHScale) + 'px';
   viewerContainer.style.height = viewportMemory * Math.pow(2, viewer.viewportVScale) / 8192 + 'px';
+  scrollContainer.scrollLeft = scrollContainer.scrollWidth * scrollH;
+  scrollContainer.scrollTop = scrollContainer.scrollHeight * scrollV;
 
   if (viewer.viewportHScale < 3) {
     viewerContainer.classList.add('mondrian-viewer-bounds-no-label');
