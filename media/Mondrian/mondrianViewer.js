@@ -156,11 +156,24 @@ function scaleViewport(viewer) {
   const scrollH = scrollContainer.scrollLeft / scrollContainer.scrollWidth;
   const scrollV = scrollContainer.scrollTop / scrollContainer.scrollHeight;
 
+  const scaleH = Math.pow(2, viewer.viewportHScale);
+  const scaleV = Math.pow(2, viewer.viewportVScale);
+
   const viewportCycles = viewer.viewportMaxCycle - viewer.viewportMinCycle;
-  viewerContainer.style.width = viewportCycles * Math.pow(2, viewer.viewportHScale) + 'px';
-  viewerContainer.style.height = viewportMemory * Math.pow(2, viewer.viewportVScale) / 8192 + 'px';
+  viewerContainer.style.width = viewportCycles * scaleH + 'px';
+  viewerContainer.style.height = viewportMemory * scaleV / 8192 + 'px';
   scrollContainer.scrollLeft = scrollContainer.scrollWidth * scrollH;
   scrollContainer.scrollTop = scrollContainer.scrollHeight * scrollV;
+
+  if (scaleH < 4 || scaleV < 4) {
+    viewerContainer.style.backgroundImage = 'none';
+  } else {
+    viewerContainer.style.backgroundImage = `url("data:image/svg+xml;charset=UTF-8,%3csvg `
+      + `xmlns='http://www.w3.org/2000/svg' width='${scaleH}' height='${scaleV}'%3e%3cpath `
+      + `style='fill:none;stroke-width:1px;stroke:%23fff;opacity:0.1' `
+      + `d='M 0,${scaleV - 0.5} ${scaleH - 0.5},${scaleV - 0.5} ${scaleH - 0.5},0' `
+      + `/%3e%3c/svg%3e")`;
+  }
 
   if (viewer.viewportHScale < 3) {
     viewerContainer.classList.add('mondrian-viewer-bounds-no-label');
