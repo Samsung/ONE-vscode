@@ -187,9 +187,9 @@ function updateViewport(data, viewer) {
       continue;
     }
 
-    let size = alloc.size > 1024 ? (alloc.size / 1024).toFixed(1) + 'K' : alloc.size;
-    let box = boxTemplate.cloneNode(true);
+    const size = alloc.size > 1024 ? Math.round(alloc.size / 102.4) / 10 + 'K' : alloc.size;
 
+    let box = boxTemplate.cloneNode(true);
     box.firstChild.innerText = size;
     box.style.top = (alloc.offset / viewportMemory * 100) + '%';
     box.style.height = (alloc.size / viewportMemory * 100) + '%';

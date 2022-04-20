@@ -80,21 +80,25 @@ div.mondrian-allocation-box {
   overflow: visible;
   position: absolute;
   border-radius: 2px;
+  box-shadow: 0px 0px 1px #000;
 }
 
 div.mondrian-allocation-label {
   overflow: visible;
   border-radius: 2px;
-  border: solid rgba(0, 0, 0, 0.2) 1px;
-  height: calc(100% - 8px);
+  height: calc(100% - 4px);
   color: rgb(255, 255, 255);
   text-shadow: 1px 1px 1px #000;
   padding: 2px 4px;
-  margin: 1px;
+  margin: 0px;
+}
+
+div.mondrian-allocation-label:hover {
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 div.mondrian-viewer-bounds-no-label div.mondrian-allocation-label {
-  display: none;
+  font-size: 0px;
 }
 
 div.mondrian-statusbar {
