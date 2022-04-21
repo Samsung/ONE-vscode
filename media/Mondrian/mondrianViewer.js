@@ -209,6 +209,11 @@ function updateViewport(data, viewer) {
     box.style.left = (alloc.alive_from / viewportCycles * 100) + '%';
     box.style.right = ((viewportCycles - alloc.alive_till) / viewportCycles * 100) + '%';
     box.style.backgroundColor = boxColors[i % boxColors.length];
+    box.addEventListener('mouseover', (event) => {
+      statusLineContainer.innerHTML =
+          `<b>Origin:</b> ${alloc.origin} | <b>Size:</b> ${alloc.size} | <b>Offset:</b> ${
+              alloc.offset} | <b>Lifetime:</b> ${alloc.alive_till - alloc.alive_from}`;
+    });
     viewerContainer.appendChild(box);
   }
 }
