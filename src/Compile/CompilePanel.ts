@@ -41,7 +41,6 @@ https://github.com/microsoft/vscode-webview-ui-toolkit-samples/blob/b807107df402
 */
 import * as vscode from 'vscode';
 
-import {globalBackends} from '../Backend';
 import {getUri} from '../Utils/Uri';
 
 import {CompileEnv} from './CompileEnv';

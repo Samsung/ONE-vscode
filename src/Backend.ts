@@ -17,13 +17,20 @@
 import {Backend} from './Backend/API';
 import {DummyBackend} from './BackendDummy/BackendDummy';
 
+/**
+ * Interface of backend map
+ */
+interface BackendMap {
+  [key: string]: Backend;
+}
+
 // List of backend extensions registered
-let globalBackends: Backend[] = [];
+let globalBackendMap: BackendMap = {};
 
 function backendRegistrationApi() {
   let registrationAPI = {
     registerBackend(backend: Backend) {
-      globalBackends.push(backend);
+      globalBackendMap[backend.name()] = backend;
 
       console.log(`Backend ${backend.name()} was registered into ONE-vscode.`);
     }
@@ -35,4 +42,4 @@ function backendRegistrationApi() {
   return registrationAPI;
 }
 
-export {globalBackends, backendRegistrationApi};
+export {globalBackendMap, backendRegistrationApi};

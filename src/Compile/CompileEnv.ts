@@ -141,3 +141,12 @@ export class CompileEnv extends Env {
     this.build();
   }
 };
+
+/**
+ * Interface of backend map
+ */
+export interface CompileEnvMap {
+  [key: string]: CompileEnv;
+}
+
+export let gCompileEnvMap: CompileEnvMap = {};

@@ -46,7 +46,7 @@ suite('Project', function() {
           }
           const workspaceRoot: string = obtainWorkspaceRoot();
           const runner =
-              toolRunner.getRunner(job.name, oneccPath, job.tool, job.toolArgs, workspaceRoot);
+              toolRunner.getRunner(job, oneccPath);
           assert.isNotNull(runner);
           runner
               .then(function(str) {

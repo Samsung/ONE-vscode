@@ -16,7 +16,8 @@
 
 import * as vscode from 'vscode';
 
-import {backendRegistrationApi} from './Backend';
+import {globalBackendMap, backendRegistrationApi} from './Backend';
+import {gCompileEnvMap, CompileEnv} from './Compile/CompileEnv';
 import {decoder} from './Circlereader/Circlereader';
 import {Circletracer} from './Circletracer';
 import {CompilePanel} from './Compile/CompilePanel';
@@ -27,6 +28,8 @@ import {HoverProvider} from './Editor/HoverProvider';
 import {Jsontracer} from './Jsontracer';
 import {Project} from './Project';
 import {Utils} from './Utils';
+import {Logger} from './Utils/Logger';
+import {installQuickInput} from './InstallQuickInput';
 
 /**
  * Set vscode context that is used globally
@@ -48,11 +51,13 @@ function setGlobalContext() {
   vscode.commands.executeCommand('setContext', 'onevscode.compilableDirList', dirList);
 }
 
-export async function showQuickPick() {
-  let i = 0;
-  const result = await vscode.window.showQuickPick(['eins', 'zwei', 'drai'], {
-    placeHolder: 'eins, zwei or drei',
-    onDidSelectItem: item => vscode.window.showInformationMessage(`Focus ${++i}: ${item}`)
+function initCompilerEnv() {
+  Object.values(globalBackendMap).forEach(backend => {
+    console.log(backend);
+    const compiler = backend.compiler();
+    if (compiler) {
+      gCompileEnvMap[backend.name()] = new CompileEnv(new Logger(), compiler);
+    }
   });
 }
 
@@ -68,21 +73,10 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(refreshCompiler);
   let installCompiler = vscode.commands.registerCommand('onevscode.install-compiler', () => {
     console.log('install-compiler: running');
-    
-    const testList: { [key: string]: (context: vscode.ExtensionContext) => Promise<void> } = {
-      showQuickPick,
-    };
-    const quickPick = vscode.window.createQuickPick();
-    quickPick.title = 'Install compiler toolchain';
-    quickPick.items = Object.keys(testList).map(label => ({ label }));
-    quickPick.onDidChangeSelection(selection => {
-      if (selection[0]) {
-        testList[selection[0].label](context)
-          .catch(console.error);
-      }
-    });
-    quickPick.onDidHide(() => quickPick.dispose());
-    quickPick.show();
+    if (Object.keys(gCompileEnvMap).length === 0) {
+      initCompilerEnv();
+    }
+    installQuickInput(context);
   });
   context.subscriptions.push(installCompiler);
 
