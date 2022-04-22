@@ -124,7 +124,10 @@ function updateContent(data, viewer) {
 
   segmentSelect.replaceChildren();
   for (const [index, segment] of data.segments.entries()) {
-    segmentSelect.appendChild(new Option(segment.name, index));
+    let option = document.createElement('vscode-option');
+    option.innerText = segment.name;
+    option.value = index;
+    segmentSelect.appendChild(option);
   }
   segmentSelect.value = viewer.activeSegment;
 

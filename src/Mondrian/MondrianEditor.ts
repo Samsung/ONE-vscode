@@ -16,6 +16,7 @@
 
 import * as vscode from 'vscode';
 import {getNonce} from '../Config/GetNonce';
+import {getUri} from '../Utils/Uri';
 
 export class MondrianEditorProvider implements vscode.CustomTextEditorProvider {
   public static register(context: vscode.ExtensionContext): vscode.Disposable {
@@ -53,6 +54,14 @@ export class MondrianEditorProvider implements vscode.CustomTextEditorProvider {
     const prefix = 'media/Mondrian';
     const nonce = getNonce();
 
+    const toolkitUri = getUri(webview, this.context.extensionUri, [
+      'node_modules',
+      '@vscode',
+      'webview-ui-toolkit',
+      'dist',
+      'toolkit.js',
+    ]);
+
     const scriptUri = webview.asWebviewUri(
         vscode.Uri.joinPath(this.context.extensionUri, prefix, 'mondrianViewer.js'));
 
@@ -66,8 +75,9 @@ export class MondrianEditorProvider implements vscode.CustomTextEditorProvider {
         <meta charset="UTF-8">
         <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${
         webview.cspSource} data:;
-          style-src ${webview.cspSource}; script-src 'nonce-${nonce}';" />
+          style-src 'self' 'unsafe-inline' ${webview.cspSource}; script-src 'nonce-${nonce}';" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <script nonce="${nonce}" type="module" src="${toolkitUri}"></script>
         <link href="${styleUri}" rel="stylesheet" />
         <title>Mondrian Viewer</title>
       </head>
@@ -82,7 +92,7 @@ export class MondrianEditorProvider implements vscode.CustomTextEditorProvider {
             <div class="mondrian-info">
               <b>Memory:</b> <span class="mondrian-info-memory-size">0</span> |
               <b>Cycles:</b> <span class="mondrian-info-cycle-count">0</span> |
-              <b>Segment:</b> <select class="mondrian-segment-picker"></select>
+              <b>Segment:</b> <vscode-dropdown class="mondrian-segment-picker"></vscode-dropdown>
             </div>
           </div>
         </div>

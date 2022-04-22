@@ -105,6 +105,7 @@ div.mondrian-viewer-bounds-no-label div.mondrian-allocation-label {
 div.mondrian-statusbar {
   flex: 0;
   display: flex;
+  align-items: center;
 }
 
 div.mondrian-statusline {
@@ -116,4 +117,7 @@ div.mondrian-statusline {
 div.mondrian-info {
   flex: 0;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
