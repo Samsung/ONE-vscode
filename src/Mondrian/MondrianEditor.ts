@@ -83,7 +83,9 @@ export class MondrianEditorProvider implements vscode.CustomTextEditorProvider {
       </head>
       <body>
         <div class="mondrian-layout">
-          <div class="mondrian-scrollbar"></div>
+          <div class="mondrian-scrollbar">
+            <!-- TODO Model trim scrollbar is NYI -->
+          </div>
           <div class="mondrian-viewer-area">
             <div class="mondrian-viewer-bounds"></div>
           </div>
