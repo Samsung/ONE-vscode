@@ -19,7 +19,7 @@ import {EventEmitter} from 'events';
 import {Balloon} from '../Utils/Balloon';
 import {Logger} from '../Utils/Logger';
 
-import {ToolArgs} from './ToolArgs';
+import {Job} from './Job';
 import {ToolRunner} from './ToolRunner';
 import {WorkJobs} from './WorkJobs';
 
@@ -42,7 +42,7 @@ export class JobRunner extends EventEmitter {
     this.on(K_CLEANUP, this.onCleanup);
   }
 
-  private invoke(name: string, tool: string, toolArgs: ToolArgs, path: string) {
+  private invoke(job: Job, path: string) {
     const onecc = this.toolRunner.getOneccPath();
     if (onecc === undefined) {
       Balloon.error('Failed to find onecc: ' + onecc);
@@ -51,8 +51,13 @@ export class JobRunner extends EventEmitter {
       return;
     }
     console.log('Found onecc: ', onecc);
-    console.log('Run onecc: ', onecc, ' tool: ', tool, ' args: ', toolArgs, ' cwd: ', path);
-    const runner = this.toolRunner.getRunner(name, onecc, tool, toolArgs, path);
+
+    // place tool to the front of toolargs
+    job.toolArgs.unshift(job.tool);
+    job.tool = onecc;
+
+    console.log('Run tool: ', job.tool, ' args: ', job.toolArgs, ' cwd: ', path);
+    const runner = this.toolRunner.getRunner(job, path);
 
     runner
         .then(() => {
@@ -72,7 +77,7 @@ export class JobRunner extends EventEmitter {
       this.emit(K_CLEANUP);
       return;
     }
-    this.invoke(job.name, job.tool, job.toolArgs, this.cwd);
+    this.invoke(job, this.cwd);
   }
 
   private onCleanup() {

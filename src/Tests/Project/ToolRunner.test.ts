@@ -15,7 +15,6 @@
  */
 
 import {assert} from 'chai';
-import {join} from 'path';
 
 import {ToolRunner} from '../../Project/ToolRunner';
 import {obtainWorkspaceRoot} from '../../Utils/Helpers';
@@ -45,8 +44,7 @@ suite('Project', function() {
             assert.fail('oneccPath should be string type');
           }
           const workspaceRoot: string = obtainWorkspaceRoot();
-          const runner =
-              toolRunner.getRunner(job.name, oneccPath, job.tool, job.toolArgs, workspaceRoot);
+          const runner = toolRunner.getRunner(job, workspaceRoot);
           assert.isNotNull(runner);
           runner
               .then(function(str) {

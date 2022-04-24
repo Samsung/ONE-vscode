@@ -16,18 +16,6 @@
 
 import {ToolArgs} from './ToolArgs';
 
-// Currently `Job`s should be used by `onecc`
-// Ex1) JobCodegen
-// `onecc codegen arg0 arg1`
-// `onecc`: driver
-// `codegen`: tool
-// `arg0 arg1`: toolArgs
-// Ex2) JobImportTF
-// `onecc import tf arg0 arg1`
-// `onecc`: driver
-// `import`: tool
-// `tf arg0 arg1`: toolArgs
-// TODO: Introduce `driver` if other drivers(not `onecc`) is necessary
 export interface Job {
   jobType: Job.Type;
   name: string;
@@ -35,6 +23,14 @@ export interface Job {
   tool: string;
   toolArgs: ToolArgs;
 }
+// TODO
+// In the future, Job will be changed like
+// Ex1) onecc --config model.cfg
+// - tool: onecc
+// - toolArgs: --config, model.cfg
+// Ex2) apt-get install pkg_name
+// - tool: apt-get
+// - toolArgs: install pkg_name
 
 export namespace Job {
 
