@@ -79,7 +79,7 @@ export class ContextTreeDataProvider implements vscode.TreeDataProvider<ContextN
   readonly onDidChangeTreeData: vscode.Event<ContextNode|undefined|void> =
       this._onDidChangeTreeData.event;
 
-  private cfgMap: DirNode|undefined;
+  private cfgMap: Node|undefined;
 
   constructor(private workspaceRoot: vscode.Uri|undefined) {
     if (workspaceRoot !== undefined) {
@@ -123,18 +123,18 @@ export class ContextTreeDataProvider implements vscode.TreeDataProvider<ContextN
     return node.childs.map(node => toContext(node));
   }
 
-  private getConfigMap(rootPath: vscode.Uri): DirNode {
+  private getConfigMap(rootPath: vscode.Uri): Node {
     const node = {type: NodeType.directory, name: path.parse(rootPath.fsPath).base, dir: true, childs: [], uri: rootPath};
     this.searchConfigs(node, path.dirname(rootPath.fsPath));
     return node;
   }
 
-  private searchConfigs(node: DirNode, dirPath: string) {
+  private searchConfigs(node: Node, dirPath: string) {
     const dirpath = path.join(dirPath, node.name);
     const files = fs.readdirSync(dirpath);
+
     for (const fn of files) {
       const fpath = path.join(dirpath, fn);
-      console.log("fpath: " + fpath);
       const fstat = fs.statSync(fpath);
 
       if (fstat.isDirectory()) {
@@ -157,22 +157,30 @@ export class ContextTreeDataProvider implements vscode.TreeDataProvider<ContextN
 
   /**
    * Search cfg files in the same directory of the node
+   * 
    * NOTE It assumes 1-1 relation for model and config
-   * TODO(dayo) Support multiple relation
+   * 
+   * TODO(dayo) Support N-N relation
    */
   private searchPairConfig(node: ModelNode, dirPath: string)
   {
     const dirpath = path.dirname(path.join(dirPath, node.name));
-    console.log("searchPairConfig: dirpath: "+dirpath);
-    const files = fs.readdirSync(dirpath); // siblings
+    const files = fs.readdirSync(dirpath);
+
+    const extSlicer = (fileName: string) =>
+    {
+      return fileName.slice(0, fileName.lastIndexOf('.'));
+    };
 
     for (const fn of files) {
       const fpath = path.join(dirpath, fn);
       const fstat = fs.statSync(fpath);
 
-      if (fstat.isFile() && fn.endsWith('.cfg')) {
+      if (fstat.isFile() 
+      && fn.endsWith('.cfg')
+      && (extSlicer(fn) === extSlicer(node.name))){
         console.log(fpath);
-        const configWrapperNode : ConfigWrapperNode = {type: NodeType.configWrapper, name: node.name + ' (ONE configuration)', childs: []};
+        const configWrapperNode : ConfigWrapperNode = {type: NodeType.configWrapper, name: extSlicer(fn) + ' (ONE configuration)', childs: []};
         node.childs.push(configWrapperNode);
         console.log("searchPairConfig: configWrapperNode: "+configWrapperNode);
 
@@ -197,7 +205,7 @@ export class ContextExplorer {
     vscode.commands.registerCommand('contextExplorer.openConfigFile', (file) => this.openConfigFile(file));
   }
 
-  private openConfigFile(node: DirNode) {
-    vscode.window.showTextDocument(node.uri);
+  private openConfigFile(dirnode: DirNode) {
+    vscode.window.showTextDocument(dirnode.uri);
   }
 }
