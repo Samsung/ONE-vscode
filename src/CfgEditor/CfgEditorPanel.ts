@@ -67,11 +67,16 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
       enableScripts: true,
     };
     vscode.commands.executeCommand('setContext', CfgEditorPanel.viewType, true);
+    vscode.commands.executeCommand('setContext', 'cfgEditorDocumentUri', document.uri);
 
     webviewPanel.webview.html = this._getHtmlForWebview(webviewPanel.webview);
 
     function updateWebview() {
-      // TODO Update Webview with text document content
+      let ini = require('ini');
+      webviewPanel.webview.postMessage({
+        type: 'displayCfgToEditor',
+        text: ini.parse(document.getText()),
+      });
     };
 
     const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(e => {
@@ -98,7 +103,13 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
     // Receive message from the webview.
     webviewPanel.webview.onDidReceiveMessage(e => {
       switch (e.type) {
-        // TODO Add more webview modification handlers
+        case 'inputPathUpdate':
+          // const edit = new vscode.WorkspaceEdit();
+          // edit.replace(
+          //     document.uri, new vscode.Range(0, 0, document.lineCount, 0), 'something to replace');
+          // vscode.workspace.applyEdit(edit);
+          return;
+        // TODO Add more modifications
         default:
           break;
       }
@@ -137,8 +148,18 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script type="module" src="${toolkitUri}"></script>
         <script type="module" src="${jsUri}"></script>
+        <script>
+          function flipOnOff(cell) {
+            cell.textContent = cell.textContent === 'ON' ? 'OFF' : 'ON';
+          }
+
+          function customOptionValueDBClick(cell) {
+            cell.disabled = false;
+          }
+        </script>
         <link rel="stylesheet" href="${cssUri}">
         <link rel="stylesheet" href="${codiconUri}">
+        <title>CFG EDITOR</title>
       </head>
       <body>      
         <div class="conf">
@@ -158,23 +179,23 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
               <span>&nbsp;</span>
               <span class="codicon codicon-arrow-right"></span>
               <span>&nbsp;</span>
-              <vscode-button id="importEnabled" appearance="primary" style="display:none">Import</vscode-button>
-              <vscode-button id="importDisabled" appearance="secondary">Import</vscode-button>
+              <vscode-button id="ImportEnabled" appearance="primary" style="display:none">Import</vscode-button>
+              <vscode-button id="ImportDisabled" appearance="secondary">Import</vscode-button>
               <span>&nbsp;</span>
               <span class="codicon codicon-arrow-right"></span>
               <span>&nbsp;</span>
-              <vscode-button id="optimizeEnabled" appearance="primary" style="display:none">Optimize</vscode-button>
-              <vscode-button id="optimizeDisabled" appearance="secondary">Optimize</vscode-button>
+              <vscode-button id="OptimizeEnabled" appearance="primary" style="display:none">Optimize</vscode-button>
+              <vscode-button id="OptimizeDisabled" appearance="secondary">Optimize</vscode-button>
               <span>&nbsp;</span>
               <span class="codicon codicon-arrow-right"></span>
               <span>&nbsp;</span>
-              <vscode-button id="quantizeEnabled" appearance="primary" style="display:none">Quantize</vscode-button>
-              <vscode-button id="quantizeDisabled" appearance="secondary">Quantize</vscode-button>
+              <vscode-button id="QuantizeEnabled" appearance="primary" style="display:none">Quantize</vscode-button>
+              <vscode-button id="QuantizeDisabled" appearance="secondary">Quantize</vscode-button>
               <span>&nbsp;</span>
               <span class="codicon codicon-arrow-right"></span>
               <span>&nbsp;</span>
-              <vscode-button id="codegenEnabled" appearance="primary" style="display:none">Codegen</vscode-button>
-              <vscode-button id="codegenDisabled" appearance="secondary">Codegen</vscode-button>
+              <vscode-button id="CodegenEnabled" appearance="primary" style="display:none">Codegen</vscode-button>
+              <vscode-button id="CodegenDisabled" appearance="secondary">Codegen</vscode-button>
               <span>&nbsp;</span>
               <span class="codicon codicon-arrow-right"></span>
               <span>&nbsp;</span>
@@ -188,8 +209,8 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
               <!-- Placeholder for display -->
             </div>
             <div class="leftInlineElement">
-              <vscode-button id="profileEnabled" appearance="primary" style="display:none">Profile</vscode-button>
-              <vscode-button id="profileDisabled" appearance="secondary">Profile</vscode-button>
+              <vscode-button id="ProfileEnabled" appearance="primary" style="display:none">Profile</vscode-button>
+              <vscode-button id="ProfileDisabled" appearance="secondary">Profile</vscode-button>
               <span>&nbsp;&nbsp;</span>
               <vscode-button id="packEnabled" appearance="primary" style="display:none" disabled>Pack</vscode-button>
               <vscode-button id="packDisabled" appearance="secondary" disabled>Pack</vscode-button>
@@ -231,7 +252,7 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
               <span id="unfoldAdvancedOptions" class="codicon codicon-expand-all" style="cursor:pointer"></span>
               <span id="foldAdvancedOptions" class="codicon codicon-collapse-all" style="display:none; cursor:pointer"></span>
             </div>
-            <vscode-panels id="advancedOptions" activeid="tabImport" style="display:none">
+            <vscode-panels id="AdvancedOptions" activeid="tabImport" style="display:none">
               <vscode-panel-tab id="tabImport">Import</vscode-panel-tab>
               <vscode-panel-tab id="tabOptimize">Optimize</vscode-panel-tab>
               <vscode-panel-tab id="tabQuantize">Quantize</vscode-panel-tab>
@@ -242,35 +263,126 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
                   <div id="ImportInitialState">
                     Select import model type first.
                   </div>
-                  <div id="TFConverterOptions" style="display:none">
-                    <div id="TFConverterVersion" class="vscode-panel-view">
-                      <vscode-radio-group id="converterVersionRadio">
+                  <div id="PBConverterOptions" style="display:none">
+                    <div id="PBConverterVersion" class="vscode-panel-view">
+                      <vscode-radio-group id="PBConverterVersionRadio">
                         <label slot="label">Converter Version</label>
                         <vscode-radio value="v1">v1</vscode-radio>
                         <vscode-radio value="v2">v2</vscode-radio>
                       </vscode-radio-group>
                     </div>
-                    <div id="TFInputArrays" class="vscode-panel-view">
-                      <vscode-text-field startIcon=true size=50 placeholder="semi-colon separated input names">
+                    <div class="vscode-panel-view">
+                      <vscode-text-field id="PBInputArrays" startIcon=true size=50 placeholder="semi-colon separated input names">
                         Input Arrays
                         <span slot="end" class="codicon codicon-question" style="cursor: pointer"></span>
                       </vscode-text-field>
                     </div>
-                    <div id="TFOutputArrays" class="vscode-panel-view">
-                      <vscode-text-field startIcon=true size=50 placeholder="semi-colon separated output names">
+                    <div class="vscode-panel-view">
+                      <vscode-text-field id="PBOutputArrays" startIcon=true size=50 placeholder="semi-colon separated output names">
                         Output Arrays
                         <span slot="end" class="codicon codicon-question" style="cursor: pointer"></span>
                       </vscode-text-field>
                     </div>
-                    <div id="TFInputShapes" class="vscode-panel-view">
-                      <vscode-text-field startIcon=true size=50 placeholder="semi-colon separated input shapes (e.g. 1,299,299,3;1,1001)">
+                    <div class="vscode-panel-view">
+                      <vscode-text-field id="PBInputShapes" startIcon=true size=50 placeholder="semi-colon separated input shapes (e.g. 1,299,299,3;1,1001)">
                         Input Shapes (Optional)
                         <span slot="end" class="codicon codicon-question" style="cursor: pointer"></span>
                       </vscode-text-field>
                     </div>
+                    <div>
+                      <span>Intermediate Paths</span>
+                      <span id="unfoldPBIntermediatePaths" class="codicon codicon-expand-all" style="cursor:pointer"></span>
+                      <span id="foldPBIntermediatePaths" class="codicon codicon-collapse-all" style="display:none; cursor:pointer"></span>
+                    </div>
+                    <div id="PBIntermediatePaths" style="display:none">
+                      <div class="vscode-panel-view">
+                        <!-- Placeholder for display -->
+                      </div>
+                      <div class="vscode-panel-view">
+                        <vscode-text-field id="PBInputPath" startIcon=true size=50 placeholder="">
+                          Input Path
+                          <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        </vscode-text-field>
+                      </div>
+                      <div class="vscode-panel-view">
+                        <vscode-text-field id="PBOutputPath" startIcon=true size=50 placeholder="">
+                          Output Path
+                          <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        </vscode-text-field>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="SAVEDConverterOptions" style="display:none">
+                    <div>
+                      <span>Intermediate Paths</span>
+                      <span id="unfoldSAVEDIntermediatePaths" class="codicon codicon-expand-all" style="cursor:pointer"></span>
+                      <span id="foldSAVEDIntermediatePaths" class="codicon codicon-collapse-all" style="display:none; cursor:pointer"></span>
+                    </div>
+                    <div id="SAVEDIntermediatePaths" style="display:none">
+                      <div class="vscode-panel-view">
+                        <!-- Placeholder for display -->
+                      </div>
+                      <div class="vscode-panel-view">
+                        <vscode-text-field id="SAVEDInputPath" startIcon=true size=50 placeholder="">
+                          Input Path
+                          <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        </vscode-text-field>
+                      </div>
+                      <div class="vscode-panel-view">
+                        <vscode-text-field id="SAVEDOutputPath" startIcon=true size=50 placeholder="">
+                          Output Path
+                          <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        </vscode-text-field>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="KERASConverterOptions" style="display:none">
+                    <div>
+                      <span>Intermediate Paths</span>
+                      <span id="unfoldKERASIntermediatePaths" class="codicon codicon-expand-all" style="cursor:pointer"></span>
+                      <span id="foldKERASIntermediatePaths" class="codicon codicon-collapse-all" style="display:none; cursor:pointer"></span>
+                    </div>
+                    <div id="KERASIntermediatePaths" style="display:none">
+                      <div class="vscode-panel-view">
+                        <!-- Placeholder for display -->
+                      </div>
+                      <div class="vscode-panel-view">
+                        <vscode-text-field id="KERASInputPath" startIcon=true size=50 placeholder="">
+                          Input Path
+                          <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        </vscode-text-field>
+                      </div>
+                      <div class="vscode-panel-view">
+                        <vscode-text-field id="KERASOutputPath" startIcon=true size=50 placeholder="">
+                          Output Path
+                          <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        </vscode-text-field>
+                      </div>
+                    </div>
                   </div>
                   <div id="TFLITEConverterOptions" style="display:none">
-                    No additional options for TFLite.
+                    <div>
+                      <span>Intermediate Paths</span>
+                      <span id="unfoldTFLITEIntermediatePaths" class="codicon codicon-expand-all" style="cursor:pointer"></span>
+                      <span id="foldTFLITEIntermediatePaths" class="codicon codicon-collapse-all" style="display:none; cursor:pointer"></span>
+                    </div>
+                    <div id="TFLITEIntermediatePaths" style="display:none">
+                      <div class="vscode-panel-view">
+                        <!-- Placeholder for display -->
+                      </div>
+                      <div class="vscode-panel-view">
+                        <vscode-text-field id="TFLITEInputPath" startIcon=true size=50 placeholder="">
+                          Input Path
+                          <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        </vscode-text-field>
+                      </div>
+                      <div class="vscode-panel-view">
+                        <vscode-text-field id="TFLITEOutputPath" startIcon=true size=50 placeholder="">
+                          Output Path
+                          <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        </vscode-text-field>
+                      </div>
+                    </div>
                   </div>
                   <div id="ONNXConverterOptions" style="display:none">
                     <div id="ONNXSaveIntermediate" class="vscode-panel-view">
@@ -291,6 +403,28 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
                       </vscode-checkbox>
                       <span class="codicon codicon-question" style="cursor: pointer"></span>
                     </div>
+                    <div>
+                      <span>Intermediate Paths</span>
+                      <span id="unfoldONNXIntermediatePaths" class="codicon codicon-expand-all" style="cursor:pointer"></span>
+                      <span id="foldONNXIntermediatePaths" class="codicon codicon-collapse-all" style="display:none; cursor:pointer"></span>
+                    </div>
+                    <div id="ONNXIntermediatePaths" style="display:none">
+                      <div class="vscode-panel-view">
+                        <!-- Placeholder for display -->
+                      </div>
+                      <div class="vscode-panel-view">
+                        <vscode-text-field id="ONNXInputPath" startIcon=true size=50 placeholder="">
+                          Input Path
+                          <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        </vscode-text-field>
+                      </div>
+                      <div class="vscode-panel-view">
+                        <vscode-text-field id="ONNXOutputPath" startIcon=true size=50 placeholder="">
+                          Output Path
+                          <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        </vscode-text-field>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div class="vscode-panel-view-root" id="panelImportDisabled">
@@ -300,7 +434,63 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
               </vscode-panel-view>
               <vscode-panel-view id="viewOptimizer">
                 <div class="vscode-panel-view-root" id="panelOptimizeEnabled" style="display:none">
-                  <span>Preparing awesome UI for optimize options...</span>
+                  <div class="vscode-panel-view">
+                    <vscode-data-grid id="basicOptTable" aria-label="Basic">
+                      <vscode-data-grid-row row-type="header">
+                        <vscode-data-grid-cell cell-type="columnheader" grid-column="1">
+                          <span id="helpBasicOptions" class="codicon codicon-question" style="cursor: pointer"></span>
+                          <span>Basic options</span>
+                          <span id="optOptionReset" class="codicon codicon-debug-restart-frame" style="cursor:pointer" title="Set to default"></span>
+                        </vscode-data-grid-cell>
+                        <vscode-data-grid-cell cell-type="columnheader" grid-column="2"></vscode-data-grid-cell>
+                      </vscode-data-grid-row>
+                      <vscode-data-grid-row>
+                        <vscode-data-grid-cell id="basicOptTable_1_1" grid-column="1">removeRedundantReshape</vscode-data-grid-cell>
+                        <vscode-data-grid-cell onClick="flipOnOff(this)" id="basicOptTable_1_2" style="cursor:pointer" grid-column="2">ON</vscode-data-grid-cell>
+                      </vscode-data-grid-row>
+                      <vscode-data-grid-row>
+                        <vscode-data-grid-cell id="basicOptTable_2_1" grid-column="1">substituteSqueezeToReshape</vscode-data-grid-cell>
+                        <vscode-data-grid-cell onClick="flipOnOff(this)" id="basicOptTable_2_2" style="cursor:pointer" grid-column="2">OFF</vscode-data-grid-cell>
+                      </vscode-data-grid-row>
+                      <vscode-data-grid-row>
+                        <vscode-data-grid-cell id="basicOptTable_3_1" grid-column="1">substituteSqueezeToReshape</vscode-data-grid-cell>
+                        <vscode-data-grid-cell onClick="flipOnOff(this)" id="basicOptTable_3_2" style="cursor:pointer" grid-column="2">OFF</vscode-data-grid-cell>
+                      </vscode-data-grid-row>
+                      <vscode-data-grid-row>
+                        <vscode-data-grid-cell id="basicOptTable_4_1" grid-column="1">substituteSqueezeToReshape</vscode-data-grid-cell>
+                        <vscode-data-grid-cell onClick="flipOnOff(this)" id="basicOptTable_4_2" style="cursor:pointer" grid-column="2">OFF</vscode-data-grid-cell>
+                      </vscode-data-grid-row>
+                      <vscode-data-grid-row>
+                        <vscode-data-grid-cell id="basicOptTable_5_1" grid-column="1">substituteSqueezeToReshape</vscode-data-grid-cell>
+                        <vscode-data-grid-cell onClick="flipOnOff(this)" id="basicOptTable_5_2" style="cursor:pointer" grid-column="2">OFF</vscode-data-grid-cell>
+                      </vscode-data-grid-row>
+                      <vscode-data-grid-row>
+                        <vscode-data-grid-cell id="basicOptTable_6_1" grid-column="1">substituteSqueezeToReshape</vscode-data-grid-cell>
+                        <vscode-data-grid-cell onClick="flipOnOff(this)" id="basicOptTable_6_2" style="cursor:pointer" grid-column="2">OFF</vscode-data-grid-cell>
+                      </vscode-data-grid-row>
+                    </vscode-data-grid>
+                  </div>
+                  <div class="vscode-panel-view">
+                    <vscode-data-grid id="customOptTable" aria-label="Basic">
+                      <vscode-data-grid-row row-type="header">
+                        <vscode-data-grid-cell cell-type="columnheader" grid-column="1">
+                          <span id="helpCustomOptions" class="codicon codicon-question" style="cursor: pointer"></span>
+                          <span>Custom options</span>
+                        </vscode-data-grid-cell>
+                        <vscode-data-grid-cell cell-type="columnheader" grid-column="2"></vscode-data-grid-cell>
+                      </vscode-data-grid-row>
+                      <vscode-data-grid-row>
+                        <vscode-data-grid-cell id="optTableCustom_1_1" grid-column="1">
+                          <vscode-text-field id="optTableCustom_1_1_text" placeholder="Option name">
+                            <span id="optTableCustom_1_1_remove" slot="end" class="codicon codicon-trash" style="cursor:pointer"></span>
+                          </vscode-text-field>                    
+                        </vscode-data-grid-cell>
+                        <vscode-data-grid-cell id="optTableCustom_1_2" grid-column="2">
+                          <vscode-text-field id="optTableCustom_1_2_text" placeholder="parameters"></vscode-text-field>
+                        </vscode-data-grid-cell>
+                      </vscode-data-grid-row>
+                    </vscode-data-grid>
+                  </div>
                 </div>
                 <div class="vscode-panel-view-root" id="panelOptimizeDisabled">
                   <vscode-link id="linkEnableOptimize" href="#">Enable Optimize</vscode-link>
@@ -309,7 +499,29 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
               </vscode-panel-view>
               <vscode-panel-view id="viewQuantizer">
                 <div class="vscode-panel-view-root" id="panelQuantizeEnabled" style="display:none">
-                  <span>Preparing awesome UI for quantize options...</span>
+                  <div class="vscode-panel-view">
+                    <span>Input Data</span>
+                    <span id="helpQuantizeInputData" class="codicon codicon-question" style="cursor: pointer"></span>
+                  </div>
+                  <div class="vscode-panel-view">
+                    <vscode-text-field id="inputDataPath" startIcon=true size=40 placeholder="Select Input Data File">
+                      <span id="inputDataSearch" slot="end" class="codicon codicon-search" style="cursor:pointer"></span>
+                    </vscode-text-field>
+                  </div>
+                  <div id="inputDataFormatRadioArea" class="vscode-panel-view">
+                    <vscode-radio-group id="inputDataFormatRadio">
+                      <label slot="label">
+                        InputDataFormat
+                        <span id="helpInputDataFormat" class="codicon codicon-question" style="cursor: pointer"></span>
+                      </label>
+                      <vscode-radio value="h5">h5</vscode-radio>
+                      <vscode-radio value="line">line</vscode-radio>
+                      <vscode-radio value="dir">dir</vscode-radio>
+                    </vscode-radio-group>
+                  </div>
+                  <div class="vscode-panel-view">
+                    <h3>There are much more options :( Quantize Options should be investigated more for better UI....</h3>
+                  </div>
                 </div>
                 <div class="vscode-panel-view-root" id="panelQuantizeDisabled">
                   <vscode-link id="linkEnableQuantize" href="#">Enable Quantize</vscode-link>

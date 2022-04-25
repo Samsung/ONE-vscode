@@ -17,8 +17,8 @@
 import * as vscode from 'vscode';
 
 import {backendRegistrationApi} from './Backend/Backend';
-import {CfgEditorPanel} from './CfgEditor/CfgEditorPanel';
 import {decoder} from './Circlereader/Circlereader';
+import {CfgEditorPanel} from './CfgEditor/CfgEditorPanel';
 import {Circletracer} from './Circletracer';
 import {CompilePanel} from './Compile/CompilePanel';
 import {ConfigPanel} from './Config/ConfigPanel';
@@ -56,6 +56,15 @@ export function activate(context: vscode.ExtensionContext) {
   setGlobalContext();
 
   new OneExplorer(context);
+
+  let cfgWithGUI = vscode.commands.registerCommand('onevscode.flip-cfg-to-gui', () => {
+    // ?
+  });
+  context.subscriptions.push(cfgWithGUI);
+  let cfgWithText = vscode.commands.registerCommand('onevscode.flip-cfg-to-ini', () => {
+    //vscode.workspace.openTextDocument();
+  });
+  context.subscriptions.push(cfgWithText);
 
   // ONE view
   let refreshCompiler = vscode.commands.registerCommand('onevscode.refresh-compiler', () => {
