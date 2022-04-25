@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "segments": [
+    {
+      "name": "Segment1",
+      "size": 32768,
+      "allocations": [
+        { "offset": 0, "size": 8192, "alive_from": 0, "alive_till": 8, "origin": "Node1" },
+        { "offset": 8192, "size": 8192, "alive_from": 8, "alive_till": 12, "origin": "Node2" },
+        { "offset": 0, "size": 8192, "alive_from": 12, "alive_till": 16, "origin": "Node3" },
+        { "offset": 8192, "size": 16384, "alive_from": 16, "alive_till": 24, "origin": "Node4" }
+      ]
+    },
+    {
+      "name": "Segment2",
+      "size": 16384,
+      "allocations": [
+        { "offset": 0, "size": 8192, "alive_from": 0, "alive_till": 32, "origin": "Node1" }
+      ]
+    }
+  ]
+}
