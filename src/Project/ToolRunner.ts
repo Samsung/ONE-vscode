@@ -17,7 +17,6 @@
 import * as cp from 'child_process';
 import * as fs from 'fs';
 import {Logger} from '../Utils/Logger';
-import {Job} from './Job';
 import {ToolArgs} from './ToolArgs';
 
 const path = require('path');
@@ -84,10 +83,10 @@ export class ToolRunner {
     return oneccRealPath;
   }
 
-  public getRunner(job: Job, path: string) {
+  public getRunner(name: string, tool: string, toolargs: ToolArgs, path: string) {
     return new Promise<string>((resolve, reject) => {
-      this.logger.outputWithTime('Running: ' + job.name);
-      let cmd = cp.spawn(job.tool, job.toolArgs, {cwd: path});
+      this.logger.outputWithTime('Running: ' + name);
+      let cmd = cp.spawn(tool, toolargs, {cwd: path});
       this.handlePromise(resolve, reject, cmd);
     });
   }

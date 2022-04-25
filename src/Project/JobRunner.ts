@@ -20,6 +20,7 @@ import {Balloon} from '../Utils/Balloon';
 import {Logger} from '../Utils/Logger';
 
 import {Job} from './Job';
+import {ToolArgs} from './ToolArgs';
 import {ToolRunner} from './ToolRunner';
 import {WorkJobs} from './WorkJobs';
 
@@ -52,12 +53,16 @@ export class JobRunner extends EventEmitter {
     }
     console.log('Found onecc: ', onecc);
 
-    // place tool to the front of toolargs
-    job.toolArgs.unshift(job.tool);
-    job.tool = onecc;
+    // This is tricky. Now old jobs like `JobQuantize` are
+    // tool: quantize, toolArgs: options
+    // and the `tool` & `toolArgs` are only getter(not setter.)
+    // So the `quantize` is shifted to new ToolArgs.
+    // This trick will be disappeared after Old jobs are removed
+    let toolArgs: ToolArgs = job.toolArgs;
+    toolArgs.unshift(job.tool);
 
-    console.log('Run tool: ', job.tool, ' args: ', job.toolArgs, ' cwd: ', path);
-    const runner = this.toolRunner.getRunner(job, path);
+    console.log('Run tool: ', onecc, ' args: ', toolArgs, ' cwd: ', path);
+    const runner = this.toolRunner.getRunner(job.name, onecc, toolArgs, path);
 
     runner
         .then(() => {
