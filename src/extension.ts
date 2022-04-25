@@ -17,6 +17,7 @@
 import * as vscode from 'vscode';
 
 import {backendRegistrationApi} from './Backend/Backend';
+import {CfgEditorPanel} from './CfgEditor/CfgEditorPanel';
 import {decoder} from './Circlereader/Circlereader';
 import {Circletracer} from './Circletracer';
 import {CompilePanel} from './Compile/CompilePanel';
@@ -68,6 +69,8 @@ export function activate(context: vscode.ExtensionContext) {
     CompilePanel.render(context.extensionUri);
   });
   context.subscriptions.push(compileWebView);
+
+  context.subscriptions.push(CfgEditorPanel.register(context));
 
   let logger = new Utils.Logger();
   let projectBuilder = new Project.Builder(logger);
