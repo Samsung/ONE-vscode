@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-// TODO: Uncomment after `Command` and `Version` are introduced
-/*
 import assert from 'assert';
 
-import {Command} from '../../Project/Command';
+import {Command} from '../Command';
 import {Toolchain, ToolchainInfo} from '../Toolchain';
 
 class DebianRepo {
@@ -72,6 +70,7 @@ class DebianToolchain implements Toolchain {
       pkg = `${pkg}=${this.info.version.str()}`;
     }
     cmd.push(pkg);
+    console.log('install' + cmd.str());
     return cmd;
   }
   uninstall(): Command {
@@ -85,6 +84,7 @@ class DebianToolchain implements Toolchain {
       pkg = `${pkg}=${this.info.version.str()}`;
     }
     cmd.push(pkg);
+    console.log('uninstall' + cmd.str());
     return cmd;
   }
   installed(): Command {
@@ -94,9 +94,9 @@ class DebianToolchain implements Toolchain {
     cmd.push(this.info.name);
     cmd.push('&&');
     cmd.push('echo $?');
+    console.log('installed' + cmd.str());
     return cmd;
   }
 };
 
 export {DebianRepo, DebianArch, DebianToolchain};
-*/

@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-// TODO: Uncomment after `Command` and `Version` are introduced
-/*
-import {Command} from '../Project/Command';
-import {Version} from '../Utils/Version';
+import {Command} from './Command';
+import {Version} from './Version';
 
 class PackageInfo {
   name: string;
@@ -33,9 +31,10 @@ class PackageInfo {
 class ToolchainInfo {
   name: string;
   description: string;
-  version: Version;        // specific version
-  depends: PackageInfo[];  // too much dependens on deb
-  constructor(name: string, description: string, version: Version, depends: PackageInfo[]) {
+  version: Version;                  // specific version
+  depends: PackageInfo[]|undefined;  // NOTE: too much dependens on deb
+  constructor(
+      name: string, description: string, version: Version, depends?: PackageInfo[]|undefined) {
     this.name = name;
     this.description = description;
     this.version = version;
@@ -72,4 +71,3 @@ class Toolchain {
 class Toolchains extends Array<Toolchain> {};
 
 export {PackageInfo, ToolchainInfo, Toolchain, Toolchains};
-*/
