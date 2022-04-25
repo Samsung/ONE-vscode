@@ -20,9 +20,22 @@ import {config} from 'process';
 import {stringify} from 'querystring';
 import * as vscode from 'vscode';
 
-interface DirNode {
-  dir: boolean, name: string, childs: DirNode[], uri: vscode.Uri
+enum NodeType{
+  directory,
+  model,
+  config
 }
+
+
+interface DirNode {
+  type: NodeType, dir: boolean, name: string, childs: DirNode[], uri: vscode.Uri
+}
+
+interface ModelNode extends DirNode {
+  modeltype: string
+}
+interface DirectoryNode extends DirNode {}
+interface ConfigNode extends DirNode {}
 
 export class ContextNode extends vscode.TreeItem {
   constructor(
@@ -34,10 +47,16 @@ export class ContextNode extends vscode.TreeItem {
 
     this.tooltip = `${this.label}`;
 
-    if (dirnode.dir) {
-      this.iconPath = vscode.ThemeIcon.Folder;
-    } else {
+    if (dirnode.type === NodeType.config) {
       this.iconPath = new vscode.ThemeIcon('gear');
+    }
+
+    if (dirnode.type === NodeType.directory){
+      this.iconPath = vscode.ThemeIcon.Folder;
+    }
+
+    if (dirnode.type === NodeType.model) {
+      this.iconPath = vscode.ThemeIcon.File;
     }
   }
 }
@@ -93,7 +112,7 @@ export class ContextTreeDataProvider implements vscode.TreeDataProvider<ContextN
   }
 
   private getConfigMap(rootPath: vscode.Uri): DirNode {
-    const node = {name: path.parse(rootPath.fsPath).base, dir: true, childs: [], uri: rootPath};
+    const node = {type: NodeType.directory, name: path.parse(rootPath.fsPath).base, dir: true, childs: [], uri: rootPath};
     this.searchConfigs(node, path.dirname(rootPath.fsPath));
     return node;
   }
@@ -106,15 +125,23 @@ export class ContextTreeDataProvider implements vscode.TreeDataProvider<ContextN
       const fstat = fs.statSync(fpath);
 
       if (fstat.isDirectory()) {
-        const dirnode = {name: fn, dir: true, childs: [], uri: vscode.Uri.file(fpath)};
+        const dirnode = {type: NodeType.directory, name: fn, dir: true, childs: [], uri: vscode.Uri.file(fpath)};
 
         this.searchConfigs(dirnode, dirpath);
         if (dirnode.childs.length > 0) {
           node.childs.push(dirnode);
         }
       }
-      if (fstat.isFile() && fn.endsWith('.cfg')) {
-        const dirnode = {name: fn, dir: false, childs: [], uri: vscode.Uri.file(fpath)};
+      else if (fstat.isFile() && fn.endsWith('.cfg')) {
+        const dirnode = {type: NodeType.config, name: fn, dir: false, childs: [], uri: vscode.Uri.file(fpath)};
+        node.childs.push(dirnode);
+      }
+      else if (fstat.isFile() && fn.endsWith('.tflite')) {
+        const dirnode = {type: NodeType.model, name: fn, dir: false, childs: [], uri: vscode.Uri.file(fpath)};
+        node.childs.push(dirnode);
+      }
+      else if (fstat.isFile() && fn.endsWith('.onnx')) {
+        const dirnode = {type: NodeType.model, name: fn, dir: false, childs: [], uri: vscode.Uri.file(fpath)};
         node.childs.push(dirnode);
       }
     }
