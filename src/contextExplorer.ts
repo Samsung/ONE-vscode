@@ -19,44 +19,56 @@ import * as path from 'path';
 import {config} from 'process';
 import {stringify} from 'querystring';
 import * as vscode from 'vscode';
+import { Model } from './Circlereader/circle-analysis/circle/model';
 
 enum NodeType{
   directory,
   model,
-  config
+  config,
+  configWrapper
 }
 
-
-interface DirNode {
-  type: NodeType, dir: boolean, name: string, childs: DirNode[], uri: vscode.Uri
+interface Node {
+  type: NodeType, name: string, childs: Node[]
 }
 
-interface ModelNode extends DirNode {
-  modeltype: string
+interface DirNode extends Node{
+  uri: vscode.Uri
 }
-interface DirectoryNode extends DirNode {}
-interface ConfigNode extends DirNode {}
+
+interface ModelNode extends Node {
+  uri: vscode.Uri
+}
+
+interface ConfigNode extends Node {
+  uri: vscode.Uri
+  pairModel: Node
+}
+
+interface ConfigWrapperNode extends Node {
+}
 
 export class ContextNode extends vscode.TreeItem {
   constructor(
       public readonly label: string,
       public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-      public readonly dirnode: DirNode,
+      public readonly node: Node,
   ) {
     super(label, collapsibleState);
 
     this.tooltip = `${this.label}`;
 
-    if (dirnode.type === NodeType.config) {
+    if (node.type === NodeType.config) {
       this.iconPath = new vscode.ThemeIcon('gear');
     }
-
-    if (dirnode.type === NodeType.directory){
+    else if (node.type === NodeType.directory){
       this.iconPath = vscode.ThemeIcon.Folder;
     }
-
-    if (dirnode.type === NodeType.model) {
+    else if (node.type === NodeType.model) {
       this.iconPath = vscode.ThemeIcon.File;
+    }
+    else if (node.type === NodeType.configWrapper) {
+      this.iconPath = new vscode.ThemeIcon('symbol-structure');
     }
   }
 }
@@ -80,8 +92,8 @@ export class ContextTreeDataProvider implements vscode.TreeDataProvider<ContextN
   }
 
   getTreeItem(element: ContextNode): vscode.TreeItem {
-    if (element.dirnode.dir === false) {
-      element.command = { command: 'contextExplorer.openConfigFile', title: "Open File", arguments: [element.dirnode] };
+    if (element.node.type === NodeType.directory) {
+      element.command = { command: 'contextExplorer.openConfigFile', title: "Open File", arguments: [element.node] };
     }
     return element;
   }
@@ -93,15 +105,15 @@ export class ContextTreeDataProvider implements vscode.TreeDataProvider<ContextN
     }
 
     if (element) {
-      return Promise.resolve(this.getContextNode(element.dirnode));
+      return Promise.resolve(this.getNode(element.node));
     } else {
-      return Promise.resolve(this.getContextNode(this.cfgMap));
+      return Promise.resolve(this.getNode(this.cfgMap));
     }
   }
 
-  private getContextNode(node: DirNode): ContextNode[] {
-    const toContext = (node: DirNode): ContextNode => {
-      if (node.dir) {
+  private getNode(node: Node): ContextNode[] {
+    const toContext = (node: Node): ContextNode => {
+      if (node.childs.length > 0) {
         return new ContextNode(node.name, vscode.TreeItemCollapsibleState.Collapsed, node);
       } else {
         return new ContextNode(node.name, vscode.TreeItemCollapsibleState.None, node);
@@ -117,32 +129,56 @@ export class ContextTreeDataProvider implements vscode.TreeDataProvider<ContextN
     return node;
   }
 
-  private searchConfigs(node: DirNode, rootPath: string) {
-    const dirpath = path.join(rootPath, node.name);
+  private searchConfigs(node: DirNode, dirPath: string) {
+    const dirpath = path.join(dirPath, node.name);
     const files = fs.readdirSync(dirpath);
+    for (const fn of files) {
+      const fpath = path.join(dirpath, fn);
+      console.log("fpath: " + fpath);
+      const fstat = fs.statSync(fpath);
+
+      if (fstat.isDirectory()) {
+        const dirNode = {type: NodeType.directory, name: fn, dir: true, childs: [], uri: vscode.Uri.file(fpath)};
+
+        this.searchConfigs(dirNode, dirpath);
+        if (dirNode.childs.length > 0) {
+          node.childs.push(dirNode);
+        }
+      }
+      else if ((fstat.isFile() 
+        && (fn.endsWith('.tflite')) || fn.endsWith('.onnx'))){
+        const modelNode: ModelNode = {type: NodeType.model, name: fn, childs: [], uri: vscode.Uri.file(fpath)};
+        this.searchPairConfig(modelNode, dirpath);
+
+        node.childs.push(modelNode);
+      }
+    }
+  }
+
+  /**
+   * Search cfg files in the same directory of the node
+   * NOTE It assumes 1-1 relation for model and config
+   * TODO(dayo) Support multiple relation
+   */
+  private searchPairConfig(node: ModelNode, dirPath: string)
+  {
+    const dirpath = path.dirname(path.join(dirPath, node.name));
+    console.log("searchPairConfig: dirpath: "+dirpath);
+    const files = fs.readdirSync(dirpath); // siblings
+
     for (const fn of files) {
       const fpath = path.join(dirpath, fn);
       const fstat = fs.statSync(fpath);
 
-      if (fstat.isDirectory()) {
-        const dirnode = {type: NodeType.directory, name: fn, dir: true, childs: [], uri: vscode.Uri.file(fpath)};
+      if (fstat.isFile() && fn.endsWith('.cfg')) {
+        console.log(fpath);
+        const configWrapperNode : ConfigWrapperNode = {type: NodeType.configWrapper, name: node.name + ' (ONE configuration)', childs: []};
+        node.childs.push(configWrapperNode);
+        console.log("searchPairConfig: configWrapperNode: "+configWrapperNode);
 
-        this.searchConfigs(dirnode, dirpath);
-        if (dirnode.childs.length > 0) {
-          node.childs.push(dirnode);
-        }
-      }
-      else if (fstat.isFile() && fn.endsWith('.cfg')) {
-        const dirnode = {type: NodeType.config, name: fn, dir: false, childs: [], uri: vscode.Uri.file(fpath)};
-        node.childs.push(dirnode);
-      }
-      else if (fstat.isFile() && fn.endsWith('.tflite')) {
-        const dirnode = {type: NodeType.model, name: fn, dir: false, childs: [], uri: vscode.Uri.file(fpath)};
-        node.childs.push(dirnode);
-      }
-      else if (fstat.isFile() && fn.endsWith('.onnx')) {
-        const dirnode = {type: NodeType.model, name: fn, dir: false, childs: [], uri: vscode.Uri.file(fpath)};
-        node.childs.push(dirnode);
+        const configNode : ConfigNode = {pairModel: node, type: NodeType.config, name: fn, childs: [], uri: vscode.Uri.file(fpath)};
+        configWrapperNode.childs.push(configNode);
+        console.log("searchPairConfig: configNode: "+configNode);
       }
     }
   }
