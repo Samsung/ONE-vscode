@@ -39,10 +39,10 @@ class DebianToolchain implements Toolchain {
   ready: boolean = false;
 
   info: ToolchainInfo;
-  repo: DebianRepo;
-  arch: DebianArch = DebianArch.undefined;
+  repo?: DebianRepo;
+  arch?: DebianArch = DebianArch.undefined;
 
-  constructor(info: ToolchainInfo, repo: DebianRepo, arch: DebianArch) {
+  constructor(info: ToolchainInfo, repo?: DebianRepo, arch?: DebianArch) {
     this.info = info;
     this.repo = repo;
     this.arch = arch;
@@ -62,39 +62,36 @@ class DebianToolchain implements Toolchain {
   install(): Command {
     this.prepare();
     let cmd = new Command('apt-get');
-    cmd.push(`-t=${this.repo.distribute}`);
-    cmd.push(`-a=${this.arch.toString()}`);
     cmd.push('install');
     let pkg: string = this.info.name;
     if (this.info.version !== undefined) {
       pkg = `${pkg}=${this.info.version.str()}`;
     }
     cmd.push(pkg);
-    console.log('install' + cmd.str());
     return cmd;
   }
   uninstall(): Command {
     this.prepare();
     let cmd = new Command('apt-get');
-    cmd.push(`-t=${this.repo.distribute}`);
-    cmd.push(`-a=${this.arch.toString()}`);
     cmd.push('purge');
     let pkg: string = this.info.name;
     if (this.info.version !== undefined) {
       pkg = `${pkg}=${this.info.version.str()}`;
     }
     cmd.push(pkg);
-    console.log('uninstall' + cmd.str());
     return cmd;
   }
   installed(): Command {
     this.prepare();
     let cmd = new Command('dpkg-query');
     cmd.push('--show');
-    cmd.push(this.info.name);
+    let pkg: string = this.info.name;
+    if (this.info.version !== undefined) {
+      pkg = `${pkg}=${this.info.version.str()}`;
+    }
+    cmd.push(pkg);
     cmd.push('&&');
     cmd.push('echo $?');
-    console.log('installed' + cmd.str());
     return cmd;
   }
 };

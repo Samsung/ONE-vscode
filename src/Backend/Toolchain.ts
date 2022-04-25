@@ -31,10 +31,9 @@ class PackageInfo {
 class ToolchainInfo {
   name: string;
   description: string;
-  version: Version;                  // specific version
-  depends: PackageInfo[]|undefined;  // NOTE: too much dependens on deb
-  constructor(
-      name: string, description: string, version: Version, depends?: PackageInfo[]|undefined) {
+  version?: Version;        // specific version
+  depends?: PackageInfo[];  // NOTE: too much dependens on deb
+  constructor(name: string, description: string, version?: Version, depends?: PackageInfo[]) {
     this.name = name;
     this.description = description;
     this.version = version;

@@ -26,21 +26,19 @@ suite('Backend', function() {
   suite('ToolchainImpl', function() {
     suite('DebianToolchain', function() {
       // for Toolchain
-      // Let's use `gcc-9`
-      const name = 'gcc-9';
-      const desc = 'gcc toolchain';
-      const version = new Version(9, 3, 0);
+      // Let's use `npm`
+      const name = 'npm';
+      const desc = 'npm toolchain';
+      const version = new Version(6, 14, 4, '+ds-1ubuntu2');
       const info = new ToolchainInfo(name, desc, version);
-
-      // for DebianToolchain
-      const uri = 'http://archive.ubuntu.com/ubuntu';
-      const dist = 'foscal';
-      const comp = 'universe';
-      const repo = new DebianRepo(uri, dist, comp);
-      const arch = DebianArch.amd64;
 
       suite('#contructor()', function() {
         test('is contructed with values', function() {
+          const uri = 'http://archive.ubuntu.com/ubuntu';
+          const dist = 'foscal';
+          const comp = 'universe';
+          const repo = new DebianRepo(uri, dist, comp);
+          const arch = DebianArch.amd64;
           let dt = new DebianToolchain(info, repo, arch);
           assert.strictEqual(dt.info, info);
           assert.strictEqual(dt.repo, repo);
@@ -50,7 +48,7 @@ suite('Backend', function() {
 
       suite('#prepare()', function() {
         test('', function() {
-          let dt = new DebianToolchain(info, repo, arch);
+          let dt = new DebianToolchain(info);
           dt.prepare();
           assert.strictEqual(dt.ready, true);
         });
@@ -58,22 +56,28 @@ suite('Backend', function() {
 
       suite('#install()', function() {
         test('', function() {
-          let dt = new DebianToolchain(info, repo, arch);
+          let dt = new DebianToolchain(info);
           let cmd = dt.install();
+          const expectedStr = 'apt-get install ' + name + '=' + version.str();
+          assert.strictEqual(cmd.str(), expectedStr);
         });
       });
 
       suite('#uninstall()', function() {
         test('', function() {
-          let dt = new DebianToolchain(info, repo, arch);
+          let dt = new DebianToolchain(info);
           let cmd = dt.uninstall();
+          const expectedStr = 'apt-get purge ' + name + '=' + version.str();
+          assert.strictEqual(cmd.str(), expectedStr);
         });
       });
 
       suite('#installed()', function() {
         test('', function() {
-          let dt = new DebianToolchain(info, repo, arch);
+          let dt = new DebianToolchain(info);
           let cmd = dt.installed();
+          const expectedStr = 'dpkg-query --show ' + name + '=' + version.str() + ' && echo $?';
+          assert.strictEqual(cmd.str(), expectedStr);
         });
       });
     });
