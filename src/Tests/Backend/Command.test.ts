@@ -24,12 +24,9 @@ suite('Backend', function() {
         const cmdStr: string = 'ls';
         const optionStrs: string[] = ['-lh', '~'];
         let cmd = new Command(cmdStr, optionStrs);
-        assert.deepStrictEqual(cmd.cmd, cmdStr);
-        assert.isOk(cmd.options !== undefined);
-        if (cmd.options !== undefined) {
-          assert.deepStrictEqual(cmd.options[0], optionStrs[0]);
-          assert.deepStrictEqual(cmd.options[1], optionStrs[1]);
-        }
+        assert.deepStrictEqual(cmd[0], cmdStr);
+        assert.deepStrictEqual(cmd[1], optionStrs[0]);
+        assert.deepStrictEqual(cmd[2], optionStrs[1]);
       });
     });
 
