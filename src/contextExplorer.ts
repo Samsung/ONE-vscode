@@ -92,7 +92,7 @@ export class ContextTreeDataProvider implements vscode.TreeDataProvider<ContextN
   }
 
   getTreeItem(element: ContextNode): vscode.TreeItem {
-    if (element.node.type === NodeType.directory) {
+    if (element.node.type === NodeType.config) {
       element.command = { command: 'contextExplorer.openConfigFile', title: "Open File", arguments: [element.node] };
     }
     return element;
@@ -205,7 +205,7 @@ export class ContextExplorer {
     vscode.commands.registerCommand('contextExplorer.openConfigFile', (file) => this.openConfigFile(file));
   }
 
-  private openConfigFile(dirnode: DirNode) {
-    vscode.window.showTextDocument(dirnode.uri);
+  private openConfigFile(configNode: ConfigNode) {
+    vscode.window.showTextDocument(configNode.uri);
   }
 }
