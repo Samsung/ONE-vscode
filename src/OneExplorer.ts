@@ -153,7 +153,8 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
    * NOTE It assumes 1-1 relation for model and config
    *
    * TODO(dayo) Support N-N relation
-   * TODO(dayo) Search by parsing config file's model entry
+   * TODO(dayo) Search by parsing config file's model entry (Currently model name and cfg name must
+   * match)
    */
   private searchPairConfig(node: Node, dirPath: string) {
     const dirpath = path.dirname(path.join(dirPath, node.name));
