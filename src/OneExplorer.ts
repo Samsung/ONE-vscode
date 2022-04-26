@@ -68,6 +68,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
     }
   }
 
+  // TODO(dayo): enable refresh command
   refresh(): void {
     this._onDidChangeTreeData.fire();
   }
