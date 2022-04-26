@@ -19,6 +19,7 @@ import {EventEmitter} from 'events';
 import {Balloon} from '../Utils/Balloon';
 import {Logger} from '../Utils/Logger';
 
+import {Job} from './Job';
 import {ToolArgs} from './ToolArgs';
 import {ToolRunner} from './ToolRunner';
 import {WorkJobs} from './WorkJobs';
@@ -42,7 +43,7 @@ export class JobRunner extends EventEmitter {
     this.on(K_CLEANUP, this.onCleanup);
   }
 
-  private invoke(name: string, tool: string, toolArgs: ToolArgs, path: string) {
+  private invoke(job: Job, path: string) {
     const onecc = this.toolRunner.getOneccPath();
     if (onecc === undefined) {
       Balloon.error('Failed to find onecc: ' + onecc);
@@ -51,8 +52,17 @@ export class JobRunner extends EventEmitter {
       return;
     }
     console.log('Found onecc: ', onecc);
-    console.log('Run onecc: ', onecc, ' tool: ', tool, ' args: ', toolArgs, ' cwd: ', path);
-    const runner = this.toolRunner.getRunner(name, onecc, tool, toolArgs, path);
+
+    // This is tricky. Now old jobs like `JobQuantize` are
+    // tool: quantize, toolArgs: options
+    // and the `tool` & `toolArgs` are only getter(not setter.)
+    // So the `quantize` is shifted to new ToolArgs.
+    // This trick will be disappeared after Old jobs are removed
+    let toolArgs: ToolArgs = job.toolArgs;
+    toolArgs.unshift(job.tool);
+
+    console.log('Run tool: ', onecc, ' args: ', toolArgs, ' cwd: ', path);
+    const runner = this.toolRunner.getRunner(job.name, onecc, toolArgs, path);
 
     runner
         .then(() => {
@@ -72,7 +82,7 @@ export class JobRunner extends EventEmitter {
       this.emit(K_CLEANUP);
       return;
     }
-    this.invoke(job.name, job.tool, job.toolArgs, this.cwd);
+    this.invoke(job, this.cwd);
   }
 
   private onCleanup() {
