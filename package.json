@@ -67,14 +67,14 @@
     ],
     "commands": [
       {
-        "command": "onevscode.flip-cfg-to-ui",
-        "title": "Open cfg (UI)",
+        "command": "onevscode.flip-cfg-to-gui",
+        "title": "Open cfg in GUI",
         "category": "ONE",
         "icon": "$(go-to-file)"
       },
       {
         "command": "onevscode.flip-cfg-to-ini",
-        "title": "Open cfg (ini)",
+        "title": "Open cfg in Text Editor",
         "category": "ONE",
         "icon": "$(go-to-file)"
       },
@@ -148,7 +148,7 @@
       ],
       "editor/title": [
         {
-          "command": "onevscode.flip-cfg-to-ui",
+          "command": "onevscode.flip-cfg-to-gui",
           "group": "navigation",
           "when": "resourceExtname == .cfg && !cfg.editor"
         },

@@ -270,27 +270,27 @@ function disableProfileStep() {
 
 function modelTypeClick() {
   const modelType = document.getElementById('modelTypeRadio').value;
-  const InitialImportState = document.getElementById('ImportInitialState');
-  const TFConverterOptions = document.getElementById('TFConverterOptions');
-  const TFLConverterOptions = document.getElementById('TFLITEConverterOptions');
-  const ONNXConverterOptions = document.getElementById('ONNXConverterOptions');
+  const initialImportState = document.getElementById('ImportInitialState');
+  const tfConverterOptions = document.getElementById('TFConverterOptions');
+  const tflConverterOptions = document.getElementById('TFLITEConverterOptions');
+  const onnxConverterOptions = document.getElementById('ONNXConverterOptions');
 
-  InitialImportState.style.display = 'none';
-  TFConverterOptions.style.display = 'none';
-  TFLConverterOptions.style.display = 'none';
-  ONNXConverterOptions.style.display = 'none';
+  initialImportState.style.display = 'none';
+  tfConverterOptions.style.display = 'none';
+  tflConverterOptions.style.display = 'none';
+  onnxConverterOptions.style.display = 'none';
 
   switch (modelType) {
     case 'pb':
     case 'savedModel':
     case 'kerasModel':
-      TFConverterOptions.style.display = 'block';
+      tfConverterOptions.style.display = 'block';
       return;
     case 'tflite':
-      TFLConverterOptions.style.display = 'block';
+      tflConverterOptions.style.display = 'block';
       return;
     case 'onnx':
-      ONNXConverterOptions.style.display = 'block';
+      onnxConverterOptions.style.display = 'block';
       return;
     default:
       return;
