@@ -64,7 +64,7 @@ export function run(): Promise<void> {
   // const testFilter = "Returns parsed object";
 
   const testFilter = '';
-  const mocha = new Mocha({fgrep: testFilter, ui: 'tdd', color: true});
+  const mocha = new Mocha({fgrep: testFilter, ui: 'tdd', color: true, reporter: 'xunit', reporterOptions: { output: 'result.xml' }});
 
   const testsRoot = path.resolve(__dirname, '.');
 
