@@ -59,11 +59,11 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
   readonly onDidChangeTreeData: vscode.Event<OneNode|undefined|void> =
       this._onDidChangeTreeData.event;
 
-  private cfgMap: Node|undefined;
+  private oneTree: Node|undefined;
 
   constructor(private workspaceRoot: vscode.Uri|undefined) {
     if (workspaceRoot !== undefined) {
-      this.cfgMap = this.getConfigMap(workspaceRoot);
+      this.oneTree = this.getTree(workspaceRoot);
     }
   }
 
@@ -78,7 +78,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
   }
 
   getChildren(element?: OneNode): OneNode[]|Thenable<OneNode[]> {
-    if (this.cfgMap === undefined) {
+    if (this.oneTree === undefined) {
       vscode.window.showInformationMessage('No ONE model or config in empty workspace');
       return Promise.resolve([]);
     }
@@ -86,7 +86,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
     if (element) {
       return Promise.resolve(this.getNode(element.node));
     } else {
-      return Promise.resolve(this.getNode(this.cfgMap));
+      return Promise.resolve(this.getNode(this.oneTree));
     }
   }
 
@@ -102,13 +102,13 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
     return node.childNodes.map(node => toOneNode(node));
   }
 
-  private getConfigMap(rootPath: vscode.Uri): Node {
+  private getTree(rootPath: vscode.Uri): Node {
     const node = {type: NodeType.directory, name: path.parse(rootPath.fsPath).base, dir: true, childNodes: [], uri: rootPath};
-    this.searchConfigs(node, path.dirname(rootPath.fsPath));
+    this.searchNode(node, path.dirname(rootPath.fsPath));
     return node;
   }
 
-  private searchConfigs(node: Node, dirPath: string) {
+  private searchNode(node: Node, dirPath: string) {
     const dirpath = path.join(dirPath, node.name);
     const files = fs.readdirSync(dirpath);
 
@@ -119,7 +119,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
       if (fstat.isDirectory()) {
         const dirNode = {type: NodeType.directory, name: fn, dir: true, childNodes: [], uri: vscode.Uri.file(fpath)};
 
-        this.searchConfigs(dirNode, dirpath);
+        this.searchNode(dirNode, dirpath);
         if (dirNode.childNodes.length > 0) {
           node.childNodes.push(dirNode);
         }
@@ -136,7 +136,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
   }
 
   /**
-   * Search cfg files in the same directory of the node
+   * Search .cfg files in the same directory of the node
    * 
    * NOTE It assumes 1-1 relation for model and config
    * 
