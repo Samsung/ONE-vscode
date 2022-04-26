@@ -61,15 +61,24 @@ export class JobRunner extends EventEmitter {
     let toolArgs: ToolArgs = job.toolArgs;
     toolArgs.unshift(job.tool);
 
+    let success = job.successCallback;
+    let failure = job.failureCallback;
+
     console.log('Run tool: ', onecc, ' args: ', toolArgs, ' cwd: ', path);
     const runner = this.toolRunner.getRunner(job.name, onecc, toolArgs, path);
 
     runner
         .then(() => {
+          if (success !== undefined) {
+            success();
+          }
           // Move on to next job
           this.emit(K_INVOKE);
         })
         .catch(() => {
+          if (failure !== undefined) {
+            failure();
+          }
           Balloon.error('Running ONE failed');
           this.emit(K_CLEANUP);
         });
