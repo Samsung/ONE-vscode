@@ -121,13 +121,8 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
       const fstat = fs.statSync(fpath);
 
       if (fstat.isDirectory()) {
-        const dirNode = {
-          type: NodeType.directory,
-          name: fn,
-          dir: true,
-          childNodes: [],
-          uri: vscode.Uri.file(fpath)
-        };
+        const dirNode: Node =
+            {type: NodeType.directory, name: fn, childNodes: [], uri: vscode.Uri.file(fpath)};
 
         this.searchNode(dirNode, dirpath);
         if (dirNode.childNodes.length > 0) {
