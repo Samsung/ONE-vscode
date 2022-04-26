@@ -102,10 +102,9 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
   }
 
   private getTree(rootPath: vscode.Uri): Node {
-    const node = {
+    const node: Node = {
       type: NodeType.directory,
       name: path.parse(rootPath.fsPath).base,
-      dir: true,
       childNodes: [],
       uri: rootPath
     };
