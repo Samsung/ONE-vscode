@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-// TODO: Uncomment after `Command` and `Toolchains`
-/*
-import {Command} from '../Project/Command';
-
+import {Command} from './Command';
 import {Toolchains} from './Toolchain';
 
 // This Backend API assumes that backend supporter's backend has ONE-compiler as default.
@@ -53,4 +50,3 @@ class CompilerBase implements Compiler {
 };
 
 export {Compiler, CompilerBase};
-*/
