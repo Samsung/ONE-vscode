@@ -23,6 +23,7 @@ import {Circletracer} from './Circletracer';
 import {CompilePanel} from './Compile/CompilePanel';
 import {ConfigPanel} from './Config/ConfigPanel';
 import {createStatusBarItem} from './Config/ConfigStatusBar';
+import {OneExplorer} from './OneExplorer';
 import {CodelensProvider} from './Editor/CodelensProvider';
 import {HoverProvider} from './Editor/HoverProvider';
 import {Jsontracer} from './Jsontracer';
@@ -53,6 +54,8 @@ export function activate(context: vscode.ExtensionContext) {
   console.log('one-vscode activate OK');
 
   setGlobalContext();
+
+  new OneExplorer(context);
 
   // ONE view
   let refreshCompiler = vscode.commands.registerCommand('onevscode.refresh-compiler', () => {
