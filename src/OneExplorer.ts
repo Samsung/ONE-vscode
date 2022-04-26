@@ -16,10 +16,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import {config} from 'process';
-import {stringify} from 'querystring';
 import * as vscode from 'vscode';
-import { Model } from './Circlereader/circle-analysis/circle/model';
 
 enum NodeType{
   directory,
@@ -29,23 +26,7 @@ enum NodeType{
 }
 
 interface Node {
-  type: NodeType, name: string, childs: Node[]
-}
-
-interface DirNode extends Node{
-  uri: vscode.Uri
-}
-
-interface ModelNode extends Node {
-  uri: vscode.Uri
-}
-
-interface ConfigNode extends Node {
-  uri: vscode.Uri
-  pairModel: Node
-}
-
-interface ConfigWrapperNode extends Node {
+  type: NodeType, name: string, childs: Node[], uri: vscode.Uri
 }
 
 export class OneNode extends vscode.TreeItem {
@@ -92,8 +73,8 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
   }
 
   getTreeItem(element: OneNode): vscode.TreeItem {
-    if (element.node.type === NodeType.config) {
-      element.command = { command: 'oneExplorer.openConfigFile', title: "Open File", arguments: [element.node] };
+    if (element.node.type !== NodeType.configWrapper) {
+      element.command = { command: 'oneExplorer.openFile', title: "Open File", arguments: [element.node] };
     }
     return element;
   }
@@ -147,7 +128,8 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
       }
       else if ((fstat.isFile() 
         && (fn.endsWith('.tflite')) || fn.endsWith('.onnx'))){
-        const modelNode: ModelNode = {type: NodeType.model, name: fn, childs: [], uri: vscode.Uri.file(fpath)};
+        const modelNode: Node = {type: NodeType.model, name: fn, childs: [], uri: vscode.Uri.file(fpath)};
+
         this.searchPairConfig(modelNode, dirpath);
 
         node.childs.push(modelNode);
@@ -161,8 +143,9 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
    * NOTE It assumes 1-1 relation for model and config
    * 
    * TODO(dayo) Support N-N relation
+   * TODO(dayo) Search by parsing config file's model entry
    */
-  private searchPairConfig(node: ModelNode, dirPath: string)
+  private searchPairConfig(node: Node, dirPath: string)
   {
     const dirpath = path.dirname(path.join(dirPath, node.name));
     const files = fs.readdirSync(dirpath);
@@ -179,14 +162,11 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
       if (fstat.isFile() 
       && fn.endsWith('.cfg')
       && (extSlicer(fn) === extSlicer(node.name))){
-        console.log(fpath);
-        const configWrapperNode : ConfigWrapperNode = {type: NodeType.configWrapper, name: extSlicer(fn) + ' (ONE configuration)', childs: []};
+        const configWrapperNode : Node = {type: NodeType.configWrapper, name: extSlicer(fn) + ' (ONE configuration)', childs: [], uri: vscode.Uri.file(fpath)};
         node.childs.push(configWrapperNode);
-        console.log("searchPairConfig: configWrapperNode: "+configWrapperNode);
 
-        const configNode : ConfigNode = {pairModel: node, type: NodeType.config, name: fn, childs: [], uri: vscode.Uri.file(fpath)};
+        const configNode : Node = {type: NodeType.config, name: fn, childs: [], uri: vscode.Uri.file(fpath)};
         configWrapperNode.childs.push(configNode);
-        console.log("searchPairConfig: configNode: "+configNode);
       }
     }
   }
@@ -202,10 +182,10 @@ export class OneExplorer {
     const oneTreeDataProvider = new OneTreeDataProvider(rootPath);
     context.subscriptions.push(
         vscode.window.registerTreeDataProvider('OneExplorerView', oneTreeDataProvider));
-    vscode.commands.registerCommand('oneExplorer.openConfigFile', (file) => this.openConfigFile(file));
+    vscode.commands.registerCommand('oneExplorer.openFile', (file) => this.openFile(file));
   }
 
-  private openConfigFile(configNode: ConfigNode) {
-    vscode.window.showTextDocument(configNode.uri);
+  private openFile(node: Node) {
+    vscode.window.showTextDocument(node.uri);
   }
 }
