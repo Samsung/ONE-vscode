@@ -15,11 +15,86 @@
  */
 
 import {Backend} from '../Backend/API';
+import { Toolchain, Toolchains } from '../Backend/Toolchain';
+import { Command } from '../Project/Command';
 import {Compiler, CompilerBase} from '../Backend/Compiler';
 import {Executor, ExecutorBase} from '../Backend/Executor';
+import { Version } from '../Utils/Version';
+import * as cp from 'child_process';
+import { LinkedEditingRanges } from 'vscode';
 
+interface CommandFunc {
+  (): Command;
+}
 
-class DummyCompiler extends CompilerBase {};
+class DummyCompiler extends CompilerBase {
+  constructor() {
+    super();
+    // this._toolchains = [
+    //   { 
+    //     info: { name: 'dummy-toolchain', description: 'dummy', version: new Version(1,1,0), depends: [] },
+    //     install: this.install('dummy-toolchain'),
+    //     uninstall: this.uninstall('dummy-toolchain'),
+    //     installed: this.installed('dummy-toolchain')
+    //   },
+    // ];
+    this.resolveToolchains();
+  }
+
+  private getVersionString(name: string, version: string): string {
+    return `${name}` + (version === '' ? '' : `=${version}`);
+  }
+  private install(name: string, version: string = ''): CommandFunc {
+    return () => { return new Command('apt-get install ' + this.getVersionString(name, version)); };
+  }
+  private uninstall(name: string, version: string = ''): CommandFunc {
+    return () => { return new Command('apt-get remove ' + this.getVersionString(name, version)); };
+  }
+  private installed(name: string, version: string = ''): CommandFunc {
+    return () => { return new Command('dpkg -l ' + this.getVersionString(name, version)); };
+  }
+
+  private async resolveToolchains() {
+    cp.exec('apt-cache madison triv2-toolchain-latest | head -4', (err, stdout, stderr) => {
+      if (err) {
+        console.log(`error: ${err.message}`);
+        return;
+      } else {
+        console.log(stdout);
+        const lines = stdout.split('\n').filter((p) => p.trim());
+        lines.forEach(line => {
+          console.log(line);
+          const data = line.split(' | ');
+          let ret;
+          try {
+            ret = cp.execSync(`dpkg -l ${data[0]}=${data[1]}`);
+          } catch (err) {
+            ret = 0;
+          }
+          this._toolchains.push({
+            info: { name: data[0], description: '', version: new Version(data[1]), installed: Boolean(ret), depends: [] },
+            install: this.install(data[0], data[1]),
+            uninstall: this.uninstall(data[0], data[1]),
+            installed: this.installed(data[0], data[1])
+          });
+        });
+      }
+    });
+  }
+
+  toolchains(): Toolchains {
+    return this._toolchains;
+  }
+
+  compile(cfg: string): Command {
+    let cmd = new Command('onecc');
+    cmd.push('--config');
+    cmd.push(cfg);
+    return cmd;
+  }
+
+  _toolchains: Toolchains = [];
+};
 
 class DummyExecutor extends ExecutorBase {};
 

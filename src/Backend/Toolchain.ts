@@ -29,6 +29,7 @@ interface ToolchainInfo {
   description: string;
   version: Version;        // specific version
   depends: PackageInfo[];  // too much dependens on deb
+  installed: boolean;
 }
 
 // TODO: Support `DockerToolchain` so multiple toolchains can be installed

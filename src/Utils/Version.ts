@@ -21,11 +21,19 @@ export class Version {
   patch: number;
   option: string = '';
 
-  constructor(major: number = 0, minor: number = 0, patch: number = 0, option: string = '') {
-    this.major = major;
-    this.minor = minor;
-    this.patch = patch;
-    this.option = option;
+  constructor(str?: string, major: number = 0, minor: number = 0, patch: number = 0, option: string = '') {
+    if (str === undefined) {
+      this.major = major;
+      this.minor = minor;
+      this.patch = patch;
+      this.option = option;
+    } else {
+      const strs = str.split(/[.~]/);
+      this.major = Number(strs[0]);
+      this.minor = Number(strs[1]);
+      this.patch = Number(strs[2]);
+      this.option = "".concat('~', strs[3]);
+    }
   }
 
   str(): string {
