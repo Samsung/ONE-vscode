@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-// TODO: Uncomment after `Command` and `Toolchain` are landed
-/*
-import {Command} from '../Project/Command';
-
+import {Command} from './Command';
 import {Toolchains} from './Toolchain';
 
-// NOTE: This designs by feedback from kideuk.bang
-// Tools to execute -> Exactly commands to execute tools
 interface Executor {
   // defined/available toolchains
   toolchains(): Toolchains;
 
+  // inference a job with a cmd
   inference(): Command;
 }
 
@@ -41,4 +37,3 @@ class ExecutorBase implements Executor {
 };
 
 export {Executor, ExecutorBase};
-*/
