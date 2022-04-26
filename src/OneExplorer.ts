@@ -121,8 +121,8 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
           node.childs.push(dirNode);
         }
       }
-      else if ((fstat.isFile() 
-        && (fn.endsWith('.tflite')) || fn.endsWith('.onnx'))){
+      else if (fstat.isFile() 
+        && (fn.endsWith('.pb') || fn.endsWith('.tflite') || fn.endsWith('.onnx'))) {
         const modelNode: Node = {type: NodeType.model, name: fn, childs: [], uri: vscode.Uri.file(fpath)};
 
         this.searchPairConfig(modelNode, dirpath);
