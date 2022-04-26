@@ -48,7 +48,7 @@ interface ConfigNode extends Node {
 interface ConfigWrapperNode extends Node {
 }
 
-export class ContextNode extends vscode.TreeItem {
+export class OneNode extends vscode.TreeItem {
   constructor(
       public readonly label: string,
       public readonly collapsibleState: vscode.TreeItemCollapsibleState,
@@ -73,10 +73,10 @@ export class ContextNode extends vscode.TreeItem {
   }
 }
 
-export class ContextTreeDataProvider implements vscode.TreeDataProvider<ContextNode> {
-  private _onDidChangeTreeData: vscode.EventEmitter<ContextNode|undefined|void> =
-      new vscode.EventEmitter<ContextNode|undefined|void>();
-  readonly onDidChangeTreeData: vscode.Event<ContextNode|undefined|void> =
+export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
+  private _onDidChangeTreeData: vscode.EventEmitter<OneNode|undefined|void> =
+      new vscode.EventEmitter<OneNode|undefined|void>();
+  readonly onDidChangeTreeData: vscode.Event<OneNode|undefined|void> =
       this._onDidChangeTreeData.event;
 
   private cfgMap: Node|undefined;
@@ -91,16 +91,16 @@ export class ContextTreeDataProvider implements vscode.TreeDataProvider<ContextN
     this._onDidChangeTreeData.fire();
   }
 
-  getTreeItem(element: ContextNode): vscode.TreeItem {
+  getTreeItem(element: OneNode): vscode.TreeItem {
     if (element.node.type === NodeType.config) {
-      element.command = { command: 'contextExplorer.openConfigFile', title: "Open File", arguments: [element.node] };
+      element.command = { command: 'oneExplorer.openConfigFile', title: "Open File", arguments: [element.node] };
     }
     return element;
   }
 
-  getChildren(element?: ContextNode): ContextNode[]|Thenable<ContextNode[]> {
+  getChildren(element?: OneNode): OneNode[]|Thenable<OneNode[]> {
     if (this.cfgMap === undefined) {
-      vscode.window.showInformationMessage('No context in empty workspace');
+      vscode.window.showInformationMessage('No ONE model or config in empty workspace');
       return Promise.resolve([]);
     }
 
@@ -111,16 +111,16 @@ export class ContextTreeDataProvider implements vscode.TreeDataProvider<ContextN
     }
   }
 
-  private getNode(node: Node): ContextNode[] {
-    const toContext = (node: Node): ContextNode => {
+  private getNode(node: Node): OneNode[] {
+    const toOneNode = (node: Node): OneNode => {
       if (node.childs.length > 0) {
-        return new ContextNode(node.name, vscode.TreeItemCollapsibleState.Collapsed, node);
+        return new OneNode(node.name, vscode.TreeItemCollapsibleState.Collapsed, node);
       } else {
-        return new ContextNode(node.name, vscode.TreeItemCollapsibleState.None, node);
+        return new OneNode(node.name, vscode.TreeItemCollapsibleState.None, node);
       }
     };
 
-    return node.childs.map(node => toContext(node));
+    return node.childs.map(node => toOneNode(node));
   }
 
   private getConfigMap(rootPath: vscode.Uri): Node {
@@ -199,10 +199,10 @@ export class OneExplorer {
         vscode.workspace.workspaceFolders[0].uri :
         undefined;
 
-    const contextProvider = new ContextTreeDataProvider(rootPath);
+    const oneTreeDataProvider = new OneTreeDataProvider(rootPath);
     context.subscriptions.push(
-        vscode.window.registerTreeDataProvider('OneExplorerView', contextProvider));
-    vscode.commands.registerCommand('contextExplorer.openConfigFile', (file) => this.openConfigFile(file));
+        vscode.window.registerTreeDataProvider('OneExplorerView', oneTreeDataProvider));
+    vscode.commands.registerCommand('oneExplorer.openConfigFile', (file) => this.openConfigFile(file));
   }
 
   private openConfigFile(configNode: ConfigNode) {
