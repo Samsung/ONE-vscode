@@ -36,7 +36,7 @@ export class OneNode extends vscode.TreeItem {
   ) {
     super(label, collapsibleState);
 
-    this.tooltip = `${this.label}`;
+    this.tooltip = `${this.node.uri.fsPath}`;
 
     if (node.type === NodeType.config) {
       this.iconPath = new vscode.ThemeIcon('gear');
