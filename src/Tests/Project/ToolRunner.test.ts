@@ -25,7 +25,6 @@ import {MockJob} from '../MockJob';
 suite('Project', function() {
   suite('ToolRunner', function() {
     const logger = new Logger();
-    let job = new MockJob('mockup');
     suite('@Use-onecc', function() {
       suite('#getOneccPath()', function() {
         test('returns onecc path as string', function() {
@@ -38,6 +37,7 @@ suite('Project', function() {
       });
       suite('#getRunner()', function() {
         test('returns runner as Promise<string>', function(done) {
+          let job = new MockJob('mockup');
           let toolRunner = new ToolRunner(logger);
           const oneccPath = toolRunner.getOneccPath();
           // oneccPath could be string or undefined. Avoid compiling error
@@ -45,8 +45,7 @@ suite('Project', function() {
             assert.fail('oneccPath should be string type');
           }
           const workspaceRoot: string = obtainWorkspaceRoot();
-          const runner =
-              toolRunner.getRunner(job.name, oneccPath, job.tool, job.toolArgs, workspaceRoot);
+          const runner = toolRunner.getRunner(job.name, oneccPath, job.toolArgs, workspaceRoot);
           assert.isNotNull(runner);
           runner
               .then(function(str) {
