@@ -91,7 +91,7 @@ function main() {
   const outputPathCodicon = document.getElementById('outputPathCodicon');
   outputPathCodicon.addEventListener('click', clickOutputPathCodicon);
 
-  const inputModelSearchCodicon = document.getElementById('inputModelSearch')
+  const inputModelSearchCodicon = document.getElementById('inputModelSearch');
   inputModelSearchCodicon.addEventListener('click', inputModelSearchClick);
 
   const outputPathSearchCodicon = document.getElementById('outputPathSearch');
@@ -101,7 +101,7 @@ function main() {
   modelTypeRadio.addEventListener('click', modelTypeClick);
 
   const foldButton = document.getElementById('foldAdvancedOptions');
-  foldButton.addEventListener('click', clickFoldAdvencedOptions);
+  foldButton.addEventListener('click', clickFoldAdvancedOptions);
 
   const unfoldButton = document.getElementById('unfoldAdvancedOptions');
   unfoldButton.addEventListener('click', clickUnfoldAdvencedOptions);
@@ -291,6 +291,7 @@ function modelTypeClick() {
       return;
     case 'onnx':
       ONNXConverterOptions.style.display = 'block';
+      return;
     default:
       return;
   }
@@ -306,7 +307,7 @@ function clickUnfoldAdvencedOptions() {
   unfoldButton.style.display = 'none';
 }
 
-function clickFoldAdvencedOptions() {
+function clickFoldAdvancedOptions() {
   const foldButton = document.getElementById('foldAdvancedOptions');
   const unfoldButton = document.getElementById('unfoldAdvancedOptions');
   const advancedOptions = document.getElementById('advancedOptions');
