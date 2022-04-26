@@ -123,7 +123,12 @@ function check_json_files()
   for f in ${FILES_TO_CHECK[@]}; do
     # File extension to check
     if [[ ${f} == +(*.json) ]]; then
-      FILES_TO_CHECK_JSON+=("${f}")
+      FILES_TO_CHECK_DIR="$(dirname "${f}")"
+      # skip if ".FORMATDENY" exist
+      JQIGNORE_DIR=${FILES_TO_CHECK_DIR}/.FORMATDENY
+      if [[ ! -f ${JQIGNORE_DIR} ]]; then
+        FILES_TO_CHECK_JSON+=("${f}")
+      fi
     fi
   done
   
