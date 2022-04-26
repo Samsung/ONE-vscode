@@ -49,7 +49,7 @@ export class OneNode extends vscode.TreeItem {
       this.iconPath = vscode.ThemeIcon.File;
     }
     else if (node.type === NodeType.configWrapper) {
-      this.iconPath = new vscode.ThemeIcon('symbol-structure');
+      this.iconPath = new vscode.ThemeIcon('output');
     }
   }
 }
