@@ -25,7 +25,10 @@ enum NodeType{
 }
 
 interface Node {
-  type: NodeType, name: string, childs: Node[], uri: vscode.Uri
+  type: NodeType;
+  name: string;
+  childNodes: Node[];
+  uri: vscode.Uri;
 }
 
 export class OneNode extends vscode.TreeItem {
@@ -89,18 +92,18 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
 
   private getNode(node: Node): OneNode[] {
     const toOneNode = (node: Node): OneNode => {
-      if (node.childs.length > 0) {
+      if (node.childNodes.length > 0) {
         return new OneNode(node.name, vscode.TreeItemCollapsibleState.Collapsed, node);
       } else {
         return new OneNode(node.name, vscode.TreeItemCollapsibleState.None, node);
       }
     };
 
-    return node.childs.map(node => toOneNode(node));
+    return node.childNodes.map(node => toOneNode(node));
   }
 
   private getConfigMap(rootPath: vscode.Uri): Node {
-    const node = {type: NodeType.directory, name: path.parse(rootPath.fsPath).base, dir: true, childs: [], uri: rootPath};
+    const node = {type: NodeType.directory, name: path.parse(rootPath.fsPath).base, dir: true, childNodes: [], uri: rootPath};
     this.searchConfigs(node, path.dirname(rootPath.fsPath));
     return node;
   }
@@ -114,20 +117,20 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
       const fstat = fs.statSync(fpath);
 
       if (fstat.isDirectory()) {
-        const dirNode = {type: NodeType.directory, name: fn, dir: true, childs: [], uri: vscode.Uri.file(fpath)};
+        const dirNode = {type: NodeType.directory, name: fn, dir: true, childNodes: [], uri: vscode.Uri.file(fpath)};
 
         this.searchConfigs(dirNode, dirpath);
-        if (dirNode.childs.length > 0) {
-          node.childs.push(dirNode);
+        if (dirNode.childNodes.length > 0) {
+          node.childNodes.push(dirNode);
         }
       }
       else if (fstat.isFile() 
         && (fn.endsWith('.pb') || fn.endsWith('.tflite') || fn.endsWith('.onnx'))) {
-        const modelNode: Node = {type: NodeType.model, name: fn, childs: [], uri: vscode.Uri.file(fpath)};
+        const modelNode: Node = {type: NodeType.model, name: fn, childNodes: [], uri: vscode.Uri.file(fpath)};
 
         this.searchPairConfig(modelNode, dirpath);
 
-        node.childs.push(modelNode);
+        node.childNodes.push(modelNode);
       }
     }
   }
@@ -157,8 +160,8 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
       if (fstat.isFile() 
       && fn.endsWith('.cfg')
       && (extSlicer(fn) === extSlicer(node.name))){
-        const configNode : Node = {type: NodeType.config, name: fn, childs: [], uri: vscode.Uri.file(fpath)};
-        node.childs.push(configNode);
+        const configNode : Node = {type: NodeType.config, name: fn, childNodes: [], uri: vscode.Uri.file(fpath)};
+        node.childNodes.push(configNode);
       }
     }
   }
