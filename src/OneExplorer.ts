@@ -21,8 +21,7 @@ import * as vscode from 'vscode';
 enum NodeType{
   directory,
   model,
-  config,
-  configWrapper
+  config
 }
 
 interface Node {
@@ -48,9 +47,6 @@ export class OneNode extends vscode.TreeItem {
     else if (node.type === NodeType.model) {
       this.iconPath = vscode.ThemeIcon.File;
     }
-    else if (node.type === NodeType.configWrapper) {
-      this.iconPath = new vscode.ThemeIcon('output');
-    }
   }
 }
 
@@ -74,9 +70,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
   }
 
   getTreeItem(element: OneNode): vscode.TreeItem {
-    if (element.node.type !== NodeType.configWrapper) {
-      element.command = { command: 'oneExplorer.openFile', title: "Open File", arguments: [element.node] };
-    }
+    element.command = { command: 'oneExplorer.openFile', title: "Open File", arguments: [element.node] };
     return element;
   }
 
@@ -163,11 +157,8 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
       if (fstat.isFile() 
       && fn.endsWith('.cfg')
       && (extSlicer(fn) === extSlicer(node.name))){
-        const configWrapperNode : Node = {type: NodeType.configWrapper, name: extSlicer(fn) + ' (ONE configuration)', childs: [], uri: vscode.Uri.file(fpath)};
-        node.childs.push(configWrapperNode);
-
         const configNode : Node = {type: NodeType.config, name: fn, childs: [], uri: vscode.Uri.file(fpath)};
-        configWrapperNode.childs.push(configNode);
+        node.childs.push(configNode);
       }
     }
   }
