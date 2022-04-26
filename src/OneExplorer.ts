@@ -192,7 +192,7 @@ export class ContextTreeDataProvider implements vscode.TreeDataProvider<ContextN
   }
 }
 
-export class ContextExplorer {
+export class OneExplorer {
   constructor(context: vscode.ExtensionContext) {
     const rootPath =
         (vscode.workspace.workspaceFolders && (vscode.workspace.workspaceFolders.length > 0)) ?
@@ -201,7 +201,7 @@ export class ContextExplorer {
 
     const contextProvider = new ContextTreeDataProvider(rootPath);
     context.subscriptions.push(
-        vscode.window.registerTreeDataProvider('ContextExplorerView', contextProvider));
+        vscode.window.registerTreeDataProvider('OneExplorerView', contextProvider));
     vscode.commands.registerCommand('contextExplorer.openConfigFile', (file) => this.openConfigFile(file));
   }
 
