@@ -15,7 +15,8 @@
  */
 
 import * as vscode from 'vscode';
-import { gCompileEnvMap } from './Compile/CompileEnv';
+import { Toolchain } from './Backend/Toolchain';
+import { gCompileEnvMap, CompileEnv } from './Compile/CompileEnv';
 import { MultiStepInput } from './Utils/MultiStepInput';
 
 export async function installQuickInput(context: vscode.ExtensionContext) {
@@ -26,6 +27,8 @@ export async function installQuickInput(context: vscode.ExtensionContext) {
     totalSteps: number;
     backend: vscode.QuickPickItem;
     version: vscode.QuickPickItem;
+    compileEnv: CompileEnv;
+    toolchain: Toolchain;
   }
 
   async function collectInputs() {
@@ -46,14 +49,15 @@ export async function installQuickInput(context: vscode.ExtensionContext) {
       items: backendGroups,
       shouldResume: shouldResume
     });
+    state.compileEnv = gCompileEnvMap[state.backend.label];
     return (input: MultiStepInput) => pickVersion(input, state);
   }
 
   async function pickVersion(input: MultiStepInput, state: Partial<State>) {
-    if (state.backend === undefined) {
+    if (state.compileEnv === undefined) {
       throw Error('Backend is undefined.');
     }
-    const toolchains = gCompileEnvMap[state.backend.label].listAvailable();
+    const toolchains = state.compileEnv.listAvailable();
     const versions = toolchains.map((value) => value.info.version.str());
     const versionGroups: vscode.QuickPickItem[] = versions.map((label) => ({label}));
     state.version = await input.showQuickPick({
@@ -64,6 +68,7 @@ export async function installQuickInput(context: vscode.ExtensionContext) {
       items: versionGroups,
       shouldResume: shouldResume
     });
+    state.toolchain = toolchains[versions.indexOf(state.version.label)];
   }
 
   function shouldResume() {
@@ -75,4 +80,5 @@ export async function installQuickInput(context: vscode.ExtensionContext) {
 
   const state = await collectInputs();
   console.log(`Backend: ${state.backend.label}-${state.version.label}`);
+  state.compileEnv.install(state.toolchain);
 }

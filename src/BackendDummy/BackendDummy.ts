@@ -60,10 +60,8 @@ class DummyCompiler extends CompilerBase {
         console.log(`error: ${err.message}`);
         return;
       } else {
-        console.log(stdout);
         const lines = stdout.split('\n').filter((p) => p.trim());
         lines.forEach(line => {
-          console.log(line);
           const data = line.split(' | ');
           let ret;
           try {
