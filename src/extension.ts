@@ -26,6 +26,7 @@ import {createStatusBarItem} from './Config/ConfigStatusBar';
 import {CodelensProvider} from './Editor/CodelensProvider';
 import {HoverProvider} from './Editor/HoverProvider';
 import {Jsontracer} from './Jsontracer';
+import {OneExplorer} from './OneExplorer';
 import {Project} from './Project';
 import {Utils} from './Utils';
 
@@ -53,6 +54,8 @@ export function activate(context: vscode.ExtensionContext) {
   console.log('one-vscode activate OK');
 
   setGlobalContext();
+
+  new OneExplorer(context);
 
   // ONE view
   let refreshCompiler = vscode.commands.registerCommand('onevscode.refresh-compiler', () => {
