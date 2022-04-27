@@ -16,15 +16,21 @@
 
 import {assert} from 'chai';
 
-import {Backend, CompilerToolchains} from '../../Backend/API';
+import {Backend} from '../../Backend/API';
 import {backendRegistrationApi, globalBackendMap} from '../../Backend/Backend';
+import {Compiler, CompilerBase} from '../../Backend/Compiler';
+import {Executor, ExecutorBase} from '../../Backend/Executor';
 
 class BackendMockup implements Backend {
   name(): string {
     return 'Mockup';
   }
-  getInstalledCompilerToolchain(): CompilerToolchains {
-    return new CompilerToolchains();
+  compiler(): Compiler|undefined {
+    return new CompilerBase();
+  }
+
+  executor(): Executor|undefined {
+    return new ExecutorBase();
   }
 };
 
