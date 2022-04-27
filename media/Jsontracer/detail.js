@@ -76,7 +76,7 @@ export function renderSingleDetail(data) {
       const setData = document.querySelector('.set-data');
       const displayTimeUnit = setData.dataset['displayTimeUnit'];
       li.innerText = `${key} : ${parseInt(data[key] * timeUnit[displayTimeUnit] * 1000) / 1000} ${
-          displayTimeUnit}`;
+        displayTimeUnit}`;
     } else {
       // show others
       li.innerText = `${key} : ${data[key]}`;
@@ -196,7 +196,7 @@ function renderTds(value) {
     const durAvg = document.createElement('td');
     durAvg.innerText =
         `${Math.round(ele['dur'] * timeUnit[displayTimeUnit] * 1000) / 1000 / ele['occurrences']} ${
-            displayTimeUnit}`;
+          displayTimeUnit}`;
 
     const occurrences = document.createElement('td');
     occurrences.innerText = ele['occurrences'];
