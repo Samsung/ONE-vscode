@@ -25,7 +25,8 @@ const fileFormatsToCheck = "ts,js,css,html";
 
 const ignorePathList = [
     "**/node_modules/**",
-    "**/media/Circletracer/external/**"
+    "**/media/Circletracer/external/**",
+    "**/media/CircleGraph/external/**"
 ];
 
 glob("**/*.{" + fileFormatsToCheck + "}",
