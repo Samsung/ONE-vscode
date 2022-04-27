@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import {Compiler} from './Compiler';
+import {Executor} from './Executor';
+
 /**
  * This file defines common API exposed by backend extension.
  *
@@ -23,41 +26,6 @@
  *
  * TODO ONE-vscode and backend extensions have copies of this file. Check if this is really OK.
  */
-
-/**
- * Class containing information of compiler toolchains
- */
-class CompilerToolchains {
-  /* TODO Implement */
-};
-
-/**
- * Interface of backend extension
- */
-interface Backend {
-  /**
-   * Return name of backend
-   */
-  name(): string;
-
-  //
-  // Compiler toolchain API
-  //
-
-  /**
-   * Search already-installed compiler toolchain in local desktop and remote server
-   */
-  getInstalledCompilerToolchain(): CompilerToolchains;
-
-  // TODO Define more functions
-}
-
-export {Backend, CompilerToolchains};
-
-// TODO: Uncomment below code and remove above code after `Compiler` and `Executor` are introduced
-/*
-import {Compiler} from './Compiler';
-import {Executor} from './Executor';
 
 // ** The scope of Backend is defined by each backend supporter **
 // A kind of proxy. Backend doesn't know where it-self is (local? remote? it doesn't know.)
@@ -71,4 +39,3 @@ export interface Backend {
   // executor specs by being filled by impl
   executor(): Executor|undefined;
 }
-*/
