@@ -17,43 +17,113 @@
 import {assert} from 'chai';
 
 import {Command} from '../../Backend/Command';
+import {Compiler, CompilerBase} from '../../Backend/Compiler';
+import {Toolchains} from '../../Backend/Toolchain';
+import {PackageInfo, ToolchainInfo} from '../../Backend/Toolchain';
+import {DebianArch, DebianRepo, DebianToolchain} from '../../Backend/ToolchainImpl/DebianToolchain';
+import {Version} from '../../Backend/Version';
 import {CompileEnv} from '../../Compile/CompileEnv';
+import {Logger} from '../../Utils/Logger';
+
+class MockCompiler extends CompilerBase {
+  // TODO: What toolchain is necessary as tests?
+  installedToolchain: DebianToolchain;
+  availableToolchain: DebianToolchain;
+  ts: Toolchains;
+
+  constructor() {
+    super();
+    this.installedToolchain = new DebianToolchain(new ToolchainInfo('npm', 'npm'));
+    this.availableToolchain = new DebianToolchain(new ToolchainInfo('nodejs', 'nodejs'));
+    this.ts = new Toolchains();
+    this.ts.push(this.installedToolchain);
+    this.ts.push(this.availableToolchain);
+  }
+  toolchains(): Toolchains {
+    return this.ts;
+  }
+};
 
 suite('Compile', function() {
   suite('CompileEnv', function() {
-    suite('#confirmInstalled()', function() {
-      test('', function() {
+    const K_CLEANUP: string = 'cleanup';
+    const logger = new Logger();
+    const compiler = new MockCompiler();
 
+    suite('#constructor()', function() {
+      test('is constructed with params', function() {
+        let env = new CompileEnv(logger, compiler);
+        assert.equal(env.installed, undefined);
+        assert.strictEqual(env.compiler, compiler);
       });
     });
 
     suite('#listAvailable()', function() {
-      test('', function() {
-
+      test('lists available toolchains', function() {
+        let env = new CompileEnv(logger, compiler);
+        let toolchains = env.listAvailable();
+        assert.strictEqual(toolchains, compiler.toolchains());
       });
     });
 
-    suite('#listInstalled()', function() {
-      test('', function() {
-
+    // NOTE: use K_CLEANUP event in JobRunner because of the timing when building jobs are done.
+    suite('@Use-onecc', function() {
+      suite('#confirmInstalled()', function() {
+        test('confirms the toolchain is installed', function(done) {
+          let env = new CompileEnv(logger, compiler);
+          assert.equal(env.installed, undefined);
+          env.confirmInstalled();
+          env.workFlow.jobRunner.on(K_CLEANUP, function() {
+            assert.notEqual(env.installed, undefined);
+            done();
+          });
+        });
       });
-    });
 
-    suite('#install()', function() {
-      test('', function() {
-
+      suite('#listInstalled()', function() {
+        test('lists installed toolchain', function(done) {
+          let env = new CompileEnv(logger, compiler);
+          env.confirmInstalled();
+          env.workFlow.jobRunner.on(K_CLEANUP, function() {
+            assert.notEqual(env.installed, undefined);
+            let toolchain = env.listInstalled();
+            assert.strictEqual(toolchain, compiler.installedToolchain);
+            done();
+          });
+        });
       });
-    });
 
-    suite('#uninstall()', function() {
-      test('', function() {
-
+      suite('#install()', function() {
+        test('installes the toolchain', function(done) {
+          let env = new CompileEnv(logger, compiler);
+          env.install(compiler.availableToolchain);
+          env.workFlow.jobRunner.on(K_CLEANUP, function() {
+            assert.notEqual(env.installed, undefined);
+            let toolchain = env.listInstalled();
+            assert.strictEqual(toolchain, compiler.installedToolchain);
+            done();
+          });
+        });
       });
-    });
 
-    suite('#compile()', function() {
-      test('', function() {
+      suite('#uninstall()', function() {
+        test('uninstalles the toolchain', function(done) {
+          let env = new CompileEnv(logger, compiler);
+          env.uninstall(compiler.installedToolchain);
+          env.workFlow.jobRunner.on(K_CLEANUP, function() {
+            assert.equal(env.installed, undefined);
+            done();
+          });
+        });
+      });
 
+      suite('#compile()', function() {
+        test('compiles model file with cfg file', function(done) {
+          // TODO
+          // 1. Install toolchain
+          // 2. After installing,
+          // 3. Does compile
+        });
       });
     });
   });
