@@ -42,7 +42,7 @@ export class JobConfig extends JobBase {
 
   public get toolArgs() {
     let args = new ToolArgs();
-    args.concat(this.cmd.strs().slice(1));
+    this.cmd.strs().slice(1).map(item => args.push(item));
     return args;
   }
 };

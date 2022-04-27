@@ -29,7 +29,7 @@ class JobToolchain extends JobBase {
     this.cmd = cmd;
 
     assert(this.jobType >= Job.Type.tInstall && this.jobType <= Job.Type.tInstalled);
-    assert(this.cmd.strs.length >= 3);
+    assert(this.cmd.strs().length >= 3);
   }
 
   public get valid() {

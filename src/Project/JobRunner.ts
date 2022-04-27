@@ -104,7 +104,7 @@ export class JobRunner extends EventEmitter {
       this.logger.outputWithTime('Finish Running ONE compilers.');
       this.emit(K_CLEANUP);
       return;
-    } else if (job.jobType >= Job.Type.tInstall && job.jobType >= Job.Type.tInstalled) {
+    } else if (job.jobType >= Job.Type.tInstall && job.jobType <= Job.Type.tInstalled) {
       this.invokeToolchainJobs(job, this.cwd);
     } else {
       this.invoke(job, this.cwd);

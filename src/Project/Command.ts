@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-export class Command extends Array<string> {
-  readonly cmd: string;
-  options?: string[];
-
+class Command extends Array<string> {
   constructor(cmd: string, options?: string[]) {
     super();
-    this.cmd = cmd;
-    this.options = options;
+    this.push(cmd);
+    if (options !== undefined) {
+      options.forEach(option => {
+        this.push(option);
+      });
+    }
   }
 
   strs(): string[] {
-    let ret: string[] = [this.cmd];
-    if (this.options !== undefined) {
-      ret.concat(this.options);
-    }
-    return ret;
+    return this;
   }
 
   str(): string {
     return this.strs().join(' ');
   }
 };
+
+export {Command};

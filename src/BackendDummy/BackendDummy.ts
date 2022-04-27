@@ -45,13 +45,13 @@ class DummyCompiler extends CompilerBase {
     return `${name}` + (version === '' ? '' : `=${version}`);
   }
   private install(name: string, version: string = ''): CommandFunc {
-    return () => { return new Command('apt-get install ' + this.getVersionString(name, version)); };
+    return () => { return new Command('apt-get', ['install', this.getVersionString(name, version)]); };
   }
   private uninstall(name: string, version: string = ''): CommandFunc {
-    return () => { return new Command('apt-get remove ' + this.getVersionString(name, version)); };
+    return () => { return new Command('apt-get', ['remove', this.getVersionString(name, version)]); };
   }
   private installed(name: string, version: string = ''): CommandFunc {
-    return () => { return new Command('dpkg -l ' + this.getVersionString(name, version)); };
+    return () => { return new Command('dpkg', ['-l', this.getVersionString(name, version)]); };
   }
 
   private async resolveToolchains() {
