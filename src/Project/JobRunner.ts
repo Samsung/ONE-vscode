@@ -44,28 +44,24 @@ export class JobRunner extends EventEmitter {
   }
 
   private invoke(job: Job, path: string) {
-    const onecc = this.toolRunner.getOneccPath();
-    if (onecc === undefined) {
-      Balloon.error('Failed to find onecc: ' + onecc);
-      this.logger.outputLine('Failed to find tool: ' + onecc);
-      this.emit(K_CLEANUP);
-      return;
-    }
-    console.log('Found onecc: ', onecc);
-
-    // This is tricky. Now old jobs like `JobQuantize` are
-    // tool: quantize, toolArgs: options
-    // and the `tool` & `toolArgs` are only getter(not setter.)
-    // So the `quantize` is shifted to new ToolArgs.
-    // This trick will be disappeared after Old jobs are removed
+    let tool: string = job.tool;
     let toolArgs: ToolArgs = job.toolArgs;
-    toolArgs.unshift(job.tool);
-
     let success = job.successCallback;
     let failure = job.failureCallback;
 
-    console.log('Run tool: ', onecc, ' args: ', toolArgs, ' cwd: ', path);
-    const runner = this.toolRunner.getRunner(job.name, onecc, toolArgs, path);
+    // TODO: Remove this and deprecate old Jobs like JobQuantize
+    if (job.jobType >= Job.Type.tImportTF && job.jobType <= Job.Type.tCodegen) {
+      // This is tricky. Now old jobs like `JobQuantize` are
+      // tool: quantize, toolArgs: options
+      // and the `tool` & `toolArgs` are only getter(not setter.)
+      // So the `quantize` is shifted to new ToolArgs.
+      // This trick will be disappeared after Old jobs are removed
+      toolArgs.unshift(tool);
+      tool = 'onecc';
+    }
+
+    console.log('Run tool: ', tool, ' args: ', toolArgs, ' cwd: ', path);
+    const runner = this.toolRunner.getRunner(job.name, tool, toolArgs, path);
 
     runner
         .then(() => {
