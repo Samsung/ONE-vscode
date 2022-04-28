@@ -20,7 +20,7 @@ import {Balloon} from '../Utils/Balloon';
 import * as helpers from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
-import {BuilderCfgFile} from './BuilderCfgFile';
+import {BuilderCfgFile} from './BuilderCfgFile.new';
 import {BuilderJob} from './BuilderJob';
 import {Job} from './Job';
 import {WorkFlow} from './WorkFlow';
