@@ -57,6 +57,11 @@ export function activate(context: vscode.ExtensionContext) {
 
   new OneExplorer(context);
 
+  let refreshOneExplorer = vscode.commands.registerCommand('refresh-one-explorer', () => {
+    console.log('one-explorer.refresh: NYI');
+  });
+  context.subscriptions.push(refreshOneExplorer);
+
   // ONE view
   let refreshCompiler = vscode.commands.registerCommand('onevscode.refresh-compiler', () => {
     console.log('refresh-compiler: NYI');

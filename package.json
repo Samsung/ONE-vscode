@@ -62,6 +62,14 @@
     ],
     "commands": [
       {
+        "command": "onevscode.refresh-one-explorer",
+        "title": "Refresh",
+        "icon": {
+          "light": "media/icon/light/refresh.svg",
+          "dark": "media/icon/dark/refresh.svg"
+        }
+      },
+      {
         "command": "onevscode.flip-cfg-to-gui",
         "title": "Open cfg in GUI",
         "category": "ONE",
@@ -130,6 +138,11 @@
         }
       ],
       "view/title": [
+        {
+          "command": "onevscode.refresh-one-explorer",
+          "when": "view == OneExplorerView",
+          "group": "navigation"
+        },
         {
           "command": "onevscode.refresh-compiler",
           "when": "view == CompilerToolchainView",
