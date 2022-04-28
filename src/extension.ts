@@ -30,6 +30,9 @@ import {OneExplorer} from './OneExplorer';
 import {Project} from './Project';
 import {Utils} from './Utils';
 
+import {selectBackendExecutor} from './Execute/quickPick';
+import { runInferenceQuickInput } from './executeQuickInput';
+
 /**
  * Set vscode context that is used globally
  */
@@ -66,6 +69,13 @@ export function activate(context: vscode.ExtensionContext) {
     console.log('install-compiler: NYI');
   });
   context.subscriptions.push(installCompiler);
+
+  let inferenceCommand = vscode.commands.registerCommand('onevscode.infer-model', () => {
+    console.log('one infer model...');
+    // selectBackendExecutor(context);
+    runInferenceQuickInput(context);
+  });
+  context.subscriptions.push(inferenceCommand);
 
   // show compilation page
   let compileWebView = vscode.commands.registerCommand('onevscode.show-compile-webview', () => {

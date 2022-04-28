@@ -16,6 +16,7 @@
 
 const assert = require('assert');
 import {Backend} from './API';
+import {DummyBackend} from '../BackendDummy/BackendDummy';
 
 /**
  * Interface of backend map
@@ -37,6 +38,8 @@ function backendRegistrationApi() {
       console.log(`Backend ${backendName} was registered into ONE-vscode.`);
     }
   };
+
+  registrationAPI.registerBackend(new DummyBackend());
 
   return registrationAPI;
 }

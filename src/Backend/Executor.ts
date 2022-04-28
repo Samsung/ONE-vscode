@@ -18,20 +18,28 @@ import {Command} from './Command';
 import {Toolchains} from './Toolchain';
 
 interface Executor {
+  // exetensions of executable files
+  getExecutableExt(): string[];
+
   // defined/available toolchains
   toolchains(): Toolchains;
 
   // inference a job with a cmd
-  inference(): Command;
+  // TODO: use cfg path to run onecc after one-infer landed
+  runInference(_modelPath: string, _options?: string[]): Command;
 }
 
 // General excutor uses onecc so default jobs can be used
 class ExecutorBase implements Executor {
+  getExecutableExt(): string[] {
+    throw Error('Invalid toolchains call');
+  }
+
   toolchains(): Toolchains {
     throw Error('Invalid toolchains call');
   }
 
-  inference(): Command {
+  runInference(_modelPath: string, _options?: string[]): Command {
     throw Error('Invalid inference call');
   }
 };
