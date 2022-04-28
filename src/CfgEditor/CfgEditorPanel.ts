@@ -158,23 +158,23 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
               <span>&nbsp;</span>
               <span class="codicon codicon-arrow-right"></span>
               <span>&nbsp;</span>
-              <vscode-button id="importEnabled" appearance="primary" style="display:none">Import</vscode-button>
-              <vscode-button id="importDisabled" appearance="secondary">Import</vscode-button>
+              <vscode-button id="ImportEnabled" appearance="primary" style="display:none">Import</vscode-button>
+              <vscode-button id="ImportDisabled" appearance="secondary">Import</vscode-button>
               <span>&nbsp;</span>
               <span class="codicon codicon-arrow-right"></span>
               <span>&nbsp;</span>
-              <vscode-button id="optimizeEnabled" appearance="primary" style="display:none">Optimize</vscode-button>
-              <vscode-button id="optimizeDisabled" appearance="secondary">Optimize</vscode-button>
+              <vscode-button id="OptimizeEnabled" appearance="primary" style="display:none">Optimize</vscode-button>
+              <vscode-button id="OptimizeDisabled" appearance="secondary">Optimize</vscode-button>
               <span>&nbsp;</span>
               <span class="codicon codicon-arrow-right"></span>
               <span>&nbsp;</span>
-              <vscode-button id="quantizeEnabled" appearance="primary" style="display:none">Quantize</vscode-button>
-              <vscode-button id="quantizeDisabled" appearance="secondary">Quantize</vscode-button>
+              <vscode-button id="QuantizeEnabled" appearance="primary" style="display:none">Quantize</vscode-button>
+              <vscode-button id="QuantizeDisabled" appearance="secondary">Quantize</vscode-button>
               <span>&nbsp;</span>
               <span class="codicon codicon-arrow-right"></span>
               <span>&nbsp;</span>
-              <vscode-button id="codegenEnabled" appearance="primary" style="display:none">Codegen</vscode-button>
-              <vscode-button id="codegenDisabled" appearance="secondary">Codegen</vscode-button>
+              <vscode-button id="CodegenEnabled" appearance="primary" style="display:none">Codegen</vscode-button>
+              <vscode-button id="CodegenDisabled" appearance="secondary">Codegen</vscode-button>
               <span>&nbsp;</span>
               <span class="codicon codicon-arrow-right"></span>
               <span>&nbsp;</span>
@@ -188,8 +188,8 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
               <!-- Placeholder for display -->
             </div>
             <div class="leftInlineElement">
-              <vscode-button id="profileEnabled" appearance="primary" style="display:none">Profile</vscode-button>
-              <vscode-button id="profileDisabled" appearance="secondary">Profile</vscode-button>
+              <vscode-button id="ProfileEnabled" appearance="primary" style="display:none">Profile</vscode-button>
+              <vscode-button id="ProfileDisabled" appearance="secondary">Profile</vscode-button>
               <span>&nbsp;&nbsp;</span>
               <vscode-button id="packEnabled" appearance="primary" style="display:none" disabled>Pack</vscode-button>
               <vscode-button id="packDisabled" appearance="secondary" disabled>Pack</vscode-button>
@@ -231,7 +231,7 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
               <span id="unfoldAdvancedOptions" class="codicon codicon-expand-all" style="cursor:pointer"></span>
               <span id="foldAdvancedOptions" class="codicon codicon-collapse-all" style="display:none; cursor:pointer"></span>
             </div>
-            <vscode-panels id="advancedOptions" activeid="tabImport" style="display:none">
+            <vscode-panels id="AdvancedOptions" activeid="tabImport" style="display:none">
               <vscode-panel-tab id="tabImport">Import</vscode-panel-tab>
               <vscode-panel-tab id="tabOptimize">Optimize</vscode-panel-tab>
               <vscode-panel-tab id="tabQuantize">Quantize</vscode-panel-tab>
@@ -242,28 +242,28 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
                   <div id="ImportInitialState">
                     Select import model type first.
                   </div>
-                  <div id="TFConverterOptions" style="display:none">
-                    <div id="TFConverterVersion" class="vscode-panel-view">
-                      <vscode-radio-group id="converterVersionRadio">
+                  <div id="PBConverterOptions" style="display:none">
+                    <div id="PBConverterVersion" class="vscode-panel-view">
+                      <vscode-radio-group id="PBConverterVersionRadio">
                         <label slot="label">Converter Version</label>
                         <vscode-radio value="v1">v1</vscode-radio>
                         <vscode-radio value="v2">v2</vscode-radio>
                       </vscode-radio-group>
                     </div>
-                    <div id="TFInputArrays" class="vscode-panel-view">
-                      <vscode-text-field startIcon=true size=50 placeholder="semi-colon separated input names">
+                    <div class="vscode-panel-view">
+                      <vscode-text-field id="PBInputArrays" startIcon=true size=50 placeholder="semi-colon separated input names">
                         Input Arrays
                         <span slot="end" class="codicon codicon-question" style="cursor: pointer"></span>
                       </vscode-text-field>
                     </div>
-                    <div id="TFOutputArrays" class="vscode-panel-view">
-                      <vscode-text-field startIcon=true size=50 placeholder="semi-colon separated output names">
+                    <div class="vscode-panel-view">
+                      <vscode-text-field id="PBOutputArrays" startIcon=true size=50 placeholder="semi-colon separated output names">
                         Output Arrays
                         <span slot="end" class="codicon codicon-question" style="cursor: pointer"></span>
                       </vscode-text-field>
                     </div>
-                    <div id="TFInputShapes" class="vscode-panel-view">
-                      <vscode-text-field startIcon=true size=50 placeholder="semi-colon separated input shapes (e.g. 1,299,299,3;1,1001)">
+                    <div class="vscode-panel-view">
+                      <vscode-text-field id="PBInputShapes" startIcon=true size=50 placeholder="semi-colon separated input shapes (e.g. 1,299,299,3;1,1001)">
                         Input Shapes (Optional)
                         <span slot="end" class="codicon codicon-question" style="cursor: pointer"></span>
                       </vscode-text-field>
