@@ -86,6 +86,11 @@
         "_comment": "Call this when compiling compilable model(e.g., *.tflite, *.onnx, etc.)"
       },
       {
+        "command": "onevscode.run-cfg",
+        "title": "Run",
+        "category": "ONE"
+      },
+      {
         "command": "onevscode.refresh-compiler",
         "title": "Refresh",
         "category": "ONE",
@@ -160,6 +165,13 @@
         {
           "command": "onevscode.register-device",
           "when": "view == TargetDevice",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "onevscode.run-cfg",
+          "when": "view == OneExplorerView && resourceExtname == .cfg",
           "group": "navigation"
         }
       ],

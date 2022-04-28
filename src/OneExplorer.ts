@@ -18,6 +18,12 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 
+import {ToolArgs} from './Project/ToolArgs';
+import {ToolRunner} from './Project/ToolRunner';
+import {Logger} from './Utils/Logger';
+
+const which = require('which');
+
 enum NodeType {
   directory,
   model,
@@ -194,4 +200,36 @@ export class OneExplorer {
     vscode.commands.registerCommand(
         'onevscode.refresh-one-explorer', () => oneTreeDataProvider.refresh());
   }
+}
+
+//
+// menu handler
+//
+
+export {handleRunOnecc};
+
+/**
+ * Function called when onevscode.run-cfg is called (when user clicks 'Run' on cfg file).
+ * @param cfgUri uri of cfg file
+ */
+function handleRunOnecc(cfgUri: vscode.Uri, logger: Logger) {
+  const toolRunner = new ToolRunner(logger);
+
+  // TODO Refine later
+  const resolve = function(value: string) {
+    console.log('Running onecc was successful!');
+  };
+  const reject = function(value: string) {
+    console.log('Running onecc failed!');
+  };
+
+  const toolArgs = new ToolArgs('-C', cfgUri.fsPath);
+  const cwd = path.dirname(cfgUri.fsPath);
+  let oneccPath = toolRunner.getOneccPath();
+  if (oneccPath === undefined) {
+    throw new Error('Cannot find installed onecc');
+  }
+
+  const runner = toolRunner.getRunner('onecc', oneccPath, toolArgs, cwd);
+  runner.then(resolve).catch(reject);
 }

@@ -26,7 +26,7 @@ import {createStatusBarItem} from './Config/ConfigStatusBar';
 import {CodelensProvider} from './Editor/CodelensProvider';
 import {HoverProvider} from './Editor/HoverProvider';
 import {Jsontracer} from './Jsontracer';
-import {OneExplorer} from './OneExplorer';
+import {handleRunOnecc, OneExplorer, OneNode} from './OneExplorer';
 import {Project} from './Project';
 import {Utils} from './Utils';
 
@@ -52,6 +52,8 @@ function setGlobalContext() {
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('one-vscode activate OK');
+
+  let logger = new Utils.Logger();
 
   setGlobalContext();
 
@@ -79,9 +81,14 @@ export function activate(context: vscode.ExtensionContext) {
   });
   context.subscriptions.push(compileWebView);
 
+  // run onecc with cfg
+  let runCfgDisposal = vscode.commands.registerCommand('onevscode.run-cfg', (oneNode: OneNode) => {
+    handleRunOnecc(oneNode.node.uri, logger);
+  });
+  context.subscriptions.push(runCfgDisposal);
+
   context.subscriptions.push(CfgEditorPanel.register(context));
 
-  let logger = new Utils.Logger();
   let projectBuilder = new Project.Builder(logger);
 
   projectBuilder.init();
