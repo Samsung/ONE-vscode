@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { assert } from 'console';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
@@ -27,6 +28,7 @@ enum NodeType {
 interface Node {
   type: NodeType;
   name: string;
+  path: string;
   childNodes: Node[];
   uri: vscode.Uri;
 }
@@ -105,37 +107,41 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
     const node: Node = {
       type: NodeType.directory,
       name: path.parse(rootPath.fsPath).base,
+      path: rootPath.fsPath,
       childNodes: [],
       uri: rootPath
     };
-    this.searchNode(node, path.dirname(rootPath.fsPath));
+    this.searchNode(node);
     return node;
   }
 
-  private searchNode(node: Node, dirPath: string) {
-    const dirpath = path.join(dirPath, node.name);
+  private searchNode(node: Node) {
+    assert(node.type === NodeType.directory);
+
+    const dirpath = node.path;
     const files = fs.readdirSync(dirpath);
 
-    for (const fn of files) {
-      const fpath = path.join(dirpath, fn);
+    for (const fname of files) {
+      const fpath = path.join(dirpath, fname);
       const fstat = fs.statSync(fpath);
 
       if (fstat.isDirectory()) {
         const dirNode: Node =
-            {type: NodeType.directory, name: fn, childNodes: [], uri: vscode.Uri.file(fpath)};
+            {type: NodeType.directory, name: fname, path: fpath, childNodes: [], uri: vscode.Uri.file(fpath)};
 
-        this.searchNode(dirNode, dirpath);
+        this.searchNode(dirNode);
         if (dirNode.childNodes.length > 0) {
           node.childNodes.push(dirNode);
         }
-      } else if (
-          fstat.isFile() &&
-          (fn.endsWith('.pb') || fn.endsWith('.tflite') || fn.endsWith('.onnx'))) {
+      } 
+      else if 
+      (fstat.isFile() &&
+        (fname.endsWith('.pb') || fname.endsWith('.tflite') || fname.endsWith('.onnx'))) {
+
         const modelNode:
-            Node = {type: NodeType.model, name: fn, childNodes: [], uri: vscode.Uri.file(fpath)};
+          Node = {type: NodeType.model, name: fname, path: fpath, childNodes: [], uri: vscode.Uri.file(fpath)};
 
-        this.searchPairConfig(modelNode, dirpath);
-
+        this.searchPairConfig(modelNode);
         node.childNodes.push(modelNode);
       }
     }
@@ -150,22 +156,29 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
    * TODO(dayo) Search by parsing config file's model entry (Currently model name and cfg name must
    * match)
    */
-  private searchPairConfig(node: Node, dirPath: string) {
-    const dirpath = path.dirname(path.join(dirPath, node.name));
-    const files = fs.readdirSync(dirpath);
-
-    const extSlicer = (fileName: string) => {
-      return fileName.slice(0, fileName.lastIndexOf('.'));
+  private searchPairConfig(node: Node) {
+    const modelPath = node.path;
+    const modelName = node.name;
+    const modelExt = path.extname(modelPath).slice(1);
+    
+    const readInputPath = (configPath: string) => {
+      const ini = require('ini');
+      const config = ini.parse(fs.readFileSync(configPath).toString());
+      return config[`one-import-${modelExt}`]['input_path'];
     };
 
+    const dirPath = path.dirname(modelPath);
+    const files = fs.readdirSync(dirPath);
     for (const fn of files) {
-      const fpath = path.join(dirpath, fn);
+      const fpath = path.join(dirPath, fn);
       const fstat = fs.statSync(fpath);
 
-      if (fstat.isFile() && fn.endsWith('.cfg') && (extSlicer(fn) === extSlicer(node.name))) {
-        const configNode:
-            Node = {type: NodeType.config, name: fn, childNodes: [], uri: vscode.Uri.file(fpath)};
-        node.childNodes.push(configNode);
+      if (fstat.isFile() && fn.endsWith('.cfg')) {
+        if (readInputPath(fpath) === modelName) {
+          const configNode:
+            Node = {type: NodeType.config, name: fn, path:fpath, childNodes: [], uri: vscode.Uri.file(fpath)};
+          node.childNodes.push(configNode);
+        }
       }
     }
   }
