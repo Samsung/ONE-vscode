@@ -53,36 +53,36 @@ function main() {
   const inputPathCodicon = document.getElementById('inputPathCodicon');
   inputPathCodicon.addEventListener('click', clickInputPathCodicon);
 
-  const importEnabled = document.getElementById('importEnabled');
-  const importDisabled = document.getElementById('importDisabled');
+  const importEnabled = document.getElementById('ImportEnabled');
+  const importDisabled = document.getElementById('ImportDisabled');
   const importLink = document.getElementById('linkEnableImport');
   importEnabled.addEventListener('click', disableImportStep);
   importDisabled.addEventListener('click', enableImportStep);
   importLink.addEventListener('click', enableImportStep);
 
-  const optimizeEnabled = document.getElementById('optimizeEnabled');
-  const optimizeDisabled = document.getElementById('optimizeDisabled');
+  const optimizeEnabled = document.getElementById('OptimizeEnabled');
+  const optimizeDisabled = document.getElementById('OptimizeDisabled');
   const optimizeLink = document.getElementById('linkEnableOptimize');
   optimizeEnabled.addEventListener('click', disableOptimizeStep);
   optimizeDisabled.addEventListener('click', enableOptimizeStep);
   optimizeLink.addEventListener('click', enableOptimizeStep);
 
-  const quantizeEnabled = document.getElementById('quantizeEnabled');
-  const quantizeDisabled = document.getElementById('quantizeDisabled');
+  const quantizeEnabled = document.getElementById('QuantizeEnabled');
+  const quantizeDisabled = document.getElementById('QuantizeDisabled');
   const quantizeLink = document.getElementById('linkEnableQuantize');
   quantizeEnabled.addEventListener('click', disableQuantizeStep);
   quantizeDisabled.addEventListener('click', enableQuantizeStep);
   quantizeLink.addEventListener('click', enableQuantizeStep);
 
-  const codegenEnabled = document.getElementById('codegenEnabled');
-  const codegenDisabled = document.getElementById('codegenDisabled');
+  const codegenEnabled = document.getElementById('CodegenEnabled');
+  const codegenDisabled = document.getElementById('CodegenDisabled');
   const codegenLink = document.getElementById('linkEnableCodegen');
   codegenEnabled.addEventListener('click', disableCodegenStep);
   codegenDisabled.addEventListener('click', enableCodegenStep);
   codegenLink.addEventListener('click', enableCodegenStep);
 
-  const profileEnabled = document.getElementById('profileEnabled');
-  const profileDisabled = document.getElementById('profileDisabled');
+  const profileEnabled = document.getElementById('ProfileEnabled');
+  const profileDisabled = document.getElementById('ProfileDisabled');
   const profileLink = document.getElementById('linkEnableProfile');
   profileEnabled.addEventListener('click', disableProfileStep);
   profileDisabled.addEventListener('click', enableProfileStep);
@@ -125,8 +125,8 @@ function inputModelSearchClick() {
 }
 
 function enableImportStep() {
-  const importEnabled = document.getElementById('importEnabled');
-  const importDisabled = document.getElementById('importDisabled');
+  const importEnabled = document.getElementById('ImportEnabled');
+  const importDisabled = document.getElementById('ImportDisabled');
   const modelTypeRadioArea = document.getElementById('modelTypeRadioArea');
   const panelImportEnabled = document.getElementById('panelImportEnabled');
   const panelImportDisabled = document.getElementById('panelImportDisabled');
@@ -138,13 +138,13 @@ function enableImportStep() {
   panelImportDisabled.style.display = 'none';
 
   clickUnfoldAdvencedOptions();
-  const advancedOptions = document.getElementById('advancedOptions');
+  const advancedOptions = document.getElementById('AdvancedOptions');
   advancedOptions.activeid = 'tabImport';
 }
 
 function disableImportStep() {
-  const importEnabled = document.getElementById('importEnabled');
-  const importDisabled = document.getElementById('importDisabled');
+  const importEnabled = document.getElementById('ImportEnabled');
+  const importDisabled = document.getElementById('ImportDisabled');
   const modelTypeRadioArea = document.getElementById('modelTypeRadioArea');
   const panelImportEnabled = document.getElementById('panelImportEnabled');
   const panelImportDisabled = document.getElementById('panelImportDisabled');
@@ -157,8 +157,8 @@ function disableImportStep() {
 }
 
 function enableOptimizeStep() {
-  const optimizeEnabled = document.getElementById('optimizeEnabled');
-  const optimizeDisabled = document.getElementById('optimizeDisabled');
+  const optimizeEnabled = document.getElementById('OptimizeEnabled');
+  const optimizeDisabled = document.getElementById('OptimizeDisabled');
   const panelOptimizeEnabled = document.getElementById('panelOptimizeEnabled');
   const panelOptimizeDisabled = document.getElementById('panelOptimizeDisabled');
 
@@ -168,13 +168,13 @@ function enableOptimizeStep() {
   panelOptimizeDisabled.style.display = 'none';
 
   clickUnfoldAdvencedOptions();
-  const advancedOptions = document.getElementById('advancedOptions');
+  const advancedOptions = document.getElementById('AdvancedOptions');
   advancedOptions.activeid = 'tabOptimize';
 }
 
 function disableOptimizeStep() {
-  const optimizeEnabled = document.getElementById('optimizeEnabled');
-  const optimizeDisabled = document.getElementById('optimizeDisabled');
+  const optimizeEnabled = document.getElementById('OptimizeEnabled');
+  const optimizeDisabled = document.getElementById('OptimizeDisabled');
   const panelOptimizeEnabled = document.getElementById('panelOptimizeEnabled');
   const panelOptimizeDisabled = document.getElementById('panelOptimizeDisabled');
 
@@ -185,8 +185,8 @@ function disableOptimizeStep() {
 }
 
 function enableQuantizeStep() {
-  const quantizeEnabled = document.getElementById('quantizeEnabled');
-  const quantizeDisabled = document.getElementById('quantizeDisabled');
+  const quantizeEnabled = document.getElementById('QuantizeEnabled');
+  const quantizeDisabled = document.getElementById('QuantizeDisabled');
   const panelQuantizeEnabled = document.getElementById('panelQuantizeEnabled');
   const panelQuantizeDisabled = document.getElementById('panelQuantizeDisabled');
 
@@ -196,13 +196,13 @@ function enableQuantizeStep() {
   panelQuantizeDisabled.style.display = 'none';
 
   clickUnfoldAdvencedOptions();
-  const advancedOptions = document.getElementById('advancedOptions');
+  const advancedOptions = document.getElementById('AdvancedOptions');
   advancedOptions.activeid = 'tabQuantize';
 }
 
 function disableQuantizeStep() {
-  const quantizeEnabled = document.getElementById('quantizeEnabled');
-  const quantizeDisabled = document.getElementById('quantizeDisabled');
+  const quantizeEnabled = document.getElementById('QuantizeEnabled');
+  const quantizeDisabled = document.getElementById('QuantizeDisabled');
   const panelQuantizeEnabled = document.getElementById('panelQuantizeEnabled');
   const panelQuantizeDisabled = document.getElementById('panelQuantizeDisabled');
 
@@ -213,8 +213,8 @@ function disableQuantizeStep() {
 }
 
 function enableCodegenStep() {
-  const codegenEnabled = document.getElementById('codegenEnabled');
-  const codegenDisabled = document.getElementById('codegenDisabled');
+  const codegenEnabled = document.getElementById('CodegenEnabled');
+  const codegenDisabled = document.getElementById('CodegenDisabled');
   const panelCodegenEnabled = document.getElementById('panelCodegenEnabled');
   const panelCodegenDisabled = document.getElementById('panelCodegenDisabled');
 
@@ -224,13 +224,13 @@ function enableCodegenStep() {
   panelCodegenDisabled.style.display = 'none';
 
   clickUnfoldAdvencedOptions();
-  const advancedOptions = document.getElementById('advancedOptions');
+  const advancedOptions = document.getElementById('AdvancedOptions');
   advancedOptions.activeid = 'tabCodegen';
 }
 
 function disableCodegenStep() {
-  const codegenEnabled = document.getElementById('codegenEnabled');
-  const codegenDisabled = document.getElementById('codegenDisabled');
+  const codegenEnabled = document.getElementById('CodegenEnabled');
+  const codegenDisabled = document.getElementById('CodegenDisabled');
   const panelCodegenEnabled = document.getElementById('panelCodegenEnabled');
   const panelCodegenDisabled = document.getElementById('panelCodegenDisabled');
 
@@ -241,8 +241,8 @@ function disableCodegenStep() {
 }
 
 function enableProfileStep() {
-  const profileEnabled = document.getElementById('profileEnabled');
-  const profileDisabled = document.getElementById('profileDisabled');
+  const profileEnabled = document.getElementById('ProfileEnabled');
+  const profileDisabled = document.getElementById('ProfileDisabled');
   const panelProfileEnabled = document.getElementById('panelProfileEnabled');
   const panelProfileDisabled = document.getElementById('panelProfileDisabled');
 
@@ -252,13 +252,13 @@ function enableProfileStep() {
   panelProfileDisabled.style.display = 'none';
 
   clickUnfoldAdvencedOptions();
-  const advancedOptions = document.getElementById('advancedOptions');
+  const advancedOptions = document.getElementById('AdvancedOptions');
   advancedOptions.activeid = 'tabProfile';
 }
 
 function disableProfileStep() {
-  const profileEnabled = document.getElementById('profileEnabled');
-  const profileDisabled = document.getElementById('profileDisabled');
+  const profileEnabled = document.getElementById('ProfileEnabled');
+  const profileDisabled = document.getElementById('ProfileDisabled');
   const panelProfileEnabled = document.getElementById('panelProfileEnabled');
   const panelProfileDisabled = document.getElementById('panelProfileDisabled');
 
@@ -271,12 +271,12 @@ function disableProfileStep() {
 function modelTypeClick() {
   const modelType = document.getElementById('modelTypeRadio').value;
   const initialImportState = document.getElementById('ImportInitialState');
-  const tfConverterOptions = document.getElementById('TFConverterOptions');
+  const pbConverterOptions = document.getElementById('PBConverterOptions');
   const tflConverterOptions = document.getElementById('TFLITEConverterOptions');
   const onnxConverterOptions = document.getElementById('ONNXConverterOptions');
 
   initialImportState.style.display = 'none';
-  tfConverterOptions.style.display = 'none';
+  pbConverterOptions.style.display = 'none';
   tflConverterOptions.style.display = 'none';
   onnxConverterOptions.style.display = 'none';
 
@@ -284,7 +284,7 @@ function modelTypeClick() {
     case 'pb':
     case 'savedModel':
     case 'kerasModel':
-      tfConverterOptions.style.display = 'block';
+      pbConverterOptions.style.display = 'block';
       return;
     case 'tflite':
       tflConverterOptions.style.display = 'block';
@@ -300,7 +300,7 @@ function modelTypeClick() {
 function clickUnfoldAdvencedOptions() {
   const foldButton = document.getElementById('foldAdvancedOptions');
   const unfoldButton = document.getElementById('unfoldAdvancedOptions');
-  const advancedOptions = document.getElementById('advancedOptions');
+  const advancedOptions = document.getElementById('AdvancedOptions');
 
   advancedOptions.style.display = 'block';
   foldButton.style.display = 'inline';
@@ -310,7 +310,7 @@ function clickUnfoldAdvencedOptions() {
 function clickFoldAdvancedOptions() {
   const foldButton = document.getElementById('foldAdvancedOptions');
   const unfoldButton = document.getElementById('unfoldAdvancedOptions');
-  const advancedOptions = document.getElementById('advancedOptions');
+  const advancedOptions = document.getElementById('AdvancedOptions');
 
   advancedOptions.style.display = 'none';
   foldButton.style.display = 'none';
