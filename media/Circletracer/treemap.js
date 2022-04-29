@@ -56,7 +56,7 @@ async function treeMap(json) {
       }
 
       label += `<p><label><b>input${checkIdx}</b></label><span>&lt;${
-          getTypeArray('x', input.type)}&gt;</span></p>`;
+        getTypeArray('x', input.type)}&gt;</span></p>`;
     });
 
     attributes.forEach(attr => {
@@ -73,7 +73,7 @@ async function treeMap(json) {
 
       label += `<p class='duration-title'>DURATION</p>`;
       label += `<p class='duration'>${dur1.toFixed(4)} ${timeUnit} <b>&roarr;</b> ${
-          dur2.toFixed(4)} ${timeUnit}</p>`;
+        dur2.toFixed(4)} ${timeUnit}</p>`;
     }
 
     inputs.forEach(input => {
@@ -114,8 +114,8 @@ async function treeMap(json) {
       let parent = parents[i];
       let label = `<p class="edge-label">${getTypeArray('x', parent.type)}</p>`;
       g.setEdge(
-          parent.location, index,
-          {labelType: 'html', label: label, curve: d3.curveBasis, arrowheadClass: 'arrowhead'});
+        parent.location, index,
+        {labelType: 'html', label: label, curve: d3.curveBasis, arrowheadClass: 'arrowhead'});
     }
   });
 
@@ -126,8 +126,8 @@ async function treeMap(json) {
 
   // Set up zoom support
   d3.select('#wrapper')
-      .on('scroll', scrolled)
-      .call(d3.zoom().scaleExtent([0.1, 10]).on('zoom', () => zoomed(inner, g)));
+    .on('scroll', scrolled)
+    .call(d3.zoom().scaleExtent([0.1, 10]).on('zoom', () => zoomed(inner, g)));
   render(inner, g);
 
   svg.attr('width', screen.width);

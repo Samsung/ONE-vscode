@@ -86,7 +86,7 @@ function createDetailContent(nodes, id, g) {
           node[key].forEach((output, idx) => {
             createDetailItem(`output ${idx}`, `name: ${output['name']}`, '#outputs-content');
             createDetailItem(
-                '', `type: [${getTypeArray(',', output['type'])}]`, '#outputs-content');
+              '', `type: [${getTypeArray(',', output['type'])}]`, '#outputs-content');
             createDetailItem('', `location: ${output['location']}`, '#outputs-content');
           });
         }

@@ -195,7 +195,7 @@
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint && npm run lintjs && npm run lintcss && npm run linthtml",
     "lint": "eslint src --ext ts --max-warnings 0",
-    "lintjs": "eslint media --ext js --max-warnings 0",
+    "lintjs": "eslint media --ext js --max-warnings 0 --fix",
     "lintcss": "csslint media src",
     "linthtml": "htmlhint media src",
     "unittest": "node ./out/Tests/runTest.js",
