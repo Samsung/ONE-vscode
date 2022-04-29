@@ -50,6 +50,11 @@ export class OneNode extends vscode.TreeItem {
     } else if (node.type === NodeType.model) {
       this.iconPath = vscode.ThemeIcon.File;
     }
+
+    if(node.type == NodeType.config)
+    {
+      this.command = {command: 'onevscode.openfile-one-explorer', title: 'Open File', arguments: [this.node]};
+    }
   }
 }
 
@@ -67,35 +72,63 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
     }
   }
 
-  // TODO(dayo): enable refresh command
   refresh(): void {
+    console.log('refresh called');
     this._onDidChangeTreeData.fire();
   }
 
   getTreeItem(element: OneNode): vscode.TreeItem {
-    element
-        .command = {command: 'oneExplorer.openFile', title: 'Open File', arguments: [element.node]};
     return element;
   }
 
   getChildren(element?: OneNode): OneNode[]|Thenable<OneNode[]> {
-    if (this.oneTree === undefined) {
-      vscode.window.showInformationMessage('No ONE model or config in empty workspace');
+    if(element)
+      console.log("getChildren for "+ element.node.path);
+
+    if (!this.workspaceRoot) {
+      vscode.window.showInformationMessage('Cannot find your workspace root.');
       return Promise.resolve([]);
     }
 
     if (element) {
-      return Promise.resolve(this.getNode(element.node));
+      if(this.pathExists(element.node.path))
+      {
+        return Promise.resolve(this.getNode(element.node));
+      }
+      else
+      {
+        console.warn(`Path not exist: ${element}`);
+        return Promise.resolve([]);
+      }
     } else {
-      return Promise.resolve(this.getNode(this.oneTree));
+      if(this.workspaceRoot)
+      {
+        return Promise.resolve(this.getNode(this.getTree(this.workspaceRoot)));
+      }
+      else
+      {
+        console.log("ERROR");
+        return Promise.resolve([]);
+     }
+   }
+  }
+
+  private pathExists(p: string): boolean {
+    try {
+      fs.accessSync(p);
+    } catch (err) {
+      return false;
     }
+    return true;
   }
 
   private getNode(node: Node): OneNode[] {
     const toOneNode = (node: Node): OneNode => {
-      if (node.childNodes.length > 0) {
+      if (node.type == NodeType.directory){
+        return new OneNode(node.name, vscode.TreeItemCollapsibleState.Expanded, node);
+      } else if(node.type == NodeType.model){
         return new OneNode(node.name, vscode.TreeItemCollapsibleState.Collapsed, node);
-      } else {
+      } else {// (node.type == NodeType.config)
         return new OneNode(node.name, vscode.TreeItemCollapsibleState.None, node);
       }
     };
@@ -186,9 +219,12 @@ export class OneExplorer {
         undefined;
 
     const oneTreeDataProvider = new OneTreeDataProvider(rootPath);
+
     context.subscriptions.push(
         vscode.window.registerTreeDataProvider('OneExplorerView', oneTreeDataProvider));
-    vscode.commands.registerCommand('oneExplorer.openFile', (file) => this.openFile(file));
+
+    vscode.commands.registerCommand('onevscode.refresh-one-explorer', () => oneTreeDataProvider.refresh());
+    vscode.commands.registerCommand('onevscode.openfile-one-explorer', (file) => this.openFile(file));
   }
 
   private openFile(node: Node) {
