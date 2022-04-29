@@ -253,21 +253,21 @@ if (state) {
 }
 
 viewerVScale.children[0].addEventListener('click', () => {
-  changeScale(0, 1);
+  changeScale(0, 0.5);
 });
 viewerVScale.children[1].addEventListener('input', (event) => {
   changeVScale(parseInt(event.target.value));
 });
 viewerVScale.children[2].addEventListener('click', () => {
-  changeScale(0, -1);
+  changeScale(0, -0.5);
 });
 viewerHScale.children[0].addEventListener('click', () => {
-  changeScale(-1, 0);
+  changeScale(-0.5, 0);
 });
 viewerHScale.children[1].addEventListener('input', (event) => {
   changeHScale(parseInt(event.target.value));
 });
 viewerHScale.children[2].addEventListener('click', () => {
-  changeScale(1, 0);
+  changeScale(0.5, 0);
 });
 })();
