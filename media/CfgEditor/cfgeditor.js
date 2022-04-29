@@ -57,36 +57,64 @@ function main() {
   const importDisabled = document.getElementById('ImportDisabled');
   const importLink = document.getElementById('linkEnableImport');
   importEnabled.addEventListener('click', disableImportStep);
-  importDisabled.addEventListener('click', enableImportStep);
-  importLink.addEventListener('click', enableImportStep);
+  importDisabled.addEventListener('click', function() {
+    enableImportStep(true);
+  });
+  importLink.addEventListener('click', function() {
+    enableImportStep(true);
+  });
 
   const optimizeEnabled = document.getElementById('OptimizeEnabled');
   const optimizeDisabled = document.getElementById('OptimizeDisabled');
   const optimizeLink = document.getElementById('linkEnableOptimize');
-  optimizeEnabled.addEventListener('click', disableOptimizeStep);
-  optimizeDisabled.addEventListener('click', enableOptimizeStep);
-  optimizeLink.addEventListener('click', enableOptimizeStep);
+  optimizeEnabled.addEventListener('click', function() {
+    disableStep('Optimize', true);
+  });
+  optimizeDisabled.addEventListener('click', function() {
+    enableStep('Optimize', true);
+  });
+  optimizeLink.addEventListener('click', function() {
+    enableStep('Optimize', true);
+  });
 
   const quantizeEnabled = document.getElementById('QuantizeEnabled');
   const quantizeDisabled = document.getElementById('QuantizeDisabled');
   const quantizeLink = document.getElementById('linkEnableQuantize');
-  quantizeEnabled.addEventListener('click', disableQuantizeStep);
-  quantizeDisabled.addEventListener('click', enableQuantizeStep);
-  quantizeLink.addEventListener('click', enableQuantizeStep);
+  quantizeEnabled.addEventListener('click', function() {
+    disableStep('Quantize', true);
+  });
+  quantizeDisabled.addEventListener('click', function() {
+    enableStep('Quantize', true);
+  });
+  quantizeLink.addEventListener('click', function() {
+    enableStep('Quantize', true);
+  });
 
   const codegenEnabled = document.getElementById('CodegenEnabled');
   const codegenDisabled = document.getElementById('CodegenDisabled');
   const codegenLink = document.getElementById('linkEnableCodegen');
-  codegenEnabled.addEventListener('click', disableCodegenStep);
-  codegenDisabled.addEventListener('click', enableCodegenStep);
-  codegenLink.addEventListener('click', enableCodegenStep);
+  codegenEnabled.addEventListener('click', function() {
+    disableStep('Codegen', true);
+  });
+  codegenDisabled.addEventListener('click', function() {
+    enableStep('Codegen', true);
+  });
+  codegenLink.addEventListener('click', function() {
+    enableStep('Codegen', true);
+  });
 
   const profileEnabled = document.getElementById('ProfileEnabled');
   const profileDisabled = document.getElementById('ProfileDisabled');
   const profileLink = document.getElementById('linkEnableProfile');
-  profileEnabled.addEventListener('click', disableProfileStep);
-  profileDisabled.addEventListener('click', enableProfileStep);
-  profileLink.addEventListener('click', enableProfileStep);
+  profileEnabled.addEventListener('click', function() {
+    disableStep('Profile', true);
+  });
+  profileDisabled.addEventListener('click', function() {
+    enableStep('Profile', true);
+  });
+  profileLink.addEventListener('click', function() {
+    enableStep('Profile', true);
+  });
 
   const outputPathCodicon = document.getElementById('outputPathCodicon');
   outputPathCodicon.addEventListener('click', clickOutputPathCodicon);
@@ -100,11 +128,14 @@ function main() {
   const modelTypeRadio = document.getElementById('modelTypeRadio');
   modelTypeRadio.addEventListener('click', modelTypeClick);
 
-  const foldButton = document.getElementById('foldAdvancedOptions');
-  foldButton.addEventListener('click', clickFoldAdvancedOptions);
-
-  const unfoldButton = document.getElementById('unfoldAdvancedOptions');
-  unfoldButton.addEventListener('click', clickUnfoldAdvencedOptions);
+  const foldAdvancedOptionsButton = document.getElementById('foldAdvancedOptions');
+  const unfoldAdvancedOptionsButton = document.getElementById('unfoldAdvancedOptions');
+  foldAdvancedOptionsButton.addEventListener('click', function() {
+    clickFold('AdvancedOptions');
+  });
+  unfoldAdvancedOptionsButton.addEventListener('click', function() {
+    clickUnfold('AdvancedOptions');
+  });
 
   const foldPBIntermediatePathsButton = document.getElementById('foldPBIntermediatePaths');
   const unfoldPBIntermediatePathsButton = document.getElementById('unfoldPBIntermediatePaths');
@@ -172,6 +203,50 @@ function inputModelSearchClick() {
   vscode.postMessage({type: 'setInputPath'});
 }
 
+function enableStep(step, isFocus) {
+  const stepEnabled = document.getElementById(step + 'Enabled');
+  const stepDisabled = document.getElementById(step + 'Disabled');
+  const panelStepEnabled = document.getElementById('panel' + step + 'Enabled');
+  const panelStepDisabled = document.getElementById('panel' + step + 'Disabled');
+
+  stepEnabled.style.display = 'block';
+  stepDisabled.style.display = 'none';
+  panelStepEnabled.style.display = 'block';
+  panelStepDisabled.style.display = 'none';
+
+  if (isFocus) {
+    clickUnfold('AdvancedOptions');
+    const advancedOptions = document.getElementById('AdvancedOptions');
+    advancedOptions.activeid = 'tab' + step;
+  }
+}
+
+function disableStep(step) {
+  const stepEnabled = document.getElementById(step + 'Enabled');
+  const stepDisabled = document.getElementById(step + 'Disabled');
+  const panelStepEnabled = document.getElementById('panel' + step + 'Enabled');
+  const panelStepDisabled = document.getElementById('panel' + step + 'Disabled');
+
+  stepEnabled.style.display = 'none';
+  stepDisabled.style.display = 'block';
+  panelStepEnabled.style.display = 'none';
+  panelStepDisabled.style.display = 'block';
+}
+
+function enableImportStep(isFocus) {
+  enableStep('Import', isFocus);
+
+  const modelTypeRadioArea = document.getElementById('modelTypeRadioArea');
+  modelTypeRadioArea.style.display = 'block';
+}
+
+function disableImportStep() {
+  disableStep('Import');
+
+  const modelTypeRadioArea = document.getElementById('modelTypeRadioArea');
+  modelTypeRadioArea.style.display = 'none';
+}
+
 function clickUnfold(id) {
   const foldButton = document.getElementById('fold' + id);
   const unfoldButton = document.getElementById('unfold' + id);
@@ -192,6 +267,7 @@ function clickFold(id) {
   unfoldButton.style.display = 'inline';
 }
 
+/* TODO Remove useless codes
 function enableImportStep() {
   const importEnabled = document.getElementById('ImportEnabled');
   const importDisabled = document.getElementById('ImportDisabled');
@@ -335,6 +411,7 @@ function disableProfileStep() {
   panelProfileEnabled.style.display = 'none';
   panelProfileDisabled.style.display = 'block';
 }
+*/
 
 function modelTypeClick() {
   const modelType = document.getElementById('modelTypeRadio').value;
@@ -373,6 +450,7 @@ function modelTypeClick() {
   }
 }
 
+/* TODO Remove useless codes
 function clickUnfoldAdvencedOptions() {
   const foldButton = document.getElementById('foldAdvancedOptions');
   const unfoldButton = document.getElementById('unfoldAdvancedOptions');
@@ -392,6 +470,7 @@ function clickFoldAdvancedOptions() {
   foldButton.style.display = 'none';
   unfoldButton.style.display = 'inline';
 }
+*/
 
 function clickInputPathCodicon() {
   document.getElementById('inputPath').focus();
