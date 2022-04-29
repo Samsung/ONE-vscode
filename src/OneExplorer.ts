@@ -91,9 +91,11 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
 
   private getNode(node: Node): OneNode[] {
     const toOneNode = (node: Node): OneNode => {
-      if (node.childNodes.length > 0) {
+      if (node.type === NodeType.directory) {
+        return new OneNode(node.name, vscode.TreeItemCollapsibleState.Expanded, node);
+      } else if (node.type === NodeType.model) {
         return new OneNode(node.name, vscode.TreeItemCollapsibleState.Collapsed, node);
-      } else {
+      } else {  // (node.type == NodeType.config)
         return new OneNode(node.name, vscode.TreeItemCollapsibleState.None, node);
       }
     };
