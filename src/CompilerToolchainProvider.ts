@@ -18,17 +18,33 @@ import * as vscode from 'vscode';
 import { gCompileEnvMap } from './Compile/CompileEnv';
 import {Toolchain} from './Backend/Toolchain';
 
+enum NodeType {
+  backend,
+  toolchain,
+}
+
+// interface Node {
+//   type: NodeType;
+//   name: string;
+//   version: string;
+// }
+
 export class ToolchainNode extends vscode.TreeItem {
 
   constructor(
     public readonly label: string,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-    private readonly backend: string,
-    private readonly version: string,
+    private readonly type: NodeType,
+    public readonly version?: string,
   ) {
     super(label, collapsibleState);
 
-    this.label = `[${this.backend}] ${this.label}  ${this.version}`;
+    if (type === NodeType.backend) {
+      this.iconPath = new vscode.ThemeIcon('bracket');
+    } else {
+      this.iconPath = new vscode.ThemeIcon('circle-filled');
+      this.label = `${this.label} ${this.version}`;
+    }
   }
 }
 
@@ -44,26 +60,33 @@ export class CompilerToolchainProvider implements vscode.TreeDataProvider<Toolch
   }
 
   getChildren(element?: ToolchainNode): Thenable<ToolchainNode[]> {
-    const toToolchainNode = (b: string, t: Toolchain) : ToolchainNode => {
-      return new ToolchainNode(t.info.name, vscode.TreeItemCollapsibleState.None, b, t.info.version.str());
-    };
-
     if (element) {
-      return Promise.resolve([]);
+      return Promise.resolve(this.getNode(element.label));
     } else {
       if (Object.keys(gCompileEnvMap).length === 0) {
         vscode.window.showInformationMessage('No toolchain installed');
         return Promise.resolve([]);
       } else {
-        let nodes: Array<ToolchainNode> = new Array();
-        Object.keys(gCompileEnvMap).forEach((backend) => {
-          const toolchains = gCompileEnvMap[backend].listInstalled();
-          toolchains.filter((t) => t.info.installed === true).forEach(t => {
-            nodes.push(toToolchainNode(backend, t));
-          });
-        });
+        const nodes = Object.keys(gCompileEnvMap).map((backend) => this.toToolchainNode(NodeType.backend, backend));
         return Promise.resolve(nodes);
       }
+    }
+  }
+
+  private toToolchainNode(type: NodeType, name: string, version?: string): ToolchainNode {
+    if (type === NodeType.backend) {
+      return new ToolchainNode(name, vscode.TreeItemCollapsibleState.Expanded, type);
+    } else {
+      return new ToolchainNode(name, vscode.TreeItemCollapsibleState.None, type, version);
+    }
+  }
+
+  private getNode(backend: string): ToolchainNode[] {
+    if (backend in gCompileEnvMap) {
+      const toolchains = gCompileEnvMap[backend].listInstalled();
+      return toolchains.filter((t) => t.info.installed).map((t) => this.toToolchainNode(NodeType.toolchain, t.info.name, t.info.version.str()));
+    } else {
+      return [];
     }
   }
 
