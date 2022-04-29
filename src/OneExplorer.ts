@@ -71,8 +71,6 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
   }
 
   getTreeItem(element: OneNode): vscode.TreeItem {
-    element
-        .command = {command: 'oneExplorer.openFile', title: 'Open File', arguments: [element.node]};
     return element;
   }
 
@@ -181,10 +179,5 @@ export class OneExplorer {
     const oneTreeDataProvider = new OneTreeDataProvider(rootPath);
     context.subscriptions.push(
         vscode.window.registerTreeDataProvider('OneExplorerView', oneTreeDataProvider));
-    vscode.commands.registerCommand('oneExplorer.openFile', (file) => this.openFile(file));
-  }
-
-  private openFile(node: Node) {
-    vscode.window.showTextDocument(node.uri);
   }
 }
