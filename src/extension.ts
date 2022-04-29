@@ -16,8 +16,7 @@
 
 import * as vscode from 'vscode';
 
-import {globalBackendMap, backendRegistrationApi} from './Backend';
-import {gCompileEnvMap, CompileEnv} from './Compile/CompileEnv';
+import {backendRegistrationApi} from './Backend';
 import {decoder} from './Circlereader/Circlereader';
 import {Circletracer} from './Circletracer';
 import {CompilePanel} from './Compile/CompilePanel';
@@ -30,6 +29,7 @@ import {Project} from './Project';
 import {Utils} from './Utils';
 import {Logger} from './Utils/Logger';
 import {installQuickInput} from './InstallQuickInput';
+import {CompilerToolchainProvider} from './CompilerToolchainProvider';
 
 /**
  * Set vscode context that is used globally
@@ -51,15 +51,15 @@ function setGlobalContext() {
   vscode.commands.executeCommand('setContext', 'onevscode.compilableDirList', dirList);
 }
 
-function initCompilerEnv() {
-  Object.values(globalBackendMap).forEach(backend => {
-    console.log(backend);
-    const compiler = backend.compiler();
-    if (compiler) {
-      gCompileEnvMap[backend.name()] = new CompileEnv(new Logger(), compiler);
-    }
-  });
-}
+// function initCompilerEnv() {
+//   Object.values(globalBackendMap).forEach(backend => {
+//     console.log(backend);
+//     const compiler = backend.compiler();
+//     if (compiler) {
+//       gCompileEnvMap[backend.name()] = new CompileEnv(new Logger(), compiler);
+//     }
+//   });
+// }
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('one-vscode activate OK');
@@ -67,15 +67,15 @@ export function activate(context: vscode.ExtensionContext) {
   setGlobalContext();
 
   // ONE view
-  let refreshCompiler = vscode.commands.registerCommand('onevscode.refresh-compiler', () => {
-    console.log('refresh-compiler: NYI');
-  });
+  const compilerToolchainProvider = new CompilerToolchainProvider(context);
+  let refreshCompiler = vscode.commands.registerCommand('onevscode.refresh-compiler', () => compilerToolchainProvider.refresh());
   context.subscriptions.push(refreshCompiler);
+  vscode.window.registerTreeDataProvider('CompilerToolchainView', compilerToolchainProvider);
   let installCompiler = vscode.commands.registerCommand('onevscode.install-compiler', () => {
     console.log('install-compiler: running');
-    if (Object.keys(gCompileEnvMap).length === 0) {
-      initCompilerEnv();
-    }
+    // if (Object.keys(gCompileEnvMap).length === 0) {
+    //   initCompilerEnv();
+    // }
     installQuickInput(context);
   });
   context.subscriptions.push(installCompiler);

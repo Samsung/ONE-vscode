@@ -15,13 +15,14 @@
  */
 
 import {Backend} from '../Backend/API';
-import { Toolchain, Toolchains } from '../Backend/Toolchain';
+import { PackageInfo, Toolchain, Toolchains } from '../Backend/Toolchain';
 import { Command } from '../Project/Command';
 import {Compiler, CompilerBase} from '../Backend/Compiler';
 import {Executor, ExecutorBase} from '../Backend/Executor';
 import { Version } from '../Utils/Version';
 import * as cp from 'child_process';
 import { LinkedEditingRanges } from 'vscode';
+import {BinaryControl} from 'apt-parser';
 
 interface CommandFunc {
   (): Command;
@@ -77,6 +78,34 @@ class DummyCompiler extends CompilerBase {
           });
         });
       }
+    });
+
+    // Apt-get doesn't support the multiple verison installation of the same package.
+    // So dpkg-query --status command shows only one package information.
+    cp.exec('dpkg-query -s triv2-toolchain-latest', (err, stdout, stderr) => {
+      if (err) {
+        console.log(`error: ${err.message}`);
+        return;
+      } else {
+        const control = new BinaryControl(stdout);
+        let depends: PackageInfo[] = [];
+        control.depends?.forEach(item => {
+          const data = item.replace(/[()=<>]/g, '').split(' ').filter(i => i);
+          depends.push({ name: data[0], version: new Version(data[1])});
+        });
+
+        this._toolchains.push({
+          info: { 
+            name: control.package,
+            description: control.description,
+            version: new Version(control.version),
+            installed: true,
+            depends: depends},
+          install: this.install(control.package, control.version),
+          uninstall: this.uninstall(control.package, control.version),
+          installed: this.installed(control.package, control.version)
+        });
+      }      
     });
   }
 

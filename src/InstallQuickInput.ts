@@ -15,12 +15,11 @@
  */
 
 import * as vscode from 'vscode';
-import { Toolchain } from './Backend/Toolchain';
 import { gCompileEnvMap, CompileEnv } from './Compile/CompileEnv';
+import { Toolchain } from './Backend/Toolchain';
 import { MultiStepInput } from './Utils/MultiStepInput';
 
 export async function installQuickInput(context: vscode.ExtensionContext) {
-
   interface State {
     title: string;
     step: number;

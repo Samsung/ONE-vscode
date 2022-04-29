@@ -16,6 +16,7 @@
 
 import assert from 'assert';
 
+import {globalBackendMap} from '../Backend';
 import {Compiler} from '../Backend/Compiler';
 import {Toolchain} from '../Backend/Toolchain';
 // Project
@@ -81,24 +82,33 @@ export class Env implements BuilderJob {
 
 // A CompileEnv has a Toolchain
 export class CompileEnv extends Env {
-  installed?: Toolchain;
+  installed: Toolchain[] = [];
   compiler: Compiler;
 
   constructor(l: Logger, compiler: Compiler) {
     super(l);
     this.compiler = compiler;
+  }
+
+  refresh() {
     this.init();
+    const toolchains = this.compiler.toolchains();
+    toolchains.forEach((t) => {
+      if (t.info.installed) {
+        const index = this.installed.indexOf(t);
+        if (index === -1) {
+          this.installed.push(t);
+        }
+      }
+    });
   }
 
   listAvailable(): Toolchain[] {
-    let infoList = new Array<Toolchain>();
-    this.compiler.toolchains().forEach((t) => {
-      infoList.push(t);
-    });
-    return infoList;
+    return this.compiler.toolchains().filter(t => t.info.installed === false);
   }
 
-  listInstalled(): Toolchain|undefined {
+  listInstalled(): Toolchain[] {
+    console.log(this.installed.length);
     return this.installed;
   }
 
@@ -111,24 +121,29 @@ export class CompileEnv extends Env {
     this.addJob(job);
     this.finishAdd();
     this.build();
-    this.installed = t;
+    this.installed.push(t);
+    console.log(this.installed.length);
   }
 
   uninstall(t: Toolchain) {
     // assert(this toolchain should be installed)
     // assert(installed has t)
+    const index = this.installed.indexOf(t);
+    assert(index === -1);
     let cmd = t.uninstall();
     let job = new JobToolchain.JobUninstall(cmd);
     this.clearJobs();
     this.addJob(job);
     this.finishAdd();
     this.build();
-    this.installed = undefined;
+    this.installed.splice(index, 1);
+    console.log(this.installed.length);
   }
 
   compile(cfg: string, t: Toolchain) {
-    if (this.installed === undefined || this.installed !== t) {
-      throw Error('A toolchain should be installed before the compile job');
+    const index = this.installed.indexOf(t, 0);
+    if (index === -1) {
+      throw Error('This toolchain should be installed before the compile job');
     }
     // assert(this toolchain should be installed)
     // assert(installed has t)
@@ -145,7 +160,7 @@ export class CompileEnv extends Env {
 /**
  * Interface of backend map
  */
-export interface CompileEnvMap {
+interface CompileEnvMap {
   [key: string]: CompileEnv;
 }
 

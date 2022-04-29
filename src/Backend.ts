@@ -16,6 +16,8 @@
 
 import {Backend} from './Backend/API';
 import {DummyBackend} from './BackendDummy/BackendDummy';
+import {gCompileEnvMap, CompileEnv} from './Compile/CompileEnv';
+import {Logger} from './Utils/Logger';
 
 /**
  * Interface of backend map
@@ -31,7 +33,10 @@ function backendRegistrationApi() {
   let registrationAPI = {
     registerBackend(backend: Backend) {
       globalBackendMap[backend.name()] = backend;
-
+      const compiler = backend.compiler();
+      if (compiler) {
+        gCompileEnvMap[backend.name()] = new CompileEnv(new Logger(), compiler);
+      }
       console.log(`Backend ${backend.name()} was registered into ONE-vscode.`);
     }
   };
