@@ -17,8 +17,10 @@
 import * as vscode from 'vscode';
 import { gCompileEnvMap } from './Compile/CompileEnv';
 import {Toolchain} from './Backend/Toolchain';
+import {gTargetMap} from './Target';
 
 enum NodeType {
+  target,
   backend,
   toolchain,
 }
@@ -34,14 +36,16 @@ export class ToolchainNode extends vscode.TreeItem {
   constructor(
     public readonly label: string,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-    private readonly type: NodeType,
+    public readonly type: NodeType,
     public readonly version?: string,
   ) {
     super(label, collapsibleState);
 
-    if (type === NodeType.backend) {
+    if (type === NodeType.target) {
+      this.iconPath = new vscode.ThemeIcon('device-desktop');
+    } else if (type === NodeType.backend) {
       this.iconPath = new vscode.ThemeIcon('bracket');
-    } else {
+    } else if (type === NodeType.toolchain) {
       this.iconPath = new vscode.ThemeIcon('circle-filled');
       this.label = `${this.label} ${this.version}`;
     }
@@ -61,33 +65,31 @@ export class CompilerToolchainProvider implements vscode.TreeDataProvider<Toolch
 
   getChildren(element?: ToolchainNode): Thenable<ToolchainNode[]> {
     if (element) {
-      return Promise.resolve(this.getNode(element.label));
+      return Promise.resolve(this.getNode(element));
     } else {
-      if (Object.keys(gCompileEnvMap).length === 0) {
-        vscode.window.showInformationMessage('No toolchain installed');
-        return Promise.resolve([]);
-      } else {
-        const nodes = Object.keys(gCompileEnvMap).map((backend) => this.toToolchainNode(NodeType.backend, backend));
-        return Promise.resolve(nodes);
-      }
+      const nodes = Object.keys(gTargetMap).map((target) => this.toToolchainNode(NodeType.target, target));
+      return Promise.resolve(nodes);
     }
   }
 
   private toToolchainNode(type: NodeType, name: string, version?: string): ToolchainNode {
-    if (type === NodeType.backend) {
-      return new ToolchainNode(name, vscode.TreeItemCollapsibleState.Expanded, type);
-    } else {
+    if (type === NodeType.toolchain) {
       return new ToolchainNode(name, vscode.TreeItemCollapsibleState.None, type, version);
+    } else {
+      return new ToolchainNode(name, vscode.TreeItemCollapsibleState.Expanded, type);
     }
   }
 
-  private getNode(backend: string): ToolchainNode[] {
-    if (backend in gCompileEnvMap) {
-      const toolchains = gCompileEnvMap[backend].listInstalled();
-      return toolchains.filter((t) => t.info.installed).map((t) => this.toToolchainNode(NodeType.toolchain, t.info.name, t.info.version.str()));
-    } else {
-      return [];
+  private getNode(node: ToolchainNode): ToolchainNode[] {
+    if (node.type === NodeType.target) {
+      return Object.keys(gCompileEnvMap).map((backend) => this.toToolchainNode(NodeType.backend, backend));
+    } else if (node.type === NodeType.backend) {
+      if (node.label in gCompileEnvMap) {
+        const toolchains = gCompileEnvMap[node.label].listInstalled();
+        return toolchains.filter((t) => t.info.installed).map((t) => this.toToolchainNode(NodeType.toolchain, t.info.name, t.info.version.str()));
+      }
     }
+    return [];
   }
 
   refresh() {
