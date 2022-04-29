@@ -268,9 +268,100 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
                         <span slot="end" class="codicon codicon-question" style="cursor: pointer"></span>
                       </vscode-text-field>
                     </div>
+                    <div>
+                      <span>Intermediate Paths</span>
+                      <span id="unfoldPBIntermediatePaths" class="codicon codicon-expand-all" style="cursor:pointer"></span>
+                      <span id="foldPBIntermediatePaths" class="codicon codicon-collapse-all" style="display:none; cursor:pointer"></span>
+                    </div>
+                    <div id="PBIntermediatePaths" style="display:none">
+                      <div class="vscode-panel-view">
+                        <!-- Placeholder for display -->
+                      </div>
+                      <div class="vscode-panel-view">
+                        <vscode-text-field id="PBInputPath" startIcon=true size=50 placeholder="">
+                          Input Path
+                          <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        </vscode-text-field>
+                      </div>
+                      <div class="vscode-panel-view">
+                        <vscode-text-field id="PBOutputPath" startIcon=true size=50 placeholder="">
+                          Output Path
+                          <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        </vscode-text-field>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="SAVEDConverterOptions" style="display:none">
+                    <div>
+                      <span>Intermediate Paths</span>
+                      <span id="unfoldSAVEDIntermediatePaths" class="codicon codicon-expand-all" style="cursor:pointer"></span>
+                      <span id="foldSAVEDIntermediatePaths" class="codicon codicon-collapse-all" style="display:none; cursor:pointer"></span>
+                    </div>
+                    <div id="SAVEDIntermediatePaths" style="display:none">
+                      <div class="vscode-panel-view">
+                        <!-- Placeholder for display -->
+                      </div>
+                      <div class="vscode-panel-view">
+                        <vscode-text-field id="SAVEDInputPath" startIcon=true size=50 placeholder="">
+                          Input Path
+                          <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        </vscode-text-field>
+                      </div>
+                      <div class="vscode-panel-view">
+                        <vscode-text-field id="SAVEDOutputPath" startIcon=true size=50 placeholder="">
+                          Output Path
+                          <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        </vscode-text-field>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="KERASConverterOptions" style="display:none">
+                    <div>
+                      <span>Intermediate Paths</span>
+                      <span id="unfoldKERASIntermediatePaths" class="codicon codicon-expand-all" style="cursor:pointer"></span>
+                      <span id="foldKERASIntermediatePaths" class="codicon codicon-collapse-all" style="display:none; cursor:pointer"></span>
+                    </div>
+                    <div id="KERASIntermediatePaths" style="display:none">
+                      <div class="vscode-panel-view">
+                        <!-- Placeholder for display -->
+                      </div>
+                      <div class="vscode-panel-view">
+                        <vscode-text-field id="KERASInputPath" startIcon=true size=50 placeholder="">
+                          Input Path
+                          <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        </vscode-text-field>
+                      </div>
+                      <div class="vscode-panel-view">
+                        <vscode-text-field id="KERASOutputPath" startIcon=true size=50 placeholder="">
+                          Output Path
+                          <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        </vscode-text-field>
+                      </div>
+                    </div>
                   </div>
                   <div id="TFLITEConverterOptions" style="display:none">
-                    No additional options for TFLite.
+                    <div>
+                      <span>Intermediate Paths</span>
+                      <span id="unfoldTFLITEIntermediatePaths" class="codicon codicon-expand-all" style="cursor:pointer"></span>
+                      <span id="foldTFLITEIntermediatePaths" class="codicon codicon-collapse-all" style="display:none; cursor:pointer"></span>
+                    </div>
+                    <div id="TFLITEIntermediatePaths" style="display:none">
+                      <div class="vscode-panel-view">
+                        <!-- Placeholder for display -->
+                      </div>
+                      <div class="vscode-panel-view">
+                        <vscode-text-field id="TFLITEInputPath" startIcon=true size=50 placeholder="">
+                          Input Path
+                          <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        </vscode-text-field>
+                      </div>
+                      <div class="vscode-panel-view">
+                        <vscode-text-field id="TFLITEOutputPath" startIcon=true size=50 placeholder="">
+                          Output Path
+                          <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        </vscode-text-field>
+                      </div>
+                    </div>
                   </div>
                   <div id="ONNXConverterOptions" style="display:none">
                     <div id="ONNXSaveIntermediate" class="vscode-panel-view">
@@ -290,6 +381,28 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
                         Unroll LSTM
                       </vscode-checkbox>
                       <span class="codicon codicon-question" style="cursor: pointer"></span>
+                    </div>
+                    <div>
+                      <span>Intermediate Paths</span>
+                      <span id="unfoldONNXIntermediatePaths" class="codicon codicon-expand-all" style="cursor:pointer"></span>
+                      <span id="foldONNXIntermediatePaths" class="codicon codicon-collapse-all" style="display:none; cursor:pointer"></span>
+                    </div>
+                    <div id="ONNXIntermediatePaths" style="display:none">
+                      <div class="vscode-panel-view">
+                        <!-- Placeholder for display -->
+                      </div>
+                      <div class="vscode-panel-view">
+                        <vscode-text-field id="ONNXInputPath" startIcon=true size=50 placeholder="">
+                          Input Path
+                          <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        </vscode-text-field>
+                      </div>
+                      <div class="vscode-panel-view">
+                        <vscode-text-field id="ONNXOutputPath" startIcon=true size=50 placeholder="">
+                          Output Path
+                          <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        </vscode-text-field>
+                      </div>
                     </div>
                   </div>
                 </div>

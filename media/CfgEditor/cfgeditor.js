@@ -106,6 +106,54 @@ function main() {
   const unfoldButton = document.getElementById('unfoldAdvancedOptions');
   unfoldButton.addEventListener('click', clickUnfoldAdvencedOptions);
 
+  const foldPBIntermediatePathsButton = document.getElementById('foldPBIntermediatePaths');
+  const unfoldPBIntermediatePathsButton = document.getElementById('unfoldPBIntermediatePaths');
+  foldPBIntermediatePathsButton.addEventListener('click', function() {
+    clickFold('PBIntermediatePaths');
+  });
+  unfoldPBIntermediatePathsButton.addEventListener('click', function() {
+    clickUnfold('PBIntermediatePaths');
+  });
+
+  const foldSAVEDIntermediatePathsButton = document.getElementById('foldSAVEDIntermediatePaths');
+  const unfoldSAVEDIntermediatePathsButton =
+      document.getElementById('unfoldSAVEDIntermediatePaths');
+  foldSAVEDIntermediatePathsButton.addEventListener('click', function() {
+    clickFold('SAVEDIntermediatePaths');
+  });
+  unfoldSAVEDIntermediatePathsButton.addEventListener('click', function() {
+    clickUnfold('SAVEDIntermediatePaths');
+  });
+
+  const foldKERASIntermediatePathsButton = document.getElementById('foldKERASIntermediatePaths');
+  const unfoldKERASIntermediatePathsButton =
+      document.getElementById('unfoldKERASIntermediatePaths');
+  foldKERASIntermediatePathsButton.addEventListener('click', function() {
+    clickFold('KERASIntermediatePaths');
+  });
+  unfoldKERASIntermediatePathsButton.addEventListener('click', function() {
+    clickUnfold('KERASIntermediatePaths');
+  });
+
+  const foldTFLITEIntermediatePathsButton = document.getElementById('foldTFLITEIntermediatePaths');
+  const unfoldTFLITEIntermediatePathsButton =
+      document.getElementById('unfoldTFLITEIntermediatePaths');
+  foldTFLITEIntermediatePathsButton.addEventListener('click', function() {
+    clickFold('TFLITEIntermediatePaths');
+  });
+  unfoldTFLITEIntermediatePathsButton.addEventListener('click', function() {
+    clickUnfold('TFLITEIntermediatePaths');
+  });
+
+  const foldONNXIntermediatePathsButton = document.getElementById('foldONNXIntermediatePaths');
+  const unfoldONNXIntermediatePathsButton = document.getElementById('unfoldONNXIntermediatePaths');
+  foldONNXIntermediatePathsButton.addEventListener('click', function() {
+    clickFold('ONNXIntermediatePaths');
+  });
+  unfoldONNXIntermediatePathsButton.addEventListener('click', function() {
+    clickUnfold('ONNXIntermediatePaths');
+  });
+
   // event from vscode extension
   window.addEventListener('message', event => {
     const message = event.data;
@@ -122,6 +170,26 @@ function outputPathSearchClick() {
 
 function inputModelSearchClick() {
   vscode.postMessage({type: 'setInputPath'});
+}
+
+function clickUnfold(id) {
+  const foldButton = document.getElementById('fold' + id);
+  const unfoldButton = document.getElementById('unfold' + id);
+  const content = document.getElementById(id);
+
+  content.style.display = 'block';
+  foldButton.style.display = 'inline';
+  unfoldButton.style.display = 'none';
+}
+
+function clickFold(id) {
+  const foldButton = document.getElementById('fold' + id);
+  const unfoldButton = document.getElementById('unfold' + id);
+  const content = document.getElementById(id);
+
+  content.style.display = 'none';
+  foldButton.style.display = 'none';
+  unfoldButton.style.display = 'inline';
 }
 
 function enableImportStep() {
@@ -272,19 +340,27 @@ function modelTypeClick() {
   const modelType = document.getElementById('modelTypeRadio').value;
   const initialImportState = document.getElementById('ImportInitialState');
   const pbConverterOptions = document.getElementById('PBConverterOptions');
+  const savedConverterOptions = document.getElementById('SAVEDConverterOptions');
+  const kerasConverterOptions = document.getElementById('KERASConverterOptions');
   const tflConverterOptions = document.getElementById('TFLITEConverterOptions');
   const onnxConverterOptions = document.getElementById('ONNXConverterOptions');
 
   initialImportState.style.display = 'none';
   pbConverterOptions.style.display = 'none';
+  savedConverterOptions.style.display = 'none';
+  kerasConverterOptions.style.display = 'none';
   tflConverterOptions.style.display = 'none';
   onnxConverterOptions.style.display = 'none';
 
   switch (modelType) {
     case 'pb':
-    case 'savedModel':
-    case 'kerasModel':
       pbConverterOptions.style.display = 'block';
+      return;
+    case 'savedModel':
+      savedConverterOptions.style.display = 'block';
+      return;
+    case 'kerasModel':
+      kerasConverterOptions.style.display = 'block';
       return;
     case 'tflite':
       tflConverterOptions.style.display = 'block';
