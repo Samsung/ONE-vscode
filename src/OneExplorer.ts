@@ -71,14 +71,14 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
   }
 
   getChildren(element?: OneNode): OneNode[]|Thenable<OneNode[]> {
+    if (!this.workspaceRoot) {
+      vscode.window.showInformationMessage('Cannot find workspace root');
+      return Promise.resolve([]);
+    }
+
     if (element) {
       return Promise.resolve(this.getNode(element.node));
     } else {
-      if (!this.workspaceRoot) {
-        vscode.window.showInformationMessage('Cannot find workspace root');
-        return Promise.resolve([]);
-      }
-
       return Promise.resolve(this.getNode(this.getTree(this.workspaceRoot)));
     }
   }
