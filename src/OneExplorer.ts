@@ -57,13 +57,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
   readonly onDidChangeTreeData: vscode.Event<OneNode|undefined|void> =
       this._onDidChangeTreeData.event;
 
-  private oneTree: Node|undefined;
-
-  constructor(private workspaceRoot: vscode.Uri|undefined) {
-    if (workspaceRoot !== undefined) {
-      this.oneTree = this.getTree(workspaceRoot);
-    }
-  }
+  constructor(private workspaceRoot: vscode.Uri|undefined) {}
 
   // TODO(dayo): enable refresh command
   refresh(): void {
@@ -77,15 +71,15 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
   }
 
   getChildren(element?: OneNode): OneNode[]|Thenable<OneNode[]> {
-    if (this.oneTree === undefined) {
-      vscode.window.showInformationMessage('No ONE model or config in empty workspace');
-      return Promise.resolve([]);
-    }
-
     if (element) {
       return Promise.resolve(this.getNode(element.node));
     } else {
-      return Promise.resolve(this.getNode(this.oneTree));
+      if (!this.workspaceRoot) {
+        vscode.window.showInformationMessage('Cannot find workspace root');
+        return Promise.resolve([]);
+      }
+
+      return Promise.resolve(this.getNode(this.getTree(this.workspaceRoot)));
     }
   }
 
