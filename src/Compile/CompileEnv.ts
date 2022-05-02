@@ -32,7 +32,7 @@ import {Logger} from '../Utils/Logger';
 class Env implements BuilderJob {
   workFlow: WorkFlow;  // our build WorkFlow
   currentWorkspace: string = '';
-  prepare: boolean = false;
+  isPrepared: boolean = false;
 
   constructor(l: Logger) {
     this.workFlow = new WorkFlow(l);
@@ -43,23 +43,23 @@ class Env implements BuilderJob {
   }
 
   public addJob(job: Job): void {
-    assert(this.prepare === false);
+    assert(this.isPrepared === false);
     this.workFlow.addJob(job);
   }
 
   public clearJobs(): void {
     this.workFlow.clearJobs();
-    this.prepare = false;
+    this.isPrepared = false;
   }
 
   public finishAdd(): void {
     console.log('Done building WorkFlow on Env');
     console.log(this.workFlow.jobs);
-    this.prepare = true;
+    this.isPrepared = true;
   }
 
   public build() {
-    if (this.prepare !== true) {
+    if (this.isPrepared !== true) {
       throw Error('Env is not yet prepared');
     }
 
