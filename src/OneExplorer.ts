@@ -166,15 +166,14 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
    * match)
    */
   private searchPairConfig(node: Node) {
-    const dirpath = path.dirname(node.path);
-    const files = fs.readdirSync(dirpath);
+    const files = fs.readdirSync(node.parent);
 
     const extSlicer = (fileName: string) => {
       return fileName.slice(0, fileName.lastIndexOf('.'));
     };
 
     for (const fname of files) {
-      const fpath = path.join(dirpath, fname);
+      const fpath = path.join(node.parent, fname);
       const fstat = fs.statSync(fpath);
 
       if (fstat.isFile() && fname.endsWith('.cfg') && (extSlicer(fname) === extSlicer(node.name))) {
