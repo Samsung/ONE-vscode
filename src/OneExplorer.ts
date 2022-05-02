@@ -24,11 +24,32 @@ enum NodeType {
   config
 }
 
-interface Node {
+class Node {
   type: NodeType;
-  name: string;
   childNodes: Node[];
   uri: vscode.Uri;
+
+  constructor(type: NodeType, childNodes: Node[], uri: vscode.Uri) {
+    this.type = type;
+    this.childNodes = childNodes;
+    this.uri = uri;
+  }
+
+  get path(): string {
+    return this.uri.fsPath;
+  }
+
+  get parent(): string {
+    return path.dirname(this.uri.fsPath);
+  }
+
+  get name(): string {
+    return path.parse(this.uri.fsPath).base;
+  }
+
+  get ext(): string {
+    return path.extname(this.uri.fsPath);
+  }
 }
 
 export class OneNode extends vscode.TreeItem {
@@ -39,7 +60,7 @@ export class OneNode extends vscode.TreeItem {
   ) {
     super(label, collapsibleState);
 
-    this.tooltip = `${this.node.uri.fsPath}`;
+    this.tooltip = `${this.node.path}`;
 
     if (node.type === NodeType.config) {
       this.iconPath = new vscode.ThemeIcon('gear');
@@ -95,41 +116,38 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
   }
 
   private getTree(rootPath: vscode.Uri): Node {
-    const node: Node = {
-      type: NodeType.directory,
-      name: path.parse(rootPath.fsPath).base,
-      childNodes: [],
-      uri: rootPath
-    };
-    this.searchNode(node, path.dirname(rootPath.fsPath));
+    const node = new Node(NodeType.directory, [], rootPath);
+
+    this.searchNode(node);
     return node;
   }
 
-  private searchNode(node: Node, dirPath: string) {
-    const dirpath = path.join(dirPath, node.name);
-    const files = fs.readdirSync(dirpath);
+  /**
+   * Construct a tree under the given node
+   * @returns void
+   */
+  private searchNode(node: Node) {
+    const files = fs.readdirSync(node.path);
 
-    for (const fn of files) {
-      const fpath = path.join(dirpath, fn);
+    for (const fname of files) {
+      const fpath = path.join(node.path, fname);
       const fstat = fs.statSync(fpath);
 
       if (fstat.isDirectory()) {
-        const dirNode: Node =
-            {type: NodeType.directory, name: fn, childNodes: [], uri: vscode.Uri.file(fpath)};
+        const childNode = new Node(NodeType.directory, [], vscode.Uri.file(fpath));
 
-        this.searchNode(dirNode, dirpath);
-        if (dirNode.childNodes.length > 0) {
-          node.childNodes.push(dirNode);
+        this.searchNode(childNode);
+        if (childNode.childNodes.length > 0) {
+          node.childNodes.push(childNode);
         }
       } else if (
           fstat.isFile() &&
-          (fn.endsWith('.pb') || fn.endsWith('.tflite') || fn.endsWith('.onnx'))) {
-        const modelNode:
-            Node = {type: NodeType.model, name: fn, childNodes: [], uri: vscode.Uri.file(fpath)};
+          (fname.endsWith('.pb') || fname.endsWith('.tflite') || fname.endsWith('.onnx'))) {
+        const childNode = new Node(NodeType.model, [], vscode.Uri.file(fpath));
 
-        this.searchPairConfig(modelNode, dirpath);
+        this.searchPairConfig(childNode);
 
-        node.childNodes.push(modelNode);
+        node.childNodes.push(childNode);
       }
     }
   }
@@ -143,22 +161,20 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
    * TODO(dayo) Search by parsing config file's model entry (Currently model name and cfg name must
    * match)
    */
-  private searchPairConfig(node: Node, dirPath: string) {
-    const dirpath = path.dirname(path.join(dirPath, node.name));
-    const files = fs.readdirSync(dirpath);
+  private searchPairConfig(node: Node) {
+    const files = fs.readdirSync(node.parent);
 
     const extSlicer = (fileName: string) => {
       return fileName.slice(0, fileName.lastIndexOf('.'));
     };
 
-    for (const fn of files) {
-      const fpath = path.join(dirpath, fn);
+    for (const fname of files) {
+      const fpath = path.join(node.parent, fname);
       const fstat = fs.statSync(fpath);
 
-      if (fstat.isFile() && fn.endsWith('.cfg') && (extSlicer(fn) === extSlicer(node.name))) {
-        const configNode:
-            Node = {type: NodeType.config, name: fn, childNodes: [], uri: vscode.Uri.file(fpath)};
-        node.childNodes.push(configNode);
+      if (fstat.isFile() && fname.endsWith('.cfg') && (extSlicer(fname) === extSlicer(node.name))) {
+        const pairNode = new Node(NodeType.config, [], vscode.Uri.file(fpath));
+        node.childNodes.push(pairNode);
       }
     }
   }
