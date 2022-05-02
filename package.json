@@ -43,7 +43,7 @@
           "name": "Compiler Toolchain"
         },
         {
-          "id": "TargetDevice",
+          "id": "TargetDeviceView",
           "name": "Target Devices"
         }
       ]
