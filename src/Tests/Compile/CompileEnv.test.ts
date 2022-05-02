@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import {assert} from 'chai';
+import {strict as assert} from 'assert';
 
-import {Command} from '../../Backend/Command';
-import {Compiler, CompilerBase} from '../../Backend/Compiler';
+import {CompilerBase} from '../../Backend/Compiler';
 import {Toolchains} from '../../Backend/Toolchain';
-import {PackageInfo, ToolchainInfo} from '../../Backend/Toolchain';
-import {DebianArch, DebianRepo, DebianToolchain} from '../../Backend/ToolchainImpl/DebianToolchain';
-import {Version} from '../../Backend/Version';
+import {ToolchainInfo} from '../../Backend/Toolchain';
+import {DebianToolchain} from '../../Backend/ToolchainImpl/DebianToolchain';
 import {CompileEnv} from '../../Compile/CompileEnv';
 import {Logger} from '../../Utils/Logger';
 
@@ -33,8 +31,10 @@ class MockCompiler extends CompilerBase {
 
   constructor() {
     super();
-    this.installedToolchain = new DebianToolchain(new ToolchainInfo('npm', 'npm'));
-    this.availableToolchain = new DebianToolchain(new ToolchainInfo('nodejs', 'nodejs'));
+    this.installedToolchain =
+        new DebianToolchain(new ToolchainInfo('npm', 'package manager for Node.js'));
+    this.availableToolchain = new DebianToolchain(
+        new ToolchainInfo('nodejs', 'Node.js event-based server-side javascript engine'));
     this.ts = new Toolchains();
     this.ts.push(this.installedToolchain);
     this.ts.push(this.availableToolchain);
@@ -93,38 +93,42 @@ suite('Compile', function() {
         });
       });
 
-      suite('#install()', function() {
-        test('installes the toolchain', function(done) {
-          let env = new CompileEnv(logger, compiler);
-          env.install(compiler.availableToolchain);
-          env.workFlow.jobRunner.on(K_CLEANUP, function() {
-            assert.notEqual(env.installed, undefined);
-            let toolchain = env.listInstalled();
-            assert.strictEqual(toolchain, compiler.installedToolchain);
-            done();
-          });
-        });
-      });
+      // TODO(jyoung): Enable to install and uninstall package test case
+      // NOTE: It is necessary to consider about how to solve the operation
+      // that needs root permission like install and uninstall.
+      // suite('#install()', function() {
+      //   test('installes the toolchain', function(done) {
+      //     let env = new CompileEnv(logger, compiler);
+      //     env.install(compiler.availableToolchain);
+      //     env.workFlow.jobRunner.on(K_CLEANUP, function() {
+      //       assert.notEqual(env.installed, undefined);
+      //       let toolchain = env.listInstalled();
+      //       assert.strictEqual(toolchain, compiler.installedToolchain);
+      //       done();
+      //     });
+      //   });
+      // });
+      //
+      // suite('#uninstall()', function() {
+      //   test('uninstalles the toolchain', function(done) {
+      //     let env = new CompileEnv(logger, compiler);
+      //     env.uninstall(compiler.installedToolchain);
+      //     env.workFlow.jobRunner.on(K_CLEANUP, function() {
+      //       assert.equal(env.installed, undefined);
+      //       done();
+      //     });
+      //   });
+      // });
 
-      suite('#uninstall()', function() {
-        test('uninstalles the toolchain', function(done) {
-          let env = new CompileEnv(logger, compiler);
-          env.uninstall(compiler.installedToolchain);
-          env.workFlow.jobRunner.on(K_CLEANUP, function() {
-            assert.equal(env.installed, undefined);
-            done();
-          });
-        });
-      });
-
-      suite('#compile()', function() {
-        test('compiles model file with cfg file', function(done) {
-          // TODO
-          // 1. Install toolchain
-          // 2. After installing,
-          // 3. Does compile
-        });
-      });
+      // TODO(jyoung): Enable to compile test case
+      // suite('#compile()', function() {
+      //   test('compiles model file with cfg file', function(done) {
+      //     // TODO
+      //     // 1. Install toolchain
+      //     // 2. After installing,
+      //     // 3. Does compile
+      //   });
+      // });
     });
   });
 });
