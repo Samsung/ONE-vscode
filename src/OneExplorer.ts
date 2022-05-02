@@ -42,12 +42,16 @@ class Node {
     return this.uri.fsPath;
   }
 
-  get dir():string {
-    return this.uri.fsPath;
+  get parent():string {
+    return path.dirname(this.uri.fsPath);
   }
 
   get name(): string {
     return path.parse(this.uri.fsPath).base;
+  }
+
+  get ext(): string {
+    return path.extname(this.uri.fsPath);
   }
 }
 
