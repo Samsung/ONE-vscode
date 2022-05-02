@@ -59,7 +59,6 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
 
   constructor(private workspaceRoot: vscode.Uri|undefined) {}
 
-  // TODO(dayo): enable refresh command
   refresh(): void {
     this._onDidChangeTreeData.fire();
   }
@@ -175,5 +174,8 @@ export class OneExplorer {
     const oneTreeDataProvider = new OneTreeDataProvider(rootPath);
     context.subscriptions.push(
         vscode.window.registerTreeDataProvider('OneExplorerView', oneTreeDataProvider));
+
+    vscode.commands.registerCommand(
+        'onevscode.refresh-one-explorer', () => oneTreeDataProvider.refresh());
   }
 }
