@@ -118,11 +118,15 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
   private getTree(rootPath: vscode.Uri): Node {
     const node = new Node(NodeType.directory, [], rootPath);
 
-    this.searchNode(node, node.path);
+    this.searchNode(node);
     return node;
   }
 
-  private searchNode(node: Node, dirPath: string) {
+  /**
+   * Construct a tree under the given node
+   * @returns void
+   */
+  private searchNode(node: Node) {
     const files = fs.readdirSync(node.path);
 
     for (const fname of files) {
@@ -132,7 +136,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
       if (fstat.isDirectory()) {
         const childNode = new Node(NodeType.directory, [], vscode.Uri.file(fpath));
 
-        this.searchNode(childNode, fpath);
+        this.searchNode(childNode);
         if (childNode.childNodes.length > 0) {
           node.childNodes.push(childNode);
         }
@@ -141,9 +145,9 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
           (fname.endsWith('.pb') || fname.endsWith('.tflite') || fname.endsWith('.onnx'))) {
         const childNode = new Node(NodeType.model, [], vscode.Uri.file(fpath));
 
-        this.searchPairConfig(childNode, node.path);
+        this.searchPairConfig(childNode);
 
-        node.childNodes.push(node);
+        node.childNodes.push(childNode);
       }
     }
   }
@@ -157,8 +161,8 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
    * TODO(dayo) Search by parsing config file's model entry (Currently model name and cfg name must
    * match)
    */
-  private searchPairConfig(node: Node, dirPath: string) {
-    const dirpath = path.dirname(path.join(dirPath, node.name));
+  private searchPairConfig(node: Node) {
+    const dirpath = path.dirname(node.path);
     const files = fs.readdirSync(dirpath);
 
     const extSlicer = (fileName: string) => {
