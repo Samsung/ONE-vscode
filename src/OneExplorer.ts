@@ -29,20 +29,17 @@ class Node {
   childNodes: Node[];
   uri: vscode.Uri;
 
-  constructor(type: NodeType,
-    childNodes: Node[],
-    uri: vscode.Uri)
-  {
+  constructor(type: NodeType, childNodes: Node[], uri: vscode.Uri) {
     this.type = type;
     this.childNodes = childNodes;
     this.uri = uri;
   }
 
-  get path():string {
+  get path(): string {
     return this.uri.fsPath;
   }
 
-  get parent():string {
+  get parent(): string {
     return path.dirname(this.uri.fsPath);
   }
 
@@ -144,8 +141,8 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
         if (childNode.childNodes.length > 0) {
           node.childNodes.push(childNode);
         }
-      } 
-      else if (fstat.isFile() &&
+      } else if (
+          fstat.isFile() &&
           (fname.endsWith('.pb') || fname.endsWith('.tflite') || fname.endsWith('.onnx'))) {
         const childNode = new Node(NodeType.model, [], vscode.Uri.file(fpath));
 
