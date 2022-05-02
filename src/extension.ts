@@ -68,10 +68,10 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(installCompiler);
 
   // Target Device view
-  let connectDevice = vscode.commands.registerCommand('onevscode.connect-device', () => {
-    console.log('connect-device: NYI');
+  let registerDevice = vscode.commands.registerCommand('onevscode.register-device', () => {
+    console.log('register-device: NYI');
   });
-  context.subscriptions.push(connectDevice);
+  context.subscriptions.push(registerDevice);
 
   // show compilation page
   let compileWebView = vscode.commands.registerCommand('onevscode.show-compile-webview', () => {

@@ -98,8 +98,8 @@
         "icon": "$(desktop-download)"
       },
       {
-        "command": "onevscode.connect-device",
-        "title": "connect",
+        "command": "onevscode.register-device",
+        "title": "Register",
         "category": "ONE",
         "icon": "$(add)"
       },
@@ -158,7 +158,7 @@
           "group": "navigation"
         },
         {
-          "command": "onevscode.connect-device",
+          "command": "onevscode.register-device",
           "when": "view == TargetDevice",
           "group": "navigation"
         }
