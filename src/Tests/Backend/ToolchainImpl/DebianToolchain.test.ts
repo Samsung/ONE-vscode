@@ -76,7 +76,7 @@ suite('Backend', function() {
         test('', function() {
           let dt = new DebianToolchain(info);
           let cmd = dt.installed();
-          const expectedStr = 'dpkg-query --show ' + name + '=' + version.str() + ' && echo $?';
+          const expectedStr = 'dpkg-query --show ' + name + '=' + version.str();
           assert.strictEqual(cmd.str(), expectedStr);
         });
       });

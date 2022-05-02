@@ -90,8 +90,6 @@ class DebianToolchain implements Toolchain {
       pkg = `${pkg}=${this.info.version.str()}`;
     }
     cmd.push(pkg);
-    cmd.push('&&');
-    cmd.push('echo $?');
     return cmd;
   }
 };
