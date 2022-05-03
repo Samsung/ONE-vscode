@@ -18,6 +18,9 @@ import {Command} from './Command';
 import {Toolchains} from './Toolchain';
 
 interface Executor {
+  // exetensions of executable files
+  getExecutableExt(): string[];
+
   // defined/available toolchains
   toolchains(): Toolchains;
 
@@ -27,6 +30,11 @@ interface Executor {
 
 // General excutor uses onecc so default jobs can be used
 class ExecutorBase implements Executor {
+  // exetensions of executable files
+  getExecutableExt(): string[] {
+    throw Error('Invalid toolchains call');
+  }
+
   toolchains(): Toolchains {
     throw Error('Invalid toolchains call');
   }
