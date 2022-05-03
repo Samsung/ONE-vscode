@@ -15,6 +15,7 @@
  */
 
 import * as fs from 'fs';
+import * as ini from 'ini';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import {CfgEditorPanel} from './CfgEditor/CfgEditorPanel';
@@ -24,11 +25,30 @@ import {ToolRunner} from './Project/ToolRunner';
 import {Logger} from './Utils/Logger';
 
 const which = require('which');
+/**
+ * Read an ini file
+ * @param filePath
+ * @returns `object` if file read is successful, or `null` if file open has failed
+ *
+ */
+function readIni(filePath: string): object|null {
+  let configRaw: string;
+  try {
+    configRaw = fs.readFileSync(filePath, 'utf-8');
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+
+  // TODO check if toString() is required
+  return ini.parse(configRaw.toString());
+}
 
 enum NodeType {
   directory,
   model,
-  config
+  config,
+  baseModel
 }
 
 function nodeTypeToStr(t: NodeType): string {
@@ -78,6 +98,8 @@ export class OneNode extends vscode.TreeItem {
       this.iconPath = new vscode.ThemeIcon('gear');
     } else if (node.type === NodeType.directory) {
       this.iconPath = vscode.ThemeIcon.Folder;
+    } else if (node.type === NodeType.baseModel) {
+      this.iconPath = vscode.ThemeIcon.File;
     } else if (node.type === NodeType.model) {
       this.iconPath = vscode.ThemeIcon.File;
     }
@@ -127,9 +149,11 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
       if (node.type === NodeType.directory) {
         return new OneNode(node.name, vscode.TreeItemCollapsibleState.Expanded, node);
       } else if (node.type === NodeType.model) {
+        return new OneNode(node.name, vscode.TreeItemCollapsibleState.None, node);
+      } else if (node.type === NodeType.baseModel) {
         return new OneNode(node.name, vscode.TreeItemCollapsibleState.Collapsed, node);
       } else {  // (node.type == NodeType.config)
-        let oneNode = new OneNode(node.name, vscode.TreeItemCollapsibleState.None, node);
+        let oneNode = new OneNode(node.name, vscode.TreeItemCollapsibleState.Expanded, node);
         oneNode.command = {
           command: 'onevscode.open-cfg',
           title: 'Open File',
@@ -170,7 +194,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
       } else if (
           fstat.isFile() &&
           (fname.endsWith('.pb') || fname.endsWith('.tflite') || fname.endsWith('.onnx'))) {
-        const childNode = new Node(NodeType.model, [], vscode.Uri.file(fpath));
+        const childNode = new Node(NodeType.baseModel, [], vscode.Uri.file(fpath));
 
         this.searchPairConfig(childNode);
 
@@ -179,29 +203,131 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
     }
   }
 
+  // TODO(dayo) extract file-relative functions as another module
+  private parseInputPath = (configPath: string, modelPath: string): string|undefined => {
+    const config = readIni(configPath);
+    const ext = path.extname(modelPath).slice(1);
+
+    if (ext === undefined || config === null) {
+      return undefined;
+    }
+
+    return config[`one-import-${ext}` as keyof typeof config] ?
+        config[`one-import-${ext}` as keyof typeof config]['input_path'] :
+        undefined;
+  };
+
+  // TODO(dayo) extract file-relative functions as another module
+  private grepTargetInCommand = (str: string): string[] => {
+    let targets: string[] = [];
+    for (let entry of str.split(' ')) {
+      if (path.extname(entry) === '.tvn' || path.extname(entry) === '.circle') {
+        targets.push(entry);
+      }
+    }
+    return targets;
+  };
+
+  // TODO(dayo) extract file-relative functions as another module
+  private grepTarget = (str: string): string[] => {
+    let targets: string[] = [];
+    // TODO(dayo) add checks
+    targets.push(str);
+    return targets;
+  };
+
+  // TODO(dayo) extract file-relative functions as another module
+  private parseIntermediates = (configPath: string): string[] => {
+    const config = readIni(configPath);
+
+    if (config === null) {
+      return [];
+    }
+
+    const targetLocator = [
+      {section: 'one-optimize', key: 'input_path', grepper: this.grepTarget},
+      {section: 'one-optimize', key: 'input_path', grepper: this.grepTarget},
+      {section: 'one-quantize', key: 'input_path', grepper: this.grepTarget},
+      {section: 'one-quantize', key: 'input_path', grepper: this.grepTarget},
+      {section: 'one-codegen', key: 'command', grepper: this.grepTargetInCommand},
+    ];
+
+    let intermediates: string[] = [];
+    for (let loc of targetLocator) {
+      let confSection = config[loc.section as keyof typeof config];
+      let confKey = confSection ? confSection[loc.key as keyof typeof config] : undefined;
+      if (confKey) {
+        const targets = loc.grepper(confKey);
+        for (let target of targets) {
+          if (intermediates.includes(target) === false) {
+            intermediates.push(target);
+          }
+        }
+      }
+    }
+
+    return intermediates;
+  };
+
   /**
-   * Search .cfg files in the same directory of the node
-   *
-   * NOTE It assumes 1-1 relation for model and config
-   *
-   * TODO(dayo) Support N-N relation
-   * TODO(dayo) Search by parsing config file's model entry (Currently model name and cfg name must
-   * match)
+   * compare paths by normalization
+   * NOTE that '~'(home) is not supported
+   * TODO(dayo) support '~'
+   * TODO(dayo) extract file-relative functions as another module
+   */
+  private comparePath(path0: string, path1: string): boolean {
+    const absPath0 = path.resolve(path.normalize(path0));
+    const absPath1 = path.resolve(path.normalize(path1));
+    return absPath0 === absPath1;
+  }
+
+  /**
+   * Search .cfg files in the same directory
    */
   private searchPairConfig(node: Node) {
-    const files = fs.readdirSync(node.parent);
+    console.assert(node.type === NodeType.baseModel);
 
-    const extSlicer = (fileName: string) => {
-      return fileName.slice(0, fileName.lastIndexOf('.'));
-    };
+    const files = fs.readdirSync(node.parent);
 
     for (const fname of files) {
       const fpath = path.join(node.parent, fname);
       const fstat = fs.statSync(fpath);
 
-      if (fstat.isFile() && fname.endsWith('.cfg') && (extSlicer(fname) === extSlicer(node.name))) {
-        const pairNode = new Node(NodeType.config, [], vscode.Uri.file(fpath));
-        node.childNodes.push(pairNode);
+      if (fstat.isFile() && fname.endsWith('.cfg')) {
+        const parsedInputPath = this.parseInputPath(fpath, node.path);
+        if (parsedInputPath) {
+          const fullInputPath = path.join(node.parent, parsedInputPath);
+          if (this.comparePath(fullInputPath, node.path)) {
+            const pairNode = new Node(NodeType.config, [], vscode.Uri.file(fpath));
+            this.searchChildModels(pairNode);
+            node.childNodes.push(pairNode);
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Search specified intermediate model files in the same directory
+   */
+  private searchChildModels(node: Node) {
+    console.assert(node.type === NodeType.config);
+    console.log('searchChildModels');
+    const files = fs.readdirSync(node.parent);
+
+    for (const fname of files) {
+      const fpath = path.join(node.parent, fname);
+      const fstat = fs.statSync(fpath);
+
+      if (fstat.isFile() && (fname.endsWith('.circle') || fname.endsWith('.tvn'))) {
+        const intermediates = this.parseIntermediates(node.path);
+        for (let intermediate of intermediates) {
+          const parsedPath = path.join(node.parent, intermediate);
+          if (this.comparePath(parsedPath, fpath)) {
+            const child = new Node(NodeType.model, [], vscode.Uri.file(fpath));
+            node.childNodes.push(child);
+          }
+        }
       }
     }
   }
