@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import assert from 'assert';
+import {strict as assert} from 'assert';
 
 import {Compiler} from '../Backend/Compiler';
 import {Toolchain} from '../Backend/Toolchain';

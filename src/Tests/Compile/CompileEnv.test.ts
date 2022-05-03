@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {strict as assert} from 'assert';
+import {assert} from 'chai';
 
 import {CompilerBase} from '../../Backend/Compiler';
 import {Toolchains} from '../../Backend/Toolchain';
