@@ -166,4 +166,15 @@ class CompileEnv extends Env {
   }
 };
 
-export {Env, CompileEnv};
+/**
+ * Interface of backend map
+ * - Use Obejct class to use the only string key
+ */
+interface CompileEnvMap {
+  [key: string]: CompileEnv;
+}
+
+// List of compile environments
+let gCompileEnvMap: CompileEnvMap = {};
+
+export {Env, CompileEnv, gCompileEnvMap};
