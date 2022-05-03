@@ -30,6 +30,10 @@ enum NodeType {
   config
 }
 
+function nodeTypeToStr(t: NodeType): string {
+  return NodeType[t];
+}
+
 class Node {
   type: NodeType;
   childNodes: Node[];
@@ -58,6 +62,7 @@ class Node {
   }
 }
 
+
 export class OneNode extends vscode.TreeItem {
   constructor(
       public readonly label: string,
@@ -75,6 +80,15 @@ export class OneNode extends vscode.TreeItem {
     } else if (node.type === NodeType.model) {
       this.iconPath = vscode.ThemeIcon.File;
     }
+
+    // To show contextual menu on items in OneExplorer,
+    // we have to use "when" clause under "view/item/context" under "menus".
+    // We first try to use the following:
+    //    "when": "view == OneExplorerView && resourceExtname == .cfg"
+    //
+    // However, resourceExtname returns info of vscode Explorer view (not of OneExplorer).
+    //    "when": "view == OneExplorerView && viewItem == config"
+    this.contextValue = nodeTypeToStr(node.type);
   }
 }
 
