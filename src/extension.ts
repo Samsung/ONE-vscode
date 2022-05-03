@@ -26,7 +26,7 @@ import {createStatusBarItem} from './Config/ConfigStatusBar';
 import {CodelensProvider} from './Editor/CodelensProvider';
 import {HoverProvider} from './Editor/HoverProvider';
 import {Jsontracer} from './Jsontracer';
-import {handleRunOnecc, OneExplorer, OneNode} from './OneExplorer';
+import {OneExplorer} from './OneExplorer';
 import {Project} from './Project';
 import {Utils} from './Utils';
 
@@ -80,12 +80,6 @@ export function activate(context: vscode.ExtensionContext) {
     CompilePanel.render(context.extensionUri);
   });
   context.subscriptions.push(compileWebView);
-
-  // run onecc with cfg
-  let runCfgDisposal = vscode.commands.registerCommand('onevscode.run-cfg', (oneNode: OneNode) => {
-    handleRunOnecc(oneNode.node.uri, logger);
-  });
-  context.subscriptions.push(runCfgDisposal);
 
   context.subscriptions.push(CfgEditorPanel.register(context));
 

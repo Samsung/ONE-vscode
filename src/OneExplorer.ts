@@ -213,6 +213,12 @@ export class OneExplorer {
 
     vscode.commands.registerCommand(
         'onevscode.refresh-one-explorer', () => oneTreeDataProvider.refresh());
+
+    let runCfgDisposal =
+        vscode.commands.registerCommand('onevscode.run-cfg', (oneNode: OneNode) => {
+          handleRunOnecc(oneNode.node.uri, new Logger);
+        });
+    context.subscriptions.push(runCfgDisposal);
   }
 }
 
