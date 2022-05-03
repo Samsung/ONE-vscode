@@ -124,7 +124,7 @@ class CompileEnv extends Env {
     if (this.installed === toolchain) {
       throw Error('The toolchain is already installed');
     }
-    let cmd = toolchain.installed();
+    let cmd = toolchain.install();
     let job = new JobInstall(cmd);
     job.successCallback = () => {
       this.installed = toolchain;
