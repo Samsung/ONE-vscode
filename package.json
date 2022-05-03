@@ -43,8 +43,8 @@
           "name": "Compiler Toolchain"
         },
         {
-          "id": "ExecutorView",
-          "name": "Executor"
+          "id": "TargetDeviceView",
+          "name": "Target Devices"
         }
       ]
     },
@@ -98,6 +98,12 @@
         "icon": "$(desktop-download)"
       },
       {
+        "command": "onevscode.register-device",
+        "title": "Register",
+        "category": "ONE",
+        "icon": "$(add)"
+      },
+      {
         "command": "onevscode.build",
         "title": "build",
         "category": "ONE"
@@ -149,6 +155,11 @@
         {
           "command": "onevscode.install-compiler",
           "when": "view == CompilerToolchainView",
+          "group": "navigation"
+        },
+        {
+          "command": "onevscode.register-device",
+          "when": "view == TargetDevice",
           "group": "navigation"
         }
       ],
