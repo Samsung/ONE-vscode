@@ -208,7 +208,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
 }
 
 export class OneExplorer {
-  constructor(context: vscode.ExtensionContext) {
+  constructor(context: vscode.ExtensionContext, logger: Logger) {
     const rootPath =
         (vscode.workspace.workspaceFolders && (vscode.workspace.workspaceFolders.length > 0)) ?
         vscode.workspace.workspaceFolders[0].uri :
@@ -224,7 +224,8 @@ export class OneExplorer {
 
     let runCfgDisposal =
         vscode.commands.registerCommand('onevscode.run-cfg', (oneNode: OneNode) => {
-          handleRunOnecc(oneNode.node.uri, new Logger);
+          const oneccRunner = new OneccRunner(oneNode.node.uri, logger);
+          oneccRunner.run();
         });
     context.subscriptions.push(runCfgDisposal);
   }
@@ -238,30 +239,66 @@ export class OneExplorer {
 // menu handler
 //
 
-export {handleRunOnecc};
+import {EventEmitter} from 'events';
 
-/**
- * Function called when onevscode.run-cfg is called (when user clicks 'Run' on cfg file).
- * @param cfgUri uri of cfg file
- */
-function handleRunOnecc(cfgUri: vscode.Uri, logger: Logger) {
-  const toolRunner = new ToolRunner(logger);
+class OneccRunner extends EventEmitter {
+  private startRunningOnecc: string = 'START_RUNNING_ONECC';
+  private finishedRunningOnecc: string = 'FINISHED_RUNNING_ONECC';
 
-  // TODO Refine later
-  const resolve = function(value: string) {
-    console.log('Running onecc was successful!');
-  };
-  const reject = function(value: string) {
-    console.log('Running onecc failed!');
-  };
-
-  const toolArgs = new ToolArgs('-C', cfgUri.fsPath);
-  const cwd = path.dirname(cfgUri.fsPath);
-  let oneccPath = toolRunner.getOneccPath();
-  if (oneccPath === undefined) {
-    throw new Error('Cannot find installed onecc');
+  constructor(private cfgUri: vscode.Uri, private logger: Logger) {
+    super();
   }
 
-  const runner = toolRunner.getRunner('onecc', oneccPath, toolArgs, cwd);
-  runner.then(resolve).catch(reject);
+  /**
+   * Function called when onevscode.run-cfg is called (when user clicks 'Run' on cfg file).
+   */
+  public run() {
+    const toolRunner = new ToolRunner(this.logger);
+
+    this.on(this.startRunningOnecc, this.onStartRunningOnecc);
+    this.on(this.finishedRunningOnecc, this.onFinishedRunningOnecc);
+
+    const toolArgs = new ToolArgs('-C', this.cfgUri.fsPath);
+    const cwd = path.dirname(this.cfgUri.fsPath);
+    let oneccPath = toolRunner.getOneccPath();
+    if (oneccPath === undefined) {
+      throw new Error('Cannot find installed onecc');
+    }
+
+    const runnerPromise = toolRunner.getRunner('onecc', oneccPath, toolArgs, cwd);
+    this.emit(this.startRunningOnecc, runnerPromise);
+  }
+
+  private onStartRunningOnecc(runnerPromise: Promise<string>) {
+    const progressOption: vscode.ProgressOptions = {
+      location: vscode.ProgressLocation.Notification,
+      title: `Running: 'onecc --config ${this.cfgUri.fsPath}'`,
+      cancellable: true
+    };
+
+    // Show progress UI
+    vscode.window.withProgress(progressOption, (progress, token) => {
+      token.onCancellationRequested(() => {
+        vscode.window.showWarningMessage(`Error: NYI`);
+      });
+
+      const p = new Promise<void>(resolve => {
+        runnerPromise
+            .then(value => {
+              resolve();
+              this.emit(this.finishedRunningOnecc);
+            })
+            .catch(value => {
+              vscode.window.showWarningMessage(
+                  `Error occured while running: 'onecc --config ${this.cfgUri.fsPath}'`);
+            });
+      });
+
+      return p;
+    });
+  }
+
+  private onFinishedRunningOnecc() {
+    vscode.window.showInformationMessage(`Successfully completed`);
+  }
 }

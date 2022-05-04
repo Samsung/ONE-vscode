@@ -58,7 +58,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   setGlobalContext();
 
-  new OneExplorer(context);
+  new OneExplorer(context, logger);
 
   // ONE view
   let refreshCompiler = vscode.commands.registerCommand('onevscode.refresh-toolchain', () => {
