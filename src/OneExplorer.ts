@@ -17,6 +17,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
+import {CfgEditorPanel} from './CfgEditor/CfgEditorPanel';
 
 import {ToolArgs} from './Project/ToolArgs';
 import {ToolRunner} from './Project/ToolRunner';
@@ -128,7 +129,13 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
       } else if (node.type === NodeType.model) {
         return new OneNode(node.name, vscode.TreeItemCollapsibleState.Collapsed, node);
       } else {  // (node.type == NodeType.config)
-        return new OneNode(node.name, vscode.TreeItemCollapsibleState.None, node);
+        let oneNode = new OneNode(node.name, vscode.TreeItemCollapsibleState.None, node);
+        oneNode.command = {
+          command: 'onevscode.open-cfg',
+          title: 'Open File',
+          arguments: [oneNode.node]
+        };
+        return oneNode;
       }
     };
 
@@ -211,6 +218,7 @@ export class OneExplorer {
     context.subscriptions.push(
         vscode.window.registerTreeDataProvider('OneExplorerView', oneTreeDataProvider));
 
+    vscode.commands.registerCommand('onevscode.open-cfg', (file) => this.openFile(file));
     vscode.commands.registerCommand(
         'onevscode.refresh-one-explorer', () => oneTreeDataProvider.refresh());
 
@@ -219,6 +227,10 @@ export class OneExplorer {
           handleRunOnecc(oneNode.node.uri, new Logger);
         });
     context.subscriptions.push(runCfgDisposal);
+  }
+
+  private openFile(node: Node) {
+    vscode.commands.executeCommand('vscode.openWith', node.uri, CfgEditorPanel.viewType);
   }
 }
 
