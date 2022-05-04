@@ -137,6 +137,11 @@
         "command": "onevscode.circle-tracer",
         "title": "circle tracer",
         "category": "ONE"
+      },
+      {
+        "command": "onevscode.circle-graphview",
+        "title": "circle graph view",
+        "category": "ONE"
       }
     ],
     "menus": {
