@@ -164,7 +164,7 @@
         },
         {
           "command": "onevscode.register-device",
-          "when": "view == TargetDevice",
+          "when": "view == TargetDeviceView",
           "group": "navigation"
         }
       ],
