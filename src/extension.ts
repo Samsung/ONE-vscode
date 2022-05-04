@@ -29,6 +29,7 @@ import {Jsontracer} from './Jsontracer';
 import {OneExplorer} from './OneExplorer';
 import {Project} from './Project';
 import {Utils} from './Utils';
+import {showInstallQuickInput} from './View/InstallQuickInput';
 
 /**
  * Set vscode context that is used globally
@@ -65,7 +66,7 @@ export function activate(context: vscode.ExtensionContext) {
   });
   context.subscriptions.push(refreshCompiler);
   let installCompiler = vscode.commands.registerCommand('onevscode.install-compiler', () => {
-    console.log('install-compiler: NYI');
+    showInstallQuickInput(context);
   });
   context.subscriptions.push(installCompiler);
 
