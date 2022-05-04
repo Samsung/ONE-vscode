@@ -219,13 +219,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
 
   // TODO(dayo) extract file-relative functions as another module
   private grepTargetInCommand = (str: string): string[] => {
-    let targets: string[] = [];
-    for (let entry of str.split(' ')) {
-      if (path.extname(entry) === '.tvn' || path.extname(entry) === '.circle') {
-        targets.push(entry);
-      }
-    }
-    return targets;
+    return str.split(' ').filter(e => path.extname(e) === '.tvn' || path.extname(e) === '.circle');
   };
 
   // TODO(dayo) extract file-relative functions as another module
