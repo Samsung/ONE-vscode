@@ -71,7 +71,11 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
     webviewPanel.webview.html = this._getHtmlForWebview(webviewPanel.webview);
 
     function updateWebview() {
-      // TODO Update Webview with text document content
+      let ini = require('ini');
+      webviewPanel.webview.postMessage({
+        type: 'displayCfgToEditor',
+        text: ini.parse(document.getText()),
+      });
     };
 
     const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(e => {

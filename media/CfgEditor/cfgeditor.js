@@ -190,9 +190,112 @@ function main() {
     const message = event.data;
 
     switch (message.type) {
-      // TODO Add more message Hanler
+      case 'displayCfgToEditor':
+        displayCfgToEditor(message.text);
+        break;
+      default:
+        break;
     }
   });
+}
+
+function displayCfgToEditor(cfg) {
+  // one-build Section
+  const oneBuild = cfg['one-build'];
+  if (!oneBuild) {
+    return;
+  }
+
+  if (oneBuild['one-import-tf'] === 'True' || oneBuild['one-import-tflite'] === 'True' ||
+      oneBuild['one-import-onnx'] === 'True') {
+    enableImportStep(false);
+  } else {
+    disableImportStep();
+  }
+
+  if (oneBuild['one-optimize'] === 'True') {
+    enableStep('Optimize', false);
+  } else {
+    disableStep('Optimize');
+  }
+
+  if (oneBuild['one-quantize'] === 'True') {
+    enableStep('Quantize', false);
+  } else {
+    disableStep('Quantize');
+  }
+
+  if (oneBuild['one-codegen'] === 'True') {
+    enableStep('Codegen', false);
+  } else {
+    disableStep('Codegen');
+  }
+
+  if (oneBuild['one-profile'] === 'True') {
+    enableStep('Profile', false);
+  } else {
+    disableStep('Profile');
+  }
+
+  // one-import Section
+  if (cfg['one-import-tf']) {
+    const oneImportTF = cfg['one-import-tf'];
+    if (!oneImportTF['model_format'] || oneImportTF['model_format'] === 'graph_def') {
+      document.getElementById('modelTypeRadio').value = 'pb';
+      document.getElementById('PBConverterVersionRadio').value = oneImportTF['converter_version'];
+      document.getElementById('PBInputArrays').value = oneImportTF['input_arrays'];
+      document.getElementById('PBOutputArrays').value = oneImportTF['output_arrays'];
+      document.getElementById('PBInputShapes').value = oneImportTF['input_shapes'];
+      document.getElementById('PBInputPath').value = oneImportTF['input_path'];
+      document.getElementById('PBOutputPath').value = oneImportTF['output_path'];
+    } else if (oneImportTF['model_format'] === 'saved_model') {
+      document.getElementById('modelTypeRadio').value = 'savedModel';
+      document.getElementById('SAVEDInputPath').value = oneImportTF['input_path'];
+      document.getElementById('SAVEDOutputPath').value = oneImportTF['output_path'];
+    } else if (oneImportTF['model_format'] === 'keras_model') {
+      document.getElementById('modelTypeRadio').value = 'kerasModel';
+      document.getElementById('KERASInputPath').value = oneImportTF['input_path'];
+      document.getElementById('KERASOutputPath').value = oneImportTF['output_path'];
+    }
+    modelTypeClick();
+  } else if (cfg['one-import-tflite']) {
+    const oneImportTFLITE = cfg['one-import-tflite'];
+    document.getElementById('modelTypeRadio').value = 'tflite';
+    document.getElementById('TFLITEInputPath').value = oneImportTFLITE['input_path'];
+    document.getElementById('TFLITEOutputPath').value = oneImportTFLITE['output_path'];
+    modelTypeClick();
+  } else if (cfg['one-import-onnx']) {
+    const oneImportONNX = cfg['one-import-onnx'];
+    document.getElementById('modelTypeRadio').value = 'onnx';
+    document.getElementById('ONNXInputPath').value = oneImportONNX['input_path'];
+    document.getElementById('ONNXOutputPath').value = oneImportONNX['output_path'];
+    modelTypeClick();
+  } else if (cfg['one-import-bcq']) {
+    // TODO Support one-import-bcq
+  }
+
+  // TODO Implement for optimize
+
+  // TODO Implement for quantize
+
+  // one-codegen Section
+  if (cfg['one-codegen']) {
+    const oneCodegen = cfg['one-codegen'];
+    document.getElementById('codegenBackend').value = oneCodegen['backend'];
+    document.getElementById('codegenCommand').value = oneCodegen['command'];
+  }
+
+  // one-profile Section
+  if (cfg['one-profile']) {
+    const oneProfile = cfg['one-profile'];
+    document.getElementById('profileBackend').value = oneProfile['backend'];
+    document.getElementById('profileCommand').value = oneProfile['command'];
+  }
+
+  // TODO Support Intelligence Auto Complete
+  //   - Input Model
+  //   - Output Path
+  //   - Intermediate paths
 }
 
 function outputPathSearchClick() {
