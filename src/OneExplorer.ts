@@ -223,11 +223,8 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
   };
 
   // TODO(dayo) extract file-relative functions as another module
-  private grepTarget = (str: string): string[] => {
-    let targets: string[] = [];
-    // TODO(dayo) add checks
-    targets.push(str);
-    return targets;
+  private grepAll = (str: string): string[] => {
+    return [str];
   };
 
   // TODO(dayo) extract file-relative functions as another module
@@ -239,10 +236,10 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
     }
 
     const targetLocator = [
-      {section: 'one-optimize', key: 'input_path', grepper: this.grepTarget},
-      {section: 'one-optimize', key: 'output_path', grepper: this.grepTarget},
-      {section: 'one-quantize', key: 'input_path', grepper: this.grepTarget},
-      {section: 'one-quantize', key: 'output_path', grepper: this.grepTarget},
+      {section: 'one-optimize', key: 'input_path', grepper: this.grepAll},
+      {section: 'one-optimize', key: 'output_path', grepper: this.grepAll},
+      {section: 'one-quantize', key: 'input_path', grepper: this.grepAll},
+      {section: 'one-quantize', key: 'output_path', grepper: this.grepAll},
       {section: 'one-codegen', key: 'command', grepper: this.grepTargetInCommand},
     ];
 
