@@ -24,7 +24,6 @@ import {ToolArgs} from './Project/ToolArgs';
 import {ToolRunner} from './Project/ToolRunner';
 import {Logger} from './Utils/Logger';
 
-const which = require('which');
 /**
  * Read an ini file
  * @param filePath
@@ -212,9 +211,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
       return undefined;
     }
 
-    return config[`one-import-${ext}` as keyof typeof config] ?
-        config[`one-import-${ext}` as keyof typeof config]['input_path'] :
-        undefined;
+    return config[`one-import-${ext}` as keyof typeof config]?.['input_path'];
   };
 
   // TODO(dayo) extract file-relative functions as another module
@@ -246,7 +243,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
     let intermediates: string[] = [];
     for (let loc of targetLocator) {
       let confSection = config[loc.section as keyof typeof config];
-      let confKey = confSection ? confSection[loc.key as keyof typeof config] : undefined;
+      let confKey = confSection?.[loc.key as keyof typeof config];
       if (confKey) {
         const targets = loc.grepper(confKey);
         for (let target of targets) {
@@ -310,6 +307,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
       const fpath = path.join(node.parent, fname);
       const fstat = fs.statSync(fpath);
 
+      // TODO(dayo) Get .tvn file extension from backend
       if (fstat.isFile() && (fname.endsWith('.circle') || fname.endsWith('.tvn'))) {
         const intermediates = this.parseIntermediates(node.path);
         for (let intermediate of intermediates) {
