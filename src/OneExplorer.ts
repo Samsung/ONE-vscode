@@ -289,6 +289,6 @@ class OneccRunner extends EventEmitter {
 
   private onFinishedRunningOnecc() {
     vscode.window.showInformationMessage(
-        `Successfully finished running onecc --config ${this.cfgUri.fsPath}`);
+        `Successfully completed`);
   }
 }
