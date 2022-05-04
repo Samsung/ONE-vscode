@@ -17,10 +17,9 @@
 import {assert} from 'chai';
 
 import {CompilerBase} from '../../Backend/Compiler';
-import {Toolchains} from '../../Backend/Toolchain';
-import {ToolchainInfo} from '../../Backend/Toolchain';
+import {ToolchainInfo, Toolchains} from '../../Backend/Toolchain';
 import {DebianToolchain} from '../../Backend/ToolchainImpl/DebianToolchain';
-import {CompileEnv} from '../../Compile/CompileEnv';
+import {ToolchainEnv} from '../../Toolchain/ToolchainEnv';
 import {Logger} from '../../Utils/Logger';
 
 class MockCompiler extends CompilerBase {
@@ -44,15 +43,15 @@ class MockCompiler extends CompilerBase {
   }
 };
 
-suite('Compile', function() {
-  suite('CompileEnv', function() {
+suite('Toolchain', function() {
+  suite('ToolchainEnv', function() {
     const K_CLEANUP: string = 'cleanup';
     const logger = new Logger();
     const compiler = new MockCompiler();
 
     suite('#constructor()', function() {
       test('is constructed with params', function() {
-        let env = new CompileEnv(logger, compiler);
+        let env = new ToolchainEnv(logger, compiler);
         assert.equal(env.installed, undefined);
         assert.strictEqual(env.compiler, compiler);
       });
@@ -60,7 +59,7 @@ suite('Compile', function() {
 
     suite('#listAvailable()', function() {
       test('lists available toolchains', function() {
-        let env = new CompileEnv(logger, compiler);
+        let env = new ToolchainEnv(logger, compiler);
         let toolchains = env.listAvailable();
         assert.strictEqual(toolchains, compiler.toolchains());
       });
@@ -70,7 +69,7 @@ suite('Compile', function() {
     suite('@Use-onecc', function() {
       suite('#confirmInstalled()', function() {
         test('confirms the toolchain is installed', function(done) {
-          let env = new CompileEnv(logger, compiler);
+          let env = new ToolchainEnv(logger, compiler);
           assert.equal(env.installed, undefined);
           env.confirmInstalled();
           env.workFlow.jobRunner.on(K_CLEANUP, function() {
@@ -82,7 +81,7 @@ suite('Compile', function() {
 
       suite('#listInstalled()', function() {
         test('lists installed toolchain', function(done) {
-          let env = new CompileEnv(logger, compiler);
+          let env = new ToolchainEnv(logger, compiler);
           env.confirmInstalled();
           env.workFlow.jobRunner.on(K_CLEANUP, function() {
             assert.notEqual(env.installed, undefined);
@@ -98,7 +97,7 @@ suite('Compile', function() {
       // that needs root permission like install and uninstall.
       // suite('#install()', function() {
       //   test('installes the toolchain', function(done) {
-      //     let env = new CompileEnv(logger, compiler);
+      //     let env = new ToolchainEnv(logger, compiler);
       //     env.install(compiler.availableToolchain);
       //     env.workFlow.jobRunner.on(K_CLEANUP, function() {
       //       assert.notEqual(env.installed, undefined);
@@ -111,7 +110,7 @@ suite('Compile', function() {
       //
       // suite('#uninstall()', function() {
       //   test('uninstalles the toolchain', function(done) {
-      //     let env = new CompileEnv(logger, compiler);
+      //     let env = new ToolchainEnv(logger, compiler);
       //     env.uninstall(compiler.installedToolchain);
       //     env.workFlow.jobRunner.on(K_CLEANUP, function() {
       //       assert.equal(env.installed, undefined);

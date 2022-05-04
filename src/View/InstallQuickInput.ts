@@ -15,7 +15,7 @@
  */
 
 import * as vscode from 'vscode';
-import {gCompileEnvMap} from '../Compile/CompileEnv';
+import {gToolchainEnvMap} from '../Toolchain/ToolchainEnv';
 import {MultiStepInput} from '../Utils/MultiStepInput';
 
 export async function showInstallQuickInput(context: vscode.ExtensionContext) {
@@ -37,7 +37,7 @@ export async function showInstallQuickInput(context: vscode.ExtensionContext) {
 
   async function pickBackend(input: MultiStepInput, state: Partial<State>) {
     const backendGroups: vscode.QuickPickItem[] =
-        Object.keys(gCompileEnvMap).map((label) => ({label}));
+        Object.keys(gToolchainEnvMap).map((label) => ({label}));
     state.backend = await input.showQuickPick({
       title,
       step: 1,
@@ -53,7 +53,7 @@ export async function showInstallQuickInput(context: vscode.ExtensionContext) {
     if (state.backend === undefined) {
       throw Error('Backend is undefined.');
     }
-    const toolchains = gCompileEnvMap[state.backend.label].listAvailable();
+    const toolchains = gToolchainEnvMap[state.backend.label].listAvailable();
     const versions =
         toolchains.map((value) => value.info.version !== undefined ? value.info.version.str() : '');
     const versionGroups: vscode.QuickPickItem[] = versions.map((label) => ({label}));
