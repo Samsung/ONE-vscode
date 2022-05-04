@@ -39,8 +39,8 @@
           "name": "ONE Explorer"
         },
         {
-          "id": "CompilerToolchainView",
-          "name": "Compiler Toolchain"
+          "id": "ToolchainView",
+          "name": "Toolchain"
         },
         {
           "id": "TargetDeviceView",
@@ -91,13 +91,13 @@
         "category": "ONE"
       },
       {
-        "command": "onevscode.refresh-compiler",
+        "command": "onevscode.refresh-toolchain",
         "title": "Refresh",
         "category": "ONE",
         "icon": "$(refresh)"
       },
       {
-        "command": "onevscode.install-compiler",
+        "command": "onevscode.install-toolchain",
         "title": "Install",
         "category": "ONE",
         "icon": "$(desktop-download)"
@@ -153,13 +153,13 @@
           "group": "navigation"
         },
         {
-          "command": "onevscode.refresh-compiler",
-          "when": "view == CompilerToolchainView",
+          "command": "onevscode.refresh-toolchain",
+          "when": "view == ToolchainView",
           "group": "navigation"
         },
         {
-          "command": "onevscode.install-compiler",
-          "when": "view == CompilerToolchainView",
+          "command": "onevscode.install-toolchain",
+          "when": "view == ToolchainView",
           "group": "navigation"
         },
         {

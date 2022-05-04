@@ -16,7 +16,7 @@
 
 const assert = require('assert');
 import {Backend} from './API';
-import {gCompileEnvMap, CompileEnv} from '../Compile/CompileEnv';
+import {gToolchainEnvMap, ToolchainEnv} from '../Toolchain/ToolchainEnv';
 import {Logger} from '../Utils/Logger';
 
 /**
@@ -38,7 +38,7 @@ function backendRegistrationApi() {
       globalBackendMap[backendName] = backend;
       const compiler = backend.compiler();
       if (compiler) {
-        gCompileEnvMap[backend.name()] = new CompileEnv(new Logger(), compiler);
+        gToolchainEnvMap[backend.name()] = new ToolchainEnv(new Logger(), compiler);
       }
       console.log(`Backend ${backendName} was registered into ONE-vscode.`);
     }

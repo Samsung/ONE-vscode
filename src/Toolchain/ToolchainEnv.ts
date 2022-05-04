@@ -79,8 +79,8 @@ class Env implements BuilderJob {
   }
 }
 
-// A CompileEnv has a Toolchain
-class CompileEnv extends Env {
+class ToolchainEnv extends Env {
+  // TODO(jyoung): Support multiple installed toolchains
   installed?: Toolchain;
   compiler: Compiler;
 
@@ -170,11 +170,11 @@ class CompileEnv extends Env {
  * Interface of backend map
  * - Use Obejct class to use the only string key
  */
-interface CompileEnvMap {
-  [key: string]: CompileEnv;
+interface ToolchainEnvMap {
+  [key: string]: ToolchainEnv;
 }
 
 // List of compile environments
-let gCompileEnvMap: CompileEnvMap = {};
+let gToolchainEnvMap: ToolchainEnvMap = {};
 
-export {Env, CompileEnv, gCompileEnvMap};
+export {Env, ToolchainEnv, gToolchainEnvMap};

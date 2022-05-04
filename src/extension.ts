@@ -61,11 +61,11 @@ export function activate(context: vscode.ExtensionContext) {
   new OneExplorer(context);
 
   // ONE view
-  let refreshCompiler = vscode.commands.registerCommand('onevscode.refresh-compiler', () => {
-    console.log('refresh-compiler: NYI');
+  let refreshCompiler = vscode.commands.registerCommand('onevscode.refresh-toolchain', () => {
+    console.log('refresh-toolchain: NYI');
   });
   context.subscriptions.push(refreshCompiler);
-  let installCompiler = vscode.commands.registerCommand('onevscode.install-compiler', () => {
+  let installCompiler = vscode.commands.registerCommand('onevscode.install-toolchain', () => {
     showInstallQuickInput(context);
   });
   context.subscriptions.push(installCompiler);
