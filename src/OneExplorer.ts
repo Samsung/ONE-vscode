@@ -260,7 +260,7 @@ class OneccRunner extends EventEmitter {
   private onStartRunningOnecc(runnerPromise: Promise<string>) {
     const progressOption: vscode.ProgressOptions = {
       location: vscode.ProgressLocation.Notification,
-      title: `Running onecc --config ${this.cfgUri.fsPath}`,
+      title: `Running: 'onecc --config ${this.cfgUri.fsPath}'`,
       cancellable: true
     };
 
