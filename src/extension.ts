@@ -25,6 +25,7 @@ import {ConfigPanel} from './Config/ConfigPanel';
 import {createStatusBarItem} from './Config/ConfigStatusBar';
 import {CodelensProvider} from './Editor/CodelensProvider';
 import {HoverProvider} from './Editor/HoverProvider';
+import {runInferenceQuickInput} from './Execute/executeQuickInput';
 import {Jsontracer} from './Jsontracer';
 import {OneExplorer} from './OneExplorer';
 import {Project} from './Project';
@@ -75,6 +76,12 @@ export function activate(context: vscode.ExtensionContext) {
     console.log('register-device: NYI');
   });
   context.subscriptions.push(registerDevice);
+
+  let inferenceCommand = vscode.commands.registerCommand('onevscode.infer-model', () => {
+    console.log('one infer model...');
+    runInferenceQuickInput(context);
+  });
+  context.subscriptions.push(inferenceCommand);
 
   // show compilation page
   let compileWebView = vscode.commands.registerCommand('onevscode.show-compile-webview', () => {
