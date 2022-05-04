@@ -279,7 +279,7 @@ class OneccRunner extends EventEmitter {
             })
             .catch(value => {
               vscode.window.showWarningMessage(
-                  `Error: Running onecc --config ${this.cfgUri.fsPath}`);
+                  `Error occured while running: 'onecc --config ${this.cfgUri.fsPath}'`);
             });
       });
 
