@@ -80,6 +80,12 @@
         "icon": "$(go-to-file)"
       },
       {
+        "command": "onevscode.infer-model",
+        "title": "Infer",
+        "category": "ONE",
+        "_comment": "Run backend executor's inference command with a given model."
+      },
+      {
         "command": "onevscode.show-compile-webview",
         "title": "Compile",
         "category": "ONE",
