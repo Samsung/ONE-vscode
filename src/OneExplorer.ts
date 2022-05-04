@@ -240,9 +240,9 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
 
     const targetLocator = [
       {section: 'one-optimize', key: 'input_path', grepper: this.grepTarget},
-      {section: 'one-optimize', key: 'input_path', grepper: this.grepTarget},
+      {section: 'one-optimize', key: 'output_path', grepper: this.grepTarget},
       {section: 'one-quantize', key: 'input_path', grepper: this.grepTarget},
-      {section: 'one-quantize', key: 'input_path', grepper: this.grepTarget},
+      {section: 'one-quantize', key: 'output_path', grepper: this.grepTarget},
       {section: 'one-codegen', key: 'command', grepper: this.grepTargetInCommand},
     ];
 
@@ -320,6 +320,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
           if (this.comparePath(parsedPath, fpath)) {
             const child = new Node(NodeType.model, [], vscode.Uri.file(fpath));
             node.childNodes.push(child);
+            break;
           }
         }
       }
