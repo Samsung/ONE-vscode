@@ -53,6 +53,8 @@ function setGlobalContext() {
 export function activate(context: vscode.ExtensionContext) {
   console.log('one-vscode activate OK');
 
+  let logger = new Utils.Logger();
+
   setGlobalContext();
 
   new OneExplorer(context);
@@ -81,7 +83,6 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(CfgEditorPanel.register(context));
 
-  let logger = new Utils.Logger();
   let projectBuilder = new Project.Builder(logger);
 
   projectBuilder.init();

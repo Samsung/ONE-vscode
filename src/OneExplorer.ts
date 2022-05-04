@@ -18,10 +18,20 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 
+import {ToolArgs} from './Project/ToolArgs';
+import {ToolRunner} from './Project/ToolRunner';
+import {Logger} from './Utils/Logger';
+
+const which = require('which');
+
 enum NodeType {
   directory,
   model,
   config
+}
+
+function nodeTypeToStr(t: NodeType): string {
+  return NodeType[t];
 }
 
 class Node {
@@ -52,6 +62,7 @@ class Node {
   }
 }
 
+
 export class OneNode extends vscode.TreeItem {
   constructor(
       public readonly label: string,
@@ -69,6 +80,15 @@ export class OneNode extends vscode.TreeItem {
     } else if (node.type === NodeType.model) {
       this.iconPath = vscode.ThemeIcon.File;
     }
+
+    // To show contextual menu on items in OneExplorer,
+    // we have to use "when" clause under "view/item/context" under "menus".
+    // We first try to use the following:
+    //    "when": "view == OneExplorerView && resourceExtname == .cfg"
+    //
+    // However, resourceExtname returns info of vscode Explorer view (not of OneExplorer).
+    //    "when": "view == OneExplorerView && viewItem == config"
+    this.contextValue = nodeTypeToStr(node.type);
   }
 }
 
@@ -193,5 +213,43 @@ export class OneExplorer {
 
     vscode.commands.registerCommand(
         'onevscode.refresh-one-explorer', () => oneTreeDataProvider.refresh());
+
+    let runCfgDisposal =
+        vscode.commands.registerCommand('onevscode.run-cfg', (oneNode: OneNode) => {
+          handleRunOnecc(oneNode.node.uri, new Logger);
+        });
+    context.subscriptions.push(runCfgDisposal);
   }
+}
+
+//
+// menu handler
+//
+
+export {handleRunOnecc};
+
+/**
+ * Function called when onevscode.run-cfg is called (when user clicks 'Run' on cfg file).
+ * @param cfgUri uri of cfg file
+ */
+function handleRunOnecc(cfgUri: vscode.Uri, logger: Logger) {
+  const toolRunner = new ToolRunner(logger);
+
+  // TODO Refine later
+  const resolve = function(value: string) {
+    console.log('Running onecc was successful!');
+  };
+  const reject = function(value: string) {
+    console.log('Running onecc failed!');
+  };
+
+  const toolArgs = new ToolArgs('-C', cfgUri.fsPath);
+  const cwd = path.dirname(cfgUri.fsPath);
+  let oneccPath = toolRunner.getOneccPath();
+  if (oneccPath === undefined) {
+    throw new Error('Cannot find installed onecc');
+  }
+
+  const runner = toolRunner.getRunner('onecc', oneccPath, toolArgs, cwd);
+  runner.then(resolve).catch(reject);
 }
