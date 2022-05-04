@@ -273,7 +273,6 @@ class OneccRunner extends EventEmitter {
       const p = new Promise<void>(resolve => {
         runnerPromise
             .then(value => {
-              // successfully running onecc
               resolve();
               this.emit(this.finishedRunningOnecc);
             })
@@ -288,7 +287,6 @@ class OneccRunner extends EventEmitter {
   }
 
   private onFinishedRunningOnecc() {
-    vscode.window.showInformationMessage(
-        `Successfully completed`);
+    vscode.window.showInformationMessage(`Successfully completed`);
   }
 }
