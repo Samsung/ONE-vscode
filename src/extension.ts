@@ -27,6 +27,7 @@ import {CodelensProvider} from './Editor/CodelensProvider';
 import {HoverProvider} from './Editor/HoverProvider';
 import {runInferenceQuickInput} from './Execute/executeQuickInput';
 import {Jsontracer} from './Jsontracer';
+import {MondrianEditorProvider} from './Mondrian/MondrianEditor';
 import {OneExplorer} from './OneExplorer';
 import {Project} from './Project';
 import {Utils} from './Utils';
@@ -156,6 +157,8 @@ export function activate(context: vscode.ExtensionContext) {
     });
   });
   context.subscriptions.push(disposableOneCircleTracer);
+
+  context.subscriptions.push(MondrianEditorProvider.register(context));
 
   // returning backend registration function that will be called by backend extensions
   return backendRegistrationApi();
