@@ -18,6 +18,7 @@ import * as vscode from 'vscode';
 
 import {backendRegistrationApi} from './Backend/Backend';
 import {CfgEditorPanel} from './CfgEditor/CfgEditorPanel';
+import {CircleGraphPanel} from './CircleGraph/CircleGraph';
 import {decoder} from './Circlereader/Circlereader';
 import {Circletracer} from './Circletracer';
 import {CompilePanel} from './Compile/CompilePanel';
@@ -159,6 +160,11 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(disposableOneCircleTracer);
 
   context.subscriptions.push(MondrianEditorProvider.register(context));
+
+  let disposableGraphPenel = vscode.commands.registerCommand('onevscode.circle-graphview', () => {
+    CircleGraphPanel.createOrShow(context.extensionUri, undefined);
+  });
+  context.subscriptions.push(disposableGraphPenel);
 
   // returning backend registration function that will be called by backend extensions
   return backendRegistrationApi();
