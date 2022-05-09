@@ -18,7 +18,25 @@ import * as vscode from 'vscode';
 
 export class CircleGraphPanel {
   public static createOrShow(extensionUri: vscode.Uri, modelPath: string|undefined) {
+    // if modelPath is undefined, let's show file open dialog and get the model path from the user
+    if (modelPath === undefined) {
+      const options: vscode.OpenDialogOptions = {
+        canSelectMany: false,
+        openLabel: 'Open',
+        filters: {'circle files': ['circle']}
+      };
+      vscode.window.showOpenDialog(options).then(fileUri => {
+        if (fileUri && fileUri[0]) {
+          CircleGraphPanel.createOrShowContinue(extensionUri, fileUri[0].fsPath);
+        }
+      });
+    } else {
+      CircleGraphPanel.createOrShowContinue(extensionUri, modelPath);
+    }
+  }
+
+  private static createOrShowContinue(extensionUri: vscode.Uri, modelToLoad: string) {
     // TODO implement
-    console.log('NYI CircleGraph.createOrShow()');
+    console.log('NYI CircleGraph.createOrShowContinue()');
   }
 }
