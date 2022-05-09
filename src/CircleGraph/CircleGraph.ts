@@ -17,6 +17,13 @@
 import * as vscode from 'vscode';
 
 export class CircleGraphPanel {
+  public static currentPanel: CircleGraphPanel|undefined;
+  public static readonly viewType = 'CircleGraphPanel';
+
+  private readonly _panel: vscode.WebviewPanel;
+  private readonly _extensionUri: vscode.Uri;
+  private _modelToLoad: string;
+
   public static createOrShow(extensionUri: vscode.Uri, modelPath: string|undefined) {
     // if modelPath is undefined, let's show file open dialog and get the model path from the user
     if (modelPath === undefined) {
@@ -36,7 +43,45 @@ export class CircleGraphPanel {
   }
 
   private static createOrShowContinue(extensionUri: vscode.Uri, modelToLoad: string) {
-    // TODO implement
-    console.log('NYI CircleGraph.createOrShowContinue()');
+    const column =
+        vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
+
+    // TODO we may have show two or more graphs at the same time depending
+    //      on the usage if this control.
+    //      for now, let's limit to only one CircleGraphPanel
+
+    // If we already have a panel, show it.
+    if (CircleGraphPanel.currentPanel) {
+      CircleGraphPanel.currentPanel._panel.reveal(column);
+      return;
+    }
+
+    // Otherwise, create a new panel.
+    const panel = vscode.window.createWebviewPanel(
+        CircleGraphPanel.viewType,
+        'CircleGraphPanel',
+        column || vscode.ViewColumn.One,
+        getWebviewOptions(extensionUri),
+    );
+
+    CircleGraphPanel.currentPanel = new CircleGraphPanel(panel, extensionUri, modelToLoad);
   }
+
+  private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, modelToLoad: string) {
+    this._panel = panel;
+    this._extensionUri = extensionUri;
+    this._modelToLoad = modelToLoad;
+
+    // TODO implement
+  }
+}
+
+function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {
+  return {
+    // Enable javascript in the webview
+    enableScripts: true,
+    // And restrict the webview to only loading content from our extension's
+    // 'media/CircleGraph' directory.
+    localResourceRoots: [vscode.Uri.joinPath(extensionUri, 'media/CircleGraph')]
+  };
 }
