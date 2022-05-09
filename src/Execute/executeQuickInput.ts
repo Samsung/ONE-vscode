@@ -142,7 +142,8 @@ export async function runInferenceQuickInput(context: vscode.ExtensionContext) {
             })
         .then(
             () => {
-              vscode.window.showInformationMessage('Inference succeed!', {title: 'OK'});
+              vscode.window.showInformationMessage(
+                  `Inference succeeded! You can find the log at ${outFileName}`, {title: 'OK'});
             },
             (error: string) => {
               appendFileSync(outFileName, error);
