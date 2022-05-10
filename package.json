@@ -68,6 +68,12 @@
         "icon": "$(refresh)"
       },
       {
+        "command": "onevscode.create-cfg",
+        "title": "Create new ONE configuration",
+        "category": "ONE",
+        "icon": "$(add)"
+      },
+      {
         "command": "onevscode.flip-cfg-to-gui",
         "title": "Open cfg in GUI",
         "category": "ONE",
@@ -184,6 +190,11 @@
           "command": "onevscode.run-cfg",
           "when": "view == OneExplorerView && viewItem == config",
           "group": "navigation"
+        },
+        {
+          "command": "onevscode.create-cfg",
+          "when": "view == OneExplorerView && viewItem == baseModel",
+          "group": "inline"
         }
       ],
       "editor/title": [
