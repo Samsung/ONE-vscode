@@ -28,8 +28,35 @@ import {Toolchains} from './Toolchain';
 // 1. CompilerEnv uses Compiler to make jobs with cmds
 // 2. CompilerEnv runs the job with workflow
 interface Compiler {
+  /**
+   * @Deprecated Use toolchainTypes() and getToolchains()
+   */
   // defined/available toolchains by backend supporter
   toolchains(): Toolchains;
+
+  /**
+   * Function to get the type of toolchain. E.g., ['official', 'nightly']
+   */
+  getToolchainTypes(): string[];
+
+  /**
+   * Function to get the list of installable Toolchains.
+   * Assume that there are, say, 100 installable toolchain versions and UI needs to show
+   * 20 'nightly' toolchains first, and then next 30 'nightly' toolchains, sorted by version (recent
+   * first)
+   * in such case, we can call those two.
+   *    const first20 = getToolchains('nightly', 0, 20);
+   *    const next30 = getToolchains('nightly', 20, 30);
+   *
+   * @param toolchainType One of value returned from toolchainTypes()
+   * @param start starting index of whole installable toolchains sorted by version,
+   *              recent version first. 0-based index.
+   * @param count number of Toolchain returned. When count > n where
+   *              n = number of toonchains available, n number of toolchains will be returned.
+   *
+   * @throw Error when toolchainTypes are not supported
+   */
+  getToolchains(toolchainType: string, start: number, count: number): Toolchains;
 
   // compiler jobs
   compile(cfg: string): Command;
@@ -39,6 +66,14 @@ interface Compiler {
 class CompilerBase implements Compiler {
   toolchains(): Toolchains {
     throw Error('Invalid toolchains call');
+  }
+
+  getToolchainTypes(): string[] {
+    throw Error('Invalid getToolchainTypes call');
+  }
+
+  getToolchains(toolchainType: string, start: number, count: number): Toolchains {
+    throw Error('Invalid getToolchains call');
   }
 
   compile(cfg: string): Command {
