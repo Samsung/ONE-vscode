@@ -1671,8 +1671,8 @@ view.ModelFactoryService = class {
         this.register('./flax', [ '.msgpack' ]);
         this.register('./om', [ '.om', '.onnx', '.pb', '.engine' ]);
         this.register('./nnabla', [ '.nntxt' ], [ '.nnp' ]);
+        // clang-format on
     }
-    // clang-format on
     register(id, factories, containers) {
         for (const extension of factories) {
             this._factories.push({extension: extension, id: id});
