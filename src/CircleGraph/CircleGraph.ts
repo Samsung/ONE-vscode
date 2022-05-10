@@ -24,6 +24,8 @@ export class CircleGraphPanel {
   private readonly _extensionUri: vscode.Uri;
   private _modelToLoad: string;
 
+  private _disposables: vscode.Disposable[] = [];
+
   public static createOrShow(extensionUri: vscode.Uri, modelPath: string|undefined) {
     // if modelPath is undefined, let's show file open dialog and get the model path from the user
     if (modelPath === undefined) {
@@ -72,6 +74,38 @@ export class CircleGraphPanel {
     this._extensionUri = extensionUri;
     this._modelToLoad = modelToLoad;
 
+    // Set the webview's initial html content
+    this.update();
+
+    // Listen for when the panel is disposed
+    // This happens when the user closes the panel or when the panel is closed programmatically
+    this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
+
+    // Update the content based on view changes
+    this._panel.onDidChangeViewState(e => {
+      if (this._panel.visible) {
+        // NOTE if we call this.update(), it'll reload the model which may take time.
+        // TODO call conditional this.update() when necessary.
+        // this.update();
+      }
+    }, null, this._disposables);
+  }
+
+  public dispose() {
+    CircleGraphPanel.currentPanel = undefined;
+
+    // Clean up our resources
+    this._panel.dispose();
+
+    while (this._disposables.length) {
+      const x = this._disposables.pop();
+      if (x) {
+        x.dispose();
+      }
+    }
+  }
+
+  private update() {
     // TODO implement
   }
 }
