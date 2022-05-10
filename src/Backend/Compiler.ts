@@ -51,7 +51,8 @@ interface Compiler {
    * @param toolchainType One of value returned from toolchainTypes()
    * @param start starting index of whole installable toolchains sorted by version,
    *              recent version first. 0-based index.
-   * @param count number of Toolchain returned
+   * @param count number of Toolchain returned. When count > n where
+   *              n = number of toonchains available, n number of toolchains will be returned.
    *
    * @throw Error when toolchainTypes are not supported
    */
