@@ -154,7 +154,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
       } else if (node.type === NodeType.baseModel) {
         return new OneNode(node.name, vscode.TreeItemCollapsibleState.Collapsed, node);
       } else {  // (node.type == NodeType.config)
-        let oneNode = new OneNode(node.name, vscode.TreeItemCollapsibleState.Expanded, node);
+        const oneNode = new OneNode(node.name, vscode.TreeItemCollapsibleState.Expanded, node);
         oneNode.command = {
           command: 'onevscode.open-cfg',
           title: 'Open File',
@@ -242,13 +242,13 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
       {section: 'one-codegen', key: 'command', grepper: this.grepTargetInCommand},
     ];
 
-    let intermediates: string[] = [];
-    for (let loc of targetLocator) {
-      let confSection = config[loc.section as keyof typeof config];
-      let confKey = confSection ?.[loc.key as keyof typeof config];
+    const intermediates: string[] = [];
+    for (const loc of targetLocator) {
+      const confSection = config[loc.section as keyof typeof config];
+      const confKey = confSection ?.[loc.key as keyof typeof config];
       if (confKey) {
         const targets = loc.grepper(confKey);
-        for (let target of targets) {
+        for (const target of targets) {
           if (intermediates.includes(target) === false) {
             intermediates.push(target);
           }
@@ -312,7 +312,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
       // TODO(dayo) Get .tvn file extension from backend
       if (fstat.isFile() && (fname.endsWith('.circle') || fname.endsWith('.tvn'))) {
         const intermediates = this.parseIntermediates(node.path);
-        for (let intermediate of intermediates) {
+        for (const intermediate of intermediates) {
           const parsedPath = path.join(node.parent, intermediate);
           if (this.comparePath(parsedPath, fpath)) {
             const child = new Node(NodeType.model, [], vscode.Uri.file(fpath));
@@ -340,7 +340,7 @@ export class OneExplorer {
     vscode.commands.registerCommand(
         'onevscode.refresh-one-explorer', () => oneTreeDataProvider.refresh());
 
-    let runCfgDisposal =
+    const runCfgDisposal =
         vscode.commands.registerCommand('onevscode.run-cfg', (oneNode: OneNode) => {
           const oneccRunner = new OneccRunner(oneNode.node.uri, logger);
           oneccRunner.run();
@@ -360,8 +360,8 @@ export class OneExplorer {
 import {EventEmitter} from 'events';
 
 class OneccRunner extends EventEmitter {
-  private startRunningOnecc: string = 'START_RUNNING_ONECC';
-  private finishedRunningOnecc: string = 'FINISHED_RUNNING_ONECC';
+  private startRunningOnecc = 'START_RUNNING_ONECC';
+  private finishedRunningOnecc = 'FINISHED_RUNNING_ONECC';
 
   constructor(private cfgUri: vscode.Uri, private logger: Logger) {
     super();
@@ -378,7 +378,7 @@ class OneccRunner extends EventEmitter {
 
     const toolArgs = new ToolArgs('-C', this.cfgUri.fsPath);
     const cwd = path.dirname(this.cfgUri.fsPath);
-    let oneccPath = toolRunner.getOneccPath();
+    const oneccPath = toolRunner.getOneccPath();
     if (oneccPath === undefined) {
       throw new Error('Cannot find installed onecc');
     }
@@ -402,11 +402,11 @@ class OneccRunner extends EventEmitter {
 
       const p = new Promise<void>(resolve => {
         runnerPromise
-            .then(value => {
+            .then(() => {
               resolve();
               this.emit(this.finishedRunningOnecc);
             })
-            .catch(value => {
+            .catch(() => {
               vscode.window.showWarningMessage(
                   `Error occured while running: 'onecc --config ${this.cfgUri.fsPath}'`);
             });
