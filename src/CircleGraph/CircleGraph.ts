@@ -21,6 +21,8 @@ export class CircleGraphPanel {
   public static currentPanel: CircleGraphPanel|undefined;
   public static readonly viewType = 'CircleGraphPanel';
   public static readonly folderMediaCircleGraph = 'media/CircleGraph';
+  private static readonly folderMediaCircleGraphExt = 'media/CircleGraph/external';
+  private static readonly folderExternal = 'external/';
 
   private readonly _panel: vscode.WebviewPanel;
   private readonly _extensionUri: vscode.Uri;
@@ -116,13 +118,55 @@ export class CircleGraphPanel {
     const htmlPath = this.getMediaPath('index.html');
     let html = fs.readFileSync(htmlPath.fsPath, {encoding: 'utf-8'});
 
-    // TODO fix file loadings inside html
+    const nonce = getNonce();
+    html = html.replace(/\%nonce%/gi, nonce);
+    html = html.replace('%webview.cspSource%', webview.cspSource);
+    // necessary files from netron to work
+    html = this.updateExternalUri(html, webview, '%view-grapher.css%', 'view-grapher.css');
+    html = this.updateExternalUri(html, webview, '%view-sidebar.css%', 'view-sidebar.css');
+    html = this.updateExternalUri(html, webview, '%view-sidebar.js%', 'view-sidebar.js');
+    html = this.updateExternalUri(html, webview, '%view-grapher.js%', 'view-grapher.js');
+    html = this.updateExternalUri(html, webview, '%dagre.js%', 'dagre.js');
+    html = this.updateExternalUri(html, webview, '%base.js%', 'base.js');
+    html = this.updateExternalUri(html, webview, '%text.js%', 'text.js');
+    html = this.updateExternalUri(html, webview, '%json.js%', 'json.js');
+    html = this.updateExternalUri(html, webview, '%xml.js%', 'xml.js');
+    html = this.updateExternalUri(html, webview, '%python.js%', 'python.js');
+    html = this.updateExternalUri(html, webview, '%protobuf.js%', 'protobuf.js');
+    html = this.updateExternalUri(html, webview, '%flatbuffers.js%', 'flatbuffers.js');
+    html = this.updateExternalUri(html, webview, '%flexbuffers.js%', 'flexbuffers.js');
+    html = this.updateExternalUri(html, webview, '%zip.js%', 'zip.js');
+    html = this.updateExternalUri(html, webview, '%gzip.js%', 'gzip.js');
+    html = this.updateExternalUri(html, webview, '%tar.js%', 'tar.js');
+    // for circle format
+    html = this.updateExternalUri(html, webview, '%circle.js%', 'circle.js');
+    html = this.updateExternalUri(html, webview, '%circle-schema.js%', 'circle-schema.js');
+    // modified for one-vscode
+    html = this.updateUri(html, webview, '%index.js%', 'index.js');
+    html = this.updateUri(html, webview, '%view.js%', 'view.js');
 
     return html;
   }
 
   private getMediaPath(file: string) {
     return vscode.Uri.joinPath(this._extensionUri, CircleGraphPanel.folderMediaCircleGraph, file);
+  }
+
+  private updateExternalUri(
+      html: string, webview: vscode.Webview, search: string, replace: string) {
+    const replaceUri = this.getUriFromPath(webview, CircleGraphPanel.folderExternal + replace);
+    return html.replace(search, `${replaceUri}`);
+  }
+
+  private updateUri(html: string, webview: vscode.Webview, search: string, replace: string) {
+    const replaceUri = this.getUriFromPath(webview, replace);
+    return html.replace(search, `${replaceUri}`);
+  }
+
+  private getUriFromPath(webview: vscode.Webview, file: string) {
+    const mediaPath = this.getMediaPath(file);
+    const uriView = webview.asWebviewUri(mediaPath);
+    return uriView;
   }
 }
 
@@ -138,4 +182,13 @@ function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions&
     // to prevent view to reload after loosing focus
     retainContextWhenHidden: true
   };
+}
+
+function getNonce() {
+  let text = '';
+  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  for (let i = 0; i < 32; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  return text;
 }
