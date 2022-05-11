@@ -273,26 +273,16 @@ host.BrowserHost = class {
             return Promise.resolve(this.window.__exports__[url]);
         }
         return new Promise((resolve, reject) => {
-            this.window.module = {exports: {}};
-            const script = document.createElement('script');
-            script.setAttribute('id', id);
-            script.setAttribute('type', 'text/javascript');
-            script.setAttribute('src', url);
-            script.onload = (e) => {
-                if (this.window.module && this.window.module.exports) {
-                    const exports = this.window.module.exports;
-                    delete this.window.module;
-                    this.window.__modules__[id] = exports;
-                    resolve(exports);
-                } else {
-                    reject(new Error('The script \'' + e.target.src + '\' has no exports.'));
-                }
-            };
-            script.onerror = (e) => {
-                delete this.window.module;
-                reject(new Error('The script \'' + e.target.src + '\' failed to load.'));
-            };
-            this.document.head.appendChild(script);
+            // NOTE this only implements require for below ids
+            // TODO add more for other formats
+            if (id === 'circle' || id === './circle') {
+                this.window.__modules__[id] = circle;
+                resolve(circle);
+            } else if (id === 'circle-schema' || id === './circle-schema') {
+                this.window.__modules__[id] = $root.circle;
+                resolve($root.circle);
+            }
+            reject(new Error('Unsupported require: ' + id));
         });
     }
 
