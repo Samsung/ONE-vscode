@@ -1,0 +1,250 @@
+name: Build release
+
+on:
+  workflow_dispatch:    # Allow manual triggers
+    inputs:
+      tag:
+        description: 'Release tag (format: major.minor.patch)'
+        required: true
+      draft:
+        description: 'Create a draft (unpublished) release (default: false)'
+        type: boolean
+        default: false
+      prerelease:
+        description: 'Identify the release as a prerelease (default: false)'
+        type: boolean
+        default: false
+
+jobs:
+  create-issue:
+    runs-on: ubuntu-latest
+    outputs:
+      issue_number: ${{ steps.create_issue.outputs.issue_number }}
+    steps:
+      - name: Create issue
+        id: create_issue
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Release ${{ github.event.inputs.tag }} version`,
+              body: `## Let's release ${{ github.event.inputs.tag }} version`,
+              labels: ['release']
+            }).then(response => {
+              core.setOutput('issue_number', response.data.number);
+            })
+
+  # Same job with check-license.yml
+  check-license:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npx license-checker --unknown --json --out license_list.json
+      - shell: bash
+        run: npx ts-node infra/license/license-checker.ts license_list.json ${{ matrix.os }}
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.os }}.json
+          path: ${{ matrix.os }}.json
+          retention-days: 1
+  post-license-result:
+    needs:
+      - check-license
+      - create-issue
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - uses: actions/download-artifact@v3
+        with:
+          name: ubuntu-latest.json
+      - uses: actions/download-artifact@v3
+        with:
+          name: macos-latest.json
+      - uses: actions/download-artifact@v3
+        with:
+          name: windows-latest.json
+      - run: npm install
+      - run: npx ts-node infra/license/check-result-formatter.ts ubuntu-latest.json windows-latest.json macos-latest.json
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            var fs = require('fs');
+            var body_content = fs.readFileSync('license_check_result.md', 'utf-8');
+            github.rest.issues.createComment({
+              issue_number: ${{ needs.create-issue.outputs.issue_number }},
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body_content
+            });
+  delete-license-result:
+    needs: post-license-result
+    runs-on: ubuntu-latest
+    steps:
+      - uses: geekyeggo/delete-artifact@v1
+        with:
+          name: |
+            ubuntu-latest.json
+            macos-latest.json
+            windows-latest.json
+          failOnError: false
+
+  # Same job with check-copyright.yml
+  check-copyright:
+    needs: create-issue
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npx ts-node infra/copyright/copyright-checker.ts
+      - uses: actions/github-script@v6
+        if: ${{ hashFiles('copyright-checker.fail') }}
+        with:
+          script: |
+            var fs = require('fs');
+            var body_content = fs.readFileSync('copyright-checker.fail', 'utf-8');
+            github.rest.issues.createComment({
+              issue_number: ${{ needs.create-issue.outputs.issue_number }},
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body_content
+            })
+      - uses: actions/github-script@v6
+        if: ${{ !hashFiles('copyright-checker.fail') }}
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: ${{ needs.create-issue.outputs.issue_number }},
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `:heavy_check_mark: Copyright test passed`
+            })
+      - run: exit 1
+        if: ${{ hashFiles('copyright-checker.fail') }}
+
+  # Same job with check-pr-tsc.yml
+  check-compile:
+    needs: create-issue
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run compile
+      - uses: actions/github-script@v6
+        if: ${{ success() }}
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: ${{ needs.create-issue.outputs.issue_number }},
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `:heavy_check_mark: Compile test passed`
+            })
+
+  # Same job with check-pr-test.yml
+  check-test:
+    needs: create-issue
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: sudo apt install xvfb
+      - run: DISPLAY=:44 xvfb-run --server-num 44 npm test ci
+      - uses: actions/github-script@v6
+        if: ${{ success() }}
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: ${{ needs.create-issue.outputs.issue_number }},
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `:heavy_check_mark: Unit test passed`
+            })
+
+  # Same job with publish-extension.yml
+  create-vsce-package:
+    needs:
+      - post-license-result
+      - check-copyright
+      - check-compile
+      - check-test
+    runs-on: ubuntu-latest
+    outputs:
+      package_name: ${{ steps.search_package.outputs.package_name }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - name: Install node packages
+        run: |
+          npm install
+      - name: Install vsce tool
+        run: |
+          npm install -g vsce
+      - name: Build vsix package
+        run: |
+          vsce package ${{ github.event.inputs.tag }}
+      # TODO Enable publish job
+      - name: Publish vsix package
+        if: ${{ false }}
+        run: |
+          vsce publish
+      - id: search_package
+        run: |
+          fname=$(find . -name "*.vsix" | xargs -I {} basename {})
+          echo "::set-output name=package_name::$fname"
+      - name: Upload vsix package
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.search_package.outputs.package_name }}
+          path: ./${{ steps.search_package.outputs.package_name }}
+
+  release:
+    needs: create-vsce-package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v3
+        with:
+          name: ${{ needs.create-vsce-package.outputs.package_name }}
+      - name: Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.event.inputs.tag }}
+          release_name: Release ${{ github.event.inputs.tag }}
+          body_path: ./release_notes.md
+          draft: ${{ github.event.inputs.draft }}
+          prerelease: ${{ github.event.inputs.prerelease }}
+      - name: Upload artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./${{ needs.create-vsce-package.outputs.package_name }}
+          asset_name: ${{ needs.create-vsce-package.outputs.package_name }}
+          asset_content_type: application/vsix
