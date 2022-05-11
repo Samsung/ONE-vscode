@@ -17,6 +17,13 @@
 import * as fs from 'fs';
 import * as vscode from 'vscode';
 
+import {Balloon} from '../Utils/Balloon';
+
+class MessageDefs {
+  // message command
+  public static readonly alert = 'alert';
+};
+
 export class CircleGraphPanel {
   public static currentPanel: CircleGraphPanel|undefined;
   public static readonly viewType = 'CircleGraphPanel';
@@ -89,6 +96,15 @@ export class CircleGraphPanel {
         // NOTE if we call this.update(), it'll reload the model which may take time.
         // TODO call conditional this.update() when necessary.
         // this.update();
+      }
+    }, null, this._disposables);
+
+    // Handle messages from the webview
+    this._panel.webview.onDidReceiveMessage(message => {
+      switch (message.command) {
+        case MessageDefs.alert:
+          Balloon.error(message.text);
+          return;
       }
     }, null, this._disposables);
   }

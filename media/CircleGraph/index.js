@@ -46,6 +46,8 @@
 
 var host = {};
 
+const vscode = acquireVsCodeApi();
+
 host.BrowserHost = class {
     constructor() {
         this._document = window.document;
@@ -259,7 +261,8 @@ host.BrowserHost = class {
     }
 
     error(message, detail) {
-        alert((message === 'Error' ? '' : message + ' ') + detail);
+        let text = (message === 'Error' ? '' : message + ' ') + detail;
+        vscode.postMessage({command: 'alert', text: text});
     }
 
     confirm(message, detail) {
