@@ -110,12 +110,6 @@ host.BrowserHost = class {
             'zoom', params.has('zoom') ? params.get('zoom') : this._environment.get('zoom'));
 
         this._menu = new host.Dropdown(this, 'menu-button', 'menu-dropdown');
-        this._menu.add({
-            label: 'Properties...',
-            accelerator: 'CmdOrCtrl+Enter',
-            click: () => this._view.showModelProperties()
-        });
-        this._menu.add({});
         this._menu.add(
             {label: 'Find...', accelerator: 'CmdOrCtrl+F', click: () => this._view.find()});
         this._menu.add({});
@@ -163,92 +157,9 @@ host.BrowserHost = class {
             accelerator: 'Shift+Backspace',
             click: () => this._view.resetZoom()
         });
-        this._menu.add({});
-        this._menu.add({
-            label: 'Export as PNG',
-            accelerator: 'CmdOrCtrl+Shift+E',
-            click: () => this._view.export(document.title + '.png')
-        });
-        this._menu.add({
-            label: 'Export as SVG',
-            accelerator: 'CmdOrCtrl+Alt+E',
-            click: () => this._view.export(document.title + '.svg')
-        });
         this.document.getElementById('menu-button').addEventListener('click', (e) => {
             this._menu.toggle();
             e.preventDefault();
-        });
-        this._menu.add({});
-        this._menu.add({label: 'About ' + this.document.title, click: () => this._about()});
-
-        this.document.getElementById('version').innerText = this.version;
-
-        if (this._meta.file) {
-            const url = this._meta.file[0];
-            if (this._view.accept(url)) {
-                this._openModel(this._url(url), null);
-                return;
-            }
-        }
-
-        const url = params.get('url');
-        if (url) {
-            const identifier = params.get('identifier') || null;
-            const location = url.replace(
-                new RegExp('^https://github.com/([\\w]*/[\\w]*)/blob/([\\w/_.]*)(\\?raw=true)?$'),
-                'https://raw.githubusercontent.com/$1/$2');
-            if (this._view.accept(identifier || location)) {
-                this._openModel(location, identifier);
-                return;
-            }
-        }
-
-        const gist = params.get('gist');
-        if (gist) {
-            this._openGist(gist);
-            return;
-        }
-
-        const openFileButton = this.document.getElementById('open-file-button');
-        const openFileDialog = this.document.getElementById('open-file-dialog');
-        if (openFileButton && openFileDialog) {
-            openFileButton.addEventListener('click', () => {
-                openFileDialog.value = '';
-                openFileDialog.click();
-            });
-            openFileDialog.addEventListener('change', (e) => {
-                if (e.target && e.target.files && e.target.files.length > 0) {
-                    const files = Array.from(e.target.files);
-                    const file = files.find((file) => this._view.accept(file.name));
-                    if (file) {
-                        this._open(file, files);
-                    }
-                }
-            });
-        }
-        const githubButton = this.document.getElementById('github-button');
-        const githubLink = this.document.getElementById('logo-github');
-        if (githubButton && githubLink) {
-            githubButton.style.opacity = 1;
-            githubButton.addEventListener('click', () => {
-                this.openURL(githubLink.href);
-            });
-        }
-        this.document.addEventListener('dragover', (e) => {
-            e.preventDefault();
-        });
-        this.document.addEventListener('drop', (e) => {
-            e.preventDefault();
-        });
-        this.document.body.addEventListener('drop', (e) => {
-            e.preventDefault();
-            if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-                const files = Array.from(e.dataTransfer.files);
-                const file = files.find((file) => this._view.accept(file.name));
-                if (file) {
-                    this._open(file, files);
-                }
-            }
         });
 
         this._view.show('welcome');
