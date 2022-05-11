@@ -17,9 +17,10 @@
 import * as fs from 'fs';
 import * as ini from 'ini';
 import * as path from 'path';
+import {TextEncoder} from 'util';
 import * as vscode from 'vscode';
-import {CfgEditorPanel} from './CfgEditor/CfgEditorPanel';
 
+import {CfgEditorPanel} from './CfgEditor/CfgEditorPanel';
 import {ToolArgs} from './Project/ToolArgs';
 import {ToolRunner} from './Project/ToolRunner';
 import {Logger} from './Utils/Logger';
@@ -126,6 +127,25 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
 
   refresh(): void {
     this._onDidChangeTreeData.fire();
+  }
+
+  createCfg(oneNode: OneNode): void {
+    const dirname = path.parse(oneNode.node.path).dir;
+    const filename = path.parse(oneNode.node.path).name;
+    const extname = path.parse(oneNode.node.path).ext.slice(1);
+
+    const encoder = new TextEncoder;
+
+    // TODO(dayo) Auto-configure more fields
+    vscode.workspace.fs.writeFile(vscode.Uri.file(`${dirname}/${filename}.cfg`), encoder.encode(`
+[one-build]
+one-import-${extname}=True
+[one-import-${extname}]
+input_path=${filename}.${extname}
+`));
+    // TODO(dayo) Support auto-refresh
+    // NOTE The following line is not working
+    // this.refresh();
   }
 
   getTreeItem(element: OneNode): vscode.TreeItem {
@@ -339,6 +359,8 @@ export class OneExplorer {
     vscode.commands.registerCommand('onevscode.open-cfg', (file) => this.openFile(file));
     vscode.commands.registerCommand(
         'onevscode.refresh-one-explorer', () => oneTreeDataProvider.refresh());
+    vscode.commands.registerCommand(
+        'onevscode.create-cfg', (oneNode: OneNode) => oneTreeDataProvider.createCfg(oneNode));
 
     let runCfgDisposal =
         vscode.commands.registerCommand('onevscode.run-cfg', (oneNode: OneNode) => {
