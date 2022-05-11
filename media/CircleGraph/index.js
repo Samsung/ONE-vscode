@@ -51,9 +51,6 @@ host.BrowserHost = class {
         this._document = window.document;
         this._window = window;
         this._navigator = navigator;
-        if (this._window.location.hostname.endsWith('.github.io')) {
-            this._window.location.replace('https://netron.app');
-        }
         this._window.eval = () => {
             throw new Error('window.eval() not supported.');
         };
@@ -99,66 +96,7 @@ host.BrowserHost = class {
     initialize(view) {
         this._view = view;
         return new Promise((resolve /*, reject */) => {
-            const accept = () => {
-                if (this._telemetry) {
-                    const script = this.document.createElement('script');
-                    script.setAttribute('type', 'text/javascript');
-                    script.setAttribute('src', 'https://www.google-analytics.com/analytics.js');
-                    script.onload = () => {
-                        if (this.window.ga) {
-                            this.window.ga.l = 1 * new Date();
-                            this.window.ga('create', 'UA-54146-13', 'auto');
-                            this.window.ga('set', 'anonymizeIp', true);
-                        }
-                        resolve();
-                    };
-                    script.onerror = () => {
-                        resolve();
-                    };
-                    this.document.body.appendChild(script);
-                } else {
-                    resolve();
-                }
-            };
-            const request = () => {
-                this._view.show('welcome consent');
-                const acceptButton = this.document.getElementById('consent-accept-button');
-                if (acceptButton) {
-                    acceptButton.addEventListener('click', () => {
-                        this._setCookie('consent', 'yes', 30);
-                        accept();
-                    });
-                }
-            };
-            if (this._getCookie('consent')) {
-                accept();
-            } else {
-                this._request(
-                        // eslint-disable-next-line
-                        'https://ipinfo.io/json', {'Content-Type': 'application/json'}, 'utf-8',
-                        2000)
-                    .then((text) => {
-                        try {
-                            const json = JSON.parse(text);
-                            const countries = [
-                                'AT', 'BE', 'BG', 'HR', 'CZ', 'CY', 'DK', 'EE', 'FI', 'FR', 'DE',
-                                'EL', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'NO', 'PL',
-                                'PT', 'SK', 'ES', 'SE', 'GB', 'UK', 'GR', 'EU', 'RO'
-                            ];
-                            if (json && json.country && !countries.indexOf(json.country) !== -1) {
-                                this._setCookie('consent', Date.now(), 30);
-                                accept();
-                            } else {
-                                request();
-                            }
-                        } catch (err) {
-                            request();
-                        }
-                    })
-                    .catch(() => {
-                        request();
-                    });
-            }
+            resolve();
         });
     }
 
