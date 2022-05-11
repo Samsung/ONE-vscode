@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import * as fs from 'fs';
 import * as vscode from 'vscode';
 
 export class CircleGraphPanel {
   public static currentPanel: CircleGraphPanel|undefined;
   public static readonly viewType = 'CircleGraphPanel';
+  public static readonly folderMediaCircleGraph = 'media/CircleGraph';
 
   private readonly _panel: vscode.WebviewPanel;
   private readonly _extensionUri: vscode.Uri;
@@ -106,7 +108,21 @@ export class CircleGraphPanel {
   }
 
   private update() {
-    // TODO implement
+    this._panel.title = 'circle graph';
+    this._panel.webview.html = this.getHtmlForWebview(this._panel.webview);
+  }
+
+  private getHtmlForWebview(webview: vscode.Webview) {
+    const htmlPath = this.getMediaPath('index.html');
+    let html = fs.readFileSync(htmlPath.fsPath, {encoding: 'utf-8'});
+
+    // TODO fix file loadings inside html
+
+    return html;
+  }
+
+  private getMediaPath(file: string) {
+    return vscode.Uri.joinPath(this._extensionUri, CircleGraphPanel.folderMediaCircleGraph, file);
   }
 }
 
