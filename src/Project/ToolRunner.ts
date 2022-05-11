@@ -83,10 +83,16 @@ export class ToolRunner {
     return oneccRealPath;
   }
 
-  public getRunner(name: string, tool: string, toolargs: ToolArgs, path: string) {
+  public getRunner(name: string, tool: string, toolargs: ToolArgs, root: boolean, path: string) {
     return new Promise<string>((resolve, reject) => {
       this.logger.outputWithTime('Running: ' + name);
-      let cmd = cp.spawn(tool, toolargs, {cwd: path});
+      if (root) {
+        tool = `echo ${process.env.userp} | sudo -S ` + tool;
+      }
+      let cmd = cp.spawn(tool, toolargs, {cwd: path, shell: true});
+      if (root) {
+        process.env.userp = '';
+      }
       this.handlePromise(resolve, reject, cmd);
     });
   }
