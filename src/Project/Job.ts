@@ -22,6 +22,7 @@ export interface Job {
   valid: boolean;
   tool: string;
   toolArgs: ToolArgs;
+  root: boolean;
   successCallback?: () => void;
   failureCallback?: () => void;
 }

@@ -28,6 +28,7 @@ class JobCommand implements Job {
   valid: boolean;
   tool: string;
   toolArgs: ToolArgs;
+  root: boolean;
   successCallback?: () => void;
   failureCallback?: () => void;
 
@@ -44,6 +45,7 @@ class JobCommand implements Job {
     for (let i = 1; i < cmd.length; i++) {
       this.toolArgs.push(cmd[i]);
     }
+    this.root = cmd.root;
   }
 }
 

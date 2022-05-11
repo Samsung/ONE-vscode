@@ -383,7 +383,7 @@ class OneccRunner extends EventEmitter {
       throw new Error('Cannot find installed onecc');
     }
 
-    const runnerPromise = toolRunner.getRunner('onecc', oneccPath, toolArgs, cwd);
+    const runnerPromise = toolRunner.getRunner('onecc', oneccPath, toolArgs, false, cwd);
     this.emit(this.startRunningOnecc, runnerPromise);
   }
 

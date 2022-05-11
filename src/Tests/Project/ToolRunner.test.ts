@@ -45,7 +45,8 @@ suite('Project', function() {
             assert.fail('oneccPath should be string type');
           }
           const workspaceRoot: string = obtainWorkspaceRoot();
-          const runner = toolRunner.getRunner(job.name, oneccPath, job.toolArgs, workspaceRoot);
+          const runner =
+              toolRunner.getRunner(job.name, oneccPath, job.toolArgs, false, workspaceRoot);
           assert.isNotNull(runner);
           runner
               .then(function(str) {

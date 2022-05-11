@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
+import {BinaryControl} from 'apt-parser';
+import * as cp from 'child_process';
+
 import {Backend} from '../Backend/API';
-import { PackageInfo, Toolchains } from '../Backend/Toolchain';
-import { Command } from '../Backend/Command';
+import {Command} from '../Backend/Command';
 import {Compiler, CompilerBase} from '../Backend/Compiler';
 import {Executor, ExecutorBase} from '../Backend/Executor';
-import { Version } from '../Backend/Version';
-import * as cp from 'child_process';
-import {BinaryControl} from 'apt-parser';
+import {PackageInfo, Toolchains} from '../Backend/Toolchain';
+import {Version} from '../Backend/Version';
 
 /**
  * Convert semantic version string to Version object
@@ -32,7 +33,7 @@ import {BinaryControl} from 'apt-parser';
  *          Version.option will include "-" or "~".
  * @see https://www.debian.org/doc/debian-policy/ch-controlfields.html#version
  */
- function parseVersion(trivVerStr: string): Version|null {
+function parseVersion(trivVerStr: string): Version|null {
   const regex = /^([0-9][\.a-zA-Z0-9]*)([-~+]*)(.*)/;
   const t = trivVerStr.match(regex);
   // example
@@ -94,11 +95,10 @@ class DummyCompiler extends CompilerBase {
   constructor() {
     super();
     // this._toolchains = [
-    //   { 
-    //     info: { name: 'dummy-toolchain', description: 'dummy', version: new Version(1,1,0), depends: [] },
-    //     install: this.install('dummy-toolchain'),
-    //     uninstall: this.uninstall('dummy-toolchain'),
-    //     installed: this.installed('dummy-toolchain')
+    //   {
+    //     info: { name: 'dummy-toolchain', description: 'dummy', version: new Version(1,1,0),
+    //     depends: [] }, install: this.install('dummy-toolchain'), uninstall:
+    //     this.uninstall('dummy-toolchain'), installed: this.installed('dummy-toolchain')
     //   },
     // ];
     this.resolveToolchains();
@@ -109,20 +109,28 @@ class DummyCompiler extends CompilerBase {
   }
   private setupinstall(name: string, version: string = ''): CommandFunc[] {
     // sudo apt install ca-certificates
-    // sudo echo "deb [trusted=yes] http://art.sec.samsung.net/artifactory/list/aip_debian bionic universe"\
+    // sudo echo "deb [trusted=yes] http://art.sec.samsung.net/artifactory/list/aip_debian bionic
+    // universe"\
     //     | sudo tee /etc/apt/sources.list.d/artifactory.list
-    // wget -qO - https://art.sec.samsung.net:443/artifactory/api/gpg/key/public | sudo apt-key add -
-    // sudo apt update
+    // wget -qO - https://art.sec.samsung.net:443/artifactory/api/gpg/key/public | sudo apt-key add
+    // - sudo apt update
     return [];
   }
   private install(name: string, version: string = ''): CommandFunc {
-    return () => { return new Command('apt-get', ['install', this.getVersionString(name, version)]); };
+    return () => {
+      return new Command('aptitude', ['install', '-y', '-q', this.getVersionString(name, version)])
+          .setRoot();
+    };
   }
   private uninstall(name: string, version: string = ''): CommandFunc {
-    return () => { return new Command('apt-get', ['remove', this.getVersionString(name, version)]); };
+    return () => {
+      return new Command('apt-get', ['remove', this.getVersionString(name, version)]);
+    };
   }
   private installed(name: string, version: string = ''): CommandFunc {
-    return () => { return new Command('dpkg-query', ['--show', name, '|', 'grep', version]); };
+    return () => {
+      return new Command('dpkg-query', ['--show', name, '|', 'grep', version]);
+    };
   }
 
   private async resolveToolchains() {
@@ -138,7 +146,7 @@ class DummyCompiler extends CompilerBase {
           const version = parseVersion(data[1]);
           if (version) {
             this._toolchains.push({
-              info: { name: data[0], description: '', version: version, depends: [] },
+              info: {name: data[0], description: '', version: version, depends: []},
               install: this.install(data[0], data[1]),
               uninstall: this.uninstall(data[0], data[1]),
               installed: this.installed(data[0], data[1])
@@ -147,7 +155,7 @@ class DummyCompiler extends CompilerBase {
         });
       }
     });
-    
+
 
     // Apt-get doesn't support the multiple verison installation of the same package.
     // So dpkg-query --status command shows only one package information.
@@ -164,7 +172,7 @@ class DummyCompiler extends CompilerBase {
     //     });
 
     //     this._toolchains.push({
-    //       info: { 
+    //       info: {
     //         name: control.package,
     //         description: control.description,
     //         version: Version.parseVersion(control.version),
@@ -173,7 +181,7 @@ class DummyCompiler extends CompilerBase {
     //       uninstall: this.uninstall(control.package, control.version),
     //       installed: this.installed(control.package, control.version)
     //     });
-    //   }      
+    //   }
     // });
   }
 

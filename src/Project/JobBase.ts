@@ -23,6 +23,7 @@ export class JobBase implements Job, MixinInOutPaths {
   name: string = '(noname)';
   inputPath: string = '';
   outputPath: string = '';
+  root: boolean = false;
 
   public get valid(): boolean {
     throw Error('Invalid valid call');
