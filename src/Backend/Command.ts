@@ -15,6 +15,7 @@
  */
 
 class Command extends Array<string> {
+  root: boolean;
   constructor(cmd: string, options?: string[]) {
     super();
     this.push(cmd);
@@ -23,6 +24,12 @@ class Command extends Array<string> {
         this.push(option);
       });
     }
+    this.root = false;
+  }
+
+  setRoot(): Command {
+    this.root = true;
+    return this;
   }
 
   strs(): string[] {
