@@ -62,6 +62,7 @@
   },
   {
     "name": "BidirectionalSequenceLSTM",
+    "category": "Layer",
     "attributes": [
       {
         "name": "fused_activation_function",
@@ -167,6 +168,7 @@
   },
   {
     "name": "Concatenation",
+    "category": "Tensor",
     "attributes": [
       {
         "name": "axis",
@@ -193,6 +195,7 @@
   },
   {
     "name": "Conv2D",
+    "category": "Layer",
     "attributes": [
       {
         "name": "padding",
@@ -257,6 +260,7 @@
   },
   {
     "name": "DepthwiseConv2D",
+    "category": "Layer",
     "attributes": [
       {
         "name": "padding",
@@ -342,6 +346,7 @@
   },
   {
     "name": "FullyConnected",
+    "category": "Layer",
     "attributes": [
       {
         "name": "fused_activation_function",
@@ -387,6 +392,7 @@
   },
   {
     "name": "Gather",
+    "category": "Transform",
     "attributes": [
       {
         "name": "axis",
@@ -412,6 +418,7 @@
   },
   {
     "name": "InstanceNorm",
+    "category": "Normalization",
     "attributes": [
       {
         "name": "epsilon",
@@ -437,6 +444,7 @@
   },
   {
     "name": "LocalResponseNormalization",
+    "category": "Normalization",
     "attributes": [
       {
         "name": "radius",
@@ -472,6 +480,7 @@
   },
   {
     "name": "LSTM",
+    "category": "Layer",
     "attributes": [
       {
         "name": "fused_activation_function",
@@ -547,6 +556,7 @@
   },
   {
     "name": "Reshape",
+    "category": "Shape",
     "attributes": [
       {
         "name": "new_shape",
@@ -607,6 +617,7 @@
   },
   {
     "name": "RNN",
+    "category": "Layer",
     "attributes": [
       {
         "name": "fused_activation_function",
@@ -652,6 +663,7 @@
   },
   {
     "name": "Softmax",
+    "category": "Activation",
     "attributes": [
       {
         "name": "beta",
@@ -682,6 +694,7 @@
   },
   {
     "name": "Split",
+    "category": "Tensor",
     "attributes": [
       {
         "name": "num_splits",
@@ -702,6 +715,7 @@
   },
   {
     "name": "Squeeze",
+    "category": "Transform",
     "attributes": [
       {
         "name": "squeeze_dims",
@@ -712,6 +726,7 @@
   },
   {
     "name": "StridedSlice",
+    "category": "Tensor",
     "attributes": [
       {
         "name": "begin_mask",
@@ -752,6 +767,7 @@
   },
   {
     "name": "SVDF",
+    "category": "Layer",
     "attributes": [
       {
         "name": "rank",
@@ -772,6 +788,7 @@
   },
   {
     "name": "TransposeConv",
+    "category": "Layer",
     "attributes": [
       {
         "name": "padding",
@@ -792,6 +809,7 @@
   },
   {
     "name": "UnidirectionalSequenceLSTM",
+    "category": "Layer",
     "attributes": [
       {
         "name": "fused_activation_function",
