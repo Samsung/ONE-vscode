@@ -48,6 +48,7 @@ interface InputBoxParameters {
   totalSteps: number;
   value: string;
   prompt: string;
+  password?: boolean;
   validate: (value: string) => Promise<string|undefined>;
   buttons?: QuickInputButton[];
   shouldResume: () => Thenable<boolean>;
@@ -134,7 +135,7 @@ export class MultiStepInput {
   }
 
   async showInputBox<P extends InputBoxParameters>(
-      {title, step, totalSteps, value, prompt, validate, buttons, shouldResume}: P) {
+      {title, step, totalSteps, value, prompt, password, validate, buttons, shouldResume}: P) {
     const disposables: Disposable[] = [];
     try {
       return await new Promise<string|(P extends {buttons: (infer I)[]} ? I : never)>(
@@ -145,6 +146,9 @@ export class MultiStepInput {
             input.totalSteps = totalSteps;
             input.value = value || '';
             input.prompt = prompt;
+            if (password) {
+              input.password = password;
+            }
             input.buttons =
                 [...(this.steps.length > 1 ? [QuickInputButtons.Back] : []), ...(buttons || [])];
             let validating = validate('');
