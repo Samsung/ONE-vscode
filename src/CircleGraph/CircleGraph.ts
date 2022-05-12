@@ -208,8 +208,8 @@ export class CircleGraphPanel {
    */
   private handleRequest(url: string, encoding: string) {
     // TODO check scheme
-    var reqUrl = new URL(url);
-    var filePath = vscode.Uri.joinPath(
+    const reqUrl = new URL(url);
+    let filePath = vscode.Uri.joinPath(
         this._extensionUri, CircleGraphPanel.folderMediaCircleGraph, reqUrl.pathname);
     if (!fs.existsSync(filePath.fsPath)) {
       filePath = vscode.Uri.joinPath(
@@ -239,7 +239,7 @@ export class CircleGraphPanel {
 
       try {
         console.log('Load model...');
-        var stats = fs.statSync(this._modelToLoad);
+        const stats = fs.statSync(this._modelToLoad);
         this._modelLength = stats.size;
 
         if (this._modelLength <= sendPacketSize) {

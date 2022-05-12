@@ -409,7 +409,7 @@ view.View = class {
     toggleSelect(viewNode) {
         if (viewNode) {
             // toggle for viewNode
-            var index = this._selectionNodes.indexOf(viewNode);
+            let index = this._selectionNodes.indexOf(viewNode);
             if (index > -1) {
                 // de-select
                 this._selectionNodes.splice(index, 1);
