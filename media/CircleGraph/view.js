@@ -152,14 +152,14 @@ view.View = class {
 
     find() {
         if (this._graph) {
-            this.clearSelection();
             const graphElement = this._getElementById('canvas');
             const view = new sidebar.FindSidebar(this._host, graphElement, this._graph);
             view.on('search-text-changed', (sender, text) => {
                 this._searchText = text;
             });
             view.on('select', (sender, selection) => {
-                this.select(selection);
+                this.scrollToSelection(selection);
+                // TODO maybe toggle selection
             });
             this._sidebar.open(view.content, 'Find');
             view.focus(this._searchText);
@@ -381,7 +381,6 @@ view.View = class {
     }
 
     select(selection) {
-        this.clearSelection();
         if (selection && selection.length > 0) {
             const container = this._getElementById('graph');
             let x = 0;
@@ -389,6 +388,28 @@ view.View = class {
             for (const element of selection) {
                 element.classList.add('select');
                 this._selection.push(element);
+                const rect = element.getBoundingClientRect();
+                x += rect.left + (rect.width / 2);
+                y += rect.top + (rect.height / 2);
+            }
+            x = x / selection.length;
+            y = y / selection.length;
+            const rect = container.getBoundingClientRect();
+            const left = (container.scrollLeft + x - rect.left) - (rect.width / 2);
+            const top = (container.scrollTop + y - rect.top) - (rect.height / 2);
+            container.scrollTo({left: left, top: top, behavior: 'smooth'});
+        }
+    }
+
+    /**
+     * @brief scroll to selection but do not select
+     */
+    scrollToSelection(selection) {
+        if (selection && selection.length > 0) {
+            const container = this._getElementById('graph');
+            let x = 0;
+            let y = 0;
+            for (const element of selection) {
                 const rect = element.getBoundingClientRect();
                 x += rect.left + (rect.width / 2);
                 y += rect.top + (rect.height / 2);
