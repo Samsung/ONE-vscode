@@ -32,18 +32,18 @@ export class Logger {
     }
   }
 
-  public outputWithTime(msg: string) {
-    let dateTime = new Date();
+  public outputWithTime(msg: string): void {
+    const dateTime = new Date();
     this.checkShow();
     this.outputChannel.appendLine('[' + dateTime.toLocaleString() + '] ' + msg);
   }
 
-  public output(msg: string) {
+  public output(msg: string): void {
     this.checkShow();
     this.outputChannel.append(msg);
   }
 
-  public outputLine(msg: string) {
+  public outputLine(msg: string): void {
     this.checkShow();
     this.outputChannel.appendLine(msg);
   }
