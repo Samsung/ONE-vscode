@@ -3,7 +3,7 @@
 INVALID_EXIT=0
 FILES_TO_CHECK=()
 DIRECTORIES_TO_BE_TESTED=()
-DIRECTORIES_NOT_TO_BE_TESTED=()
+DIRECTORIES_NOT_TO_BE_TESTED=("media/CircleGraph/external")
 CLANG_FORMAT_CANDIDATES=()
 PATCH_FILE=format.patch
 
@@ -94,10 +94,8 @@ function check_ts_files() {
     fi
   done
 
-  # Skip by '.FORMATDENY' file
   for s in ${DIRECTORIES_NOT_TO_BE_TESTED[@]}; do
     FILES_TO_CHECK_TS=(${FILES_TO_CHECK_TS[*]/$s*/})
-    FILES_TO_CHECK_TS_BY_CLANG_FORMAT_8=(${FILES_TO_CHECK_TS_BY_CLANG_FORMAT_8[*]/$s*/})
   done
 
   if [[ ${#FILES_TO_CHECK_TS} -ne 0 ]]; then
@@ -130,6 +128,10 @@ function check_json_files()
         FILES_TO_CHECK_JSON+=("${f}")
       fi
     fi
+  done
+
+  for s in ${DIRECTORIES_NOT_TO_BE_TESTED[@]}; do
+    FILES_TO_CHECK_JSON=(${FILES_TO_CHECK_JSON[*]/$s*/})
   done
   
   for f in ${FILES_TO_CHECK_JSON[@]}; do
