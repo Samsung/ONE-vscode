@@ -24,7 +24,11 @@ class MessageDefs {
   public static readonly alert = 'alert';
   public static readonly request = 'request';
   public static readonly response = 'response';
+  public static readonly loadmodel = 'loadmodel';
   public static readonly error = 'error';
+  // loadmodel type
+  public static readonly modelpath = 'modelpath';
+  public static readonly uint8array = 'uint8array';
 };
 
 export class CircleGraphPanel {
@@ -37,6 +41,7 @@ export class CircleGraphPanel {
   private readonly _panel: vscode.WebviewPanel;
   private readonly _extensionUri: vscode.Uri;
   private _modelToLoad: string;
+  private _modelLength: number;
 
   private _disposables: vscode.Disposable[] = [];
 
@@ -87,6 +92,7 @@ export class CircleGraphPanel {
     this._panel = panel;
     this._extensionUri = extensionUri;
     this._modelToLoad = modelToLoad;
+    this._modelLength = 0;
 
     // Set the webview's initial html content
     this.update();
@@ -112,6 +118,9 @@ export class CircleGraphPanel {
           return;
         case MessageDefs.request:
           this.handleRequest(message.url, message.encoding);
+          return;
+        case MessageDefs.loadmodel:
+          this.handleLoadModel(parseInt(message.offset));  // to number
           return;
       }
     }, null, this._disposables);
@@ -213,6 +222,58 @@ export class CircleGraphPanel {
     } catch (err) {
       this._panel.webview.postMessage({command: MessageDefs.error, response: ''});
     }
+  }
+
+  /**
+   * @brief handleLoadModel will respond with 'loadmodel' message from WebView
+   * @param offset offset of file WebView requested
+   * @note  'offset' will start with 0 and then with offset of the model file
+   */
+  private handleLoadModel(offset: number) {
+    // TODO make this faster
+    const sendPacketSize = 1024 * 1024 * 10;  // 10MB
+
+    if (offset === 0) {
+      // TODO add request for model path with separate command
+      this.sendModelPath();
+
+      try {
+        console.log('Load model...');
+        var stats = fs.statSync(this._modelToLoad);
+        this._modelLength = stats.size;
+
+        if (this._modelLength <= sendPacketSize) {
+          this.sendModelSingle();
+        } else {
+          // TODO impelment multi packet
+        }
+      } catch (err: unknown) {
+        // TODO handle error
+      }
+    } else {
+      // TODO impelment multi packet
+    }
+  }
+
+  private sendModelPath() {
+    this._panel.webview.postMessage(
+        {command: MessageDefs.loadmodel, type: MessageDefs.modelpath, value: this._modelToLoad});
+  }
+
+  /**
+   * @brief sendModelSingle will send model to WebView with single postMessage
+   */
+  private sendModelSingle() {
+    const buffer = fs.readFileSync(this._modelToLoad);
+    const modelData = new Uint8Array(buffer);
+    this._panel.webview.postMessage({
+      command: MessageDefs.loadmodel,
+      type: MessageDefs.uint8array,
+      offset: 0,
+      length: this._modelLength,
+      total: this._modelLength,
+      responseArray: modelData
+    });
   }
 }
 
