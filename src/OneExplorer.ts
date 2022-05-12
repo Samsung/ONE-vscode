@@ -123,7 +123,18 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
   readonly onDidChangeTreeData: vscode.Event<OneNode|undefined|void> =
       this._onDidChangeTreeData.event;
 
-  constructor(private workspaceRoot: vscode.Uri|undefined) {}
+  // TODO(dayo) Get the ext list(cfg,tflite..) from backend
+  private fileWatcher =
+      vscode.workspace.createFileSystemWatcher(`**/*.{cfg,tflite,onnx,circle,tvn}`);
+
+  constructor(private workspaceRoot: vscode.Uri|undefined) {
+    const fileWatchersEvents =
+        [this.fileWatcher.onDidCreate, this.fileWatcher.onDidChange, this.fileWatcher.onDidDelete];
+
+    for (let event of fileWatchersEvents) {
+      event(() => this._onDidChangeTreeData.fire());
+    }
+  }
 
   refresh(): void {
     this._onDidChangeTreeData.fire();
@@ -143,9 +154,6 @@ one-import-${extname}=True
 [one-import-${extname}]
 input_path=${filename}.${extname}
 `));
-    // TODO(dayo) Support auto-refresh
-    // NOTE The following line is not working
-    // this.refresh();
   }
 
   getTreeItem(element: OneNode): vscode.TreeItem {
