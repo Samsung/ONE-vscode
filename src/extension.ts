@@ -153,7 +153,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.window.showOpenDialog(options).then(fileUri => {
       if (fileUri && fileUri[0]) {
         const circleToJson = decoder(fileUri[0].fsPath);
-        Circletracer.createOrShow(context.extensionUri, circleToJson);
+        Circletracer.createOrShow(context.extensionUri, circleToJson, fileUri[0].fsPath);
       }
     });
   });

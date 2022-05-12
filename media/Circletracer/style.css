@@ -263,3 +263,24 @@ g.node {
     display: none;
     right: 0;
 }
+
+/* circle-opselector */
+.select_box {
+    border: 1px solid blue;
+    position: absolute;
+    background-color: blue;
+    opacity: 50%;
+}
+
+.selected_node rect {
+    fill: blueviolet !important;
+}
+
+.seleted_nodes_text {
+    font-size: large;
+    font-weight: bold;
+    border: 1px solid blueviolet;
+    border-radius: 2px;
+    padding: 2px;
+}
+

@@ -87,6 +87,16 @@ https://github.com/lutzroeder/netron/tree/50083007d427fa0c03eda4ea0e62de373ec89c
                 <div id="outputs-content" class="detail-content"></div>
             </div>
         </main>
+        <div>
+            <button id="deselectAllNodes">deselect all nodes</button>
+            <button id="copyToClipboard">copy command</button>
+            <p class="seleted_nodes_text">
+                <span>ONE/build/compiler/circle-opselector/circle-opselector </span>
+                <span>_Circletracer._originalCirclePath </span>
+                <span>temp/output.circle --by_id</span>
+                "<span id="selectedNodesIndices"></span>"
+            </p>
+        </div>
     </div>
     <script src="_loadFileUri" nonce="_nonce"></script>
     <script src="_treeMapUri" nonce="_nonce"></script>
@@ -94,9 +104,11 @@ https://github.com/lutzroeder/netron/tree/50083007d427fa0c03eda4ea0e62de373ec89c
     <script src="_utilsUri" nonce="_nonce"></script>
     <script src="_circleInfoUri" nonce="_nonce"></script>
     <script src="_dagreUri" nonce="_nonce"></script>
+    <script src="_selectNodesUri" nonce="_nonce"></script>
     <script src="https://d3js.org/d3.v5.min.js" nonce="_nonce"></script>
     <script nonce="_nonce">
         treeMap(_Circletracer._circleToJsonData);
+        drawSelectBox(document.getElementById("wrapper"));
     </script>
 </body>
 
