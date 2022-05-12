@@ -390,68 +390,6 @@ host.BrowserHost = class {
                 this._view.error(error, null, null);
             });
     }
-
-    _openGist(gist) {
-        this._view.show('welcome spinner');
-        const url = 'https://api.github.com/gists/' + gist;
-        // eslint-disable-next-line
-        this._request(url, {'Content-Type': 'application/json'}, 'utf-8')
-            .then((text) => {
-                const json = JSON.parse(text);
-                if (json.message) {
-                    this.error('Error while loading Gist.', json.message);
-                    return;
-                }
-                const key = Object.keys(json.files)
-                                .find((key) => this._view.accept(json.files[key].filename));
-                if (!key) {
-                    this.error('Error while loading Gist.', 'Gist does not contain a model file.');
-                    return;
-                }
-                const file = json.files[key];
-                const identifier = file.filename;
-                const encoder = new TextEncoder();
-                const buffer = encoder.encode(file.content);
-                const context = new host.BrowserHost.BrowserContext(this, '', identifier, buffer);
-                this._view.open(context)
-                    .then(() => {
-                        this.document.title = identifier;
-                    })
-                    .catch((error) => {
-                        if (error) {
-                            this._view.show(error.name, error, 'welcome');
-                        }
-                    });
-            })
-            .catch((err) => {
-                this._view.show('Model load request failed.', err, 'welcome');
-            });
-    }
-
-    _setCookie(name, value, days) {
-        const date = new Date();
-        date.setTime(
-            date.getTime() + ((typeof days !== 'number' ? 365 : days) * 24 * 60 * 60 * 1000));
-        document.cookie = name + '=' + value + ';path=/;expires=' + date.toUTCString();
-    }
-
-    _getCookie(name) {
-        const cookie = '; ' + document.cookie;
-        const parts = cookie.split('; ' + name + '=');
-        return parts.length < 2 ? undefined : parts.pop().split(';').shift();
-    }
-
-    _about() {
-        const self = this;
-        const eventHandler = () => {
-            this.window.removeEventListener('keydown', eventHandler);
-            self.document.body.removeEventListener('click', eventHandler);
-            self._view.show('default');
-        };
-        this.window.addEventListener('keydown', eventHandler);
-        this.document.body.addEventListener('click', eventHandler);
-        this._view.show('about');
-    }
 };
 
 host.Dropdown = class {
