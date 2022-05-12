@@ -113,7 +113,7 @@ export class ResultSet {
 };
 
 export function verify(pkgName: string, pkgLicense: string): ResultType {
-  if (pkgName === 'one-vscode') {
+  if (pkgName.startsWith('one-vscode')) {
     // As one-vscode is our product, always pass!
     return 'pass';
   }
