@@ -70,6 +70,7 @@ view.View = class {
                 this._model = null;
                 this._graphs = [];
                 this._selection = [];
+                this._selectionNodes = [];  // selection of view.Node
                 this._sidebar = new sidebar.Sidebar(this._host, id);
                 this._searchText = '';
                 this._modelFactoryService = new view.ModelFactoryService(this._host);
@@ -398,6 +399,34 @@ view.View = class {
             const left = (container.scrollLeft + x - rect.left) - (rect.width / 2);
             const top = (container.scrollTop + y - rect.top) - (rect.height / 2);
             container.scrollTo({left: left, top: top, behavior: 'smooth'});
+        }
+    }
+
+    /**
+     * @brief toggleSelect will toggle selection of the node
+     * @param viewNode view.Node instance
+     */
+    toggleSelect(viewNode) {
+        if (viewNode) {
+            // toggle for viewNode
+            var index = this._selectionNodes.indexOf(viewNode);
+            if (index > -1) {
+                // de-select
+                this._selectionNodes.splice(index, 1);
+            } else {
+                this._selectionNodes.push(viewNode);
+            }
+            // toggle for element
+            const element = viewNode.element;  // member of grapher.Node
+            index = this._selection.indexOf(element);
+            if (index > -1) {
+                // de-select
+                element.classList.remove('select');
+                this._selection.splice(index, 1);
+            } else {
+                element.classList.add('select');
+                this._selection.push(element);
+            }
         }
     }
 
@@ -1093,7 +1122,10 @@ view.Node = class extends grapher.Node {
             type.name :
             (node.name || node.location);
         const title = header.add(null, styles, content, tooltip);
-        title.on('click', () => this.context.view.showNodeProperties(node, null));
+        // toggle select with click
+        title.on('click', () => {
+            this.context.view.toggleSelect(this);
+        });
         if (node.type.nodes && node.type.nodes.length > 0) {
             const definition = header.add(null, styles, '\u0192', 'Show Function Definition');
             definition.on('click', () => this.context.view.pushGraph(node.type));
