@@ -113,6 +113,11 @@ export class ResultSet {
 };
 
 export function verify(pkgName: string, pkgLicense: string): ResultType {
+  if (pkgName === 'one-vscode') {
+    // As one-vscode is our product, always pass!
+    return 'pass';
+  }
+
   if (packageJudgment.hasOwnProperty(pkgName)) {
     switch (packageJudgment[pkgName as keyof typeof packageJudgment].permitted) {
       case 'yes':
