@@ -88,9 +88,6 @@ view.View = class {
                 this._getElementById('sidebar').addEventListener('mousewheel', (e) => {
                     this._preventDefault(e);
                 }, {passive: true});
-                this._host.document.addEventListener('keydown', () => {
-                    this.clearSelection();
-                });
                 this._host.start();
                 const container = this._getElementById('graph');
                 container.addEventListener('scroll', (e) => this._scrollHandler(e));
