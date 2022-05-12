@@ -245,13 +245,18 @@ export class CircleGraphPanel {
         if (this._modelLength <= sendPacketSize) {
           this.sendModelSingle();
         } else {
-          // TODO impelment multi packet
+          this.sendModelMulti(sendPacketSize, offset);
         }
       } catch (err: unknown) {
-        // TODO handle error
+        this.handleLoadError(err);
       }
     } else {
-      // TODO impelment multi packet
+      const nextPacketSize = Math.min(this._modelLength - offset, sendPacketSize);
+      try {
+        this.sendModelMulti(nextPacketSize, offset);
+      } catch (err: unknown) {
+        this.handleLoadError(err);
+      }
     }
   }
 
@@ -274,6 +279,47 @@ export class CircleGraphPanel {
       total: this._modelLength,
       responseArray: modelData
     });
+  }
+
+  /**
+   * @brief sendModelMulti will send model to WebView with multiple postMessage
+   * @param packetSize size of packet in bytes to send with one postMessage
+   * @param offset     position of the file where to begin with
+   */
+  private sendModelMulti(packetSize: number, offset: number) {
+    fs.open(this._modelToLoad, 'r', (err, fd) => {
+      if (err) {
+        this._panel.webview.postMessage(
+            {command: MessageDefs.loadmodel, type: MessageDefs.error, responseErr: err.message});
+        Balloon.error(err.message);
+        return;
+      }
+      const buffer = Buffer.alloc(packetSize);
+      fs.readSync(fd, buffer, 0, packetSize, offset);
+      const modelData = new Uint8Array(buffer);
+
+      this._panel.webview.postMessage({
+        command: MessageDefs.loadmodel,
+        type: MessageDefs.uint8array,
+        offset: offset,
+        length: packetSize,
+        total: this._modelLength,
+        responseArray: modelData
+      });
+      fs.close(fd, (err) => {});
+    });
+  }
+
+  private handleLoadError(err: unknown) {
+    this._panel.webview.postMessage({
+      command: MessageDefs.loadmodel,
+      type: MessageDefs.error,
+    });
+    if (err instanceof Error) {
+      Balloon.error(err.message);
+    } else {
+      Balloon.error('Failed to load model');
+    }
   }
 }
 
