@@ -22,6 +22,9 @@ import {Balloon} from '../Utils/Balloon';
 class MessageDefs {
   // message command
   public static readonly alert = 'alert';
+  public static readonly request = 'request';
+  public static readonly response = 'response';
+  public static readonly error = 'error';
 };
 
 export class CircleGraphPanel {
@@ -107,6 +110,9 @@ export class CircleGraphPanel {
         case MessageDefs.alert:
           Balloon.error(message.text);
           return;
+        case MessageDefs.request:
+          this.handleRequest(message.url, message.encoding);
+          return;
       }
     }, null, this._disposables);
   }
@@ -183,6 +189,30 @@ export class CircleGraphPanel {
     const mediaPath = this.getMediaPath(file);
     const uriView = webview.asWebviewUri(mediaPath);
     return uriView;
+  }
+
+  /**
+   * @brief handleRequest will handle 'request()' from webview for local resource
+   *        through message channel
+   * @param url URL of the local resource file
+   * @param encoding encoding of load local resource file
+   */
+  private handleRequest(url: string, encoding: string) {
+    // TODO check scheme
+    var reqUrl = new URL(url);
+    var filePath = vscode.Uri.joinPath(
+        this._extensionUri, CircleGraphPanel.folderMediaCircleGraph, reqUrl.pathname);
+    if (!fs.existsSync(filePath.fsPath)) {
+      filePath = vscode.Uri.joinPath(
+          this._extensionUri, CircleGraphPanel.folderMediaCircleGraphExt, reqUrl.pathname);
+    }
+
+    try {
+      const fileData = fs.readFileSync(filePath.fsPath, {encoding: encoding, flag: 'r'});
+      this._panel.webview.postMessage({command: MessageDefs.response, response: fileData});
+    } catch (err) {
+      this._panel.webview.postMessage({command: MessageDefs.error, response: ''});
+    }
   }
 }
 

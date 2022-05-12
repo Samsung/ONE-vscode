@@ -268,6 +268,28 @@ host.BrowserHost = class {
 
     _request(url, headers, encoding, timeout) {
         return new Promise((resolve, reject) => {
+            if (url.startsWith('vscode-webview://')) {
+                const messageHandler = (event) => {
+                    // remove this temporary handler
+                    this.window.removeEventListener('message', messageHandler);
+
+                    const message = event.data;
+                    if (message.command === 'response') {
+                        resolve(message.response);
+                    } else if (message.command === 'error') {
+                        const err = new Error('Failed to get response \'' + url + '\'.');
+                        err.url = url;
+                        reject(err);
+                    }
+                    // ignore other response
+                };
+                // add temporary handler for this request
+                this.window.addEventListener('message', messageHandler);
+
+                vscode.postMessage({command: 'request', url: url, encoding: encoding});
+                return;
+            }
+
             const request = new XMLHttpRequest();
             if (!encoding) {
                 request.responseType = 'arraybuffer';
