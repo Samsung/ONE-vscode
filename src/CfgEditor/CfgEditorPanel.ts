@@ -40,7 +40,7 @@ Some part of this code refers to
 https://github.com/microsoft/vscode-extension-samples/blob/2556c82cb333cf65d372bd01ac30c35ea1898a0e/custom-editor-sample/src/catScratchEditor.ts
 */
 import * as vscode from 'vscode';
-import {getUri} from '../Utils/Uri';
+import {getUri} from '../Utils/external/Uri';
 
 export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
   private _disposables: vscode.Disposable[] = [];

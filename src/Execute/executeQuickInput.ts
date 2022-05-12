@@ -20,7 +20,7 @@ import * as vscode from 'vscode';
 
 import {Backend} from '../Backend/API';
 import {globalBackendMap} from '../Backend/Backend';
-import {MultiStepInput} from '../Utils/MultiStepInput';
+import {MultiStepInput} from '../Utils/external/MultiStepInput';
 
 export async function runInferenceQuickInput(context: vscode.ExtensionContext) {
   interface State {
