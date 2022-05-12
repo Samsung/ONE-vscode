@@ -40,7 +40,7 @@ Some part of this code refers to
 https://github.com/microsoft/vscode-webview-ui-toolkit-samples/blob/b807107df40271e83ea6d36828357fdb10d71f12/default/hello-world/src/panels/HelloWorldPanel.ts
 */
 import * as vscode from 'vscode';
-import {getUri} from '../Utils/Uri';
+import {getUri} from '../Utils/external/Uri';
 
 function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {
   return {

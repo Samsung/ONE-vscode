@@ -24,9 +24,11 @@ const copyrightRegex = new RegExp('Copyright \\(c\\) [0-9]{4} Samsung Electronic
 const fileFormatsToCheck = "ts,js,css,html";
 
 const ignorePathList = [
+    "**/out/**",
     "**/node_modules/**",
     "**/media/Circletracer/external/**",
-    "**/media/CircleGraph/external/**"
+    "**/media/CircleGraph/external/**",
+    "**/src/Utils/external/**",
 ];
 
 glob("**/*.{" + fileFormatsToCheck + "}",

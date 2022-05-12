@@ -1,3 +1,5 @@
+// This file is copied from
+// https://github.com/lutzroeder/netron/blob/ae449ff55642636e6a1eef092eda34ffcba1c684/source/gzip.js
 
 var gzip = gzip || {};
 var zip = zip || require('./zip');
