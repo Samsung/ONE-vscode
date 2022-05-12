@@ -172,9 +172,17 @@ input_path=${filename}.${extname}
       } else if (node.type === NodeType.model) {
         return new OneNode(node.name, vscode.TreeItemCollapsibleState.None, node);
       } else if (node.type === NodeType.baseModel) {
-        return new OneNode(node.name, vscode.TreeItemCollapsibleState.Collapsed, node);
+        return new OneNode(
+            node.name,
+            (node.childNodes.length > 0) ? vscode.TreeItemCollapsibleState.Collapsed :
+                                           vscode.TreeItemCollapsibleState.None,
+            node);
       } else {  // (node.type == NodeType.config)
-        let oneNode = new OneNode(node.name, vscode.TreeItemCollapsibleState.Expanded, node);
+        let oneNode = new OneNode(
+            node.name,
+            (node.childNodes.length > 0) ? vscode.TreeItemCollapsibleState.Collapsed :
+                                           vscode.TreeItemCollapsibleState.None,
+            node);
         oneNode.command = {
           command: 'onevscode.open-cfg',
           title: 'Open File',
