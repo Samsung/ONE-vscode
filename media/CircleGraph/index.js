@@ -69,6 +69,10 @@ host.BrowserHost = class {
         this._environment = new Map();
         this._environment.set('zoom', 'scroll');
         // this._environment.set('zoom', 'drag');
+
+        // model
+        this._modelData = [];
+        this._modelPath = '';
     }
 
     get window() {
@@ -105,6 +109,15 @@ host.BrowserHost = class {
     start() {
         this.window.addEventListener('error', (e) => {
             this.exception(e.error, true);
+        });
+
+        this.window.addEventListener('message', (event) => {
+            const message = event.data;
+            switch (message.command) {
+                case 'loadmodel':
+                    this._msgLoadModel(message);
+                    break;
+            }
         });
 
         const params = new URLSearchParams(this.window.location.search);
@@ -164,7 +177,10 @@ host.BrowserHost = class {
             e.preventDefault();
         });
 
-        this._view.show('welcome');
+        this._view.show('welcome spinner');
+        // start to load model by requesting the model
+        // NOTE to start loading from extension, we have to check view is ready.
+        vscode.postMessage({command: 'loadmodel', offset: '0'});
     }
 
     environment(name) {
@@ -389,6 +405,34 @@ host.BrowserHost = class {
             .catch((error) => {
                 this._view.error(error, null, null);
             });
+    }
+
+    _msgLoadModel(message) {
+        if (message.type === 'modelpath') {
+            // 'modelpath' should be received before last model packet
+            this._modelPath = message.value;
+        } else if (message.type === 'uint8array') {
+            // model content is in Uint8Array data, store it in this._modelData
+            const offset = parseInt(message.offset);
+            const length = parseInt(message.length);
+            const total = parseInt(message.total);
+            this._modelData.push(message.responseArray);
+
+            if (offset + length >= total) {
+                // this is the last packet
+                const file1 = new File(this._modelData, this._modelPath, {type: ''});
+                this._view._host._open(file1, [file1]);
+                this._loadingModelArray = [];
+                this._view.show('default');
+            } else {
+                // request next packet
+                vscode.postMessage({command: 'loadmodel', offset: offset + length});
+            }
+        } else if (message.type === 'error') {
+            // TODO revise to something like 'Failed to load'
+            this._view.show('welcome');
+            this._loadingModelArray = [];
+        }
     }
 };
 
