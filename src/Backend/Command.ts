@@ -41,4 +41,26 @@ class Command extends Array<string> {
   }
 };
 
-export {Command};
+/**
+ * Class representing `$ pipingCmd | pipedCmd` type of piped command chain.
+ */
+class PipedCommand {
+  constructor(private _pipingCmd: Command, private _pipedCmd: Command) { /* empty */
+  }
+
+  str(): string {
+    return this._pipingCmd.str() + ' | ' + this._pipedCmd.str();
+  }
+
+  public get pipingCmd(): Command {
+    return this._pipingCmd;
+  }
+
+  public get pipedCmd(): Command {
+    return this._pipedCmd;
+  }
+};
+
+type CommandList = (Command|PipedCommand)[];
+
+export {Command, PipedCommand, CommandList};
