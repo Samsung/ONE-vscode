@@ -1131,7 +1131,6 @@ view.Node = class extends grapher.Node {
         });
         if (initializers.length > 0 || hiddenInitializers || sortedAttributes.length > 0) {
             const list = this.list();
-            list.on('click', () => this.context.view.showNodeProperties(node));
             for (const initializer of initializers) {
                 const argument = initializer.arguments[0];
                 const type = argument.type;
