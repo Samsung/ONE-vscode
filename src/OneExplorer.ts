@@ -140,20 +140,46 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
     this._onDidChangeTreeData.fire();
   }
 
+  /**
+   * Create ONE configuration file for a base model
+   *
+   * If the name is not given by user, it will be named using the base model's file name.
+   *
+   * base model     : ${NAME}.(tflite/tf/onnx/..)
+   * config(default): ${NAME}.cfg
+   *
+   * @param oneNode A base model to create configuration
+   */
   createCfg(oneNode: OneNode): void {
     const dirname = path.parse(oneNode.node.path).dir;
     const filename = path.parse(oneNode.node.path).name;
     const extname = path.parse(oneNode.node.path).ext.slice(1);
 
     const encoder = new TextEncoder;
-
     // TODO(dayo) Auto-configure more fields
-    vscode.workspace.fs.writeFile(vscode.Uri.file(`${dirname}/${filename}.cfg`), encoder.encode(`
+    const content = encoder.encode(`
 [one-build]
 one-import-${extname}=True
 [one-import-${extname}]
 input_path=${filename}.${extname}
-`));
+`);
+
+    const recommendedFileName = `${filename}.cfg`;
+    vscode.window
+        .showInputBox({
+          title: `Create ONE configuration of '${filename}.${extname}' :`,
+          placeHolder: recommendedFileName,
+          value: recommendedFileName
+        })
+        .then(value => {
+          if (value !== null && value !== undefined) {
+            const givenFileName = `${dirname}/${value}`;
+            vscode.workspace.fs.writeFile(vscode.Uri.file(givenFileName), content);
+          } else {
+            // Recommended name
+            vscode.workspace.fs.writeFile(vscode.Uri.file(recommendedFileName), content);
+          }
+        });
   }
 
   getTreeItem(element: OneNode): vscode.TreeItem {
