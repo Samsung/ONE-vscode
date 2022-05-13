@@ -142,43 +142,44 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
 
   /**
    * Create ONE configuration file for a base model
-   *
-   * If the name is not given by user, it will be named using the base model's file name.
-   *
-   * base model     : ${NAME}.(tflite/tf/onnx/..)
-   * config(default): ${NAME}.cfg
+   * Input box is prefilled as <base model's name>.cfg
+   * The operation will be cancelled if the file already exists.
    *
    * @param oneNode A base model to create configuration
    */
   createCfg(oneNode: OneNode): void {
-    const dirname = path.parse(oneNode.node.path).dir;
-    const filename = path.parse(oneNode.node.path).name;
-    const extname = path.parse(oneNode.node.path).ext.slice(1);
+    const dirName = path.parse(oneNode.node.path).dir;
+    const modelName = path.parse(oneNode.node.path).name;
+    const extName = path.parse(oneNode.node.path).ext.slice(1);
 
     const encoder = new TextEncoder;
     // TODO(dayo) Auto-configure more fields
     const content = encoder.encode(`
 [one-build]
-one-import-${extname}=True
-[one-import-${extname}]
-input_path=${filename}.${extname}
+one-import-${extName}=True
+[one-import-${extName}]
+input_path=${modelName}.${extName}
 `);
 
-    const recommendedFileName = `${filename}.cfg`;
     vscode.window
         .showInputBox({
-          title: `Create ONE configuration of '${filename}.${extname}' :`,
-          placeHolder: recommendedFileName,
-          value: recommendedFileName
+          title: `Create ONE configuration of '${modelName}.${extName}' :`,
+          placeHolder: `${modelName}.cfg`,
+          value: `${modelName}.cfg`
         })
         .then(value => {
-          if (value !== null && value !== undefined) {
-            const givenFileName = `${dirname}/${value}`;
-            vscode.workspace.fs.writeFile(vscode.Uri.file(givenFileName), content);
-          } else {
-            // Recommended name
-            vscode.workspace.fs.writeFile(vscode.Uri.file(recommendedFileName), content);
+          const cfgPath = `${dirName}/${value}`;
+          try {
+            if (fs.existsSync(cfgPath)) {
+              vscode.window.showInformationMessage(`Cancelled: Path already exists (${cfgPath})`);
+              return;
+            }
+          } catch (err) {
+            console.error(err);
+            return;
           }
+
+          vscode.workspace.fs.writeFile(vscode.Uri.file(cfgPath), content);
         });
   }
 
