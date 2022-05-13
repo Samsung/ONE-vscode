@@ -263,6 +263,10 @@ input_path=${filename}.${extname}
     }
 
     const targetLocator = [
+      {section: 'one-import-tf', key: 'output_path', grepper: this.grepAll},
+      {section: 'one-import-tflite', key: 'output_path', grepper: this.grepAll},
+      {section: 'one-import-onnx', key: 'output_path', grepper: this.grepAll},
+      {section: 'one-import-bcq', key: 'output_path', grepper: this.grepAll},
       {section: 'one-optimize', key: 'input_path', grepper: this.grepAll},
       {section: 'one-optimize', key: 'output_path', grepper: this.grepAll},
       {section: 'one-quantize', key: 'input_path', grepper: this.grepAll},
