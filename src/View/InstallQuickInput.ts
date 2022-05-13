@@ -16,7 +16,7 @@
 
 import * as vscode from 'vscode';
 import {gToolchainEnvMap} from '../Toolchain/ToolchainEnv';
-import {MultiStepInput} from '../Utils/MultiStepInput';
+import {MultiStepInput} from '../Utils/external/MultiStepInput';
 
 export async function showInstallQuickInput(context: vscode.ExtensionContext) {
   interface State {
