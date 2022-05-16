@@ -397,18 +397,25 @@ export class OneExplorer {
     context.subscriptions.push(
         vscode.window.registerTreeDataProvider('OneExplorerView', oneTreeDataProvider));
 
-    vscode.commands.registerCommand('onevscode.open-cfg', (file) => this.openFile(file));
-    vscode.commands.registerCommand(
-        'onevscode.refresh-one-explorer', () => oneTreeDataProvider.refresh());
-    vscode.commands.registerCommand(
-        'onevscode.create-cfg', (oneNode: OneNode) => oneTreeDataProvider.createCfg(oneNode));
+    const subscribeCommands = (disposals: vscode.Disposable[]) => {
+      for (const disposal of disposals) {
+        context.subscriptions.push(disposal);
+      }
+    };
 
-    let runCfgDisposal =
-        vscode.commands.registerCommand('onevscode.run-cfg', (oneNode: OneNode) => {
-          const oneccRunner = new OneccRunner(oneNode.node.uri, logger);
-          oneccRunner.run();
-        });
-    context.subscriptions.push(runCfgDisposal);
+    subscribeCommands([
+      vscode.commands.registerCommand('onevscode.open-cfg', (file) => this.openFile(file)),
+      vscode.commands.registerCommand(
+          'onevscode.refresh-one-explorer', () => oneTreeDataProvider.refresh()),
+      vscode.commands.registerCommand(
+          'onevscode.create-cfg', (oneNode: OneNode) => oneTreeDataProvider.createCfg(oneNode)),
+      vscode.commands.registerCommand(
+          'onevscode.run-cfg',
+          (oneNode: OneNode) => {
+            const oneccRunner = new OneccRunner(oneNode.node.uri, logger);
+            oneccRunner.run();
+          })
+    ]);
   }
 
   private openFile(node: Node) {
