@@ -83,10 +83,20 @@ export class ToolRunner {
     return oneccRealPath;
   }
 
-  public getRunner(name: string, tool: string, toolargs: ToolArgs, path: string) {
+  public getRunner(name: string, tool: string, toolargs: ToolArgs, path: string, root?: boolean) {
     return new Promise<string>((resolve, reject) => {
       this.logger.outputWithTime('Running: ' + name);
-      let cmd = cp.spawn(tool, toolargs, {cwd: path});
+      if (root) {
+        // NOTE
+        // To run the root command job, it must requires a password in `process.env.userp`
+        // environment.
+        // TODO(jyoung): Need password encryption
+        tool = `echo ${process.env.userp} | sudo -S ` + tool;
+      }
+      let cmd = cp.spawn(tool, toolargs, {cwd: path, shell: true});
+      if (root) {
+        process.env.userp = '';
+      }
       this.handlePromise(resolve, reject, cmd);
     });
   }
