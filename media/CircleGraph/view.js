@@ -456,6 +456,7 @@ view.View = class {
             const element = this._selection.pop();
             element.classList.remove('select');
         }
+        this._selectionNodes = [];
     }
 
     error(err, name, screen) {
