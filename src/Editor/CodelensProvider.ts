@@ -26,32 +26,45 @@ export class CodelensProvider implements vscode.CodeLensProvider {
   eventGenerator: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
   public readonly onDidChangeCodeLenses: vscode.Event<void> = this.eventGenerator.event;
 
-  constructor() {
-    vscode.commands.registerCommand('onevscode.toggleAttrCodelens', (toolName: string) => {
-      let findToolIdx = this.showTool.findIndex((tool) => tool === toolName);
+  private toggleAttrCodelens(toolName: string) {
+    let findToolIdx = this.showTool.findIndex((tool) => tool === toolName);
 
-      if (findToolIdx === -1) {
-        this.showTool.push(toolName);
-      } else {
-        this.showTool.splice(findToolIdx, 1);
+    if (findToolIdx === -1) {
+      this.showTool.push(toolName);
+    } else {
+      this.showTool.splice(findToolIdx, 1);
+    }
+    this.hideAttr = this.hideAttr.filter((toolAttr) => !toolAttr.includes(toolName));
+    this.eventGenerator.fire();
+  }
+
+  private hideAttrCodelens(toolName: string, attrName: string) {
+    let toolAttr = toolName + '.' + attrName;
+    let findHideAttrIdx = this.hideAttr.findIndex((hideattr) => hideattr === toolAttr);
+
+    if (findHideAttrIdx === -1) {
+      this.hideAttr.push(toolAttr);
+    } else {
+      this.hideAttr.splice(findHideAttrIdx, 1);
+    }
+
+    this.eventGenerator.fire();
+  }
+
+  constructor(context: vscode.ExtensionContext) {
+    const subscribeCommands = (disposals: vscode.Disposable[]) => {
+      for (const disposal of disposals) {
+        context.subscriptions.push(disposal);
       }
-      this.hideAttr = this.hideAttr.filter((toolAttr) => !toolAttr.includes(toolName));
-      this.eventGenerator.fire();
-    });
+    };
 
-    vscode.commands.registerCommand(
-        'onevscode.hideAttrCodelens', (toolName: string, attrName: string) => {
-          let toolAttr = toolName + '.' + attrName;
-          let findHideAttrIdx = this.hideAttr.findIndex((hideattr) => hideattr === toolAttr);
-
-          if (findHideAttrIdx === -1) {
-            this.hideAttr.push(toolAttr);
-          } else {
-            this.hideAttr.splice(findHideAttrIdx, 1);
-          }
-
-          this.eventGenerator.fire();
-        });
+    subscribeCommands([
+      vscode.commands.registerCommand(
+          'onevscode.toggleAttrCodelens', (toolName) => this.toggleAttrCodelens(toolName)),
+      vscode.commands.registerCommand(
+          'onevscode.hideAttrCodelens',
+          (toolName: string, attrName: string) => this.hideAttrCodelens(toolName, attrName)),
+    ]);
 
     vscode.workspace.onDidChangeConfiguration(() => {
       this.eventGenerator.fire();

@@ -133,7 +133,7 @@ export function activate(context: vscode.ExtensionContext) {
       });
   context.subscriptions.push(disposableToggleCodelens);
 
-  let codelens = new CodelensProvider();
+  let codelens = new CodelensProvider(context);
   let disposableCodelens = vscode.languages.registerCodeLensProvider('ini', codelens);
   context.subscriptions.push(disposableCodelens);
 
