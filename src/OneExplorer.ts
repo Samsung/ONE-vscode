@@ -23,6 +23,7 @@ import * as vscode from 'vscode';
 import {CfgEditorPanel} from './CfgEditor/CfgEditorPanel';
 import {ToolArgs} from './Project/ToolArgs';
 import {ToolRunner} from './Project/ToolRunner';
+import {obtainWorkspaceRoot} from './Utils/Helpers';
 import {Logger} from './Utils/Logger';
 
 /**
@@ -387,13 +388,12 @@ input_path=${filename}.${extname}
 }
 
 export class OneExplorer {
-  constructor(context: vscode.ExtensionContext, logger: Logger) {
-    const rootPath =
-        (vscode.workspace.workspaceFolders && (vscode.workspace.workspaceFolders.length > 0)) ?
-        vscode.workspace.workspaceFolders[0].uri :
-        undefined;
+  // TODO Support multi-workspace
+  public workspaceRoot: vscode.Uri = vscode.Uri.file(obtainWorkspaceRoot());
 
-    const oneTreeDataProvider = new OneTreeDataProvider(rootPath);
+  constructor(context: vscode.ExtensionContext, logger: Logger) {
+    // NOTE: Fix `obtainWorksapceRoot` if non-null assertion is false
+    const oneTreeDataProvider = new OneTreeDataProvider(this.workspaceRoot!);
     context.subscriptions.push(
         vscode.window.registerTreeDataProvider('OneExplorerView', oneTreeDataProvider));
 
