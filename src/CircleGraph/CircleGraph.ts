@@ -238,7 +238,6 @@ export class CircleGraphPanel {
       this.sendModelPath();
 
       try {
-        console.log('Load model...');
         const stats = fs.statSync(this._modelToLoad);
         this._modelLength = stats.size;
 
