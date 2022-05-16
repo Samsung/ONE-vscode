@@ -86,16 +86,17 @@ export class ToolRunner {
   public getRunner(name: string, tool: string, toolargs: ToolArgs, path: string, root?: boolean) {
     return new Promise<string>((resolve, reject) => {
       this.logger.outputWithTime('Running: ' + name);
+      let cmd = undefined;
       if (root) {
         // NOTE
         // To run the root command job, it must requires a password in `process.env.userp`
         // environment.
         // TODO(jyoung): Need password encryption
         tool = `echo ${process.env.userp} | sudo -S ` + tool;
-      }
-      let cmd = cp.spawn(tool, toolargs, {cwd: path, shell: true});
-      if (root) {
+        cmd = cp.spawn(tool, toolargs, {cwd: path, shell: true});
         process.env.userp = '';
+      } else {
+        cmd = cp.spawn(tool, toolargs, {cwd: path});
       }
       this.handlePromise(resolve, reject, cmd);
     });
