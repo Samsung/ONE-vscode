@@ -155,7 +155,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
     const encoder = new TextEncoder;
     // TODO(dayo) Auto-configure more fields
     const content = encoder.encode(`
-[one-build]
+[onecc]
 one-import-${extName}=True
 [one-import-${extName}]
 input_path=${modelName}.${extName}
