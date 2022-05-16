@@ -131,6 +131,7 @@ host.BrowserHost = class {
         this._menu.add(
             {label: 'Find...', accelerator: 'CmdOrCtrl+F', click: () => this._view.find()});
         this._menu.add({});
+        this._menu.add({label: 'Get selection', click: () => this.getSelection()});
         this._menu.add({label: 'Clear selection', click: () => this._view.clearSelection()});
         this._menu.add({});
         this._menu.add({
@@ -186,6 +187,11 @@ host.BrowserHost = class {
         // start to load model by requesting the model
         // NOTE to start loading from extension, we have to check view is ready.
         vscode.postMessage({command: 'loadmodel', offset: '0'});
+    }
+
+    getSelection() {
+        let v = this._view.getSelection();
+        vscode.postMessage({command: 'selection', names: v.names, tensors: v.tensors});
     }
 
     environment(name) {

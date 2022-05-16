@@ -286,6 +286,22 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider, Part
     this.updateWebview();
   }
 
+  private selectForOpName(backend: string) {
+    if (this._document) {
+      let partContent = ini.parse(this._document.getText());
+      console.log('partContent', partContent);
+
+      partContent.partition.selectOpName = backend;
+      let stringContent = ini.stringify(partContent);
+      console.log('stringContent', stringContent);
+
+      const edit = new vscode.WorkspaceEdit();
+      edit.replace(
+          this._document.uri, new vscode.Range(0, 0, this._document.lineCount, 0), stringContent);
+      vscode.workspace.applyEdit(edit);
+    }
+  }
+
   private getHtmlForWebview(webview: vscode.Webview) {
     const htmlPath = this.getMediaPath('index.html');
     let html = fs.readFileSync(htmlPath.fsPath, {encoding: 'utf-8'});

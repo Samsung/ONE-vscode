@@ -37,6 +37,9 @@ editor.Operator = class {
   }
 };
 
+/**
+ * @brief editor.Editor provides editor GUI
+ */
 editor.Editor = class {
   constructor() {
     this.window = window;
@@ -45,6 +48,8 @@ editor.Editor = class {
     this.operators = [];  // array of editor.Operator
     this.partition = {};  // current partition from document
     this.beToCode = {};   // backend string to code, for search performance
+    // NOTE
+    // this.partition.partition.default is current default backend
   }
 
   initialize() {
@@ -57,6 +62,11 @@ editor.Editor = class {
   }
 
   register() {
+    console.log('editor: register');
+    this.window.addEventListener('error', (e) => {
+      this.exception(e.error, true);
+    });
+
     this.window.addEventListener('message', (event) => {
       const message = event.data;
       switch (message.command) {
