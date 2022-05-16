@@ -83,10 +83,10 @@ export class ToolRunner {
     return oneccRealPath;
   }
 
-  public getRunner(name: string, tool: string, toolargs: ToolArgs, path: string) {
+  public getRunner(name: string, toolPath: string, toolargs: ToolArgs, cwd: string) {
     return new Promise<string>((resolve, reject) => {
       this.logger.outputWithTime('Running: ' + name);
-      let cmd = cp.spawn(tool, toolargs, {cwd: path});
+      let cmd = cp.spawn(toolPath, toolargs, {cwd: cwd});
       this.handlePromise(resolve, reject, cmd);
     });
   }
