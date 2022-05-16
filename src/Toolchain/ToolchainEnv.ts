@@ -28,6 +28,7 @@ import {WorkFlow} from '../Project/WorkFlow';
 import {Balloon} from '../Utils/Balloon';
 import * as helpers from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
+import {showPasswordQuickInput} from '../View/PasswordQuickInput';
 
 class Env implements BuilderJob {
   workFlow: WorkFlow;  // our build WorkFlow
@@ -75,7 +76,21 @@ class Env implements BuilderJob {
       return;
     }
 
-    this.workFlow.start(this.currentWorkspace);
+    const rootJobs = this.workFlow.jobs.filter(j => j.root === true);
+    if (rootJobs.length > 0) {
+      console.log('Showing password prompt');
+      showPasswordQuickInput().then(password => {
+        if (password === undefined) {
+          console.log('Password dialog canceled');
+          return;
+        }
+        console.log('Enter the password: ' + password);
+        process.env.userp = password;
+        this.workFlow.start(this.currentWorkspace);
+      });
+    } else {
+      this.workFlow.start(this.currentWorkspace);
+    }
   }
 }
 
@@ -119,10 +134,13 @@ class ToolchainEnv extends Env {
 
   install(toolchain: Toolchain) {
     if (this.installed !== undefined) {
-      throw Error('Before installing, uninstall toolchain');
+      Balloon.error(
+          'Debian toolchain is allowed to install only one. Please uninstall toolchain first.');
+      return;
     }
     if (this.installed === toolchain) {
-      throw Error('The toolchain is already installed');
+      Balloon.error('This toolchain is already installed.');
+      return;
     }
     let cmd = toolchain.install();
     let job = new JobInstall(cmd);
