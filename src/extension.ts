@@ -33,6 +33,7 @@ import {OneExplorer} from './OneExplorer';
 import {Project} from './Project';
 import {Utils} from './Utils';
 import {showInstallQuickInput} from './View/InstallQuickInput';
+import {ToolchainProvider} from './Toolchain/ToolchainProvider';
 
 /**
  * Set vscode context that is used globally
@@ -64,9 +65,9 @@ export function activate(context: vscode.ExtensionContext) {
   new OneExplorer(context, logger);
 
   // ONE view
-  let refreshCompiler = vscode.commands.registerCommand('onevscode.refresh-toolchain', () => {
-    console.log('refresh-toolchain: NYI');
-  });
+  const toolchainProvier = new ToolchainProvider(context);
+	vscode.window.registerTreeDataProvider('ToolchainView', toolchainProvier);
+  let refreshCompiler = vscode.commands.registerCommand('onevscode.refresh-toolchain', () => toolchainProvier.refresh());
   context.subscriptions.push(refreshCompiler);
   let installCompiler = vscode.commands.registerCommand('onevscode.install-toolchain', () => {
     showInstallQuickInput(context);
