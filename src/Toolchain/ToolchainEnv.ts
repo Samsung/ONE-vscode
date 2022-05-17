@@ -135,7 +135,7 @@ class ToolchainEnv extends Env {
   install(toolchain: Toolchain) {
     if (this.installed !== undefined) {
       Balloon.error(
-          'The toolchain installed in your system must be one and only. Please uninstall the existing toolchain first.');
+          'The debian toolchain installed in your system must be one and only. Please uninstall the existing toolchain first.');
       return;
     }
     if (this.installed === toolchain) {
