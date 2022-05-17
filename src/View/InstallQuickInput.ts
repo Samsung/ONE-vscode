@@ -15,7 +15,8 @@
  */
 
 import * as vscode from 'vscode';
-import {gToolchainEnvMap} from '../Toolchain/ToolchainEnv';
+import {Toolchain} from '../Backend/Toolchain';
+import {gToolchainEnvMap, ToolchainEnv} from '../Toolchain/ToolchainEnv';
 import {MultiStepInput} from '../Utils/external/MultiStepInput';
 
 export async function showInstallQuickInput(context: vscode.ExtensionContext) {
@@ -25,6 +26,8 @@ export async function showInstallQuickInput(context: vscode.ExtensionContext) {
     totalSteps: number;
     backend: vscode.QuickPickItem;
     version: vscode.QuickPickItem;
+    toolchainEnv: ToolchainEnv;
+    toolchain: Toolchain;
   }
 
   async function collectInputs() {
@@ -46,14 +49,15 @@ export async function showInstallQuickInput(context: vscode.ExtensionContext) {
       items: backendGroups,
       shouldResume: shouldResume
     });
+    state.toolchainEnv = gToolchainEnvMap[state.backend.label];
     return (input: MultiStepInput) => pickVersion(input, state);
   }
 
   async function pickVersion(input: MultiStepInput, state: Partial<State>) {
-    if (state.backend === undefined) {
+    if (state.toolchainEnv === undefined) {
       throw Error('Backend is undefined.');
     }
-    const toolchains = gToolchainEnvMap[state.backend.label].listAvailable();
+    const toolchains = state.toolchainEnv.listAvailable();
     const versions =
         toolchains.map((value) => value.info.version !== undefined ? value.info.version.str() : '');
     const versionGroups: vscode.QuickPickItem[] = versions.map((label) => ({label}));
@@ -65,6 +69,7 @@ export async function showInstallQuickInput(context: vscode.ExtensionContext) {
       items: versionGroups,
       shouldResume: shouldResume
     });
+    state.toolchain = toolchains[versions.indexOf(state.version.label)];
   }
 
   function shouldResume() {
@@ -77,5 +82,5 @@ export async function showInstallQuickInput(context: vscode.ExtensionContext) {
 
   const state = await collectInputs();
   console.log(`Selected backend: ${state.backend.label}-${state.version.label}`);
-  // TODO(jyoung): Request to install selected toolchain
+  state.toolchainEnv.install(state.toolchain);
 }
