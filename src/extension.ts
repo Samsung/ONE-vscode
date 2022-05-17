@@ -69,6 +69,9 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.window.registerTreeDataProvider('ToolchainView', toolchainProvier);
   let refreshCompiler = vscode.commands.registerCommand('onevscode.refresh-toolchain', () => toolchainProvier.refresh());
   context.subscriptions.push(refreshCompiler);
+  context.subscriptions.push(vscode.commands.registerCommand('onevscode.uninstall-toolchain', () => {
+    console.log('uninstall-toolchain: NYI');
+  }));
   let installCompiler = vscode.commands.registerCommand('onevscode.install-toolchain', () => {
     showInstallQuickInput(context);
   });
