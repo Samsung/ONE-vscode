@@ -37,6 +37,7 @@ export class ToolchainNode extends vscode.TreeItem {
       this.iconPath = new vscode.ThemeIcon('circle-filled');
       this.label = `${this.label} ${this.version}`;
     }
+    this.contextValue = NodeType[type];
   }
 }
 
