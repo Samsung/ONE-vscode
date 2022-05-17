@@ -388,7 +388,7 @@ input_path=${filename}.${extname}
 }
 
 export class OneExplorer {
-  // TODO Support multi-workspace
+  // TODO Support multi-root workspace
   public workspaceRoot: vscode.Uri = vscode.Uri.file(obtainWorkspaceRoot());
 
   constructor(context: vscode.ExtensionContext, logger: Logger) {
