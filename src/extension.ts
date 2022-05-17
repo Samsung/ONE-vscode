@@ -66,14 +66,13 @@ export function activate(context: vscode.ExtensionContext) {
 
   // ONE view
   const toolchainProvier = new ToolchainProvider();
-  vscode.window.registerTreeDataProvider('ToolchainView', toolchainProvier);
-  let refreshCompiler = vscode.commands.registerCommand(
-      'onevscode.refresh-toolchain', () => toolchainProvier.refresh());
-  context.subscriptions.push(refreshCompiler);
-  let installCompiler = vscode.commands.registerCommand('onevscode.install-toolchain', () => {
+  context.subscriptions.push(
+      vscode.window.registerTreeDataProvider('ToolchainView', toolchainProvier));
+  context.subscriptions.push(vscode.commands.registerCommand(
+      'onevscode.refresh-toolchain', () => toolchainProvier.refresh()));
+  context.subscriptions.push(vscode.commands.registerCommand('onevscode.install-toolchain', () => {
     showInstallQuickInput(context);
-  });
-  context.subscriptions.push(installCompiler);
+  }));
 
   // Target Device view
   let registerDevice = vscode.commands.registerCommand('onevscode.register-device', () => {
