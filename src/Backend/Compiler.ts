@@ -59,8 +59,8 @@ interface Compiler {
   getToolchains(toolchainType: string, start: number, count: number): Toolchains;
 
   /**
-   * @brief Function to return the list of already-installed toolchain
-   * @param toolchainType One of value returned from toolchainTypes()
+   * @brief Function to return the list of already-installed toolchains
+   * @param toolchainType One of the values returned from toolchainTypes()
    */
   getInstalledToolchains(toolchainType: string): Toolchains;
 
