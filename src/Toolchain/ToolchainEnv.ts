@@ -92,29 +92,32 @@ class ToolchainEnv extends Env {
   }
 
   confirmInstalled() {
-    this.clearJobs();
+    // this.clearJobs();
 
-    const toolchains = this.compiler.toolchains();
-    for (let index = 0; index < toolchains.length; index++) {
-      const toolchain = toolchains[index];
-      let cmd = toolchain.installed();
-      let job = new JobInstalled(cmd);
-      job.successCallback = () => {
-        this.installed = toolchain;
-      };
-      this.addJob(job);
-    }
+    // const toolchains = this.compiler.toolchains();
+    // for (let index = 0; index < toolchains.length; index++) {
+    //   const toolchain = toolchains[index];
+    //   let cmd = toolchain.installed();
+    //   let job = new JobInstalled(cmd);
+    //   job.successCallback = () => {
+    //     this.installed = toolchain;
+    //   };
+    //   job.failureCallback = () => {
+    //     console.log('this toolchain is not installed');
+    //   };
+    //   this.addJob(job);
+    // }
 
-    this.finishAdd();
-    this.build();
+    // this.finishAdd();
+    // this.build();
   }
 
   listAvailable(): Toolchain[] {
-    return this.compiler.toolchains();
+    return this.compiler.availableToolchains();
   }
 
-  listInstalled(): Toolchain|undefined {
-    return this.installed;
+  listInstalled(): Toolchain[] {
+    return this.compiler.installedToolchains();
   }
 
   install(toolchain: Toolchain) {

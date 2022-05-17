@@ -15,7 +15,7 @@
  */
 
 import {Backend} from '../Backend/API';
-import { PackageInfo, Toolchains } from '../Backend/Toolchain';
+import { PackageInfo, Toolchain, Toolchains } from '../Backend/Toolchain';
 import { Command } from '../Backend/Command';
 import {Compiler, CompilerBase} from '../Backend/Compiler';
 import {Executor, ExecutorBase} from '../Backend/Executor';
@@ -122,10 +122,47 @@ class DummyCompiler extends CompilerBase {
     return () => { return new Command('apt-get', ['remove', this.getVersionString(name, version)]); };
   }
   private installed(name: string, version: string = ''): CommandFunc {
-    return () => { return new Command('dpkg-query', ['--show', name, '|', 'grep', version]); };
+    return () => { return new Command(''); };
   }
 
   private async resolveToolchains() {
+    // Apt-get doesn't support the multiple verison installation of the same package.
+    // So dpkg-query --status command shows only one package information.
+    cp.exec('dpkg-query -s triv2-toolchain-latest', (err, stdout, stderr) => {
+      if (err) {
+        console.log(`error: ${err.message}`);
+        return;
+      } else {
+        const control = new BinaryControl(stdout);
+        let depends: PackageInfo[] = [];
+        control.depends?.forEach(item => {
+          const data = item.replace(/[()=<>]/g, '').split(' ').filter(i => i);
+          const version = parseVersion(data[1]);
+          if (version) {
+            depends.push({ name: data[0], version: version});
+          } else {
+            console.log(`data[0] does not have version string`);
+          }
+        });
+
+        console.log(depends);
+        const version = parseVersion(control.version);
+        if (version) {
+          this._installed.push({
+            info: { 
+              name: control.package,
+              description: control.description,
+              version: version,
+              depends: depends},
+            install: this.install(control.package, control.version),
+            uninstall: this.uninstall(control.package, control.version),
+            installed: this.installed(control.package, control.version)
+          });
+        }
+        console.log(this._installed);
+      }      
+    });
+
     cp.exec('apt-cache madison triv2-toolchain-latest | head -4', (err, stdout, stderr) => {
       if (err) {
         console.log(`error: ${err.message}`);
@@ -145,40 +182,17 @@ class DummyCompiler extends CompilerBase {
             });
           }
         });
+        console.log(this._toolchains);
       }
     });
-    
-
-    // Apt-get doesn't support the multiple verison installation of the same package.
-    // So dpkg-query --status command shows only one package information.
-    // cp.exec('dpkg-query -s triv2-toolchain-latest', (err, stdout, stderr) => {
-    //   if (err) {
-    //     console.log(`error: ${err.message}`);
-    //     return;
-    //   {
-    //     const control = new BinaryControl(stdout);
-    //     let depends: PackageInfo[] = [];
-    //     control.depends?.forEach(item => {
-    //       const data = item.replace(/[()=<>]/g, '').split(' ').filter(i => i);
-    //       depends.push({ name: data[0], version: Version.parseVersion(data[1])});
-    //     });
-
-    //     this._toolchains.push({
-    //       info: { 
-    //         name: control.package,
-    //         description: control.description,
-    //         version: Version.parseVersion(control.version),
-    //         depends: depends},
-    //       install: this.install(control.package, control.version),
-    //       uninstall: this.uninstall(control.package, control.version),
-    //       installed: this.installed(control.package, control.version)
-    //     });
-    //   }      
-    // });
   }
 
-  toolchains(): Toolchains {
+  availableToolchains(): Toolchains {
     return this._toolchains;
+  }
+
+  installedToolchains(): Toolchains {
+    return this._installed;
   }
 
   compile(cfg: string): Command {
@@ -189,6 +203,7 @@ class DummyCompiler extends CompilerBase {
   }
 
   _toolchains: Toolchains = [];
+  _installed: Toolchains = [];
 };
 
 class DummyExecutor extends ExecutorBase {};

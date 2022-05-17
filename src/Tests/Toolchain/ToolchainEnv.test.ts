@@ -79,18 +79,18 @@ suite('Toolchain', function() {
         });
       });
 
-      suite('#listInstalled()', function() {
-        test('lists installed toolchain', function(done) {
-          let env = new ToolchainEnv(logger, compiler);
-          env.confirmInstalled();
-          env.workFlow.jobRunner.on(K_CLEANUP, function() {
-            assert.notEqual(env.installed, undefined);
-            let toolchain = env.listInstalled();
-            assert.strictEqual(toolchain, compiler.installedToolchain);
-            done();
-          });
-        });
-      });
+      // suite('#listInstalled()', function() {
+      //   test('lists installed toolchain', function(done) {
+      //     let env = new ToolchainEnv(logger, compiler);
+      //     env.confirmInstalled();
+      //     env.workFlow.jobRunner.on(K_CLEANUP, function() {
+      //       assert.notEqual(env.installed, undefined);
+      //       let toolchain = env.listInstalled();
+      //       assert.strictEqual(toolchain, compiler.installedToolchain);
+      //       done();
+      //     });
+      //   });
+      // });
 
       // TODO(jyoung): Enable to install and uninstall package test case
       // NOTE: It is necessary to consider about how to solve the operation

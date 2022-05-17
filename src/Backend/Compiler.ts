@@ -32,7 +32,8 @@ interface Compiler {
    * @Deprecated Use toolchainTypes() and getToolchains()
    */
   // defined/available toolchains by backend supporter
-  toolchains(): Toolchains;
+  availableToolchains(): Toolchains;
+  installedToolchains(): Toolchains;
 
   /**
    * Function to get the type of toolchain. E.g., ['official', 'nightly']
@@ -64,8 +65,12 @@ interface Compiler {
 
 // General compiler uses onecc so default jobs can be used
 class CompilerBase implements Compiler {
-  toolchains(): Toolchains {
-    throw Error('Invalid toolchains call');
+  availableToolchains(): Toolchains {
+    throw Error('Invalid availalbeToolchains call');
+  }
+
+  installedToolchains(): Toolchains {
+    throw Error('Invalid installedToolchains call');
   }
 
   getToolchainTypes(): string[] {
