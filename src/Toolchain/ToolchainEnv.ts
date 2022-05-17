@@ -84,7 +84,7 @@ class Env implements BuilderJob {
           console.log('Password dialog canceled');
           return;
         }
-        console.log('Enter the password: ' + password);
+        console.log('Got password response');
         process.env.userp = password;
         this.workFlow.start(this.currentWorkspace);
       });
