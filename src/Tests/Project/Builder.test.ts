@@ -21,7 +21,7 @@ import {MockJob} from '../MockJob';
 
 suite('Project', function() {
   suite('Builder', function() {
-    const logger = new Logger();
+    const logger = Logger.getInstance();
     suite('#contructor()', function() {
       test('is contructed with Logger', function() {
         let builder = new Builder(logger);

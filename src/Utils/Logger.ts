@@ -20,9 +20,19 @@ export class Logger {
   outputChannel: vscode.OutputChannel;
   firstFocus: boolean;
 
-  constructor() {
+  private static logger: Logger|null = null;
+
+  private constructor() {
     this.outputChannel = vscode.window.createOutputChannel('ONE-VSCode');
     this.firstFocus = true;
+  }
+
+  public static getInstance(): Logger {
+    if (Logger.logger === null) {
+      Logger.logger = new Logger();
+    }
+
+    return Logger.logger;
   }
 
   private checkShow() {

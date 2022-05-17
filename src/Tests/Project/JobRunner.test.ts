@@ -24,7 +24,7 @@ import {MockJob} from '../MockJob';
 
 suite('Project', function() {
   suite('JobRunner', function() {
-    const logger = new Logger();
+    const logger = Logger.getInstance();
     suite('@Use-onecc', function() {
       suite('#start()', function() {
         test('jobs are done', function(done) {
