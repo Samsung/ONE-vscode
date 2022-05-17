@@ -58,6 +58,12 @@ interface Compiler {
    */
   getToolchains(toolchainType: string, start: number, count: number): Toolchains;
 
+  /**
+   * @brief Function to return the list of already-installed toolchains
+   * @param toolchainType One of the values returned from toolchainTypes()
+   */
+  getInstalledToolchains(toolchainType: string): Toolchains;
+
   // compiler jobs
   compile(cfg: string): Command;
 
@@ -86,6 +92,10 @@ class CompilerBase implements Compiler {
 
   getToolchains(toolchainType: string, start: number, count: number): Toolchains {
     throw Error('Invalid getToolchains call');
+  }
+
+  getInstalledToolchains(toolchainType: string): Toolchains {
+    throw Error('Invalid getInstalledToolchains call');
   }
 
   compile(cfg: string): Command {
