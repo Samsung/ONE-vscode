@@ -20,7 +20,12 @@ export class Balloon {
   static error(msg: string) {
     vscode.window.showErrorMessage(msg);
   }
+
   static info(msg: string) {
     vscode.window.showInformationMessage(msg);
+  }
+
+  static warning(msg: string) {
+    vscode.window.showWarningMessage(msg);
   }
 }
