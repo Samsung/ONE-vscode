@@ -60,6 +60,18 @@ interface Compiler {
 
   // compiler jobs
   compile(cfg: string): Command;
+
+  /**
+   * @brief Method to get command that prepares environment before calling getToolchains()
+   * @detail If multiple commands are needed, Command with shell script containing multiple commands
+   *         will be returned
+   *
+   * ```ts
+   * // prepare a script that runs multiple commands here
+   * return new Command('/bin/bash', ['-c', `"${scriptPath} ${scriptArg}"`])
+   * ```
+   */
+  prerequisitesForGetToolchains(): Command;
 }
 
 // General compiler uses onecc so default jobs can be used
@@ -81,6 +93,10 @@ class CompilerBase implements Compiler {
     cmd.push('--config');
     cmd.push(cfg);
     return cmd;
+  }
+
+  prerequisitesForGetToolchains(): Command {
+    throw Error('Invalid prerequisitesForGetToolchains call');
   }
 };
 
