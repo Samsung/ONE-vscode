@@ -31,6 +31,7 @@ import {Jsontracer} from './Jsontracer';
 import {MondrianEditorProvider} from './Mondrian/MondrianEditor';
 import {OneExplorer} from './OneExplorer';
 import {Project} from './Project';
+import {ToolchainProvider} from './Toolchain/ToolchainProvider';
 import {Utils} from './Utils';
 import {showInstallQuickInput} from './View/InstallQuickInput';
 
@@ -64,14 +65,14 @@ export function activate(context: vscode.ExtensionContext) {
   new OneExplorer(context, logger);
 
   // ONE view
-  let refreshCompiler = vscode.commands.registerCommand('onevscode.refresh-toolchain', () => {
-    console.log('refresh-toolchain: NYI');
-  });
-  context.subscriptions.push(refreshCompiler);
-  let installCompiler = vscode.commands.registerCommand('onevscode.install-toolchain', () => {
+  const toolchainProvier = new ToolchainProvider();
+  context.subscriptions.push(
+      vscode.window.registerTreeDataProvider('ToolchainView', toolchainProvier));
+  context.subscriptions.push(vscode.commands.registerCommand(
+      'onevscode.refresh-toolchain', () => toolchainProvier.refresh()));
+  context.subscriptions.push(vscode.commands.registerCommand('onevscode.install-toolchain', () => {
     showInstallQuickInput(context);
-  });
-  context.subscriptions.push(installCompiler);
+  }));
 
   // Target Device view
   let registerDevice = vscode.commands.registerCommand('onevscode.register-device', () => {
