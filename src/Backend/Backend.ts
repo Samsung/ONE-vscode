@@ -16,6 +16,7 @@
 
 const assert = require('assert');
 import {Backend} from './API';
+import {DeviceType} from '../Device/DeviceType';
 import {gToolchainEnvMap, ToolchainEnv} from '../Toolchain/ToolchainEnv';
 import {Logger} from '../Utils/Logger';
 
@@ -27,8 +28,13 @@ interface BackendMap {
   [key: string]: Backend;
 }
 
+interface DeviceTypeMap {
+  [key: string]: DeviceType;
+}
+
 // List of backend extensions registered
 let globalBackendMap: BackendMap = {};
+let globalDeviceTypeMap: DeviceTypeMap = {};
 
 function backendRegistrationApi() {
   let registrationAPI = {
@@ -41,10 +47,15 @@ function backendRegistrationApi() {
         gToolchainEnvMap[backend.name()] = new ToolchainEnv(new Logger(), compiler);
       }
       console.log(`Backend ${backendName} was registered into ONE-vscode.`);
+    },
+    registerDeviceType(deviceType: DeviceType) {
+      const deviceTypeName = deviceType.name();
+      assert(deviceTypeName.length > 0);
+      globalDeviceTypeMap[deviceTypeName] = deviceType;
     }
   };
 
   return registrationAPI;
 }
 
-export {globalBackendMap, backendRegistrationApi};
+export {globalBackendMap, globalDeviceTypeMap, backendRegistrationApi};
