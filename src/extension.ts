@@ -24,6 +24,7 @@ import {Circletracer} from './Circletracer';
 import {CompilePanel} from './Compile/CompilePanel';
 import {ConfigPanel} from './Config/ConfigPanel';
 import {createStatusBarItem} from './Config/ConfigStatusBar';
+import {runDeviceQuickInput} from './Device/deviceQuickInput';
 import {CodelensProvider} from './Editor/CodelensProvider';
 import {HoverProvider} from './Editor/HoverProvider';
 import {runInferenceQuickInput} from './Execute/executeQuickInput';
@@ -76,7 +77,8 @@ export function activate(context: vscode.ExtensionContext) {
 
   // Target Device view
   let registerDevice = vscode.commands.registerCommand('onevscode.register-device', () => {
-    console.log('register-device: NYI');
+    console.log('Device Connection Start......');
+    runDeviceQuickInput(context);
   });
   context.subscriptions.push(registerDevice);
 
