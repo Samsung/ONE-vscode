@@ -32,7 +32,13 @@ class Version {
     return ret;
   }
 
-  // TODO: Add operator <, <=, ==, >, >=
+  equals(ver: Version): boolean {
+    return (
+        this.major === ver.major && this.minor === ver.minor && this.patch === ver.patch &&
+        this.option === ver.option);
+  }
+
+  // TODO: Add operator <, <=, >, >=
 };
 
 export {Version};
