@@ -80,11 +80,13 @@ function nodeTypeToStr(t: NodeType): string {
 }
 
 class Node {
+  name: string;  // a name to be shown in OneExplorer view
   type: NodeType;
   childNodes: Node[];
   uri: vscode.Uri;
 
-  constructor(type: NodeType, childNodes: Node[], uri: vscode.Uri) {
+  constructor(name: string, type: NodeType, childNodes: Node[], uri: vscode.Uri) {
+    this.name = name;
     this.type = type;
     this.childNodes = childNodes;
     this.uri = uri;
@@ -96,10 +98,6 @@ class Node {
 
   get parent(): string {
     return path.dirname(this.uri.fsPath);
-  }
-
-  get name(): string {
-    return path.parse(this.uri.fsPath).base;
   }
 
   get ext(): string {
@@ -253,7 +251,7 @@ input_path=${modelName}.${extName}
   }
 
   private getTree(rootPath: vscode.Uri): Node {
-    const node = new Node(NodeType.directory, [], rootPath);
+    const node = new Node(rootPath.fsPath, NodeType.directory, [], rootPath);
 
     this.searchNode(node);
     return node;
@@ -271,7 +269,8 @@ input_path=${modelName}.${extName}
       const fstat = fs.statSync(fpath);
 
       if (fstat.isDirectory()) {
-        const childNode = new Node(NodeType.directory, [], vscode.Uri.file(fpath));
+        const childNode = new Node(
+            path.relative(node.path, fpath), NodeType.directory, [], vscode.Uri.file(fpath));
 
         this.searchNode(childNode);
         if (childNode.childNodes.length > 0) {
@@ -280,7 +279,8 @@ input_path=${modelName}.${extName}
       } else if (
           fstat.isFile() &&
           (fname.endsWith('.pb') || fname.endsWith('.tflite') || fname.endsWith('.onnx'))) {
-        const childNode = new Node(NodeType.baseModel, [], vscode.Uri.file(fpath));
+        const childNode = new Node(
+            path.relative(node.path, fpath), NodeType.baseModel, [], vscode.Uri.file(fpath));
 
         this.searchPairConfig(childNode);
 
@@ -377,7 +377,8 @@ input_path=${modelName}.${extName}
         if (parsedInputPath) {
           const fullInputPath = path.join(node.parent, parsedInputPath);
           if (this.comparePath(fullInputPath, node.path)) {
-            const pairNode = new Node(NodeType.config, [], vscode.Uri.file(fpath));
+            const pairNode = new Node(
+                path.relative(node.path, fpath), NodeType.config, [], vscode.Uri.file(fpath));
             this.searchChildModels(pairNode);
             node.childNodes.push(pairNode);
           }
@@ -404,7 +405,8 @@ input_path=${modelName}.${extName}
         for (let intermediate of intermediates) {
           const parsedPath = path.join(node.parent, intermediate);
           if (this.comparePath(parsedPath, fpath)) {
-            const child = new Node(NodeType.derivedModel, [], vscode.Uri.file(fpath));
+            const child = new Node(
+                path.relative(node.path, fpath), NodeType.derivedModel, [], vscode.Uri.file(fpath));
             node.childNodes.push(child);
             break;
           }
