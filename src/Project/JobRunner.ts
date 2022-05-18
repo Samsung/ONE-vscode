@@ -15,6 +15,7 @@
  */
 
 import {EventEmitter} from 'events';
+import * as vscode from 'vscode';
 
 import {Balloon} from '../Utils/Balloon';
 import {Logger} from '../Utils/Logger';
@@ -33,6 +34,8 @@ export class JobRunner extends EventEmitter {
   cwd: string = '';
   running: boolean = false;
   toolRunner: ToolRunner;
+  private progressTimer?: NodeJS.Timeout;
+  private progress?: vscode.Progress<{message?: string, increment?: number}>;
 
   constructor(l: Logger) {
     super();
@@ -48,6 +51,10 @@ export class JobRunner extends EventEmitter {
     let toolArgs: ToolArgs = job.toolArgs;
     let success = job.successCallback;
     let failure = job.failureCallback;
+
+    if (this.progress) {
+      this.progress.report({message: `Running ${job.name}...`});
+    }
 
     // TODO: Remove this and deprecate old Jobs like JobQuantize
     if (job.jobType >= Job.Type.tImportTF && job.jobType <= Job.Type.tCodegen) {
@@ -100,6 +107,24 @@ export class JobRunner extends EventEmitter {
       Balloon.error('ONE compile in progress');
       return;
     }
+
+    vscode.window.withProgress(
+        {location: vscode.ProgressLocation.Notification, title: 'Running...', cancellable: false},
+        (progress) => {
+          // TODO(jyoung): Implement to request cancel job.
+          return new Promise<void>(resolve => {
+            this.progress = progress;
+            this.progressTimer = setInterval(() => {
+              if (!this.running) {
+                if (this.progressTimer) {
+                  clearInterval(this.progressTimer);
+                  resolve(undefined);
+                }
+              }
+            }, 1000);
+          });
+        });
+
     this.running = true;
     this.jobs = jobs;
     this.cwd = path;
