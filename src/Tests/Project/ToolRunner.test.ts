@@ -24,7 +24,7 @@ import {MockJob} from '../MockJob';
 
 suite('Project', function() {
   suite('ToolRunner', function() {
-    const logger = new Logger();
+    const logger = Logger.getInstance();
     suite('@Use-onecc', function() {
       suite('#getOneccPath()', function() {
         test('returns onecc path as string', function() {

@@ -21,7 +21,7 @@ import {MockJob} from '../MockJob';
 
 suite('Project', function() {
   suite('WorkFlow', function() {
-    const logger = new Logger();
+    const logger = Logger.getInstance();
     // jobs for WorkFlow
     const name0 = 'job0';
     const name1 = 'job1';

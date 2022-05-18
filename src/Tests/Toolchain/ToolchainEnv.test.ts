@@ -46,7 +46,7 @@ class MockCompiler extends CompilerBase {
 suite('Toolchain', function() {
   suite('ToolchainEnv', function() {
     const K_CLEANUP: string = 'cleanup';
-    const logger = new Logger();
+    const logger = Logger.getInstance();
     const compiler = new MockCompiler();
 
     suite('#constructor()', function() {
