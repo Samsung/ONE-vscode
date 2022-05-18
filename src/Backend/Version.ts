@@ -32,7 +32,7 @@ class Version {
     return ret;
   }
 
-  equals(ver: Version): Boolean {
+  equals(ver: Version): boolean {
     return (
         this.major === ver.major && this.minor === ver.minor && this.patch === ver.patch &&
         this.option === ver.option);
