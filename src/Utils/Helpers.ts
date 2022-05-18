@@ -32,9 +32,10 @@ export function obtainWorkspaceRoot(): string {
     throw new Error('Need workspace');
   }
 
-  // TODO support active workspace from multiple workspace
+  // TODO support active workspace among the multiple workspaceFolders
+  // TODO support multi-root workspace
   if (workspaceFolders.length > 1) {
-    Balloon.info('Warning: only first Workspace is supported');
+    Balloon.info('Warning: Only the first workspace directory is currently supported');
   }
   const workspaceRoot = workspaceFolders[0].uri.path;
   if (!workspaceRoot) {
