@@ -55,7 +55,7 @@ function setGlobalContext() {
 }
 
 export function activate(context: vscode.ExtensionContext) {
-  let logger = Utils.Logger.getInstance();
+  const logger = Utils.Logger.getInstance();
 
   logger.outputWithTime('one-vscode activate OK');
 
