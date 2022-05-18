@@ -37,10 +37,10 @@ export class JobRunner extends EventEmitter {
   private progressTimer?: NodeJS.Timeout;
   private progress?: vscode.Progress<{message?: string, increment?: number}>;
 
-  constructor(l: Logger) {
+  constructor() {
     super();
-    this.logger = l;
-    this.toolRunner = new ToolRunner(l);
+    this.logger = Logger.getInstance();
+    this.toolRunner = new ToolRunner();
 
     this.on(K_INVOKE, this.onInvoke);
     this.on(K_CLEANUP, this.onCleanup);

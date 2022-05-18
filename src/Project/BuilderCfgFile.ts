@@ -116,10 +116,10 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
   cfgFilePath: string = '';
   cfgFilename: string = '';
 
-  constructor(jobOwner: BuilderJob, l: Logger) {
+  constructor(jobOwner: BuilderJob) {
     super();
     this.jobOwner = jobOwner;
-    this.logger = l;
+    this.logger = Logger.getInstance();
 
     this.on(K_BEGIN_IMPORT, this.onBeginImport);
   }

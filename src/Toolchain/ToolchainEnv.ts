@@ -35,8 +35,8 @@ class Env implements BuilderJob {
   currentWorkspace: string = '';
   isPrepared: boolean = false;
 
-  constructor(l: Logger) {
-    this.workFlow = new WorkFlow(l);
+  constructor() {
+    this.workFlow = new WorkFlow();
   }
 
   public init() {
@@ -99,8 +99,8 @@ class ToolchainEnv extends Env {
   installed?: Toolchain;
   compiler: Compiler;
 
-  constructor(l: Logger, compiler: Compiler) {
-    super(l);
+  constructor(compiler: Compiler) {
+    super();
     this.installed = undefined;
     this.compiler = compiler;
     this.init();

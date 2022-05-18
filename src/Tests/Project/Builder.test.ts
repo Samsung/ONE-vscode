@@ -21,17 +21,16 @@ import {MockJob} from '../MockJob';
 
 suite('Project', function() {
   suite('Builder', function() {
-    const logger = Logger.getInstance();
     suite('#contructor()', function() {
       test('is contructed with Logger', function() {
-        let builder = new Builder(logger);
+        let builder = new Builder();
         assert.isObject<Builder>(builder);
       });
     });
 
     suite('#init()', function() {
       test('inits members of Builder', function() {
-        let builder = new Builder(logger);
+        let builder = new Builder();
         builder.init();
         assert.equal(builder.workFlow.jobs.length, 0);
       });
@@ -39,7 +38,7 @@ suite('Project', function() {
 
     suite('#addJob()', function() {
       test('adds job', function() {
-        let builder = new Builder(logger);
+        let builder = new Builder();
         builder.init();
         assert.equal(builder.workFlow.jobs.length, 0);
         let job = new MockJob('job0');
@@ -50,7 +49,7 @@ suite('Project', function() {
 
     suite('#clearJobs()', function() {
       test('clears jobs', function() {
-        let builder = new Builder(logger);
+        let builder = new Builder();
         builder.init();
         assert.equal(builder.workFlow.jobs.length, 0);
         let job = new MockJob('job0');

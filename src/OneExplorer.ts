@@ -418,7 +418,7 @@ export class OneExplorer {
   // TODO Support multi-root workspace
   public workspaceRoot: vscode.Uri = vscode.Uri.file(obtainWorkspaceRoot());
 
-  constructor(context: vscode.ExtensionContext, logger: Logger) {
+  constructor(context: vscode.ExtensionContext) {
     // NOTE: Fix `obtainWorksapceRoot` if non-null assertion is false
     const oneTreeDataProvider = new OneTreeDataProvider(this.workspaceRoot!);
     context.subscriptions.push(
@@ -439,7 +439,7 @@ export class OneExplorer {
       vscode.commands.registerCommand(
           'onevscode.run-cfg',
           (oneNode: OneNode) => {
-            const oneccRunner = new OneccRunner(oneNode.node.uri, logger);
+            const oneccRunner = new OneccRunner(oneNode.node.uri);
             oneccRunner.run();
           })
     ]);
@@ -460,7 +460,7 @@ class OneccRunner extends EventEmitter {
   private startRunningOnecc: string = 'START_RUNNING_ONECC';
   private finishedRunningOnecc: string = 'FINISHED_RUNNING_ONECC';
 
-  constructor(private cfgUri: vscode.Uri, private logger: Logger) {
+  constructor(private cfgUri: vscode.Uri) {
     super();
   }
 
@@ -468,7 +468,7 @@ class OneccRunner extends EventEmitter {
    * Function called when onevscode.run-cfg is called (when user clicks 'Run' on cfg file).
    */
   public run() {
-    const toolRunner = new ToolRunner(this.logger);
+    const toolRunner = new ToolRunner();
 
     this.on(this.startRunningOnecc, this.onStartRunningOnecc);
     this.on(this.finishedRunningOnecc, this.onFinishedRunningOnecc);

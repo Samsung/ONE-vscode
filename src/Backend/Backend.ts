@@ -38,7 +38,7 @@ function backendRegistrationApi() {
       globalBackendMap[backendName] = backend;
       const compiler = backend.compiler();
       if (compiler) {
-        gToolchainEnvMap[backend.name()] = new ToolchainEnv(Logger.getInstance(), compiler);
+        gToolchainEnvMap[backend.name()] = new ToolchainEnv(compiler);
       }
       console.log(`Backend ${backendName} was registered into ONE-vscode.`);
     }

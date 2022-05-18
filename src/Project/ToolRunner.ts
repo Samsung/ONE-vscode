@@ -28,8 +28,8 @@ const K_EXIT: string = 'exit';
 export class ToolRunner {
   logger: Logger;
 
-  constructor(l: Logger) {
-    this.logger = l;
+  constructor() {
+    this.logger = Logger.getInstance();
   }
 
   private handlePromise(

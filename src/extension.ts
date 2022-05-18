@@ -62,7 +62,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   setGlobalContext();
 
-  new OneExplorer(context, logger);
+  new OneExplorer(context);
 
   // ONE view
   const toolchainProvier = new ToolchainProvider();
@@ -94,7 +94,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(CfgEditorPanel.register(context));
 
-  let projectBuilder = new Project.Builder(logger);
+  let projectBuilder = new Project.Builder();
 
   projectBuilder.init();
 

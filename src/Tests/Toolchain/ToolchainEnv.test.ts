@@ -46,12 +46,11 @@ class MockCompiler extends CompilerBase {
 suite('Toolchain', function() {
   suite('ToolchainEnv', function() {
     const K_CLEANUP: string = 'cleanup';
-    const logger = Logger.getInstance();
     const compiler = new MockCompiler();
 
     suite('#constructor()', function() {
       test('is constructed with params', function() {
-        let env = new ToolchainEnv(logger, compiler);
+        let env = new ToolchainEnv(compiler);
         assert.equal(env.installed, undefined);
         assert.strictEqual(env.compiler, compiler);
       });
@@ -59,7 +58,7 @@ suite('Toolchain', function() {
 
     suite('#listAvailable()', function() {
       test('lists available toolchains', function() {
-        let env = new ToolchainEnv(logger, compiler);
+        let env = new ToolchainEnv(compiler);
         let toolchains = env.listAvailable();
         assert.strictEqual(toolchains, compiler.toolchains());
       });
@@ -69,7 +68,7 @@ suite('Toolchain', function() {
     suite('@Use-onecc', function() {
       suite('#confirmInstalled()', function() {
         test('confirms the toolchain is installed', function(done) {
-          let env = new ToolchainEnv(logger, compiler);
+          let env = new ToolchainEnv(compiler);
           assert.equal(env.installed, undefined);
           env.confirmInstalled();
           env.workFlow.jobRunner.on(K_CLEANUP, function() {
@@ -81,7 +80,7 @@ suite('Toolchain', function() {
 
       suite('#listInstalled()', function() {
         test('lists installed toolchain', function(done) {
-          let env = new ToolchainEnv(logger, compiler);
+          let env = new ToolchainEnv(compiler);
           env.confirmInstalled();
           env.workFlow.jobRunner.on(K_CLEANUP, function() {
             assert.notEqual(env.installed, undefined);
