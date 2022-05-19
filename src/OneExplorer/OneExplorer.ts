@@ -20,11 +20,11 @@ import * as path from 'path';
 import {TextEncoder} from 'util';
 import * as vscode from 'vscode';
 
-import {CfgEditorPanel} from './CfgEditor/CfgEditorPanel';
-import {ToolArgs} from './Project/ToolArgs';
-import {ToolRunner} from './Project/ToolRunner';
-import {obtainWorkspaceRoot} from './Utils/Helpers';
-import {Logger} from './Utils/Logger';
+import {CfgEditorPanel} from '../CfgEditor/CfgEditorPanel';
+import {ToolArgs} from '../Project/ToolArgs';
+import {ToolRunner} from '../Project/ToolRunner';
+import {obtainWorkspaceRoot} from '../Utils/Helpers';
+import {Logger} from '../Utils/Logger';
 
 /**
  * Read an ini file

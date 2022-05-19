@@ -28,7 +28,7 @@ import {HoverProvider} from './Editor/HoverProvider';
 import {runInferenceQuickInput} from './Execute/executeQuickInput';
 import {Jsontracer} from './Jsontracer';
 import {MondrianEditorProvider} from './Mondrian/MondrianEditor';
-import {OneExplorer} from './OneExplorer';
+import {OneExplorer} from './OneExplorer/OneExplorer';
 import {Project} from './Project';
 import {ToolchainProvider} from './Toolchain/ToolchainProvider';
 import {Utils} from './Utils';
