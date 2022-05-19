@@ -27,6 +27,7 @@ export async function showInstallQuickInput(context: vscode.ExtensionContext) {
     backend: vscode.QuickPickItem;
     version: vscode.QuickPickItem;
     toolchainEnv: ToolchainEnv;
+    toolchainType: string;
     toolchain: Toolchain;
   }
 
@@ -44,27 +45,50 @@ export async function showInstallQuickInput(context: vscode.ExtensionContext) {
     state.backend = await input.showQuickPick({
       title,
       step: 1,
-      totalSteps: 2,
+      totalSteps: 3,
       placeholder: 'Pick toolchain backend',
       items: backendGroups,
       shouldResume: shouldResume
     });
     state.toolchainEnv = gToolchainEnvMap[state.backend.label];
+    return (input: MultiStepInput) => pickType(input, state);
+  }
+
+  async function pickType(input: MultiStepInput, state: Partial<State>) {
+    if (state.toolchainEnv === undefined) {
+      throw Error('Backend is undefined');
+    }
+    const types = state.toolchainEnv.getToolchainTypes();
+    if (types.length === 1) {
+      state.toolchainType = types[0];
+    } else if (types.length > 1) {
+      const typeGroups: vscode.QuickPickItem[] = types.map((label) => ({label}));
+      const type = await input.showQuickPick({
+        title,
+        step: 2,
+        totalSteps: 3,
+        placeholder: 'Pick toolchain type',
+        items: typeGroups,
+        shouldResume: shouldResume
+      });
+      state.toolchainType = type.label;
+    }
     return (input: MultiStepInput) => pickVersion(input, state);
   }
 
   async function pickVersion(input: MultiStepInput, state: Partial<State>) {
-    if (state.toolchainEnv === undefined) {
-      throw Error('Backend is undefined.');
+    if (state.toolchainEnv === undefined || state.toolchainType === undefined) {
+      throw Error('toolchainenv  is undefined.');
     }
-    const toolchains = state.toolchainEnv.listAvailable();
+    // TODO(jyoung): Support page UI
+    const toolchains = state.toolchainEnv.listAvailable(state.toolchainType, 0, 10);
     const versions =
         toolchains.map((value) => value.info.version !== undefined ? value.info.version.str() : '');
     const versionGroups: vscode.QuickPickItem[] = versions.map((label) => ({label}));
     state.version = await input.showQuickPick({
       title,
-      step: 2,
-      totalSteps: 2,
+      step: 3,
+      totalSteps: 3,
       placeholder: 'Pick toolchain version',
       items: versionGroups,
       shouldResume: shouldResume
@@ -81,6 +105,7 @@ export async function showInstallQuickInput(context: vscode.ExtensionContext) {
   }
 
   const state = await collectInputs();
-  console.log(`Selected backend: ${state.backend.label}-${state.version.label}`);
+  console.log(
+      `Selected backend: ${state.backend.label}-${state.toolchainType}-${state.version.label}`);
   state.toolchainEnv.install(state.toolchain);
 }
