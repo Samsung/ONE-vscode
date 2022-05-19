@@ -119,6 +119,12 @@
         "icon": "$(desktop-download)"
       },
       {
+        "command": "onevscode.uninstall-toolchain",
+        "title": "Uninstall",
+        "category": "ONE",
+        "icon": "$(x)"
+      },
+      {
         "command": "onevscode.register-device",
         "title": "Register",
         "category": "ONE",
@@ -192,6 +198,11 @@
         {
           "command": "onevscode.create-cfg",
           "when": "view == OneExplorerView && viewItem == baseModel",
+          "group": "inline"
+        },
+        {
+          "command": "onevscode.uninstall-toolchain",
+          "when": "view == ToolchainView && viewItem == toolchain",
           "group": "inline"
         }
       ],
