@@ -21,7 +21,6 @@ import {CfgEditorPanel} from './CfgEditor/CfgEditorPanel';
 import {CircleGraphPanel} from './CircleGraph/CircleGraph';
 import {decoder} from './Circlereader/Circlereader';
 import {Circletracer} from './Circletracer';
-import {CompilePanel} from './Compile/CompilePanel';
 import {ConfigPanel} from './Config/ConfigPanel';
 import {createStatusBarItem} from './Config/ConfigStatusBar';
 import {CodelensProvider} from './Editor/CodelensProvider';
@@ -35,32 +34,10 @@ import {ToolchainProvider} from './Toolchain/ToolchainProvider';
 import {Utils} from './Utils';
 import {showInstallQuickInput} from './View/InstallQuickInput';
 
-/**
- * Set vscode context that is used globally
- */
-function setGlobalContext() {
-  // These contexts are used to show "Compile" menu in File Explorer view
-  //
-  // 1. When a file is right-clicked (e.g., .pb, .tflite, etc)
-  // 2. When a dir is right-clicked (e.g., Keras model or saved model)
-
-  let compilableFileExts = ['.pb', '.tflite', '.onnx'];
-  vscode.commands.executeCommand('setContext', 'onevscode.compilableExtList', compilableFileExts);
-
-  // TODO Search directories containing Keras model or saved model
-  //
-  // Refer to https://github.com/Samsung/ONE-vscode/issues/331#issuecomment-1081295299 for
-  // experience with directory path format.
-  let dirList: string[] = [/* NYI */];
-  vscode.commands.executeCommand('setContext', 'onevscode.compilableDirList', dirList);
-}
-
 export function activate(context: vscode.ExtensionContext) {
   const logger = Utils.Logger.getInstance();
 
   logger.outputWithTime('one-vscode activate OK');
-
-  setGlobalContext();
 
   new OneExplorer(context, logger);
 
@@ -85,12 +62,6 @@ export function activate(context: vscode.ExtensionContext) {
     runInferenceQuickInput(context);
   });
   context.subscriptions.push(inferenceCommand);
-
-  // show compilation page
-  let compileWebView = vscode.commands.registerCommand('onevscode.show-compile-webview', () => {
-    CompilePanel.render(context.extensionUri);
-  });
-  context.subscriptions.push(compileWebView);
 
   context.subscriptions.push(CfgEditorPanel.register(context));
 
