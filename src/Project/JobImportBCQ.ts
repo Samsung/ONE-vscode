@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import {Logger} from '../Utils/Logger';
+
 import {Job} from './Job';
 import {JobImport} from './JobImport';
 import {ToolArgs} from './ToolArgs';
@@ -43,7 +45,7 @@ export class JobImportBCQ extends JobImport {
     args.add('--input_shapes', this.inputShapes);
     args.add('--converter_version', this.converterVersion);
 
-    console.log('args = ', args);
+    Logger.outputWithTime('args = ' + args);
 
     return args;
   }

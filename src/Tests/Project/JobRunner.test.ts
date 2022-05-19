@@ -24,11 +24,10 @@ import {MockJob} from '../MockJob';
 
 suite('Project', function() {
   suite('JobRunner', function() {
-    const logger = Logger.getInstance();
     suite('@Use-onecc', function() {
       suite('#start()', function() {
         test('jobs are done', function(done) {
-          let jobRunner = new JobRunner(logger);
+          let jobRunner = new JobRunner();
           const workspaceRoot: string = obtainWorkspaceRoot();
           let workJobs = new WorkJobs();
           workJobs.push(new MockJob('mockup'));

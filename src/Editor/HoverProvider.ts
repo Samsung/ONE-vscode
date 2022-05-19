@@ -15,6 +15,9 @@
  */
 
 import * as vscode from 'vscode';
+
+import {Logger} from '../Utils/Logger';
+
 import toolsAttr from './json/tools_attr.json';
 
 export class HoverProvider implements vscode.HoverProvider {
@@ -25,7 +28,7 @@ export class HoverProvider implements vscode.HoverProvider {
     let markdownString = new vscode.MarkdownString();
     const range = _doc.getWordRangeAtPosition(_position, new RegExp(/(.+)/g));
     if (range === undefined) {
-      console.log('getWordRangeAtPosition return undefined');
+      Logger.outputWithTime('getWordRangeAtPosition return undefined');
       return new vscode.Hover(markdownString);
     }
     const word = _doc.getText(range);

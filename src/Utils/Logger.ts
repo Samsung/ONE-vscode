@@ -17,9 +17,11 @@
 import * as vscode from 'vscode';
 
 export class Logger {
-  outputChannel: vscode.OutputChannel;
-  firstFocus: boolean;
+  static outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel('ONE-VSCode');
+  static firstFocus: boolean;
 
+  // TODO Remove code in comment. These lines were commented out for easy review.
+  /*
   private static logger: Logger|null = null;
 
   private constructor() {
@@ -34,27 +36,27 @@ export class Logger {
 
     return Logger.logger;
   }
-
-  private checkShow() {
-    if (this.firstFocus) {
-      this.outputChannel.show(false);
-      this.firstFocus = false;
+*/
+  private static checkShow() {
+    if (Logger.firstFocus) {
+      Logger.outputChannel.show(false);
+      Logger.firstFocus = false;
     }
   }
 
-  public outputWithTime(msg: string) {
+  public static outputWithTime(msg: string) {
     let dateTime = new Date();
-    this.checkShow();
-    this.outputChannel.appendLine('[' + dateTime.toLocaleString() + '] ' + msg);
+    Logger.checkShow();
+    Logger.outputChannel.appendLine('[' + dateTime.toLocaleString() + '] ' + msg);
   }
 
-  public output(msg: string) {
-    this.checkShow();
-    this.outputChannel.append(msg);
+  public static output(msg: string) {
+    Logger.checkShow();
+    Logger.outputChannel.append(msg);
   }
 
-  public outputLine(msg: string) {
-    this.checkShow();
-    this.outputChannel.appendLine(msg);
+  public static outputLine(msg: string) {
+    Logger.checkShow();
+    Logger.outputChannel.appendLine(msg);
   }
 }

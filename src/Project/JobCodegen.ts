@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import {Logger} from '../Utils/Logger';
+
 import {Job} from './Job';
 import {JobBase} from './JobBase';
 import {ToolArgs} from './ToolArgs';
@@ -43,7 +45,7 @@ export class JobCodegen extends JobBase {
 
   public get valid() {
     if (this.backend === '') {
-      console.log('JobCodegen: backend not set');
+      Logger.outputWithTime('JobCodegen: backend not set');
       return false;
     }
     return true;

@@ -17,6 +17,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
+import {Logger} from '../Utils/Logger';
 
 import {Balloon} from './Balloon';
 
@@ -51,7 +52,7 @@ export class RealPath {
 export function obtainWorkspaceRoot(): string {
   const workspaceFolders = vscode.workspace.workspaceFolders;
   if (!workspaceFolders) {
-    console.log('obtainWorkspaceRoot: NO workspaceFolders');
+    Logger.outputWithTime('obtainWorkspaceRoot: NO workspaceFolders');
     // TODO revise message
     throw new Error('Need workspace');
   }
@@ -63,11 +64,11 @@ export function obtainWorkspaceRoot(): string {
   }
   const workspaceRoot = workspaceFolders[0].uri.path;
   if (!workspaceRoot) {
-    console.log('obtainWorkspaceRoot: NO workspaceRoot');
+    Logger.outputWithTime('obtainWorkspaceRoot: NO workspaceRoot');
     // TODO revise message
     throw new Error('Need workspace');
   }
-  console.log('obtainWorkspaceRoot:', workspaceRoot);
+  Logger.outputWithTime('obtainWorkspaceRoot:' + workspaceRoot);
 
   return workspaceRoot;
 }

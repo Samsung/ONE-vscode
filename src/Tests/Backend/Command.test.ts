@@ -16,6 +16,7 @@
 
 import {assert} from 'chai';
 import {Command} from '../../Backend/Command';
+import {Logger} from '../../Utils/Logger';
 
 suite('Backend', function() {
   suite('Command', function() {
@@ -36,7 +37,7 @@ suite('Backend', function() {
         const optionStrs: string[] = ['-lh', '~'];
         const cmd = new Command(cmdStr, optionStrs);
         const actualStrs = cmd.strs();
-        console.log(actualStrs);
+        Logger.outputWithTime(`{actualStrs}`);
         assert.strictEqual(actualStrs.length, 1 + optionStrs.length);
         assert.deepStrictEqual(actualStrs[0], cmdStr);
         assert.deepStrictEqual(actualStrs[1], optionStrs[0]);

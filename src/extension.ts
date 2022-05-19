@@ -31,15 +31,13 @@ import {MondrianEditorProvider} from './Mondrian/MondrianEditor';
 import {OneExplorer} from './OneExplorer/OneExplorer';
 import {Project} from './Project';
 import {ToolchainProvider} from './Toolchain/ToolchainProvider';
-import {Utils} from './Utils';
+import {Logger} from './Utils/Logger';
 import {showInstallQuickInput} from './View/InstallQuickInput';
 
 export function activate(context: vscode.ExtensionContext) {
-  const logger = Utils.Logger.getInstance();
+  Logger.outputWithTime('one-vscode activate OK');
 
-  logger.outputWithTime('one-vscode activate OK');
-
-  new OneExplorer(context, logger);
+  new OneExplorer(context);
 
   // ONE view
   const toolchainProvier = new ToolchainProvider();
@@ -52,41 +50,41 @@ export function activate(context: vscode.ExtensionContext) {
   }));
   context.subscriptions.push(
       vscode.commands.registerCommand('onevscode.uninstall-toolchain', () => {
-        console.log('uninstall-toolchain: NYI');
+        Logger.outputWithTime('uninstall-toolchain: NYI');
       }));
 
   // Target Device view
   let registerDevice = vscode.commands.registerCommand('onevscode.register-device', () => {
-    console.log('register-device: NYI');
+    Logger.outputWithTime('register-device: NYI');
   });
   context.subscriptions.push(registerDevice);
 
   let inferenceCommand = vscode.commands.registerCommand('onevscode.infer-model', () => {
-    console.log('one infer model...');
+    Logger.outputWithTime('one infer model...');
     runInferenceQuickInput(context);
   });
   context.subscriptions.push(inferenceCommand);
 
   context.subscriptions.push(CfgEditorPanel.register(context));
 
-  let projectBuilder = new Project.Builder(logger);
+  let projectBuilder = new Project.Builder();
 
   projectBuilder.init();
 
   let disposableOneBuild = vscode.commands.registerCommand('onevscode.build', () => {
-    console.log('one build...');
+    Logger.outputWithTime('one build...');
     projectBuilder.build(context);
   });
   context.subscriptions.push(disposableOneBuild);
 
   let disposableOneImport = vscode.commands.registerCommand('onevscode.import', () => {
-    console.log('one import...');
+    Logger.outputWithTime('one import...');
     projectBuilder.import(context);
   });
   context.subscriptions.push(disposableOneImport);
 
   let disposableOneJsontracer = vscode.commands.registerCommand('onevscode.json-tracer', () => {
-    console.log('one json tracer...');
+    Logger.outputWithTime('one json tracer...');
     Jsontracer.createOrShow(context.extensionUri);
   });
   context.subscriptions.push(disposableOneJsontracer);
@@ -94,7 +92,7 @@ export function activate(context: vscode.ExtensionContext) {
   let disposableOneConfigurationSettings =
       vscode.commands.registerCommand('onevscode.configuration-settings', () => {
         ConfigPanel.createOrShow(context);
-        console.log('one configuration settings...');
+        Logger.outputWithTime('one configuration settings...');
       });
   context.subscriptions.push(disposableOneConfigurationSettings);
 
@@ -118,7 +116,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(disposableHover);
 
   let disposableOneCircleTracer = vscode.commands.registerCommand('onevscode.circle-tracer', () => {
-    console.log('one circle tracer...');
+    Logger.outputWithTime('one circle tracer...');
     const options: vscode.OpenDialogOptions = {
       canSelectMany: false,
       openLabel: 'Open',

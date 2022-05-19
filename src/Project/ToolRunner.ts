@@ -26,34 +26,28 @@ const K_DATA: string = 'data';
 const K_EXIT: string = 'exit';
 
 export class ToolRunner {
-  logger: Logger;
-
-  constructor(l: Logger) {
-    this.logger = l;
-  }
-
   private handlePromise(
       resolve: (value: string|PromiseLike<string>) => void,
       reject: (value: string|PromiseLike<string>) => void, cmd: cp.ChildProcessWithoutNullStreams) {
     // stdout
     cmd.stdout.on(K_DATA, (data: any) => {
-      this.logger.output(data.toString());
+      Logger.output(data.toString());
     });
     // stderr
     cmd.stderr.on(K_DATA, (data: any) => {
-      this.logger.output(data.toString());
+      Logger.output(data.toString());
     });
 
     cmd.on(K_EXIT, (code: any) => {
       let codestr = code.toString();
-      console.log('child process exited with code ' + codestr);
+      Logger.outputWithTime('child process exited with code ' + codestr);
       if (codestr === '0') {
-        this.logger.outputWithTime('Build Success.');
-        this.logger.outputLine('');
+        Logger.outputWithTime('Build Success.');
+        Logger.outputLine('');
         resolve(codestr);
       } else {
-        this.logger.outputWithTime('Build Failed:' + codestr);
-        this.logger.outputLine('');
+        Logger.outputWithTime('Build Failed:' + codestr);
+        Logger.outputLine('');
         let errorMsg = 'Failed with exit code: ' + codestr;
         reject(errorMsg);
       }
@@ -66,18 +60,18 @@ export class ToolRunner {
       // Use fixed installation path
       oneccPath = '/usr/share/one/bin/onecc';
     }
-    console.log('onecc path: ', oneccPath);
+    Logger.outputWithTime('onecc path: ' + oneccPath);
     // check if onecc exist
     if (!fs.existsSync(oneccPath)) {
-      console.log('Failed to find onecc file');
+      Logger.outputWithTime('Failed to find onecc file');
       return undefined;
     }
     // onecc maybe symbolic link: use fs.realpathSync to convert to real path
     let oneccRealPath = fs.realpathSync(oneccPath);
-    console.log('onecc real path: ', oneccRealPath);
+    Logger.outputWithTime('onecc real path: ' + oneccRealPath);
     // check if this onecc exist
     if (!fs.existsSync(oneccRealPath)) {
-      console.log('Failed to find onecc file');
+      Logger.outputWithTime('Failed to find onecc file');
       return undefined;
     }
     return oneccRealPath;
@@ -85,7 +79,7 @@ export class ToolRunner {
 
   public getRunner(name: string, tool: string, toolargs: ToolArgs, path: string, root?: boolean) {
     return new Promise<string>((resolve, reject) => {
-      this.logger.outputWithTime('Running: ' + name);
+      Logger.outputWithTime('Running: ' + name);
       let cmd = undefined;
       if (root) {
         // NOTE

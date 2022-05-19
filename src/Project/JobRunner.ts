@@ -29,7 +29,6 @@ const K_INVOKE: string = 'invoke';
 const K_CLEANUP: string = 'cleanup';
 
 export class JobRunner extends EventEmitter {
-  logger: Logger;
   jobs: WorkJobs = [];
   cwd: string = '';
   running: boolean = false;
@@ -37,10 +36,9 @@ export class JobRunner extends EventEmitter {
   private progressTimer?: NodeJS.Timeout;
   private progress?: vscode.Progress<{message?: string, increment?: number}>;
 
-  constructor(l: Logger) {
+  constructor() {
     super();
-    this.logger = l;
-    this.toolRunner = new ToolRunner(l);
+    this.toolRunner = new ToolRunner();
 
     this.on(K_INVOKE, this.onInvoke);
     this.on(K_CLEANUP, this.onCleanup);
@@ -67,7 +65,7 @@ export class JobRunner extends EventEmitter {
       tool = 'onecc';
     }
 
-    console.log('Run tool: ', tool, ' args: ', toolArgs, ' cwd: ', path, ' root: ', job.root);
+    Logger.outputWithTime(`Run tool: ${tool}, args: ${toolArgs}, cwd: ${path}, root: ${job.root}`);
     const runner = this.toolRunner.getRunner(job.name, tool, toolArgs, path, job.root);
 
     runner
@@ -90,7 +88,7 @@ export class JobRunner extends EventEmitter {
   private onInvoke() {
     let job = this.jobs.shift();
     if (job === undefined) {
-      this.logger.outputWithTime('Finish Running ONE compilers.');
+      Logger.outputWithTime('Finish Running ONE compilers.');
       this.emit(K_CLEANUP);
       return;
     }

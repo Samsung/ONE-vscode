@@ -15,17 +15,18 @@
  */
 
 import * as vscode from 'vscode';
+import {Logger} from '../Utils/Logger';
 
 // if some stuffs are needed before/after starting tests,
 export const mochaHooks = {
   suiteSetup() {
     const msg = 'All tests start!';
-    console.log(msg);
+    Logger.outputWithTime(msg);
     vscode.window.showInformationMessage(msg);
   },
   suiteTeardown() {
     const msg = 'All tests done!';
-    console.log(msg);
+    Logger.outputWithTime(msg);
     vscode.window.showInformationMessage(msg);
   }
 };

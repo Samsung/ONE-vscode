@@ -26,15 +26,13 @@ import {Job} from './Job';
 import {WorkFlow} from './WorkFlow';
 
 export class Builder implements BuilderJob {
-  logger: Logger;
   workFlow: WorkFlow;  // our build WorkFlow
   currentWorkspace: string = '';
   builderCfgFile: BuilderCfgFile;
 
-  constructor(l: Logger) {
-    this.logger = l;
-    this.workFlow = new WorkFlow(l);
-    this.builderCfgFile = new BuilderCfgFile(this, l);
+  constructor() {
+    this.workFlow = new WorkFlow();
+    this.builderCfgFile = new BuilderCfgFile(this);
   }
 
   public init() {
@@ -51,8 +49,7 @@ export class Builder implements BuilderJob {
   }
 
   public finishAdd(): void {
-    console.log('Done building WorkFlow.');
-    console.log(this.workFlow.jobs);
+    Logger.outputWithTime(`Done building WorkFlow: ${this.workFlow.jobs}`);
   }
 
   // called from user interface

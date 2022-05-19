@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import {Logger} from '../Utils/Logger';
+
 import {Job} from './Job';
 import {JobImport} from './JobImport';
 import {ToolArgs} from './ToolArgs';
@@ -43,7 +45,7 @@ export class JobImportONNX extends JobImport {
       args.push('--save_intermediate');
     }
 
-    console.log('ONNX args = ', args);
+    Logger.outputWithTime('ONNX args = ' + args);
 
     return args;
   }

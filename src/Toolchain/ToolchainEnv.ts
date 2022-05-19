@@ -35,8 +35,8 @@ class Env implements BuilderJob {
   currentWorkspace: string = '';
   isPrepared: boolean = false;
 
-  constructor(l: Logger) {
-    this.workFlow = new WorkFlow(l);
+  constructor() {
+    this.workFlow = new WorkFlow();
   }
 
   public init() {
@@ -54,8 +54,7 @@ class Env implements BuilderJob {
   }
 
   public finishAdd(): void {
-    console.log('Done building WorkFlow on Env');
-    console.log(this.workFlow.jobs);
+    Logger.outputWithTime(`Done building WorkFlow on Env: ${this.workFlow.jobs}`);
     this.isPrepared = true;
   }
 
@@ -78,13 +77,13 @@ class Env implements BuilderJob {
 
     const rootJobs = this.workFlow.jobs.filter(j => j.root === true);
     if (rootJobs.length > 0) {
-      console.log('Showing password prompt');
+      Logger.outputWithTime('Showing password prompt');
       showPasswordQuickInput().then(password => {
         if (password === undefined) {
-          console.log('Password dialog canceled');
+          Logger.outputWithTime('Password dialog canceled');
           return;
         }
-        console.log('Got password response');
+        Logger.outputWithTime('Got password response');
         process.env.userp = password;
         this.workFlow.start(this.currentWorkspace);
       });
@@ -99,8 +98,8 @@ class ToolchainEnv extends Env {
   installed?: Toolchain;
   compiler: Compiler;
 
-  constructor(l: Logger, compiler: Compiler) {
-    super(l);
+  constructor(compiler: Compiler) {
+    super();
     this.installed = undefined;
     this.compiler = compiler;
     this.init();

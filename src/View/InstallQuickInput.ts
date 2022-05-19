@@ -18,6 +18,7 @@ import * as vscode from 'vscode';
 import {Toolchain} from '../Backend/Toolchain';
 import {gToolchainEnvMap, ToolchainEnv} from '../Toolchain/ToolchainEnv';
 import {MultiStepInput} from '../Utils/external/MultiStepInput';
+import {Logger} from '../Utils/Logger';
 
 export async function showInstallQuickInput(context: vscode.ExtensionContext) {
   interface State {
@@ -81,6 +82,6 @@ export async function showInstallQuickInput(context: vscode.ExtensionContext) {
   }
 
   const state = await collectInputs();
-  console.log(`Selected backend: ${state.backend.label}-${state.version.label}`);
+  Logger.outputWithTime(`Selected backend: ${state.backend.label}-${state.version.label}`);
   state.toolchainEnv.install(state.toolchain);
 }
