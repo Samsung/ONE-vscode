@@ -15,10 +15,34 @@
  */
 
 import * as fs from 'fs';
+import * as path from 'path';
 import * as vscode from 'vscode';
+
 import {Balloon} from './Balloon';
 
 var ini = require('ini');
+
+/**
+ * @brief This class represents a normalized absolute path
+ *        which actually exists on the filesystem
+ */
+export class RealPath {
+  absPath: string;
+
+  private constructor(absPath: string) {
+    this.absPath = absPath;
+  }
+
+  public static isEqual(path0: RealPath, path1: RealPath): boolean {
+    return path0.absPath === path1.absPath;
+  }
+
+  public static createRealPath(rawPath: string): RealPath|null {
+    const absPath = path.resolve(path.normalize(rawPath));
+
+    return fs.existsSync(absPath) ? new RealPath(absPath) : null;
+  }
+}
 
 /**
  * @brief Get Workspace root folder as string

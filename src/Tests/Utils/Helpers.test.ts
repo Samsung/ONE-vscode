@@ -17,7 +17,7 @@
 import {assert} from 'chai';
 import {join} from 'path';
 
-import {loadCfgFile, obtainWorkspaceRoot} from '../../Utils/Helpers';
+import {loadCfgFile, obtainWorkspaceRoot, RealPath} from '../../Utils/Helpers';
 
 suite('Utils', function() {
   suite('Helpers', function() {
@@ -36,6 +36,41 @@ suite('Utils', function() {
         assert.isNotNull(cfgIni);
         assert.strictEqual(cfgIni['onecc']['one-import-tf'], 'True');
         assert.strictEqual(cfgIni['onecc']['one-import-tflite'], 'False');
+      });
+    });
+
+    suite('#createRealPath()', function() {
+      test('create RealPath of system root directory', function() {
+        let realPath = RealPath.createRealPath('/');
+        assert.isObject<RealPath>(realPath!);
+      });
+
+      test('return null when path not exists', function() {
+        let realPath = RealPath.createRealPath('/dummy/not/exists/here');
+        assert.isNull(realPath);
+      });
+    });
+
+    suite('#isEqual()', function() {
+      test('compare practically the same paths', function() {
+        const workspaceRoot = obtainWorkspaceRoot();
+        let realPath0 = RealPath.createRealPath(`${workspaceRoot}`);
+        let realPath1 = RealPath.createRealPath(`${workspaceRoot}/dummy/..`);
+
+        assert.isNotNull(realPath0);
+        assert.isNotNull(realPath1);
+        assert.isTrue(RealPath.isEqual(realPath0!, realPath1!));
+      });
+    });
+
+    suite('#isEqual()', function() {
+      test('compare exactly the same paths', function() {
+        let realPath0 = RealPath.createRealPath('/');
+        let realPath1 = RealPath.createRealPath('/');
+
+        assert.isNotNull(realPath0);
+        assert.isNotNull(realPath1);
+        assert.isTrue(RealPath.isEqual(realPath0!, realPath1!));
       });
     });
   });
