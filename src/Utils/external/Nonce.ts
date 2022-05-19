@@ -40,6 +40,9 @@ This file refers to
 https://github.com/microsoft/vscode-extension-samples/blob/63d86e3a0e459b2adf26487204891f7af62898ce/custom-editor-sample/src/util.ts
 */
 
+/**
+  * @brief Get a nonce (string of length 32)
+  */
 export function getNonce() {
   let text = '';
   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
