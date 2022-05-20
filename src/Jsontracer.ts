@@ -16,8 +16,9 @@
 
 import * as fs from 'fs';
 import * as vscode from 'vscode';
-import {getNonce} from './Config/GetNonce';
+
 import {getWebviewOptions} from './Jsontracer/GetWebviewOptions';
+import {getNonce} from './Utils/external/Nonce';
 
 export class Jsontracer {
   /**

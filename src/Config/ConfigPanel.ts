@@ -19,10 +19,11 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import {Balloon} from '../Utils/Balloon';
+import {getNonce} from '../Utils/external/Nonce';
+
 import {exportConfig} from './Dialog/ExportConfigDialog';
 import {importConfig} from './Dialog/ImportConfigDialog';
 import {getInputPath} from './Dialog/InputFileDialog';
-import {getNonce} from './GetNonce';
 
 export class ConfigPanel {
   /**
