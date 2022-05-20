@@ -18,6 +18,7 @@ import * as fs from 'fs';
 import * as vscode from 'vscode';
 
 import {Balloon} from '../Utils/Balloon';
+import {CircleGraphCtrl} from './CircleGraphCtrl';
 
 class MessageDefs {
   // message command
@@ -31,15 +32,11 @@ class MessageDefs {
   public static readonly uint8array = 'uint8array';
 };
 
-export class CircleGraphPanel {
+export class CircleGraphPanel extends CircleGraphCtrl {
   public static currentPanel: CircleGraphPanel|undefined;
   public static readonly viewType = 'CircleGraphPanel';
-  public static readonly folderMediaCircleGraph = 'media/CircleGraph';
-  private static readonly folderMediaCircleGraphExt = 'media/CircleGraph/external';
-  private static readonly folderExternal = 'external/';
 
   private readonly _panel: vscode.WebviewPanel;
-  private readonly _extensionUri: vscode.Uri;
   private _modelToLoad: string;
   private _modelLength: number;
 
@@ -89,8 +86,9 @@ export class CircleGraphPanel {
   }
 
   private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, modelToLoad: string) {
+    super(extensionUri);
+
     this._panel = panel;
-    this._extensionUri = extensionUri;
     this._modelToLoad = modelToLoad;
     this._modelLength = 0;
 
@@ -143,61 +141,6 @@ export class CircleGraphPanel {
   private update() {
     this._panel.title = 'circle graph';
     this._panel.webview.html = this.getHtmlForWebview(this._panel.webview);
-  }
-
-  private getHtmlForWebview(webview: vscode.Webview) {
-    const htmlPath = this.getMediaPath('index.html');
-    let html = fs.readFileSync(htmlPath.fsPath, {encoding: 'utf-8'});
-
-    const nonce = getNonce();
-    html = html.replace(/\%nonce%/gi, nonce);
-    html = html.replace('%webview.cspSource%', webview.cspSource);
-    // necessary files from netron to work
-    html = this.updateExternalUri(html, webview, '%view-grapher.css%', 'view-grapher.css');
-    html = this.updateExternalUri(html, webview, '%view-sidebar.css%', 'view-sidebar.css');
-    html = this.updateExternalUri(html, webview, '%view-sidebar.js%', 'view-sidebar.js');
-    html = this.updateExternalUri(html, webview, '%view-grapher.js%', 'view-grapher.js');
-    html = this.updateExternalUri(html, webview, '%dagre.js%', 'dagre.js');
-    html = this.updateExternalUri(html, webview, '%base.js%', 'base.js');
-    html = this.updateExternalUri(html, webview, '%text.js%', 'text.js');
-    html = this.updateExternalUri(html, webview, '%json.js%', 'json.js');
-    html = this.updateExternalUri(html, webview, '%xml.js%', 'xml.js');
-    html = this.updateExternalUri(html, webview, '%python.js%', 'python.js');
-    html = this.updateExternalUri(html, webview, '%protobuf.js%', 'protobuf.js');
-    html = this.updateExternalUri(html, webview, '%flatbuffers.js%', 'flatbuffers.js');
-    html = this.updateExternalUri(html, webview, '%flexbuffers.js%', 'flexbuffers.js');
-    html = this.updateExternalUri(html, webview, '%zip.js%', 'zip.js');
-    html = this.updateExternalUri(html, webview, '%gzip.js%', 'gzip.js');
-    html = this.updateExternalUri(html, webview, '%tar.js%', 'tar.js');
-    // for circle format
-    html = this.updateExternalUri(html, webview, '%circle.js%', 'circle.js');
-    html = this.updateExternalUri(html, webview, '%circle-schema.js%', 'circle-schema.js');
-    // modified for one-vscode
-    html = this.updateUri(html, webview, '%index.js%', 'index.js');
-    html = this.updateUri(html, webview, '%view.js%', 'view.js');
-
-    return html;
-  }
-
-  private getMediaPath(file: string) {
-    return vscode.Uri.joinPath(this._extensionUri, CircleGraphPanel.folderMediaCircleGraph, file);
-  }
-
-  private updateExternalUri(
-      html: string, webview: vscode.Webview, search: string, replace: string) {
-    const replaceUri = this.getUriFromPath(webview, CircleGraphPanel.folderExternal + replace);
-    return html.replace(search, `${replaceUri}`);
-  }
-
-  private updateUri(html: string, webview: vscode.Webview, search: string, replace: string) {
-    const replaceUri = this.getUriFromPath(webview, replace);
-    return html.replace(search, `${replaceUri}`);
-  }
-
-  private getUriFromPath(webview: vscode.Webview, file: string) {
-    const mediaPath = this.getMediaPath(file);
-    const uriView = webview.asWebviewUri(mediaPath);
-    return uriView;
   }
 
   /**
@@ -335,13 +278,4 @@ function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions&
     // to prevent view to reload after loosing focus
     retainContextWhenHidden: true
   };
-}
-
-function getNonce() {
-  let text = '';
-  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  for (let i = 0; i < 32; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
 }
