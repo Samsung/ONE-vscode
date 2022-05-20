@@ -74,11 +74,8 @@ export class ToolchainProvider implements vscode.TreeDataProvider<ToolchainNode>
   private getNode(node: ToolchainNode): ToolchainNode[] {
     if (node.type === NodeType.backend) {
       if (node.label in gToolchainEnvMap) {
-        const toolchain = gToolchainEnvMap[node.label].listInstalled();
-        if (toolchain && toolchain.info.version) {
-          return [this.toToolchainNode(
-              NodeType.toolchain, toolchain.info.name, toolchain.info.version.str())];
-        }
+        const toolchains = gToolchainEnvMap[node.label].listInstalled();
+        return toolchains.filter((t) => t.info.version).map((t) => this.toToolchainNode(NodeType.toolchain, t.info.name, t.info.version?.str()));
       }
     }
     return [];

@@ -17,7 +17,7 @@
 import {strict as assert} from 'assert';
 
 import {Compiler} from '../Backend/Compiler';
-import {Toolchain} from '../Backend/Toolchain';
+import {Toolchain, Toolchains} from '../Backend/Toolchain';
 import {BuilderJob} from '../Project/BuilderJob';
 import {Job} from '../Project/Job';
 import {JobConfig} from '../Project/JobConfig';
@@ -106,30 +106,20 @@ class ToolchainEnv extends Env {
     this.init();
   }
 
-  confirmInstalled() {
-    this.clearJobs();
-
-    const toolchains = this.compiler.toolchains();
-    for (let index = 0; index < toolchains.length; index++) {
-      const toolchain = toolchains[index];
-      let cmd = toolchain.installed();
-      let job = new JobInstalled(cmd);
-      job.successCallback = () => {
-        this.installed = toolchain;
-      };
-      this.addJob(job);
-    }
-
-    this.finishAdd();
-    this.build();
+  getToolchainTypes(): string[] {
+    return this.compiler.getToolchainTypes();
   }
 
-  listAvailable(): Toolchain[] {
-    return this.compiler.toolchains();
+  listAvailable(type: string, start: number, count: number): Toolchain[] {
+    return this.compiler.getToolchains(type, start, count);
   }
 
-  listInstalled(): Toolchain|undefined {
-    return this.installed;
+  listInstalled(): Toolchain[] {
+    return this.compiler.getToolchainTypes()
+        .map((type) => this.compiler.getInstalledToolchains(type))
+        .reduce((r, a) => {
+          return r.concat(a);
+        });
   }
 
   install(toolchain: Toolchain) {
