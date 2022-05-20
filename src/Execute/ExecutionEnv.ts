@@ -29,7 +29,7 @@ interface ExecutionEnv {
 }
 
 class ToolchainExecutorEnv implements ExecutionEnv {
-  envName: string; // Specified name for Each Env
+  envName: string;  // Specified name for Each Env
   simulator: Executor;
   constructor(backendName: string, sim: Executor) {
     this.envName = backendName;
@@ -51,7 +51,7 @@ class ToolchainExecutorEnv implements ExecutionEnv {
     // TODO: if multiple Toolchain installed on
     // we need to fix this to show all installed Executors
     if (gToolchainEnvMap[this.envName].listInstalled()) {
-        return ['Simulator'];
+      return ['Simulator'];
     }
     return [];
   }
