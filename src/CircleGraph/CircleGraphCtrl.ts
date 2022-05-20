@@ -17,6 +17,8 @@
 import * as fs from 'fs';
 import * as vscode from 'vscode';
 
+import {getNonce} from '../Utils/external/Nonce';
+
 export class CircleGraphCtrl {
   // TODO make this protected
   public static readonly folderMediaCircleGraph = 'media/CircleGraph';
@@ -84,12 +86,3 @@ export class CircleGraphCtrl {
     return uriView;
   }
 };
-
-function getNonce() {
-  let text = '';
-  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  for (let i = 0; i < 32; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
-}

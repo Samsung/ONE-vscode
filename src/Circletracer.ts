@@ -17,6 +17,8 @@
 import {readFileSync} from 'fs';
 import * as vscode from 'vscode';
 
+import {getNonce} from './Utils/external/Nonce';
+
 export class Circletracer {
   /**
    * Track the current panel. Only allow a single panel to exist at a time.
@@ -164,15 +166,6 @@ export class Circletracer {
 
     return html;
   }
-}
-
-function getNonce() {
-  let text = '';
-  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  for (let i = 0; i < 32; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
 }
 
 function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {
