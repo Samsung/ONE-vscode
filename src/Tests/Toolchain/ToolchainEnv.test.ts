@@ -68,7 +68,6 @@ suite('Toolchain', function() {
     suite('#constructor()', function() {
       test('is constructed with params', function() {
         let env = new ToolchainEnv(logger, compiler);
-        assert.equal(env.installed, undefined);
         assert.strictEqual(env.compiler, compiler);
       });
     });
