@@ -61,13 +61,10 @@ export class ToolchainProvider implements vscode.TreeDataProvider<ToolchainNode>
   }
 
   getChildren(element?: ToolchainNode): Thenable<ToolchainNode[]> {
-    if (element) {
-      return Promise.resolve(this.getNode(element));
-    } else {
-      return Promise.resolve(this.getNode(undefined));
-    }
+    return Promise.resolve(this.getNode(element));
   }
 
+  // TODO(jyoung): Refactor deep depth branches
   private getNode(node: ToolchainNode|undefined): ToolchainNode[] {
     const toToolchainNode =
         (type: NodeType, name: string, toolchain?: Toolchain): ToolchainNode => {
