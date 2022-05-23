@@ -42,18 +42,70 @@ export class Logger {
     }
   }
 
+  // deprecate. replace to error(), warning(), info, or debug()
   public outputWithTime(msg: string) {
     let dateTime = new Date();
     this.checkShow();
     this.outputChannel.appendLine('[' + dateTime.toLocaleString() + '] ' + msg);
   }
 
+  // deprecate. replace to append()
   public output(msg: string) {
     this.checkShow();
     this.outputChannel.append(msg);
   }
 
+  // deprecate
   public outputLine(msg: string) {
+    this.checkShow();
+    this.outputChannel.appendLine(msg);
+  }
+
+  private log(severity: string, tag: string, msg: string) {
+    const time = new Date().toLocaleString();
+
+    this.checkShow();
+    this.outputChannel.appendLine(`[${time}][${tag}][${severity}] ${msg}`);
+  }
+
+  /**
+   * @brief Print log in '[time][tag][severity] msg' format where severity = 'err'
+   */
+  public error(tag: string, msg: string) {
+    const severity = 'err';
+    this.log(severity, tag, msg);
+  }
+
+  /**
+   * @brief Print log in '[time][tag][severity] msg' format where severity = 'warn'
+   */
+  public warn(tag: string, msg: string) {
+    const severity = 'warn';
+    this.log(severity, tag, msg);
+  }
+
+  /**
+   * @brief Print log in '[time][tag][severity] msg' format where severity = 'info'
+   */
+  public info(tag: string, msg: string) {
+    const severity = 'info';
+    this.log(severity, tag, msg);
+  }
+
+  /**
+   * @brief Print log in '[time][tag][severity] msg' format where severity = 'debug'
+   */
+  public debug(tag: string, msg: string) {
+    const severity = 'debug';
+    this.log(severity, tag, msg);
+  }
+
+  /**
+   * @brief Print msg without adding '[time][tag][severity]'
+   * @detail When log is long and need to be splitted into many chunks, append() could be used
+   *         after the first chunk.
+   */
+  public append(msg: string) {
     this.checkShow();
     this.outputChannel.appendLine(msg);
   }
