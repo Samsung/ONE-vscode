@@ -90,7 +90,7 @@ suite('OneExplorer', function() {
     })
 
     suite('#createConfigObj()', function() {
-      test('Returns null when file read failed', function() {
+      test('NEG: Returns null when file read failed', function() {
         const configObj =
             ConfigObj.createConfigObj(vscode.Uri.file('/tmp/one-vscode.test/invalid/path'));
 
