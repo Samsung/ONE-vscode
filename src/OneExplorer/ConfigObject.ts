@@ -132,7 +132,7 @@ export class ConfigObj {
    */
   private static parseBaseModels = (uri: vscode.Uri, iniObj: object): vscode.Uri[] => {
     let baseModels: string[] = [];
-    
+
     // TODO Get ext list from backend
     for (const ext of ['tflite', 'pb', 'onnx']) {
       let confSection = iniObj[`one-import-${ext}` as keyof typeof iniObj];
@@ -144,7 +144,7 @@ export class ConfigObj {
 
     // Get absolute paths by calculating from cfg file
     // '..' or '//' are resolved here
-    baseModels = baseModels!.map(relpath => path.join(path.dirname(uri.fsPath), relpath));
+    baseModels = baseModels!.map(relpath => path.resolve(path.dirname(uri.fsPath), relpath));
 
     // Remove duplicated entries
     baseModels = [...new Set(baseModels)];
@@ -207,7 +207,7 @@ export class ConfigObj {
 
     // Get absolute paths by calculating from cfg file
     // '..' or '//' are resolved here
-    derivedModels = derivedModels.map(relpath => path.join(path.dirname(uri.fsPath), relpath));
+    derivedModels = derivedModels.map(relpath => path.resolve(path.dirname(uri.fsPath), relpath));
 
     // Remove duplicated entries
     derivedModels = [...new Set(derivedModels)];

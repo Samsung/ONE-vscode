@@ -17,8 +17,6 @@
 import {assert} from 'chai';
 import * as fs from 'fs';
 import * as vscode from 'vscode';
-import {FillOptions} from '../../Circlereader/circle-analysis/circle/fill-options';
-
 import {ConfigObj} from '../../OneExplorer/ConfigObject';
 
 class TestBuilder {
@@ -130,8 +128,9 @@ input_path=${modelName}
           assert.isArray(configObj!.obj.derivedModels);
 
           assert.strictEqual(configObj!.obj.baseModels.length, 1);
-          assert.strictEqual(configObj!.obj.baseModels[0].fsPath, modelPath);
           assert.strictEqual(configObj!.obj.derivedModels.length, 0);
+
+          assert.strictEqual(configObj!.obj.baseModels[0].fsPath, modelPath);
         }
       });
 
@@ -176,8 +175,9 @@ output_path=${derivedModelName2}
           assert.isArray(configObj!.obj.derivedModels);
 
           assert.strictEqual(configObj!.obj.baseModels.length, 1);
-          assert.strictEqual(configObj!.obj.baseModels[0].fsPath, baseModelPath);
           assert.strictEqual(configObj!.obj.derivedModels.length, 2);
+
+          assert.strictEqual(configObj!.obj.baseModels[0].fsPath, baseModelPath);
 
           assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.fsPath)
                             .includes(derivedModelPath1));
@@ -198,10 +198,55 @@ output_path=${derivedModelName2}
 one-import-tflite=True
 one-quantize=True
 [one-import-tflite]
+input_path=dummy/dummy/../../${baseModelName}
+output_path=dummy/dummy/../../${derivedModelName1}
+[one-quantize]
+input_path=${derivedModelName1}
+output_path=dummy/dummy/../..//${derivedModelName2}
+        `;
+
+        // Write a file inside a temp directory
+        testBuilder.writeFileSync(configName, content);
+
+        // Get file paths inside the temp directory
+        const configPath = testBuilder.getPath(configName);
+        const baseModelPath = testBuilder.getPath(baseModelName);
+        const derivedModelPath1 = testBuilder.getPath(derivedModelName1);
+        const derivedModelPath2 = testBuilder.getPath(derivedModelName2);
+
+        const configObj = ConfigObj.createConfigObj(vscode.Uri.file(configPath));
+
+        // Validation
+        {
+          assert.strictEqual(configObj!.obj.baseModels.length, 1);
+          assert.strictEqual(configObj!.obj.derivedModels.length, 2);
+
+          assert.strictEqual(configObj!.obj.baseModels[0].fsPath, baseModelPath);
+
+          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.fsPath)
+                            .includes(derivedModelPath1));
+          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.fsPath)
+                            .includes(derivedModelPath2));
+        }
+      });
+
+      test('NEG: Parse config with detouring paths with faulty absolute path', function() {
+        const configName = 'model.cfg';
+        const baseModelName = 'model.tflite';
+        const derivedModelName1 = 'model.circle';
+        const derivedModelName2 = 'model.q8.circle';
+
+        // Detouring paths with faulty absolute path
+        // NOTE that path starts with '/' will be interpreted as an absolute path
+        const content = `
+[onecc]
+one-import-tflite=True
+one-quantize=True
+[one-import-tflite]
 input_path=/dummy/dummy/../../${baseModelName}
 output_path=/dummy/dummy/../../${derivedModelName1}
 [one-quantize]
-input_path=////${derivedModelName1}
+input_path=/${derivedModelName1}
 output_path=/dummy/dummy/../..//${derivedModelName2}
         `;
 
@@ -219,10 +264,58 @@ output_path=/dummy/dummy/../..//${derivedModelName2}
         // Validation
         {
           assert.strictEqual(configObj!.obj.baseModels.length, 1);
+          assert.strictEqual(configObj!.obj.derivedModels.length, 2);
+
+          assert.notStrictEqual(configObj!.obj.baseModels[0].fsPath, baseModelPath);
+
+          assert.isFalse(configObj!.obj.derivedModels.map(derivedModel => derivedModel.fsPath)
+                             .includes(derivedModelPath1));
+          assert.isFalse(configObj!.obj.derivedModels.map(derivedModel => derivedModel.fsPath)
+                             .includes(derivedModelPath2));
+          ;
+        }
+      });
+
+
+      test('Parse config with absolute paths', function() {
+        const configName = 'model.cfg';
+        const baseModelName = 'model.tflite';
+        const derivedModelName1 = 'model.circle';
+        const derivedModelName2 = 'model.q8.circle';
+
+        // Get file paths inside the temp directory
+        const configPath = testBuilder.getPath(configName);
+        const baseModelPath = testBuilder.getPath(baseModelName);
+        const derivedModelPath1 = testBuilder.getPath(derivedModelName1);
+        const derivedModelPath2 = testBuilder.getPath(derivedModelName2);
+
+        // Detouring paths
+        const content = `
+[onecc]
+one-import-tflite=True
+one-quantize=True
+[one-import-tflite]
+input_path=/${baseModelPath}
+output_path=/${derivedModelPath1}
+[one-quantize]
+input_path=/${derivedModelPath1}
+output_path=/${derivedModelPath2}
+        `;
+
+        // Write a file inside a temp directory
+        testBuilder.writeFileSync(configName, content);
+
+
+        const configObj = ConfigObj.createConfigObj(vscode.Uri.file(configPath));
+
+        // Validation
+        {
+          assert.strictEqual(configObj!.obj.baseModels.length, 1);
+          assert.strictEqual(configObj!.obj.derivedModels.length, 2);
+
           assert.strictEqual(
               configObj!.obj.baseModels[0].fsPath, baseModelPath,
               configObj!.obj.baseModels[0].fsPath);
-          assert.strictEqual(configObj!.obj.derivedModels.length, 2);
 
           assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.fsPath)
                             .includes(derivedModelPath1));
