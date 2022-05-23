@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import {platform} from 'os';
 import {Command} from '../Backend/Command';
 import {Executor} from '../Backend/Executor';
 import {gToolchainEnvMap} from '../Toolchain/ToolchainEnv';
@@ -22,9 +23,9 @@ import {gToolchainEnvMap} from '../Toolchain/ToolchainEnv';
 interface ExecutionEnv {
   name(): string;
   host(): string;
-  listExecutableExt(): string[];
-  isExecutionEnvAvail(name: string): boolean;
   getEnableEnvList(): string[];
+  isAvailable(name: string): boolean;
+  getListExecutableExt(): string[];
   getInferenceCmd(model_path: string, _options?: string[]): Command;
 }
 
@@ -39,9 +40,9 @@ class ToolchainExecutorEnv implements ExecutionEnv {
     return this.envName;
   }
   host(): string {
-    return 'x86';
+    return platform();
   }
-  isExecutionEnvAvail(name: string): boolean {
+  isAvailable(name: string): boolean {
     if (gToolchainEnvMap[this.envName].listInstalled()) {
       return this.getEnableEnvList().includes(name);
     }
@@ -55,7 +56,7 @@ class ToolchainExecutorEnv implements ExecutionEnv {
     }
     return [];
   }
-  listExecutableExt(): string[] {
+  getListExecutableExt(): string[] {
     return this.simulator.getExecutableExt();
   }
   getInferenceCmd(modelPath: string, _options?: string[]): Command {
@@ -75,13 +76,13 @@ class TizenEnv implements ExecutionEnv {
   host(): string {
     return 'tizen';
   }
-  isExecutionEnvAvail(name: string): boolean {
+  isAvailable(name: string): boolean {
     throw new Error('Method not implemented.');
   }
   getEnableEnvList(): string[] {
     throw new Error('Method not implemented.');
   }
-  listExecutableExt(): string[] {
+  getListExecutableExt(): string[] {
     throw new Error('Method not implemented.');
   }
   getInferenceCmd(modelPath: string, _options?: string[]): Command {

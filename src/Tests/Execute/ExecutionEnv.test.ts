@@ -15,9 +15,62 @@
  */
 
 import {assert} from 'chai';
+import {platform} from 'os';
+import {Command} from '../../Backend/Command';
+import {ExecutorBase} from '../../Backend/Executor';
+import {Toolchains} from '../../Backend/Toolchain';
+import {ToolchainExecutorEnv} from '../../Execute/ExecutionEnv';
 
-const mocCompilerType: string = 'test';
+class MockExecutor extends ExecutorBase {
+  getExecutableExt(): string[] {
+    return ['tflite', 'onnx', 'pb'];
+  }
+  runInference(_modelPath: string, _options?: Array<string>|undefined): Command {
+    let cmd: string = '/usr/share/one/bin/one-infer';
+    let STRIDE_PATH = _modelPath.split('.');
+    let opt: Array<string> = ['-b ', STRIDE_PATH[STRIDE_PATH.length - 1], _modelPath];
+    if (_options) {
+      for (let index = 0; index < _options.length; index++) {
+        const element = _options[index];
+        opt.push(element);
+      }
+    }
+    let command: Command = new Command(cmd, opt);
+    return command;
+  }
+}
 
-suite('ExecutionEnv', function(){
-    
+suite('ExecutionEnv', function() {
+  const executor = new MockExecutor();
+
+  suite('#constructor()', function() {
+    test('is constructed with params', function() {
+      let env = new ToolchainExecutorEnv('mock-up', executor);
+      assert.equal(env.envName, 'mock-up');
+      assert.strictEqual(env.simulator, executor);
+    });
+  });
+  suite('#getHost()', function() {
+    test('get host type', function() {
+      let env = new ToolchainExecutorEnv('mock-up', executor);
+      const host = env.host();
+      assert.equal(platform(), host);
+    });
+  });
+  //   isAvailable() need toolchain or backend about MockExecutor
+  //   getEnableEnvList() need toolchain or backend about MockExecutor
+  suite('#listExecutableExt()', function() {
+    test('get Executable suffix', function() {
+      let env = new ToolchainExecutorEnv('mock-up', executor);
+      const ext = env.getListExecutableExt();
+      assert.deepEqual(ext, executor.getExecutableExt());
+    });
+  });
+  suite('#getInferenceCmd()', function() {
+    test('get Inference command for certain model', function() {
+      let env = new ToolchainExecutorEnv('mock-up', executor);
+      const cmd = env.getInferenceCmd('test.tflite');
+      assert.deepEqual(cmd, executor.runInference('test.tflite'));
+    });
+  });
 });

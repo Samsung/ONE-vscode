@@ -51,6 +51,7 @@ function backendRegistrationApi() {
         gToolchainEnvMap[backend.name()] = new ToolchainEnv(compiler);
       }
       // This will register case 1, ExecutionEnv with Backend Executor
+      // Executor will handled as a Simulator.
       const executor = backend.executor();
       if (executor) {
         globalExecutionEnvMap[backend.name()] = new ToolchainExecutorEnv(backend.name(), executor);
