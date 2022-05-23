@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 
+Copyright (c) 2022 Samsung Electronics Co., Ltd. All Rights Reserved
+ 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+ 
+   http://www.apache.org/licenses/LICENSE-2.0
+ 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<head>
+    <meta charset="utf-8">
+    <meta
+        http-equiv="Content-Security-Policy"
+        content="img-src vscode;
+                style-src 'unsafe-inline' ${webview.cspSource};
+                script-src 'nonce-${nonce}';">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script nonce="${nonce}" type="module" src="${toolkitUri}"></script>
+    <script nonce="${nonce}" type="module" src="${jsUri}"></script>
+    <link rel="stylesheet" href="${cssUri}">
+    <link rel="stylesheet" href="${codiconUri}">
+    <title>cfg editor</title>
+</head>
+<body>
+    <div class="maintitle">
+        <span class="codicon codicon-megaphone"></span>
+        <span>Click checkbox to enable each step.</span>
+    </div>
+    <div class="statusbar">
+        <div class="detail">
+            <div class="expanded" id="expandedDetail">
+                <span>Steps</span>
+            </div>
+        </div>
+        <div class="steps" id="statusbarSteps">
+            <div class="step" id="stepbarImport">
+                <vscode-checkbox id="checkboxImport"></vscode-checkbox>
+                <span id="stepImport" class="title">Import</span>
+            </div>
+            <div class="step" id="stepbarOptimize">
+                <vscode-checkbox id="checkboxOptimize"></vscode-checkbox>
+                <span id="stepOptimize" class="title">Optimize</span>
+            </div>
+            <div class="step" id="stepbarQuantize">
+                <vscode-checkbox id="checkboxQuantize"></vscode-checkbox>
+                <span id="stepQuantize" class="title">Quantize</span>
+            </div>
+            <div class="step" id="stepbarCodegen">
+                <vscode-checkbox id="checkboxCodegen"></vscode-checkbox>
+                <span id="stepCodegen" class="title">Codegen</span>
+            </div>
+            <div class="step" id="stepbarProfile">
+                <vscode-checkbox id="checkboxProfile"></vscode-checkbox>
+                <span id="stepProfile" class="title">Profile</span>
+            </div>
+        </div>
+    </div>
+    <div>
+        <vscode-divider></vscode-divider>
+    </div>
+    <div class="optionPanel">
+        <div class="options" id="optionSummary">
+            <div class="basic">
+                <div class="title">
+                    What Should We Display Here?
+                </div>
+                <div class="option">
+                    <vscode-text-field startIcon=true size=50 placeholder="">
+                        Some item
+                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+            </div>
+        </div>
+        <div class="options" id="optionImport">
+            <div class="prerequisite">
+                <div class="title">
+                    Basic Options
+                </div>
+                <div class="option">
+                    <vscode-radio-group id="importInputModelType">
+                        <label slot="label">Input Model Type</label>
+                        <vscode-radio value="pb" checked="true">pb</vscode-radio>
+                        <vscode-radio value="saved">saved_model</vscode-radio>
+                        <vscode-radio value="keras">keras_model</vscode-radio>
+                        <vscode-radio value="tflite">tflite</vscode-radio>
+                        <vscode-radio value="onnx">onnx</vscode-radio>
+                        <vscode-radio value="bcq" disabled="true">bcq</vscode-radio>
+                    </vscode-radio-group>
+                </div>
+            </div>
+            <div class="basic" id="optionImportPBBasic">
+                <div class="option">
+                    <vscode-text-field id="PBInputPath" startIcon="true" size="50" placeholder="">
+                        Input Path
+                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="PBOutputPath" startIcon="true" size="50" placeholder="">
+                        Output Path
+                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-radio-group id="PBConverterVersion">
+                        <label slot="label">Converter Version</label>
+                        <vscode-radio value="v1">v1</vscode-radio>
+                        <vscode-radio value="v2">v2</vscode-radio>
+                    </vscode-radio-group>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="PBInputArrays" startIcon="true" size="50" placeholder="semi-colon separated input names">
+                        Input Arrays
+                        <span slot="end" class="codicon codicon-question" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="PBOutputArrays" startIcon="true" size="50" placeholder="semi-colon separated output names">
+                        Output Arrays
+                        <span slot="end" class="codicon codicon-question" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+            </div>
+            <div class="advanced" id="optionImportPBAdvanced">
+                <div class="title">
+                    <span>Advanced Options</span>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="PBInputShapes" startIcon="true" size="50" placeholder="semi-colon separated input shapes (e.g. 1,299,299,3;1,1001)">
+                        Input Shapes (Optional)
+                        <span slot="end" class="codicon codicon-question" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+            </div>
+            <div class="basic" id="optionImportSAVEDBasic">
+                <div class="option">
+                    <vscode-text-field id="SAVEDInputPath" startIcon="true" size="50" placeholder="">
+                        Input Path
+                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="SAVEDOutputPath" startIcon="true" size="50" placeholder="">
+                        Output Path
+                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+            </div>
+            <div class="basic" id="optionImportKERASBasic">
+                <div class="option">
+                    <vscode-text-field id="KERASInputPath" startIcon="true" size="50" placeholder="">
+                        Input Path
+                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="KERASOutputPath" startIcon="true" size="50" placeholder="">
+                        Output Path
+                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+            </div>
+            <div class="basic" id="optionImportTFLITEBasic">
+                <div class="option">
+                    <vscode-text-field id="TFLITEInputPath" startIcon="true" size="50" placeholder="">
+                        Input Path
+                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="TFLITEOutputPath" startIcon="true" size="50" placeholder="">
+                        Output Path
+                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+            </div>
+            <div class="basic" id="optionImportONNXBasic">
+                <div class="option">
+                    <vscode-text-field id="ONNXInputPath" startIcon="true" size="50" placeholder="">
+                        Input Path
+                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="ONNXOutputPath" startIcon="true" size="50" placeholder="">
+                        Output Path
+                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+            </div>
+            <div class="advanced" id="optionImportONNXAdvanced">
+                <div class="title">
+                    Advanced Options
+                </div>
+                <div class="option">
+                    <vscode-checkbox id="ONNXSaveIntermediate">
+                        Save Intermediate
+                    </vscode-checkbox>
+                    <span class="codicon codicon-question" style="cursor: pointer"></span>
+                </div>
+                <div class="option">
+                    <vscode-checkbox id="ONNXUnrollRNN">
+                        Unroll RNN
+                    </vscode-checkbox>
+                    <span class="codicon codicon-question" style="cursor: pointer"></span>
+                </div>
+                <div class="option">
+                    <vscode-checkbox id="ONNXUnrollLSTM">
+                        Unroll LSTM
+                    </vscode-checkbox>
+                    <span class="codicon codicon-question" style="cursor: pointer"></span>
+                </div>
+            </div>
+        </div>
+        <div class="options" id="optionOptimize">
+            <div class="basic">
+                <div class="title">
+                    Basic Options
+                </div>
+                <div class="option">
+                    <vscode-text-field id="optimizeInputPath" startIcon="true" size="50" placeholder="">
+                        Input Path
+                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="optimizeOutputPath" startIcon="true" size="50" placeholder="">
+                        Output Path
+                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+            </div>
+            <div class="advanced">
+                <div class="title">
+                    Optimization Parameters
+                    <span slot="end" class="codicon codicon-question" style="cursor: pointer"></span>
+                </div>
+                <div class="option">
+                    <vscode-data-grid id="basicOptimizeTable" generate-header="default" aria-label="Default Header" grid-template-columns="35% 10% 55%">
+                        <vscode-data-grid-row row-type="header">
+                          <vscode-data-grid-cell cell-type="columnheader" grid-column="1">Name</vscode-data-grid-cell>
+                          <vscode-data-grid-cell cell-type="columnheader" grid-column="2">Switch</vscode-data-grid-cell>
+                          <vscode-data-grid-cell cell-type="columnheader" grid-column="3">Description</vscode-data-grid-cell>
+                        </vscode-data-grid-row>                        
+                    </vscode-data-grid>
+                </div>                
+            </div>
+        </div>
+        <div class="options" id="optionQuantize">
+            <div class="basic">
+
+            </div>
+            <div class="advanced">
+
+            </div>
+        </div>
+        <div class="options" id="optionCodegen">
+            <div class="basic">
+                <div class="title">
+                    Basic Options
+                </div>
+                <div class="option">
+                    <vscode-text-field id="codegenBackend" startIcon="true" size="30" placeholder="Backend to generate code">
+                        Backend
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="codegenCommand" startIcon="true" size="50" placeholder="CLI command to execute">
+                        Command
+                    </vscode-text-field>           
+                </div>
+            </div>
+        </div>
+        <div class="options" id="optionProfile">
+            <div class="basic">
+                <div class="title">
+                    Basic Options
+                </div>
+                <div class="option">
+                    <vscode-text-field id="profileBackend" startIcon="true" size="30" placeholder="Backend to generate code">
+                        Backend
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="profileCommand" startIcon="true" size="50" placeholder="CLI command to execute">
+                        Command
+                    </vscode-text-field>           
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
