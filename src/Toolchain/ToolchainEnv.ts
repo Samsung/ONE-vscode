@@ -96,12 +96,10 @@ class Env implements BuilderJob {
 
 class ToolchainEnv extends Env {
   // TODO(jyoung): Support multiple installed toolchains
-  installed?: Toolchain;
   compiler: Compiler;
 
   constructor(l: Logger, compiler: Compiler) {
     super(l);
-    this.installed = undefined;
     this.compiler = compiler;
     this.init();
   }
@@ -123,20 +121,8 @@ class ToolchainEnv extends Env {
   }
 
   install(toolchain: Toolchain) {
-    if (this.installed !== undefined) {
-      Balloon.error(
-          'The debian toolchain installed in your system must be one and only. Please uninstall the existing toolchain first.');
-      return;
-    }
-    if (this.installed === toolchain) {
-      Balloon.error('This toolchain is already installed.');
-      return;
-    }
     let cmd = toolchain.install();
     let job = new JobInstall(cmd);
-    job.successCallback = () => {
-      this.installed = toolchain;
-    };
     this.clearJobs();
     this.addJob(job);
     this.finishAdd();
@@ -144,12 +130,6 @@ class ToolchainEnv extends Env {
   }
 
   uninstall(toolchain: Toolchain) {
-    if (this.installed === undefined) {
-      throw Error('Any toolchain is not yet installed');
-    }
-    if (this.installed !== toolchain) {
-      throw Error('The other toolchain is installed');
-    }
     let cmd = toolchain.uninstall();
     let job = new JobUninstall(cmd);
     this.clearJobs();
@@ -159,12 +139,6 @@ class ToolchainEnv extends Env {
   }
 
   compile(cfg: string, toolchain: Toolchain) {
-    if (this.installed === undefined) {
-      throw Error('Any toolchain is not yet installed');
-    }
-    if (this.installed !== toolchain) {
-      throw Error('The other toolchain is installed');
-    }
     let cmd = this.compiler.compile(cfg);
     let job = new JobConfig(cmd);
     this.clearJobs();
