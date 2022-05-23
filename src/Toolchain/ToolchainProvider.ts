@@ -15,6 +15,7 @@
  */
 
 import * as vscode from 'vscode';
+import {Toolchain} from '../Backend/Toolchain';
 import {gToolchainEnvMap} from './ToolchainEnv';
 
 enum NodeType {
@@ -27,15 +28,21 @@ export class ToolchainNode extends vscode.TreeItem {
       public readonly label: string,
       public readonly collapsibleState: vscode.TreeItemCollapsibleState,
       public readonly type: NodeType,
-      public readonly version?: string,
+      public readonly toolchain?: Toolchain,
   ) {
     super(label, collapsibleState);
 
     if (type === NodeType.backend) {
       this.iconPath = new vscode.ThemeIcon('bracket');
     } else if (type === NodeType.toolchain) {
+      if (toolchain === undefined) {
+        throw Error('Invalid ToolchainNode');
+      }
       this.iconPath = new vscode.ThemeIcon('circle-filled');
-      this.label = `${this.label} ${this.version}`;
+      this.description = toolchain.info.version ?.str();
+      const dependency =
+          toolchain.info.depends ?.map((t) => `${t.name} ${t.version.str()}`).join('\n').toString();
+      this.tooltip = dependency;
     }
     this.contextValue = NodeType[type];
   }
@@ -54,28 +61,29 @@ export class ToolchainProvider implements vscode.TreeDataProvider<ToolchainNode>
   }
 
   getChildren(element?: ToolchainNode): Thenable<ToolchainNode[]> {
-    if (element) {
-      return Promise.resolve(this.getNode(element));
-    } else {
-      const nodes = Object.keys(gToolchainEnvMap)
-                        .map((backend) => this.toToolchainNode(NodeType.backend, backend));
-      return Promise.resolve(nodes);
-    }
+    return Promise.resolve(this.getNode(element));
   }
 
-  private toToolchainNode(type: NodeType, name: string, version?: string): ToolchainNode {
-    if (type === NodeType.toolchain) {
-      return new ToolchainNode(name, vscode.TreeItemCollapsibleState.None, type, version);
+  // TODO(jyoung): Refactor deep depth branches
+  private getNode(node: ToolchainNode|undefined): ToolchainNode[] {
+    const toToolchainNode =
+        (type: NodeType, name: string, toolchain?: Toolchain): ToolchainNode => {
+          if (type === NodeType.toolchain) {
+            return new ToolchainNode(name, vscode.TreeItemCollapsibleState.None, type, toolchain);
+          } else {
+            return new ToolchainNode(name, vscode.TreeItemCollapsibleState.Expanded, type);
+          }
+        };
+    if (node === undefined) {
+      return Object.keys(gToolchainEnvMap)
+          .map((backend) => toToolchainNode(NodeType.backend, backend));
     } else {
-      return new ToolchainNode(name, vscode.TreeItemCollapsibleState.Expanded, type);
-    }
-  }
-
-  private getNode(node: ToolchainNode): ToolchainNode[] {
-    if (node.type === NodeType.backend) {
-      if (node.label in gToolchainEnvMap) {
-        const toolchains = gToolchainEnvMap[node.label].listInstalled();
-        return toolchains.filter((t) => t.info.version).map((t) => this.toToolchainNode(NodeType.toolchain, t.info.name, t.info.version?.str()));
+      if (node.type === NodeType.backend) {
+        if (node.label in gToolchainEnvMap) {
+          const toolchains = gToolchainEnvMap[node.label].listInstalled();
+          return toolchains.filter((t) => t.info.version)
+              .map((t) => toToolchainNode(NodeType.toolchain, t.info.name, t));
+        }
       }
     }
     return [];
