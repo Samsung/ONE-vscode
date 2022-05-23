@@ -41,7 +41,7 @@ class TestBuilder {
       }
 
       fs.mkdirSync(this.testDir!, {recursive: true});
-      console.log(`Test ${this.testLabel} - Start`)
+      console.log(`Test ${this.testLabel} - Start`);
     } catch (e) {
       console.error('Cannot create temporal directory for the test');
       throw e;
@@ -72,7 +72,7 @@ class TestBuilder {
       console.error('Cannot remove the test directory');
       throw e;
     } finally {
-      console.log(`Test ${this.testLabel} - Done`)
+      console.log(`Test ${this.testLabel} - Done`);
     }
   }
 };
@@ -87,7 +87,7 @@ suite('OneExplorer', function() {
 
     teardown(() => {
       testBuilder.tearDown();
-    })
+    });
 
     suite('#createConfigObj()', function() {
       test('NEG: Returns null when file read failed', function() {

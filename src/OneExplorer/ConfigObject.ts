@@ -204,7 +204,7 @@ export class ConfigObj {
 
     // Get absolute paths by calculating from cfg file
     // '..' or '//' are resolved here
-    derivedModels = derivedModels.map(relpath => path.join(path.dirname(uri.fsPath), relpath))
+    derivedModels = derivedModels.map(relpath => path.join(path.dirname(uri.fsPath), relpath));
 
     // Remove duplicated entries
     derivedModels = [...new Set(derivedModels)];
