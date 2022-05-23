@@ -132,6 +132,8 @@ export class ConfigObj {
    */
   private static parseBaseModels = (uri: vscode.Uri, iniObj: object): vscode.Uri[] => {
     let baseModels: string[] = [];
+    
+    // TODO Get ext list from backend
     for (const ext of ['tflite', 'pb', 'onnx']) {
       let confSection = iniObj[`one-import-${ext}` as keyof typeof iniObj];
       let confKey = confSection ?.['input_path' as keyof typeof iniObj] as string;
@@ -182,6 +184,7 @@ export class ConfigObj {
         section: 'one-codegen',
         key: 'command',
         filt: (str: string): string[] => {
+          // TODO Get ext list from backend
           return str.split(' ').filter(
               e => path.extname(e) === '.tvn' || path.extname(e) === '.circle');
         }
