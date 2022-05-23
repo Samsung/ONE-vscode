@@ -22,6 +22,7 @@ import * as vscode from 'vscode';
 /**
  * @brief Parsed .cfg file into an 'obj' which contains fields such as
  *        'baseModels' or 'derivedModels'
+ *        The returned paths are all resolved. (No '..' in the path)
  *
  * @usage Direct Parse
  * ```
@@ -123,36 +124,49 @@ export class ConfigObj {
   /**
    * Parse base models written in the ini object and return the absolute path.
    *
+   * @param uri cfg uri is required to calculate absolute path
    * ABOUT MULTIPLE BASE MODELS
    * onecc doesn't support multiple base models.
    * However, OneExplorer will show the config node below multiple base models
    * to prevent a case that users cannot find their faulty config files on ONE explorer.
    */
   private static parseBaseModels = (uri: vscode.Uri, iniObj: object): vscode.Uri[] => {
-     const baseModels = ['tflite','pb','onnx']
-     .filter(ext=>iniObj[`one-import-${ext}` as keyof typeof iniObj] ?.['input_path'] !== undefined)
-     .map(ext => iniObj[`one-import-${ext}` as keyof typeof iniObj] ?.['input_path'])
-     .map(relpath=>path.join(path.dirname(uri.fsPath),relpath))
-     .map(abspath=>vscode.Uri.file(abspath));
+    let baseModels: string[] = [];
+    for (const ext of ['tflite', 'pb', 'onnx']) {
+      let confSection = iniObj[`one-import-${ext}` as keyof typeof iniObj];
+      let confKey = confSection ?.['input_path' as keyof typeof iniObj] as string;
+      if (confKey) {
+        baseModels.push(confKey);
+      }
+    }
 
-     if (baseModels.length > 1) {
-       // TODO Notify the error with a better UX
-       // EX. put question mark next to the config icon
-       console.warn(
-           `Warning: There are multiple input models in the configuration. (path: ${uri})`);
-     }
+    // Get absolute paths by calculating from cfg file
+    // '..' or '//' are resolved here
+    baseModels = baseModels!.map(relpath => path.join(path.dirname(uri.fsPath), relpath));
 
-     if (baseModels.length === 0) {
-       // TODO Notify the error with a better UX
-       // EX. showing orphan nodes somewhere
-       console.warn(`Warning: There is no input model in the configuration. (path: ${uri})`);
-     }
+    // Remove duplicated entries
+    baseModels = [...new Set(baseModels)];
 
-     return baseModels;
+    if (baseModels.length > 1) {
+      // TODO Notify the error with a better UX
+      // EX. put question mark next to the config icon
+      console.warn(`Warning: There are multiple input models in the configuration. (path: ${uri})`);
+    }
+
+    if (baseModels.length === 0) {
+      // TODO Notify the error with a better UX
+      // EX. showing orphan nodes somewhere
+      console.warn(`Warning: There is no input model in the configuration. (path: ${uri})`);
+    }
+
+    // Return as list of uri
+    return baseModels.map(abspath => vscode.Uri.file(abspath));
   };
 
   /**
    * Find derived models written in the ini object and return the absolute path.
+   *
+   * @param uri cfg uri is required to calculate absolute path
    */
   private static parseDerivedModels = (uri: vscode.Uri, iniObj: object): vscode.Uri[] => {
     const derivedModelLocator = [
@@ -177,7 +191,7 @@ export class ConfigObj {
     let derivedModels: string[] = [];
     for (let loc of derivedModelLocator) {
       let confSection = iniObj[loc.section as keyof typeof iniObj];
-      let confKey = confSection ?.[loc.key as keyof typeof iniObj];
+      let confKey = confSection ?.[loc.key as keyof typeof iniObj] as string;
       if (confKey) {
         const greppedModels = loc.filt ? loc.filt(confKey) : [confKey];
         for (let model of greppedModels) {
@@ -188,7 +202,14 @@ export class ConfigObj {
       }
     }
 
-    return derivedModels.map(relpath => path.join(path.dirname(uri.fsPath), relpath))
-        .map(abspath => vscode.Uri.file(abspath));
+    // Get absolute paths by calculating from cfg file
+    // '..' or '//' are resolved here
+    derivedModels = derivedModels.map(relpath => path.join(path.dirname(uri.fsPath), relpath))
+
+    // Remove duplicated entries
+    derivedModels = [...new Set(derivedModels)];
+
+    // Return as list of uri
+    return derivedModels.map(abspath => vscode.Uri.file(abspath));
   };
 };

@@ -17,22 +17,31 @@
 import {assert} from 'chai';
 import * as fs from 'fs';
 import * as vscode from 'vscode';
+import {FillOptions} from '../../Circlereader/circle-analysis/circle/fill-options';
 
 import {ConfigObj} from '../../OneExplorer/ConfigObject';
 
-class TestFileBuilder {
-  testDir: string = '/tmp/one-vscode.test/ConfigObject';
+class TestBuilder {
+  static testCount = 0;
+  static testDirRoot: string = '/tmp/one-vscode.test/ConfigObject';
+  testLabel: string|null = null;
+  testDir: string|null = null;
   fileList: string[] = [];
 
-  constructor(testDir?: string) {
-    if (testDir) {
-      this.testDir = testDir;
-    }
+  constructor(suiteName: string) {
+    TestBuilder.testCount++;
+    this.testLabel = `${suiteName}/${TestBuilder.testCount}`;
+    this.testDir = `${TestBuilder.testDirRoot}/${suiteName}/${TestBuilder.testCount}`;
+  }
 
+  setUp() {
     try {
-      if (!fs.existsSync(this.testDir)) {
-        fs.mkdirSync(this.testDir, {recursive: true});
+      if (fs.existsSync(this.testDir!)) {
+        fs.rmdirSync(this.testDir!, {recursive: true});
       }
+
+      fs.mkdirSync(this.testDir!, {recursive: true});
+      console.log(`Test ${this.testLabel} - Start`)
     } catch (e) {
       console.error('Cannot create temporal directory for the test');
       throw e;
@@ -48,20 +57,38 @@ class TestFileBuilder {
 
     try {
       fs.writeFileSync(filePath, content, 'utf-8');
-      console.log('File creation succeeded!');
+      console.log(`Test file is created (${filePath})`);
     } catch (e) {
       console.error('Cannot create temporal files for the test');
       throw e;
-    };
+    }
   }
 
-  destructor() {
-    fs.rmdirSync(this.testDir, {recursive: true});
+  tearDown() {
+    try {
+      fs.rmdirSync(this.testDir!, {recursive: true});
+      console.log(`Test directory is removed successfully. (${this.testDir})`);
+    } catch (e) {
+      console.error('Cannot remove the test directory');
+      throw e;
+    } finally {
+      console.log(`Test ${this.testLabel} - Done`)
+    }
   }
 };
 
 suite('OneExplorer', function() {
   suite('ConfigObject', function() {
+    let testBuilder: TestBuilder;
+    setup(() => {
+      testBuilder = new TestBuilder(`${this.title}`);
+      testBuilder.setUp();
+    });
+
+    teardown(() => {
+      testBuilder.tearDown();
+    })
+
     suite('#createConfigObj()', function() {
       test('Returns null when file read failed', function() {
         const configObj =
@@ -72,12 +99,8 @@ suite('OneExplorer', function() {
       });
 
       test('Returns parsed object', function() {
-        const fileBuilder = new TestFileBuilder;
-
         const configName = 'model.cfg';
-        const configPath = fileBuilder.getPath(configName);
         const modelName = 'model.tflite';
-        const modelPath = fileBuilder.getPath(modelName);
 
         const content = `
 [onecc]
@@ -86,7 +109,12 @@ one-import-tflite=True
 input_path=${modelName}
         `;
 
-        fileBuilder.writeFileSync(configName, content);
+        // Write a file inside temp directory
+        testBuilder.writeFileSync(configName, content);
+
+        // Get file paths inside the temp directory
+        const configPath = testBuilder.getPath(configName);
+        const modelPath = testBuilder.getPath(modelName);
 
         const configObj = ConfigObj.createConfigObj(vscode.Uri.file(configPath));
 
@@ -108,16 +136,10 @@ input_path=${modelName}
       });
 
       test('Returns parsed object with derivedModels', function() {
-        const fileBuilder = new TestFileBuilder;
-
         const configName = 'model.cfg';
-        const configPath = fileBuilder.getPath(configName);
         const baseModelName = 'model.tflite';
-        const baseModelPath = fileBuilder.getPath(baseModelName);
         const derivedModelName1 = 'model.circle';
-        const derivedModelPath1 = fileBuilder.getPath(derivedModelName1);
         const derivedModelName2 = 'model.q8.circle';
-        const derivedModelPath2 = fileBuilder.getPath(derivedModelName2);
 
         const content = `
 [onecc]
@@ -131,7 +153,14 @@ input_path=${derivedModelName1}
 output_path=${derivedModelName2}
         `;
 
-        fileBuilder.writeFileSync(configName, content);
+        // Write a file inside a temp directory
+        testBuilder.writeFileSync(configName, content);
+
+        // Get file paths inside the temp directory
+        const configPath = testBuilder.getPath(configName);
+        const baseModelPath = testBuilder.getPath(baseModelName);
+        const derivedModelPath1 = testBuilder.getPath(derivedModelName1);
+        const derivedModelPath2 = testBuilder.getPath(derivedModelName2);
 
         const configObj = ConfigObj.createConfigObj(vscode.Uri.file(configPath));
 
@@ -146,9 +175,53 @@ output_path=${derivedModelName2}
           assert.isArray(configObj!.obj.baseModels);
           assert.isArray(configObj!.obj.derivedModels);
 
-          console.log(configObj!.obj.baseModels);
           assert.strictEqual(configObj!.obj.baseModels.length, 1);
           assert.strictEqual(configObj!.obj.baseModels[0].fsPath, baseModelPath);
+          assert.strictEqual(configObj!.obj.derivedModels.length, 2);
+
+          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.fsPath)
+                            .includes(derivedModelPath1));
+          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.fsPath)
+                            .includes(derivedModelPath2));
+        }
+      });
+
+      test('Parse config with detouring paths', function() {
+        const configName = 'model.cfg';
+        const baseModelName = 'model.tflite';
+        const derivedModelName1 = 'model.circle';
+        const derivedModelName2 = 'model.q8.circle';
+
+        // Detouring paths
+        const content = `
+[onecc]
+one-import-tflite=True
+one-quantize=True
+[one-import-tflite]
+input_path=/dummy/dummy/../../${baseModelName}
+output_path=/dummy/dummy/../../${derivedModelName1}
+[one-quantize]
+input_path=////${derivedModelName1}
+output_path=/dummy/dummy/../..//${derivedModelName2}
+        `;
+
+        // Write a file inside a temp directory
+        testBuilder.writeFileSync(configName, content);
+
+        // Get file paths inside the temp directory
+        const configPath = testBuilder.getPath(configName);
+        const baseModelPath = testBuilder.getPath(baseModelName);
+        const derivedModelPath1 = testBuilder.getPath(derivedModelName1);
+        const derivedModelPath2 = testBuilder.getPath(derivedModelName2);
+
+        const configObj = ConfigObj.createConfigObj(vscode.Uri.file(configPath));
+
+        // Validation
+        {
+          assert.strictEqual(configObj!.obj.baseModels.length, 1);
+          assert.strictEqual(
+              configObj!.obj.baseModels[0].fsPath, baseModelPath,
+              configObj!.obj.baseModels[0].fsPath);
           assert.strictEqual(configObj!.obj.derivedModels.length, 2);
 
           assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.fsPath)
