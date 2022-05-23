@@ -34,6 +34,10 @@ interface ExecutionEnvMap {
 
 // List of backend extensions registered
 let globalBackendMap: BackendMap = {};
+
+// As Execution Env will Contains components below
+// 1. ExecutionEnv with Backend Executor
+// 2. ExecutionEnv with specific HW and specific SW
 let globalExecutionEnvMap: ExecutionEnvMap = {};
 
 function backendRegistrationApi() {
@@ -46,12 +50,14 @@ function backendRegistrationApi() {
       if (compiler) {
         gToolchainEnvMap[backend.name()] = new ToolchainEnv(compiler);
       }
+      // This will register case 1, ExecutionEnv with Backend Executor
       const executor = backend.executor();
       if (executor) {
         globalExecutionEnvMap[backend.name()] = new ToolchainExecutorEnv(backend.name(), executor);
       }
       console.log(`Backend ${backendName} was registered into ONE-vscode.`);
     },
+    // This will register case 2, ExecutionEnv with specific HW and specific SW(Device)
     registerExecutionEnv(execEnv: ExecutionEnv) {
       const execEnvName = execEnv.name();
       assert(execEnvName.length > 0);

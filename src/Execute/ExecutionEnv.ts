@@ -89,4 +89,4 @@ class TizenEnv implements ExecutionEnv {
   }
 }
 
-export {ExecutionEnv, ToolchainExecutorEnv};
+export {ExecutionEnv, ToolchainExecutorEnv, TizenEnv};
