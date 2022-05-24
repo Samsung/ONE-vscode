@@ -16,12 +16,10 @@
 
 import {assert} from 'chai';
 import {WorkFlow} from '../../Project/WorkFlow';
-import {Logger} from '../../Utils/Logger';
 import {MockJob} from '../MockJob';
 
 suite('Project', function() {
   suite('WorkFlow', function() {
-    const logger = Logger.getInstance();
     // jobs for WorkFlow
     const name0 = 'job0';
     const name1 = 'job1';
@@ -29,16 +27,15 @@ suite('Project', function() {
     const job1 = new MockJob(name1);
     suite('#contructor()', function() {
       test('is constructed as WorkFlow', function() {
-        let workFlow = new WorkFlow(logger);
+        let workFlow = new WorkFlow();
         assert.isNotNull(workFlow);
-        assert.isNotNull(workFlow.logger);
         assert.isNotNull(workFlow.jobs);
         assert.isNotNull(workFlow.jobRunner);
       });
     });
     suite('#addJob()', function() {
       test('adds jobs', function() {
-        let workFlow = new WorkFlow(logger);
+        let workFlow = new WorkFlow();
         workFlow.addJob(job0);
         workFlow.addJob(job1);
         assert.strictEqual(workFlow.jobs.length, 2);
@@ -48,7 +45,7 @@ suite('Project', function() {
     });
     suite('#clearJobs()', function() {
       test('clears jobs', function() {
-        let workFlow = new WorkFlow(logger);
+        let workFlow = new WorkFlow();
         workFlow.addJob(job0);
         workFlow.addJob(job1);
         workFlow.clearJobs();

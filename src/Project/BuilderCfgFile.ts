@@ -111,15 +111,14 @@ const K_OPT_transform_min_relu_to_relu6: string = 'transform_min_relu_to_relu6';
  * @brief onecc/one-build cfg importer
  */
 export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector {
+  tag = this.constructor.name;
   jobOwner: BuilderJob;
-  logger: Logger;
   cfgFilePath: string = '';
   cfgFilename: string = '';
 
-  constructor(jobOwner: BuilderJob, l: Logger) {
+  constructor(jobOwner: BuilderJob) {
     super();
     this.jobOwner = jobOwner;
-    this.logger = l;
 
     this.on(K_BEGIN_IMPORT, this.onBeginImport);
   }
@@ -140,7 +139,7 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
 
     console.log('importTF = ', importTF);
     this.jobOwner.addJob(importTF);
-    this.logger.outputLine('Add Import: ' + inputModel);
+    Logger.info(this.tag, 'Add Import: ' + inputModel);
   }
 
   private cfgImportTflite(prop: any) {
@@ -153,7 +152,7 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
 
     console.log('importTFlite = ', importTFlite);
     this.jobOwner.addJob(importTFlite);
-    this.logger.outputLine('Add Import: ' + inputModel);
+    Logger.info(this.tag, 'Add Import: ' + inputModel);
   }
 
   private cfgImportOnnx(prop: any) {
@@ -168,7 +167,7 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
 
     console.log('importOnnx = ', importONNX);
     this.jobOwner.addJob(importONNX);
-    this.logger.outputLine('Add Import: ' + inputModel);
+    Logger.info(this.tag, 'Add Import: ' + inputModel);
   }
 
   private cfgImportBcq(prop: any) {
@@ -185,7 +184,7 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
 
     console.log('importTF = ', importBCQ);
     this.jobOwner.addJob(importBCQ);
-    this.logger.outputLine('Add Import: ' + inputModel);
+    Logger.info(this.tag, 'Add Import: ' + inputModel);
   }
 
   private cfgOptimize(prop: any) {
@@ -244,7 +243,7 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
 
     console.log('optimize = ', optimize);
     this.jobOwner.addJob(optimize);
-    this.logger.outputLine('Add Optimize: ' + inputModel);
+    Logger.info(this.tag, 'Add Optimize: ' + inputModel);
   }
 
   private cfgQuantize(prop: any) {
@@ -257,7 +256,7 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
 
     console.log('quantize = ', quantize);
     this.jobOwner.addJob(quantize);
-    this.logger.outputLine('Add Quantize: ' + inputModel);
+    Logger.info(this.tag, 'Add Quantize: ' + inputModel);
   }
 
   private cfgPack(prop: any) {
@@ -270,7 +269,7 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
 
     console.log('pack = ', pack);
     this.jobOwner.addJob(pack);
-    this.logger.outputLine('Add Pack: ' + inputModel);
+    Logger.info(this.tag, 'Add Pack: ' + inputModel);
   }
 
   private cfgCodegen(prop: any) {
@@ -282,7 +281,7 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
 
     console.log('Codegen = ', codegen);
     this.jobOwner.addJob(codegen);
-    this.logger.outputLine('Add Codegen: ' + codegen.backend);
+    Logger.info(this.tag, 'Add Codegen: ' + codegen.backend);
   }
 
   private isItemTrue(item: string): boolean {
@@ -296,21 +295,21 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
   private validateUniqueImport(cfgOne: any): boolean {
     let importCount = 0;
 
-    this.logger.outputLine('Reading configuration...');
+    Logger.info(this.tag, 'Reading configuration...');
     if (this.isItemTrue(cfgOne[K_IMPORT_TF])) {
-      this.logger.outputLine(K_IMPORT_TF + ' is True');
+      Logger.info(this.tag, K_IMPORT_TF + ' is True');
       importCount = importCount + 1;
     }
     if (this.isItemTrue(cfgOne[K_IMPORT_TFLITE])) {
-      this.logger.outputLine(K_IMPORT_TFLITE + ' is True');
+      Logger.info(this.tag, K_IMPORT_TFLITE + ' is True');
       importCount = importCount + 1;
     }
     if (this.isItemTrue(cfgOne[K_IMPORT_ONNX])) {
-      this.logger.outputLine(K_IMPORT_ONNX + ' is True');
+      Logger.info(this.tag, K_IMPORT_ONNX + ' is True');
       importCount = importCount + 1;
     }
     if (this.isItemTrue(cfgOne[K_IMPORT_BCQ])) {
-      this.logger.outputLine(K_IMPORT_BCQ + ' is True');
+      Logger.info(this.tag, K_IMPORT_BCQ + ' is True');
       importCount = importCount + 1;
     }
     return importCount === 1;
@@ -400,7 +399,7 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
       this.cfgCodegen(prop);
     }
 
-    this.logger.outputLine('Done import configuration.');
+    Logger.info(this.tag, 'Done import configuration.');
     this.jobOwner.finishAdd();
   }
 

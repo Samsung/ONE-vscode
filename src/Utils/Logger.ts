@@ -17,87 +17,63 @@
 import * as vscode from 'vscode';
 
 export class Logger {
-  outputChannel: vscode.OutputChannel;
-  firstFocus: boolean;
+  static outputChannel = vscode.window.createOutputChannel('ONE-VSCode');
+  static firstFocus: boolean;
 
-  private static logger: Logger|null = null;
-
-  private constructor() {
-    this.outputChannel = vscode.window.createOutputChannel('ONE-VSCode');
-    this.firstFocus = true;
-  }
-
-  public static getInstance(): Logger {
-    if (Logger.logger === null) {
-      Logger.logger = new Logger();
-    }
-
-    return Logger.logger;
-  }
-
-  private checkShow() {
-    if (this.firstFocus) {
-      this.outputChannel.show(false);
-      this.firstFocus = false;
+  private static checkShow() {
+    if (Logger.firstFocus) {
+      Logger.outputChannel.show(false);
+      Logger.firstFocus = false;
     }
   }
 
-  // deprecate. replace to error(), warning(), info, or debug()
-  public outputWithTime(msg: string) {
-    let dateTime = new Date();
-    this.checkShow();
-    this.outputChannel.appendLine('[' + dateTime.toLocaleString() + '] ' + msg);
-  }
-
-  // deprecate. replace to append()
-  public output(msg: string) {
-    this.checkShow();
-    this.outputChannel.append(msg);
-  }
-
-  // deprecate
-  public outputLine(msg: string) {
-    this.checkShow();
-    this.outputChannel.appendLine(msg);
-  }
-
-  private log(severity: string, tag: string, msg: string) {
+  private static log(severity: string, tag: string, msg: string) {
     const time = new Date().toLocaleString();
 
-    this.checkShow();
-    this.outputChannel.appendLine(`[${time}][${tag}][${severity}] ${msg}`);
+    Logger.checkShow();
+    Logger.outputChannel.appendLine(`[${time}][${tag}][${severity}] ${msg}`);
   }
 
   /**
    * @brief Print log in '[time][tag][severity] msg' format where severity = 'err'
    */
-  public error(tag: string, msg: string) {
+  public static error(tag: string, msg: string) {
     const severity = 'err';
-    this.log(severity, tag, msg);
+    Logger.log(severity, tag, msg);
   }
 
   /**
    * @brief Print log in '[time][tag][severity] msg' format where severity = 'warn'
    */
-  public warn(tag: string, msg: string) {
+  public static warn(tag: string, msg: string) {
     const severity = 'warn';
-    this.log(severity, tag, msg);
+    Logger.log(severity, tag, msg);
   }
 
   /**
    * @brief Print log in '[time][tag][severity] msg' format where severity = 'info'
    */
-  public info(tag: string, msg: string) {
+  public static info(tag: string, msg: string) {
     const severity = 'info';
-    this.log(severity, tag, msg);
+    Logger.log(severity, tag, msg);
   }
 
   /**
    * @brief Print log in '[time][tag][severity] msg' format where severity = 'debug'
    */
-  public debug(tag: string, msg: string) {
+  public static debug(tag: string, msg: string) {
     const severity = 'debug';
-    this.log(severity, tag, msg);
+    Logger.log(severity, tag, msg);
+  }
+
+  /**
+   * @brief Print msg and a line feed character without adding '[time][tag][severity]'
+   * @detail When log is long and need to be splitted into many chunks, append() could be used
+   *         after the first chunk.
+   */
+  public static appendLine(msg: string) {
+    Logger.checkShow();
+    Logger.outputChannel.appendLine(msg);
   }
 
   /**
@@ -105,8 +81,8 @@ export class Logger {
    * @detail When log is long and need to be splitted into many chunks, append() could be used
    *         after the first chunk.
    */
-  public append(msg: string) {
-    this.checkShow();
-    this.outputChannel.appendLine(msg);
+  public static append(msg: string) {
+    Logger.checkShow();
+    Logger.outputChannel.append(msg);
   }
 }

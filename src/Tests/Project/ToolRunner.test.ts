@@ -19,16 +19,14 @@ import {join} from 'path';
 
 import {ToolRunner} from '../../Project/ToolRunner';
 import {obtainWorkspaceRoot} from '../../Utils/Helpers';
-import {Logger} from '../../Utils/Logger';
 import {MockJob} from '../MockJob';
 
 suite('Project', function() {
   suite('ToolRunner', function() {
-    const logger = Logger.getInstance();
     suite('@Use-onecc', function() {
       suite('#getOneccPath()', function() {
         test('returns onecc path as string', function() {
-          let toolRunner = new ToolRunner(logger);
+          let toolRunner = new ToolRunner();
           let actual = toolRunner.getOneccPath();  // string or undefined
           // Note. `onecc` path could be changed by user
         assert.isTrue((actual === '/usr/share/one/bin/onecc') ||
@@ -38,7 +36,7 @@ suite('Project', function() {
       suite('#getRunner()', function() {
         test('returns runner as Promise<string>', function(done) {
           let job = new MockJob('mockup');
-          let toolRunner = new ToolRunner(logger);
+          let toolRunner = new ToolRunner();
           const oneccPath = toolRunner.getOneccPath();
           // oneccPath could be string or undefined. Avoid compiling error
           if (oneccPath === undefined) {
