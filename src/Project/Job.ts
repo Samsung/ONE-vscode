@@ -16,6 +16,10 @@
 
 import {ToolArgs} from './ToolArgs';
 
+export type JobCallback = {
+  (): void;
+};
+
 export interface Job {
   jobType: Job.Type;
   name: string;
@@ -23,8 +27,8 @@ export interface Job {
   tool: string;
   toolArgs: ToolArgs;
   root: boolean;
-  successCallback?: () => void;
-  failureCallback?: () => void;
+  successCallback?: JobCallback;
+  failureCallback?: JobCallback;
 }
 // TODO
 // In the future, Job will be changed like
