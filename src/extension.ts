@@ -31,15 +31,15 @@ import {MondrianEditorProvider} from './Mondrian/MondrianEditor';
 import {OneExplorer} from './OneExplorer/OneExplorer';
 import {Project} from './Project';
 import {ToolchainProvider} from './Toolchain/ToolchainProvider';
-import {Utils} from './Utils';
+import {Logger} from './Utils/Logger';
 import {showInstallQuickInput} from './View/InstallQuickInput';
 
 export function activate(context: vscode.ExtensionContext) {
-  const logger = Utils.Logger.getInstance();
+  const tag = 'activate';
 
-  logger.outputWithTime('one-vscode activate OK');
+  Logger.info(tag, 'one-vscode activate OK');
 
-  new OneExplorer(context, logger);
+  new OneExplorer(context);
 
   // ONE view
   const toolchainProvier = new ToolchainProvider();
@@ -69,7 +69,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(CfgEditorPanel.register(context));
 
-  let projectBuilder = new Project.Builder(logger);
+  let projectBuilder = new Project.Builder();
 
   projectBuilder.init();
 

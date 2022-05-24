@@ -15,21 +15,18 @@
  */
 
 import {Balloon} from '../Utils/Balloon';
-import {Logger} from '../Utils/Logger';
 import {Job} from './Job';
 import {JobRunner} from './JobRunner';
 import {WorkJobs} from './WorkJobs';
 
 export class WorkFlow {
-  logger: Logger;
   workspace: string = '';
   jobs: WorkJobs;
   jobRunner: JobRunner;
 
-  constructor(logger: Logger) {
-    this.logger = logger;
+  constructor() {
     this.jobs = new WorkJobs();
-    this.jobRunner = new JobRunner(this.logger);
+    this.jobRunner = new JobRunner();
   }
 
   private validateJobs(): boolean {

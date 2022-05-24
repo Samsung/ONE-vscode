@@ -27,7 +27,6 @@ import {JobUninstall} from '../Project/JobUninstall';
 import {WorkFlow} from '../Project/WorkFlow';
 import {Balloon} from '../Utils/Balloon';
 import * as helpers from '../Utils/Helpers';
-import {Logger} from '../Utils/Logger';
 import {showPasswordQuickInput} from '../View/PasswordQuickInput';
 
 class Env implements BuilderJob {
@@ -35,8 +34,8 @@ class Env implements BuilderJob {
   currentWorkspace: string = '';
   isPrepared: boolean = false;
 
-  constructor(l: Logger) {
-    this.workFlow = new WorkFlow(l);
+  constructor() {
+    this.workFlow = new WorkFlow();
   }
 
   public init() {
@@ -98,8 +97,8 @@ class ToolchainEnv extends Env {
   // TODO(jyoung): Support multiple installed toolchains
   compiler: Compiler;
 
-  constructor(l: Logger, compiler: Compiler) {
-    super(l);
+  constructor(compiler: Compiler) {
+    super();
     this.compiler = compiler;
     this.init();
   }

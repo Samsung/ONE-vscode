@@ -20,7 +20,6 @@ import {CompilerBase} from '../../Backend/Compiler';
 import {ToolchainInfo, Toolchains} from '../../Backend/Toolchain';
 import {DebianToolchain} from '../../Backend/ToolchainImpl/DebianToolchain';
 import {ToolchainEnv} from '../../Toolchain/ToolchainEnv';
-import {Logger} from '../../Utils/Logger';
 
 const mocCompilerType: string = 'test';
 
@@ -62,19 +61,18 @@ class MockCompiler extends CompilerBase {
 suite('Toolchain', function() {
   suite('ToolchainEnv', function() {
     const K_CLEANUP: string = 'cleanup';
-    const logger = Logger.getInstance();
     const compiler = new MockCompiler();
 
     suite('#constructor()', function() {
       test('is constructed with params', function() {
-        let env = new ToolchainEnv(logger, compiler);
+        let env = new ToolchainEnv(compiler);
         assert.strictEqual(env.compiler, compiler);
       });
     });
 
     suite('#getToolchainType()', function() {
       test('get toolchain types', function() {
-        let env = new ToolchainEnv(logger, compiler);
+        let env = new ToolchainEnv(compiler);
         const types = env.getToolchainTypes();
         assert.deepEqual(types, compiler.getToolchainTypes());
       });
@@ -82,7 +80,7 @@ suite('Toolchain', function() {
 
     suite('#listAvailable()', function() {
       test('lists available toolchains', function() {
-        let env = new ToolchainEnv(logger, compiler);
+        let env = new ToolchainEnv(compiler);
         const types = env.getToolchainTypes();
         let toolchains = env.listAvailable(types[0], 0, 1);
         assert.deepEqual(toolchains, [compiler.availableToolchain]);
@@ -91,7 +89,7 @@ suite('Toolchain', function() {
 
     suite('#listInstalled()', function() {
       test('lists installed toolchain', function() {
-        let env = new ToolchainEnv(logger, compiler);
+        let env = new ToolchainEnv(compiler);
         let toolchains = env.listInstalled();
         assert.deepEqual(toolchains, [compiler.installedToolchain]);
       });
@@ -103,7 +101,7 @@ suite('Toolchain', function() {
     // suite('@Use-onecc', function() {
     //   suite('#install()', function() {
     //     test('installes the toolchain', function(done) {
-    //       let env = new ToolchainEnv(logger, compiler);
+    //       let env = new ToolchainEnv(compiler);
     //       env.install(compiler.availableToolchain);
     //       env.workFlow.jobRunner.on(K_CLEANUP, function() {
     //         assert.notEqual(env.installed, undefined);
@@ -116,7 +114,7 @@ suite('Toolchain', function() {
 
     //   suite('#uninstall()', function() {
     //     test('uninstalles the toolchain', function(done) {
-    //       let env = new ToolchainEnv(logger, compiler);
+    //       let env = new ToolchainEnv(compiler);
     //       env.uninstall(compiler.installedToolchain);
     //       env.workFlow.jobRunner.on(K_CLEANUP, function() {
     //         assert.equal(env.installed, undefined);

@@ -25,35 +25,32 @@ const which = require('which');
 const K_DATA: string = 'data';
 const K_EXIT: string = 'exit';
 
-export class ToolRunner {
-  logger: Logger;
 
-  constructor(l: Logger) {
-    this.logger = l;
-  }
+export class ToolRunner {
+  tag = this.constructor.name;  // logging tag
 
   private handlePromise(
       resolve: (value: string|PromiseLike<string>) => void,
       reject: (value: string|PromiseLike<string>) => void, cmd: cp.ChildProcessWithoutNullStreams) {
     // stdout
     cmd.stdout.on(K_DATA, (data: any) => {
-      this.logger.output(data.toString());
+      Logger.append(data.toString());
     });
     // stderr
     cmd.stderr.on(K_DATA, (data: any) => {
-      this.logger.output(data.toString());
+      Logger.append(data.toString());
     });
 
     cmd.on(K_EXIT, (code: any) => {
       let codestr = code.toString();
       console.log('child process exited with code ' + codestr);
       if (codestr === '0') {
-        this.logger.outputWithTime('Build Success.');
-        this.logger.outputLine('');
+        Logger.info(this.tag, 'Build Success.');
+        Logger.appendLine('');
         resolve(codestr);
       } else {
-        this.logger.outputWithTime('Build Failed:' + codestr);
-        this.logger.outputLine('');
+        Logger.info(this.tag, 'Build Failed:' + codestr);
+        Logger.appendLine('');
         let errorMsg = 'Failed with exit code: ' + codestr;
         reject(errorMsg);
       }
@@ -85,7 +82,7 @@ export class ToolRunner {
 
   public getRunner(name: string, tool: string, toolargs: ToolArgs, path: string, root?: boolean) {
     return new Promise<string>((resolve, reject) => {
-      this.logger.outputWithTime('Running: ' + name);
+      Logger.info(this.tag, 'Running: ' + name);
       let cmd = undefined;
       if (root) {
         // NOTE
