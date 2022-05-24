@@ -18,7 +18,8 @@ const assert = require('assert');
 import {Backend} from './API';
 import {gToolchainEnvMap, ToolchainEnv} from '../Toolchain/ToolchainEnv';
 import {Logger} from '../Utils/Logger';
-import {ExecutionEnv, HWExecutionEnv, SWExecutionEnv} from '../Execute/ExecutionEnv';
+import {ExecutionEnv, ExecutionEnvBase} from '../Execute/ExecutionEnv';
+import {ToolchainExecutorEnv} from '../Execute/ToolchainExecutorEnv';
 
 /**
  * Interface of backend map
@@ -57,12 +58,12 @@ function backendRegistrationApi() {
       // Executor will handled as a Simulator.
       const executor = backend.executor();
       if (executor) {
-        globalExecutionEnvMap[backend.name()] = new SWExecutionEnv(backend.name(), executor);
+        globalExecutionEnvMap[backend.name()] = new ToolchainExecutorEnv(backend.name(), executor);
       }
       console.log(`Backend ${backendName} was registered into ONE-vscode.`);
     },
     // This will register case 2, ExecutionEnv with specific HW and specific SW(Device)
-    registerHWExecutionEnv(execEnv: HWExecutionEnv) {
+    registerExecutionEnv(execEnv: ExecutionEnvBase) {
       const execEnvName = execEnv.name();
       assert(execEnvName.length > 0);
       globalExecutionEnvMap[execEnvName] = execEnv;
