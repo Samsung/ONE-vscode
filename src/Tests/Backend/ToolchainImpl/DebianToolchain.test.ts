@@ -58,7 +58,7 @@ suite('Backend', function() {
         test('', function() {
           let dt = new DebianToolchain(info);
           let cmd = dt.install();
-          const expectedStr = 'apt-get install ' + name + '=' + version.str();
+          const expectedStr = `sudo aptitude install ${name}=${version.str()} -q -y`;
           assert.strictEqual(cmd.str(), expectedStr);
         });
       });
@@ -67,7 +67,7 @@ suite('Backend', function() {
         test('', function() {
           let dt = new DebianToolchain(info);
           let cmd = dt.uninstall();
-          const expectedStr = 'apt-get purge ' + name + '=' + version.str();
+          const expectedStr = 'sudo apt-get purge ' + name + '=' + version.str();
           assert.strictEqual(cmd.str(), expectedStr);
         });
       });
@@ -76,7 +76,7 @@ suite('Backend', function() {
         test('', function() {
           let dt = new DebianToolchain(info);
           let cmd = dt.installed();
-          const expectedStr = 'dpkg-query --show ' + name + '=' + version.str();
+          const expectedStr = `dpkg-query --show ${name}=${version.str()} && echo $?`;
           assert.strictEqual(cmd.str(), expectedStr);
         });
       });
