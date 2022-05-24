@@ -51,9 +51,7 @@ export function activate(context: vscode.ExtensionContext) {
     showInstallQuickInput(context);
   }));
   context.subscriptions.push(
-      vscode.commands.registerCommand('onevscode.uninstall-toolchain', () => {
-        console.log('uninstall-toolchain: NYI');
-      }));
+      vscode.commands.registerCommand('onevscode.uninstall-toolchain', (node) => toolchainProvier.uninstall(node)));
 
   // Target Device view
   let registerDevice = vscode.commands.registerCommand('onevscode.register-device', () => {
