@@ -46,8 +46,25 @@ import Mocha from 'mocha';
 import * as path from 'path';
 
 export function run(): Promise<void> {
-  // fgrep: 'str' if we need to filter
-  const mocha = new Mocha({ui: 'tdd', color: true});
+  // FOR DEVELOPERS,
+  //
+  // To run a selective unit test, add a fgrep option below.
+  // Mocha will run the tests containing the string given.
+  // Don't forget to run `npm compile` before `npm run unittest`
+  // once you have changed 'testFilter'
+  // to update the list.
+  //
+  // EXAMPLE
+  //
+  // (1) Filter with a test suite name
+  // const testFilter = "Backend";
+  // const testFilter = "createConfigObj";
+  //
+  // (2) Filter with a test name
+  // const testFilter = "Returns parsed object";
+
+  const testFilter = '';
+  const mocha = new Mocha({fgrep: testFilter, ui: 'tdd', color: true});
 
   const testsRoot = path.resolve(__dirname, '.');
 
