@@ -120,27 +120,33 @@ class ToolchainEnv extends Env {
         });
   }
 
-  install(toolchain: Toolchain) {
+  install(toolchain: Toolchain, successCallback?: () => void, failedCallback?: () => void) {
     let cmd = toolchain.install();
     let job = new JobInstall(cmd);
+    job.successCallback = successCallback;
+    job.failureCallback = failedCallback;
     this.clearJobs();
     this.addJob(job);
     this.finishAdd();
     this.build();
   }
 
-  uninstall(toolchain: Toolchain) {
+  uninstall(toolchain: Toolchain, successCallback?: () => void, failedCallback?: () => void) {
     let cmd = toolchain.uninstall();
     let job = new JobUninstall(cmd);
+    job.successCallback = successCallback;
+    job.failureCallback = failedCallback;
     this.clearJobs();
     this.addJob(job);
     this.finishAdd();
     this.build();
   }
 
-  compile(cfg: string, toolchain: Toolchain) {
+  compile(cfg: string, toolchain: Toolchain, successCallback?: () => void, failedCallback?: () => void) {
     let cmd = this.compiler.compile(cfg);
     let job = new JobConfig(cmd);
+    job.successCallback = successCallback;
+    job.failureCallback = failedCallback;
     this.clearJobs();
     this.addJob(job);
     this.finishAdd();
