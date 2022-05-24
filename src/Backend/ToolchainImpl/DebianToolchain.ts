@@ -60,14 +60,27 @@ class DebianToolchain implements Toolchain {
 
   // impl of Toolchain
   install(): Command {
+    // NOTE (Issue #30)
+    // Install command uses `aptitude` tool because this tool resolves
+    // package dependency issues automatically unlike `apt-get`.
+    //
+    // Command:
+    // $ aptitude install triv2-toolchain-latest=1.1.0~22050320 -q -y
+    //
+    // According to man(8) aptitude
+    // -q: suppress all incremental progress indicators
+    // -y: assume that the user entered "yes"
     this.prepare();
-    let cmd = new Command('apt-get');
+    let cmd = new Command('aptitude');
     cmd.push('install');
     let pkg: string = this.info.name;
     if (this.info.version !== undefined) {
       pkg = `${pkg}=${this.info.version.str()}`;
     }
     cmd.push(pkg);
+    cmd.push('-q');
+    cmd.push('-y');
+    cmd.setRoot();
     return cmd;
   }
   uninstall(): Command {
@@ -79,6 +92,7 @@ class DebianToolchain implements Toolchain {
       pkg = `${pkg}=${this.info.version.str()}`;
     }
     cmd.push(pkg);
+    cmd.setRoot();
     return cmd;
   }
   installed(): Command {
@@ -90,6 +104,8 @@ class DebianToolchain implements Toolchain {
       pkg = `${pkg}=${this.info.version.str()}`;
     }
     cmd.push(pkg);
+    cmd.push('&&');
+    cmd.push('echo $?');
     return cmd;
   }
 };
