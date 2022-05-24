@@ -19,7 +19,7 @@ import {platform} from 'os';
 import {Command} from '../../Backend/Command';
 import {ExecutorBase} from '../../Backend/Executor';
 import {Toolchains} from '../../Backend/Toolchain';
-import {ToolchainExecutorEnv} from '../../Execute/ExecutionEnv';
+import {SWExecutionEnv} from '../../Execute/ExecutionEnv';
 
 class MockExecutor extends ExecutorBase {
   getExecutableExt(): string[] {
@@ -45,30 +45,33 @@ suite('ExecutionEnv', function() {
 
   suite('#constructor()', function() {
     test('is constructed with params', function() {
-      let env = new ToolchainExecutorEnv('mock-up', executor);
+      let env = new SWExecutionEnv('mock-up', executor);
       assert.equal(env.envName, 'mock-up');
-      assert.strictEqual(env.simulator, executor);
+      assert.strictEqual(env.executor, executor);
     });
   });
+
   suite('#getHost()', function() {
     test('get host type', function() {
-      let env = new ToolchainExecutorEnv('mock-up', executor);
+      let env = new SWExecutionEnv('mock-up', executor);
       const host = env.host();
       assert.equal(platform(), host);
     });
   });
+
   //   isAvailable() need toolchain or backend about MockExecutor
   //   getEnableEnvList() need toolchain or backend about MockExecutor
   suite('#listExecutableExt()', function() {
     test('get Executable suffix', function() {
-      let env = new ToolchainExecutorEnv('mock-up', executor);
+      let env = new SWExecutionEnv('mock-up', executor);
       const ext = env.getListExecutableExt();
       assert.deepEqual(ext, executor.getExecutableExt());
     });
   });
+
   suite('#getInferenceCmd()', function() {
     test('get Inference command for certain model', function() {
-      let env = new ToolchainExecutorEnv('mock-up', executor);
+      let env = new SWExecutionEnv('mock-up', executor);
       const cmd = env.getInferenceCmd('test.tflite');
       assert.deepEqual(cmd, executor.runInference('test.tflite'));
     });

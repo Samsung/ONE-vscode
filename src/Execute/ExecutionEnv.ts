@@ -14,41 +14,52 @@
  * limitations under the License.
  */
 
-import {platform} from 'os';
+import {arch} from 'os';
 import {Command} from '../Backend/Command';
 import {Executor} from '../Backend/Executor';
 import {gToolchainEnvMap} from '../Toolchain/ToolchainEnv';
 
-// Specify Device with 'name' on `getEnableEnvList()` and `ExecutionEnv`.
+// Specify with 'name' on `getEnableEnvList()` and `ExecutionEnv`.
 interface ExecutionEnv {
   name(): string;
   host(): string;
-  getEnableEnvList(): string[];
-  isAvailable(name: string): boolean;
+  getConnectableEnv(): string[];
+  isAvailable(execEnvName: string): boolean;
   getListExecutableExt(): string[];
-  getInferenceCmd(model_path: string, _options?: string[]): Command;
+  getInferenceCmd(modelPath: string, options?: string[]): Command;
 }
 
-class ToolchainExecutorEnv implements ExecutionEnv {
+class SWExecutionEnv implements ExecutionEnv {
   envName: string;  // Specified name for Each Env
-  simulator: Executor;
-  constructor(backendName: string, sim: Executor) {
+  executor: Executor;
+  constructor(backendName: string, exec: Executor) {
     this.envName = backendName;
-    this.simulator = sim;
+    this.executor = exec;
   }
+
+  // This function will return a name of SWExcutorEnv based on backend name.
   name(): string {
     return this.envName;
   }
+
+  // This function will return execution host infomation.
+  // on SWExecutionEnv, it will return current host information.
   host(): string {
-    return platform();
+    return arch();
   }
+
+  // This function will check certain SWExecutor installed.
+  // `name` will be unique name for certain Env.
   isAvailable(name: string): boolean {
     if (gToolchainEnvMap[this.envName].listInstalled()) {
-      return this.getEnableEnvList().includes(name);
+      return this.getConnectableEnv().includes(name);
     }
     return false;
   }
-  getEnableEnvList(): string[] {
+
+  // this function will return list of Env that can connect on one-vscode
+  // if this comes from toolchain, currently only one executorEnv for each toolchain
+  getConnectableEnv(): string[] {
     // TODO: if multiple Toolchain installed on
     // we need to fix this to show all installed Executors
     if (gToolchainEnvMap[this.envName].listInstalled()) {
@@ -56,38 +67,42 @@ class ToolchainExecutorEnv implements ExecutionEnv {
     }
     return [];
   }
+
+  // This function will return ext list that executor could run.
   getListExecutableExt(): string[] {
-    return this.simulator.getExecutableExt();
+    return this.executor.getExecutableExt();
   }
-  getInferenceCmd(modelPath: string, _options?: string[]): Command {
-    return this.simulator.runInference(modelPath);
+
+  // This funcion will return inference `Command` with model and options.
+  getInferenceCmd(modelPath: string, options?: string[]): Command {
+    return this.executor.runInference(modelPath, options);
   }
 }
 
-class TizenEnv implements ExecutionEnv {
-  envName: string;
-
-  constructor(envName: string) {
-    this.envName = envName;
-  }
+class HWExecutionEnv implements ExecutionEnv {
   name(): string {
-    return this.envName;
+    throw new Error('Define Env name.');
   }
+
   host(): string {
-    return 'tizen';
+    throw new Error('Define host information that model will run');
   }
-  isAvailable(name: string): boolean {
-    throw new Error('Method not implemented.');
+
+  getConnectableEnv(): string[] {
+    throw new Error('Define List of Device that could be connected');
   }
-  getEnableEnvList(): string[] {
-    throw new Error('Method not implemented.');
+
+  isAvailable(execEnvName: string): boolean {
+    throw new Error('Check specific ExecutionEnv available to use');
   }
+
   getListExecutableExt(): string[] {
-    throw new Error('Method not implemented.');
+    throw new Error('Define string array that contain model ext name ');
   }
-  getInferenceCmd(modelPath: string, _options?: string[]): Command {
-    throw new Error('Method not implemented.');
+
+  getInferenceCmd(modelPath: string, options?: string[]|undefined): Command {
+    throw new Error('Define Command that run model on device with model path');
   }
 }
 
-export {ExecutionEnv, ToolchainExecutorEnv, TizenEnv};
+export {ExecutionEnv, SWExecutionEnv, HWExecutionEnv};

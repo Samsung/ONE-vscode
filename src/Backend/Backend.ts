@@ -18,7 +18,7 @@ const assert = require('assert');
 import {Backend} from './API';
 import {gToolchainEnvMap, ToolchainEnv} from '../Toolchain/ToolchainEnv';
 import {Logger} from '../Utils/Logger';
-import {ExecutionEnv, ToolchainExecutorEnv} from '../Execute/ExecutionEnv';
+import {ExecutionEnv, HWExecutionEnv, SWExecutionEnv} from '../Execute/ExecutionEnv';
 
 /**
  * Interface of backend map
@@ -35,9 +35,12 @@ interface ExecutionEnvMap {
 // List of backend extensions registered
 let globalBackendMap: BackendMap = {};
 
-// As Execution Env will Contains components below
-// 1. ExecutionEnv with Backend Executor
-// 2. ExecutionEnv with specific HW and specific SW
+// ExecutionEnv is a interface for model to execute on.
+// We define this as a two type
+// 1. SWExecutorEnv
+//    ExecutorEnv that comes from Backend itself.
+// 2. HWExecutionEnv
+//    ExecutorEnv that Backend provider define wiht specific HW
 let globalExecutionEnvMap: ExecutionEnvMap = {};
 
 function backendRegistrationApi() {
@@ -54,12 +57,12 @@ function backendRegistrationApi() {
       // Executor will handled as a Simulator.
       const executor = backend.executor();
       if (executor) {
-        globalExecutionEnvMap[backend.name()] = new ToolchainExecutorEnv(backend.name(), executor);
+        globalExecutionEnvMap[backend.name()] = new SWExecutionEnv(backend.name(), executor);
       }
       console.log(`Backend ${backendName} was registered into ONE-vscode.`);
     },
     // This will register case 2, ExecutionEnv with specific HW and specific SW(Device)
-    registerExecutionEnv(execEnv: ExecutionEnv) {
+    registerHWExecutionEnv(execEnv: HWExecutionEnv) {
       const execEnvName = execEnv.name();
       assert(execEnvName.length > 0);
       globalExecutionEnvMap[execEnvName] = execEnv;
