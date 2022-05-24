@@ -15,11 +15,13 @@
  */
 
 import * as vscode from 'vscode';
+
 import {Toolchain} from '../Backend/Toolchain';
+import {JobCallback} from '../Project/Job';
 import {gToolchainEnvMap, ToolchainEnv} from '../Toolchain/ToolchainEnv';
 import {MultiStepInput} from '../Utils/external/MultiStepInput';
 
-export async function showInstallQuickInput(context: vscode.ExtensionContext) {
+export async function showInstallQuickInput() {
   interface State {
     title: string;
     step: number;
@@ -107,5 +109,14 @@ export async function showInstallQuickInput(context: vscode.ExtensionContext) {
   const state = await collectInputs();
   console.log(
       `Selected backend: ${state.backend.label}-${state.toolchainType}-${state.version.label}`);
-  state.toolchainEnv.install(state.toolchain);
+
+  return new Promise((resolve, reject) => {
+    const success: JobCallback = function() {
+      resolve(state.toolchain);
+    };
+    const failed: JobCallback = function() {
+      reject();
+    };
+    state.toolchainEnv.install(state.toolchain, success, failed);
+  });
 }

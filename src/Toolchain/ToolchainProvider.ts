@@ -15,7 +15,10 @@
  */
 
 import * as vscode from 'vscode';
+
 import {Toolchain} from '../Backend/Toolchain';
+import {showInstallQuickInput} from '../View/InstallQuickInput';
+
 import {gToolchainEnvMap} from './ToolchainEnv';
 
 enum NodeType {
@@ -93,6 +96,12 @@ export class ToolchainProvider implements vscode.TreeDataProvider<ToolchainNode>
 
   refresh() {
     this._onDidChangeTreeData.fire();
+  }
+
+  install() {
+    showInstallQuickInput().then(() => {
+      this.refresh();
+    });
   }
 
   uninstall(node: ToolchainNode) {

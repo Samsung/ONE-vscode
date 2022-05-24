@@ -32,7 +32,6 @@ import {OneExplorer} from './OneExplorer/OneExplorer';
 import {Project} from './Project';
 import {ToolchainProvider} from './Toolchain/ToolchainProvider';
 import {Logger} from './Utils/Logger';
-import {showInstallQuickInput} from './View/InstallQuickInput';
 
 export function activate(context: vscode.ExtensionContext) {
   const tag = 'activate';
@@ -47,9 +46,8 @@ export function activate(context: vscode.ExtensionContext) {
       vscode.window.registerTreeDataProvider('ToolchainView', toolchainProvier));
   context.subscriptions.push(vscode.commands.registerCommand(
       'onevscode.refresh-toolchain', () => toolchainProvier.refresh()));
-  context.subscriptions.push(vscode.commands.registerCommand('onevscode.install-toolchain', () => {
-    showInstallQuickInput(context);
-  }));
+  context.subscriptions.push(vscode.commands.registerCommand(
+      'onevscode.install-toolchain', () => toolchainProvier.install()));
   context.subscriptions.push(vscode.commands.registerCommand(
       'onevscode.uninstall-toolchain', (node) => toolchainProvier.uninstall(node)));
 
