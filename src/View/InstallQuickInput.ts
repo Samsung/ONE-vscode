@@ -61,7 +61,7 @@ export async function showInstallQuickInput() {
     const types = state.toolchainEnv.getToolchainTypes();
     if (types.length === 1) {
       state.toolchainType = types[0];
-    } else if (types.length > 1) {
+    } else {
       const typeGroups: vscode.QuickPickItem[] = types.map((label) => ({label}));
       const type = await input.showQuickPick({
         title,
