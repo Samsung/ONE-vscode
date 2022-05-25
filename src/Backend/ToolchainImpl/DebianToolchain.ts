@@ -84,6 +84,15 @@ class DebianToolchain implements Toolchain {
     return cmd;
   }
   uninstall(): Command {
+    // NOTE
+    // Uninstall command uses `apt-get` tool.
+    //
+    // Command:
+    // $ apt-get purge triv2-toolchain-latest=1.1.0~22050320 -q -y
+    //
+    // According to man(8) apt-get
+    // -q: Quiet; produces output suitable for logging, omitting progress indicators.
+    // -y: Automatic yes to prompts
     this.prepare();
     let cmd = new Command('apt-get');
     cmd.push('purge');
@@ -92,6 +101,8 @@ class DebianToolchain implements Toolchain {
       pkg = `${pkg}=${this.info.version.str()}`;
     }
     cmd.push(pkg);
+    cmd.push('-q');
+    cmd.push('-y');
     cmd.setRoot();
     return cmd;
   }
