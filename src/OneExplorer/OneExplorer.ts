@@ -23,7 +23,9 @@ import * as vscode from 'vscode';
 import {CfgEditorPanel} from '../CfgEditor/CfgEditorPanel';
 import {ToolArgs} from '../Project/ToolArgs';
 import {ToolRunner} from '../Project/ToolRunner';
-import {obtainWorkspaceRoot} from '../Utils/Helpers';
+import {obtainWorkspaceRoot, RealPath} from '../Utils/Helpers';
+import {Logger} from '../Utils/Logger';
+import {ConfigObj} from './ConfigObject';
 
 /**
  * Read an ini file
@@ -360,26 +362,62 @@ input_path=${modelName}.${extName}
   }
 
   /**
-   * Search .cfg files in the same directory
+   * Search corresponding .cfg files inside the workspace
+   * for the given baseModelNode
+   *
+   * @param baseModelNode a Node of the base model
    */
-  private searchPairConfig(node: Node) {
-    console.assert(node.type === NodeType.baseModel);
+  private searchPairConfig(baseModelNode: Node) {
+    console.assert(baseModelNode.type === NodeType.baseModel);
 
-    const files = fs.readdirSync(node.parent);
+    /**
+     * Returns every file inside directory
+     * @todo Check soft link
+     * @param root
+     * @returns
+     */
+    const readdirSyncRecursive = (root: string): string[] => {
+      if (fs.statSync(root).isFile()) {
+        return [root];
+      }
 
-    for (const fname of files) {
-      const fpath = path.join(node.parent, fname);
-      const fstat = fs.statSync(fpath);
+      let children: string[] = [];
+      if (fs.statSync(root).isDirectory()) {
+        fs.readdirSync(root).forEach(val => {
+          children = children.concat(readdirSyncRecursive(path.join(root, val)));
+        });
+      }
+      return children;
+    };
 
-      if (fstat.isFile() && fname.endsWith('.cfg')) {
-        const parsedInputPath = this.parseInputPath(fpath, node.path);
-        if (parsedInputPath) {
-          const fullInputPath = path.join(node.parent, parsedInputPath);
-          if (this.comparePath(fullInputPath, node.path)) {
-            const pairNode = new Node(NodeType.config, [], vscode.Uri.file(fpath));
-            this.searchChildModels(pairNode);
-            node.childNodes.push(pairNode);
-          }
+    // Get the list of all the cfg files inside workspace root
+    const confs =
+        readdirSyncRecursive(this.workspaceRoot!.fsPath).filter(val => val.endsWith('.cfg'));
+
+    for (const conf of confs) {
+      const parsedObj = ConfigObj.parse(vscode.Uri.file(conf));
+      if (!parsedObj) {
+        Logger.info('OneExplorer', `Failed to open file ${conf}`);
+        continue;
+      }
+
+      const {baseModels, derivedModels} = parsedObj;
+
+      for (const baseModel of baseModels) {
+        if (this.comparePath(baseModel.fsPath, baseModelNode.path)) {
+          const pairNode = new Node(NodeType.config, [], vscode.Uri.file(conf));
+          console.log(`DerivedModels : ${derivedModels}`);
+
+          derivedModels ?.forEach(derivedModel => {
+                           // Display only the existing node
+                           const realPath = RealPath.createRealPath(derivedModel.fsPath);
+                           if (realPath) {
+                             pairNode.childNodes.push(new Node(
+                                 NodeType.derivedModel, [], vscode.Uri.file(realPath.absPath)));
+                           }
+                         });
+
+          baseModelNode.childNodes.push(pairNode);
         }
       }
     }
