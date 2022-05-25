@@ -534,7 +534,7 @@ class OneccRunner extends EventEmitter {
         vscode.window.showWarningMessage(`Error: NYI`);
       });
 
-      const p = new Promise<void>(resolve => {
+      const p = new Promise<void>((resolve, reject) => {
         runnerPromise
             .then(value => {
               resolve();
@@ -543,6 +543,7 @@ class OneccRunner extends EventEmitter {
             .catch(value => {
               vscode.window.showWarningMessage(
                   `Error occured while running: 'onecc --config ${this.cfgUri.fsPath}'`);
+              reject();
             });
       });
 
