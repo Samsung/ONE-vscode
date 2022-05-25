@@ -107,6 +107,11 @@
         "category": "ONE"
       },
       {
+        "command": "onevscode.rename-on-oneexplorer",
+        "title": "Rename",
+        "category": "ONE"
+      },
+      {
         "command": "onevscode.refresh-toolchain",
         "title": "Refresh",
         "category": "ONE",
@@ -193,6 +198,11 @@
         {
           "command": "onevscode.run-cfg",
           "when": "view == OneExplorerView && viewItem == config",
+          "group": "navigation"
+        },
+        {
+          "command": "onevscode.rename-on-oneexplorer",
+          "when": "view == OneExplorerView && viewItem != directory",
           "group": "navigation"
         },
         {
