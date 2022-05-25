@@ -381,13 +381,13 @@ input_path=${modelName}.${extName}
         return [root];
       }
 
-      let childs: string[] = [];
+      let children: string[] = [];
       if (fs.statSync(root).isDirectory()) {
         fs.readdirSync(root).forEach(val => {
-          childs = childs.concat(readdirSyncRecursive(path.join(root, val)));
+          children = children.concat(readdirSyncRecursive(path.join(root, val)));
         });
       }
-      return childs;
+      return children;
     };
 
     // Get the list of all the cfg files inside workspace root
@@ -398,7 +398,7 @@ input_path=${modelName}.${extName}
       const parsedObj = ConfigObj.parse(vscode.Uri.file(conf));
       if (!parsedObj) {
         Logger.info('OneExplorer', `Failed to open file ${conf}`);
-        return;
+        continue;
       }
 
       const {baseModels, derivedModels} = parsedObj;
