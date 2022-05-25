@@ -150,7 +150,7 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
     let inputModel = path.basename(importTFlite.inputPath);
     importTFlite.name = 'ImportTFlite ' + inputModel;
 
-    console.log('importTFlite = ', importTFlite);
+    Logger.debug(this.tag, 'importTFlite = ', importTFlite);
     this.jobOwner.addJob(importTFlite);
     Logger.info(this.tag, 'Add Import: ' + inputModel);
   }

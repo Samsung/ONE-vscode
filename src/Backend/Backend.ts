@@ -17,6 +17,7 @@
 const assert = require('assert');
 import {Backend} from './API';
 import {gToolchainEnvMap, ToolchainEnv} from '../Toolchain/ToolchainEnv';
+import {Logger} from '../Utils/Logger';
 
 /**
  * Interface of backend map
@@ -30,6 +31,7 @@ interface BackendMap {
 let globalBackendMap: BackendMap = {};
 
 function backendRegistrationApi() {
+  const logTag = 'backendRegistrationApi';
   let registrationAPI = {
     registerBackend(backend: Backend) {
       const backendName = backend.name();
@@ -39,7 +41,7 @@ function backendRegistrationApi() {
       if (compiler) {
         gToolchainEnvMap[backend.name()] = new ToolchainEnv(compiler);
       }
-      console.log(`Backend ${backendName} was registered into ONE-vscode.`);
+      Logger.info(logTag, 'Backend', backendName, 'was registered into ONE-vscode.');
     }
   };
 
