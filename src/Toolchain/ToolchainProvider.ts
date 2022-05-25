@@ -28,6 +28,7 @@ export class ToolchainNode extends vscode.TreeItem {
       public readonly label: string,
       public readonly collapsibleState: vscode.TreeItemCollapsibleState,
       public readonly type: NodeType,
+      public readonly backend?: string,
       public readonly toolchain?: Toolchain,
   ) {
     super(label, collapsibleState);
@@ -35,7 +36,7 @@ export class ToolchainNode extends vscode.TreeItem {
     if (type === NodeType.backend) {
       this.iconPath = new vscode.ThemeIcon('bracket');
     } else if (type === NodeType.toolchain) {
-      if (toolchain === undefined) {
+      if (backend === undefined || toolchain === undefined) {
         throw Error('Invalid ToolchainNode');
       }
       this.iconPath = new vscode.ThemeIcon('circle-filled');
@@ -67,9 +68,10 @@ export class ToolchainProvider implements vscode.TreeDataProvider<ToolchainNode>
   // TODO(jyoung): Refactor deep depth branches
   private getNode(node: ToolchainNode|undefined): ToolchainNode[] {
     const toToolchainNode =
-        (type: NodeType, name: string, toolchain?: Toolchain): ToolchainNode => {
+        (type: NodeType, name: string, backend?: string, toolchain?: Toolchain): ToolchainNode => {
           if (type === NodeType.toolchain) {
-            return new ToolchainNode(name, vscode.TreeItemCollapsibleState.None, type, toolchain);
+            return new ToolchainNode(
+                name, vscode.TreeItemCollapsibleState.None, type, backend, toolchain);
           } else {
             return new ToolchainNode(name, vscode.TreeItemCollapsibleState.Expanded, type);
           }
@@ -82,7 +84,7 @@ export class ToolchainProvider implements vscode.TreeDataProvider<ToolchainNode>
         if (node.label in gToolchainEnvMap) {
           const toolchains = gToolchainEnvMap[node.label].listInstalled();
           return toolchains.filter((t) => t.info.version)
-              .map((t) => toToolchainNode(NodeType.toolchain, t.info.name, t));
+              .map((t) => toToolchainNode(NodeType.toolchain, t.info.name, node.label, t));
         }
       }
     }
@@ -91,5 +93,14 @@ export class ToolchainProvider implements vscode.TreeDataProvider<ToolchainNode>
 
   refresh() {
     this._onDidChangeTreeData.fire();
+  }
+
+  uninstall(node: ToolchainNode) {
+    if (node.backend === undefined || node.toolchain === undefined) {
+      throw Error('Invalid toolchain node');
+    }
+    gToolchainEnvMap[node.backend].uninstall(node.toolchain, (): void => {
+      this.refresh();
+    });
   }
 }
