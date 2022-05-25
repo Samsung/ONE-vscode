@@ -18,7 +18,7 @@ import assert from 'assert';
 
 import {Command} from '../Backend/Command';
 
-import {Job} from './Job';
+import {Job, JobCallback} from './Job';
 import {ToolArgs} from './ToolArgs';
 
 // NOTE: JobBase will be replaced by this
@@ -29,8 +29,8 @@ class JobCommand implements Job {
   tool: string;
   toolArgs: ToolArgs;
   root: boolean;
-  successCallback?: () => void;
-  failureCallback?: () => void;
+  successCallback?: JobCallback;
+  failureCallback?: JobCallback;
 
   constructor(cmd: Command) {
     // should be implemented by child classes

@@ -19,7 +19,7 @@ import {strict as assert} from 'assert';
 import {Compiler} from '../Backend/Compiler';
 import {Toolchain, Toolchains} from '../Backend/Toolchain';
 import {BuilderJob} from '../Project/BuilderJob';
-import {Job} from '../Project/Job';
+import {Job, JobCallback} from '../Project/Job';
 import {JobConfig} from '../Project/JobConfig';
 import {JobInstall} from '../Project/JobInstall';
 import {JobInstalled} from '../Project/JobInstalled';
@@ -119,27 +119,35 @@ class ToolchainEnv extends Env {
         });
   }
 
-  install(toolchain: Toolchain) {
+  install(toolchain: Toolchain, successCallback?: JobCallback, failedCallback?: JobCallback) {
     let cmd = toolchain.install();
     let job = new JobInstall(cmd);
+    job.successCallback = successCallback;
+    job.failureCallback = failedCallback;
     this.clearJobs();
     this.addJob(job);
     this.finishAdd();
     this.build();
   }
 
-  uninstall(toolchain: Toolchain) {
+  uninstall(toolchain: Toolchain, successCallback?: JobCallback, failedCallback?: JobCallback) {
     let cmd = toolchain.uninstall();
     let job = new JobUninstall(cmd);
+    job.successCallback = successCallback;
+    job.failureCallback = failedCallback;
     this.clearJobs();
     this.addJob(job);
     this.finishAdd();
     this.build();
   }
 
-  compile(cfg: string, toolchain: Toolchain) {
+  compile(
+      cfg: string, toolchain: Toolchain, successCallback?: JobCallback,
+      failedCallback?: JobCallback) {
     let cmd = this.compiler.compile(cfg);
     let job = new JobConfig(cmd);
+    job.successCallback = successCallback;
+    job.failureCallback = failedCallback;
     this.clearJobs();
     this.addJob(job);
     this.finishAdd();
