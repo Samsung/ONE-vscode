@@ -39,11 +39,13 @@
 Some part of this code refers to
 https://github.com/microsoft/vscode-extension-samples/blob/2556c82cb333cf65d372bd01ac30c35ea1898a0e/custom-editor-sample/src/catScratchEditor.ts
 */
+import * as ini from 'ini';
 import * as vscode from 'vscode';
 import {getUri} from '../Utils/external/Uri';
 
 export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
   private _disposables: vscode.Disposable[] = [];
+  private _oneConfig: any = undefined;
 
   public static readonly viewType = 'cfg.editor';
 
@@ -60,6 +62,22 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
 
   constructor(private readonly context: vscode.ExtensionContext) {}
 
+  private updateWebview(document: vscode.TextDocument, webviewPanel: vscode.WebviewPanel) {
+    this._oneConfig = ini.parse(document.getText());
+
+    // NOTE 'one-build' will be deprecated.
+    //      Therefore, when only 'one-build' is used, it will be replaced to 'onecc'.
+    if (this._oneConfig['onecc'] === undefined && this._oneConfig['one-build'] !== undefined) {
+      this._oneConfig['onecc'] = ini.parse(ini.stringify(this._oneConfig['one-build']));
+      delete this._oneConfig['one-build'];
+    }
+
+    webviewPanel.webview.postMessage({
+      type: 'displayCfgToEditor',
+      text: ini.parse(document.getText()),
+    });
+  };
+
   public async resolveCustomTextEditor(
       document: vscode.TextDocument, webviewPanel: vscode.WebviewPanel,
       _token: vscode.CancellationToken): Promise<void> {
@@ -70,17 +88,9 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
 
     webviewPanel.webview.html = this._getHtmlForWebview(webviewPanel.webview);
 
-    function updateWebview() {
-      let ini = require('ini');
-      webviewPanel.webview.postMessage({
-        type: 'displayCfgToEditor',
-        text: ini.parse(document.getText()),
-      });
-    };
-
     const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(e => {
       if (e.document.uri.toString() === document.uri.toString()) {
-        updateWebview();
+        this.updateWebview(document, webviewPanel);
       }
     });
 
@@ -108,7 +118,7 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
       }
     });
 
-    updateWebview();
+    this.updateWebview(document, webviewPanel);
   };
 
   // TODO Create separate HTML generator class
