@@ -25,6 +25,7 @@ import {ToolArgs} from '../Project/ToolArgs';
 import {SuccessResult, ToolRunner} from '../Project/ToolRunner';
 import {obtainWorkspaceRoot, RealPath} from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
+
 import {ConfigObj} from './ConfigObject';
 
 /**
@@ -522,8 +523,11 @@ export class OneExplorer {
 //
 
 import {EventEmitter} from 'events';
+import * as cp from 'child_process';
 
 class OneccRunner extends EventEmitter {
+  private logTag = this.constructor.name;
+
   private startRunningOnecc: string = 'START_RUNNING_ONECC';
   private finishedRunningOnecc: string = 'FINISHED_RUNNING_ONECC';
 
