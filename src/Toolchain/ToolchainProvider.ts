@@ -22,81 +22,100 @@ import {JobInstall} from '../Project/JobInstall';
 import {JobUninstall} from '../Project/JobUninstall';
 import {Logger} from '../Utils/Logger';
 import {showInstallQuickInput} from '../View/InstallQuickInput';
-
 import {gToolchainEnvMap} from './ToolchainEnv';
 
-enum NodeType {
-  backend,
-  toolchain,
-}
 
-type ToolchainTreeData = ToolchainNode|undefined|void;
+type ToolchainTreeData = BaseNode|undefined|void;
 
-export class ToolchainNode extends vscode.TreeItem {
+// BaseNode is a wrapper class for vscode.TreeItem
+export class BaseNode extends vscode.TreeItem {
   constructor(
       public readonly label: string,
-      public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-      public readonly type: NodeType,
-      public readonly backend?: string,
-      public readonly toolchain?: Toolchain,
-  ) {
+      public readonly collapsibleState: vscode.TreeItemCollapsibleState) {
     super(label, collapsibleState);
-
-    if (type === NodeType.backend) {
-      this.iconPath = new vscode.ThemeIcon('bracket');
-    } else if (type === NodeType.toolchain) {
-      if (backend === undefined || toolchain === undefined) {
-        throw Error('Invalid ToolchainNode');
-      }
-      this.iconPath = new vscode.ThemeIcon('circle-filled');
-      this.description = toolchain.info.version ?.str();
-      const dependency =
-          toolchain.info.depends ?.map((t) => `${t.name} ${t.version.str()}`).join('\n').toString();
-      this.tooltip = dependency;
-    }
-    this.contextValue = NodeType[type];
   }
 }
 
-export class ToolchainProvider implements vscode.TreeDataProvider<ToolchainNode> {
+// BackendNode expresses a backend for a group of toolchains
+// However, BackendNode doesn't have dependency ToolchainNode directly
+export class BackendNode extends BaseNode {
+  constructor(public readonly label: string) {
+    super(label, vscode.TreeItemCollapsibleState.Expanded);
+    this.iconPath = new vscode.ThemeIcon('bracket');
+    this.contextValue = 'backend';
+  }
+}
+
+// ToolchainNode expresses a toolchain from a backend
+// Toolchain doesn't have dependency BackendNode directly but can know its backend name
+export class ToolchainNode extends BaseNode {
+  readonly backendName: string;
+
+  constructor(
+      public readonly label: string, public readonly backend: string,
+      public readonly toolchain: Toolchain) {
+    super(label, vscode.TreeItemCollapsibleState.None);
+    this.iconPath = new vscode.ThemeIcon('circle-filled');
+    this.description = toolchain.info.version ?.str();
+    const dependency =
+        toolchain.info.depends ?.map((t) => `${t.name} ${t.version.str()}`).join('\n').toString();
+    this.tooltip = dependency;
+    this.contextValue = 'toolchain';
+    this.backendName = backend;
+  }
+}
+
+// NodeBuilder creates BackendNodes or ToolchainNodes
+export class NodeBuilder {
+  static createBackendNodes(): BackendNode[] {
+    return Object.keys(gToolchainEnvMap).map((backendName) => {
+      let bnode = new BackendNode(backendName);
+      return bnode;
+    });
+  }
+
+  static createToolchainNodes(bnode: BaseNode): ToolchainNode[] {
+    if ((bnode instanceof BackendNode) === false) {
+      return [];
+    }
+
+    const backendName = bnode.label;
+    if ((backendName in gToolchainEnvMap) === undefined) {
+      return [];
+    }
+    const toolchains = gToolchainEnvMap[bnode.label].listInstalled();
+    return toolchains.filter((t) => t.info.version).map((t) => {
+      let tnode = new ToolchainNode(t.info.name, backendName, t);
+      return tnode;
+    });
+  }
+}
+
+// ToolchainProvider provides TreeData
+export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
   tag = this.constructor.name;  // logging tag
 
   private _onDidChangeTreeData: vscode.EventEmitter<ToolchainTreeData> =
       new vscode.EventEmitter<ToolchainTreeData>();
   readonly onDidChangeTreeData?: vscode.Event<ToolchainTreeData> = this._onDidChangeTreeData.event;
 
-  getTreeItem(element: ToolchainNode): vscode.TreeItem {
+  constructor() {}
+
+  getTreeItem(element: BaseNode): vscode.TreeItem {
     return element;
   }
 
-  getChildren(element?: ToolchainNode): Thenable<ToolchainNode[]> {
-    return Promise.resolve(this.getNode(element));
+  getChildren(element?: BaseNode): Thenable<BaseNode[]> {
+    if (element === undefined) {
+      return Promise.resolve(NodeBuilder.createBackendNodes());
+    } else {
+      return Promise.resolve(NodeBuilder.createToolchainNodes(element));
+    }
   }
 
-  // TODO(jyoung): Refactor deep depth branches
-  private getNode(node: ToolchainNode|undefined): ToolchainNode[] {
-    const toToolchainNode =
-        (type: NodeType, name: string, backend?: string, toolchain?: Toolchain): ToolchainNode => {
-          if (type === NodeType.toolchain) {
-            return new ToolchainNode(
-                name, vscode.TreeItemCollapsibleState.None, type, backend, toolchain);
-          } else {
-            return new ToolchainNode(name, vscode.TreeItemCollapsibleState.Expanded, type);
-          }
-        };
-    if (node === undefined) {
-      return Object.keys(gToolchainEnvMap)
-          .map((backend) => toToolchainNode(NodeType.backend, backend));
-    } else {
-      if (node.type === NodeType.backend) {
-        if (node.label in gToolchainEnvMap) {
-          const toolchains = gToolchainEnvMap[node.label].listInstalled();
-          return toolchains.filter((t) => t.info.version)
-              .map((t) => toToolchainNode(NodeType.toolchain, t.info.name, node.label, t));
-        }
-      }
-    }
-    return [];
+  error(msg: string): void {
+    Logger.error(this.tag, msg);
+    vscode.window.showErrorMessage(msg);
   }
 
   refresh() {
@@ -111,50 +130,58 @@ export class ToolchainProvider implements vscode.TreeDataProvider<ToolchainNode>
           // are not recognized as the same object by `instanceof` function.
           const installed = toolchainEnv.listInstalled().filter(
               value => value.constructor.name === 'DebianToolchain');
+
           if (installed.length > 1) {
-            Logger.error(this.tag, 'Installed debian toolchain must be unique');
-            vscode.window.showErrorMessage('Installed debian toolchain must be unique');
-          } else if (installed.length === 1) {
-            vscode.window
-                .showInformationMessage(
-                    'Do you want to remove the existing and re-install? Backend toolchain can be installed only once.',
-                    'Yes', 'No')
-                .then((answer) => {
-                  if (answer === 'Yes') {
-                    const jobs: Array<Job> = [];
-                    jobs.push(new JobUninstall(installed[0].uninstall()));
-                    jobs.push(new JobInstall(toolchain.install()));
-                    const name = `${toolchain.info.name}-${toolchain.info.version ?.str()}`;
-                    toolchainEnv.request(jobs).then(
-                        () => {
-                          this.refresh();
-                          vscode.window.showInformationMessage(`Install ${name} successfully`);
-                        },
-                        () => {
-                          Logger.error(this.tag, 'Installation is failed');
-                          vscode.window.showErrorMessage('Installation is failed');
-                        });
-                  } else {
-                    Logger.info(this.tag, 'Installation is canceled');
-                  }
-                });
-          } else {
-            toolchainEnv.install(toolchain).then(() => this.refresh(), () => {
-              Logger.error(this.tag, 'Installation is failed');
-              vscode.window.showErrorMessage('Installation is failed');
-            });
+            this.error('Installed debian toolchain must be unique');
+            return;
           }
+
+          if (installed.length !== 1) {
+            toolchainEnv.install(toolchain).then(() => this.refresh(), () => {
+              this.error('Installation is failed');
+            });
+            return;
+          }
+
+          vscode.window
+              .showInformationMessage(
+                  'Do you want to remove the existing and re-install? Backend toolchain can be installed only once.',
+                  'Yes', 'No')
+              .then((answer) => {
+                if (answer === 'Yes') {
+                  const jobs: Array<Job> = [];
+                  jobs.push(new JobUninstall(installed[0].uninstall()));
+                  jobs.push(new JobInstall(toolchain.install()));
+                  const name = `${toolchain.info.name}-${toolchain.info.version ?.str()}`;
+                  toolchainEnv.request(jobs).then(
+                      () => {
+                        this.refresh();
+                        vscode.window.showInformationMessage(`Install ${name} successfully`);
+                      },
+                      () => {
+                        this.error('Installation is failed');
+                      });
+                } else {
+                  Logger.info(this.tag, 'Installation is canceled');
+                }
+              });
         },
         () => {
           Logger.info(this.tag, 'Installation is canceled.');
         });
   }
 
-  uninstall(node: ToolchainNode) {
-    if (node.backend === undefined || node.toolchain === undefined) {
+  uninstall(tnode: ToolchainNode) {
+    if (tnode === undefined) {
       throw Error('Invalid toolchain node');
     }
-    gToolchainEnvMap[node.backend].uninstall(node.toolchain).then(() => {
+
+    const backendName = tnode.backendName;
+    if (backendName === undefined) {
+      throw Error('Invalid toolchain node');
+    }
+
+    gToolchainEnvMap[backendName].uninstall(tnode.toolchain).then(() => {
       this.refresh();
     });
   }
