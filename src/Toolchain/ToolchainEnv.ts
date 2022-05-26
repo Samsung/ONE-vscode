@@ -22,7 +22,7 @@ import {BuilderJob} from '../Project/BuilderJob';
 import {Job, JobCallback} from '../Project/Job';
 import {JobConfig} from '../Project/JobConfig';
 import {JobInstall} from '../Project/JobInstall';
-import {JobInstalled} from '../Project/JobInstalled';
+import {JobPrerequisites} from '../Project/JobPrerequisites';
 import {JobUninstall} from '../Project/JobUninstall';
 import {WorkFlow} from '../Project/WorkFlow';
 import {Balloon} from '../Utils/Balloon';
@@ -118,6 +118,17 @@ class ToolchainEnv extends Env {
         .reduce((r, a) => {
           return r.concat(a);
         });
+  }
+
+  prerequisites(successCallback?: JobCallback, failedCallback?: JobCallback) {
+    let cmd = this.compiler.prerequisitesForGetToolchains();
+    let job = new JobPrerequisites(cmd);
+    job.successCallback = successCallback;
+    job.failureCallback = failedCallback;
+    this.clearJobs();
+    this.addJob(job);
+    this.finishAdd();
+    this.build();
   }
 
   install(toolchain: Toolchain, successCallback?: JobCallback, failedCallback?: JobCallback) {
