@@ -16,6 +16,8 @@
 
 import * as vscode from 'vscode';
 
+type MsgList = (number|boolean|string|object)[];
+
 export class Logger {
   static outputChannel = vscode.window.createOutputChannel('ONE-VSCode');
   static firstFocus: boolean;
@@ -27,7 +29,18 @@ export class Logger {
     }
   }
 
-  private static log(severity: string, tag: string, msg: string) {
+  private static log(severity: string, tag: string, ...msgs: MsgList) {
+    let logStrList = [];
+
+    for (var i = 0; i < msgs.length; i++) {
+      // ref: https://stackoverflow.com/q/5612787
+      if (typeof (msgs[i]) === 'object') {
+        logStrList.push(JSON.stringify(msgs[i]));
+      } else {
+        logStrList.push(`${msgs[i]}`);
+      }
+    }
+    const msg = logStrList.join(' ');
     const time = new Date().toLocaleString();
 
     Logger.checkShow();
@@ -35,35 +48,35 @@ export class Logger {
   }
 
   /**
-   * @brief Print log in '[time][tag][severity] msg' format where severity = 'err'
+   * @brief Print log with prefix '[time][tag][severity]' where severity = 'err'
    */
-  public static error(tag: string, msg: string) {
+  public static error(tag: string, ...msgs: MsgList) {
     const severity = 'err';
-    Logger.log(severity, tag, msg);
+    Logger.log(severity, tag, ...msgs);
   }
 
   /**
-   * @brief Print log in '[time][tag][severity] msg' format where severity = 'warn'
+   * @brief Print log with prefix '[time][tag][severity]' where severity = 'warn'
    */
-  public static warn(tag: string, msg: string) {
+  public static warn(tag: string, ...msgs: MsgList) {
     const severity = 'warn';
-    Logger.log(severity, tag, msg);
+    Logger.log(severity, tag, ...msgs);
   }
 
   /**
-   * @brief Print log in '[time][tag][severity] msg' format where severity = 'info'
+   * @brief Print log with prefix '[time][tag][severity]' where severity = 'info'
    */
-  public static info(tag: string, msg: string) {
+  public static info(tag: string, ...msgs: MsgList) {
     const severity = 'info';
-    Logger.log(severity, tag, msg);
+    Logger.log(severity, tag, ...msgs);
   }
 
   /**
-   * @brief Print log in '[time][tag][severity] msg' format where severity = 'debug'
+   * @brief Print log with prefix '[time][tag][severity]' where severity = 'debug'
    */
-  public static debug(tag: string, msg: string) {
+  public static debug(tag: string, ...msgs: MsgList) {
     const severity = 'debug';
-    Logger.log(severity, tag, msg);
+    Logger.log(severity, tag, ...msgs);
   }
 
   /**

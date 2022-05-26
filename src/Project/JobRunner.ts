@@ -66,7 +66,7 @@ export class JobRunner extends EventEmitter {
       tool = 'onecc';
     }
 
-    console.log('Run tool: ', tool, ' args: ', toolArgs, ' cwd: ', path, ' root: ', job.root);
+    Logger.info(this.tag, 'Run tool:', tool, 'args:', toolArgs, 'cwd:', path, 'root:', job.root);
     const runner = this.toolRunner.getRunner(job.name, tool, toolArgs, path, job.root);
 
     runner
