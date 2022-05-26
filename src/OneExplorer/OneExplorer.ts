@@ -198,7 +198,6 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
             vscode.workspace.fs.rename(oneNode.node.uri, vscode.Uri.file(newpath));
 
             this.refresh();
-            return;
           }
         });
   }
