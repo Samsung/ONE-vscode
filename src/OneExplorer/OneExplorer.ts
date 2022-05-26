@@ -185,11 +185,26 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
       warningMessage = 'WARNING: Renaming may result in some unexpected changes on the tree view.';
     }
 
+    const validateInputPath = (newname: string): string|undefined => {
+      const oldpath = oneNode.node.path;
+      const dirpath = path.dirname(oneNode.node.uri.fsPath);
+      const newpath: string = `${dirpath}/${newname}`;
+
+      if (path.extname(newpath) !== path.extname(oldpath)) {
+        return `File ext must be (${path.extname(oldpath)})`;
+      }
+
+      if (fs.existsSync(newpath)) {
+        return `Invalid: Path already exists!`;
+      }
+    };
+
     vscode.window
         .showInputBox({
           title: 'Enter a file name:',
           placeHolder: `${path.basename(oneNode.node.uri.fsPath)}`,
-          prompt: warningMessage
+          prompt: warningMessage,
+          validateInput: validateInputPath
         })
         .then(newname => {
           if (newname) {
