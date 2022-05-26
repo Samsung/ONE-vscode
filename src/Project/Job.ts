@@ -50,6 +50,7 @@ export const enum Type {
   tCodegen,
   // New Job Types
   tConfig,
+  tPrerequisites,
   tInstall,
   tUninstall,
   tInstalled,

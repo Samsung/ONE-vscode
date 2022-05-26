@@ -76,6 +76,12 @@ export async function showInstallQuickInput() {
     return (input: MultiStepInput) => pickVersion(input, state);
   }
 
+  class InnerButton implements vscode.QuickInputButton {
+    constructor(public iconPath: vscode.ThemeIcon, public tooltip: string) {}
+  }
+
+  const refreshButton = new InnerButton(new vscode.ThemeIcon('refresh'), 'Update backend list');
+
   async function pickVersion(input: MultiStepInput, state: Partial<State>) {
     if (state.toolchainEnv === undefined || state.toolchainType === undefined) {
       throw Error('toolchainenv  is undefined.');
@@ -85,15 +91,48 @@ export async function showInstallQuickInput() {
     const versions =
         toolchains.map((value) => value.info.version !== undefined ? value.info.version.str() : '');
     const versionGroups: vscode.QuickPickItem[] = versions.map((label) => ({label}));
-    state.version = await input.showQuickPick({
+    const version = await input.showQuickPick({
       title,
       step: 3,
       totalSteps: 3,
       placeholder: 'Pick toolchain version',
       items: versionGroups,
+      buttons: [refreshButton],
       shouldResume: shouldResume
     });
+    if (version instanceof InnerButton) {
+      console.log('press the refresh button');
+      return (input: MultiStepInput) => updateBackend(input, state);
+    }
+    state.version = version;
     state.toolchain = toolchains[versions.indexOf(state.version.label)];
+  }
+
+  async function requestPrerequisitesAsync(toolchainEnv: ToolchainEnv) {
+    return new Promise((resolve, reject) => {
+      toolchainEnv.prerequisites(() => {
+        console.log('prerequiste: done');
+        resolve('done');
+      }, () => {
+        console.log('prerequiste: fail');
+        resolve('fail');
+      });
+    });
+  }
+
+  async function updateBackend(input: MultiStepInput, state: Partial<State>) {
+    if (state.toolchainEnv === undefined || state.toolchainType === undefined) {
+      throw Error('toolchainenv  is undefined.');
+    }
+
+    await requestPrerequisitesAsync(state.toolchainEnv);
+    // NOTE(jyoung)
+    // Prerequisites request shows the password quick input and this input is
+    // automatically added to MultiStepInput's steps. If the user clicks
+    // 'back' button on quick input, the previous step is shown, and the password
+    // input is show at this time, so it must be removed directly from the steps.
+    input.steps.pop();
+    return pickVersion(input, state);
   }
 
   function shouldResume() {
