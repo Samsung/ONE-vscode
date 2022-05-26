@@ -176,24 +176,20 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
       // TODO automatically change the corresponding files
       warningMessage = 'WARNING: You may need to change input paths in the following cfg files:\n';
       for (const conf of oneNode.node.childNodes) {
-        warningMessage += `${conf.name} \n`;
+        // NOTE A newline character is not supported in input box.
+        // vscode-extension doesn't plan to support multiple lines inside in input box or in
+        // notification box.
+        warningMessage += `${conf.name} `;
       }
     } else {
       warningMessage = 'WARNING: Renaming may result in some unexpected changes on the tree view.';
     }
 
     vscode.window
-        .showInputBox({title: warningMessage, placeHolder: 'Enter(proceed) / Escape(cancel)'})
-        .then((answer) => {
-          if (answer === undefined) {
-            // User has pressed esc to cancel.
-            return;
-          } else {
-            return vscode.window.showInputBox({
-              title: 'Enter a file name:',
-              placeHolder: `${path.basename(oneNode.node.uri.fsPath)}`
-            });
-          }
+        .showInputBox({
+          title: 'Enter a file name:',
+          placeHolder: `${path.basename(oneNode.node.uri.fsPath)}`,
+          prompt: warningMessage
         })
         .then(newname => {
           if (newname) {
