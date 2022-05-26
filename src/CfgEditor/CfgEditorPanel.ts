@@ -72,10 +72,7 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
       delete this._oneConfig['one-build'];
     }
 
-    webviewPanel.webview.postMessage({
-      type: 'displayCfgToEditor',
-      text: ini.parse(document.getText()),
-    });
+    webviewPanel.webview.postMessage({type: 'displayCfgToEditor', text: this._oneConfig});
   };
 
   public async resolveCustomTextEditor(
