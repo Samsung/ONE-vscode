@@ -17,7 +17,8 @@
 import {assert} from 'chai';
 import {join} from 'path';
 
-import {ToolRunner} from '../../Project/ToolRunner';
+import {ToolArgs} from '../../Project/ToolArgs';
+import {SelfKilled, ToolRunner} from '../../Project/ToolRunner';
 import {obtainWorkspaceRoot} from '../../Utils/Helpers';
 import {MockJob} from '../MockJob';
 
@@ -52,6 +53,59 @@ suite('Project', function() {
               })
               .catch(done);
         });
+      });
+    });  // @use-onecc
+
+    suite(`#kill()`, function() {
+      test('basic case', async function() {
+        let finished = false;
+
+        let toolRunner = new ToolRunner();
+
+        let args = new ToolArgs();
+        args.push('10');  // sec
+
+        const runner = toolRunner.getRunner('long process', 'sleep', args, obtainWorkspaceRoot());
+        runner
+            .then((val: string|SelfKilled) => {
+              assert.equal(val, 'SelfKilled');
+            })
+            .catch(exitcode => {
+              assert.fail();
+            });
+
+        // Let's kill the process!!
+        // This will eventually call runner.then(...)
+        assert.isTrue(toolRunner.kill());
+      });
+
+      test('NEG: too early kill', function() {
+        let toolRunner = new ToolRunner();
+        assert.throw(() => toolRunner.kill());
+      });
+
+      test('NEG: too late kill', async function() {
+        let finished = false;
+
+        let toolRunner = new ToolRunner();
+        let args = new ToolArgs();
+        args.push('0.01');  // 0.01 sec
+
+        const runner = toolRunner.getRunner('long process', 'sleep', args, obtainWorkspaceRoot());
+        runner
+            .then((val: string|SelfKilled) => {
+              assert.equal(val, '0');
+              finished = true;
+            })
+            .catch(exitcode => {
+              assert.fail();
+            });
+
+        // wait for 0.1 sec. sleep already exited
+        await new Promise(resolve => setTimeout(resolve, 100));
+        assert.isTrue(finished);  // sanity check
+
+        assert.throw(() => toolRunner.kill());
       });
     });
   });

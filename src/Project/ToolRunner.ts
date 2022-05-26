@@ -25,29 +25,59 @@ const which = require('which');
 const K_DATA: string = 'data';
 const K_EXIT: string = 'exit';
 
+// successfully killed by calling kill() method
+export type SelfKilled = 'SelfKilled';
 
 export class ToolRunner {
   tag = this.constructor.name;  // logging tag
 
+  private child: cp.ChildProcessWithoutNullStreams|undefined = undefined;
+
+  // When the spawned process was killed by kill() method, set this true
+  private killedByMe = false;
+
   private handlePromise(
-      resolve: (value: string|PromiseLike<string>) => void,
-      reject: (value: string|PromiseLike<string>) => void, cmd: cp.ChildProcessWithoutNullStreams) {
+      resolve: (value: string|SelfKilled|PromiseLike<string>) => void,
+      reject: (value: string|NodeJS.Signals|PromiseLike<string>) => void) {
     // stdout
-    cmd.stdout.on(K_DATA, (data: any) => {
+    this.child!.stdout.on(K_DATA, (data: any) => {
       Logger.append(data.toString());
     });
     // stderr
-    cmd.stderr.on(K_DATA, (data: any) => {
+    this.child!.stderr.on(K_DATA, (data: any) => {
       Logger.append(data.toString());
     });
 
-    cmd.on(K_EXIT, (code: any) => {
+    this.child!.on(K_EXIT, (code: number|null, signal: NodeJS.Signals|null) => {
+      this.child = undefined;
+
+      // From https://nodejs.org/api/child_process.html#event-exit
+      //
+      // The 'exit' event is emitted after the child process ends.
+      // If the process exited, code is the final exit code of the process, otherwise null.
+      // If the process terminated due to receipt of a signal, signal is the string name
+      // of the signal, otherwise null.
+      // One of the two will always be non-null.
+
+      // when child was terminated due to a signal
+      if (code === null) {
+        Logger.debug(this.tag, `Child process was killed (signal: ${signal!})`);
+
+        if (this.killedByMe) {
+          resolve('SelfKilled');
+        } else {
+          reject(signal!);
+        }
+        return;
+      }
+
+      // when child exited
       let codestr = code.toString();
       console.log('child process exited with code ' + codestr);
       if (codestr === '0') {
         Logger.info(this.tag, 'Build Success.');
         Logger.appendLine('');
-        resolve(codestr);
+        resolve('0');
       } else {
         Logger.info(this.tag, 'Build Failed:' + codestr);
         Logger.appendLine('');
@@ -55,6 +85,35 @@ export class ToolRunner {
         reject(errorMsg);
       }
     });
+  }
+
+  /**
+   * Function to kill child process
+   */
+  public kill(): boolean {
+    this.killedByMe = false;
+
+    if (this.child === undefined || this.child.killed) {
+      throw Error('No process to kill');
+    }
+
+    const signals: NodeJS.Signals[] = ['SIGINT', 'SIGTERM', 'SIGKILL'];
+
+    for (const signal of signals) {
+      if (this.child!.kill(signal)) {
+        this.killedByMe = true;
+        break;
+      }
+    }
+
+    if (this.killedByMe) {
+      Logger.info(this.tag, `Process was terminated.`);
+      this.child = undefined;
+    } else {
+      Logger.error(this.tag, 'Fail to terminate process.');
+    }
+
+    return this.killedByMe;
   }
 
   public getOneccPath(): string|undefined {
@@ -81,21 +140,22 @@ export class ToolRunner {
   }
 
   public getRunner(name: string, tool: string, toolargs: ToolArgs, path: string, root?: boolean) {
+    this.killedByMe = false;
+
     return new Promise<string>((resolve, reject) => {
       Logger.info(this.tag, 'Running: ' + name);
-      let cmd = undefined;
       if (root) {
         // NOTE
         // To run the root command job, it must requires a password in `process.env.userp`
         // environment.
         // TODO(jyoung): Need password encryption
         tool = `echo ${process.env.userp} | sudo -S ` + tool;
-        cmd = cp.spawn(tool, toolargs, {cwd: path, shell: true});
+        this.child = cp.spawn(tool, toolargs, {cwd: path, shell: true});
         process.env.userp = '';
       } else {
-        cmd = cp.spawn(tool, toolargs, {cwd: path});
+        this.child = cp.spawn(tool, toolargs, {cwd: path});
       }
-      this.handlePromise(resolve, reject, cmd);
+      this.handlePromise(resolve, reject);
     });
   }
 }
