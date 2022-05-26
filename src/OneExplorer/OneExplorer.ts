@@ -163,6 +163,45 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
     this._onDidChangeTreeData.fire();
   }
 
+  // TODO: Add move()
+
+  /**
+   * Rename a file of all types of nodes (baseModel, derivedModel, config) excepts for directory.
+   * It only alters the file name, not the path.
+   */
+  rename(oneNode: OneNode): void {
+    // TODO: prohibit special characters for security ('..', '*', etc)
+    let warningMessage;
+    if (oneNode.node.type === NodeType.baseModel) {
+      // TODO automatically change the corresponding files
+      warningMessage = 'WARNING: You may need to change input paths in the following cfg files:\n';
+      for (const conf of oneNode.node.childNodes) {
+        // NOTE A newline character is not supported in input box.
+        // vscode-extension doesn't plan to support multiple lines inside in input box or in
+        // notification box.
+        warningMessage += `${conf.name} `;
+      }
+    } else {
+      warningMessage = 'WARNING: Renaming may result in some unexpected changes on the tree view.';
+    }
+
+    vscode.window
+        .showInputBox({
+          title: 'Enter a file name:',
+          placeHolder: `${path.basename(oneNode.node.uri.fsPath)}`,
+          prompt: warningMessage
+        })
+        .then(newname => {
+          if (newname) {
+            const dirpath = path.dirname(oneNode.node.uri.fsPath);
+            const newpath = `${dirpath}/${newname}`;
+            vscode.workspace.fs.rename(oneNode.node.uri, vscode.Uri.file(newpath));
+
+            this.refresh();
+          }
+        });
+  }
+
   /**
    * Create ONE configuration file for a base model
    * Input box is prefilled as <base model's name>.cfg
@@ -478,7 +517,10 @@ export class OneExplorer {
           (oneNode: OneNode) => {
             const oneccRunner = new OneccRunner(oneNode.node.uri);
             oneccRunner.run();
-          })
+          }),
+      vscode.commands.registerCommand(
+          'onevscode.rename-on-oneexplorer',
+          (oneNode: OneNode) => oneTreeDataProvider.rename(oneNode))
     ]);
   }
 
