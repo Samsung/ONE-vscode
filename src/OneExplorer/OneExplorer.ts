@@ -195,7 +195,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
       }
 
       if (fs.existsSync(newpath)) {
-        return `Invalid: File already exists!`;
+        return `A file or folder ${newpath} already exists at this location. Please choose a different name.`;
       }
     };
 
