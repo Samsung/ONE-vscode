@@ -12,13 +12,6 @@
   ],
   "extensionKind ": "workspace",
   "activationEvents": [
-    "onCommand:onevscode.build",
-    "onCommand:onevscode.import",
-    "onCommand:onevscode.json-tracer",
-    "onCommand:onevscode.configuration-settings",
-    "onCommand:onevscode.toggle-codelens",
-    "onCommand:onevscode.circle-tracer",
-    "onCustomEditor:cfg.editor",
     "onStartupFinished"
   ],
   "main": "./out/extension.js",
