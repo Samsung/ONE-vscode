@@ -149,8 +149,14 @@
         "icon": "$(x)"
       },
       {
-        "command": "onevscode.register-device",
-        "title": "Register",
+        "command": "onevscode.devices.connect",
+        "title": "Connect to Env",
+        "category": "ONE",
+        "icon": "$(add)"
+      },
+      {
+        "command": "onevscode.devices.register",
+        "title": "Register Executor",
         "category": "ONE",
         "icon": "$(add)"
       },
@@ -213,7 +219,7 @@
           "group": "navigation"
         },
         {
-          "command": "onevscode.register-device",
+          "command": "onevscode.devices.connect",
           "when": "view == TargetDeviceView",
           "group": "navigation"
         }
@@ -245,6 +251,11 @@
           "group": "inline"
         },
         {
+          "command": "onevscode.devices.register",
+          "when": "view == TargetDeviceView && viewItem == executionEnv",
+          "group": "inline"
+        },
+        {
           "command": "onevscode.uninstall-toolchain",
           "when": "view == ToolchainView && viewItem == toolchain",
           "group": "inline"
@@ -269,6 +280,10 @@
         "one-vscode.enableCodelens": {
           "type": "boolean",
           "default": true
+        },
+        "one-vscode.targetDeviceInfo": {
+          "type": ["object", "null"],
+          "default": null
         }
       }
     },

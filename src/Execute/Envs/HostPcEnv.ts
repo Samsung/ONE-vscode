@@ -1,0 +1,46 @@
+/*
+ * Copyright (c) 2022 Samsung Electronics Co., Ltd. All Rights Reserved
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import {release} from 'os';
+import {Command} from '../../Backend/Command';
+import {ExecutionEnvBase} from '../ExecutionEnv';
+
+class HostPcEnv extends ExecutionEnvBase {
+  deviceName: string;
+  constructor(name: string) {
+    super();
+    this.deviceName = name;
+  }
+  name(): string {
+    return this.deviceName;
+  }
+  // envInfo will used to check thos env could use certain Executor.
+  envInfo(): string {
+    // This is just a example. this will be specified later
+    return release();
+  }
+}
+
+function getConnectableEnvs(): Command {
+  let command = new Command('echo HostPc');
+  return command;
+}
+
+function getEnv(name: string): HostPcEnv {
+  return new HostPcEnv(name);
+}
+
+export {HostPcEnv, getEnv, getConnectableEnvs};
