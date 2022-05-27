@@ -82,11 +82,13 @@ function nodeTypeToStr(t: NodeType): string {
 
 class Node {
   type: NodeType;
+  parentNode : Node | null;
   childNodes: Node[];
   uri: vscode.Uri;
 
-  constructor(type: NodeType, childNodes: Node[], uri: vscode.Uri) {
+  constructor(type: NodeType, parentNode: Node | null, childNodes: Node[], uri: vscode.Uri) {
     this.type = type;
+    this.parentNode = parentNode;
     this.childNodes = childNodes;
     this.uri = uri;
   }
@@ -309,7 +311,7 @@ input_path=${modelName}.${extName}
   }
 
   private getTree(rootPath: vscode.Uri): Node {
-    const node = new Node(NodeType.directory, [], rootPath);
+    const node = new Node(NodeType.directory, null, [], rootPath);
 
     this.searchNode(node);
     return node;
@@ -327,7 +329,7 @@ input_path=${modelName}.${extName}
       const fstat = fs.statSync(fpath);
 
       if (fstat.isDirectory()) {
-        const childNode = new Node(NodeType.directory, [], vscode.Uri.file(fpath));
+        const childNode = new Node(NodeType.directory, node, [], vscode.Uri.file(fpath));
 
         this.searchNode(childNode);
         if (childNode.childNodes.length > 0) {
@@ -336,7 +338,7 @@ input_path=${modelName}.${extName}
       } else if (
           fstat.isFile() &&
           (fname.endsWith('.pb') || fname.endsWith('.tflite') || fname.endsWith('.onnx'))) {
-        const childNode = new Node(NodeType.baseModel, [], vscode.Uri.file(fpath));
+        const childNode = new Node(NodeType.baseModel, node, [], vscode.Uri.file(fpath));
 
         this.searchPairConfig(childNode);
 
@@ -460,7 +462,7 @@ input_path=${modelName}.${extName}
 
       for (const baseModel of baseModels) {
         if (this.comparePath(baseModel.fsPath, baseModelNode.path)) {
-          const pairNode = new Node(NodeType.config, [], vscode.Uri.file(conf));
+          const pairNode = new Node(NodeType.config, baseModelNode, [], vscode.Uri.file(conf));
           console.log(`DerivedModels : ${derivedModels}`);
 
           derivedModels ?.forEach(derivedModel => {
@@ -468,7 +470,8 @@ input_path=${modelName}.${extName}
                            const realPath = RealPath.createRealPath(derivedModel.fsPath);
                            if (realPath) {
                              pairNode.childNodes.push(new Node(
-                                 NodeType.derivedModel, [], vscode.Uri.file(realPath.absPath)));
+                                 NodeType.derivedModel, pairNode, [],
+                                 vscode.Uri.file(realPath.absPath)));
                            }
                          });
 
@@ -496,7 +499,7 @@ input_path=${modelName}.${extName}
         for (let intermediate of intermediates) {
           const parsedPath = path.join(node.parent, intermediate);
           if (this.comparePath(parsedPath, fpath)) {
-            const child = new Node(NodeType.derivedModel, [], vscode.Uri.file(fpath));
+            const child = new Node(NodeType.derivedModel, node, [], vscode.Uri.file(fpath));
             node.childNodes.push(child);
             break;
           }
