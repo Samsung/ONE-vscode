@@ -174,15 +174,12 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
     let warningMessage;
     if (oneNode.node.type === NodeType.baseModel) {
       // TODO automatically change the corresponding files
-      warningMessage = 'WARNING: You may need to change input paths in the following cfg files:\n';
-      for (const conf of oneNode.node.childNodes) {
-        // NOTE A newline character is not supported in input box.
-        // vscode-extension doesn't plan to support multiple lines inside in input box or in
-        // notification box.
-        warningMessage += `${conf.name} `;
-      }
-    } else {
-      warningMessage = 'WARNING: Renaming may result in some unexpected changes on the tree view.';
+      warningMessage = `WARNING! ${
+          oneNode.node.childNodes.map(node => `'${node.name}'`)
+              .toString()} will disappear from the view.`;
+    } else if (oneNode.node.type === NodeType.derivedModel) {
+      // TODO automatically change the corresponding files
+      warningMessage = `WARNING! '${oneNode.node.name}' may disappear from the view.`;
     }
 
     const validateInputPath = (newname: string): string|undefined => {
@@ -190,13 +187,17 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
       const dirpath = path.dirname(oneNode.node.uri.fsPath);
       const newpath: string = path.join(dirpath, newname);
 
-      if (path.extname(newpath) !== path.extname(oldpath)) {
-        return `File ext must be (${path.extname(oldpath)})`;
+      if (!newname.includes(path.extname(oldpath))) {
+        // NOTE
+        // `if (path.extname(newpath) !== path.extname(oldpath))`
+        // Do not use above code here.
+        // It will evalates '.tflite' into false, because it's extname is ''.
+        return `A file extention must be (${path.extname(oldpath)})`;
       }
 
-      if (fs.existsSync(newpath)) {
+      if (newpath !== oldpath && fs.existsSync(newpath)) {
         return `A file or folder ${
-            newpath} already exists at this location. Please choose a different name.`;
+            newname} already exists at this location. Please choose a different name.`;
       }
     };
 
