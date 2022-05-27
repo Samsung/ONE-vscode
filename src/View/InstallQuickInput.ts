@@ -19,7 +19,7 @@ import * as vscode from 'vscode';
 import {Toolchain} from '../Backend/Toolchain';
 import {JobCallback} from '../Project/Job';
 import {gToolchainEnvMap, ToolchainEnv} from '../Toolchain/ToolchainEnv';
-import {MultiStepInput} from '../Utils/external/MultiStepInput';
+import {MultiStepInput} from '../Utils/MultiStepInput';
 
 export async function showInstallQuickInput() {
   interface State {
