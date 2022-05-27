@@ -529,7 +529,11 @@ export class OneExplorer {
     };
 
     subscribeCommands([
-      vscode.commands.registerCommand('onevscode.open-cfg', (file) => this.openFile(file)),
+      vscode.commands.registerCommand(
+          'onevscode.open-cfg', (oneNode: OneNode) => this.openWithCfgEditor(oneNode.node)),
+      vscode.commands.registerCommand(
+          'onevscode.open-cfg-as-text',
+          (oneNode: OneNode) => this.openWithTextEditor(oneNode.node)),
       vscode.commands.registerCommand(
           'onevscode.refresh-one-explorer', () => oneTreeDataProvider.refresh()),
       vscode.commands.registerCommand(
@@ -546,8 +550,12 @@ export class OneExplorer {
     ]);
   }
 
-  private openFile(node: Node) {
+  private openWithCfgEditor(node: Node) {
     vscode.commands.executeCommand('vscode.openWith', node.uri, CfgEditorPanel.viewType);
+  }
+
+  private openWithTextEditor(node: Node) {
+    vscode.commands.executeCommand('vscode.openWith', node.uri, 'default');
   }
 }
 
