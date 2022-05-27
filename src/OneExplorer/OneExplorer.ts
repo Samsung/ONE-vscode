@@ -351,65 +351,6 @@ input_path=${modelName}.${extName}
     }
   }
 
-  // TODO(dayo) extract file-relative functions as another module
-  private parseInputPath = (configPath: string, modelPath: string): string|undefined => {
-    const config = readIni(configPath);
-    const ext = path.extname(modelPath).slice(1);
-
-    if (ext === undefined || config === null) {
-      return undefined;
-    }
-
-    return config[`one-import-${ext}` as keyof typeof config] ?.['input_path'];
-  };
-
-  // TODO(dayo) extract file-relative functions as another module
-  private grepTargetInCommand = (str: string): string[] => {
-    return str.split(' ').filter(e => path.extname(e) === '.tvn' || path.extname(e) === '.circle');
-  };
-
-  // TODO(dayo) extract file-relative functions as another module
-  private grepAll = (str: string): string[] => {
-    return [str];
-  };
-
-  // TODO(dayo) extract file-relative functions as another module
-  private parseIntermediates = (configPath: string): string[] => {
-    const config = readIni(configPath);
-
-    if (config === null) {
-      return [];
-    }
-
-    const targetLocator = [
-      {section: 'one-import-tf', key: 'output_path', grepper: this.grepAll},
-      {section: 'one-import-tflite', key: 'output_path', grepper: this.grepAll},
-      {section: 'one-import-onnx', key: 'output_path', grepper: this.grepAll},
-      {section: 'one-import-bcq', key: 'output_path', grepper: this.grepAll},
-      {section: 'one-optimize', key: 'input_path', grepper: this.grepAll},
-      {section: 'one-optimize', key: 'output_path', grepper: this.grepAll},
-      {section: 'one-quantize', key: 'input_path', grepper: this.grepAll},
-      {section: 'one-quantize', key: 'output_path', grepper: this.grepAll},
-      {section: 'one-codegen', key: 'command', grepper: this.grepTargetInCommand},
-    ];
-
-    let intermediates: string[] = [];
-    for (let loc of targetLocator) {
-      let confSection = config[loc.section as keyof typeof config];
-      let confKey = confSection ?.[loc.key as keyof typeof config];
-      if (confKey) {
-        const targets = loc.grepper(confKey);
-        for (let target of targets) {
-          if (intermediates.includes(target) === false) {
-            intermediates.push(target);
-          }
-        }
-      }
-    }
-
-    return intermediates;
-  };
-
   /**
    * compare paths by normalization
    * NOTE that '~'(home) is not supported
@@ -479,33 +420,6 @@ input_path=${modelName}.${extName}
                          });
 
           baseModelNode.childNodes.push(pairNode);
-        }
-      }
-    }
-  }
-
-  /**
-   * Search specified intermediate model files (a.k.a NodeType.derivedModel) in the same directory
-   */
-  private searchChildModels(node: Node) {
-    console.assert(node.type === NodeType.config);
-    console.log('searchChildModels');
-    const files = fs.readdirSync(node.parent);
-
-    for (const fname of files) {
-      const fpath = path.join(node.parent, fname);
-      const fstat = fs.statSync(fpath);
-
-      // TODO(dayo) Get .tvn file extension from backend
-      if (fstat.isFile() && (fname.endsWith('.circle') || fname.endsWith('.tvn'))) {
-        const intermediates = this.parseIntermediates(node.path);
-        for (let intermediate of intermediates) {
-          const parsedPath = path.join(node.parent, intermediate);
-          if (this.comparePath(parsedPath, fpath)) {
-            const child = new Node(NodeType.derivedModel, [], vscode.Uri.file(fpath));
-            node.childNodes.push(child);
-            break;
-          }
         }
       }
     }
