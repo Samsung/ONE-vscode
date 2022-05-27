@@ -188,7 +188,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
     const validateInputPath = (newname: string): string|undefined => {
       const oldpath = oneNode.node.path;
       const dirpath = path.dirname(oneNode.node.uri.fsPath);
-      const newpath: string = path.join(${dirpath}, ${newname});
+      const newpath: string = path.join(dirpath, newname);
 
       if (path.extname(newpath) !== path.extname(oldpath)) {
         return `File ext must be (${path.extname(oldpath)})`;
