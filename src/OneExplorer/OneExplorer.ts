@@ -204,7 +204,13 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
     vscode.window
         .showInputBox({
           title: 'Enter a file name:',
-          placeHolder: `${path.basename(oneNode.node.uri.fsPath)}`,
+          value: `${path.basename(oneNode.node.uri.fsPath)}`,
+          valueSelection: [
+            0,
+            path.basename(oneNode.node.uri.fsPath).length -
+                path.parse(oneNode.node.uri.fsPath).ext.length
+          ],
+          placeHolder: `Enter a new name for ${path.basename(oneNode.node.uri.fsPath)}`,
           prompt: warningMessage,
           validateInput: validateInputPath
         })
