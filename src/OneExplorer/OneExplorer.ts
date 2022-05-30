@@ -191,7 +191,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
         // NOTE
         // `if (path.extname(newpath) !== path.extname(oldpath))`
         // Do not use above code here.
-        // It will evalates '.tflite' into false, because it's extname is ''.
+        // It will evaluate '.tflite' as false, because it's extname is ''.
         return `A file extension must be (${path.extname(oldpath)})`;
       }
 
