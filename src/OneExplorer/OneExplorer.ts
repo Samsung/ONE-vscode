@@ -163,6 +163,10 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
     this._onDidChangeTreeData.fire();
   }
 
+  collapseAll(oneNode: OneNode): void {
+    vscode.commands.executeCommand('workbench.actions.treeView.OneExplorerView.collapseAll');
+  }
+
   // TODO: Add move()
 
   openContainingFolder(oneNode: OneNode): void {
@@ -467,7 +471,9 @@ export class OneExplorer {
           (oneNode: OneNode) => oneTreeDataProvider.rename(oneNode)),
       vscode.commands.registerCommand(
           'onevscode.openContainingFolder',
-          (oneNode: OneNode) => oneTreeDataProvider.openContainingFolder(oneNode))
+          (oneNode: OneNode) => oneTreeDataProvider.openContainingFolder(oneNode)),
+      vscode.commands.registerCommand(
+          'onevscode.collapse-all', (oneNode: OneNode) => oneTreeDataProvider.collapseAll(oneNode)),
     ]);
   }
 

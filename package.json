@@ -71,6 +71,12 @@
         "icon": "$(refresh)"
       },
       {
+        "command": "onevscode.collapse-all",
+        "title": "Collapse All",
+        "category": "ONE",
+        "icon": "$(collapse-all)"
+      },
+      {
         "command": "onevscode.create-cfg",
         "title": "Create new ONE configuration",
         "category": "ONE",
@@ -178,6 +184,11 @@
       "view/title": [
         {
           "command": "onevscode.refresh-one-explorer",
+          "when": "view == OneExplorerView",
+          "group": "navigation"
+        },
+        {
+          "command": "onevscode.collapse-all",
           "when": "view == OneExplorerView",
           "group": "navigation"
         },
