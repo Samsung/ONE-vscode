@@ -187,7 +187,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
       const dirpath = path.dirname(oneNode.node.uri.fsPath);
       const newpath: string = path.join(dirpath, newname);
 
-      if (!newname.includes(path.extname(oldpath))) {
+      if (!newname.endsWith(path.extname(oldpath))) {
         // NOTE
         // `if (path.extname(newpath) !== path.extname(oldpath))`
         // Do not use above code here.
