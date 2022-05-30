@@ -29,6 +29,7 @@ import {runInferenceQuickInput} from './Execute/executeQuickInput';
 import {Jsontracer} from './Jsontracer';
 import {MondrianEditorProvider} from './Mondrian/MondrianEditor';
 import {OneExplorer} from './OneExplorer/OneExplorer';
+import {PartEditorProvider} from './PartEditor/PartEditor';
 import {Project} from './Project';
 import {ToolchainProvider} from './Toolchain/ToolchainProvider';
 import {Logger} from './Utils/Logger';
@@ -137,6 +138,8 @@ export function activate(context: vscode.ExtensionContext) {
     CircleGraphPanel.createOrShow(context.extensionUri, undefined);
   });
   context.subscriptions.push(disposableGraphPenel);
+
+  context.subscriptions.push(PartEditorProvider.register(context));
 
   // returning backend registration function that will be called by backend extensions
   return backendRegistrationApi();

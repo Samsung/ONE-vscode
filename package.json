@@ -61,6 +61,16 @@
           }
         ],
         "priority": "default"
+      },
+      {
+        "viewType": "onevscode.part-editor",
+        "displayName": "ONE Partition Editor",
+        "selector": [
+          {
+            "filenamePattern": "*.part"
+          }
+        ],
+        "priority": "default"
       }
     ],
     "commands": [

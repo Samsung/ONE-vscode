@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+Copyright (c) 2022 Samsung Electronics Co., Ltd. All Rights Reserved
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy"
+      content="img-src https: data:; style-src 'unsafe-inline' %webview.cspSource%; script-src 'nonce-%nonce%';">
+<title>Partition Editor</title>
+<link rel="stylesheet" type="text/css" href="%index.css%">
+<script type="text/javascript" src="%index.js%" nonce="%nonce%"></script>
+</head>
+<body>
+<p><h3>Available backends: CPU / ACL_CL / NPU</h3></p>
+<p>NOTE: available backend list will be defined by the backend. Currently this is fixed.</p>
+<hr/>
+<p>Operators of model <i><b>%MODEL_NAME%</b></i></p>
+<div class="group-parent">
+  <div class="group-child">
+    Operators: <br/>
+    <select id="circle-nodes" multiple name="L1" class="names_list" size="15">
+      <!-- list items will be filled from index.js -->
+    </select>
+  </div>
+  <div class="group-child">
+    Backend:<br/>
+    <select id="circle-be" name="BE" class="set_bk_list">
+      <option>(1) CPU</option>
+      <option>(2) ACL_CL</option>
+      <option>(3) NPU</option>
+    </select>
+    <input type="checkbox" id="circle-be-def" name="be_default" value="default" />
+    <label for="circle-be-def"> default</label>
+    <div>
+      <br/>
+      <button id="set-be" class="set_bk_btn">Set</button>
+      <button id="clear-be" class="set_bk_btn">Clear</button>
+      <div>&nbsp;</div>
+      <div>Set: set backend for selected nodes</div>
+      <div>Clear: clear backend for selected nodes(or set as default)</div>
+    </div>
+    <p></p>
+    <div>
+      <button id="circle-graph" class="set_bk_btn2">Set with graph view...</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
