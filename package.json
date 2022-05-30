@@ -72,7 +72,7 @@
       },
       {
         "command": "onevscode.collapse-all",
-        "title": "Collapse All",
+        "title": "Collapse Folders in ONE Explorer",
         "category": "ONE",
         "icon": "$(collapse-all)"
       },
