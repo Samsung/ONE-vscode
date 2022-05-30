@@ -14,6 +14,163 @@
  * limitations under the License.
  */
 
+label {
+  white-space: pre-wrap;
+}
+
+.maintitle {
+  width: 100%;
+  display: flex;
+}
+
+.maintitle span {
+  float: left;
+  display: block;
+  padding-left: 5px;
+}
+
+.statusbar {
+  width: 100%;
+  display: flex;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.statusbar .detail {
+  box-sizing: border-box;
+  float: left;
+  background: #007acc;
+  color: #fff;
+  position: relative;
+  padding-left: 10px;
+  padding-right: 10px;
+  width: 70px;
+  height: 32px;
+  line-height: 32px;
+  text-align: center;
+  display: block;
+}
+
+.statusbar .detail:after {
+  box-sizing: border-box;
+  content: '';
+  border-left: 16px solid #007acc;
+  border-top: 16px solid transparent;
+  border-bottom: 16px solid transparent;
+  position: absolute;
+  top: 0;
+  left: 100%;
+  z-index: 1;
+}
+
+.statusbar .detail .expanded {
+  display: inline-block;
+}
+
+.statusbar .steps {
+  display: inline-flex;
+}
+
+.statusbar .steps .step {
+  box-sizing: border-box;
+  float: left;
+  background: #007acc;
+  color: #fff;
+  position: relative;
+  padding-left: 10px;
+  width: 110px;
+  height: 32px;
+  line-height: 32px;
+  display: flex;
+  justify-content: center;
+}
+
+.statusbar .steps .step span {
+  padding-left: 5px;
+}
+
+.statusbar .steps .step:before {
+  box-sizing: border-box;
+  content: '';
+  border-left: 16px solid #fff;
+  border-top: 16px solid transparent;
+  border-bottom: 16px solid transparent;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.statusbar .steps .step:after {
+  box-sizing: border-box;
+  content: '';
+  border-left: 16px solid #007acc;
+  border-top: 16px solid transparent;
+  border-bottom: 16px solid transparent;
+  position: absolute;
+  top: 0;
+  left: 100%;
+  z-index: 1;
+}
+
+.statusbar .steps .step.current {
+  box-sizing: border-box;
+  float: left;
+  background: #4298da;
+  color: #fff;
+  position: relative;
+  padding-left: 10px;
+  width: 110px;
+  height: 32px;
+  line-height: 32px;
+  display: flex;
+  justify-content: center;
+}
+
+.statusbar .steps .step.current:after {
+  box-sizing: border-box;
+  content: '';
+  border-left: 16px solid #4298da;
+  border-top: 16px solid transparent;
+  border-bottom: 16px solid transparent;
+  position: absolute;
+  top: 0;
+  left: 100%;
+  z-index: 1;
+}
+
+.statusbar .steps .step .title {
+  cursor: pointer;
+}
+
+.optionPanel {
+  display: flex;
+}
+
+.optionPanel .options {
+  display: none;
+}
+
+#optionImport .basic,
+#optionImport .advanced {
+  display: none;
+}
+
+.optionPanel .options .prerequisite .title,
+.optionPanel .options .basic .title,
+.optionPanel .options .advanced .title {
+  font-weight: bold;
+  font-size: 15px;
+  margin-bottom: 15px;
+  margin-top: 15px;
+ }
+
+.optionPanel .options .prerequisite .option,
+.optionPanel .options .basic .option,
+.optionPanel .options .advanced .option {
+  margin-bottom: 5px;
+}
+
+/* NOTE Following css elements will be deprecated */
 .conf {
   width: 100%;
   margin-top: 5px;
