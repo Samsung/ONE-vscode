@@ -165,6 +165,10 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
 
   // TODO: Add move()
 
+  openContainingFolder(oneNode: OneNode): void {
+    vscode.commands.executeCommand('revealFileInOS', oneNode.node.uri);
+  }
+
   /**
    * Rename a file of all types of nodes (baseModel, derivedModel, config) excepts for directory.
    * It only alters the file name, not the path.
@@ -459,7 +463,10 @@ export class OneExplorer {
           }),
       vscode.commands.registerCommand(
           'onevscode.rename-on-oneexplorer',
-          (oneNode: OneNode) => oneTreeDataProvider.rename(oneNode))
+          (oneNode: OneNode) => oneTreeDataProvider.rename(oneNode)),
+      vscode.commands.registerCommand(
+          'onevscode.openContainingFolder',
+          (oneNode: OneNode) => oneTreeDataProvider.openContainingFolder(oneNode))
     ]);
   }
 
