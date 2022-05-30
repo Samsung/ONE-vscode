@@ -105,6 +105,11 @@
         "category": "ONE"
       },
       {
+        "command": "onevscode.open-cfg-as-text",
+        "title": "Open with Text Editor",
+        "category": "ONE"
+      },
+      {
         "command": "onevscode.refresh-toolchain",
         "title": "Refresh",
         "category": "ONE",
@@ -196,6 +201,11 @@
         {
           "command": "onevscode.rename-on-oneexplorer",
           "when": "view == OneExplorerView && viewItem != directory",
+          "group": "navigation"
+        },
+        {
+          "command": "onevscode.open-cfg-as-text",
+          "when": "view == OneExplorerView && viewItem == config",
           "group": "navigation"
         },
         {
