@@ -105,6 +105,11 @@
         "category": "ONE"
       },
       {
+        "command": "onevscode.openContainingFolder",
+        "title": "Open Containing Folder",
+        "category": "ONE"
+      },
+      {
         "command": "onevscode.open-cfg-as-text",
         "title": "Open with Text Editor",
         "category": "ONE"
@@ -201,6 +206,11 @@
         {
           "command": "onevscode.rename-on-oneexplorer",
           "when": "view == OneExplorerView && viewItem != directory",
+          "group": "navigation"
+        },
+        {
+          "command": "onevscode.openContainingFolder",
+          "when": "view == OneExplorerView",
           "group": "navigation"
         },
         {
