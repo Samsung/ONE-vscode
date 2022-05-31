@@ -19,6 +19,7 @@ import * as vscode from 'vscode';
 import {Toolchain} from '../Backend/Toolchain';
 import {JobCallback} from '../Project/Job';
 import {gToolchainEnvMap, ToolchainEnv} from '../Toolchain/ToolchainEnv';
+import {Logger} from '../Utils/Logger';
 import {MultiStepInput} from '../Utils/MultiStepInput';
 
 export async function showInstallQuickInput() {
@@ -107,7 +108,8 @@ export async function showInstallQuickInput() {
   }
 
   const state = await collectInputs();
-  console.log(
+  Logger.info(
+      'showInstallQuickInput',
       `Selected backend: ${state.backend.label}-${state.toolchainType}-${state.version.label}`);
 
   return new Promise((resolve, reject) => {

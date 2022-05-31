@@ -27,9 +27,11 @@ import {JobUninstall} from '../Project/JobUninstall';
 import {WorkFlow} from '../Project/WorkFlow';
 import {Balloon} from '../Utils/Balloon';
 import * as helpers from '../Utils/Helpers';
+import {Logger} from '../Utils/Logger';
 import {showPasswordQuickInput} from '../View/PasswordQuickInput';
 
 class Env implements BuilderJob {
+  logTag = 'Env';
   workFlow: WorkFlow;  // our build WorkFlow
   currentWorkspace: string = '';
   isPrepared: boolean = false;
@@ -53,8 +55,7 @@ class Env implements BuilderJob {
   }
 
   public finishAdd(): void {
-    console.log('Done building WorkFlow on Env');
-    console.log(this.workFlow.jobs);
+    Logger.info(this.logTag, 'Done building WorkFlow on Env:', this.workFlow.jobs);
     this.isPrepared = true;
   }
 
@@ -77,13 +78,13 @@ class Env implements BuilderJob {
 
     const rootJobs = this.workFlow.jobs.filter(j => j.root === true);
     if (rootJobs.length > 0) {
-      console.log('Showing password prompt');
+      Logger.info(this.logTag, 'Showing password prompt');
       showPasswordQuickInput().then(password => {
         if (password === undefined) {
-          console.log('Password dialog canceled');
+          Logger.info(this.logTag, 'Password dialog canceled');
           return;
         }
-        console.log('Got password response');
+        Logger.info(this.logTag, 'Got password response');
         process.env.userp = password;
         this.workFlow.start(this.currentWorkspace);
       });
