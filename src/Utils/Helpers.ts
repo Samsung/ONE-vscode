@@ -18,9 +18,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-import {Logger} from '../Utils/Logger';
-
 import {Balloon} from './Balloon';
+import {Logger} from './Logger';
 
 var ini = require('ini');
 
