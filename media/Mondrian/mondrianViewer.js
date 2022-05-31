@@ -28,6 +28,10 @@ const cycleCountContainer =
 const segmentSelect = /** @type {HTMLElement} */ document.querySelector('.mondrian-segment-picker');
 const viewerHScale = /** @type {HTMLElement} */ document.querySelector('.mondrian-viewer-h-scale');
 const viewerVScale = /** @type {HTMLElement} */ document.querySelector('.mondrian-viewer-v-scale');
+const scrollbarBtn = /** @type {HTMLElement} */ document.querySelector('.mondrian-scrollbar-btn');
+
+/* Limit cycle range to avoid hang-ups for large models */
+const defaultCycleLimit = 1048576;
 
 class Viewer {
   constructor() {
@@ -39,7 +43,75 @@ class Viewer {
   }
 }
 
-let viewportMemory = 0;
+class ViewportLimiter {
+  constructor() {
+    this.dragLeft = false;
+    this.dragRight = false;
+  }
+
+  startDrag(left, right, origin) {
+    this.dragLeft = left;
+    this.dragRight = right;
+    this.dragOrigin = origin;
+
+    this.barBound = scrollbarBtn.parentElement.getBoundingClientRect();
+
+    let handleBound = scrollbarBtn.getBoundingClientRect();
+    this.barOffsetLeft = handleBound.left - this.barBound.left;
+    this.barOffsetRight = this.barBound.right - handleBound.right;
+  }
+
+  showLimit(viewer) {
+    let leftRatio = viewer.viewportMinCycle / viewport.cycles;
+    let rightRatio = (viewport.cycles - viewer.viewportMaxCycle) / viewport.cycles;
+
+    scrollbarBtn.style.marginLeft = leftRatio * 100 + '%';
+    scrollbarBtn.style.marginRight = rightRatio * 100 + '%';
+
+    this.updateLimit();
+  }
+
+  updateLimit(commit = false) {
+    let barBound = scrollbarBtn.parentElement.getBoundingClientRect();
+    let handleBound = scrollbarBtn.getBoundingClientRect();
+
+    let minCycle =
+        Math.round((handleBound.left - barBound.left) / barBound.width * viewport.cycles);
+    let maxCycle = Math.round(
+        (barBound.width - barBound.right + handleBound.right) / barBound.width * viewport.cycles);
+
+    scrollbarBtn.children[1].innerHTML = `<b>Cycles:</b> ${minCycle}..${maxCycle}`;
+
+    if (commit) {
+      let state = vscode.getState();
+      state.viewer.viewportMinCycle = minCycle;
+      state.viewer.viewportMaxCycle = maxCycle;
+      vscode.setState(state);
+
+      updateViewport(state.data, state.viewer);
+    }
+  }
+
+  move(ev) {
+    if (this.dragLeft) {
+      let ratioLeft = (this.barOffsetLeft + ev.clientX - this.dragOrigin) / this.barBound.width;
+      scrollbarBtn.style.marginLeft = Math.max(ratioLeft * 100, 0) + '%';
+    }
+
+    if (this.dragRight) {
+      let ratioRight = (this.barOffsetRight - ev.clientX + this.dragOrigin) / this.barBound.width;
+      scrollbarBtn.style.marginRight = Math.max(ratioRight * 100, 0) + '%';
+    }
+
+    this.updateLimit();
+  }
+}
+
+const viewport = {
+  memory: 0,
+  cycles: 0,
+  limiter: new ViewportLimiter,
+};
 
 const boxColors = [
   '#e25935',
@@ -147,10 +219,13 @@ function updateContent(data, viewer) {
   let loadMs = (performance.now() - loadTs).toFixed(2);
   statusLineContainer.innerText = `Document loaded in ${loadMs}ms`;
 
-  viewer.viewportMinCycle = 0;
-  viewer.viewportMaxCycle = totalCycles;
-  viewportMemory = totalMemory;
+  viewport.cycles = totalCycles;
+  viewport.memory = totalMemory;
 
+  viewer.viewportMinCycle = 0;
+  viewer.viewportMaxCycle = Math.min(defaultCycleLimit, totalCycles);
+
+  viewport.limiter.showLimit(viewer);
   updateViewport(data, viewer);
 }
 
@@ -162,9 +237,8 @@ function scaleViewport(viewer) {
   const scaleH = Math.pow(2, viewer.viewportHScale);
   const scaleV = Math.pow(2, viewer.viewportVScale);
 
-  const viewportCycles = viewer.viewportMaxCycle - viewer.viewportMinCycle;
-  viewerContainer.style.width = viewportCycles * scaleH + 'px';
-  viewerContainer.style.height = viewportMemory * scaleV / 8192 + 'px';
+  viewerContainer.style.width = viewport.cycles * scaleH + 'px';
+  viewerContainer.style.height = viewport.memory * scaleV / 8192 + 'px';
   scrollContainer.scrollLeft = scrollContainer.scrollWidth * scrollH;
   scrollContainer.scrollTop = scrollContainer.scrollHeight * scrollV;
 
@@ -197,9 +271,12 @@ function updateViewport(data, viewer) {
   viewerContainer.replaceChildren();
   scaleViewport(viewer);
 
-  const viewportCycles = viewer.viewportMaxCycle - viewer.viewportMinCycle;
   for (const [i, alloc] of data.segments[viewer.activeSegment].allocations.entries()) {
-    if (alloc.alive_from > viewer.viewportMaxCycle) {
+    if (alloc.alive_from >= viewer.viewportMaxCycle) {
+      continue;
+    }
+
+    if (alloc.alive_till <= viewer.viewportMinCycle) {
       continue;
     }
 
@@ -207,10 +284,10 @@ function updateViewport(data, viewer) {
 
     let box = boxTemplate.cloneNode(true);
     box.firstChild.innerText = size;
-    box.style.top = (alloc.offset / viewportMemory * 100) + '%';
-    box.style.height = (alloc.size / viewportMemory * 100) + '%';
-    box.style.left = (alloc.alive_from / viewportCycles * 100) + '%';
-    box.style.right = ((viewportCycles - alloc.alive_till) / viewportCycles * 100) + '%';
+    box.style.top = (alloc.offset / viewport.memory * 100) + '%';
+    box.style.height = (alloc.size / viewport.memory * 100) + '%';
+    box.style.left = (alloc.alive_from / viewport.cycles * 100) + '%';
+    box.style.right = ((viewport.cycles - alloc.alive_till) / viewport.cycles * 100) + '%';
     box.style.backgroundColor = boxColors[i % boxColors.length];
     box.addEventListener('mouseover', (event) => {
       statusLineContainer.innerHTML =
@@ -218,6 +295,26 @@ function updateViewport(data, viewer) {
               alloc.offset} | <b>Lifetime:</b> ${alloc.alive_till - alloc.alive_from}`;
     });
     viewerContainer.appendChild(box);
+  }
+
+  let createShadow = () => {
+    let elem = document.createElement('div');
+    elem.classList.add('mondrian-allocation-limit');
+    return elem;
+  };
+
+  if (viewer.viewportMinCycle > 0) {
+    let shadow = createShadow();
+    shadow.style.left = '0%';
+    shadow.style.width = viewer.viewportMinCycle / viewport.cycles * 100 + '%';
+    viewerContainer.appendChild(shadow);
+  }
+
+  if (viewer.viewportMaxCycle < viewport.cycles) {
+    let shadow = createShadow();
+    shadow.style.right = '0%';
+    shadow.style.width = (viewport.cycles - viewer.viewportMaxCycle) / viewport.cycles * 100 + '%';
+    viewerContainer.appendChild(shadow);
   }
 }
 
@@ -269,5 +366,28 @@ viewerHScale.children[1].addEventListener('input', (event) => {
 });
 viewerHScale.children[2].addEventListener('click', () => {
   changeScale(0.5, 0);
+});
+
+function enableViewportLimiterDrag(left, right, origin) {
+  viewport.limiter.startDrag(left, right, origin);
+  let moveHandler = (ev) => {
+    viewport.limiter.move(ev);
+  };
+
+  document.addEventListener('mousemove', moveHandler);
+  document.addEventListener('mouseup', () => {
+    document.removeEventListener('mousemove', moveHandler);
+    viewport.limiter.updateLimit(true);
+  }, {once: true});
+}
+
+scrollbarBtn.children[0].addEventListener('mousedown', (ev) => {
+  enableViewportLimiterDrag(true, false, ev.clientX);
+});
+scrollbarBtn.children[1].addEventListener('mousedown', (ev) => {
+  enableViewportLimiterDrag(true, true, ev.clientX);
+});
+scrollbarBtn.children[2].addEventListener('mousedown', (ev) => {
+  enableViewportLimiterDrag(false, true, ev.clientX);
 });
 })();
