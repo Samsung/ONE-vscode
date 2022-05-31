@@ -137,7 +137,7 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
     let inputModel = path.basename(importTF.inputPath);
     importTF.name = 'ImportTF ' + inputModel;
 
-    console.log('importTF = ', importTF);
+    Logger.info(this.tag, 'importTF =', importTF);
     this.jobOwner.addJob(importTF);
     Logger.info(this.tag, 'Add Import: ' + inputModel);
   }
@@ -165,7 +165,7 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
     let inputModel = path.basename(importONNX.inputPath);
     importONNX.name = 'Import ' + inputModel;
 
-    console.log('importOnnx = ', importONNX);
+    Logger.info(this.tag, 'importOnnx =', importONNX);
     this.jobOwner.addJob(importONNX);
     Logger.info(this.tag, 'Add Import: ' + inputModel);
   }
@@ -182,7 +182,7 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
     let inputModel = path.basename(importBCQ.inputPath);
     importBCQ.name = 'ImportBCQ ' + inputModel;
 
-    console.log('importTF = ', importBCQ);
+    Logger.info(this.tag, 'importTF =', importBCQ);
     this.jobOwner.addJob(importBCQ);
     Logger.info(this.tag, 'Add Import: ' + inputModel);
   }
@@ -241,7 +241,7 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
     let inputModel = path.basename(optimize.inputPath);
     optimize.name = 'Optimize ' + inputModel;
 
-    console.log('optimize = ', optimize);
+    Logger.info(this.tag, 'optimize =', optimize);
     this.jobOwner.addJob(optimize);
     Logger.info(this.tag, 'Add Optimize: ' + inputModel);
   }
@@ -254,7 +254,7 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
     let inputModel = path.basename(quantize.inputPath);
     quantize.name = 'Quantize ' + inputModel;
 
-    console.log('quantize = ', quantize);
+    Logger.info(this.tag, 'quantize =', quantize);
     this.jobOwner.addJob(quantize);
     Logger.info(this.tag, 'Add Quantize: ' + inputModel);
   }
@@ -267,7 +267,7 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
     let inputModel = path.basename(pack.inputPath);
     pack.name = 'Pack ' + inputModel;
 
-    console.log('pack = ', pack);
+    Logger.info(this.tag, 'pack =', pack);
     this.jobOwner.addJob(pack);
     Logger.info(this.tag, 'Add Pack: ' + inputModel);
   }
@@ -279,7 +279,7 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
 
     codegen.name = 'Codegen ' + codegen.backend;
 
-    console.log('Codegen = ', codegen);
+    Logger.info(this.tag, 'Codegen =', codegen);
     this.jobOwner.addJob(codegen);
     Logger.info(this.tag, 'Add Codegen: ' + codegen.backend);
   }
@@ -328,7 +328,7 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
     let importItems = [K_IMPORT_TF, K_IMPORT_TFLITE, K_IMPORT_ONNX, K_IMPORT_BCQ];
 
     for (let item of importItems) {
-      console.log('getImportItem:', item);
+      Logger.info(this.tag, 'getImportItem:', item);
       if (this.isItemTrue(cfgOne[item])) {
         return item;
       }
@@ -366,7 +366,7 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
       Balloon.error('Invalid \'' + K_ONECC + '\' or \'' + K_ONE_BUILD + '\' section');
       return;
     }
-    console.log('Import: ', itemJob);
+    Logger.info(this.tag, 'Import:', itemJob);
     if (itemJob === K_IMPORT_TF) {
       let prop = cfgIni[itemJob];
       this.cfgImportTf(prop);
@@ -409,7 +409,7 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
       Balloon.error('Invalid file selection');
       return;
     }
-    console.log('Selected file: ' + fileUri.fsPath);
+    Logger.info(this.tag, 'Selected file: ' + fileUri.fsPath);
 
     this.jobOwner.clearJobs();
     this.cfgFilePath = fileUri.fsPath;

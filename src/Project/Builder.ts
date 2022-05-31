@@ -18,6 +18,7 @@ import * as vscode from 'vscode';
 
 import {Balloon} from '../Utils/Balloon';
 import * as helpers from '../Utils/Helpers';
+import {Logger} from '../Utils/Logger';
 
 import {BuilderCfgFile} from './BuilderCfgFile';
 import {BuilderJob} from './BuilderJob';
@@ -48,8 +49,7 @@ export class Builder implements BuilderJob {
   }
 
   public finishAdd(): void {
-    console.log('Done building WorkFlow.');
-    console.log(this.workFlow.jobs);
+    Logger.info('Builder', 'Done building WorkFlow: ', this.workFlow.jobs);
   }
 
   // called from user interface

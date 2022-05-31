@@ -20,9 +20,12 @@ import * as vscode from 'vscode';
 
 import {Backend} from '../Backend/API';
 import {globalBackendMap} from '../Backend/Backend';
+import {Logger} from '../Utils/Logger';
 import {MultiStepInput} from '../Utils/MultiStepInput';
 
 export async function runInferenceQuickInput(context: vscode.ExtensionContext) {
+  const logTag = 'runInferenceQuickInput';
+
   interface State {
     backend: Backend;
     modelPath: vscode.Uri;
@@ -79,7 +82,7 @@ export async function runInferenceQuickInput(context: vscode.ExtensionContext) {
     if (fileUri && fileUri[0]) {
       state.modelPath = fileUri[0];
     } else {
-      console.log('No model has been selected');
+      Logger.warn(logTag, 'No model has been selected');
       state.error = 'No model has been selected. Please check once again.';
       state.modelPath = undefined;
       return;
@@ -123,7 +126,7 @@ export async function runInferenceQuickInput(context: vscode.ExtensionContext) {
             },
             (progress, token) => {
               token.onCancellationRequested(() => {
-                console.log('User canceled the log running operation');
+                Logger.info(logTag, 'User canceled the log running operation');
               });
               const p = new Promise((resolve, reject) => {
         exec(cmd?.str() + ' > ' + outFileName, (error, stdout, stderr) => {

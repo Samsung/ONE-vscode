@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import {Logger} from '../Utils/Logger';
+
 import {Job} from './Job';
 import {JobImport} from './JobImport';
 import {ToolArgs} from './ToolArgs';
@@ -35,7 +37,7 @@ export class JobImportTFLite extends JobImport {
     args.add('--input_path', this.inputPath);
     args.add('--output_path', this.outputPath);
 
-    console.log('args = ', args);
+    Logger.info(this.constructor.name, 'args =', args);
 
     return args;
   }

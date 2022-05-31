@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import {Logger} from '../../Utils/Logger';
 import {Operator} from '../circle-analysis/circle/operator';
 import {NodeAttributes} from '../type/types';
 
@@ -176,7 +177,7 @@ export function setAttributesByOption(
       OptionsAttribute.getWhileAttr(operator, modelAttribute);
       break;
     default:
-      console.log('This option is not supported yet.');
+      Logger.warn('setAttributesByOption', 'This option is not supported yet:', optName);
       break;
   }
 }
