@@ -31,9 +31,11 @@ export type SelfKilled = 'SelfKilled';
 export class ToolRunner {
   tag = this.constructor.name;  // logging tag
 
+  // This variable is undefined while a prcess is not running
   private child: cp.ChildProcessWithoutNullStreams|undefined = undefined;
 
   // When the spawned process was killed by kill() method, set this true
+  // This value must be set to false when starting a process
   private killedByMe = false;
 
   private handlePromise(
@@ -77,7 +79,7 @@ export class ToolRunner {
       if (codestr === '0') {
         Logger.info(this.tag, 'Build Success.');
         Logger.appendLine('');
-        resolve('0');
+        resolve(codestr);
       } else {
         Logger.info(this.tag, 'Build Failed:' + codestr);
         Logger.appendLine('');
@@ -87,28 +89,30 @@ export class ToolRunner {
     });
   }
 
+  public isRunning(): boolean {
+    if (this.child === undefined) {
+      return false;
+    } else if (this.child.killed) {
+      return false;
+    } else if (this.child.exitCode !== null) {
+      // From https://nodejs.org/api/child_process.html#subprocessexitcode
+      // If the child process is still running, the field will be null.
+      return false;
+    }
+    return true;
+  }
+
   /**
    * Function to kill child process
    */
   public kill(): boolean {
-    this.killedByMe = false;
-
     if (this.child === undefined || this.child.killed) {
       throw Error('No process to kill');
     }
 
-    const signals: NodeJS.Signals[] = ['SIGINT', 'SIGTERM', 'SIGKILL'];
-
-    for (const signal of signals) {
-      if (this.child!.kill(signal)) {
-        this.killedByMe = true;
-        break;
-      }
-    }
-
-    if (this.killedByMe) {
+    if (this.child!.kill()) {
+      this.killedByMe = true;
       Logger.info(this.tag, `Process was terminated.`);
-      this.child = undefined;
     } else {
       Logger.error(this.tag, 'Fail to terminate process.');
     }
@@ -140,6 +144,12 @@ export class ToolRunner {
   }
 
   public getRunner(name: string, tool: string, toolargs: ToolArgs, path: string, root?: boolean) {
+    if (this.isRunning()) {
+      const msg = `Error: Running: ${name}. Process is already running.`;
+      Logger.error(this.tag, msg);
+      throw Error(msg);
+    }
+
     this.killedByMe = false;
 
     return new Promise<string>((resolve, reject) => {

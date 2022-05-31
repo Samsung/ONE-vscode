@@ -56,6 +56,71 @@ suite('Project', function() {
       });
     });  // @use-onecc
 
+    const wait = async function(sec: number) {
+      await new Promise(resolve => setTimeout(resolve, sec * 1000));
+    };
+
+    suite(`#getRunner()`, function() {
+      test('NEG: calling sequence', async function() {
+        let toolRunner = new ToolRunner();
+        {
+          let args = new ToolArgs();
+          args.push('0.3');
+          assert.doesNotThrow(() => toolRunner.getRunner('sleep', 'sleep', args, '.'));
+        }
+        // runner1 is still running finished. calling getRunner() throws an error
+        {
+          let args = new ToolArgs();
+          args.push('0.3');
+          assert.throw(() => toolRunner.getRunner('sleep', 'sleep', args, '.'));
+        }
+      });
+
+      test('calling sequence', async function() {
+        let toolRunner = new ToolRunner();
+        {
+          let args = new ToolArgs();
+          args.push('0.1');
+          assert.doesNotThrow(() => toolRunner.getRunner('sleep', 'sleep', args, '.'));
+        }
+        await wait(0.3);
+        // now runner1 was finished
+        {
+          let args = new ToolArgs();
+          args.push('0.1');
+          assert.doesNotThrow(() => toolRunner.getRunner('sleep', 'sleep', args, '.'));
+          // finished without Error
+        }
+      });
+
+      test('lots of simultaneous calls', async function() {
+        let toolRunner = new ToolRunner();
+
+        const simultaneousTrials = 32;  // some reasonably big number
+        const errorAmongTrials = simultaneousTrials - 1;
+
+        let errCount = 0;
+
+        for (let i = 0; i < simultaneousTrials; i++) {
+          let args = new ToolArgs();
+          args.push('1');  // 1 sec
+          try {
+            toolRunner.getRunner('sleep', 'sleep', args, '.');
+          } catch (err) {
+            // cannot make process
+            errCount++;
+          }
+        }
+
+        assert.equal(errCount, errorAmongTrials);
+
+        // kill to finish this test
+        assert.equal(toolRunner.isRunning(), true);
+        assert.equal(toolRunner.kill(), true);
+        assert.equal(toolRunner.isRunning(), false);
+      });
+    });
+
     suite(`#kill()`, function() {
       test('basic case', async function() {
         let finished = false;
@@ -101,8 +166,8 @@ suite('Project', function() {
               assert.fail();
             });
 
-        // wait for 0.1 sec. sleep already exited
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // wait some long time. sleep process will exit during this sleep.
+        await wait(0.2);
         assert.isTrue(finished);  // sanity check
 
         assert.throw(() => toolRunner.kill());
