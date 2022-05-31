@@ -19,10 +19,13 @@ import * as vscode from 'vscode';
 import {Toolchain} from '../Backend/Toolchain';
 import {JobCallback} from '../Project/Job';
 import {gToolchainEnvMap, ToolchainEnv} from '../Toolchain/ToolchainEnv';
+import {Balloon} from '../Utils/Balloon';
 import {Logger} from '../Utils/Logger';
 import {MultiStepInput} from '../Utils/MultiStepInput';
 
 export async function showInstallQuickInput() {
+  const logtag = showInstallQuickInput.name;
+
   interface State {
     title: string;
     step: number;
@@ -104,7 +107,7 @@ export async function showInstallQuickInput() {
       shouldResume: shouldResume
     });
     if (version instanceof InnerButton) {
-      console.log('press the refresh button');
+      Logger.info(logtag, 'press the refresh button');
       return (input: MultiStepInput) => updateBackend(input, state);
     }
     state.version = version;
@@ -112,30 +115,30 @@ export async function showInstallQuickInput() {
   }
 
   async function requestPrerequisitesAsync(toolchainEnv: ToolchainEnv) {
-    return new Promise((resolve, reject) => {
-      toolchainEnv.prerequisites(
-          () => {
-            console.log('Prerequisites success');
-            resolve('success');
-          },
-          () => {
-            console.log('Prerequisites fail');
-            // NOTE(jyoung)
-            // Even though this job is failed, it still shows the version quick input.
-            // The error message will be shown in JobRunner code to user. So here,
-            // only the log is output and it goes to the `resolve` so that quick input
-            // can be seen normally.
-            resolve('fail');
-          });
+    return new Promise<boolean>((resolve, reject) => {
+      toolchainEnv.prerequisites(() => resolve(true), () => {
+        // NOTE(jyoung)
+        // Even though this job is failed, it still shows the version quick input.
+        // The error message will be shown in JobRunner code to user. So here,
+        // only the log is output and it goes to the `resolve` so that quick input
+        // can be seen normally.
+        resolve(false);
+      });
     });
   }
 
   async function updateBackend(input: MultiStepInput, state: Partial<State>) {
     if (state.toolchainEnv === undefined || state.toolchainType === undefined) {
-      throw Error('toolchainenv  is undefined.');
+      throw Error('toolchainenv is undefined.');
     }
 
-    await requestPrerequisitesAsync(state.toolchainEnv);
+    const result = await requestPrerequisitesAsync(state.toolchainEnv);
+    if (result === true) {
+      Balloon.info('Backend toolchain list has been successfully updated.');
+    } else {
+      Balloon.error('Failed to update Backend toolchain list.');
+    }
+
     // NOTE(jyoung)
     // Prerequisites request shows the password quick input and this input is
     // automatically added to MultiStepInput's steps. If the user clicks
@@ -155,7 +158,7 @@ export async function showInstallQuickInput() {
 
   const state = await collectInputs();
   Logger.info(
-      'showInstallQuickInput',
+      logtag,
       `Selected backend: ${state.backend.label}-${state.toolchainType}-${state.version.label}`);
 
   return new Promise((resolve, reject) => {
