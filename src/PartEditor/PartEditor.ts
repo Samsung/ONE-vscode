@@ -25,8 +25,10 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
 
   private readonly _extensionUri: vscode.Uri;
 
+  private _webview: vscode.Webview|undefined;
   private _disposables: vscode.Disposable[] = [];
   private _document: vscode.TextDocument|undefined;
+  private _backEndNames: string[] = [];
 
   public static register(context: vscode.ExtensionContext): vscode.Disposable {
     const provider = new PartEditorProvider(context);
@@ -41,12 +43,15 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
   constructor(private readonly context: vscode.ExtensionContext) {
     this._extensionUri = context.extensionUri;
     this._document = undefined;
+    this._webview = undefined;
   }
 
   public async resolveCustomTextEditor(
       document: vscode.TextDocument, webviewPanel: vscode.WebviewPanel,
       token: vscode.CancellationToken): Promise<void> {
     console.log('document=', document);
+
+    this._webview = webviewPanel.webview;
 
     const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(e => {
       if (e.document.uri.toString() === document.uri.toString()) {
@@ -64,6 +69,15 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
         },
         null, this._disposables);
 
+    // Receive message from the webview.
+    webviewPanel.webview.onDidReceiveMessage(message => {
+      switch (message.command) {
+        case 'requestBackends':
+          this.handleRequestBackends();
+          return;
+      }
+    });
+
     this._document = document;
 
     webviewPanel.webview.options = this.getWebviewOptions(this._extensionUri),
@@ -76,6 +90,19 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
     // TODO update webView with document
     if (this._document) {
       console.log('updateWebview document.uri=', this._document.uri);
+    }
+  }
+
+  private handleRequestBackends() {
+    // TODO revise to get from backend
+    this._backEndNames = ['(default)', 'CPU', 'ACL_CL', 'NPU'];
+
+    let backends = '';
+    this._backEndNames.forEach((item) => {
+      backends = backends + item + '\n';
+    });
+    if (this._webview) {
+      this._webview.postMessage({command: 'resultBackends', backends: backends});
     }
   }
 
