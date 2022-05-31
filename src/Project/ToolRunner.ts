@@ -43,7 +43,7 @@ export class ToolRunner {
 
     cmd.on(K_EXIT, (code: any) => {
       let codestr = code.toString();
-      console.log('child process exited with code ' + codestr);
+      Logger.info(this.tag, 'child process exited with code ' + codestr);
       if (codestr === '0') {
         Logger.info(this.tag, 'Build Success.');
         Logger.appendLine('');
@@ -63,18 +63,18 @@ export class ToolRunner {
       // Use fixed installation path
       oneccPath = '/usr/share/one/bin/onecc';
     }
-    console.log('onecc path: ', oneccPath);
+    Logger.info(this.tag, 'onecc path:', oneccPath);
     // check if onecc exist
     if (!fs.existsSync(oneccPath)) {
-      console.log('Failed to find onecc file');
+      Logger.info(this.tag, 'Failed to find onecc file');
       return undefined;
     }
     // onecc maybe symbolic link: use fs.realpathSync to convert to real path
     let oneccRealPath = fs.realpathSync(oneccPath);
-    console.log('onecc real path: ', oneccRealPath);
+    Logger.info(this.tag, 'onecc real path: ', oneccRealPath);
     // check if this onecc exist
     if (!fs.existsSync(oneccRealPath)) {
-      console.log('Failed to find onecc file');
+      Logger.info(this.tag, 'Failed to find onecc file');
       return undefined;
     }
     return oneccRealPath;
