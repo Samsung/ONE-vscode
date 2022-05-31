@@ -54,12 +54,12 @@ export function activate(context: vscode.ExtensionContext) {
 
   // Target Device view
   let registerDevice = vscode.commands.registerCommand('onevscode.register-device', () => {
-    console.log('register-device: NYI');
+    Logger.info(tag, 'register-device: NYI');
   });
   context.subscriptions.push(registerDevice);
 
   let inferenceCommand = vscode.commands.registerCommand('onevscode.infer-model', () => {
-    console.log('one infer model...');
+    Logger.info(tag, 'one infer model...');
     runInferenceQuickInput(context);
   });
   context.subscriptions.push(inferenceCommand);
@@ -71,19 +71,19 @@ export function activate(context: vscode.ExtensionContext) {
   projectBuilder.init();
 
   let disposableOneBuild = vscode.commands.registerCommand('onevscode.build', () => {
-    console.log('one build...');
+    Logger.info(tag, 'one build...');
     projectBuilder.build(context);
   });
   context.subscriptions.push(disposableOneBuild);
 
   let disposableOneImport = vscode.commands.registerCommand('onevscode.import', () => {
-    console.log('one import...');
+    Logger.info(tag, 'one import...');
     projectBuilder.import(context);
   });
   context.subscriptions.push(disposableOneImport);
 
   let disposableOneJsontracer = vscode.commands.registerCommand('onevscode.json-tracer', () => {
-    console.log('one json tracer...');
+    Logger.info(tag, 'one json tracer...');
     Jsontracer.createOrShow(context.extensionUri);
   });
   context.subscriptions.push(disposableOneJsontracer);
@@ -91,7 +91,7 @@ export function activate(context: vscode.ExtensionContext) {
   let disposableOneConfigurationSettings =
       vscode.commands.registerCommand('onevscode.configuration-settings', () => {
         ConfigPanel.createOrShow(context);
-        console.log('one configuration settings...');
+        Logger.info(tag, 'one configuration settings...');
       });
   context.subscriptions.push(disposableOneConfigurationSettings);
 
@@ -115,7 +115,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(disposableHover);
 
   let disposableOneCircleTracer = vscode.commands.registerCommand('onevscode.circle-tracer', () => {
-    console.log('one circle tracer...');
+    Logger.info(tag, 'one circle tracer...');
     const options: vscode.OpenDialogOptions = {
       canSelectMany: false,
       openLabel: 'Open',
