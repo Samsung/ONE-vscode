@@ -240,7 +240,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
    *
    * @param oneNode A base model to create configuration
    */
-  createCfg(oneNode: OneNode): void {
+  async createCfg(oneNode: OneNode): Promise<void> {
     const dirPath = path.parse(oneNode.node.path).dir;
     const modelName = path.parse(oneNode.node.path).name;
     const extName = path.parse(oneNode.node.path).ext.slice(1);
@@ -276,18 +276,21 @@ input_path=${modelName}.${extName}
           validateInput: validateInputPath
         })
         .then(value => {
-          const cfgPath = `${dirPath}/${value}`;
-          try {
-            if (fs.existsSync(cfgPath)) {
-              vscode.window.showInformationMessage(`Cancelled: Path already exists (${cfgPath})`);
-              return;
-            }
-          } catch (err) {
-            console.error(err);
-            return;
-          }
+          const uri = vscode.Uri.file(`${dirPath}/${value}`);
+          return vscode.workspace.fs.writeFile(uri, content), uri;
+        })
+        .then((uri) => {
+          return new Promise<vscode.Uri>(resolve => {
+            this.refresh();
 
-          vscode.workspace.fs.writeFile(vscode.Uri.file(cfgPath), content);
+            // Wait until the refresh event listeners are handled
+            // TODO: Add an event after revising refresh commmand
+            setTimeout(() => resolve(uri), 200);
+          });
+        })
+        .then((uri) => {
+          vscode.commands.executeCommand('list.expand', uri);
+          vscode.commands.executeCommand('vscode.openWith', uri, CfgEditorPanel.viewType);
         });
   }
 
