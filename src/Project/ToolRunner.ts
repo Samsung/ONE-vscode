@@ -26,6 +26,7 @@ const K_DATA: string = 'data';
 const K_EXIT: string = 'exit';
 
 // successfully killed by calling kill() method
+export type ExitCode = string;
 export type SelfKilled = 'SelfKilled';
 
 export class ToolRunner {
@@ -39,8 +40,8 @@ export class ToolRunner {
   private killedByMe = false;
 
   private handlePromise(
-      resolve: (value: string|SelfKilled|PromiseLike<string>) => void,
-      reject: (value: string|NodeJS.Signals|PromiseLike<string>) => void) {
+      resolve: (value: ExitCode|SelfKilled|PromiseLike<string>) => void,
+      reject: (value: ExitCode|NodeJS.Signals|PromiseLike<string>) => void) {
     // stdout
     this.child!.stdout.on(K_DATA, (data: any) => {
       Logger.append(data.toString());
@@ -50,7 +51,7 @@ export class ToolRunner {
       Logger.append(data.toString());
     });
 
-    this.child!.on(K_EXIT, (code: number|null, signal: NodeJS.Signals|null) => {
+    this.child!.on(K_EXIT, (code: ExitCode|null, signal: NodeJS.Signals|null) => {
       this.child = undefined;
 
       // From https://nodejs.org/api/child_process.html#event-exit
