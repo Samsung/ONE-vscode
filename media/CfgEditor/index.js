@@ -1,0 +1,251 @@
+/*
+ * Copyright (c) 2022 Samsung Electronics Co., Ltd. All Rights Reserved
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import {displayCfgToEditor} from './displaycfg.js';
+import {applyUpdates, updateCodegen, updateImportInputModelType, updateImportKERAS, updateImportONNX, updateImportPB, updateImportSAVED, updateImportTFLITE, updateProfile, updateSteps} from './updateContent.js';
+import {updateImportUI, updateStepUI} from './updateUI.js';
+
+// Just like a regular webpage we need to wait for the webview
+// DOM to load before we can reference any of the HTML elements
+// or toolkit components
+window.addEventListener('load', main);
+
+// Main function that gets executed once the webview DOM loads
+function main() {
+  registerSteps();
+  registerImportOptions();
+  registerCodegenOptions();
+  registerProfileOptions();
+
+  // event from vscode extension
+  window.addEventListener('message', event => {
+    const message = event.data;
+    switch (message.type) {
+      case 'displayCfgToEditor':
+        displayCfgToEditor(message.text);
+        break;
+      default:
+        break;
+    }
+  });
+}
+
+function registerSteps() {
+  const checkboxImport = document.getElementById('checkboxImport');
+  const checkboxOptimize = document.getElementById('checkboxOptimize');
+  const checkboxQuantize = document.getElementById('checkboxQuantize');
+  const checkboxCodegen = document.getElementById('checkboxCodegen');
+  const checkboxProfile = document.getElementById('checkboxProfile');
+  const stepImport = document.getElementById('stepImport');
+  const stepOptimize = document.getElementById('stepOptimize');
+  const stepQuantize = document.getElementById('stepQuantize');
+  const stepCodegen = document.getElementById('stepCodegen');
+  const stepProfile = document.getElementById('stepProfile');
+
+  checkboxImport.addEventListener('click', function() {
+    updateSteps();
+    updateImportInputModelType();
+    applyUpdates();
+  });
+  checkboxOptimize.addEventListener('click', function() {
+    updateSteps();
+    // TODO Implement this
+    // UpdateOptimize();
+    applyUpdates();
+  });
+  checkboxQuantize.addEventListener('click', function() {
+    updateSteps();
+    // TODO Implement this
+    // UpdateQuantize();
+    applyUpdates();
+  });
+  checkboxCodegen.addEventListener('click', function() {
+    updateSteps();
+    updateCodegen();
+    applyUpdates();
+  });
+  checkboxProfile.addEventListener('click', function() {
+    updateSteps();
+    updateProfile();
+    applyUpdates();
+  });
+
+  stepImport.addEventListener('click', function() {
+    updateStepUI('Import');
+  });
+  stepOptimize.addEventListener('click', function() {
+    updateStepUI('Optimize');
+  });
+  stepQuantize.addEventListener('click', function() {
+    updateStepUI('Quantize');
+  });
+  stepCodegen.addEventListener('click', function() {
+    updateStepUI('Codegen');
+  });
+  stepProfile.addEventListener('click', function() {
+    updateStepUI('Profile');
+  });
+}
+
+function registerImportOptions() {
+  const importInputModelType = document.getElementById('importInputModelType');
+  importInputModelType.addEventListener('click', function() {
+    updateImportUI();
+    updateImportInputModelType();
+    applyUpdates();
+  });
+
+  registerPBOptions();
+  registerSAVEDOptions();
+  registerKERASOptions();
+  registerTFLITEOptions();
+  registerONNXOptions();
+}
+
+function registerPBOptions() {
+  const pbInputPath = document.getElementById('PBInputPath');
+  const pbOutputPath = document.getElementById('PBOutputPath');
+  const pbConverterVersion = document.getElementById('PBConverterVersion');
+  const pbInputArrays = document.getElementById('PBInputArrays');
+  const pbOutputArrays = document.getElementById('PBOutputArrays');
+  const pbInputShapes = document.getElementById('PBInputShapes');
+
+  // NOTE For radio button, 'change' event is applied from beginning.
+  //      So 'click' event should be used to avoid the problem.
+  pbConverterVersion.addEventListener('click', function() {
+    updateImportPB();
+    applyUpdates();
+  });
+  pbInputPath.addEventListener('change', function() {
+    updateImportPB();
+    applyUpdates();
+  });
+  pbOutputPath.addEventListener('change', function() {
+    updateImportPB();
+    applyUpdates();
+  });
+  pbInputArrays.addEventListener('change', function() {
+    updateImportPB();
+    applyUpdates();
+  });
+  pbOutputArrays.addEventListener('change', function() {
+    updateImportPB();
+    applyUpdates();
+  });
+  pbInputShapes.addEventListener('change', function() {
+    updateImportPB();
+    applyUpdates();
+  });
+}
+
+function registerSAVEDOptions() {
+  const savedInputPath = document.getElementById('SAVEDInputPath');
+  const savedOutputPath = document.getElementById('SAVEDOutputPath');
+
+  savedInputPath.addEventListener('change', function() {
+    updateImportSAVED();
+    applyUpdates();
+  });
+  savedOutputPath.addEventListener('change', function() {
+    updateImportSAVED();
+    applyUpdates();
+  });
+}
+
+function registerKERASOptions() {
+  const kerasInputPath = document.getElementById('KERASInputPath');
+  const kerasOutputPath = document.getElementById('KERASOutputPath');
+
+  kerasInputPath.addEventListener('change', function() {
+    updateImportKERAS();
+    applyUpdates();
+  });
+  kerasOutputPath.addEventListener('change', function() {
+    updateImportKERAS();
+    applyUpdates();
+  });
+}
+
+function registerTFLITEOptions() {
+  const tfliteInputPath = document.getElementById('TFLITEInputPath');
+  const tfliteOutputPath = document.getElementById('TFLITEOutputPath');
+
+  tfliteInputPath.addEventListener('change', function() {
+    updateImportTFLITE();
+    applyUpdates();
+  });
+  tfliteOutputPath.addEventListener('change', function() {
+    updateImportTFLITE();
+    applyUpdates();
+  });
+}
+
+function registerONNXOptions() {
+  const onnxInputPath = document.getElementById('ONNXInputPath');
+  const onnxOutputPath = document.getElementById('ONNXOutputPath');
+  const onnxSaveIntermediate = document.getElementById('ONNXSaveIntermediate');
+  const onnxUnrollRNN = document.getElementById('ONNXUnrollRNN');
+  const onnxUnrollLSTM = document.getElementById('ONNXUnrollLSTM');
+
+  onnxInputPath.addEventListener('change', function() {
+    updateImportONNX();
+    applyUpdates();
+  });
+  onnxOutputPath.addEventListener('change', function() {
+    updateImportONNX();
+    applyUpdates();
+  });
+  onnxSaveIntermediate.addEventListener('click', function() {
+    updateImportONNX();
+    applyUpdates();
+  });
+  onnxUnrollRNN.addEventListener('click', function() {
+    updateImportONNX();
+    applyUpdates();
+  });
+  onnxUnrollLSTM.addEventListener('click', function() {
+    updateImportONNX();
+    applyUpdates();
+  });
+}
+
+function registerCodegenOptions() {
+  const codegenBackend = document.getElementById('codegenBackend');
+  const codegenCommand = document.getElementById('codegenCommand');
+
+  codegenBackend.addEventListener('change', function() {
+    updateCodegen();
+    applyUpdates();
+  });
+  codegenCommand.addEventListener('change', function() {
+    updateCodegen();
+    applyUpdates();
+  });
+}
+
+function registerProfileOptions() {
+  const profileBackend = document.getElementById('profileBackend');
+  const profileCommand = document.getElementById('profileCommand');
+
+  profileBackend.addEventListener('change', function() {
+    updateProfile();
+    applyUpdates();
+  });
+  profileCommand.addEventListener('change', function() {
+    updateProfile();
+    applyUpdates();
+  });
+}
