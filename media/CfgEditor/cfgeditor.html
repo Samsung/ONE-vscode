@@ -212,7 +212,38 @@ limitations under the License.
             </div>
         </div>
         <div class="options" id="optionOptimize">
-            <!-- TODO Implement Optimize step -->
+            <div class="basic">
+                <div class="title">
+                    Basic Options
+                </div>
+                <div class="option">
+                    <vscode-text-field id="optimizeInputPath" startIcon="true" size="50" placeholder="">
+                        Input Path
+                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="optimizeOutputPath" startIcon="true" size="50" placeholder="">
+                        Output Path
+                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+            </div>
+            <div class="advanced">
+                <div class="title">
+                    Optimization Parameters
+                    <span slot="end" class="codicon codicon-question" style="cursor: pointer"></span>
+                </div>
+                <div class="option">
+                    <vscode-data-grid id="basicOptimizeTable" generate-header="default" aria-label="Default Header" grid-template-columns="5% 40% 55%">
+                        <vscode-data-grid-row row-type="header">
+                            <vscode-data-grid-cell cell-type="columnheader" grid-column="1">&nbsp;</vscode-data-grid-cell>
+                            <vscode-data-grid-cell cell-type="columnheader" grid-column="2">Name</vscode-data-grid-cell>
+                            <vscode-data-grid-cell cell-type="columnheader" grid-column="3">Description</vscode-data-grid-cell>
+                        </vscode-data-grid-row>                        
+                    </vscode-data-grid>
+                </div>                
+            </div>
         </div>
         <div class="options" id="optionQuantize">
             <!-- TODO Implement Quantize step -->

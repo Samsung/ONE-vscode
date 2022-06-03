@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import oneOptimizationList from './one-optimizations.json' assert {type : 'json'};
 import {updateImportUI} from './updateUI.js';
 
 export function displayCfgToEditor(cfg) {
@@ -100,7 +101,12 @@ export function displayCfgToEditor(cfg) {
 
   updateImportUI();
 
-  // TODO Implement for optimize
+  const oneOptimize = cfg['one-optimize'];
+  document.getElementById('optimizeInputPath').value = cfgString(oneOptimize?.['input_path']);
+  document.getElementById('optimizeOutputPath').value = cfgString(oneOptimize?.['output_path']);
+  for (const optName in oneOptimizationList) {
+    document.getElementById('checkboxOptimize' + optName).checked = cfgBoolean(oneOptimize?.[optName]);
+  }
 
   // TODO Implement for quantize
 
@@ -123,6 +129,10 @@ function cfgString(str) {
 }
 
 function cfgBoolean(str) {
+  if (str === null || str === undefined) {
+    return false;
+  }
+
   if (str === 'True') {
     return true;
   }
