@@ -19,10 +19,13 @@ import * as vscode from 'vscode';
 import {Toolchain} from '../Backend/Toolchain';
 import {JobCallback} from '../Project/Job';
 import {gToolchainEnvMap, ToolchainEnv} from '../Toolchain/ToolchainEnv';
+import {Balloon} from '../Utils/Balloon';
 import {Logger} from '../Utils/Logger';
 import {MultiStepInput} from '../Utils/MultiStepInput';
 
 export async function showInstallQuickInput() {
+  const logtag = showInstallQuickInput.name;
+
   interface State {
     title: string;
     step: number;
@@ -41,6 +44,12 @@ export async function showInstallQuickInput() {
   }
 
   const title = 'Choose Compiler Toolchain';
+
+  class InnerButton implements vscode.QuickInputButton {
+    constructor(public iconPath: vscode.ThemeIcon, public tooltip: string) {}
+  }
+
+  const updateButton = new InnerButton(new vscode.ThemeIcon('refresh'), 'Update version list');
 
   async function pickBackend(input: MultiStepInput, state: Partial<State>) {
     const backendGroups: vscode.QuickPickItem[] =
@@ -88,15 +97,55 @@ export async function showInstallQuickInput() {
     const versions =
         toolchains.map((value) => value.info.version !== undefined ? value.info.version.str() : '');
     const versionGroups: vscode.QuickPickItem[] = versions.map((label) => ({label}));
-    state.version = await input.showQuickPick({
+    const version = await input.showQuickPick({
       title,
       step: 3,
       totalSteps: 3,
       placeholder: 'Pick toolchain version',
       items: versionGroups,
+      buttons: [updateButton],
       shouldResume: shouldResume
     });
+    if (version instanceof InnerButton) {
+      Logger.info(logtag, 'press the refresh button');
+      return (input: MultiStepInput) => updateBackend(input, state);
+    }
+    state.version = version;
     state.toolchain = toolchains[versions.indexOf(state.version.label)];
+  }
+
+  async function requestPrerequisitesAsync(toolchainEnv: ToolchainEnv) {
+    return new Promise<boolean>((resolve, reject) => {
+      toolchainEnv.prerequisites(() => resolve(true), () => {
+        // NOTE(jyoung)
+        // Even though this job is failed, it still shows the version quick input.
+        // The error message will be shown in JobRunner code to user. So here,
+        // only the log is output and it goes to the `resolve` so that quick input
+        // can be seen normally.
+        resolve(false);
+      });
+    });
+  }
+
+  async function updateBackend(input: MultiStepInput, state: Partial<State>) {
+    if (state.toolchainEnv === undefined || state.toolchainType === undefined) {
+      throw Error('toolchainenv is undefined.');
+    }
+
+    const result = await requestPrerequisitesAsync(state.toolchainEnv);
+    if (result === true) {
+      Balloon.info('Backend toolchain list has been successfully updated.');
+    } else {
+      Balloon.error('Failed to update Backend toolchain list.');
+    }
+
+    // NOTE(jyoung)
+    // Prerequisites request shows the password quick input and this input is
+    // automatically added to MultiStepInput's steps. If the user clicks
+    // 'back' button on quick input, the previous step is shown, and the password
+    // input is show at this time, so it must be removed directly from the steps.
+    input.steps.pop();
+    return pickVersion(input, state);
   }
 
   function shouldResume() {
@@ -109,7 +158,7 @@ export async function showInstallQuickInput() {
 
   const state = await collectInputs();
   Logger.info(
-      'showInstallQuickInput',
+      logtag,
       `Selected backend: ${state.backend.label}-${state.toolchainType}-${state.version.label}`);
 
   return new Promise((resolve, reject) => {
