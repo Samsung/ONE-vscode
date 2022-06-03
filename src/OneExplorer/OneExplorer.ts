@@ -241,7 +241,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
    * @param oneNode A base model to create configuration
    */
   createCfg(oneNode: OneNode): void {
-    const dirName = path.parse(oneNode.node.path).dir;
+    const dirPath = path.parse(oneNode.node.path).dir;
     const modelName = path.parse(oneNode.node.path).name;
     const extName = path.parse(oneNode.node.path).ext.slice(1);
 
@@ -254,14 +254,29 @@ one-import-${extName}=True
 input_path=${modelName}.${extName}
 `);
 
+    const validateInputPath = (cfgName: string): string|undefined => {
+      const cfgPath: string = path.join(dirPath, cfgName);
+
+      if (!cfgName.endsWith('.cfg')) {
+        return `A file extension must be .cfg`;
+      }
+
+      if (fs.existsSync(cfgPath)) {
+        return `A file or folder ${
+            cfgName} already exists at this location. Please choose a different name.`;
+      }
+    };
+
     vscode.window
         .showInputBox({
           title: `Create ONE configuration of '${modelName}.${extName}' :`,
-          placeHolder: `${modelName}.cfg`,
-          value: `${modelName}.cfg`
+          placeHolder: `Enter a file name`,
+          value: `${modelName}.cfg`,
+          valueSelection: [0, `${modelName}.cfg`.length - `.cfg`.length],
+          validateInput: validateInputPath
         })
         .then(value => {
-          const cfgPath = `${dirName}/${value}`;
+          const cfgPath = `${dirPath}/${value}`;
           try {
             if (fs.existsSync(cfgPath)) {
               vscode.window.showInformationMessage(`Cancelled: Path already exists (${cfgPath})`);
