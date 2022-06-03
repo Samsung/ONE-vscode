@@ -39,8 +39,11 @@
 Some part of this code refers to
 https://github.com/microsoft/vscode-extension-samples/blob/2556c82cb333cf65d372bd01ac30c35ea1898a0e/custom-editor-sample/src/catScratchEditor.ts
 */
+
+import * as fs from 'fs';
 import * as ini from 'ini';
 import * as vscode from 'vscode';
+import {getNonce} from '../Utils/external/Nonce';
 import {getUri} from '../Utils/external/Uri';
 
 export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
@@ -118,8 +121,9 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
     this.updateWebview(document, webviewPanel);
   };
 
-  // TODO Create separate HTML generator class
   private _getHtmlForWebview(webview: vscode.Webview) {
+    const nonce = getNonce();
+
     const toolkitUri = getUri(webview, this.context.extensionUri, [
       'node_modules',
       '@vscode',
@@ -134,11 +138,27 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
       'dist',
       'codicon.css',
     ]);
-    const jsUri =
-        getUri(webview, this.context.extensionUri, ['media', 'CfgEditor', 'cfgeditor.js']);
+    const jsUri = getUri(webview, this.context.extensionUri, ['media', 'CfgEditor', 'index.js']);
 
     const cssUri =
         getUri(webview, this.context.extensionUri, ['media', 'CfgEditor', 'cfgeditor.css']);
+
+    // import html
+    const htmlPath =
+        getUri(webview, this.context.extensionUri, ['media', 'CfgEditor', 'cfgeditor.html']);
+    let html = fs.readFileSync(htmlPath.fsPath, {encoding: 'utf-8'});
+
+    // Apply js and cs to html
+    html = html.replace(/\${nonce}/g, `${nonce}`);
+    html = html.replace(/\${webview.cspSource}/g, `${webview.cspSource}`);
+    html = html.replace(/\${toolkitUri}/g, `${toolkitUri}`);
+    html = html.replace(/\${codiconUri}/g, `${codiconUri}`);
+    html = html.replace(/\${jsUri}/g, `${jsUri}`);
+    html = html.replace(/\${cssUri}/g, `${cssUri}`);
+
+    return html;
+
+    // TODO Remove following unused codes
 
     return /*html*/ `
     <!DOCTYPE html>
