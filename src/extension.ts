@@ -64,8 +64,8 @@ export function activate(context: vscode.ExtensionContext) {
     deviceProvider.connectEnv();
   });
   context.subscriptions.push(connectEnv);
-  let refreshEnv = vscode.commands.registerCommand('onevscode.devices.refresh', () => {
-    console.log('NYI: currently refresh no yet implemented.');
+  let refreshEnv = vscode.commands.registerCommand('onevscode.devices.refresh', (node) => {
+    deviceProvider.refreshEnv(node);
   });
   context.subscriptions.push(refreshEnv);
   let registerExecutor = vscode.commands.registerCommand('onevscode.devices.execute', () => {

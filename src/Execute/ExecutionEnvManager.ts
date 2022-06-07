@@ -31,6 +31,7 @@ import {ExecutionEnv} from './ExecutionEnv';
 interface ExectionEnvEnvManager {
   runInference(envName: string, executor: Executor, modelPath: string): void;
   runProfile(envName: string, executor: Executor, modelPath: string): void;
+  refreshExecutionEnv(): void;
 }
 
 class BaseEnvManager implements ExectionEnvEnvManager {
@@ -42,6 +43,9 @@ class BaseEnvManager implements ExectionEnvEnvManager {
     throw new Error('Method not implemented.');
   }
   runProfile(envName: string, executor: Executor, modelPath: string): void {
+    throw new Error('Method not implemented.');
+  }
+  refreshExecutionEnv(): void {
     throw new Error('Method not implemented.');
   }
 }
@@ -57,6 +61,20 @@ let envList = Object.values(Envs);
 class LocalEnvManager extends BaseEnvManager {
   constructor() {
     super();
+    for (let index = 0; index < envList.length; index++) {
+      const getListCommand: Command = envList[index].getConnectableEnvs();
+      const deviceList = execSync(getListCommand.str()).toString().split('\n');
+      for (let idx = 0; idx < deviceList.length; idx++) {
+        const element = deviceList[idx];
+        if (element !== '') {
+          this.executionEnvs.set(element, envList[index].getEnv(element));
+        }
+      }
+    }
+  }
+
+  refreshExecutionEnv() {
+    this.executionEnvs.clear();
     for (let index = 0; index < envList.length; index++) {
       const getListCommand: Command = envList[index].getConnectableEnvs();
       const deviceList = execSync(getListCommand.str()).toString().split('\n');

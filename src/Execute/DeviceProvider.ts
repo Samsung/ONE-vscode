@@ -77,13 +77,16 @@ export class DeviceProvider implements vscode.TreeDataProvider<DeviceNode> {
     return [];
   }
 
-  refresh() {
-    this._onDidChangeTreeData.fire();
+  refreshEnv(node: DeviceNode) {
+    if (node.type === NodeType.hostType) {
+      globalManagerMap[node.label].refreshExecutionEnv();
+      this._onDidChangeTreeData.fire();
+    }
   }
 
   connectEnv() {
     executeManagerQuickInput().then(() => {
-      this.refresh();
+      this._onDidChangeTreeData.fire();
     });
   }
 }
