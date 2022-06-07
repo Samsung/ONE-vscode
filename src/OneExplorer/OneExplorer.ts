@@ -276,21 +276,30 @@ input_path=${modelName}.${extName}
           validateInput: validateInputPath
         })
         .then(value => {
-          const uri = vscode.Uri.file(`${dirPath}/${value}`);
-          return vscode.workspace.fs.writeFile(uri, content), uri;
-        })
-        .then((uri) => {
-          return new Promise<vscode.Uri>(resolve => {
-            this.refresh();
+          if (!value) {
+            Logger.debug('OneExplorer', 'User hit the excape key!');
+            return;
+          }
 
-            // Wait until the refresh event listeners are handled
-            // TODO: Add an event after revising refresh commmand
-            setTimeout(() => resolve(uri), 200);
-          });
-        })
-        .then((uri) => {
-          vscode.commands.executeCommand('list.expand', uri);
-          vscode.commands.executeCommand('vscode.openWith', uri, CfgEditorPanel.viewType);
+          const uri = vscode.Uri.file(`${dirPath}/${value}`);
+
+          // 'uri' path is not occupied, assured by validateInputPath
+          vscode.workspace.fs.writeFile(uri, content)
+              .then(() => {
+                return new Promise<vscode.Uri>(resolve => {
+                  this.refresh();
+
+                  // Wait until the refresh event listeners are handled
+                  // TODO: Add an event after revising refresh commmand
+                  setTimeout(() => resolve(uri), 200);
+                });
+              })
+              .then((uri) => {
+                return Promise.all([
+                  vscode.commands.executeCommand('list.expand', uri),
+                  vscode.commands.executeCommand('vscode.openWith', uri, CfgEditorPanel.viewType)
+                ]);
+              });
         });
   }
 
