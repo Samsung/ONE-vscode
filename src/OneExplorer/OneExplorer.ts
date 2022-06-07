@@ -571,7 +571,7 @@ class OneccRunner extends EventEmitter {
     if (val === exitCodeSuccess) {
       vscode.window.showInformationMessage(`Successfully completed.`);
     } else if (val === 'SelfKilled') {
-      vscode.window.showInformationMessage(`Successfully teminated.`);
+      vscode.window.showInformationMessage(`The job was cancelled.`);
     } else {
       throw Error('unexpected value onFinishedRunningOnecc');
     }
