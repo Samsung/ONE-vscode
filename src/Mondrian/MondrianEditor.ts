@@ -85,9 +85,9 @@ export class MondrianEditorProvider implements vscode.CustomTextEditorProvider {
         <div class="mondrian-layout">
           <div class="mondrian-scrollbar">
             <div class="mondrian-scrollbar-btn">
-              <button class="mondrian-scrollbar-btn-left">&#9664;</button>
+              <button class="mondrian-scrollbar-btn-left">||</button>
               <button class="mondrian-scrollbar-btn-center"></button>
-              <button class="mondrian-scrollbar-btn-right">&#9658;</button>
+              <button class="mondrian-scrollbar-btn-right">||</button>
             </div>
           </div>
           <div class="mondrian-viewer-area">
