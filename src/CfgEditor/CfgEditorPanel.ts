@@ -40,7 +40,6 @@ Some part of this code refers to
 https://github.com/microsoft/vscode-extension-samples/blob/2556c82cb333cf65d372bd01ac30c35ea1898a0e/custom-editor-sample/src/catScratchEditor.ts
 */
 
-import * as fs from 'fs';
 import * as ini from 'ini';
 import * as vscode from 'vscode';
 import {getNonce} from '../Utils/external/Nonce';
@@ -86,7 +85,7 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
     };
     vscode.commands.executeCommand('setContext', CfgEditorPanel.viewType, true);
 
-    webviewPanel.webview.html = this._getHtmlForWebview(webviewPanel.webview);
+    webviewPanel.webview.html = (await this._getHtmlForWebview(webviewPanel.webview)).toString();
 
     const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(e => {
       if (e.document.uri.toString() === document.uri.toString()) {
@@ -121,7 +120,7 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
     this.updateWebview(document, webviewPanel);
   };
 
-  private _getHtmlForWebview(webview: vscode.Webview) {
+  private async _getHtmlForWebview(webview: vscode.Webview) {
     const nonce = getNonce();
 
     const toolkitUri = getUri(webview, this.context.extensionUri, [
@@ -143,10 +142,9 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
     const cssUri =
         getUri(webview, this.context.extensionUri, ['media', 'CfgEditor', 'cfgeditor.css']);
 
-    // import html
     const htmlPath =
-        getUri(webview, this.context.extensionUri, ['media', 'CfgEditor', 'cfgeditor.html']);
-    let html = fs.readFileSync(htmlPath.fsPath, {encoding: 'utf-8'});
+        vscode.Uri.joinPath(this.context.extensionUri, 'media/CfgEditor/cfgeditor.html');
+    let html = Buffer.from(await vscode.workspace.fs.readFile(htmlPath)).toString();
 
     // Apply js and cs to html
     html = html.replace(/\${nonce}/g, `${nonce}`);
