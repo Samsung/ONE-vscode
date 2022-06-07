@@ -85,7 +85,7 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
     };
     vscode.commands.executeCommand('setContext', CfgEditorPanel.viewType, true);
 
-    webviewPanel.webview.html = (await this._getHtmlForWebview(webviewPanel.webview)).toString();
+    webviewPanel.webview.html = await this._getHtmlForWebview(webviewPanel.webview);
 
     const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(e => {
       if (e.document.uri.toString() === document.uri.toString()) {
