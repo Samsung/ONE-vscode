@@ -16,7 +16,6 @@
 
 import {execSync} from 'child_process';
 import * as vscode from 'vscode';
-import {globalExecutorMap} from '../Backend/Backend';
 
 import {Command} from '../Backend/Command';
 import {Executor} from '../Backend/Executor';
@@ -28,11 +27,36 @@ import {ExecutionEnv} from './ExecutionEnv';
 // This is a concept for connected device, which means local or remote.
 // TODO Handle about remote case.
 // Currently, only local case Handled.
-class ExecutionEnvManager {
-  executionEnvs: Map<string, ExecutionEnv>;
 
+interface ExectionEnvEnvManager {
+  runInference(envName: string, executor: Executor, modelPath: string): void;
+  runProfile(envName: string, executor: Executor, modelPath: string): void;
+}
+
+class BaseEnvManager implements ExectionEnvEnvManager {
+  executionEnvs: Map<string, ExecutionEnv>;
   constructor() {
     this.executionEnvs = new Map<string, ExecutionEnv>();
+  }
+  runInference(envName: string, executor: Executor, modelPath: string): void {
+    throw new Error('Method not implemented.');
+  }
+  runProfile(envName: string, executor: Executor, modelPath: string): void {
+    throw new Error('Method not implemented.');
+  }
+}
+
+interface ExecutionEnvManagerMap {
+  [key: string]: BaseEnvManager;
+}
+
+let globalManagerMap: ExecutionEnvManagerMap = {};
+// This list will keep envTypes on it.
+let envList = Object.values(Envs);
+
+class LocalEnvManager extends BaseEnvManager {
+  constructor() {
+    super();
     for (let index = 0; index < envList.length; index++) {
       const getListCommand: Command = envList[index].getConnectableEnvs();
       const deviceList = execSync(getListCommand.str()).toString().split('\n');
@@ -44,24 +68,7 @@ class ExecutionEnvManager {
       }
     }
   }
-
-  getExecutors(name: string): Executor[] {
-    const execEnv = this.executionEnvs.get(name);
-    if (execEnv) {
-      return execEnv.getExecutors();
-    }
-    // if there is no env using those name
-    return [];
-  }
 }
-
-interface ExecutionEnvManagerMap {
-  [key: string]: ExecutionEnvManager;
-}
-
-let globalManagerMap: ExecutionEnvManagerMap = {};
-// This list will keep envTypes on it.
-let envList = Object.values(Envs);
 
 function addExecutionEnvManager(location: string, id?: string, ip?: string, passpath?: string) {
   // locataion will be both `local` or `remote`, it will be enum in next time.
@@ -70,7 +77,7 @@ function addExecutionEnvManager(location: string, id?: string, ip?: string, pass
       Balloon.error('Local Manager already added!');
       return;
     }
-    globalManagerMap[location] = new ExecutionEnvManager();
+    globalManagerMap[location] = new LocalEnvManager();
   }
   // TODO: add implementaion about `remote` case
   else {
@@ -101,14 +108,6 @@ function saveDeviceConfiguration() {
       if (key !== 'local') {
         // TODO Add Handling code about remote case.
       }
-      for (const iterator of envManagerEnvs) {
-        let envObj = [];
-        for (let index = 0; index < iterator[1].getExecutors().length; index++) {
-          const element = iterator[1].getExecutors()[index];
-          envObj.push(element.getName());
-        }
-        envManagerObj[iterator[0]] = envObj;
-      }
       deviceListObject[key] = envManagerObj;
     }
   }
@@ -129,14 +128,8 @@ function loadDeviceConfiguration(deviceConfigInfo: any) {
     let executeEnvsName = Object.keys(deviceConfigInfo[managerName]);
     for (let idx = 0; idx < executeEnvsName.length; idx++) {
       const envName = executeEnvsName[idx];
-      for (let index = 0; index < deviceConfigInfo[managerName][envName].length; index++) {
-        const element = deviceConfigInfo[managerName][envName][index];
-        globalManagerMap[managerName].executionEnvs.get(envName) ?.setExecutor(
-                                                                      element,
-                                                                      globalExecutorMap[element]);
-      }
     }
   }
 }
 
-export {globalManagerMap, ExecutionEnvManager, addExecutionEnvManager, initExecutionEnvManager};
+export {globalManagerMap, BaseEnvManager, addExecutionEnvManager, initExecutionEnvManager};

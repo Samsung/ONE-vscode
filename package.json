@@ -155,10 +155,16 @@
         "icon": "$(add)"
       },
       {
-        "command": "onevscode.devices.register",
-        "title": "Register Executor",
+        "command": "onevscode.devices.refresh",
+        "title": "Refresh Device List",
         "category": "ONE",
-        "icon": "$(add)"
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "onevscode.devices.execute",
+        "title": "Run Command",
+        "category": "ONE",
+        "icon": "$(debug-start)"
       },
       {
         "command": "onevscode.build",
@@ -251,7 +257,12 @@
           "group": "inline"
         },
         {
-          "command": "onevscode.devices.register",
+          "command": "onevscode.devices.refresh",
+          "when": "view == TargetDeviceView && viewItem == hostType",
+          "group": "inline"
+        },
+        {
+          "command": "onevscode.devices.execute",
           "when": "view == TargetDeviceView && viewItem == executionEnv",
           "group": "inline"
         },

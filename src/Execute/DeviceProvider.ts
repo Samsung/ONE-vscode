@@ -25,7 +25,6 @@ enum NodeType {
   // TODO: Implement remote type.
   hostType,
   executionEnv,
-  executor,
 }
 
 export class DeviceNode extends vscode.TreeItem {
@@ -39,8 +38,6 @@ export class DeviceNode extends vscode.TreeItem {
       this.iconPath = new vscode.ThemeIcon('device-desktop');
     } else if (type === NodeType.executionEnv) {
       this.iconPath = new vscode.ThemeIcon('circuit-board');
-    } else if (type === NodeType.executor) {
-      this.iconPath = new vscode.ThemeIcon('settings-gear');
     }
     this.contextValue = NodeType[type];
   }
@@ -72,12 +69,9 @@ export class DeviceProvider implements vscode.TreeDataProvider<DeviceNode> {
         const nodeList: DeviceNode[] = [];
         for (const iterator of globalManagerMap[node.label].executionEnvs.entries()) {
           nodeList.push(new DeviceNode(
-              iterator[0], vscode.TreeItemCollapsibleState.Collapsed, NodeType.executionEnv));
+              iterator[0], vscode.TreeItemCollapsibleState.None, NodeType.executionEnv));
         }
         return nodeList;
-      } else if (node.type === NodeType.executionEnv) {
-        // Currently Not Updated, as there is no way to add Executor on this.
-        return [];
       }
     }
     return [];
@@ -92,9 +86,4 @@ export class DeviceProvider implements vscode.TreeDataProvider<DeviceNode> {
       this.refresh();
     });
   }
-
-  // This will act on attach Executor on ExecutionEnv Node.
-  registerExecutor(node: DeviceNode) {}
-
-  // Need to Implement execution function
 }

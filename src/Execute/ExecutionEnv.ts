@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import {Executor} from '../Backend/Executor';
+import {Command} from '../Backend/Command';
 
 interface ExecutionEnv {
   name(): string;
   envInfo(): string;
-  getExecutors(): Executor[];
-  getExecutor(name: string): Executor|undefined;
-  setExecutor(name: string, executor: Executor): boolean;
+  runCommand(command: Command): Command;
 }
 
 // This is a base ExeuctionEnv.
@@ -33,25 +31,14 @@ interface ExecutionEnv {
 //    This will return Commend that execute on host and return string array of device list,
 //    could split with '\n'.
 class ExecutionEnvBase implements ExecutionEnv {
-  executors: Map<string, Executor>;
-  constructor() {
-    this.executors = new Map<string, Executor>();
-  }
   name(): string {
     throw new Error('Method not implemented.');
   }
   envInfo(): string {
     throw new Error('Method not implemented.');
   }
-  getExecutors(): Executor[] {
-    return Array.from(this.executors.values());
-  }
-  getExecutor(name: string): Executor|undefined {
-    return this.executors.get(name);
-  }
-  setExecutor(name: string, executor: Executor): boolean {
-    throw new Error(
-        'Check certain Executor installed and could use on this Env.\n If it could, return true and add Executor on ExecutorList.');
+  runCommand(command: Command): Command {
+    throw new Error('Method not implemented.');
   }
 }
 

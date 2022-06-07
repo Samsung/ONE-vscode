@@ -56,7 +56,6 @@ export function activate(context: vscode.ExtensionContext) {
 
   // Target Device view
   // TODO: this will be changed to init from config, using both remote and local
-  // addExecutionEnvManager('local');
   initExecutionEnvManager();
   const deviceProvider = new DeviceProvider();
   context.subscriptions.push(
@@ -65,7 +64,11 @@ export function activate(context: vscode.ExtensionContext) {
     deviceProvider.connectEnv();
   });
   context.subscriptions.push(connectEnv);
-  let registerExecutor = vscode.commands.registerCommand('onevscode.devices.register', () => {
+  let refreshEnv = vscode.commands.registerCommand('onevscode.devices.refresh', () => {
+    console.log('NYI: currently refresh no yet implemented.');
+  });
+  context.subscriptions.push(refreshEnv);
+  let registerExecutor = vscode.commands.registerCommand('onevscode.devices.execute', () => {
     console.log('NYI: currently no Exeuctor registered.');
   });
   context.subscriptions.push(registerExecutor);

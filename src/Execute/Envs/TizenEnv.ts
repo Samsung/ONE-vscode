@@ -32,6 +32,9 @@ class TizenEnv extends ExecutionEnvBase {
     // This is just a example. this will be specified later
     return 'Tizen';
   }
+  runCommand(command: Command): Command {
+    return new Command('sdb shell', command.strs());
+  }
 }
 
 function getConnectableEnvs(): Command {
