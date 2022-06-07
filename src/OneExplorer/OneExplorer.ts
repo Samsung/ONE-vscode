@@ -508,8 +508,6 @@ import {EventEmitter} from 'events';
 import {ExitCode, SelfKilled, ToolRunner} from '../Project/ToolRunner';
 
 class OneccRunner extends EventEmitter {
-  private logTag = this.constructor.name;
-
   private startRunningOnecc: string = 'START_RUNNING_ONECC';
   private finishedRunningOnecc: string = 'FINISHED_RUNNING_ONECC';
 
