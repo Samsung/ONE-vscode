@@ -339,7 +339,7 @@ input_path=${modelName}.${extName}
                                            vscode.TreeItemCollapsibleState.None,
             node);
         oneNode.command = {
-          command: 'one.explorer.openWithCustomEditor',
+          command: 'one.explorer.open',
           title: 'Open File',
           arguments: [oneNode.node]
         };
@@ -479,11 +479,9 @@ export class OneExplorer {
     };
 
     subscribeCommands([
+      vscode.commands.registerCommand('one.explorer.open', (file) => this.openFile(file)),
       vscode.commands.registerCommand(
-          'one.explorer.openWithCustomEditor', (file) => this.openFile(file)),
-      vscode.commands.registerCommand(
-          'one.explorer.openWithTextEditor',
-          (oneNode: OneNode) => this.openWithTextEditor(oneNode.node)),
+          'one.explorer.openAsText', (oneNode: OneNode) => this.openWithTextEditor(oneNode.node)),
       vscode.commands.registerCommand('one.explorer.refresh', () => oneTreeDataProvider.refresh()),
       vscode.commands.registerCommand(
           'one.explorer.createCfg', (oneNode: OneNode) => oneTreeDataProvider.createCfg(oneNode)),

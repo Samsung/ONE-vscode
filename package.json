@@ -126,7 +126,7 @@
         "category": "ONE"
       },
       {
-        "command": "one.explorer.openWithTextEditor",
+        "command": "one.explorer.openAsText",
         "title": "Open with Text Editor",
         "category": "ONE"
       },
@@ -235,7 +235,7 @@
           "group": "navigation"
         },
         {
-          "command": "one.explorer.openWithTextEditor",
+          "command": "one.explorer.openAsText",
           "when": "view == OneExplorerView && viewItem == config",
           "group": "navigation"
         },
