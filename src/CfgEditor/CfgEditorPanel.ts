@@ -111,7 +111,80 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
     // Receive message from the webview.
     webviewPanel.webview.onDidReceiveMessage(e => {
       switch (e.type) {
-        // TODO Add more webview modification handlers
+        case 'setParam':
+          if (this._oneConfig[e.section] === undefined) {
+            this._oneConfig[e.section] = {};
+          }
+          if (this._oneConfig[e.section][e.param] === undefined) {
+            this._oneConfig[e.section][e.param] = '';
+          }
+          this._oneConfig[e.section][e.param] = e.value;
+          break;
+        case 'setSection':
+          this._oneConfig[e.section] = ini.parse(e.param);
+          break;
+        case 'updateDocument':
+          let isSame = true;
+          const iniDocument = ini.parse(document.getText());
+          for (const [sectionName, section] of Object.entries(this._oneConfig)) {
+            for (const [paramName, param] of Object.entries(section as any)) {
+              if (iniDocument[sectionName] !== undefined &&
+                  iniDocument[sectionName][paramName] === param) {
+                continue;
+              }
+              isSame = false;
+              break;
+            }
+          }
+          for (const [sectionName, section] of Object.entries(iniDocument)) {
+            for (const [paramName, param] of Object.entries(section as any)) {
+              if (this._oneConfig[sectionName] !== undefined &&
+                  this._oneConfig[sectionName][paramName] === param) {
+                continue;
+              }
+              isSame = false;
+              break;
+            }
+          }
+
+          // TODO Optimize this to modify only changed lines
+          if (isSame === false) {
+            let sortedCfg: any = {};
+            if (this._oneConfig['onecc'] !== undefined) {
+              sortedCfg['onecc'] = this._oneConfig['onecc'];
+            }
+            if (this._oneConfig['one-import-tf'] !== undefined) {
+              sortedCfg['one-import-tf'] = this._oneConfig['one-import-tf'];
+            }
+            if (this._oneConfig['one-import-tflite'] !== undefined) {
+              sortedCfg['one-import-tflite'] = this._oneConfig['one-import-tflite'];
+            }
+            if (this._oneConfig['one-import-bcq'] !== undefined) {
+              sortedCfg['one-import-bcq'] = this._oneConfig['one-import-bcq'];
+            }
+            if (this._oneConfig['one-import-onnx'] !== undefined) {
+              sortedCfg['one-import-onnx'] = this._oneConfig['one-import-onnx'];
+            }
+            if (this._oneConfig['one-optimize'] !== undefined) {
+              sortedCfg['one-optimize'] = this._oneConfig['one-optimize'];
+            }
+            if (this._oneConfig['one-quantize'] !== undefined) {
+              sortedCfg['one-quantize'] = this._oneConfig['one-quantize'];
+            }
+            if (this._oneConfig['one-codegen'] !== undefined) {
+              sortedCfg['one-codegen'] = this._oneConfig['one-codegen'];
+            }
+            if (this._oneConfig['one-profile'] !== undefined) {
+              sortedCfg['one-profile'] = this._oneConfig['one-profile'];
+            }
+
+            const edit = new vscode.WorkspaceEdit();
+            edit.replace(
+                document.uri, new vscode.Range(0, 0, document.lineCount, 0),
+                ini.stringify(sortedCfg));
+            vscode.workspace.applyEdit(edit);
+          }
+          break;
         default:
           break;
       }
