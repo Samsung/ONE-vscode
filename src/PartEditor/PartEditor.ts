@@ -88,7 +88,7 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
     this._document = document;
 
     if (this._document) {
-      const lastSlash = this._document.fileName.lastIndexOf('/') + 1;
+      const lastSlash = this._document.fileName.lastIndexOf(path.sep) + 1;
       const fileNameExt = this._document.fileName.substring(lastSlash);
       const fileExt = path.extname(fileNameExt);
 
