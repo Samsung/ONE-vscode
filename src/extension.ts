@@ -58,7 +58,7 @@ export function activate(context: vscode.ExtensionContext) {
   });
   context.subscriptions.push(registerDevice);
 
-  let inferenceCommand = vscode.commands.registerCommand('onevscode.infer-model', () => {
+  let inferenceCommand = vscode.commands.registerCommand('one.backend.infer', () => {
     Logger.info(tag, 'one infer model...');
     runInferenceQuickInput(context);
   });

@@ -105,7 +105,7 @@
         "icon": "$(go-to-file)"
       },
       {
-        "command": "onevscode.infer-model",
+        "command": "one.backend.infer",
         "title": "Infer",
         "category": "ONE",
         "_comment": "Run backend executor's inference command with a given model."
