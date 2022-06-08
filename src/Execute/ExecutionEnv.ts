@@ -25,7 +25,7 @@ interface ExecutionEnv {
 // This is a base ExeuctionEnv.
 // on New ExecutionEnv implements, need to add 3 things
 // 1. ExecutionEnv class itself
-// 2. ExecutionEnv Creation function : named `function getEnv(name: string): ExecutionEnv`
+// 2. ExecutionEnv Creation function : named `function createExecutionEnv(name: string): ExecutionEnv`
 //    This will return class for Env that extends ExecutionEnvBase
 // 3. ExecutionEnv list get function : named `function getConnectableEnvs(): Command`
 //    This will return Commend that execute on host and return string array of device list,
