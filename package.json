@@ -75,19 +75,19 @@
     ],
     "commands": [
       {
-        "command": "onevscode.refresh-one-explorer",
+        "command": "one.explorer.refresh",
         "title": "Refresh",
         "category": "ONE",
         "icon": "$(refresh)"
       },
       {
-        "command": "onevscode.collapse-all",
+        "command": "one.explorer.collapseAll",
         "title": "Collapse Folders in ONE Explorer",
         "category": "ONE",
         "icon": "$(collapse-all)"
       },
       {
-        "command": "onevscode.create-cfg",
+        "command": "one.explorer.createCfg",
         "title": "Create new ONE configuration",
         "category": "ONE",
         "icon": "$(add)"
@@ -111,22 +111,22 @@
         "_comment": "Run backend executor's inference command with a given model."
       },
       {
-        "command": "onevscode.run-cfg",
+        "command": "one.explorer.runCfg",
         "title": "Run",
         "category": "ONE"
       },
       {
-        "command": "onevscode.rename-on-oneexplorer",
+        "command": "one.explorer.rename",
         "title": "Rename",
         "category": "ONE"
       },
       {
-        "command": "onevscode.openContainingFolder",
+        "command": "one.explorer.openContainingFolder",
         "title": "Open Containing Folder",
         "category": "ONE"
       },
       {
-        "command": "onevscode.open-cfg-as-text",
+        "command": "one.explorer.openWithTextEditor",
         "title": "Open with Text Editor",
         "category": "ONE"
       },
@@ -193,12 +193,12 @@
     "menus": {
       "view/title": [
         {
-          "command": "onevscode.refresh-one-explorer",
+          "command": "one.explorer.refresh",
           "when": "view == OneExplorerView",
           "group": "navigation"
         },
         {
-          "command": "onevscode.collapse-all",
+          "command": "one.explorer.collapseAll",
           "when": "view == OneExplorerView",
           "group": "navigation"
         },
@@ -220,27 +220,27 @@
       ],
       "view/item/context": [
         {
-          "command": "onevscode.run-cfg",
+          "command": "one.explorer.runCfg",
           "when": "view == OneExplorerView && viewItem == config",
           "group": "navigation"
         },
         {
-          "command": "onevscode.rename-on-oneexplorer",
+          "command": "one.explorer.rename",
           "when": "view == OneExplorerView && viewItem != directory",
           "group": "navigation"
         },
         {
-          "command": "onevscode.openContainingFolder",
+          "command": "one.explorer.openContainingFolder",
           "when": "view == OneExplorerView",
           "group": "navigation"
         },
         {
-          "command": "onevscode.open-cfg-as-text",
+          "command": "one.explorer.openWithTextEditor",
           "when": "view == OneExplorerView && viewItem == config",
           "group": "navigation"
         },
         {
-          "command": "onevscode.create-cfg",
+          "command": "one.explorer.createCfg",
           "when": "view == OneExplorerView && viewItem == baseModel",
           "group": "inline"
         },
