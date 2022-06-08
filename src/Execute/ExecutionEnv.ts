@@ -23,7 +23,7 @@ interface ExecutionEnv {
 }
 
 // This is a base ExeuctionEnv.
-// on New ExecutionEnv implements, need to add 3 things
+// To write a class that inherits ExecutionEnvBase, the following needs to be added
 // 1. ExecutionEnv class itself
 // 2. ExecutionEnv Creation function : named `function createExecutionEnv(name: string): ExecutionEnv`
 //    This will return class for Env that extends ExecutionEnvBase
