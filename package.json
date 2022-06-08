@@ -149,7 +149,7 @@
         "icon": "$(x)"
       },
       {
-        "command": "onevscode.register-device",
+        "command": "one.device.register",
         "title": "Register",
         "category": "ONE",
         "icon": "$(add)"
@@ -213,7 +213,7 @@
           "group": "navigation"
         },
         {
-          "command": "onevscode.register-device",
+          "command": "one.device.register",
           "when": "view == TargetDeviceView",
           "group": "navigation"
         }
