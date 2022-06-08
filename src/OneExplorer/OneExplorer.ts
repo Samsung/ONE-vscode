@@ -339,7 +339,7 @@ input_path=${modelName}.${extName}
                                            vscode.TreeItemCollapsibleState.None,
             node);
         oneNode.command = {
-          command: 'onevscode.open-cfg',
+          command: 'one.explorer.open',
           title: 'Open File',
           arguments: [oneNode.node]
         };
@@ -479,28 +479,26 @@ export class OneExplorer {
     };
 
     subscribeCommands([
-      vscode.commands.registerCommand('onevscode.open-cfg', (file) => this.openFile(file)),
+      vscode.commands.registerCommand('one.explorer.open', (file) => this.openFile(file)),
       vscode.commands.registerCommand(
-          'onevscode.open-cfg-as-text',
-          (oneNode: OneNode) => this.openWithTextEditor(oneNode.node)),
+          'one.explorer.openAsText', (oneNode: OneNode) => this.openWithTextEditor(oneNode.node)),
+      vscode.commands.registerCommand('one.explorer.refresh', () => oneTreeDataProvider.refresh()),
       vscode.commands.registerCommand(
-          'onevscode.refresh-one-explorer', () => oneTreeDataProvider.refresh()),
+          'one.explorer.createCfg', (oneNode: OneNode) => oneTreeDataProvider.createCfg(oneNode)),
       vscode.commands.registerCommand(
-          'onevscode.create-cfg', (oneNode: OneNode) => oneTreeDataProvider.createCfg(oneNode)),
-      vscode.commands.registerCommand(
-          'onevscode.run-cfg',
+          'one.explorer.runCfg',
           (oneNode: OneNode) => {
             const oneccRunner = new OneccRunner(oneNode.node.uri);
             oneccRunner.run();
           }),
       vscode.commands.registerCommand(
-          'onevscode.rename-on-oneexplorer',
-          (oneNode: OneNode) => oneTreeDataProvider.rename(oneNode)),
+          'one.explorer.rename', (oneNode: OneNode) => oneTreeDataProvider.rename(oneNode)),
       vscode.commands.registerCommand(
-          'onevscode.openContainingFolder',
+          'one.explorer.openContainingFolder',
           (oneNode: OneNode) => oneTreeDataProvider.openContainingFolder(oneNode)),
       vscode.commands.registerCommand(
-          'onevscode.collapse-all', (oneNode: OneNode) => oneTreeDataProvider.collapseAll(oneNode)),
+          'one.explorer.collapseAll',
+          (oneNode: OneNode) => oneTreeDataProvider.collapseAll(oneNode)),
     ]);
   }
 
@@ -528,7 +526,7 @@ class OneccRunner extends EventEmitter {
   }
 
   /**
-   * Function called when onevscode.run-cfg is called (when user clicks 'Run' on cfg file).
+   * Function called when one.explorer.runCfg is called (when user clicks 'Run' on cfg file).
    */
   public run() {
     const toolRunner = new ToolRunner();
