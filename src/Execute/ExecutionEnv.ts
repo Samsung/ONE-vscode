@@ -25,10 +25,11 @@ interface ExecutionEnv {
 // This is a base ExeuctionEnv.
 // To write a class that inherits ExecutionEnvBase, the following needs to be added
 // 1. ExecutionEnv class itself
-// 2. ExecutionEnv Creation function : named `function createExecutionEnv(name: string): ExecutionEnv`
+// 2. ExecutionEnv Creation function : named `function createExecutionEnv(name: string):
+// ExecutionEnv`
 //    This will return class for Env that extends ExecutionEnvBase
-// 3. ExecutionEnv list get function : named `function getConnectableEnvs(): Command`
-//    This will return Commend that execute on host and return string array of device list,
+// 3. ExecutionEnv list get function : named `function getDeviceListCommand(): Command`
+//    This will return Command that is executed on host and returns string array of device list,
 //    could split with '\n'.
 class ExecutionEnvBase implements ExecutionEnv {
   name(): string {
