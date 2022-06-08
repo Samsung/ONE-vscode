@@ -155,12 +155,12 @@
         "icon": "$(add)"
       },
       {
-        "command": "onevscode.build",
+        "command": "one.project.build",
         "title": "build",
         "category": "ONE"
       },
       {
-        "command": "onevscode.import",
+        "command": "one.project.import",
         "title": "cfg import",
         "category": "ONE"
       },
