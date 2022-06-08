@@ -93,16 +93,18 @@
         "icon": "$(add)"
       },
       {
-        "command": "onevscode.flip-cfg-to-gui",
+        "command": "one.editor.openCfg",
         "title": "Open cfg in GUI",
         "category": "ONE",
-        "icon": "$(go-to-file)"
+        "icon": "$(go-to-file)",
+        "_comment": "NYI"
       },
       {
-        "command": "onevscode.flip-cfg-to-ini",
+        "command": "one.editor.openCfgAsText",
         "title": "Open cfg in Text Editor",
         "category": "ONE",
-        "icon": "$(go-to-file)"
+        "icon": "$(go-to-file)",
+        "_comment": "NYI"
       },
       {
         "command": "onevscode.infer-model",
@@ -170,13 +172,13 @@
         "category": "ONE"
       },
       {
-        "command": "onevscode.configuration-settings",
-        "title": "configuration-settings",
+        "command": "one.editor.openCfgWithLegacyEditor",
+        "title": "Open cfg in GUI (legacy)",
         "category": "ONE"
       },
       {
-        "command": "onevscode.toggle-codelens",
-        "title": "toggle codelens",
+        "command": "one.editor.toggleCodelens",
+        "title": "Toggle codelens for cfg",
         "category": "ONE"
       },
       {
@@ -252,14 +254,16 @@
       ],
       "editor/title": [
         {
-          "command": "onevscode.flip-cfg-to-gui",
+          "command": "one.editor.openCfg",
           "group": "navigation",
-          "when": "resourceExtname == .cfg && !cfg.editor"
+          "when": "resourceExtname == .cfg && !cfg.editor",
+          "_comment": "NYI"
         },
         {
-          "command": "onevscode.flip-cfg-to-ini",
+          "command": "one.editor.openCfgAsText",
           "group": "navigation",
-          "when": "resourceExtname == .cfg && cfg.editor"
+          "when": "resourceExtname == .cfg && cfg.editor",
+          "_comment": "NYI"
         }
       ]
     },
