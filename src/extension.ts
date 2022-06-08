@@ -45,12 +45,12 @@ export function activate(context: vscode.ExtensionContext) {
   const toolchainProvier = new ToolchainProvider();
   context.subscriptions.push(
       vscode.window.registerTreeDataProvider('ToolchainView', toolchainProvier));
+  context.subscriptions.push(
+      vscode.commands.registerCommand('one.toolchain.refresh', () => toolchainProvier.refresh()));
+  context.subscriptions.push(
+      vscode.commands.registerCommand('one.toolchain.install', () => toolchainProvier.install()));
   context.subscriptions.push(vscode.commands.registerCommand(
-      'onevscode.refresh-toolchain', () => toolchainProvier.refresh()));
-  context.subscriptions.push(vscode.commands.registerCommand(
-      'onevscode.install-toolchain', () => toolchainProvier.install()));
-  context.subscriptions.push(vscode.commands.registerCommand(
-      'onevscode.uninstall-toolchain', (node) => toolchainProvier.uninstall(node)));
+      'one.toolchain.uninstall', (node) => toolchainProvier.uninstall(node)));
 
   // Target Device view
   let registerDevice = vscode.commands.registerCommand('onevscode.register-device', () => {

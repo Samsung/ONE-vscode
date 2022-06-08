@@ -131,19 +131,19 @@
         "category": "ONE"
       },
       {
-        "command": "onevscode.refresh-toolchain",
+        "command": "one.toolchain.refresh",
         "title": "Refresh",
         "category": "ONE",
         "icon": "$(refresh)"
       },
       {
-        "command": "onevscode.install-toolchain",
+        "command": "one.toolchain.install",
         "title": "Install",
         "category": "ONE",
         "icon": "$(desktop-download)"
       },
       {
-        "command": "onevscode.uninstall-toolchain",
+        "command": "one.toolchain.uninstall",
         "title": "Uninstall",
         "category": "ONE",
         "icon": "$(x)"
@@ -203,12 +203,12 @@
           "group": "navigation"
         },
         {
-          "command": "onevscode.refresh-toolchain",
+          "command": "one.toolchain.refresh",
           "when": "view == ToolchainView",
           "group": "navigation"
         },
         {
-          "command": "onevscode.install-toolchain",
+          "command": "one.toolchain.install",
           "when": "view == ToolchainView",
           "group": "navigation"
         },
@@ -245,7 +245,7 @@
           "group": "inline"
         },
         {
-          "command": "onevscode.uninstall-toolchain",
+          "command": "one.toolchain.uninstall",
           "when": "view == ToolchainView && viewItem == toolchain",
           "group": "inline"
         }
