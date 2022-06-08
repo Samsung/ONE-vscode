@@ -19,7 +19,7 @@ import {Command} from '../Backend/Command';
 interface ExecutionEnv {
   name(): string;
   envInfo(): string;
-  runCommand(command: Command): Command;
+  wrapCommand(command: Command): Command;
 }
 
 // This is a base ExeuctionEnv.
@@ -37,7 +37,8 @@ class ExecutionEnvBase implements ExecutionEnv {
   envInfo(): string {
     throw new Error('Method not implemented.');
   }
-  runCommand(command: Command): Command {
+  // This function will wrap command with bridge command.
+  wrapCommand(command: Command): Command {
     throw new Error('Method not implemented.');
   }
 }
