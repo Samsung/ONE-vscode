@@ -19,7 +19,7 @@ import {Command} from '../Backend/Command';
 interface ExecutionEnv {
   name(): string;
   envInfo(): string;
-  runCommand(command: Command): Command;
+  wrapCommand(command: Command): Command;
 }
 
 // This is a base ExeuctionEnv.
@@ -34,10 +34,14 @@ class ExecutionEnvBase implements ExecutionEnv {
   name(): string {
     throw new Error('Method not implemented.');
   }
+
+  // This will return some information for ExecutionEnv, like Tizen or some specified value to check Executor could run on this.
   envInfo(): string {
     throw new Error('Method not implemented.');
   }
-  runCommand(command: Command): Command {
+
+  // This will wrap a command with some bridge command to run on target ExecutionEnv.
+  wrapCommand(command: Command): Command {
     throw new Error('Method not implemented.');
   }
 }

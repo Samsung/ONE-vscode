@@ -32,7 +32,7 @@ class HostPcEnv extends ExecutionEnvBase {
     // This is just a example. this will be specified later
     return release();
   }
-  runCommand(command: Command): Command {
+  wrapCommand(command: Command): Command {
     return command;
   }
 }

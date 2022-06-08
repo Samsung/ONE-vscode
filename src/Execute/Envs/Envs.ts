@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
-// This file will collect all Env type on this.
+// This file will collect all ExecutionEnv type on this.
 export * as Host from './HostPcEnv';
 export * as Tizen from './TizenEnv';
