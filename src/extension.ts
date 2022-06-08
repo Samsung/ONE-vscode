@@ -25,7 +25,9 @@ import {ConfigPanel} from './Config/ConfigPanel';
 import {createStatusBarItem} from './Config/ConfigStatusBar';
 import {CodelensProvider} from './Editor/CodelensProvider';
 import {HoverProvider} from './Editor/HoverProvider';
+import {DeviceProvider} from './Execute/DeviceProvider';
 import {runInferenceQuickInput} from './Execute/executeQuickInput';
+import {initExecutionEnvManager} from './Execute/ExecutionEnvManager';
 import {Jsontracer} from './Jsontracer';
 import {MondrianEditorProvider} from './Mondrian/MondrianEditor';
 import {OneExplorer} from './OneExplorer/OneExplorer';
@@ -53,10 +55,23 @@ export function activate(context: vscode.ExtensionContext) {
       'onevscode.uninstall-toolchain', (node) => toolchainProvier.uninstall(node)));
 
   // Target Device view
-  let registerDevice = vscode.commands.registerCommand('onevscode.register-device', () => {
-    Logger.info(tag, 'register-device: NYI');
+  // TODO: this will be changed to init from config, using both remote and local
+  initExecutionEnvManager();
+  const deviceProvider = new DeviceProvider();
+  context.subscriptions.push(
+      vscode.window.registerTreeDataProvider('TargetDeviceView', deviceProvider));
+  let connectEnv = vscode.commands.registerCommand('onevscode.devices.connect', () => {
+    deviceProvider.connectEnv();
   });
-  context.subscriptions.push(registerDevice);
+  context.subscriptions.push(connectEnv);
+  let refreshEnv = vscode.commands.registerCommand('onevscode.devices.refresh', (node) => {
+    deviceProvider.refreshEnv(node);
+  });
+  context.subscriptions.push(refreshEnv);
+  let registerExecutor = vscode.commands.registerCommand('onevscode.devices.execute', () => {
+    console.log('NYI: currently no Exeuctor registered.');
+  });
+  context.subscriptions.push(registerExecutor);
 
   let inferenceCommand = vscode.commands.registerCommand('onevscode.infer-model', () => {
     Logger.info(tag, 'one infer model...');
