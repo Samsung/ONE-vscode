@@ -29,8 +29,7 @@ interface ExecutionEnv {
 // ExecutionEnv`
 //    This will return class for Env that extends ExecutionEnvBase
 // 3. ExecutionEnv list get function : named `function getDeviceListCommand(): Command`
-//    This will return Command that is executed on host and returns string array of device list,
-//    could split with '\n'.
+//    This will return Command that is executed on host and returns DeviceList string.
 class ExecutionEnvBase implements ExecutionEnv {
   name(): string {
     throw new Error('Method not implemented.');
