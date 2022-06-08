@@ -89,7 +89,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(disposableOneJsontracer);
 
   let disposableOneConfigurationSettings =
-      vscode.commands.registerCommand('onevscode.configuration-settings', () => {
+      vscode.commands.registerCommand('one.editor.openCfgWithLegacyEditor', () => {
         ConfigPanel.createOrShow(context);
         Logger.info(tag, 'one configuration settings...');
       });

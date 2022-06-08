@@ -20,7 +20,7 @@ export function createStatusBarItem(context: vscode.ExtensionContext) {
   let cfgStatusBarItem: vscode.StatusBarItem;
   cfgStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
   cfgStatusBarItem.text = `$(file-add) ONE configuration Settings`;
-  cfgStatusBarItem.command = 'onevscode.configuration-settings';
+  cfgStatusBarItem.command = 'one.editor.openCfgWithLegacyEditor';
   context.subscriptions.push(cfgStatusBarItem);
   cfgStatusBarItem.show();
 }
