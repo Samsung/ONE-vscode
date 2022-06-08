@@ -98,7 +98,7 @@ export function activate(context: vscode.ExtensionContext) {
   createStatusBarItem(context);
 
   let disposableToggleCodelens =
-      vscode.commands.registerCommand('onevscode.toggle-codelens', () => {
+      vscode.commands.registerCommand('one.editor.toggleCodelens', () => {
         let codelensState =
             vscode.workspace.getConfiguration('one-vscode').get('enableCodelens', true);
         vscode.workspace.getConfiguration('one-vscode')

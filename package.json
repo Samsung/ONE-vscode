@@ -93,13 +93,13 @@
         "icon": "$(add)"
       },
       {
-        "command": "onevscode.flip-cfg-to-gui",
+        "command": "one.editor.open",
         "title": "Open cfg in GUI",
         "category": "ONE",
         "icon": "$(go-to-file)"
       },
       {
-        "command": "onevscode.flip-cfg-to-ini",
+        "command": "one.editor.openAsText",
         "title": "Open cfg in Text Editor",
         "category": "ONE",
         "icon": "$(go-to-file)"
@@ -175,7 +175,7 @@
         "category": "ONE"
       },
       {
-        "command": "onevscode.toggle-codelens",
+        "command": "one.editor.toggleCodelens",
         "title": "toggle codelens",
         "category": "ONE"
       },
@@ -252,12 +252,12 @@
       ],
       "editor/title": [
         {
-          "command": "onevscode.flip-cfg-to-gui",
+          "command": "one.editor.open",
           "group": "navigation",
           "when": "resourceExtname == .cfg && !cfg.editor"
         },
         {
-          "command": "onevscode.flip-cfg-to-ini",
+          "command": "one.editor.openAsText",
           "group": "navigation",
           "when": "resourceExtname == .cfg && cfg.editor"
         }
