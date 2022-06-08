@@ -16,13 +16,69 @@
 
 var editor = {};
 
+const vscode = acquireVsCodeApi();
+
+/**
+ * @brief editor.Backend stores Backend records
+ */
+editor.Backend = class {
+  constructor(name) {
+    this.name = name;
+  }
+};
+
 editor.Editor = class {
   constructor() {
-    // TODO implement
+    this.window = window;
+    this.document = window.document;
+    this.backends = [];  // array of editor.Backend
   }
 
   initialize() {
-    // TODO implement
+    this.register();
+    this.requestBackends();
+  }
+
+  register() {
+    this.window.addEventListener('message', (event) => {
+      const message = event.data;
+      switch (message.command) {
+        case 'resultBackends':
+          this.handleResultBackends(message);
+          break;
+      }
+    });
+  }
+
+  requestBackends() {
+    vscode.postMessage({command: 'requestBackends'});
+  }
+
+  /**
+   * @brief fill 'circle-be' combobox with backends
+   */
+  handleResultBackends(message) {
+    // NOTE idx 0 is default which we do not add to the list
+    this.backends.push(new editor.Backend('(default)'));
+
+    const backendNames = message.backends.split(/\r?\n/);
+
+    // initial fill op backend listbox
+    const listbox = this.document.getElementById('circle-be');
+    for (let idx = 1; idx < backendNames.length; idx++) {
+      const backend = backendNames[idx];
+      // filter out empty string
+      if (backend.length > 0) {
+        let opt = this.document.createElement('option');
+        opt.text = `(${idx}) ` + backend;
+        opt.value = idx;
+        listbox.options.add(opt);
+
+        this.backends.push(new editor.Backend(backend));
+      }
+    };
+
+    // TODO request Operator names
   }
 };
 
