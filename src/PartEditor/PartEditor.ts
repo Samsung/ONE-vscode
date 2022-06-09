@@ -97,6 +97,9 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
       this._modelFilePath = this._modelFolderPath + this._modelFileName;
     }
 
+    // TODO revise to get from backend
+    this._backEndNames = ['(default)', 'CPU', 'ACL_CL', 'NPU'];
+
     webviewPanel.webview.options = this.getWebviewOptions(this._extensionUri),
     webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview);
 
@@ -111,9 +114,6 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
   }
 
   private handleRequestBackends() {
-    // TODO revise to get from backend
-    this._backEndNames = ['(default)', 'CPU', 'ACL_CL', 'NPU'];
-
     let backends = '';
     this._backEndNames.forEach((item) => {
       backends = backends + item + '\n';
