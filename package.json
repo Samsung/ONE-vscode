@@ -142,7 +142,7 @@
         "command": "one.toolchain.install",
         "title": "Install",
         "category": "ONE",
-        "icon": "$(desktop-download)"
+        "icon": "$(add)"
       },
       {
         "command": "one.toolchain.uninstall",
