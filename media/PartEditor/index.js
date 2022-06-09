@@ -27,11 +27,22 @@ editor.Backend = class {
   }
 };
 
+/**
+ * @brief editor.Operator stores model operator records
+ */
+editor.Operator = class {
+  constructor(name, code) {
+    this.name = name;
+    this.code = code;
+  }
+};
+
 editor.Editor = class {
   constructor() {
     this.window = window;
     this.document = window.document;
-    this.backends = [];  // array of editor.Backend
+    this.backends = [];   // array of editor.Backend
+    this.operators = [];  // array of editor.Operator
   }
 
   initialize() {
@@ -46,12 +57,20 @@ editor.Editor = class {
         case 'resultBackends':
           this.handleResultBackends(message);
           break;
+
+        case 'resultOpNames':
+          this.handleResultOpNames(message);
+          break;
       }
     });
   }
 
   requestBackends() {
     vscode.postMessage({command: 'requestBackends'});
+  }
+
+  requestOpNames() {
+    vscode.postMessage({command: 'requestOpNames'});
   }
 
   /**
@@ -78,7 +97,34 @@ editor.Editor = class {
       }
     };
 
-    // TODO request Operator names
+    this.requestOpNames();
+  }
+
+  /**
+   * @brief fill 'circle-nodes' listbox with operator names of the model
+   */
+  handleResultOpNames(message) {
+    this.operators = [];
+
+    const itemOpNames = message.names.split(/\r?\n/);
+
+    // initial fill operators listbox with name and code as 0
+    const listbox = this.document.getElementById('circle-nodes');
+    for (let idx = 0; idx < itemOpNames.length; idx++) {
+      const name = itemOpNames[idx];
+      if (name.length > 0) {
+        let opt = this.document.createElement('option');
+        opt.text = '(0) ' + name;
+        opt.value = idx;
+        listbox.options.add(opt);
+
+        // add name with default code(0) as of now
+        // code will be updated after document partition is received
+        this.operators.push(new editor.Operator(name, 0));
+      }
+    };
+
+    // TODO request partition information
   }
 };
 
