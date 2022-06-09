@@ -127,6 +127,9 @@ export class MultiStepInput {
                         shouldResume && await shouldResume() ? InputFlowAction.resume :
                                                                InputFlowAction.cancel);
                   })().catch(reject);
+                }),
+                input.onDidHide(item => {
+                  reject(<any>item);
                 }));
             if (this.current) {
               this.current.dispose();
