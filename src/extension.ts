@@ -70,13 +70,13 @@ export function activate(context: vscode.ExtensionContext) {
 
   projectBuilder.init();
 
-  let disposableOneBuild = vscode.commands.registerCommand('onevscode.build', () => {
+  let disposableOneBuild = vscode.commands.registerCommand('one.project.build', () => {
     Logger.info(tag, 'one build...');
     projectBuilder.build(context);
   });
   context.subscriptions.push(disposableOneBuild);
 
-  let disposableOneImport = vscode.commands.registerCommand('onevscode.import', () => {
+  let disposableOneImport = vscode.commands.registerCommand('one.project.import', () => {
     Logger.info(tag, 'one import...');
     projectBuilder.import(context);
   });
