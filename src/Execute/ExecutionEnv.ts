@@ -18,7 +18,6 @@ import {Command} from '../Backend/Command';
 
 interface ExecutionEnv {
   name(): string;
-  envInfo(): string;
   wrapCommand(command: Command): Command;
 }
 
@@ -32,9 +31,6 @@ interface ExecutionEnv {
 //    This will return Command that is executed on host and returns DeviceList string.
 class ExecutionEnvBase implements ExecutionEnv {
   name(): string {
-    throw new Error('Method not implemented.');
-  }
-  envInfo(): string {
     throw new Error('Method not implemented.');
   }
   // This function will wrap command with bridge command.
