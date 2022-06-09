@@ -105,6 +105,7 @@ function registerImportOptions() {
   importInputModelType.addEventListener('click', function() {
     updateImportUI();
     updateImportInputModelType();
+    updateSteps();
     applyUpdates();
   });
 
