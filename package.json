@@ -167,7 +167,7 @@
         "category": "ONE"
       },
       {
-        "command": "onevscode.json-tracer",
+        "command": "one.viewer.jsonTracer",
         "title": "json tracer",
         "category": "ONE"
       },
@@ -182,12 +182,12 @@
         "category": "ONE"
       },
       {
-        "command": "onevscode.circle-tracer",
+        "command": "one.viewer.circleTracer",
         "title": "circle tracer",
         "category": "ONE"
       },
       {
-        "command": "onevscode.circle-graphview",
+        "command": "one.viewer.circleGraph",
         "title": "circle graph view",
         "category": "ONE"
       }
