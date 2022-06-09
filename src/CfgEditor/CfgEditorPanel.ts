@@ -111,7 +111,63 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
     // Receive message from the webview.
     webviewPanel.webview.onDidReceiveMessage(e => {
       switch (e.type) {
-        // TODO Add more webview modification handlers
+        case 'setParam':
+          if (this._oneConfig[e.section] === undefined) {
+            this._oneConfig[e.section] = {};
+          }
+          if (this._oneConfig[e.section][e.param] === undefined) {
+            this._oneConfig[e.section][e.param] = '';
+          }
+          this._oneConfig[e.section][e.param] = e.value;
+          break;
+        case 'setSection':
+          this._oneConfig[e.section] = ini.parse(e.param);
+          break;
+        case 'updateDocument':
+          let isSame = true;
+          const iniDocument = ini.parse(document.getText());
+          for (const [sectionName, section] of Object.entries(this._oneConfig)) {
+            for (const [paramName, param] of Object.entries(section as any)) {
+              if (iniDocument[sectionName] !== undefined &&
+                  iniDocument[sectionName][paramName] === param) {
+                continue;
+              }
+              isSame = false;
+              break;
+            }
+          }
+          for (const [sectionName, section] of Object.entries(iniDocument)) {
+            for (const [paramName, param] of Object.entries(section as any)) {
+              if (this._oneConfig[sectionName] !== undefined &&
+                  this._oneConfig[sectionName][paramName] === param) {
+                continue;
+              }
+              isSame = false;
+              break;
+            }
+          }
+
+          if (isSame === false) {
+            // cfg file is written along with the order of array elements
+            let sortedCfg: any = {};
+            const sections = [
+              'onecc', 'one-import-tf', 'one-import-tflite', 'one-import-bcq', 'one-import-onnx',
+              'one-optimize', 'one-quantize', 'one-codegen', 'one-profile'
+            ];
+            sections.forEach((section) => {
+              if (this._oneConfig[section] !== undefined) {
+                sortedCfg[section] = this._oneConfig[section];
+              }
+            });
+
+            // TODO Optimize this to modify only changed lines
+            const edit = new vscode.WorkspaceEdit();
+            edit.replace(
+                document.uri, new vscode.Range(0, 0, document.lineCount, 0),
+                ini.stringify(sortedCfg));
+            vscode.workspace.applyEdit(edit);
+          }
+          break;
         default:
           break;
       }
