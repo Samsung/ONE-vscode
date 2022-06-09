@@ -147,37 +147,20 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
             }
           }
 
-          // TODO Optimize this to modify only changed lines
           if (isSame === false) {
+            // cfg file is written along with the order of array elements
             let sortedCfg: any = {};
-            if (this._oneConfig['onecc'] !== undefined) {
-              sortedCfg['onecc'] = this._oneConfig['onecc'];
-            }
-            if (this._oneConfig['one-import-tf'] !== undefined) {
-              sortedCfg['one-import-tf'] = this._oneConfig['one-import-tf'];
-            }
-            if (this._oneConfig['one-import-tflite'] !== undefined) {
-              sortedCfg['one-import-tflite'] = this._oneConfig['one-import-tflite'];
-            }
-            if (this._oneConfig['one-import-bcq'] !== undefined) {
-              sortedCfg['one-import-bcq'] = this._oneConfig['one-import-bcq'];
-            }
-            if (this._oneConfig['one-import-onnx'] !== undefined) {
-              sortedCfg['one-import-onnx'] = this._oneConfig['one-import-onnx'];
-            }
-            if (this._oneConfig['one-optimize'] !== undefined) {
-              sortedCfg['one-optimize'] = this._oneConfig['one-optimize'];
-            }
-            if (this._oneConfig['one-quantize'] !== undefined) {
-              sortedCfg['one-quantize'] = this._oneConfig['one-quantize'];
-            }
-            if (this._oneConfig['one-codegen'] !== undefined) {
-              sortedCfg['one-codegen'] = this._oneConfig['one-codegen'];
-            }
-            if (this._oneConfig['one-profile'] !== undefined) {
-              sortedCfg['one-profile'] = this._oneConfig['one-profile'];
-            }
+            const sections = [
+              'onecc', 'one-import-tf', 'one-import-tflite', 'one-import-bcq', 'one-import-onnx',
+              'one-optimize', 'one-quantize', 'one-codegen', 'one-profile'
+            ];
+            sections.forEach((section) => {
+              if (this._oneConfig[section] !== undefined) {
+                sortedCfg[section] = this._oneConfig[section];
+              }
+            });
 
+            // TODO Optimize this to modify only changed lines
             const edit = new vscode.WorkspaceEdit();
             edit.replace(
                 document.uri, new vscode.Range(0, 0, document.lineCount, 0),
