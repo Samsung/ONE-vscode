@@ -134,7 +134,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(MondrianEditorProvider.register(context));
 
-  let disposableGraphPenel = vscode.commands.registerCommand('one.viewer.circleNetron', () => {
+  let disposableGraphPenel = vscode.commands.registerCommand('one.viewer.circleGraph', () => {
     CircleGraphPanel.createOrShow(context.extensionUri, undefined);
   });
   context.subscriptions.push(disposableGraphPenel);

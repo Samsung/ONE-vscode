@@ -187,7 +187,7 @@
         "category": "ONE"
       },
       {
-        "command": "one.viewer.circleNetron",
+        "command": "one.viewer.circleGraph",
         "title": "circle graph view",
         "category": "ONE"
       }
