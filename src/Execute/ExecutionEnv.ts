@@ -16,12 +16,18 @@
 
 import {Command} from '../Backend/Command';
 
+// ExecutionEnv is a class for each Device.
+// It contains information about how to run action on this Device.
+// name() will return a unique identifier for Device.
+// wrapCommand() update command to run on certain Device.
+// TODO: Rename this with right meaning.
 interface ExecutionEnv {
   name(): string;
+  // TODO: Rename this.
   wrapCommand(command: Command): Command;
 }
 
-// This is a base ExeuctionEnv.
+// This is a base class for ExeuctionEnv.
 // To write a class that inherits ExecutionEnvBase, the following needs to be added
 // 1. ExecutionEnv class itself
 // 2. ExecutionEnv Creation function : named `function createExecutionEnv(name: string):
@@ -33,7 +39,6 @@ class ExecutionEnvBase implements ExecutionEnv {
   name(): string {
     throw new Error('Method not implemented.');
   }
-  // This function will wrap command with bridge command.
   wrapCommand(command: Command): Command {
     throw new Error('Method not implemented.');
   }
