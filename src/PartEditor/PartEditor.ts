@@ -15,6 +15,7 @@
  */
 
 import * as fs from 'fs';
+import * as path from 'path';
 import * as vscode from 'vscode';
 
 import {getNonce} from '../Utils/external/Nonce';
@@ -28,6 +29,9 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
   private _webview: vscode.Webview|undefined;
   private _disposables: vscode.Disposable[] = [];
   private _document: vscode.TextDocument|undefined;
+  private _modelFilePath: string;
+  private _modelFileName: string;
+  private _modelFolderPath: string;
   private _backEndNames: string[] = [];
 
   public static register(context: vscode.ExtensionContext): vscode.Disposable {
@@ -44,6 +48,9 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
     this._extensionUri = context.extensionUri;
     this._document = undefined;
     this._webview = undefined;
+    this._modelFilePath = '';
+    this._modelFileName = '';
+    this._modelFolderPath = '';
   }
 
   public async resolveCustomTextEditor(
@@ -79,6 +86,16 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
     });
 
     this._document = document;
+
+    if (this._document) {
+      const lastSlash = this._document.fileName.lastIndexOf(path.sep) + 1;
+      const fileNameExt = this._document.fileName.substring(lastSlash);
+      const fileExt = path.extname(fileNameExt);
+
+      this._modelFileName = path.basename(fileNameExt, fileExt) + '.circle';
+      this._modelFolderPath = this._document.fileName.substring(0, lastSlash);
+      this._modelFilePath = this._modelFolderPath + this._modelFileName;
+    }
 
     webviewPanel.webview.options = this.getWebviewOptions(this._extensionUri),
     webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview);
@@ -117,8 +134,7 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
     html = this.updateUri(html, webview, '%index.css%', 'index.css');
     html = this.updateUri(html, webview, '%index.js%', 'index.js');
 
-    // TODO update model name
-    html = this.updateText(html, webview, '%MODEL_NAME%', '');
+    html = this.updateText(html, webview, '%MODEL_NAME%', this._modelFileName);
 
     return html;
   }
