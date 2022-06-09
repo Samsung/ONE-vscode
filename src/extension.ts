@@ -82,7 +82,7 @@ export function activate(context: vscode.ExtensionContext) {
   });
   context.subscriptions.push(disposableOneImport);
 
-  let disposableOneJsontracer = vscode.commands.registerCommand('onevscode.json-tracer', () => {
+  let disposableOneJsontracer = vscode.commands.registerCommand('one.viewer.jsonTracer', () => {
     Logger.info(tag, 'one json tracer...');
     Jsontracer.createOrShow(context.extensionUri);
   });
@@ -114,7 +114,7 @@ export function activate(context: vscode.ExtensionContext) {
   let disposableHover = vscode.languages.registerHoverProvider('ini', hover);
   context.subscriptions.push(disposableHover);
 
-  let disposableOneCircleTracer = vscode.commands.registerCommand('onevscode.circle-tracer', () => {
+  let disposableOneCircleTracer = vscode.commands.registerCommand('one.viewer.circleTracer', () => {
     Logger.info(tag, 'one circle tracer...');
     const options: vscode.OpenDialogOptions = {
       canSelectMany: false,
@@ -134,7 +134,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(MondrianEditorProvider.register(context));
 
-  let disposableGraphPenel = vscode.commands.registerCommand('onevscode.circle-graphview', () => {
+  let disposableGraphPenel = vscode.commands.registerCommand('one.viewer.circleNetron', () => {
     CircleGraphPanel.createOrShow(context.extensionUri, undefined);
   });
   context.subscriptions.push(disposableGraphPenel);
