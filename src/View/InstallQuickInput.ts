@@ -110,6 +110,8 @@ export async function showInstallQuickInput() {
           'Prerequisites has not been set yet. Do you want to set it up now?', 'Yes', 'No');
       if (answer === 'Yes') {
         requestPrerequisites(state.toolchainEnv);
+      } else {
+        Balloon.info('Installation is canceled.');
       }
       return;
     }
