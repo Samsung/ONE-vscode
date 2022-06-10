@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
+import * as cp from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 
+import {Balloon} from '../Utils/Balloon';
 import {getNonce} from '../Utils/external/Nonce';
+import {Logger} from '../Utils/Logger';
 
 export class PartEditorProvider implements vscode.CustomTextEditorProvider {
   public static readonly viewType = 'onevscode.part-editor';
@@ -82,6 +85,10 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
         case 'requestBackends':
           this.handleRequestBackends();
           return;
+
+        case 'requestOpNames':
+          this.handleRequestOpNames();
+          return;
       }
     });
 
@@ -121,6 +128,60 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
     if (this._webview) {
       this._webview.postMessage({command: 'resultBackends', backends: backends});
     }
+  }
+
+  private handleRequestOpNames() {
+    const K_DATA: string = 'data';
+    const K_EXIT: string = 'exit';
+    const K_ERROR: string = 'error';
+    // TODO integrate with Toolchain
+    const tool = '/usr/share/one/bin/circle-operator';
+    const toolargs = ['--name', this._modelFilePath];
+    let result: string = '';
+    let error: string = '';
+
+    let runPromise = new Promise<string>((resolve, reject) => {
+      let cmd = cp.spawn(tool, toolargs, {cwd: this._modelFolderPath});
+
+      cmd.stdout.on(K_DATA, (data: any) => {
+        let str = data.toString();
+        if (str.length > 0) {
+          result = result + str;
+        }
+      });
+
+      cmd.stderr.on(K_DATA, (data: any) => {
+        error = result + data.toString();
+        Logger.error('Partition', error);
+      });
+
+      cmd.on(K_EXIT, (code: any) => {
+        let codestr = code.toString();
+        if (codestr === '0') {
+          resolve(result);
+        } else {
+          let msg = 'Failed to load model: ' + this._modelFileName;
+          Balloon.error(msg);
+          reject(msg);
+        }
+      });
+
+      cmd.on(K_ERROR, (err) => {
+        let msg = 'Failed to run circle-operator: ' + this._modelFileName;
+        Balloon.error(msg);
+        reject(msg);
+      });
+    });
+
+    runPromise
+        .then((result) => {
+          if (this._webview) {
+            this._webview.postMessage({command: 'resultOpNames', names: result});
+          }
+        })
+        .catch((error) => {
+          Logger.error('Partition', error);
+        });
   }
 
   private getHtmlForWebview(webview: vscode.Webview) {
