@@ -28,13 +28,13 @@ import {ExecutionEnv} from './ExecutionEnv';
 // TODO Handle about remote case.
 // Currently, only local case Handled.
 
-interface ExectionEnvEnvManager {
+interface ExectionEnvManager {
   runInference(envName: string, executor: Executor, modelPath: string): void;
   runProfile(envName: string, executor: Executor, modelPath: string): void;
   refreshExecutionEnv(): void;
 }
 
-class BaseEnvManager implements ExectionEnvEnvManager {
+class BaseEnvManager implements ExectionEnvManager {
   executionEnvs: Map<string, ExecutionEnv>;
   constructor() {
     this.executionEnvs = new Map<string, ExecutionEnv>();

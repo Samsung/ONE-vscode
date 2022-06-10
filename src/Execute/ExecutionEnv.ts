@@ -18,7 +18,6 @@ import {Command} from '../Backend/Command';
 
 interface ExecutionEnv {
   name(): string;
-  envInfo(): string;
   wrapCommand(command: Command): Command;
 }
 
@@ -32,11 +31,6 @@ interface ExecutionEnv {
 //    could split with '\n'.
 class ExecutionEnvBase implements ExecutionEnv {
   name(): string {
-    throw new Error('Method not implemented.');
-  }
-
-  // This will return some information for ExecutionEnv, like Tizen or some specified value to check Executor could run on this.
-  envInfo(): string {
     throw new Error('Method not implemented.');
   }
 
