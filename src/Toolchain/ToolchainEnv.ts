@@ -120,6 +120,19 @@ class ToolchainEnv extends Env {
         });
   }
 
+  prerequisitesAsync(): Promise<boolean> {
+    return new Promise<boolean>((resolve, reject) => {
+      this.prerequisites(() => resolve(true), () => {
+        // NOTE(jyoung)
+        // Even though this job is failed, it still shows the version quick input.
+        // The error message will be shown in JobRunner code to user. So here,
+        // only the log is output and it goes to the `resolve` so that quick input
+        // can be seen normally.
+        resolve(false);
+      });
+    });
+  }
+
   prerequisites(successCallback?: JobCallback, failedCallback?: JobCallback) {
     let cmd = this.compiler.prerequisitesForGetToolchains();
     let job = new JobPrerequisites(cmd);

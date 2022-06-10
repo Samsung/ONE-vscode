@@ -114,25 +114,12 @@ export async function showInstallQuickInput() {
     state.toolchain = toolchains[versions.indexOf(state.version.label)];
   }
 
-  async function requestPrerequisitesAsync(toolchainEnv: ToolchainEnv) {
-    return new Promise<boolean>((resolve, reject) => {
-      toolchainEnv.prerequisites(() => resolve(true), () => {
-        // NOTE(jyoung)
-        // Even though this job is failed, it still shows the version quick input.
-        // The error message will be shown in JobRunner code to user. So here,
-        // only the log is output and it goes to the `resolve` so that quick input
-        // can be seen normally.
-        resolve(false);
-      });
-    });
-  }
-
   async function updateBackend(input: MultiStepInput, state: Partial<State>) {
     if (state.toolchainEnv === undefined || state.toolchainType === undefined) {
       throw Error('toolchainenv is undefined.');
     }
 
-    const result = await requestPrerequisitesAsync(state.toolchainEnv);
+    const result = await state.toolchainEnv.prerequisitesAsync();
     if (result === true) {
       Balloon.info('Backend toolchain list has been successfully updated.');
     } else {
