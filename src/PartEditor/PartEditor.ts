@@ -145,7 +145,7 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
 
   private updateUri(html: string, webview: vscode.Webview, search: string, replace: string) {
     const replaceUri = this.getUriFromPath(webview, replace);
-    return html.replace(search, `${replaceUri}`);
+    return html.replace(search, replaceUri.toString());
   }
 
   private getUriFromPath(webview: vscode.Webview, file: string) {
@@ -155,7 +155,7 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
   }
 
   private updateText(html: string, webview: vscode.Webview, search: string, replace: string) {
-    return html.replace(search, `${replace}`);
+    return html.replace(search, replace);
   }
 
   private getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {
