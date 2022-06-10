@@ -70,9 +70,14 @@ class DebianToolchain implements Toolchain {
     // According to man(8) aptitude
     // -q: suppress all incremental progress indicators
     // -y: assume that the user entered "yes"
+    // -o: Set a configuration file option directly
+    //   * Aptitude::ProblemResolver::SolutionCost
+    //        : Describes how to determine the cost of a solution.
+    //          ref: https://tools.ietf.org/doc/aptitude/html/en/ch02s03s04.html
     this.prepare();
     let cmd = new Command('aptitude');
     cmd.push('install');
+    cmd.push(`-o Aptitude::ProblemResolver::SolutionCost='100*canceled-actions,200*removals'`);
     let pkg: string = this.info.name;
     if (this.info.version !== undefined) {
       pkg = `${pkg}=${this.info.version.str()}`;
