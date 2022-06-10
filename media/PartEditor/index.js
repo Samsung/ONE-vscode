@@ -47,6 +47,10 @@ editor.Editor = class {
 
   initialize() {
     this.register();
+    // NOTE sequence of init is;
+    // (1) fill backends to 'circle-be' combobox
+    // (2) fill operators to 'circle-nodes'' listbox
+    // (3) get document partition and apply to listbox
     this.requestBackends();
   }
 
