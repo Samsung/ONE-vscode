@@ -88,12 +88,31 @@ export async function showInstallQuickInput() {
     return (input: MultiStepInput) => pickVersion(input, state);
   }
 
+  async function requestPrerequisites(toolchainEnv: ToolchainEnv) {
+    const result = await toolchainEnv.prerequisitesAsync();
+    if (result === true) {
+      Balloon.info('Backend toolchain list has been successfully updated.');
+    } else {
+      Balloon.error('Failed to update Backend toolchain list.');
+    }
+  }
+
   async function pickVersion(input: MultiStepInput, state: Partial<State>) {
     if (state.toolchainEnv === undefined || state.toolchainType === undefined) {
       throw Error('toolchainenv  is undefined.');
     }
     // TODO(jyoung): Support page UI
-    const toolchains = state.toolchainEnv.listAvailable(state.toolchainType, 0, 10);
+    let toolchains: Toolchain[];
+    try {
+      toolchains = state.toolchainEnv.listAvailable(state.toolchainType, 0, 10);
+    } catch (err) {
+      const answer = await vscode.window.showWarningMessage(
+          'Prerequisites has not been set yet. Do you want to set it up now?', 'Yes', 'No');
+      if (answer === 'Yes') {
+        requestPrerequisites(state.toolchainEnv);
+      }
+      return;
+    }
     const versions =
         toolchains.map((value) => value.info.version !== undefined ? value.info.version.str() : '');
     const versionGroups: vscode.QuickPickItem[] = versions.map((label) => ({label}));
@@ -119,12 +138,7 @@ export async function showInstallQuickInput() {
       throw Error('toolchainenv is undefined.');
     }
 
-    const result = await state.toolchainEnv.prerequisitesAsync();
-    if (result === true) {
-      Balloon.info('Backend toolchain list has been successfully updated.');
-    } else {
-      Balloon.error('Failed to update Backend toolchain list.');
-    }
+    requestPrerequisites(state.toolchainEnv);
 
     // NOTE(jyoung)
     // Prerequisites request shows the password quick input and this input is
@@ -144,10 +158,6 @@ export async function showInstallQuickInput() {
   }
 
   const state = await collectInputs();
-  Logger.info(
-      logtag,
-      `Selected backend: ${state.backend.label}-${state.toolchainType}-${state.version.label}`);
-
   return new Promise((resolve, reject) => {
     const success: JobCallback = function() {
       resolve(state.toolchain);
@@ -155,6 +165,13 @@ export async function showInstallQuickInput() {
     const failed: JobCallback = function() {
       reject();
     };
-    state.toolchainEnv.install(state.toolchain, success, failed);
+    if (state.toolchainEnv && state.toolchain) {
+      Logger.info(
+          logtag,
+          `Selected backend: ${state.backend.label}-${state.toolchainType}-${state.version.label}`);
+      state.toolchainEnv.install(state.toolchain, success, failed);
+    } else {
+      reject();
+    }
   });
 }

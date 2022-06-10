@@ -17,6 +17,7 @@
 import * as vscode from 'vscode';
 
 import {Toolchain} from '../Backend/Toolchain';
+import {Logger} from '../Utils/Logger';
 import {showInstallQuickInput} from '../View/InstallQuickInput';
 
 import {gToolchainEnvMap} from './ToolchainEnv';
@@ -53,6 +54,8 @@ export class ToolchainNode extends vscode.TreeItem {
 }
 
 export class ToolchainProvider implements vscode.TreeDataProvider<ToolchainNode> {
+  tag = this.constructor.name;  // logging tag
+
   private _onDidChangeTreeData: vscode.EventEmitter<ToolchainNode|undefined|void> =
       new vscode.EventEmitter<ToolchainNode|undefined|void>();
   readonly onDidChangeTreeData?: vscode.Event<ToolchainNode|undefined|void> =
@@ -99,9 +102,13 @@ export class ToolchainProvider implements vscode.TreeDataProvider<ToolchainNode>
   }
 
   install() {
-    showInstallQuickInput().then(() => {
-      this.refresh();
-    });
+    showInstallQuickInput().then(
+        () => {
+          this.refresh();
+        },
+        () => {
+          Logger.info(this.tag, 'Installation is canceled.');
+        });
   }
 
   uninstall(node: ToolchainNode) {
