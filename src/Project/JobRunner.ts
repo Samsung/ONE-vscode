@@ -98,6 +98,7 @@ export class JobRunner extends EventEmitter {
 
   private onCleanup() {
     this.running = false;
+    process.env.userp = '';
   }
 
   public start(path: string, jobs: WorkJobs) {
