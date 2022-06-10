@@ -291,11 +291,6 @@ function displayCfgToEditor(cfg) {
     document.getElementById('profileBackend').value = oneProfile['backend'];
     document.getElementById('profileCommand').value = oneProfile['command'];
   }
-
-  // TODO Support Intelligence Auto Complete
-  //   - Input Model
-  //   - Output Path
-  //   - Intermediate paths
 }
 
 function outputPathSearchClick() {
