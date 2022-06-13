@@ -16,6 +16,7 @@
 
 import * as cp from 'child_process';
 import * as fs from 'fs';
+import * as ini from 'ini';
 import * as path from 'path';
 import * as vscode from 'vscode';
 
@@ -88,6 +89,10 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
 
         case 'requestOpNames':
           this.handleRequestOpNames();
+          return;
+
+        case 'requestPartition':
+          this.handleRequestPartition();
           return;
       }
     });
@@ -182,6 +187,13 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
         .catch((error) => {
           Logger.error('Partition', error);
         });
+  }
+
+  private handleRequestPartition() {
+    if (this._document && this._webview) {
+      let content = ini.parse(this._document.getText());
+      this._webview.postMessage({command: 'resultPartition', part: content});
+    }
   }
 
   private getHtmlForWebview(webview: vscode.Webview) {

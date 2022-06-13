@@ -43,6 +43,8 @@ editor.Editor = class {
     this.document = window.document;
     this.backends = [];   // array of editor.Backend
     this.operators = [];  // array of editor.Operator
+    this.partition = {};  // current partition from document
+    this.beToCode = {};   // backend string to code, for search performance
   }
 
   initialize() {
@@ -65,6 +67,10 @@ editor.Editor = class {
         case 'resultOpNames':
           this.handleResultOpNames(message);
           break;
+
+        case 'resultPartition':
+          this.handleResultPartition(message);
+          break;
       }
     });
   }
@@ -75,6 +81,10 @@ editor.Editor = class {
 
   requestOpNames() {
     vscode.postMessage({command: 'requestOpNames'});
+  }
+
+  requestPartition() {
+    vscode.postMessage({command: 'requestPartition'});
   }
 
   /**
@@ -98,6 +108,7 @@ editor.Editor = class {
         listbox.options.add(opt);
 
         this.backends.push(new editor.Backend(backend));
+        this.beToCode[backend] = idx;
       }
     };
 
@@ -128,7 +139,85 @@ editor.Editor = class {
       }
     };
 
-    // TODO request partition information
+    this.requestPartition();
+  }
+
+  /**
+   * @brief apply document partition to operators listbox
+   */
+  handleResultPartition(message) {
+    this.partition = message.part;
+
+    this.updateOperatorsBackend();
+    this.refershOpListbox();
+  }
+
+  /**
+   * @brief apply document partition to this.operators code
+   */
+  updateOperatorsBackend() {
+    // must clear first as this.partition.OPNAME may not have all nodes
+    this.clearOperatorsCode();
+
+    for (let name in this.partition.OPNAME) {
+      let backend = this.partition.OPNAME[name];
+      let beCode = this.backendCode(backend);
+      if (beCode !== -1) {
+        this.setOperatorBeCode(name, beCode);
+      } else {
+        this.setOperatorBeCode(name, 0);
+      }
+    };
+  }
+
+  /**
+   * @brief update listbox item text with backend code as prefix
+   */
+  refershOpListbox() {
+    let listbox = this.document.getElementById('circle-nodes');
+    for (let i = 0; i < listbox.options.length; i++) {
+      let opt = listbox.options[i];
+
+      let idx = opt.value;
+      let beCode = this.operators[idx].code;
+      opt.text = `(${beCode}) ` + this.operators[idx].name;
+    }
+  }
+
+  /**
+   * @brief clear operator code of backend to default(0)
+   */
+  clearOperatorsCode() {
+    for (let idx = 0; idx < this.operators.length; idx++) {
+      this.operators[idx].code = 0;
+    }
+  }
+
+  /**
+   * @brief return backend code from backend name ('CPU', ...)
+   * @return -1 if not found
+   */
+  backendCode(value) {
+    if (typeof value === 'string') {
+      value = value.toUpperCase();
+      if (this.beToCode.hasOwnProperty(value)) {
+        return this.beToCode[value];
+      }
+    }
+    return -1;
+  }
+
+  /**
+   * @brief set operator code to backend code
+   */
+  setOperatorBeCode(operator, beCode) {
+    for (let idx = 0; idx < this.operators.length; idx++) {
+      let op = this.operators[idx];
+      if (operator === op.name) {
+        this.operators[idx].code = beCode;
+        return;
+      }
+    }
   }
 };
 
