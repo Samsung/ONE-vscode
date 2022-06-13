@@ -15,7 +15,8 @@
  */
 
 import {displayCfgToEditor} from './displaycfg.js';
-import {applyUpdates, updateCodegen, updateImportInputModelType, updateImportKERAS, updateImportONNX, updateImportPB, updateImportSAVED, updateImportTFLITE, updateProfile, updateSteps} from './updateContent.js';
+import oneOptimizationList from './one-optimizations.json' assert {type : 'json'};
+import {applyUpdates, updateCodegen, updateImportInputModelType, updateImportKERAS, updateImportONNX, updateImportPB, updateImportSAVED, updateImportTFLITE, updateOptimize, updateProfile, updateSteps} from './updateContent.js';
 import {updateImportUI, updateStepUI} from './updateUI.js';
 
 // Just like a regular webpage we need to wait for the webview
@@ -27,6 +28,7 @@ window.addEventListener('load', main);
 function main() {
   registerSteps();
   registerImportOptions();
+  registerOptimizeOptions();
   registerCodegenOptions();
   registerProfileOptions();
 
@@ -62,8 +64,7 @@ function registerSteps() {
   });
   checkboxOptimize.addEventListener('click', function() {
     updateSteps();
-    // TODO Implement this
-    // UpdateOptimize();
+    updateOptimize();
     applyUpdates();
   });
   checkboxQuantize.addEventListener('click', function() {
@@ -221,6 +222,52 @@ function registerONNXOptions() {
     updateImportONNX();
     applyUpdates();
   });
+}
+
+function registerOptimizeOptions() {
+  const optimizeInputPath = document.getElementById('optimizeInputPath');
+  const optimizeOutputPath = document.getElementById('optimizeOutputPath');
+  const basicOptimizeTable = document.getElementById('basicOptimizeTable');
+
+  optimizeInputPath.addEventListener('change', function() {
+    updateOptimize();
+    applyUpdates();
+  });
+
+  optimizeOutputPath.addEventListener('change', function() {
+    updateOptimize();
+    applyUpdates();
+  });
+
+  for (const optName in oneOptimizationList) {
+    let row = document.createElement('vscode-data-grid-row');
+
+    let cellSwitch = document.createElement('vscode-data-grid-cell');
+    let checkbox = document.createElement('vscode-checkbox');
+    checkbox.setAttribute('id', 'checkboxOptimize' + optName);
+    cellSwitch.appendChild(checkbox);
+    cellSwitch.setAttribute('grid-column', '1');
+    row.appendChild(cellSwitch);
+
+    let cellName = document.createElement('vscode-data-grid-cell');
+    cellName.textContent = optName;
+    cellName.setAttribute('grid-column', '2');
+    row.appendChild(cellName);
+
+    let cellDescription = document.createElement('vscode-data-grid-cell');
+    cellDescription.textContent = oneOptimizationList[optName].description;
+    cellDescription.setAttribute('grid-column', '3');
+    row.appendChild(cellDescription);
+
+    basicOptimizeTable.appendChild(row);
+  }
+
+  for (const optName in oneOptimizationList) {
+    document.getElementById('checkboxOptimize' + optName).addEventListener('click', function() {
+      updateOptimize();
+      applyUpdates();
+    });
+  }
 }
 
 function registerCodegenOptions() {

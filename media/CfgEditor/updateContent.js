@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import oneOptimizationList from './one-optimizations.json' assert {type : 'json'};
+
 // Get access to the VS Code API from within the webview context
 const vscode = acquireVsCodeApi();
 
@@ -165,6 +167,19 @@ export function updateImportONNX() {
   content += iniKeyValueString('unroll_lstm', document.getElementById('ONNXUnrollLSTM').checked);
 
   vscode.postMessage({type: 'setSection', section: 'one-import-onnx', param: content});
+}
+
+export function updateOptimize() {
+  let content = '';
+  content += iniKeyValueString('input_path', document.getElementById('optimizeInputPath').value);
+  content += iniKeyValueString('output_path', document.getElementById('optimizeOutputPath').value);
+
+  for (const optName in oneOptimizationList) {
+    content +=
+        iniKeyValueString(optName, document.getElementById('checkboxOptimize' + optName).checked);
+  }
+
+  vscode.postMessage({type: 'setSection', section: 'one-optimize', param: content});
 }
 
 export function updateCodegen() {
