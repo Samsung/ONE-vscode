@@ -73,6 +73,11 @@ editor.Editor = class {
           break;
       }
     });
+
+    // backend combobox change
+    this.document.getElementById('circle-be').addEventListener('change', () => {
+      this.updateDefaultCheckbox();
+    });
   }
 
   requestBackends() {
@@ -150,6 +155,20 @@ editor.Editor = class {
 
     this.updateOperatorsBackend();
     this.refershOpListbox();
+    this.updateDefaultCheckbox();
+  }
+
+  updateDefaultCheckbox() {
+    // get the backend code
+    let belistbox = this.document.getElementById('circle-be');
+    let idx = belistbox.selectedIndex;
+    let beCode = belistbox.options[idx].value;
+    let beName = this.backends[beCode].name;
+    let checkbox = this.document.getElementById('circle-be-def');
+
+    checkbox.checked = (beName === this.partition.partition.default);
+    // we cannot turn off default when CPU to something else
+    checkbox.disabled = (checkbox.checked && idx === 0);
   }
 
   /**
