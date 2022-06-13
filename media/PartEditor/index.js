@@ -91,10 +91,10 @@ editor.Editor = class {
    * @brief fill 'circle-be' combobox with backends
    */
   handleResultBackends(message) {
-    // NOTE idx 0 is default which we do not add to the list
-    this.backends.push(new editor.Backend('(default)'));
-
     const backendNames = message.backends.split(/\r?\n/);
+
+    // NOTE idx 0 is default which we do not add to the list
+    this.backends.push(new editor.Backend(backendNames[0]));
 
     // initial fill op backend listbox
     const listbox = this.document.getElementById('circle-be');
