@@ -120,9 +120,11 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
   }
 
   private updateWebview() {
-    // TODO update webView with document
-    if (this._document) {
+    if (this._document && this._webview) {
       console.log('updateWebview document.uri=', this._document.uri);
+
+      let content = ini.parse(this._document.getText());
+      this._webview.postMessage({command: 'updatePartition', part: content});
     }
   }
 

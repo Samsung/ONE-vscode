@@ -71,6 +71,11 @@ editor.Editor = class {
         case 'resultPartition':
           this.handleResultPartition(message);
           break;
+
+        case 'updatePartition':
+          // when .part file was edited through text editor
+          this.handleUpdatePartition(message);
+          break;
       }
     });
 
@@ -156,6 +161,13 @@ editor.Editor = class {
     this.updateOperatorsBackend();
     this.refershOpListbox();
     this.updateDefaultCheckbox();
+  }
+
+  handleUpdatePartition(message) {
+    this.partition = message.part;
+
+    this.updateOperatorsBackend();
+    this.refershOpListbox();
   }
 
   updateDefaultCheckbox() {
