@@ -100,6 +100,11 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
         case 'requestPartition':
           this.handleRequestPartition();
           return;
+
+        case 'updateDocument':
+          console.log('updateDocument');
+          this.handleUpdateDocument(message);
+          return;
       }
     });
 
@@ -211,6 +216,38 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
     if (this._document && this._webview) {
       let content = ini.parse(this._document.getText());
       this._webview.postMessage({command: 'resultPartition', part: content});
+    }
+  }
+
+  private isValidPartition(partition: any) {
+    if (!partition) {
+      return false;
+    }
+    if (!partition.backends || !partition.default || !partition.comply) {
+      return false;
+    }
+    return true;
+  }
+
+  private handleUpdateDocument(message: any) {
+    if (this._document) {
+      let partContent = ini.parse(this._document.getText());
+
+      if (!this.isValidPartition(partContent.partition)) {
+        partContent['partition'] = this.makeDefaultPartiton();
+      }
+
+      if (message.hasOwnProperty('opname')) {
+        partContent.OPNAME = message.opname;
+      }
+      if (message.hasOwnProperty('partition')) {
+        partContent.partition = message.partition;
+      }
+
+      let text = ini.stringify(partContent);
+      const edit = new vscode.WorkspaceEdit();
+      edit.replace(this._document.uri, new vscode.Range(0, 0, this._document.lineCount, 0), text);
+      vscode.workspace.applyEdit(edit);
     }
   }
 
