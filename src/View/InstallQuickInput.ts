@@ -17,7 +17,10 @@
 import * as vscode from 'vscode';
 
 import {Toolchain} from '../Backend/Toolchain';
-import {JobCallback} from '../Project/Job';
+import {DebianToolchain} from '../Backend/ToolchainImpl/DebianToolchain';
+import {Job, JobCallback} from '../Project/Job';
+import {JobInstall} from '../Project/JobInstall';
+import {JobUninstall} from '../Project/JobUninstall';
 import {gToolchainEnvMap, ToolchainEnv} from '../Toolchain/ToolchainEnv';
 import {Balloon} from '../Utils/Balloon';
 import {Logger} from '../Utils/Logger';
@@ -159,21 +162,51 @@ export async function showInstallQuickInput() {
         });
   }
 
+  function requestInstall(
+      toolchainEnv: ToolchainEnv, toolchain: Toolchain): Promise<Toolchain|undefined> {
+    return new Promise(async (resolve, reject) => {
+      const success: JobCallback = function() {
+        resolve(toolchain);
+      };
+      const failed: JobCallback = function() {
+        reject();
+      };
+
+      const installed =
+          toolchainEnv.listInstalled().filter(value => value instanceof DebianToolchain);
+      if (installed.length === 0) {
+        toolchainEnv.install(toolchain, success, failed);
+      } else if (installed.length === 1) {
+        const answer = await vscode.window.showInformationMessage(
+            'Do you want to remove the existing and re-install? Backend toolchain can be installed only once.',
+            'Yes', 'No');
+        if (answer === 'Yes') {
+          const jobs: Array<Job> = [];
+          const uninstallJob = new JobUninstall(installed[0].uninstall());
+          uninstallJob.failureCallback = failed;
+          jobs.push(uninstallJob);
+          const installJob = new JobInstall(toolchain.install());
+          installJob.successCallback = success;
+          installJob.failureCallback = failed;
+          jobs.push(installJob);
+          toolchainEnv.request(jobs);
+        } else {
+          Balloon.info('Installation is canceled.');
+          reject();
+        }
+      } else {
+        throw Error('Installed debian toolchain must be unique.');
+      }
+    });
+  }
+
   const state = await collectInputs();
-  return new Promise((resolve, reject) => {
-    const success: JobCallback = function() {
-      resolve(state.toolchain);
-    };
-    const failed: JobCallback = function() {
-      reject();
-    };
-    if (state.toolchainEnv && state.toolchain) {
-      Logger.info(
-          logtag,
-          `Selected backend: ${state.backend.label}-${state.toolchainType}-${state.version.label}`);
-      state.toolchainEnv.install(state.toolchain, success, failed);
-    } else {
-      reject();
-    }
-  });
+  if (state.toolchainEnv && state.toolchain) {
+    Logger.info(
+        logtag,
+        `Selected backend: ${state.backend.label}-${state.toolchainType}-${state.version.label}`);
+    return requestInstall(state.toolchainEnv, state.toolchain);
+  } else {
+    return Promise.reject();
+  }
 }

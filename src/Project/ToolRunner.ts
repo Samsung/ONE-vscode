@@ -161,7 +161,6 @@ export class ToolRunner {
         // TODO(jyoung): Need password encryption
         tool = `echo ${process.env.userp} | sudo -S ` + tool;
         this.child = cp.spawn(tool, toolargs, {cwd: path, shell: true});
-        process.env.userp = '';
       } else {
         this.child = cp.spawn(tool, toolargs, {cwd: path});
       }

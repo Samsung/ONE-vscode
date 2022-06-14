@@ -120,6 +120,15 @@ class ToolchainEnv extends Env {
         });
   }
 
+  request(jobs: Array<Job>) {
+    this.clearJobs();
+    jobs.forEach((job) => {
+      this.addJob(job);
+    });
+    this.finishAdd();
+    this.build();
+  }
+
   prerequisitesAsync(): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
       this.prerequisites(() => resolve(true), () => {
