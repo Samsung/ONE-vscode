@@ -250,6 +250,32 @@ editor.Editor = class {
       }
     }
   }
+
+  /**
+   * @brief produce [OPNAME] section body
+   */
+  makeOpNameSection() {
+    let items = {};
+    for (let idx = 0; idx < this.operators.length; idx++) {
+      let beCode = this.operators[idx].code;
+      if (beCode !== 0) {
+        let backend = this.backends[beCode].name;
+        items[this.operators[idx].name] = backend;
+      }
+    }
+    return items;
+  }
+
+  /**
+   * @brief produce [partition] section body
+   */
+  makePartitionSection() {
+    let items = {};
+    items.backends = this.partition.partition.backends;
+    items.default = this.partition.partition.default;
+    items.comply = this.partition.partition.comply;
+    return items;
+  }
 };
 
 window.addEventListener('load', () => {
