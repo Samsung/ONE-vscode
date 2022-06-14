@@ -24,6 +24,12 @@ import {Balloon} from '../Utils/Balloon';
 import {getNonce} from '../Utils/external/Nonce';
 import {Logger} from '../Utils/Logger';
 
+type Partition = {
+  backends?: {};
+  default?: {};
+  comply?: {};
+};
+
 export class PartEditorProvider implements vscode.CustomTextEditorProvider {
   public static readonly viewType = 'onevscode.part-editor';
   public static readonly folderMediaPartEditor = 'media/PartEditor';
@@ -126,6 +132,15 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
       let content = ini.parse(this._document.getText());
       this._webview.postMessage({command: 'updatePartition', part: content});
     }
+  }
+
+  private makeDefaultPartiton() {
+    let partition: Partition = {};
+
+    partition.backends = this._backEndNames.slice(1, this._backEndNames.length).join(',');
+    partition.default = this._backEndNames[0];
+    partition.comply = 'opname';
+    return partition;
   }
 
   private handleRequestBackends() {
