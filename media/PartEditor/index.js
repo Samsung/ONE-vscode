@@ -83,6 +83,12 @@ editor.Editor = class {
     this.document.getElementById('circle-be').addEventListener('change', () => {
       this.updateDefaultCheckbox();
     });
+
+    // change 'default' backend to current backend of combobox
+    this.document.getElementById('circle-be-def').addEventListener('click', (e) => {
+      this.updateDefaultBackend();
+      this.updateDocument();
+    });
   }
 
   requestBackends() {
@@ -95,6 +101,13 @@ editor.Editor = class {
 
   requestPartition() {
     vscode.postMessage({command: 'requestPartition'});
+  }
+
+  updateDocument() {
+    let partition = this.makePartitionSection();
+    let opname = this.makeOpNameSection();
+
+    vscode.postMessage({command: 'updateDocument', partition: partition, opname: opname});
   }
 
   /**
@@ -181,6 +194,28 @@ editor.Editor = class {
     checkbox.checked = (beName === this.partition.partition.default);
     // we cannot turn off default when CPU to something else
     checkbox.disabled = (checkbox.checked && idx === 0);
+  }
+
+  /**
+   * @brief change default backend to current item of combobox
+   * @note  we cannot uncheck for first item(CPU)
+   */
+  updateDefaultBackend() {
+    let checkbox = this.document.getElementById('circle-be-def');
+    if (checkbox.checked) {
+      // checkbox is checked so change to current combobox items
+      let belistbox = this.document.getElementById('circle-be');
+      let idx = belistbox.selectedIndex;
+      let beCode = belistbox.options[idx].value;
+      let beName = this.backends[beCode].name;
+      this.partition.partition.default = beName;
+      // we cannot turn off default when CPU to something else
+      checkbox.disabled = (idx === 0);
+    } else {
+      // set to first backend
+      let beName = this.backends[0].name;
+      this.partition.partition.default = beName;
+    }
   }
 
   /**
