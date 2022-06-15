@@ -401,6 +401,14 @@ view.View = class {
         }
     }
 
+    _clearSelection() {
+        while (this._selection.length > 0) {
+            const element = this._selection.pop();
+            element.classList.remove('select');
+        }
+        this._selectionNodes = [];
+    }
+
     /**
      * @brief scroll to selection but do not select
      */
@@ -452,11 +460,7 @@ view.View = class {
     }
 
     clearSelection() {
-        while (this._selection.length > 0) {
-            const element = this._selection.pop();
-            element.classList.remove('select');
-        }
-        this._selectionNodes = [];
+        this._clearSelection();
     }
 
     error(err, name, screen) {
