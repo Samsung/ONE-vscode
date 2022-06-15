@@ -401,6 +401,9 @@ host.BrowserHost = class {
                 return this._view.open(context).then((model) => {
                     this._view.show(null);
                     this.document.title = files[0].name;
+
+                    // notify owner that load has finished
+                    vscode.postMessage({command: 'finishload'});
                     return model;
                 });
             })

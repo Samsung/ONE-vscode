@@ -26,6 +26,7 @@ export class MessageDefs {
   public static readonly request = 'request';
   public static readonly response = 'response';
   public static readonly loadmodel = 'loadmodel';
+  public static readonly finishload = 'finishload';
   public static readonly selection = 'selection';
   public static readonly error = 'error';
   // loadmodel type
@@ -82,6 +83,9 @@ export class CircleGraphCtrl {
           return;
         case MessageDefs.loadmodel:
           this.handleLoadModel(parseInt(message.offset));  // to number
+          return;
+        case MessageDefs.finishload:
+          this.handleFinishLoad();
           return;
       }
     }, null, this._ctrlDisposables);
@@ -144,6 +148,13 @@ export class CircleGraphCtrl {
         this.handleLoadError(err);
       }
     }
+  }
+
+  /**
+   * @brief handler for load is finished and graph is ready
+   */
+  protected handleFinishLoad() {
+    // TODO implement
   }
 
   private sendModelPath() {
