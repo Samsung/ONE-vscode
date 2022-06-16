@@ -101,6 +101,19 @@ editor.Editor = class {
       this.updateSelectedBackendCode(0);
       this.updateDocument();
     });
+
+    // set backend by graph-view
+    this.document.getElementById('circle-graph').addEventListener('click', (e) => {
+      let beName = this.currentBackendName();
+      vscode.postMessage({command: 'selectByGraph', backend: beName});
+    });
+  }
+
+  currentBackendName() {
+    let belistbox = this.document.getElementById('circle-be');
+    let idx = belistbox.selectedIndex;
+    let beCode = belistbox.options[idx].value;
+    return this.backends[beCode].name;
   }
 
   requestBackends() {
