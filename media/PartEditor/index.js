@@ -95,6 +95,12 @@ editor.Editor = class {
       this.updateSelectedBackend();
       this.updateDocument();
     });
+
+    // clear backend by clicking 'Clear' button
+    this.document.getElementById('clear-be').addEventListener('click', (e) => {
+      this.updateSelectedBackendCode(0);
+      this.updateDocument();
+    });
   }
 
   requestBackends() {
