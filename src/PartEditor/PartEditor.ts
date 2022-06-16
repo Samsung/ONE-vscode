@@ -43,6 +43,7 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
   private _modelFileName: string;
   private _modelFolderPath: string;
   private _backEndNames: string[] = [];
+  private _backEndForGraph: string;
 
   public static register(context: vscode.ExtensionContext): vscode.Disposable {
     const provider = new PartEditorProvider(context);
@@ -61,6 +62,7 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
     this._modelFilePath = '';
     this._modelFileName = '';
     this._modelFolderPath = '';
+    this._backEndForGraph = '';
   }
 
   public async resolveCustomTextEditor(
@@ -105,6 +107,11 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
           console.log('updateDocument');
           this.handleUpdateDocument(message);
           return;
+
+        case 'selectByGraph':
+          console.log('selectByGraph by', message.backend);
+          this.handleSelectByGraph(message.backend);
+          return;
       }
     });
 
@@ -146,6 +153,14 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
     partition.default = this._backEndNames[0];
     partition.comply = 'opname';
     return partition;
+  }
+
+  private handleSelectByGraph(backend: string) {
+    if (this._document) {
+      this._backEndForGraph = backend;
+
+      // TODO show graph selector
+    }
   }
 
   private handleRequestBackends() {
