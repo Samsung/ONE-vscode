@@ -89,6 +89,12 @@ editor.Editor = class {
       this.updateDefaultBackend();
       this.updateDocument();
     });
+
+    // set backend by clicking 'Set' button
+    this.document.getElementById('set-be').addEventListener('click', (e) => {
+      this.updateSelectedBackend();
+      this.updateDocument();
+    });
   }
 
   requestBackends() {
@@ -194,6 +200,27 @@ editor.Editor = class {
     checkbox.checked = (beName === this.partition.partition.default);
     // we cannot turn off default when CPU to something else
     checkbox.disabled = (checkbox.checked && idx === 0);
+  }
+
+  updateSelectedBackend() {
+    // get the backend code
+    let belistbox = this.document.getElementById('circle-be');
+    let idx = belistbox.selectedIndex;
+    let beCode = belistbox.options[idx].value;
+
+    this.updateSelectedBackendCode(beCode);
+  }
+
+  updateSelectedBackendCode(beCode) {
+    let listbox = this.document.getElementById('circle-nodes');
+    for (let i = 0; i < listbox.options.length; i++) {
+      let opt = listbox.options[i];
+      if (opt.selected) {
+        let idx = opt.value;
+        opt.text = `(${beCode}) ` + this.operators[idx].name;
+        this.operators[idx].code = beCode;
+      }
+    }
   }
 
   /**
