@@ -20,6 +20,12 @@ import * as vscode from 'vscode';
 import {Balloon} from '../Utils/Balloon';
 import {getNonce} from '../Utils/external/Nonce';
 
+class CtrlStatus {
+  public static readonly init = 0;
+  public static readonly loading = 1;
+  public static readonly ready = 2;
+}
+
 export class MessageDefs {
   // message command
   public static readonly alert = 'alert';
@@ -47,6 +53,7 @@ export class CircleGraphCtrl {
   protected readonly _webview: vscode.Webview;
   protected _modelToLoad: string;
   protected _modelLength: number;
+  protected _state: CtrlStatus;
 
   private _ctrlDisposables: vscode.Disposable[] = [];
 
@@ -55,11 +62,13 @@ export class CircleGraphCtrl {
     this._webview = webView;
     this._modelToLoad = '';
     this._modelLength = 0;
+    this._state = CtrlStatus.init;
   }
 
   public initGraphCtrl(modelToLoad: string) {
     this._modelToLoad = modelToLoad;
     this._modelLength = 0;
+    this._state = CtrlStatus.init;
 
     this.registerEventHandlers();
   }
@@ -71,6 +80,10 @@ export class CircleGraphCtrl {
         x.dispose();
       }
     }
+  }
+
+  public isReady() {
+    return this._state === CtrlStatus.ready;
   }
 
   private registerEventHandlers() {
@@ -127,6 +140,8 @@ export class CircleGraphCtrl {
     const sendPacketSize = 1024 * 1024 * 10;  // 10MB
 
     if (offset === 0) {
+      this._state = CtrlStatus.loading;
+
       // TODO add request for model path with separate command
       this.sendModelPath();
 
@@ -156,6 +171,8 @@ export class CircleGraphCtrl {
    * @brief handler for load is finished and graph is ready
    */
   protected handleFinishLoad() {
+    this._state = CtrlStatus.ready;
+
     // TODO implement
   }
 
