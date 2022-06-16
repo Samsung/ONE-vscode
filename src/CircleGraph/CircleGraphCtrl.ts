@@ -39,8 +39,7 @@ export class MessageDefs {
 
 
 export class CircleGraphCtrl {
-  // TODO make this protected
-  public static readonly folderMediaCircleGraph = 'media/CircleGraph';
+  protected static readonly folderMediaCircleGraph = 'media/CircleGraph';
   protected static readonly folderMediaCircleGraphExt = 'media/CircleGraph/external';
   protected static readonly folderExternal = 'external/';
 
