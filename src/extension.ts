@@ -30,6 +30,7 @@ import {Jsontracer} from './Jsontracer';
 import {MondrianEditorProvider} from './Mondrian/MondrianEditor';
 import {OneExplorer} from './OneExplorer/OneExplorer';
 import {PartEditorProvider} from './PartEditor/PartEditor';
+import {PartGraphSelPanel} from './PartEditor/PartGraphSelector';
 import {Project} from './Project';
 import {ToolchainProvider} from './Toolchain/ToolchainProvider';
 import {Logger} from './Utils/Logger';
@@ -140,6 +141,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(disposableGraphPenel);
 
   context.subscriptions.push(PartEditorProvider.register(context));
+  context.subscriptions.push(PartGraphSelPanel.register(context));
 
   // returning backend registration function that will be called by backend extensions
   return backendRegistrationApi();
