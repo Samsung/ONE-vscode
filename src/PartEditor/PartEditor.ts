@@ -24,6 +24,8 @@ import {Balloon} from '../Utils/Balloon';
 import {getNonce} from '../Utils/external/Nonce';
 import {Logger} from '../Utils/Logger';
 
+import {PartGraphSelPanel} from './PartGraphSelector';
+
 type Partition = {
   backends?: {};
   default?: {};
@@ -159,7 +161,8 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
     if (this._document) {
       this._backEndForGraph = backend;
 
-      // TODO show graph selector
+      vscode.commands.executeCommand(
+          PartGraphSelPanel.cmdOpen, this._document.fileName, this._document.getText(), backend);
     }
   }
 
