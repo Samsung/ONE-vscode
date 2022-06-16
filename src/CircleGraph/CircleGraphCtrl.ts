@@ -43,6 +43,10 @@ export class MessageDefs {
   public static readonly tensors = 'tensors';
 };
 
+export interface CircleGraphEvent {
+  onStartLoadModel(): void;
+  onFinishLoadModel(): void;
+}
 
 export class CircleGraphCtrl {
   protected static readonly folderMediaCircleGraph = 'media/CircleGraph';
@@ -53,6 +57,7 @@ export class CircleGraphCtrl {
   protected readonly _webview: vscode.Webview;
   protected _modelToLoad: string;
   protected _modelLength: number;
+  protected _eventHandler: CircleGraphEvent|undefined;
   protected _state: CtrlStatus;
 
   private _ctrlDisposables: vscode.Disposable[] = [];
@@ -62,13 +67,15 @@ export class CircleGraphCtrl {
     this._webview = webView;
     this._modelToLoad = '';
     this._modelLength = 0;
+    this._eventHandler = undefined;
     this._state = CtrlStatus.init;
   }
 
-  public initGraphCtrl(modelToLoad: string) {
+  public initGraphCtrl(modelToLoad: string, notify: CircleGraphEvent|undefined) {
     this._webview.options = this.getWebviewOptions(this._extensionUri);
     this._modelToLoad = modelToLoad;
     this._modelLength = 0;
+    this._eventHandler = notify;
     this._state = CtrlStatus.init;
 
     this.registerEventHandlers();
@@ -143,6 +150,9 @@ export class CircleGraphCtrl {
     if (offset === 0) {
       this._state = CtrlStatus.loading;
 
+      if (this._eventHandler) {
+        this._eventHandler.onStartLoadModel();
+      }
       // TODO add request for model path with separate command
       this.sendModelPath();
 
@@ -174,7 +184,9 @@ export class CircleGraphCtrl {
   protected handleFinishLoad() {
     this._state = CtrlStatus.ready;
 
-    // TODO implement
+    if (this._eventHandler) {
+      this._eventHandler.onFinishLoadModel();
+    }
   }
 
   private sendModelPath() {

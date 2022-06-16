@@ -87,7 +87,7 @@ export class CircleGraphPanel extends CircleGraphCtrl {
       }
     }, null, this._disposables);
 
-    this.initGraphCtrl(modelToLoad);
+    this.initGraphCtrl(modelToLoad, undefined);
   }
 
   public dispose() {
