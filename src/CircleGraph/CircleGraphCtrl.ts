@@ -66,6 +66,7 @@ export class CircleGraphCtrl {
   }
 
   public initGraphCtrl(modelToLoad: string) {
+    this._webview.options = this.getWebviewOptions(this._extensionUri);
     this._modelToLoad = modelToLoad;
     this._modelLength = 0;
     this._state = CtrlStatus.init;
@@ -293,7 +294,7 @@ export class CircleGraphCtrl {
     return uriView;
   }
 
-  public static getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions
+  private getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions
       &vscode.WebviewPanelOptions {
     return {
       // Enable javascript in the webview
