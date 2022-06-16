@@ -50,14 +50,17 @@ export class CircleGraphCtrl {
 
   private _ctrlDisposables: vscode.Disposable[] = [];
 
-  public constructor(extensionUri: vscode.Uri, webView: vscode.Webview, modelToLoad: string) {
+  public constructor(extensionUri: vscode.Uri, webView: vscode.Webview) {
     this._extensionUri = extensionUri;
     this._webview = webView;
-    this._modelToLoad = modelToLoad;
+    this._modelToLoad = '';
     this._modelLength = 0;
   }
 
-  public initGraphCtrl() {
+  public initGraphCtrl(modelToLoad: string) {
+    this._modelToLoad = modelToLoad;
+    this._modelLength = 0;
+
     this.registerEventHandlers();
   }
 

@@ -70,7 +70,7 @@ export class CircleGraphPanel extends CircleGraphCtrl {
   }
 
   private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, modelToLoad: string) {
-    super(extensionUri, panel.webview, modelToLoad);
+    super(extensionUri, panel.webview);
 
     this._panel = panel;
 
@@ -87,7 +87,7 @@ export class CircleGraphPanel extends CircleGraphCtrl {
       }
     }, null, this._disposables);
 
-    this.initGraphCtrl();
+    this.initGraphCtrl(modelToLoad);
   }
 
   public dispose() {
