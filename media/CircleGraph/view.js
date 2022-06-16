@@ -463,6 +463,52 @@ view.View = class {
         this._clearSelection();
     }
 
+    selectViewNode(viewNode) {
+        if (viewNode) {
+            let index = this._selectionNodes.indexOf(viewNode);
+            if (index === -1) {
+                this._selectionNodes.push(viewNode);
+            }
+            const element = viewNode.element;  // member of grapher.Node
+            index = this._selection.indexOf(element);
+            if (index === -1) {
+                element.classList.add('select');
+                this._selection.push(element);
+            }
+        }
+    }
+
+    /**
+     * @brief turn on selection for nodes with selection.names array
+     */
+    setSelection(selection) {
+        // clear current selection
+        this._clearSelection();
+
+        // set new selection
+        if (selection.hasOwnProperty('names')) {
+            // selection is by names
+            const names = selection.names;
+
+            this._graph.nodes.forEach((node) => {
+                if (node.label.value._outputs) {
+                    node.label.value._outputs.forEach((output) => {
+                        output._arguments.forEach((arg) => {
+                            // NOTE name is tensor_name + tensor_index, in circle.js
+                            const mixed = arg._name.split(/\n/);
+                            const name = mixed[0];
+                            if (names.includes(name)) {
+                                this.selectViewNode(node.label);
+                                return true;  // break forEach
+                            }
+                        });
+                    });
+                }
+            });
+        }
+        // TODO select with others
+    }
+
     error(err, name, screen) {
         if (this._sidebar) {
             this._sidebar.close();

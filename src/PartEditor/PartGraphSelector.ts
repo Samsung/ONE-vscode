@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import * as ini from 'ini';
 import * as path from 'path';
 import * as vscode from 'vscode';
 
@@ -127,7 +128,17 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
   }
 
   public onFinishLoadModel() {
-    // TODO implement
+    // this is good time to set selection state of the graph
+    let selections: string[] = [];
+    let content = ini.parse(this._documentText);
+    for (let name in content.OPNAME) {
+      if (content.OPNAME[name] === this._backendFromEdit) {
+        selections.push(name);
+      }
+    }
+
+    // call CircleGraphCtrl method to refect selection state for all nodes
+    this.setSelection(selections);
   }
 
   public setTitle(title: string) {
