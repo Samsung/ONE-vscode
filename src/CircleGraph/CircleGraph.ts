@@ -61,7 +61,7 @@ export class CircleGraphPanel extends CircleGraphCtrl {
     // Otherwise, create a new panel.
     const panel = vscode.window.createWebviewPanel(
         CircleGraphPanel.viewType, 'CircleGraphPanel', column || vscode.ViewColumn.One,
-        CircleGraphCtrl.getWebviewOptions(extensionUri));
+        {retainContextWhenHidden: true});
 
     const circleGraph = new CircleGraphPanel(panel, extensionUri, modelToLoad);
     circleGraph.setTitle('circle graph');
