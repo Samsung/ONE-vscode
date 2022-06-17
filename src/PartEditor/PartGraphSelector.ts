@@ -27,6 +27,8 @@ export interface PartGraphEvent {
 export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEvent {
   public static readonly viewType = 'PartGraphSelector';
   public static readonly cmdOpen = 'one.part.openGraphSelector';
+  public static readonly cmdUpdate = 'one.part.updateGraphSelector';
+  public static readonly cmdClose = 'one.part.closeGraphSelector';
   public static readonly folderMediaCircleGraph = 'media/CircleGraph';
 
   public static currentPanel: PartGraphSelPanel|undefined = undefined;
@@ -41,6 +43,18 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
 
   public static register(context: vscode.ExtensionContext): vscode.Disposable {
     // TODO add more commands
+    let disposableCmdUpdate = vscode.commands.registerCommand(
+        PartGraphSelPanel.cmdUpdate, (filePath: string, docText: string, backend: string) => {
+          PartGraphSelPanel.updateByOwner(context.extensionUri, filePath, docText, backend);
+        });
+    context.subscriptions.push(disposableCmdUpdate);
+
+    let disposableCmdClose =
+        vscode.commands.registerCommand(PartGraphSelPanel.cmdClose, (filePath: string) => {
+          PartGraphSelPanel.closeByOwner(context.extensionUri, filePath);
+        });
+    context.subscriptions.push(disposableCmdClose);
+
     let disposableGraphPenel = vscode.commands.registerCommand(
         PartGraphSelPanel.cmdOpen,
         (filePath: string, docText: string, backend: string, handler: PartGraphEvent) => {
@@ -84,6 +98,34 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
         new PartGraphSelPanel(panel, extensionUri, docPath, docText, backend, handler);
     circleGraph.loadContent();
     PartGraphSelPanel.currentPanel = circleGraph;
+  }
+
+  /**
+   * @brief called when owner has changed the document or received document has changed
+   */
+  public static updateByOwner(
+      extensionUri: vscode.Uri, docPath: string, docText: string, backend: string) {
+    if (PartGraphSelPanel.currentPanel) {
+      if (docPath === PartGraphSelPanel.currentPanel._documentPath) {
+        PartGraphSelPanel.currentPanel._documentText = docText;
+        PartGraphSelPanel.currentPanel._backendFromEdit = backend;
+
+        if (PartGraphSelPanel.currentPanel.isReady()) {
+          PartGraphSelPanel.currentPanel.onFinishLoadModel();
+        }
+      }
+    }
+  }
+
+  /**
+   * @brief called when owner is closing
+   */
+  public static closeByOwner(extensionUri: vscode.Uri, docPath: string) {
+    if (PartGraphSelPanel.currentPanel) {
+      if (docPath === PartGraphSelPanel.currentPanel._documentPath) {
+        PartGraphSelPanel.currentPanel.dispose();
+      }
+    }
   }
 
   private constructor(
