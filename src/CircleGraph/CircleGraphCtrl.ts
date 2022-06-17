@@ -44,6 +44,7 @@ export class MessageDefs {
 };
 
 export interface CircleGraphEvent {
+  onSelection(names: string[], tensors: string[]): void;
   onStartLoadModel(): void;
   onFinishLoadModel(): void;
 }
@@ -120,6 +121,9 @@ export class CircleGraphCtrl {
           return;
         case MessageDefs.finishload:
           this.handleFinishLoad();
+          return;
+        case MessageDefs.selection:
+          this.handleSelection(message.names, message.tensors);
           return;
       }
     }, null, this._ctrlDisposables);
@@ -216,6 +220,18 @@ export class CircleGraphCtrl {
 
     // cleanup
     this._selectionNames = undefined;
+  }
+
+  /**
+   * @brief handleSelection will respond with 'selection' message from WebView
+   * @param names containing tensor names of selected nodes
+   * @param tensors containing tensor index of selected nodes
+   * @note  selection information should be sent to user of this control
+   */
+  private handleSelection(names: string[], tensors: string[]) {
+    if (this._eventHandler) {
+      this._eventHandler.onSelection(names, tensors);
+    }
   }
 
   private sendModelPath() {
