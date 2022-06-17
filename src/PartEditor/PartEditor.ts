@@ -114,6 +114,10 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider, Part
           console.log('selectByGraph by', message.backend);
           this.handleSelectByGraph(message.backend);
           return;
+
+        case 'updateBackend':
+          this.handleUpdateBackend(message.backend);
+          return;
       }
     });
 
@@ -145,6 +149,10 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider, Part
 
       let content = ini.parse(this._document.getText());
       this._webview.postMessage({command: 'updatePartition', part: content});
+
+      vscode.commands.executeCommand(
+          PartGraphSelPanel.cmdUpdate, this._document.fileName, this._document.getText(),
+          this._backEndForGraph);
     }
   }
 
@@ -268,6 +276,11 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider, Part
       edit.replace(this._document.uri, new vscode.Range(0, 0, this._document.lineCount, 0), text);
       vscode.workspace.applyEdit(edit);
     }
+  }
+
+  private handleUpdateBackend(backend: string) {
+    this._backEndForGraph = backend;
+    this.updateWebview();
   }
 
   private getHtmlForWebview(webview: vscode.Webview) {
