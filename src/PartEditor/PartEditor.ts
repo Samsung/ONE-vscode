@@ -81,6 +81,9 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider, Part
     });
 
     webviewPanel.onDidDispose(() => {
+      if (this._document) {
+        vscode.commands.executeCommand(PartGraphSelPanel.cmdClose, this._document.fileName);
+      }
       changeDocumentSubscription.dispose();
     });
 
