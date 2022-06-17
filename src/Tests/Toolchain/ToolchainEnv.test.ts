@@ -35,10 +35,6 @@ class MockCompiler extends CompilerBase {
     this.availableToolchain = new DebianToolchain(
         new ToolchainInfo('nodejs', 'Node.js event-based server-side javascript engine'));
   }
-  // NOTE: Deprecated API
-  toolchains(): Toolchains {
-    throw Error('Deprecated API: toolchains()');
-  }
   getToolchainTypes(): string[] {
     return [mocCompilerType];
   }
