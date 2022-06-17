@@ -456,11 +456,38 @@ view.View = class {
                 element.classList.add('select');
                 this._selection.push(element);
             }
+
+            // request host to handle selection change
+            this._host.onView('selection');
         }
     }
 
     clearSelection() {
         this._clearSelection();
+        this._host.onView('selection');
+    }
+
+    /**
+     * @brief getSelection returns array of circle.Node that are selected
+     */
+    getSelection() {
+        var selectionNodes = [];
+        var selectionTensors = [];
+        var index;
+        for (index = 0; index < this._selectionNodes.length; index++) {
+            var node = this._selectionNodes[index];
+            if (node.value.outputs) {
+                node.value.outputs.forEach((output) => {
+                    output._arguments.forEach((arg) => {
+                        // NOTE name is tensor_name + tensor_index, in circle.js
+                        const mixed = arg._name.split(/\n/);
+                        selectionNodes.push(mixed[0]);
+                        selectionTensors.push(arg._location);
+                    });
+                });
+            }
+        }
+        return {names: selectionNodes, tensors: selectionTensors};
     }
 
     selectViewNode(viewNode) {

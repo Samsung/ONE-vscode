@@ -133,6 +133,13 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
     }
   }
 
+  /**
+   * CircleGraphEvent interface implementations
+   */
+  public onSelection(names: string[], tensors: string[]) {
+    // TODO implement
+  }
+
   public onStartLoadModel() {
     // TODO implement
   }

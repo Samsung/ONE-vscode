@@ -287,6 +287,17 @@ host.BrowserHost = class {
         }
     }
 
+    /**
+     * @brief called from view.js for handle view events
+     */
+    onView(event) {
+        if (event === 'selection') {
+            // there was a selection change and view requested to apply this
+            let v = this._view.getSelection();
+            vscode.postMessage({command: 'selection', names: v.names, tensors: v.tensors});
+        }
+    }
+
     _request(url, headers, encoding, timeout) {
         return new Promise((resolve, reject) => {
             if (url.startsWith('vscode-webview://')) {
