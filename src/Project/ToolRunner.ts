@@ -41,13 +41,12 @@ export interface SuccessResult {
  * One of exitCode or signal must NOT be undefined.
  */
 export interface ErrorResult {
-  // When successful exit, exit code must be greater than 0
+  // Exit code must be greater than 0
   exitCode?: number;
   // When this process was killed by, e.g., kill command from shell,
   // this must be set to proper NodeJS.Signals.
   signal?: NodeJS.Signals;
 }
-;
 
 export class ToolRunner {
   tag = this.constructor.name;  // logging tag
