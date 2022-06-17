@@ -365,4 +365,4 @@ export class CircleGraphCtrl {
       retainContextWhenHidden: true
     };
   }
-};
+}
