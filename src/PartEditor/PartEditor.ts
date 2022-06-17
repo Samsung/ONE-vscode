@@ -318,6 +318,25 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider, Part
 
   // PartGraphEvent implements
   public onSelection(names: string[], tensors: string[]) {
-    // TODO implement
+    if (this._document) {
+      let content = ini.parse(this._document.getText());
+
+      // previous node that was for this backend may have been reset
+      for (let name in content.OPNAME) {
+        if (content.OPNAME[name] === this._backEndForGraph) {
+          if (!names.includes(name)) {
+            delete content.OPNAME[name];
+          }
+        }
+      }
+      names.forEach((name) => {
+        content.OPNAME[name] = this._backEndForGraph;
+      });
+
+      let text = ini.stringify(content);
+      const edit = new vscode.WorkspaceEdit();
+      edit.replace(this._document.uri, new vscode.Range(0, 0, this._document.lineCount, 0), text);
+      vscode.workspace.applyEdit(edit);
+    };
   }
 };
