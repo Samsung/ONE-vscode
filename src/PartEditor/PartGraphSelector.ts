@@ -19,6 +19,10 @@ import * as vscode from 'vscode';
 
 import {CircleGraphCtrl, CircleGraphEvent} from '../CircleGraph/CircleGraphCtrl';
 
+export interface PartGraphEvent {
+  onSelection(names: string[], tensors: string[]): void;
+}
+
 export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEvent {
   public static readonly viewType = 'PartGraphSelector';
   public static readonly cmdOpen = 'one.part.openGraphSelector';
@@ -32,19 +36,22 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
   private _documentText: string;     // part document
   private _modelPath: string;        // circle file path
   private _backendFromEdit: string;  // current backend for editing
+  private _partEventHandler: PartGraphEvent|undefined;
 
   public static register(context: vscode.ExtensionContext): vscode.Disposable {
     // TODO add more commands
     let disposableGraphPenel = vscode.commands.registerCommand(
-        PartGraphSelPanel.cmdOpen, (filePath: string, docText: string, backend: string) => {
-          PartGraphSelPanel.createOrShow(context.extensionUri, filePath, docText, backend);
+        PartGraphSelPanel.cmdOpen,
+        (filePath: string, docText: string, backend: string, handler: PartGraphEvent) => {
+          PartGraphSelPanel.createOrShow(context.extensionUri, filePath, docText, backend, handler);
         });
 
     return disposableGraphPenel;
   };
 
   public static createOrShow(
-      extensionUri: vscode.Uri, docPath: string, docText: string, backend: string) {
+      extensionUri: vscode.Uri, docPath: string, docText: string, backend: string,
+      handler: PartGraphEvent|undefined) {
     const column =
         vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
 
@@ -60,6 +67,7 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
       PartGraphSelPanel.currentPanel._documentText = docText;
       PartGraphSelPanel.currentPanel._backendFromEdit = backend;
       PartGraphSelPanel.currentPanel._modelPath = fileBase + '.circle';
+      PartGraphSelPanel.currentPanel._partEventHandler = handler;
 
       // TODO reflect modelPath and backend
       return;
@@ -71,14 +79,15 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
         PartGraphSelPanel.viewType, 'Graph select nodes', column || vscode.ViewColumn.Three,
         {retainContextWhenHidden: true});
 
-    const circleGraph = new PartGraphSelPanel(panel, extensionUri, docPath, docText, backend);
+    const circleGraph =
+        new PartGraphSelPanel(panel, extensionUri, docPath, docText, backend, handler);
     circleGraph.loadContent();
     PartGraphSelPanel.currentPanel = circleGraph;
   }
 
   private constructor(
       panel: vscode.WebviewPanel, extensionUri: vscode.Uri, docPath: string, docText: string,
-      backend: string) {
+      backend: string, handler: PartGraphEvent|undefined) {
     super(extensionUri, panel.webview);
 
     let parsedPath = path.parse(docPath);
@@ -89,6 +98,7 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
     this._documentText = docText;
     this._modelPath = fileBase + '.circle';
     this._backendFromEdit = backend;
+    this._partEventHandler = handler;
 
     // Listen for when the panel is disposed
     // This happens when the user closes the panel or when the panel is closed programmatically

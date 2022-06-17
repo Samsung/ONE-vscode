@@ -24,7 +24,7 @@ import {Balloon} from '../Utils/Balloon';
 import {getNonce} from '../Utils/external/Nonce';
 import {Logger} from '../Utils/Logger';
 
-import {PartGraphSelPanel} from './PartGraphSelector';
+import {PartGraphEvent, PartGraphSelPanel} from './PartGraphSelector';
 
 type Partition = {
   backends?: {};
@@ -32,7 +32,7 @@ type Partition = {
   comply?: {};
 };
 
-export class PartEditorProvider implements vscode.CustomTextEditorProvider {
+export class PartEditorProvider implements vscode.CustomTextEditorProvider, PartGraphEvent {
   public static readonly viewType = 'onevscode.part-editor';
   public static readonly folderMediaPartEditor = 'media/PartEditor';
 
@@ -162,7 +162,8 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
       this._backEndForGraph = backend;
 
       vscode.commands.executeCommand(
-          PartGraphSelPanel.cmdOpen, this._document.fileName, this._document.getText(), backend);
+          PartGraphSelPanel.cmdOpen, this._document.fileName, this._document.getText(), backend,
+          this);
     }
   }
 
@@ -313,5 +314,10 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
       localResourceRoots:
           [vscode.Uri.joinPath(extensionUri, PartEditorProvider.folderMediaPartEditor)]
     };
+  }
+
+  // PartGraphEvent implements
+  public onSelection(names: string[], tensors: string[]) {
+    // TODO implement
   }
 };
