@@ -117,6 +117,9 @@ host.BrowserHost = class {
                 case 'loadmodel':
                     this._msgLoadModel(message);
                     break;
+                case 'selection':
+                    this._msgSelection(message);
+                    break;
             }
         });
 
@@ -438,6 +441,10 @@ host.BrowserHost = class {
             this._view.show('welcome');
             this._loadingModelArray = [];
         }
+    }
+
+    _msgSelection(message) {
+        this._view.setSelection(message);
     }
 };
 

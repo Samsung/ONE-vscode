@@ -58,6 +58,7 @@ export class CircleGraphCtrl {
   protected _modelToLoad: string;
   protected _modelLength: number;
   protected _eventHandler: CircleGraphEvent|undefined;
+  protected _selectionNames: string[]|undefined;
   protected _state: CtrlStatus;
 
   private _ctrlDisposables: vscode.Disposable[] = [];
@@ -92,6 +93,16 @@ export class CircleGraphCtrl {
 
   public isReady() {
     return this._state === CtrlStatus.ready;
+  }
+
+  /**
+   * @brief set initial selection of nodes
+   * @note  if called before loading, will be applied after load is finished
+   */
+  public setSelection(names: string[]) {
+    this._selectionNames = names;
+
+    this.applySelection();
   }
 
   private registerEventHandlers() {
@@ -187,6 +198,24 @@ export class CircleGraphCtrl {
     if (this._eventHandler) {
       this._eventHandler.onFinishLoadModel();
     }
+  }
+
+  /**
+   * @brief set selection for nodes in this._selectionNames if available
+   */
+  private applySelection() {
+    if (this._selectionNames === undefined) {
+      return;
+    }
+    if (this._state !== CtrlStatus.ready) {
+      return;
+    }
+
+    this._webview.postMessage(
+        {command: MessageDefs.selection, type: 'names', names: this._selectionNames});
+
+    // cleanup
+    this._selectionNames = undefined;
   }
 
   private sendModelPath() {
