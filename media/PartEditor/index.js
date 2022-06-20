@@ -366,7 +366,6 @@ editor.Editor = class {
 };
 
 window.addEventListener('load', () => {
-  console.log('window: event: load');
   window.__editor__ = new editor.Editor();
   window.__editor__.initialize();
 });
