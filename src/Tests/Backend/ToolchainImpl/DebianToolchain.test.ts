@@ -58,7 +58,9 @@ suite('Backend', function() {
         test('', function() {
           let dt = new DebianToolchain(info);
           let cmd = dt.install();
-          const expectedStr = `sudo aptitude install ${name}=${version.str()} -q -y`;
+          const expectedStr =
+              `sudo aptitude install -o Aptitude::ProblemResolver::SolutionCost='100*canceled-actions,200*removals' ${
+                  name}=${version.str()} -q -y`;
           assert.strictEqual(cmd.str(), expectedStr);
         });
       });
