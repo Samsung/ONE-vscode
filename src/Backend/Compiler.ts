@@ -29,12 +29,6 @@ import {Toolchains} from './Toolchain';
 // 2. CompilerEnv runs the job with workflow
 interface Compiler {
   /**
-   * @Deprecated Use toolchainTypes() and getToolchains()
-   */
-  // defined/available toolchains by backend supporter
-  toolchains(): Toolchains;
-
-  /**
    * Function to get the type of toolchain. E.g., ['official', 'nightly']
    */
   getToolchainTypes(): string[];
@@ -82,10 +76,6 @@ interface Compiler {
 
 // General compiler uses onecc so default jobs can be used
 class CompilerBase implements Compiler {
-  toolchains(): Toolchains {
-    throw Error('Invalid toolchains call');
-  }
-
   getToolchainTypes(): string[] {
     throw Error('Invalid getToolchainTypes call');
   }
