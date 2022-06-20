@@ -18,7 +18,7 @@ import {assert} from 'chai';
 import {join} from 'path';
 
 import {ToolArgs} from '../../Project/ToolArgs';
-import {SelfKilled, ToolRunner} from '../../Project/ToolRunner';
+import {SuccessResult, ToolRunner} from '../../Project/ToolRunner';
 import {obtainWorkspaceRoot} from '../../Utils/Helpers';
 import {MockJob} from '../MockJob';
 
@@ -47,8 +47,8 @@ suite('Project', function() {
           const runner = toolRunner.getRunner(job.name, oneccPath, job.toolArgs, workspaceRoot);
           assert.isNotNull(runner);
           runner
-              .then(function(str) {
-                assert.ok(str);
+              .then(function(res: SuccessResult) {
+                assert.ok(res.exitCode === 0);
                 done();
               })
               .catch(done);
@@ -132,8 +132,8 @@ suite('Project', function() {
 
         const runner = toolRunner.getRunner('long process', 'sleep', args, obtainWorkspaceRoot());
         runner
-            .then((val: string|SelfKilled) => {
-              assert.equal(val, 'SelfKilled');
+            .then((val: SuccessResult) => {
+              assert.equal(val.intentionallyKilled, true);
             })
             .catch(exitcode => {
               assert.fail();
@@ -158,8 +158,8 @@ suite('Project', function() {
 
         const runner = toolRunner.getRunner('long process', 'sleep', args, obtainWorkspaceRoot());
         runner
-            .then((val: string|SelfKilled) => {
-              assert.equal(val, '0');
+            .then((val: SuccessResult) => {
+              assert.equal(val.exitCode, 0);
               finished = true;
             })
             .catch(exitcode => {

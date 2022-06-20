@@ -25,8 +25,28 @@ const which = require('which');
 const K_DATA: string = 'data';
 const K_EXIT: string = 'exit';
 
-// successfully killed by calling kill() method
-export type SelfKilled = 'SelfKilled';
+/**
+ * Return type when a process exits without error
+ * One of exitCode or intentionallyKilled must NOT be undefined.
+ */
+export interface SuccessResult {
+  // When successful exit, exit code must be 0
+  exitCode?: number;
+  // When this process was intentionally killed by user, this must be true.
+  intentionallyKilled?: boolean;
+}
+
+/**
+ * Return type when a process exits with error
+ * One of exitCode or signal must NOT be undefined.
+ */
+export interface ErrorResult {
+  // Exit code must be greater than 0
+  exitCode?: number;
+  // When this process was killed by, e.g., kill command from shell,
+  // this must be set to proper NodeJS.Signals.
+  signal?: NodeJS.Signals;
+}
 
 export class ToolRunner {
   tag = this.constructor.name;  // logging tag
@@ -39,8 +59,8 @@ export class ToolRunner {
   private killedByMe = false;
 
   private handlePromise(
-      resolve: (value: string|SelfKilled|PromiseLike<string>) => void,
-      reject: (value: string|NodeJS.Signals|PromiseLike<string>) => void) {
+      resolve: (value: SuccessResult|PromiseLike<SuccessResult>) => void,
+      reject: (value: ErrorResult|PromiseLike<ErrorResult>) => void) {
     // stdout
     this.child!.stdout.on(K_DATA, (data: any) => {
       Logger.append(data.toString());
@@ -66,25 +86,23 @@ export class ToolRunner {
         Logger.debug(this.tag, `Child process was killed (signal: ${signal!})`);
 
         if (this.killedByMe) {
-          resolve('SelfKilled');
+          resolve({intentionallyKilled: true});
         } else {
-          reject(signal!);
+          reject({signal: signal!});
         }
         return;
       }
 
       // when child exited
-      let codestr = code.toString();
-      Logger.info(this.tag, 'child process exited with code ' + codestr);
-      if (codestr === '0') {
+      Logger.info(this.tag, 'child process exited with code', code);
+      if (code === 0) {
         Logger.info(this.tag, 'Build Success.');
         Logger.appendLine('');
-        resolve(codestr);
+        resolve({exitCode: 0});
       } else {
-        Logger.info(this.tag, 'Build Failed:' + codestr);
+        Logger.info(this.tag, 'Build Failed:', code);
         Logger.appendLine('');
-        let errorMsg = 'Failed with exit code: ' + codestr;
-        reject(errorMsg);
+        reject({exitCode: code});
       }
     });
   }
@@ -152,7 +170,7 @@ export class ToolRunner {
 
     this.killedByMe = false;
 
-    return new Promise<string>((resolve, reject) => {
+    return new Promise<SuccessResult>((resolve, reject) => {
       Logger.info(this.tag, 'Running: ' + name);
       if (root) {
         // NOTE
