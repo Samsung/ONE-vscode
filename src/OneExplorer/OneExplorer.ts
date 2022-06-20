@@ -22,7 +22,7 @@ import * as vscode from 'vscode';
 
 import {CfgEditorPanel} from '../CfgEditor/CfgEditorPanel';
 import {ToolArgs} from '../Project/ToolArgs';
-import {ToolRunner} from '../Project/ToolRunner';
+import {SuccessResult, ToolRunner} from '../Project/ToolRunner';
 import {obtainWorkspaceRoot, RealPath} from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 import {ConfigObj} from './ConfigObject';
@@ -527,31 +527,32 @@ class OneccRunner extends EventEmitter {
   private startRunningOnecc: string = 'START_RUNNING_ONECC';
   private finishedRunningOnecc: string = 'FINISHED_RUNNING_ONECC';
 
+  private toolRunner: ToolRunner;
+
   constructor(private cfgUri: vscode.Uri) {
     super();
+    this.toolRunner = new ToolRunner();
   }
 
   /**
    * Function called when one.explorer.runCfg is called (when user clicks 'Run' on cfg file).
    */
   public run() {
-    const toolRunner = new ToolRunner();
-
     this.on(this.startRunningOnecc, this.onStartRunningOnecc);
     this.on(this.finishedRunningOnecc, this.onFinishedRunningOnecc);
 
     const toolArgs = new ToolArgs('-C', this.cfgUri.fsPath);
     const cwd = path.dirname(this.cfgUri.fsPath);
-    let oneccPath = toolRunner.getOneccPath();
+    let oneccPath = this.toolRunner.getOneccPath();
     if (oneccPath === undefined) {
       throw new Error('Cannot find installed onecc');
     }
 
-    const runnerPromise = toolRunner.getRunner('onecc', oneccPath, toolArgs, cwd);
+    const runnerPromise = this.toolRunner.getRunner('onecc', oneccPath, toolArgs, cwd);
     this.emit(this.startRunningOnecc, runnerPromise);
   }
 
-  private onStartRunningOnecc(runnerPromise: Promise<string>) {
+  private onStartRunningOnecc(runnerPromise: Promise<SuccessResult>) {
     const progressOption: vscode.ProgressOptions = {
       location: vscode.ProgressLocation.Notification,
       title: `Running: 'onecc --config ${this.cfgUri.fsPath}'`,
@@ -561,14 +562,14 @@ class OneccRunner extends EventEmitter {
     // Show progress UI
     vscode.window.withProgress(progressOption, (progress, token) => {
       token.onCancellationRequested(() => {
-        vscode.window.showWarningMessage(`Error: NYI`);
+        this.toolRunner.kill();
       });
 
       const p = new Promise<void>((resolve, reject) => {
         runnerPromise
-            .then(value => {
+            .then((value: SuccessResult) => {
               resolve();
-              this.emit(this.finishedRunningOnecc);
+              this.emit(this.finishedRunningOnecc, value);
             })
             .catch(value => {
               vscode.window.showErrorMessage(
@@ -581,7 +582,13 @@ class OneccRunner extends EventEmitter {
     });
   }
 
-  private onFinishedRunningOnecc() {
-    vscode.window.showInformationMessage(`Successfully completed`);
+  private onFinishedRunningOnecc(val: SuccessResult) {
+    if (val.exitCode !== undefined && val.exitCode === 0) {
+      vscode.window.showInformationMessage(`Successfully completed.`);
+    } else if (val.intentionallyKilled !== undefined && val.intentionallyKilled === true) {
+      vscode.window.showInformationMessage(`The job was cancelled.`);
+    } else {
+      throw Error('unexpected value onFinishedRunningOnecc');
+    }
   }
 }
