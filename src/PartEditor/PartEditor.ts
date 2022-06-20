@@ -70,8 +70,6 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider, Part
   public async resolveCustomTextEditor(
       document: vscode.TextDocument, webviewPanel: vscode.WebviewPanel,
       token: vscode.CancellationToken): Promise<void> {
-    console.log('document=', document);
-
     this._webview = webviewPanel.webview;
 
     const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(e => {
@@ -109,12 +107,10 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider, Part
           return;
 
         case 'updateDocument':
-          console.log('updateDocument');
           this.handleUpdateDocument(message);
           return;
 
         case 'selectByGraph':
-          console.log('selectByGraph by', message.backend);
           this.handleSelectByGraph(message.backend);
           return;
 
@@ -148,8 +144,6 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider, Part
 
   private updateWebview() {
     if (this._document && this._webview) {
-      console.log('updateWebview document.uri=', this._document.uri);
-
       let content = ini.parse(this._document.getText());
       this._webview.postMessage({command: 'updatePartition', part: content});
 
