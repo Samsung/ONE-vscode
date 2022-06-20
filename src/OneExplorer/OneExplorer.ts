@@ -163,6 +163,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
     this._onDidChangeTreeData.fire();
   }
 
+  // TODO Remove
   collapseAll(oneNode: OneNode): void {
     vscode.commands.executeCommand('workbench.actions.treeView.OneExplorerView.collapseAll');
   }
@@ -465,20 +466,24 @@ input_path=${modelName}.${extName}
 export class OneExplorer {
   // TODO Support multi-root workspace
   public workspaceRoot: vscode.Uri = vscode.Uri.file(obtainWorkspaceRoot());
+  public treeView: vscode.TreeView<OneNode|undefined>|undefined;
 
   constructor(context: vscode.ExtensionContext) {
     // NOTE: Fix `obtainWorksapceRoot` if non-null assertion is false
     const oneTreeDataProvider = new OneTreeDataProvider(this.workspaceRoot!);
-    context.subscriptions.push(
-        vscode.window.registerTreeDataProvider('OneExplorerView', oneTreeDataProvider));
 
-    const subscribeCommands = (disposals: vscode.Disposable[]) => {
+    this.treeView = vscode.window.createTreeView(
+        'OneExplorerView',
+        {treeDataProvider: oneTreeDataProvider, showCollapseAll: true, canSelectMany: true});
+
+    const subscribeDisposals = (disposals: vscode.Disposable[]) => {
       for (const disposal of disposals) {
         context.subscriptions.push(disposal);
       }
     };
 
-    subscribeCommands([
+    subscribeDisposals([
+      this.treeView,
       vscode.commands.registerCommand('one.explorer.open', (file) => this.openFile(file)),
       vscode.commands.registerCommand(
           'one.explorer.openAsText', (oneNode: OneNode) => this.openWithTextEditor(oneNode.node)),
@@ -496,6 +501,7 @@ export class OneExplorer {
       vscode.commands.registerCommand(
           'one.explorer.openContainingFolder',
           (oneNode: OneNode) => oneTreeDataProvider.openContainingFolder(oneNode)),
+      // TODO Remove
       vscode.commands.registerCommand(
           'one.explorer.collapseAll',
           (oneNode: OneNode) => oneTreeDataProvider.collapseAll(oneNode)),
