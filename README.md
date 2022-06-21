@@ -24,12 +24,23 @@ Through these activities, ONE-vscode can provide a differentiation that cannot b
 ## Extension features
 
 (gif)
-- One view explorer
-- Toolchain view explorer
-- Target devices view explorer
-- Compile
-- Value test
-- ...
+
+###  One view explorer
+
+
+###  Toolchain view explorer
+
+
+###  Target devices view explorer
+(TBD)
+
+###  Compile
+(TBD)
+
+###  Value test
+(TBD)
+
+###  ...
 
 ## Contribution
 
