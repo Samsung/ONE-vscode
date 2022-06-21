@@ -35,15 +35,20 @@ ONE-vscode supports an specialized explorer for ONE toolchain.
 
 ![toolchain](https://user-images.githubusercontent.com/7223627/172834540-945ed5f9-82b0-4388-bd46-4ea10587d701.gif)
 
+### Compile
+
+ONE-vscode supports compiling NN model by a config file with ONE toolchain.
+
+![compile](https://user-images.githubusercontent.com/10216715/174796457-4dae4a77-04e1-4e5c-9453-77ebfb65182a.gif)
+
 ### Config editor
 
 ONE-vscode supports an config editor for config files.
 
 ![config](https://user-images.githubusercontent.com/24720192/172993683-677690f3-49b5-454e-8912-31b89b8cdc2e.gif)
 
-###  in the future
+### In the future
 
-- Compile
 - Target devices view explorer
 - Value test
 
