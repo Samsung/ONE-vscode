@@ -14,7 +14,7 @@ Now [ONE](https://github.com/Samsung/ONE) officially releases on linux/ubuntu on
 
 ### workspace
 
-Prepare workspace according to [doc](https://code.visualstudio.com/docs/editor/workspaces). ONE-vscode has been devloped based on workspace.
+Prepare workspace according to the [document](https://code.visualstudio.com/docs/editor/workspaces). ONE-vscode has been developed based on workspace.
 
 ## How to install?
 
