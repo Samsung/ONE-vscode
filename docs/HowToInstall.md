@@ -40,6 +40,9 @@ ms-vscode-remote.vscode-remote-extensionpack
 Samsung.one-vscode  # YOU MUST SEE THIS
 ```
 
+### Installing with GUI
+
+[SOME png or gif to show the button in vscode extension tab]
 ### How to get vsix?
 
 If you want to use the latest version of ONE-vscode, let's the following.
