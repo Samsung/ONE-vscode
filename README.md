@@ -14,3 +14,47 @@ In addition, we are trying to have a well-designed structure ourselves so that v
 
 Through these activities, ONE-vscode can provide a differentiation that cannot be experienced only with the existing CLI by linking the toolchain with the execution environment, ONE Runtime, or a target simulator corresponding to the backend compiler. This will eventually lead to fun and high productivity for developers.
 
+## Prerequisit
+
+...
+
+### vscode and its extensions
+
+...
+
+### ssh extension in vscode
+
+...
+
+### set workspace
+
+...
+
+## How to install?
+
+...
+
+### with vsix
+
+...
+
+### with source code
+
+...
+
+## How to use?
+
+### Install toolchains
+
+... (ONE-view, ...)
+
+### Compile models
+
+...
+
+## Concepts of ONE-vscode You Must Know
+
+... (cand: backend, ONE-explorer, quantization, config file, steps(import, optimization, codegen, ...), anyway they are related to ONE-vscode not vscode)
+
+1. ...
+2. ...
