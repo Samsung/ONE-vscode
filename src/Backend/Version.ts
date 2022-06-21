@@ -16,11 +16,12 @@
 
 class Version {
   major: number;
-  minor: number;
-  patch: number;
+  minor: number|undefined;
+  patch: number|undefined;
   option: string;
 
-  constructor(major: number = 0, minor: number = 0, patch: number = 0, option: string = '') {
+  constructor(
+      major: number, minor: number|undefined, patch: number|undefined, option: string = '') {
     this.major = major;
     this.minor = minor;
     this.patch = patch;
@@ -28,7 +29,14 @@ class Version {
   }
 
   str(): string {
-    let ret: string = `${this.major}.${this.minor}.${this.patch}${this.option}`;
+    let ret: string = `${this.major}`;
+    if (this.minor !== undefined) {
+      ret += `.${this.minor}`;
+      if (this.patch !== undefined) {
+        ret += `.${this.patch}`;
+      }
+    }
+    ret += `${this.option}`;
     return ret;
   }
 
