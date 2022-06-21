@@ -48,6 +48,11 @@ var host = {};
 
 const vscode = acquireVsCodeApi();
 
+const viewMode = {
+    viewer: 0,
+    selector: 1,
+};
+
 host.BrowserHost = class {
     constructor() {
         this._document = window.document;
@@ -73,6 +78,12 @@ host.BrowserHost = class {
         // model
         this._modelData = [];
         this._modelPath = '';
+
+        // default mode as viewer
+        this._mode = viewMode.viewer;
+        if (__viewMode === 'selector') {
+            this._mode = viewMode.selector;
+        }
     }
 
     get window() {
@@ -128,10 +139,20 @@ host.BrowserHost = class {
             'zoom', params.has('zoom') ? params.get('zoom') : this._environment.get('zoom'));
 
         this._menu = new host.Dropdown(this, 'menu-button', 'menu-dropdown');
+        if (this._mode === viewMode.viewer) {
+            this._menu.add({
+                label: 'Properties...',
+                accelerator: 'CmdOrCtrl+Enter',
+                click: () => this._view.showModelProperties()
+            });
+            this._menu.add({});
+        }
         this._menu.add(
             {label: 'Find...', accelerator: 'CmdOrCtrl+F', click: () => this._view.find()});
-        this._menu.add({});
-        this._menu.add({label: 'Clear selection', click: () => this._view.clearSelection()});
+        if (this._mode === viewMode.selector) {
+            this._menu.add({});
+            this._menu.add({label: 'Clear selection', click: () => this._view.clearSelection()});
+        }
         this._menu.add({});
         this._menu.add({
             label: () => this._view.options.attributes ? 'Hide Attributes' : 'Show Attributes',
