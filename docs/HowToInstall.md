@@ -46,6 +46,10 @@ Extensions(Ctrl+Shift+x) -> Views and More Actions -> Install from VSIX
 
 ![Install](https://user-images.githubusercontent.com/10216715/174781792-fa3fbe47-708b-4977-974c-578b65f689ee.gif)
 
+(if you use ssh extension on vscode)
+
+![install_vsix_gui_linux_ssh](https://user-images.githubusercontent.com/10216715/174783207-97bfedd7-7876-4000-b4c4-7ddcafd02862.gif)
+
 ### How to get vsix?
 
 If you want to use the latest version of ONE-vscode, let's the following.
