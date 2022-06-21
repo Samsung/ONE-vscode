@@ -24,7 +24,7 @@ Let's install vscode according to [doc](https://code.visualstudio.com/docs/setup
 
 ### ssh extension in vscode
 
-Now [ONE](https://github.com/Samsung/ONE) officially releases on the only linux/ubuntu. If your dev env is on Windows, you should use ssh extension in vscode. let's follow [tutorial](https://code.visualstudio.com/docs/remote/ssh-tutorial).
+Now [ONE](https://github.com/Samsung/ONE) officially releases on linux/ubuntu only. If your develop environment is on Windows, you should use ssh extension in vscode. Let's follow [tutorial](https://code.visualstudio.com/docs/remote/ssh-tutorial).
 
 ### workspace
 
