@@ -27,6 +27,37 @@ div.mondrian-scrollbar {
   flex: 0;
 }
 
+div.mondrian-scrollbar-btn {
+  display: flex;
+  gap: 2px;
+  height: 100%;
+}
+
+div.mondrian-scrollbar-btn button {
+  display: block;
+  padding: 0px;
+  height: 100%;
+  min-width: 32px;
+  white-space: nowrap;
+  overflow: hidden;
+  color: var(--vscode-button-secondaryForeground);
+  background: var(--vscode-button-secondaryBackground);
+  border: none;
+}
+
+div.mondrian-scrollbar-btn button:hover {
+  background: var(--vscode-button-secondaryHoverBackground);
+}
+
+div.mondrian-scrollbar-btn button.mondrian-scrollbar-btn-center {
+  flex: 1;
+}
+
+div.mondrian-scrollbar-btn button.mondrian-scrollbar-btn-left,
+div.mondrian-scrollbar-btn button.mondrian-scrollbar-btn-right {
+  flex: 0;
+}
+
 div.mondrian-viewer-area {
   contain: content;
   overflow: auto;
@@ -96,6 +127,13 @@ div.mondrian-allocation-label {
 
 div.mondrian-allocation-label:hover {
   background-color: rgba(255, 255, 255, 0.2);
+}
+
+div.mondrian-allocation-limit {
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  background-color: rgba(0, 0, 0, 0.3);
 }
 
 div.mondrian-viewer-bounds-no-label div.mondrian-allocation-label {
