@@ -20,7 +20,7 @@ Prepare workspace according to the [document](https://code.visualstudio.com/docs
 
 If you are a user not a developer, installing ONE-vscode is enough. Let's install ONE-vscode with vsix file.
 
-### with vsix
+### Installing with CLI
 
 ```
 $ ls
