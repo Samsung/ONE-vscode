@@ -23,24 +23,29 @@ Through these activities, ONE-vscode can provide a differentiation that cannot b
 
 ## Extension features
 
-(gif)
-
 ###  One view explorer
 
+ONE-vscode supports an specialized explorer for NN model files and config files.
+
+![oneview](https://user-images.githubusercontent.com/17171963/172789165-1a66e890-5f8f-49db-98fa-57f61f62281c.gif)
 
 ###  Toolchain view explorer
 
+ONE-vscode supports an specialized explorer for ONE toolchain.
 
-###  Target devices view explorer
-(TBD)
+![toolchain](https://user-images.githubusercontent.com/7223627/172834540-945ed5f9-82b0-4388-bd46-4ea10587d701.gif)
 
-###  Compile
-(TBD)
+### Config editor
 
-###  Value test
-(TBD)
+ONE-vscode supports an config editor for config files.
 
-###  ...
+![config](https://user-images.githubusercontent.com/24720192/172993683-677690f3-49b5-454e-8912-31b89b8cdc2e.gif)
+
+###  in the future
+
+- Compile
+- Target devices view explorer
+- Value test
 
 ## Contribution
 
