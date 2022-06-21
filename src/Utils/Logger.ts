@@ -98,4 +98,8 @@ export class Logger {
     Logger.checkShow();
     Logger.outputChannel.append(msg);
   }
+
+  public static show() {
+    Logger.outputChannel.show(true);
+  }
 }

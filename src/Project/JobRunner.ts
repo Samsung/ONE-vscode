@@ -108,6 +108,7 @@ export class JobRunner extends EventEmitter {
       return;
     }
 
+    Logger.show();
     vscode.window.withProgress(
         {location: vscode.ProgressLocation.Notification, title: 'Running...', cancellable: false},
         (progress) => {
