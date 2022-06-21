@@ -71,6 +71,9 @@ $ git clone https://github.com/Samsung/ONE-vscode.git
 ```
 
 ```
+ONE-vscode$ npm install
+...
+
 ONE-vscode$ vsce package
 Executing prepublish script 'npm run vscode:prepublish'...
 
