@@ -16,15 +16,15 @@ Through these activities, ONE-vscode can provide a differentiation that cannot b
 
 ## Prerequisit
 
-...
+ONE-vscode is an [extension](https://code.visualstudio.com/docs/editor/extension-marketplace) of [vscode](https://code.visualstudio.com/). To use `ONE-vscode`, you should install vscode.
 
 ### vscode and its extensions
 
-...
+Let's install vscode according to [doc of code.visualstudio.com](https://code.visualstudio.com/docs/setup/setup-overview).
 
 ### ssh extension in vscode
 
-...
+Now [ONE](https://github.com/Samsung/ONE) officially releases on the only linux/ubuntu. If your dev env is on Windows, you should use ssh extension in vscode. let's follow [tutorial of code.visualstudio.com](https://code.visualstudio.com/docs/remote/ssh-tutorial).
 
 ### set workspace
 
