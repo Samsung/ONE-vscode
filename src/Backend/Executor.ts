@@ -16,7 +16,9 @@
 
 import {Command} from './Command';
 import {Toolchains} from './Toolchain';
+import {DeviceSpec, HostPcSpec, x8664Simulator} from './Spec';
 
+// TODO: Executor -> ExecutionCommandProvider (or something else)
 interface Executor {
   // exetensions of executable files
   getExecutableExt(): string[];
@@ -26,6 +28,11 @@ interface Executor {
 
   // TODO: use cfg path to run onecc after one-infer landed
   runInference(_modelPath: string, _options?: string[]): Command;
+
+  // NOTE
+  // specify that this Executor(==ExecutionCommandProvider) requires a spec
+  // And it means that ONE-vscode guarantees the supported runInference Command runs on the spec
+  require(): DeviceSpec;
 }
 
 // General excutor uses onecc so default jobs can be used
@@ -41,6 +48,26 @@ class ExecutorBase implements Executor {
 
   runInference(_modelPath: string, _options?: string[]): Command {
     throw Error('Invalid inference call');
+  }
+
+  require(): DeviceSpec {
+    throw Error('Invalid require call');
+  }
+};
+
+// Example0: DummyExecutor(==DummyExecutionCommandProvider) uses the existing spec
+class DummyExecutor0 extends ExecutorBase {
+  // ...
+  require(): DeviceSpec {
+    return x8664Simulator;
+  }
+};
+
+// Example1: DummyExecutor(==DummyExecutionCommandProvider) makes new spec
+class DummyExecutor1 extends ExecutorBase {
+  // ...
+  require(): DeviceSpec {
+    return new HostPcSpec('x64', 'ubuntu_20.04');
   }
 };
 
