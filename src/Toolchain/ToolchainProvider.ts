@@ -17,6 +17,10 @@
 import * as vscode from 'vscode';
 
 import {Toolchain} from '../Backend/Toolchain';
+import {DebianToolchain} from '../Backend/ToolchainImpl/DebianToolchain';
+import {Job, JobCallback} from '../Project/Job';
+import {JobInstall} from '../Project/JobInstall';
+import {JobUninstall} from '../Project/JobUninstall';
 import {Logger} from '../Utils/Logger';
 import {showInstallQuickInput} from '../View/InstallQuickInput';
 
@@ -43,7 +47,13 @@ export class ToolchainNode extends vscode.TreeItem {
       if (backend === undefined || toolchain === undefined) {
         throw Error('Invalid ToolchainNode');
       }
-      this.iconPath = new vscode.ThemeIcon('circle-filled');
+      // TODO(jyoung) Implement default backend
+      if (toolchain === gToolchainEnvMap['tv2'].default()) {
+        this.iconPath =
+            new vscode.ThemeIcon('circle-filled', new vscode.ThemeColor('progressBar.background'));
+      } else {
+        this.iconPath = new vscode.ThemeIcon('circle-filled');
+      }
       this.description = toolchain.info.version ?.str();
       const dependency =
           toolchain.info.depends ?.map((t) => `${t.name} ${t.version.str()}`).join('\n').toString();
@@ -103,8 +113,42 @@ export class ToolchainProvider implements vscode.TreeDataProvider<ToolchainNode>
 
   install() {
     showInstallQuickInput().then(
-        () => {
-          this.refresh();
+        ([toolchainEnv, toolchain]) => {
+          const installed =
+              toolchainEnv.listInstalled().filter(value => value instanceof DebianToolchain);
+          if (installed.length > 1) {
+            Logger.error(this.tag, 'One or more debian toolchains cannot be installed');
+            vscode.window.showErrorMessage('One or more debian toolchains cannot be installed');
+          } else if (installed.length === 1) {
+            vscode.window
+                .showInformationMessage(
+                    'Backend toolchain can be installed only one. Do you want to remove the existing installed toolchain?',
+                    'Yes', 'No')
+                .then((answer) => {
+                  if (answer === 'Yes') {
+                    const jobs: Array<Job> = [];
+                    jobs.push(new JobUninstall(installed[0].uninstall()));
+                    jobs.push(new JobInstall(toolchain.install()));
+                    const name = `${toolchain.info.name}-${toolchain.info.version ?.str()}`;
+                    toolchainEnv.request(jobs).then(
+                        () => {
+                          this.refresh();
+                          vscode.window.showInformationMessage(`Install ${name} successfully`);
+                        },
+                        () => {
+                          Logger.error(this.tag, 'Installation is failed');
+                          vscode.window.showErrorMessage('Installation is failed');
+                        })
+                  } else {
+                    Logger.info(this.tag, 'Installation is canceled');
+                  }
+                });
+          } else {
+            toolchainEnv.install(toolchain).then(() => this.refresh(), () => {
+              Logger.error(this.tag, 'Installation is failed');
+              vscode.window.showErrorMessage('Installation is failed');
+            });
+          }
         },
         () => {
           Logger.info(this.tag, 'Installation is canceled.');
@@ -113,10 +157,36 @@ export class ToolchainProvider implements vscode.TreeDataProvider<ToolchainNode>
 
   uninstall(node: ToolchainNode) {
     if (node.backend === undefined || node.toolchain === undefined) {
-      throw Error('Invalid toolchain node');
+      Logger.error(this.tag, 'Invalid toolchain node');
+      vscode.window.showErrorMessage('Invalid toolchain node');
+      return;
     }
-    gToolchainEnvMap[node.backend].uninstall(node.toolchain, (): void => {
+    const name = `${node.toolchain.info.name}-${node.toolchain.info.version ?.str()}`;
+    gToolchainEnvMap[node.backend].uninstall(node.toolchain).then(() => {
       this.refresh();
+      vscode.window.showInformationMessage(`Uninstall ${name} successfully`);
     });
+  }
+
+  run(cfg: string, toolchain?: Toolchain) {
+    // TODO(jyoung) Implement default backend
+    let activeToolchain = toolchain ? toolchain : gToolchainEnvMap['tv2'].default();
+    if (!activeToolchain) {
+      Logger.error(this.tag, 'Toolchain is not installed');
+      vscode.window.showErrorMessage('Toolchain is not installed');
+      return;
+    }
+
+    Logger.info(this.tag, `Compile toolchain: ${activeToolchain.info.name}-${activeToolchain.info.version?.str()}`);
+    // TODO(jyoung) Implement default backend
+    gToolchainEnvMap['tv2']
+        .run(cfg, activeToolchain)
+        .then(
+            () => {
+              vscode.window.showInformationMessage('Compile successfully');
+            },
+            () => {
+              vscode.window.showErrorMessage('Failed to compile model');
+            });
   }
 }

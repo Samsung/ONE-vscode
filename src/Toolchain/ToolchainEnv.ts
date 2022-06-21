@@ -97,6 +97,7 @@ class Env implements BuilderJob {
 class ToolchainEnv extends Env {
   // TODO(jyoung): Support multiple installed toolchains
   compiler: Compiler;
+  toolchain: Toolchain|undefined;
 
   constructor(compiler: Compiler) {
     super();
@@ -113,14 +114,23 @@ class ToolchainEnv extends Env {
   }
 
   listInstalled(): Toolchain[] {
-    return this.compiler.getToolchainTypes()
-        .map((type) => this.compiler.getInstalledToolchains(type))
-        .reduce((r, a) => {
-          return r.concat(a);
-        });
+    const toolchains = this.compiler.getToolchainTypes()
+                           .map((type) => this.compiler.getInstalledToolchains(type))
+                           .reduce((r, a) => {
+                             return r.concat(a);
+                           });
+    if (toolchains.length > 0) {
+      // TODO(jyoung) What item will be default toolchain?
+      this.toolchain = toolchains[0];
+    }
+    return toolchains;
   }
 
-  request(jobs: Array<Job>) {
+  default(): Toolchain|undefined {
+    return this.toolchain;
+  }
+
+  executeEnv(jobs: Array<Job>) {
     this.clearJobs();
     jobs.forEach((job) => {
       this.addJob(job);
@@ -129,63 +139,71 @@ class ToolchainEnv extends Env {
     this.build();
   }
 
-  prerequisitesAsync(): Promise<boolean> {
+  request(jobs: Array<Job>): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
-      this.prerequisites(() => resolve(true), () => {
-        // NOTE(jyoung)
-        // Even though this job is failed, it still shows the version quick input.
-        // The error message will be shown in JobRunner code to user. So here,
-        // only the log is output and it goes to the `resolve` so that quick input
-        // can be seen normally.
-        resolve(false);
+      jobs.forEach((job) => {
+        job.failureCallback = () => reject();
       });
+      jobs[jobs.length - 1].successCallback = () => resolve(true);
+      this.executeEnv(jobs);
     });
   }
 
-  prerequisites(successCallback?: JobCallback, failedCallback?: JobCallback) {
-    let cmd = this.compiler.prerequisitesForGetToolchains();
-    let job = new JobPrerequisites(cmd);
-    job.successCallback = successCallback;
-    job.failureCallback = failedCallback;
-    this.clearJobs();
-    this.addJob(job);
-    this.finishAdd();
-    this.build();
+  prerequisites(): Promise<boolean> {
+    return new Promise<boolean>((resolve, reject) => {
+      const jobs: Array<Job> = [];
+      const job = new JobPrerequisites(this.compiler.prerequisitesForGetToolchains());
+      job.successCallback = () => resolve(true);
+      // NOTE(jyoung)
+      // Even though this job is failed, it still shows the version quick input.
+      // The error message will be shown in JobRunner code to user. So here,
+      // only the log is output and it goes to the `resolve` so that quick input
+      // can be seen normally.
+      job.failureCallback = () => resolve(false);
+      jobs.push(job);
+      this.executeEnv(jobs);
+    });
   }
 
-  install(toolchain: Toolchain, successCallback?: JobCallback, failedCallback?: JobCallback) {
-    let cmd = toolchain.install();
-    let job = new JobInstall(cmd);
-    job.successCallback = successCallback;
-    job.failureCallback = failedCallback;
-    this.clearJobs();
-    this.addJob(job);
-    this.finishAdd();
-    this.build();
+  install(toolchain: Toolchain): Promise<boolean> {
+    return new Promise<boolean>((resolve, reject) => {
+      const jobs: Array<Job> = [];
+      const job = new JobInstall(toolchain.install());
+      job.successCallback = () => {
+        this.toolchain = toolchain;
+        resolve(true);
+      };
+      job.failureCallback = () => reject();
+      jobs.push(job);
+      this.executeEnv(jobs);
+    });
   }
 
-  uninstall(toolchain: Toolchain, successCallback?: JobCallback, failedCallback?: JobCallback) {
-    let cmd = toolchain.uninstall();
-    let job = new JobUninstall(cmd);
-    job.successCallback = successCallback;
-    job.failureCallback = failedCallback;
-    this.clearJobs();
-    this.addJob(job);
-    this.finishAdd();
-    this.build();
+  uninstall(toolchain: Toolchain): Promise<boolean> {
+    return new Promise<boolean>((resolve, reject) => {
+      const jobs: Array<Job> = [];
+      const job = new JobUninstall(toolchain.uninstall());
+      job.successCallback = () => {
+        if (toolchain === this.toolchain) {
+          this.toolchain = undefined;
+        }
+        resolve(true);
+      };
+      job.failureCallback = () => reject();
+      jobs.push(job);
+      this.executeEnv(jobs);
+    });
   }
 
-  compile(
-      cfg: string, toolchain: Toolchain, successCallback?: JobCallback,
-      failedCallback?: JobCallback) {
-    let cmd = this.compiler.compile(cfg);
-    let job = new JobConfig(cmd);
-    job.successCallback = successCallback;
-    job.failureCallback = failedCallback;
-    this.clearJobs();
-    this.addJob(job);
-    this.finishAdd();
-    this.build();
+  run(cfg: string, toolchain: Toolchain): Promise<boolean> {
+    return new Promise<boolean>((resolve, reject) => {
+      const jobs: Array<Job> = [];
+      const job = new JobConfig(toolchain.run(cfg));
+      job.successCallback = () => resolve(true);
+      job.failureCallback = () => reject();
+      jobs.push(job);
+      this.executeEnv(jobs);
+    });
   }
 };
 

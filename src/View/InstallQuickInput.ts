@@ -17,16 +17,12 @@
 import * as vscode from 'vscode';
 
 import {Toolchain} from '../Backend/Toolchain';
-import {DebianToolchain} from '../Backend/ToolchainImpl/DebianToolchain';
-import {Job, JobCallback} from '../Project/Job';
-import {JobInstall} from '../Project/JobInstall';
-import {JobUninstall} from '../Project/JobUninstall';
 import {gToolchainEnvMap, ToolchainEnv} from '../Toolchain/ToolchainEnv';
 import {Balloon} from '../Utils/Balloon';
 import {Logger} from '../Utils/Logger';
 import {MultiStepInput} from '../Utils/MultiStepInput';
 
-export async function showInstallQuickInput() {
+export async function showInstallQuickInput(): Promise<[ToolchainEnv, Toolchain]> {
   const logtag = showInstallQuickInput.name;
 
   interface State {
@@ -91,36 +87,33 @@ export async function showInstallQuickInput() {
     return (input: MultiStepInput) => pickVersion(input, state);
   }
 
-  async function requestPrerequisites(toolchainEnv: ToolchainEnv) {
-    const result = await toolchainEnv.prerequisitesAsync();
-    if (result === true) {
-      Balloon.info('Backend toolchain list has been successfully updated.');
-    } else {
-      Balloon.error('Failed to update Backend toolchain list.');
-    }
-  }
-
   async function pickVersion(input: MultiStepInput, state: Partial<State>) {
     if (state.toolchainEnv === undefined || state.toolchainType === undefined) {
-      throw Error('toolchainenv  is undefined.');
+      throw Error('toolchainenv is undefined.');
     }
     // TODO(jyoung): Support page UI
-    let toolchains: Toolchain[];
+    let toolchains: {[key: string]: Toolchain[]} = {};
     try {
-      toolchains = state.toolchainEnv.listAvailable(state.toolchainType, 0, 10);
+      toolchains['debian'] = state.toolchainEnv.listAvailable(state.toolchainType, 0, 1);
     } catch (err) {
       const answer = await vscode.window.showWarningMessage(
           'Prerequisites has not been set yet. Do you want to set it up now?', 'Yes', 'No');
       if (answer === 'Yes') {
-        requestPrerequisites(state.toolchainEnv);
-      } else {
-        Balloon.info('Installation is canceled.');
+        await state.toolchainEnv.prerequisites();
       }
       return;
     }
-    const versions =
-        toolchains.map((value) => value.info.version !== undefined ? value.info.version.str() : '');
-    const versionGroups: vscode.QuickPickItem[] = versions.map((label) => ({label}));
+
+    // TODO(jyoung): Get docker image list
+    toolchains['docker'] = state.toolchainEnv.listAvailable(state.toolchainType, 1, 10);
+    const versionGroups: vscode.QuickPickItem[] = [];
+    Object.entries(toolchains).map(([type, toolchains], index) => {
+      const icon = type === 'debian' ? `$(terminal-debian)` : `$(cloud)`;
+      toolchains.map((value) => value.info.version !== undefined ? value.info.version.str() : '')
+          .forEach((label) => {
+            versionGroups.push({label: `${icon} ${label}`});
+          });
+    });
     const version = await input.showQuickPick({
       title,
       step: 3,
@@ -135,7 +128,7 @@ export async function showInstallQuickInput() {
       return (input: MultiStepInput) => updateBackend(input, state);
     }
     state.version = version;
-    state.toolchain = toolchains[versions.indexOf(state.version.label)];
+    state.toolchain = Object.values(toolchains).filter((toolchains) => toolchains.filter((toolchain) => toolchain.info.version?.str() === state.version!.label))[0][0];
   }
 
   async function updateBackend(input: MultiStepInput, state: Partial<State>) {
@@ -143,7 +136,7 @@ export async function showInstallQuickInput() {
       throw Error('toolchainenv is undefined.');
     }
 
-    requestPrerequisites(state.toolchainEnv);
+    await state.toolchainEnv.prerequisites();
 
     // NOTE(jyoung)
     // Prerequisites request shows the password quick input and this input is
@@ -162,51 +155,12 @@ export async function showInstallQuickInput() {
         });
   }
 
-  function requestInstall(
-      toolchainEnv: ToolchainEnv, toolchain: Toolchain): Promise<Toolchain|undefined> {
-    return new Promise(async (resolve, reject) => {
-      const success: JobCallback = function() {
-        resolve(toolchain);
-      };
-      const failed: JobCallback = function() {
-        reject();
-      };
-
-      const installed =
-          toolchainEnv.listInstalled().filter(value => value instanceof DebianToolchain);
-      if (installed.length === 0) {
-        toolchainEnv.install(toolchain, success, failed);
-      } else if (installed.length === 1) {
-        const answer = await vscode.window.showInformationMessage(
-            'Do you want to remove the existing and re-install? Backend toolchain can be installed only once.',
-            'Yes', 'No');
-        if (answer === 'Yes') {
-          const jobs: Array<Job> = [];
-          const uninstallJob = new JobUninstall(installed[0].uninstall());
-          uninstallJob.failureCallback = failed;
-          jobs.push(uninstallJob);
-          const installJob = new JobInstall(toolchain.install());
-          installJob.successCallback = success;
-          installJob.failureCallback = failed;
-          jobs.push(installJob);
-          toolchainEnv.request(jobs);
-        } else {
-          Balloon.info('Installation is canceled.');
-          reject();
-        }
-      } else {
-        throw Error('Installed debian toolchain must be unique.');
-      }
-    });
-  }
-
   const state = await collectInputs();
-  if (state.toolchainEnv && state.toolchain) {
-    Logger.info(
-        logtag,
-        `Selected backend: ${state.backend.label}-${state.toolchainType}-${state.version.label}`);
-    return requestInstall(state.toolchainEnv, state.toolchain);
-  } else {
-    return Promise.reject();
-  }
+  return new Promise<[ToolchainEnv, Toolchain]>((resolve, reject) => {
+    if (state.toolchainEnv && state.toolchain) {
+      resolve([state.toolchainEnv, state.toolchain]);
+    } else {
+      reject();
+    }
+  });
 }

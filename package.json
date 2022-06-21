@@ -151,6 +151,11 @@
         "icon": "$(x)"
       },
       {
+        "command": "one.toolchain.runCfg",
+        "title": "Run",
+        "category": "ONE"
+      },
+      {
         "command": "one.device.register",
         "title": "Register",
         "category": "ONE",

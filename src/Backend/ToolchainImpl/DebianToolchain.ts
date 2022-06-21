@@ -99,13 +99,9 @@ class DebianToolchain implements Toolchain {
     // -q: Quiet; produces output suitable for logging, omitting progress indicators.
     // -y: Automatic yes to prompts
     this.prepare();
-    let cmd = new Command('apt-get');
+    let cmd = new Command('aptitude');
     cmd.push('purge');
-    let pkg: string = this.info.name;
-    if (this.info.version !== undefined) {
-      pkg = `${pkg}=${this.info.version.str()}`;
-    }
-    cmd.push(pkg);
+    cmd.push(this.info.name);
     cmd.push('-q');
     cmd.push('-y');
     cmd.setRoot();
@@ -122,6 +118,13 @@ class DebianToolchain implements Toolchain {
     cmd.push(pkg);
     cmd.push('&&');
     cmd.push('echo $?');
+    return cmd;
+  }
+  run(cfg: string): Command {
+    this.prepare();
+    let cmd = new Command('onecc');
+    cmd.push('--config');
+    cmd.push(cfg);
     return cmd;
   }
 };
