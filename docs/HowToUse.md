@@ -12,7 +12,7 @@ First, you need ONE toolchains. Let's install ONE toolchains. (You should instal
 
 Second, you need a NN model and a config file to run compiling. Now you can get one from [res/modelDir/truediv](../res/modelDir/truediv/). Add it to your workspace. Now you can see a model and a config.
 
-PREPARE
+![prepare](https://user-images.githubusercontent.com/10216715/174798969-eee44fea-bd71-4e6a-8e2c-9e1de37ad74a.gif)
 
 ## Compile models
 
