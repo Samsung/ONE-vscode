@@ -42,7 +42,10 @@ Samsung.one-vscode  # YOU MUST SEE THIS
 
 ### Installing with GUI
 
-[SOME png or gif to show the button in vscode extension tab]
+Extensions(Ctrl+Shift+x) -> Views and More Actions -> Install from VSIX
+
+![Install](https://user-images.githubusercontent.com/10216715/174781792-fa3fbe47-708b-4977-974c-578b65f689ee.gif)
+
 ### How to get vsix?
 
 If you want to use the latest version of ONE-vscode, let's the following.
