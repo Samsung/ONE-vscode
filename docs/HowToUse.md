@@ -6,7 +6,7 @@ Let's compile an example by using ONE-vscode.
 
 First, you need ONE toolchains. Let's install ONE toolchains. (You should install the in-house backend to follow this.)
 
-<img src="https://user-images.githubusercontent.com/7223627/172834540-945ed5f9-82b0-4388-bd46-4ea10587d701.gif" width=500 />
+<img src="https://user-images.githubusercontent.com/7223627/174947559-71ab213c-68c4-4700-bcec-e55f6a2203bf.gif" width=500 />
 
 ## Prepare a NN model and a config file
 
