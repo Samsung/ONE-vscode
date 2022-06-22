@@ -180,7 +180,7 @@ class ToolchainEnv extends Env {
   compile(cfg: string, toolchain: Toolchain): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
       const jobs: Array<Job> = [];
-      const job = new JobConfig(this.compiler.compile(cfg));
+      const job = new JobConfig(toolchain.run(cfg));
       job.successCallback = () => resolve(true);
       job.failureCallback = () => reject();
       jobs.push(job);
