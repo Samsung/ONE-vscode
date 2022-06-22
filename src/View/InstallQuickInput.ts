@@ -128,7 +128,8 @@ export async function showInstallQuickInput(): Promise<[ToolchainEnv, Toolchain]
       return (input: MultiStepInput) => updateBackend(input, state);
     }
     state.version = version;
-    state.toolchain = Object.values(toolchains).filter((toolchains) => toolchains.filter((toolchain) => toolchain.info.version?.str() === state.version!.label))[0][0];
+    const all = Object.values(toolchains).reduce((a, b) => a.concat(b), []);
+    state.toolchain = all.filter((toolchain) => state.version!.label.includes(toolchain.info.version!.str()))[0];
   }
 
   async function updateBackend(input: MultiStepInput, state: Partial<State>) {
