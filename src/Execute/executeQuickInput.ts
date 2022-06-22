@@ -58,11 +58,11 @@ export async function runInferenceQuickInput(context: vscode.ExtensionContext) {
   async function selectInputModel(input: MultiStepInput, state: Partial<State>) {
     if (state.backend === undefined) {
       state.error = 'Backend to infer is not chosen. Please check once again.';
-      return;
+      return undefined;
     }
     if (state.backend.executor() === undefined) {
       state.error = 'Backend executor is not set yet. Please check once again.';
-      return;
+      return undefined;
     }
 
     let backendName: string = state.backend.name();
@@ -85,7 +85,7 @@ export async function runInferenceQuickInput(context: vscode.ExtensionContext) {
       Logger.warn(logTag, 'No model has been selected');
       state.error = 'No model has been selected. Please check once again.';
       state.modelPath = undefined;
-      return;
+      return undefined;
     }
 
     return (input: MultiStepInput) => selectInputSpec(input, state);
