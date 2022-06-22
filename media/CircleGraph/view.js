@@ -158,8 +158,10 @@ view.View = class {
                 this._searchText = text;
             });
             view.on('select', (sender, selection) => {
-                this.scrollToSelection(selection);
-                // TODO maybe toggle selection
+                if (hostMode === viewMode.selector) {
+                    this.scrollToSelection(selection);
+                    // TODO maybe toggle selection
+                }
             });
             this._sidebar.open(view.content, 'Find');
             view.focus(this._searchText);
@@ -464,7 +466,9 @@ view.View = class {
 
     clearSelection() {
         this._clearSelection();
-        this._host.onView('selection');
+        if (host._mode === viewMode.selector) {
+            this._host.onView('selection');
+        }
     }
 
     /**
@@ -1221,10 +1225,13 @@ view.Node = class extends grapher.Node {
             type.name :
             (node.name || node.location);
         const title = header.add(null, styles, content, tooltip);
-        // toggle select with click
-        title.on('click', () => {
-            this.context.view.toggleSelect(this);
-        });
+        if (host._mode === viewMode.selector) {
+            // toggle select with click
+            title.on('click', () => {
+                this.context.view.toggleSelect(this);
+            });
+        }
+
         if (node.type.nodes && node.type.nodes.length > 0) {
             const definition = header.add(null, styles, '\u0192', 'Show Function Definition');
             definition.on('click', () => this.context.view.pushGraph(node.type));
