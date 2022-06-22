@@ -108,11 +108,7 @@ export class ToolRunner {
   }
 
   public isRunning(): boolean {
-    if (this.child === undefined) {
-      return false;
-    } else if (this.child.killed) {
-      return false;
-    } else if (this.child.exitCode !== null) {
+    if (this.child === undefined || this.child.killed || this.child.exitCode !== null) {
       // From https://nodejs.org/api/child_process.html#subprocessexitcode
       // If the child process is still running, the field will be null.
       return false;
