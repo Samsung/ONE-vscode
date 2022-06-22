@@ -6,7 +6,10 @@ ONE-vscode is an [extension](https://code.visualstudio.com/docs/editor/extension
 
 ### vscode and its extensions
 
-Let's install vscode according to [doc](https://code.visualstudio.com/docs/setup/setup-overview). (You should also install npm for vscode.)
+Let's install vscode.
+- You can download vscode [HERE](https://code.visualstudio.com/download)
+- Official document: [setup](https://code.visualstudio.com/docs/setup/setup-overview)
+- (You should also install npm for vscode)
 
 ### ssh extension in vscode
 
@@ -18,14 +21,20 @@ Prepare workspace according to the [document](https://code.visualstudio.com/docs
 Typically, a workspace for ONE-vscode has the following files:
 - your model files
   - Tensoflow model file(*.pb, saved model or Keras model)
-  - Tensorflow Lite model (*.tflite) 
+  - Tensorflow Lite model (*.tflite)
   - Onnx model (*.onnx)
 - ONE *.cfg files
 - intermediate files during compilation (e.g., *.circle) or compiled output files after compilation
 
 ## How to install?
 
-If you are a user not a developer, installing ONE-vscode is enough. Let's install ONE-vscode with vsix file.
+If you are a user(who just wants to use ONE-vscode not to develop ONE-vscode), installing ONE-vscode is enough. Let's install ONE-vscode with vsix file.
+
+### Installing with GUI
+
+Extensions(Ctrl+Shift+x) -> Views and More Actions -> Install from VSIX
+
+<img src="https://user-images.githubusercontent.com/10216715/174781792-fa3fbe47-708b-4977-974c-578b65f689ee.gif" width=400 />
 
 ### Installing with CLI
 
@@ -46,12 +55,6 @@ ms-vscode-remote.remote-wsl
 ms-vscode-remote.vscode-remote-extensionpack
 Samsung.one-vscode  # YOU MUST SEE THIS
 ```
-
-### Installing with GUI
-
-Extensions(Ctrl+Shift+x) -> Views and More Actions -> Install from VSIX
-
-![Install](https://user-images.githubusercontent.com/10216715/174781792-fa3fbe47-708b-4977-974c-578b65f689ee.gif)
 
 ### How to get vsix?
 

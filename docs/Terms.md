@@ -14,19 +14,19 @@ The word `Backend` is used to a concept to wrap `Toolchain` and others that rela
 
 `Toolchain` is a collection of tool. Now you could think it as `ONE` itself.
 
-![toolchain](https://user-images.githubusercontent.com/7223627/172834540-945ed5f9-82b0-4388-bd46-4ea10587d701.gif)
+<img src="https://user-images.githubusercontent.com/7223627/172834540-945ed5f9-82b0-4388-bd46-4ea10587d701.gif" width=400 />
 
 ### ONE-explorer
 
 `ONE-explorer` is a tree view for NN models and config file.
 
-![oneview](https://user-images.githubusercontent.com/17171963/172789165-1a66e890-5f8f-49db-98fa-57f61f62281c.gif)
+<img src="https://user-images.githubusercontent.com/17171963/172789165-1a66e890-5f8f-49db-98fa-57f61f62281c.gif" width=400 />
 
 ### Compile
 
 `Compile` in ONE-vscode is doing `Compile Steps` in a config file with `Toolchain`.
 
-![compile](https://user-images.githubusercontent.com/10216715/174796457-4dae4a77-04e1-4e5c-9453-77ebfb65182a.gif)
+<img src="https://user-images.githubusercontent.com/10216715/174796457-4dae4a77-04e1-4e5c-9453-77ebfb65182a.gif" width=400 />
 
 #### Compile Steps
 
@@ -40,4 +40,4 @@ The word `Backend` is used to a concept to wrap `Toolchain` and others that rela
 
 The above `Compile Steps` is described in a config file. The config file is basically based on [ini](https://en.wikipedia.org/wiki/INI_file).
 
-![config](https://user-images.githubusercontent.com/24720192/172993683-677690f3-49b5-454e-8912-31b89b8cdc2e.gif)
+<img src="https://user-images.githubusercontent.com/24720192/172993683-677690f3-49b5-454e-8912-31b89b8cdc2e.gif" width=400 />
