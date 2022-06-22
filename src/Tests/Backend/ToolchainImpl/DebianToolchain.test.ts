@@ -69,7 +69,7 @@ suite('Backend', function() {
         test('', function() {
           let dt = new DebianToolchain(info);
           let cmd = dt.uninstall();
-          const expectedStr = `sudo apt-get purge ${name}=${version.str()} -q -y`;
+          const expectedStr = `sudo aptitude purge ${name} -q -y`;
           assert.strictEqual(cmd.str(), expectedStr);
         });
       });
