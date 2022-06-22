@@ -1,6 +1,6 @@
 # How to use?
 
-Let's compile an example by using ONE-vscode
+Let's compile an example by using ONE-vscode.
 
 ## Install toolchains
 
