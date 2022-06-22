@@ -139,6 +139,14 @@ host.BrowserHost = class {
             'zoom', params.has('zoom') ? params.get('zoom') : this._environment.get('zoom'));
 
         this._menu = new host.Dropdown(this, 'menu-button', 'menu-dropdown');
+        if (this._mode === viewMode.viewer) {
+            this._menu.add({
+                label: 'Properties...',
+                accelerator: 'CmdOrCtrl+Enter',
+                click: () => this._view.showModelProperties()
+            });
+            this._menu.add({});
+        }
         this._menu.add(
             {label: 'Find...', accelerator: 'CmdOrCtrl+F', click: () => this._view.find()});
         if (this._mode === viewMode.selector) {
