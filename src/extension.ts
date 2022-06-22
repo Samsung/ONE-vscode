@@ -35,10 +35,15 @@ import {Project} from './Project';
 import {ToolchainProvider} from './Toolchain/ToolchainProvider';
 import {Logger} from './Utils/Logger';
 
+import {Analyzer} from './ValueTest/Analyzer';
+
 export function activate(context: vscode.ExtensionContext) {
   const tag = 'activate';
 
   Logger.info(tag, 'one-vscode activate OK');
+
+  let a = new Analyzer();
+  a.run(vscode.Uri.parse('/'), vscode.Uri.parse('/'), {peir: true});
 
   new OneExplorer(context);
 

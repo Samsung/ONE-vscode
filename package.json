@@ -347,6 +347,7 @@
     "configparser": "^0.3.9",
     "flatbuffers": "^2.0.3",
     "ini": "^2.0.0",
+    "jsfive": "^0.3.10",
     "which": "^2.0.2"
   }
 }
