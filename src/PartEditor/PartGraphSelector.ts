@@ -157,6 +157,7 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
     }, null, this._disposables);
 
     this.initGraphCtrl(this._modelPath, this);
+    this.setMode('selector');
   }
 
   public dispose() {
