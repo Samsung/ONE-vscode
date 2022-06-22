@@ -34,7 +34,7 @@ If you are a user(who just wants to use ONE-vscode not to develop ONE-vscode), i
 
 Extensions(Ctrl+Shift+x) -> Views and More Actions -> Install from VSIX
 
-<img src="https://user-images.githubusercontent.com/10216715/174781792-fa3fbe47-708b-4977-974c-578b65f689ee.gif" width=400 />
+<img src="https://user-images.githubusercontent.com/10216715/174781792-fa3fbe47-708b-4977-974c-578b65f689ee.gif" width=500 />
 
 ### Installing with CLI
 

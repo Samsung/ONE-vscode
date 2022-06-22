@@ -25,37 +25,37 @@ Through these activities, ONE-vscode can provide a differentiation that cannot b
 
 You can see `ONE` logo on Acitivity Bar. (If you are not familiar with terms of vscode, you can read [document](https://code.visualstudio.com/docs/getstarted/userinterface).)
 
-<img src="https://user-images.githubusercontent.com/10216715/174931217-2eaf6091-4b0d-4d9d-a9d0-f44b80300e71.png" width=400 />
+<img src="https://user-images.githubusercontent.com/10216715/174931217-2eaf6091-4b0d-4d9d-a9d0-f44b80300e71.png" width=500 />
 
 ###  One view explorer
 
 ONE-vscode supports an specialized explorer for NN model files and config files.
 
-<img src="https://user-images.githubusercontent.com/10216715/174931232-62ce9853-c153-4c27-b94d-1a885eb4bef2.png" width=400 />
+<img src="https://user-images.githubusercontent.com/10216715/174931232-62ce9853-c153-4c27-b94d-1a885eb4bef2.png" width=500 />
 
 ###  Toolchain view explorer
 
 ONE-vscode supports an specialized explorer for ONE toolchain.
 
-<img src="https://user-images.githubusercontent.com/10216715/174931237-bdedf079-bd2d-4600-8697-f171f87ea159.png" width=400 />
+<img src="https://user-images.githubusercontent.com/10216715/174931237-bdedf079-bd2d-4600-8697-f171f87ea159.png" width=500 />
 
 ### Compile
 
 ONE-vscode supports compiling NN model by a config file with ONE toolchain.
 
-<img src="https://user-images.githubusercontent.com/10216715/174931224-4039c32a-aea7-4a1a-bd86-cb30edb8831e.png" width=400 />
+<img src="https://user-images.githubusercontent.com/10216715/174931224-4039c32a-aea7-4a1a-bd86-cb30edb8831e.png" width=500 />
 
 ### Config editor
 
 ONE-vscode supports an config editor for config files.
 
-<img src="https://user-images.githubusercontent.com/10216715/174931229-c0649c60-0308-4916-8ee7-691c30a7859b.png" width=400 />
+<img src="https://user-images.githubusercontent.com/10216715/174931229-c0649c60-0308-4916-8ee7-691c30a7859b.png" width=500 />
 
 ### Target devices view explorer
 
 (NYI)
 
-<img src="https://user-images.githubusercontent.com/10216715/174931234-73dd7513-f8c7-49f7-8675-9cec05b247f2.png" width=400 />
+<img src="https://user-images.githubusercontent.com/10216715/174931234-73dd7513-f8c7-49f7-8675-9cec05b247f2.png" width=500 />
 
 ### In the future
 
