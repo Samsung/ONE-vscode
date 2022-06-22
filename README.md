@@ -59,3 +59,11 @@ ONE-vscode supports an config editor for config files.
 ## License
 
 [Apache License 2.0](https://github.com/Samsung/ONE-vscode/blob/main/LICENSE)
+
+![acitivity_bar_ONE](https://user-images.githubusercontent.com/10216715/174931217-2eaf6091-4b0d-4d9d-a9d0-f44b80300e71.png)
+![acitivity_bar_ONE_compile](https://user-images.githubusercontent.com/10216715/174931224-4039c32a-aea7-4a1a-bd86-cb30edb8831e.png)
+![acitivity_bar_ONE_config](https://user-images.githubusercontent.com/10216715/174931229-c0649c60-0308-4916-8ee7-691c30a7859b.png)
+![acitivity_bar_ONE_explorer](https://user-images.githubusercontent.com/10216715/174931232-62ce9853-c153-4c27-b94d-1a885eb4bef2.png)
+![acitivity_bar_ONE_target_devices](https://user-images.githubusercontent.com/10216715/174931234-73dd7513-f8c7-49f7-8675-9cec05b247f2.png)
+![acitivity_bar_ONE_toolchain](https://user-images.githubusercontent.com/10216715/174931237-bdedf079-bd2d-4600-8697-f171f87ea159.png)
+
