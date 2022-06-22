@@ -55,7 +55,7 @@ Extensions(Ctrl+Shift+x) -> Views and More Actions -> Install from VSIX
 
 ### How to get vsix?
 
-If you want to use the latest version of ONE-vscode, let's the following.
+If you want to use the latest version of ONE-vscode, let's do the following:
 
 #### Install vsce
 
