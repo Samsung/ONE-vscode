@@ -134,7 +134,7 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider, Part
 
     // TODO revise to get from backend
     // item 0 is initial default backend
-    this._backEndNames = ['CPU', 'CPU', 'ACL_CL', 'NPU'];
+    this._backEndNames = ['CPU', 'CPU', 'ACL_CL', 'TRIX'];
 
     webviewPanel.webview.options = this.getWebviewOptions(this._extensionUri),
     webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview);
