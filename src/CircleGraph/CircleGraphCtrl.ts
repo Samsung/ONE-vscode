@@ -61,6 +61,7 @@ export class CircleGraphCtrl {
   protected _eventHandler: CircleGraphEvent|undefined;
   protected _selectionNames: string[]|undefined;
   protected _state: CtrlStatus;
+  protected _viewMode: string;
 
   private _ctrlDisposables: vscode.Disposable[] = [];
 
@@ -71,6 +72,7 @@ export class CircleGraphCtrl {
     this._modelLength = 0;
     this._eventHandler = undefined;
     this._state = CtrlStatus.init;
+    this._viewMode = 'viewer';
   }
 
   public initGraphCtrl(modelToLoad: string, notify: CircleGraphEvent|undefined) {
@@ -94,6 +96,10 @@ export class CircleGraphCtrl {
 
   public isReady() {
     return this._state === CtrlStatus.ready;
+  }
+
+  public setMode(mode: string) {
+    this._viewMode = mode;
   }
 
   /**
@@ -326,6 +332,8 @@ export class CircleGraphCtrl {
     // modified for one-vscode
     html = this.updateUri(html, webview, '%index.js%', 'index.js');
     html = this.updateUri(html, webview, '%view.js%', 'view.js');
+    // viewMode
+    html = html.replace('%viewMode%', this._viewMode);
 
     return html;
   }
