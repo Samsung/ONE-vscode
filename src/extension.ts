@@ -52,6 +52,8 @@ export function activate(context: vscode.ExtensionContext) {
       vscode.commands.registerCommand('one.toolchain.install', () => toolchainProvier.install()));
   context.subscriptions.push(vscode.commands.registerCommand(
       'one.toolchain.uninstall', (node) => toolchainProvier.uninstall(node)));
+  context.subscriptions.push(
+      vscode.commands.registerCommand('one.toolchain.runCfg', (cfg) => toolchainProvier.run(cfg)));
 
   // Target Device view
   let registerDevice = vscode.commands.registerCommand('one.device.register', () => {

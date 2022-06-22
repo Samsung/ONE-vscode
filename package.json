@@ -151,6 +151,10 @@
         "icon": "$(x)"
       },
       {
+        "command": "one.toolchain.runCfg",
+        "title": "Run"
+      },
+      {
         "command": "one.device.register",
         "title": "Register",
         "category": "ONE",
@@ -264,6 +268,12 @@
           "group": "navigation",
           "when": "resourceExtname == .cfg && cfg.editor",
           "_comment": "NYI"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "one.toolchain.runCfg",
+          "when": "false"
         }
       ]
     },
