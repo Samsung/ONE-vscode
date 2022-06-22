@@ -115,7 +115,7 @@ export class ToolchainProvider implements vscode.TreeDataProvider<ToolchainNode>
     if (node.backend === undefined || node.toolchain === undefined) {
       throw Error('Invalid toolchain node');
     }
-    gToolchainEnvMap[node.backend].uninstall(node.toolchain, (): void => {
+    gToolchainEnvMap[node.backend].uninstall(node.toolchain).then(() => {
       this.refresh();
     });
   }
