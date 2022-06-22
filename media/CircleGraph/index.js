@@ -48,6 +48,11 @@ var host = {};
 
 const vscode = acquireVsCodeApi();
 
+const viewMode = {
+    viewer: 0,
+    selector: 1,
+};
+
 host.BrowserHost = class {
     constructor() {
         this._document = window.document;
@@ -73,6 +78,12 @@ host.BrowserHost = class {
         // model
         this._modelData = [];
         this._modelPath = '';
+
+        // default mode of viewer
+        this._mode = viewMode.viewer;
+        if (__viewMode === 'selector') {
+            this._mode = viewMode.selector;
+        }
     }
 
     get window() {
