@@ -75,22 +75,22 @@ export function run(): Promise<void> {
   return new Promise((c, e) => {
     glob('**/**.test.js', {cwd: testsRoot}, (err: Error|null, files: Array<string>) => {
       if (err) {
-        return e(err);
-      }
-
-      files.forEach(f => mocha.addFile(path.resolve(testsRoot, f)));
-
-      try {
-        mocha.run(failures => {
-          if (failures > 0) {
-            e(new Error(`${failures} tests failed.`));
-          } else {
-            c();
-          }
-        });
-      } catch (err) {
-        console.error(err);
         e(err);
+      } else {
+        files.forEach(f => mocha.addFile(path.resolve(testsRoot, f)));
+
+        try {
+          mocha.run(failures => {
+            if (failures > 0) {
+              e(new Error(`${failures} tests failed.`));
+            } else {
+              c();
+            }
+          });
+        } catch (err) {
+          console.error(err);
+          e(err);
+        }
       }
     });
   });

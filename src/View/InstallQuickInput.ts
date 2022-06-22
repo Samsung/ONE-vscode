@@ -116,7 +116,7 @@ export async function showInstallQuickInput() {
       } else {
         Balloon.info('Installation is canceled.');
       }
-      return;
+      return undefined;
     }
     const versions =
         toolchains.map((value) => value.info.version !== undefined ? value.info.version.str() : '');
@@ -136,6 +136,7 @@ export async function showInstallQuickInput() {
     }
     state.version = version;
     state.toolchain = toolchains[versions.indexOf(state.version.label)];
+    return undefined;
   }
 
   async function updateBackend(input: MultiStepInput, state: Partial<State>) {
