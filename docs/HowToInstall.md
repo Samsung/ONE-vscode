@@ -67,16 +67,18 @@ If you want to use the latest version of ONE-vscode, let's do the following:
 #### Install vsce
 
 [vsce](https://code.visualstudio.com/api/working-with-extensions/publishing-extension) is `Visual Studio Code Extension`.
-```
+
+```console
 $ npm install -g vsce
 ```
 
 git clone `ONE-vscode`
-```
+
+```console
 $ git clone https://github.com/Samsung/ONE-vscode.git
 ```
 
-```
+```console
 ONE-vscode$ npm install
 ...
 
