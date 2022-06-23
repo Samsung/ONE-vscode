@@ -18,6 +18,7 @@ import * as vscode from 'vscode';
 
 import {Toolchain} from '../Backend/Toolchain';
 import {DebianToolchain} from '../Backend/ToolchainImpl/DebianToolchain';
+import { DockerToolchain } from '../Backend/ToolchainImpl/DockerToolchain';
 import {Job, JobCallback} from '../Project/Job';
 import {JobInstall} from '../Project/JobInstall';
 import {JobUninstall} from '../Project/JobUninstall';
@@ -47,14 +48,23 @@ export class ToolchainNode extends vscode.TreeItem {
       if (backend === undefined || toolchain === undefined) {
         throw Error('Invalid ToolchainNode');
       }
+      let iconPath: string = '';
+      let iconColor: string = '';
+      if (toolchain instanceof DebianToolchain) {
+        iconPath = 'terminal-debian';
+      } else if (toolchain instanceof DockerToolchain) {
+        iconPath = 'cloud';
+      }
       // TODO(jyoung) Implement default backend
       if (toolchain === gToolchainEnvMap['tv2'].default()) {
-        this.iconPath =
-            new vscode.ThemeIcon('circle-filled', new vscode.ThemeColor('progressBar.background'));
-      } else {
-        this.iconPath = new vscode.ThemeIcon('circle-filled');
+        iconColor = 'progressBar.background';
       }
-      this.description = toolchain.info.version ?.str();
+      this.iconPath = new vscode.ThemeIcon(iconPath, new vscode.ThemeColor(iconColor));
+      if (toolchain.info.description) {
+        this.description = `${toolchain.info.description}-${toolchain.info.version ?.str()}`;
+      } else {
+        this.description = toolchain.info.version ?.str();
+      }
       const dependency =
           toolchain.info.depends ?.map((t) => `${t.name} ${t.version.str()}`).join('\n').toString();
       this.tooltip = dependency;

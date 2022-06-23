@@ -17,6 +17,8 @@
 import * as vscode from 'vscode';
 
 import {Toolchain} from '../Backend/Toolchain';
+import { DebianToolchain } from '../Backend/ToolchainImpl/DebianToolchain';
+import { DockerToolchain } from '../Backend/ToolchainImpl/DockerToolchain';
 import {gToolchainEnvMap, ToolchainEnv} from '../Toolchain/ToolchainEnv';
 import {Balloon} from '../Utils/Balloon';
 import {Logger} from '../Utils/Logger';
@@ -92,9 +94,9 @@ export async function showInstallQuickInput(): Promise<[ToolchainEnv, Toolchain]
       throw Error('toolchainenv is undefined.');
     }
     // TODO(jyoung): Support page UI
-    let toolchains: {[key: string]: Toolchain[]} = {};
+    let toolchains: Toolchain[];
     try {
-      toolchains['debian'] = state.toolchainEnv.listAvailable(state.toolchainType, 0, 1);
+      toolchains = state.toolchainEnv.listAvailable(state.toolchainType, 0, 10);
     } catch (err) {
       const answer = await vscode.window.showWarningMessage(
           'Prerequisites has not been set yet. Do you want to set it up now?', 'Yes', 'No');
@@ -103,17 +105,38 @@ export async function showInstallQuickInput(): Promise<[ToolchainEnv, Toolchain]
       }
       return;
     }
-
-    // TODO(jyoung): Get docker image list
-    toolchains['docker'] = state.toolchainEnv.listAvailable(state.toolchainType, 1, 10);
-    const versionGroups: vscode.QuickPickItem[] = [];
-    Object.entries(toolchains).map(([type, toolchains], index) => {
-      const icon = type === 'debian' ? `$(terminal-debian)` : `$(cloud)`;
-      toolchains.map((value) => value.info.version !== undefined ? value.info.version.str() : '')
-          .forEach((label) => {
-            versionGroups.push({label: `${icon} ${label}`});
-          });
+    const versionGroups: vscode.QuickPickItem[] = toolchains.map((toolchain) => {
+      if (toolchain instanceof DebianToolchain) {
+        return {label: `$(terminal-debian) ${toolchain.info.version?.str()}`};
+      } else if (toolchain instanceof DockerToolchain) {
+        return {label: `$(cloud) ${toolchain.info.version?.str()}`};
+      } else {
+        return {label: ''};
+      }
     });
+    // const versionGroups: vscode.QuickPickItem[] = versions.map((label) => ({label}));
+    // let toolchains: {[key: string]: Toolchain[]} = {};
+    // try {
+    //   toolchains['debian'] = state.toolchainEnv.listAvailable(state.toolchainType, 0, 1);
+    // } catch (err) {
+    //   const answer = await vscode.window.showWarningMessage(
+    //       'Prerequisites has not been set yet. Do you want to set it up now?', 'Yes', 'No');
+    //   if (answer === 'Yes') {
+    //     await state.toolchainEnv.prerequisites();
+    //   }
+    //   return;
+    // }
+
+    // // TODO(jyoung): Get docker image list
+    // toolchains['docker'] = state.toolchainEnv.listAvailable(state.toolchainType, 1, 10);
+    // const versionGroups: vscode.QuickPickItem[] = [];
+    // Object.entries(toolchains).map(([type, toolchains], index) => {
+    //   const icon = type === 'debian' ? `$(terminal-debian)` : `$(cloud)`;
+    //   toolchains.map((value) => value.info.version !== undefined ? value.info.version.str() : '')
+    //       .forEach((label) => {
+    //         versionGroups.push({label: `${icon} ${label}`});
+    //       });
+    // });
     const version = await input.showQuickPick({
       title,
       step: 3,
@@ -128,8 +151,7 @@ export async function showInstallQuickInput(): Promise<[ToolchainEnv, Toolchain]
       return (input: MultiStepInput) => updateBackend(input, state);
     }
     state.version = version;
-    const all = Object.values(toolchains).reduce((a, b) => a.concat(b), []);
-    state.toolchain = all.filter((toolchain) => state.version!.label.includes(toolchain.info.version!.str()))[0];
+    state.toolchain = toolchains.filter((toolchain) => version.label.includes(toolchain.info.version!.str()))[0];
   }
 
   async function updateBackend(input: MultiStepInput, state: Partial<State>) {
