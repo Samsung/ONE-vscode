@@ -15,9 +15,6 @@
  */
 
 import {assert, should} from 'chai';
-import { ShellExecution } from 'vscode';
-
-import {Command} from '../../Backend/Command';
 import {DeviceSpec, BridgeSpec } from '../../Backend/Spec';
 
 suite('Spec', function() {
@@ -41,13 +38,13 @@ suite('Spec', function() {
     });
     suite('BridgeSpec', function(){
       suite('#constructor()', function(){
-        const dummyDeviceList = "";
-        const dummyShell = "";
+        const dummyDeviceList = "testDeiveList";
+        const dummyShell = "bash";
         const testBridgeSpec = new BridgeSpec("test", dummyDeviceList, dummyShell);
         assert.isObject<BridgeSpec>(testBridgeSpec);
         assert.strictEqual(testBridgeSpec.name, "test");
-        assert.strictEqual(testBridgeSpec.deviceList.str(), dummyDeviceList);
-        assert.strictEqual(testBridgeSpec.shell.str(), dummyShell);
+        assert.strictEqual(testBridgeSpec.deviceListCmd.str(), dummyDeviceList);
+        assert.strictEqual(testBridgeSpec.shellCmd.str(), dummyShell);
       });
     });
   });

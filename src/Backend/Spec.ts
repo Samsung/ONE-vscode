@@ -17,17 +17,18 @@
 import {Command} from './Command';
 
 /**
- * Spec is a concept to describe HW, SW or some information to check matching.
+ * Spec is a bundle of imformation that could be used for certain objective.
  */
-
+// TODO: Split DeviceSpec and BridgeSpec.
 /**
- * DeviceSpec is a information of cetain Device to specify each Device instance.
+ * DeviceSpec is a Spec to specify device instance.
+ * Each Device have matching DeviceSpec.
  */
 class DeviceSpec {
   // TODO: make this properties more specific or new prorperty can be added.
-  hw: string;  // Currently this name comes from 'uname -m', but this could be updated
-  sw: string;  // Currently this name comes from 'cat /etc/os-release' with $(NAME), but this could be updated
-  bridge: BridgeSpec|undefined;
+  hw: string;  // Currently this value comes from 'uname -m', but this could be updated
+  sw: string;  // Currently this value comes from 'cat /etc/os-release' with $(NAME), but this could be updated
+  bridge: BridgeSpec|undefined; // this will be used to access on this spec.
 
   constructor(hw: string, sw: string, bridge: BridgeSpec|undefined) {
     this.hw = hw;
@@ -47,19 +48,18 @@ class DeviceSpec {
 }
 
 /**
- * BridgeSpec : This Spec will be used on DeviceSpec. this will be used to access on those
- *              DeviceSpec with Device unique Key.
+ * BridgeSpec is a Spec that is used for acess on certain Device.
  */
 class BridgeSpec {
   // TODO: Add Spec check command to match with given DeviceSpec
   name: string;
-  deviceList: Command;
-  shell: Command;
+  deviceListCmd: Command;
+  shellCmd: Command;
   // TODO add more command for this.
   constructor(name: string, listCommand: string, shellCommand: string) {
     this.name = name;
-    this.deviceList = new Command(listCommand);
-    this.shell = new Command(shellCommand);
+    this.deviceListCmd = new Command(listCommand);
+    this.shellCmd = new Command(shellCommand);
   }
 }
 
@@ -80,7 +80,7 @@ class TizenDeviceSpec extends DeviceSpec {
 }
 
 const supportedSpecs = new Array<DeviceSpec>(
-    new HostPCSpec('x86_64', 'Ubuntu') /* SimulatorSpec */,
+    new HostPCSpec('x86_64', 'Ubuntu 18') /* SimulatorSpec */,
     new TizenDeviceSpec('armv7l', 'Tizen') /* TizenTVSpec */);
 
 export {DeviceSpec, BridgeSpec, supportedSpecs};
