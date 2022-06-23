@@ -92,7 +92,7 @@ export async function showInstallQuickInput() {
   }
 
   async function requestPrerequisites(toolchainEnv: ToolchainEnv) {
-    const result = await toolchainEnv.prerequisitesAsync();
+    const result = await toolchainEnv.prerequisites();
     if (result === true) {
       Balloon.info('Backend toolchain list has been successfully updated.');
     } else {
@@ -163,42 +163,28 @@ export async function showInstallQuickInput() {
         });
   }
 
-  function requestInstall(
-      toolchainEnv: ToolchainEnv, toolchain: Toolchain): Promise<Toolchain|undefined> {
-    return new Promise(async (resolve, reject) => {
-      const success: JobCallback = function() {
-        resolve(toolchain);
-      };
-      const failed: JobCallback = function() {
-        reject();
-      };
-
-      const installed =
-          toolchainEnv.listInstalled().filter(value => value instanceof DebianToolchain);
-      if (installed.length === 0) {
-        toolchainEnv.install(toolchain, success, failed);
-      } else if (installed.length === 1) {
-        const answer = await vscode.window.showInformationMessage(
-            'Do you want to remove the existing and re-install? Backend toolchain can be installed only once.',
-            'Yes', 'No');
-        if (answer === 'Yes') {
-          const jobs: Array<Job> = [];
-          const uninstallJob = new JobUninstall(installed[0].uninstall());
-          uninstallJob.failureCallback = failed;
-          jobs.push(uninstallJob);
-          const installJob = new JobInstall(toolchain.install());
-          installJob.successCallback = success;
-          installJob.failureCallback = failed;
-          jobs.push(installJob);
-          toolchainEnv.request(jobs);
-        } else {
-          Balloon.info('Installation is canceled.');
-          reject();
-        }
+  async function requestInstall(
+      toolchainEnv: ToolchainEnv, toolchain: Toolchain): Promise<boolean> {
+    const installed =
+        toolchainEnv.listInstalled().filter(value => value instanceof DebianToolchain);
+    if (installed.length === 0) {
+      return toolchainEnv.install(toolchain);
+    } else if (installed.length === 1) {
+      const answer = await vscode.window.showInformationMessage(
+          'Do you want to remove the existing and re-install? Backend toolchain can be installed only once.',
+          'Yes', 'No');
+      if (answer === 'Yes') {
+        const jobs: Array<Job> = [];
+        jobs.push(new JobUninstall(installed[0].uninstall()));
+        jobs.push(new JobInstall(toolchain.install()));
+        return toolchainEnv.request(jobs);
       } else {
-        throw Error('Installed debian toolchain must be unique.');
+        Balloon.info('Installation is canceled.');
+        return Promise.reject();
       }
-    });
+    } else {
+      throw Error('Installed debian toolchain must be unique.');
+    }
   }
 
   const state = await collectInputs();
