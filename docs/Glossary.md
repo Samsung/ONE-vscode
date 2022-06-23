@@ -1,6 +1,6 @@
-# Terms
+# Glossary
 
-Terminologies for(or used in) ONE-vscode
+A glossary for(or used in) ONE-vscode
 
 ## Concepts of ONE-vscode that You Must Know
 

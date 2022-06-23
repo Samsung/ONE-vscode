@@ -20,7 +20,7 @@ Through these activities, ONE-vscode can provide a differentiation that cannot b
 - [ONE-vscode extension overview](./docs/Overview.md)
 - [How to install?](./docs/HowToInstall.md)
 - [How to use?](./docs/HowToUse.md)
-- [Terms](./docs/Terms.md)
+- [Glossary](./docs/Glossary.md)
 
 ## Features
 
