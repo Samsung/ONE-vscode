@@ -34,11 +34,11 @@ class DeviceSpec {
     this.bridge = bridge;
   }
 
-  statisfied(spec: DeviceSpec): boolean{
+  statisfied(spec: DeviceSpec): boolean {
     // TODO Specify how to check spec statisfied.
     // This will be used on check Executor Spec could cover.
-    if(spec.hw.includes(this.hw) && spec.sw.includes(this.sw)){
-        return true;
+    if (spec.hw.includes(this.hw) && spec.sw.includes(this.sw)) {
+      return true;
     }
     return false;
   }
