@@ -1,6 +1,6 @@
 # How to install?
 
-## Prerequisit
+## Prerequisite
 
 ONE-vscode is an [extension](https://code.visualstudio.com/docs/editor/extension-marketplace) of [vscode](https://code.visualstudio.com/). To use ONE-vscode, you should install vscode first.
 
