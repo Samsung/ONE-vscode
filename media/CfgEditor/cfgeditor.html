@@ -246,7 +246,208 @@ limitations under the License.
             </div>
         </div>
         <div class="options" id="optionQuantize">
-            <!-- TODO Implement Quantize step -->
+            <div class="prerequisite">
+                <div class="title">
+                    Basic Options
+                </div>
+                <div class="option">
+                    <vscode-radio-group id="quantizeActionType">
+                        <label slot="label">Quantization Action Type</label>
+                        <vscode-radio value="defaultQuant" checked="true">Quantization</vscode-radio>
+                        <vscode-radio value="forceQuant">Force Quantization Param</vscode-radio>
+                        <vscode-radio value="copyQuant">Copy Quantization Param</vscode-radio>
+                    </vscode-radio-group>
+                </div>
+            </div>
+            <div class="basic" id="optionQuantizeDefaultQuantBasic">
+                <div class="option">
+                    <vscode-text-field id="DefaultQuantInputPath" startIcon="true" size="50" placeholder="">
+                        Input Path
+                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="DefaultQuantOutputPath" startIcon="true" size="50" placeholder="">
+                        Output Path
+                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-radio-group id="DefaultQuantInputModelDtype">
+                        <label slot="label">Input Model Data Type</label>
+                        <vscode-radio value="float32">float32</vscode-radio>
+                    </vscode-radio-group>
+                </div>
+                <div class="option">
+                    <vscode-radio-group id="DefaultQuantQuantizedDtype">
+                        <label slot="label">Quantized Data Type</label>
+                        <vscode-radio value="uint8">uint8</vscode-radio>
+                        <vscode-radio value="int16">int16</vscode-radio>
+                    </vscode-radio-group>
+                </div>
+                <div class="option">
+                    <vscode-radio-group id="DefaultQuantGranularity">
+                        <label slot="label">Granularity</label>
+                        <vscode-radio value="layer">layer</vscode-radio>
+                        <vscode-radio value="channel">channel</vscode-radio>
+                    </vscode-radio-group>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="DefaultQuantQuantConfig" startIcon="true" size="50" placeholder="">
+                        Quantization Config File
+                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="DefaultQuantInputData" startIcon="true" size="50" placeholder="">
+                        Input Data
+                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-radio-group id="DefaultQuantInputDataFormat">
+                        <label slot="label">Input Data Format</label>
+                        <vscode-radio value="h5">h5</vscode-radio>
+                        <vscode-radio value="list">list</vscode-radio>
+                        <vscode-radio value="dir">dir</vscode-radio>
+                    </vscode-radio-group>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="DefaultQuantMinPercentile" startIcon="true" size="30" placeholder="(default : 1.0)">
+                        Min Percentile
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="DefaultQuantMaxPercentile" startIcon="true" size="30" placeholder="(default : 99.0)">
+                        Max Percentile
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-radio-group id="DefaultQuantMode">
+                        <label slot="label">Mode</label>
+                        <vscode-radio value="percentile">percentile</vscode-radio>
+                    </vscode-radio-group>
+                </div>
+                <div class="option">
+                    <vscode-radio-group id="DefaultQuantInputType">
+                        <label slot="label">Input Type</label>
+                        <vscode-radio value="default">default</vscode-radio>
+                        <vscode-radio value="uint8">uint8</vscode-radio>
+                        <vscode-radio value="int16">int16</vscode-radio>
+                        <vscode-radio value="float32">float32</vscode-radio>
+                    </vscode-radio-group>
+                </div>
+                <div class="option">
+                    <vscode-radio-group id="DefaultQuantOutputType">
+                        <label slot="label">Output Type</label>
+                        <vscode-radio value="default">default</vscode-radio>
+                        <vscode-radio value="uint8">uint8</vscode-radio>
+                        <vscode-radio value="int16">int16</vscode-radio>
+                        <vscode-radio value="float32">float32</vscode-radio>
+                    </vscode-radio-group>
+                </div>
+            </div>
+            <div class="advanced" id="optionQuantizeDefaultQuantAdvanced">
+                <div class="title">
+                    <span>Advanced Options</span>
+                </div>
+                <div class="option">
+                    <vscode-checkbox id="DefaultQuantVerbose">
+                        Verbose
+                    </vscode-checkbox>
+                </div>
+                <div class="option">
+                    <vscode-checkbox id="DefaultQuantSaveIntermediate">
+                        Save Intermediate
+                    </vscode-checkbox>
+                </div>
+                <div class="option">
+                    <vscode-checkbox id="DefaultQuantGenerateProfileData">
+                        Generate Profile Data
+                    </vscode-checkbox>
+                </div>
+                <div class="option">
+                    <vscode-checkbox id="DefaultQuantTFStyleMaxpool">
+                        TF-style Maxpool
+                    </vscode-checkbox>
+                    <span slot="end" class="codicon codicon-question" style="cursor: pointer"></span>
+                </div>
+                <!-- TODO Evaluate Result Option -->
+            </div>
+            <div class="basic" id="optionQuantizeForceQuantBasic">
+                <div class="option">
+                    <vscode-text-field id="ForceQuantInputPath" startIcon="true" size="50" placeholder="">
+                        Input Path
+                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="ForceQuantOutputPath" startIcon="true" size="50" placeholder="">
+                        Output Path
+                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="ForceQuantTensorName" startIcon="true" size="50" placeholder="">
+                        Tensor Name
+                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="ForceQuantScale" startIcon="true" size="30" placeholder="">
+                        Scale
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="ForceQuantZeroPoint" startIcon="true" size="30" placeholder="">
+                        Zero Point
+                    </vscode-text-field>
+                </div>
+            </div>
+            <div class="advanced" id="optionQuantizeForceQuantAdvanced">
+                <div class="title">
+                    <span>Advanced Options</span>
+                </div>
+                <div class="option">
+                    <vscode-checkbox id="ForceQuantVerbose">
+                        Verbose
+                    </vscode-checkbox>
+                </div>
+            </div>
+            <div class="basic" id="optionQuantizeCopyQuantBasic">
+                <div class="option">
+                    <vscode-text-field id="CopyQuantInputPath" startIcon="true" size="50" placeholder="">
+                        Input Path
+                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="CopyQuantOutputPath" startIcon="true" size="50" placeholder="">
+                        Output Path
+                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="CopyQuantSrcTensorName" startIcon="true" size="50" placeholder="">
+                        Source Tensor Name
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="CopyQuantDstTensorName" startIcon="true" size="50" placeholder="">
+                        Destination Tensor Name
+                    </vscode-text-field>
+                </div>
+            </div>
+            <div class="advanced" id="optionQuantizeCopyQuantAdvanced">
+                <div class="title">
+                    <span>Advanced Options</span>
+                </div>
+                <div class="option">
+                    <vscode-checkbox id="CopyQuantVerbose">
+                        Verbose
+                    </vscode-checkbox>
+                </div>
+            </div>
         </div>
         <div class="options" id="optionCodegen">
             <div class="basic">

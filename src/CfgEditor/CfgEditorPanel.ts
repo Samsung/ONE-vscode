@@ -67,11 +67,21 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
   private updateWebview(document: vscode.TextDocument, webviewPanel: vscode.WebviewPanel) {
     this._oneConfig = ini.parse(document.getText());
 
+    // TODO Separate handling deprecated elements
     // NOTE 'one-build' will be deprecated.
     //      Therefore, when only 'one-build' is used, it will be replaced to 'onecc'.
     if (this._oneConfig['onecc'] === undefined && this._oneConfig['one-build'] !== undefined) {
       this._oneConfig['onecc'] = ini.parse(ini.stringify(this._oneConfig['one-build']));
       delete this._oneConfig['one-build'];
+    }
+    // NOTE 'input_dtype' is deprecated.
+    //      Therefore, when only 'input_dtype' is used, it will be replaced to 'onecc'.
+    if (this._oneConfig['one-quantize']?.['input_dtype'] !== undefined) {
+      if (this._oneConfig['one-quantize']['input_model_dtype'] === undefined) {
+        this._oneConfig['one-quantize']['input_model_dtype'] =
+            this._oneConfig['one-quantize']['input_dtype'];
+      }
+      delete this._oneConfig['one-quantize']['input_dtype'];
     }
 
     webviewPanel.webview.postMessage({type: 'displayCfgToEditor', text: this._oneConfig});

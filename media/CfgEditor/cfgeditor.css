@@ -151,7 +151,9 @@ label {
 }
 
 #optionImport .basic,
-#optionImport .advanced {
+#optionImport .advanced,
+#optionQuantize .basic,
+#optionQuantize .advanced {
   display: none;
 }
 

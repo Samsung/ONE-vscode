@@ -19,7 +19,7 @@ import oneOptimizationList from './one-optimizations.json' assert {type : 'json'
 // Get access to the VS Code API from within the webview context
 const vscode = acquireVsCodeApi();
 
-function iniKeyValueString(iniKey, iniValue) {
+function iniKeyValueString(iniKey, iniValue, noEffectValue = undefined) {
   if (iniValue === null || iniValue === undefined) {
     return '';
   }
@@ -31,7 +31,7 @@ function iniKeyValueString(iniKey, iniValue) {
   }
 
   const trimmedValue = iniValue.trim();
-  if (trimmedValue === '') {
+  if (trimmedValue === '' || trimmedValue === noEffectValue) {
     return '';
   }
 
@@ -180,6 +180,97 @@ export function updateOptimize() {
   }
 
   vscode.postMessage({type: 'setSection', section: 'one-optimize', param: content});
+}
+
+export function updateQuantizeActionType() {
+  switch (document.getElementById('quantizeActionType').value) {
+    case 'defaultQuant':
+      updateQuantizeDefault();
+      break;
+    case 'forceQuant':
+      updateQuantizeForce();
+      break;
+    case 'copyQuant':
+      updateQuantizeCopy();
+      break;
+    default:
+      break;
+  }
+}
+
+export function updateQuantizeDefault() {
+  let content = '';
+  content +=
+      iniKeyValueString('input_path', document.getElementById('DefaultQuantInputPath').value);
+  content +=
+      iniKeyValueString('output_path', document.getElementById('DefaultQuantOutputPath').value);
+  content += iniKeyValueString(
+      'input_model_dtype', document.getElementById('DefaultQuantInputModelDtype').value, 'float32');
+  content += iniKeyValueString(
+      'quantized_dtype', document.getElementById('DefaultQuantQuantizedDtype').value, 'uint8');
+  content += iniKeyValueString(
+      'granularity', document.getElementById('DefaultQuantGranularity').value, 'layer');
+  content +=
+      iniKeyValueString('quant_config', document.getElementById('DefaultQuantQuantConfig').value);
+  content +=
+      iniKeyValueString('input_data', document.getElementById('DefaultQuantInputData').value);
+  content += iniKeyValueString(
+      'input_data_format', document.getElementById('DefaultQuantInputDataFormat').value, 'h5');
+  content += iniKeyValueString(
+      'min_percentile', document.getElementById('DefaultQuantMinPercentile').value, '1.0');
+  content += iniKeyValueString(
+      'max_percentile', document.getElementById('DefaultQuantMaxPercentile').value, '99.0');
+  content +=
+      iniKeyValueString('mode', document.getElementById('DefaultQuantMode').value, 'percentile');
+
+  if (document.getElementById('DefaultQuantInputType').value !== 'default') {
+    content +=
+        iniKeyValueString('input_type', document.getElementById('DefaultQuantInputType').value);
+  }
+
+  if (document.getElementById('DefaultQuantOutputType').value !== 'default') {
+    content +=
+        iniKeyValueString('output_type', document.getElementById('DefaultQuantOutputType').value);
+  }
+
+  content += iniKeyValueString('verbose', document.getElementById('DefaultQuantVerbose').checked);
+  content += iniKeyValueString(
+      'save_intermediate', document.getElementById('DefaultQuantSaveIntermediate').checked);
+  content += iniKeyValueString(
+      'generate_profile_data', document.getElementById('DefaultQuantGenerateProfileData').checked);
+  content += iniKeyValueString(
+      'TF-style_maxpool', document.getElementById('DefaultQuantTFStyleMaxpool').checked);
+
+  vscode.postMessage({type: 'setSection', section: 'one-quantize', param: content});
+}
+
+export function updateQuantizeForce() {
+  let content = '';
+  content += iniKeyValueString('force_quantparam', true);
+  content += iniKeyValueString('input_path', document.getElementById('ForceQuantInputPath').value);
+  content +=
+      iniKeyValueString('output_path', document.getElementById('ForceQuantOutputPath').value);
+  content +=
+      iniKeyValueString('tensor_name', document.getElementById('ForceQuantTensorName').value);
+  content += iniKeyValueString('scale', document.getElementById('ForceQuantScale').value);
+  content += iniKeyValueString('zero_point', document.getElementById('ForceQuantZeroPoint').value);
+  content += iniKeyValueString('verbose', document.getElementById('ForceQuantVerbose').checked);
+
+  vscode.postMessage({type: 'setSection', section: 'one-quantize', param: content});
+}
+
+export function updateQuantizeCopy() {
+  let content = '';
+  content += iniKeyValueString('copy_quantparam', true);
+  content += iniKeyValueString('input_path', document.getElementById('CopyQuantInputPath').value);
+  content += iniKeyValueString('output_path', document.getElementById('CopyQuantOutputPath').value);
+  content +=
+      iniKeyValueString('src_tensor_name', document.getElementById('CopyQuantSrcTensorName').value);
+  content +=
+      iniKeyValueString('dst_tensor_name', document.getElementById('CopyQuantDstTensorName').value);
+  content += iniKeyValueString('verbose', document.getElementById('CopyQuantVerbose').checked);
+
+  vscode.postMessage({type: 'setSection', section: 'one-quantize', param: content});
 }
 
 export function updateCodegen() {
