@@ -16,7 +16,7 @@ Second, you need a NN model and a config file to run compiling. Now you can get 
 
 ## Compile models
 
-Last, you can run `compile`.
+Last, you can compile the model by pushing Run button.
 
 <img src="https://user-images.githubusercontent.com/10216715/174796457-4dae4a77-04e1-4e5c-9453-77ebfb65182a.gif" width=500 />
 
