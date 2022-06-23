@@ -38,7 +38,7 @@ Extensions(Ctrl+Shift+x) -> Views and More Actions -> Install from VSIX
 
 ### Installing with CLI
 
-```
+```console
 $ ls
 one-vscode-0.1.0.vsix
 
