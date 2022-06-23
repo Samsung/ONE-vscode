@@ -60,6 +60,7 @@ ONE-vscode supports an config editor for config files.
 ### In the future
 
 - Value test
+- Profile
 
 ## Contribution
 
