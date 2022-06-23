@@ -71,6 +71,16 @@
           }
         ],
         "priority": "default"
+      },
+      {
+        "viewType": "onevscode.circleViewer",
+        "displayName": "Circle Viewer",
+        "selector": [
+          {
+            "filenamePattern": "*.circle"
+          }
+        ],
+        "priority": "default"
       }
     ],
     "commands": [
@@ -184,11 +194,6 @@
       {
         "command": "one.viewer.circleTracer",
         "title": "circle tracer",
-        "category": "ONE"
-      },
-      {
-        "command": "one.viewer.circleGraph",
-        "title": "circle graph view",
         "category": "ONE"
       }
     ],
