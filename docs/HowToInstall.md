@@ -20,7 +20,7 @@ Now [ONE](https://github.com/Samsung/ONE) officially releases on linux/ubuntu on
 Prepare workspace according to the [document](https://code.visualstudio.com/docs/editor/workspaces). ONE-vscode has been developed based on workspace.
 Typically, a workspace for ONE-vscode has the following files:
 - your model files
-  - Tensoflow model file(*.pb, saved model or Keras model)
+  - Tensorflow model file(*.pb, saved model or Keras model)
   - Tensorflow Lite model (*.tflite)
   - Onnx model (*.onnx)
 - ONE *.cfg files
