@@ -17,15 +17,16 @@
 import {Command} from './Command';
 
 /**
- * There are two type of Spec described on this file.
- * DeviceSpec : This Spec is a information of cetain Device to specify each Device instance.
- * BridgeSpec : This Spec will be used on DeviceSpec. this will be used to access on those
- *              DeviceSpec with Device unique Key.
+ * Spec is a concept to describe HW, SW or some information to check matching.
  */
 
+/**
+ * DeviceSpec is a information of cetain Device to specify each Device instance.
+ */
 class DeviceSpec {
-  hw: string;  // This name comes from 'uname -m'
-  sw: string;  // This name comes from 'cat /etc/os-release' with $(NAME)
+  // TODO: make this properties more specific or new prorperty can be added.
+  hw: string;  // Currently this name comes from 'uname -m', but this could be updated
+  sw: string;  // Currently this name comes from 'cat /etc/os-release' with $(NAME), but this could be updated
   bridge: BridgeSpec|undefined;
 
   constructor(hw: string, sw: string, bridge: BridgeSpec|undefined) {
@@ -34,8 +35,8 @@ class DeviceSpec {
     this.bridge = bridge;
   }
 
-  statisfied(spec: DeviceSpec): boolean {
-    // TODO Specify how to check spec statisfied.
+  satisfied(spec: DeviceSpec): boolean {
+    // TODO Specify how to check spec satisfied.
     // This will be used on check Executor Spec could cover.
     if (spec.hw.includes(this.hw) && spec.sw.includes(this.sw)) {
       return true;
@@ -45,6 +46,10 @@ class DeviceSpec {
   // TODO Add more Oprator to check it could cover some other spec.
 }
 
+/**
+ * BridgeSpec : This Spec will be used on DeviceSpec. this will be used to access on those
+ *              DeviceSpec with Device unique Key.
+ */
 class BridgeSpec {
   // TODO: Add Spec check command to match with given DeviceSpec
   name: string;
