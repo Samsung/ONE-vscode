@@ -15,6 +15,10 @@ Let's install vscode.
 
 Now [ONE](https://github.com/Samsung/ONE) officially releases on linux/ubuntu only. If your development environment is on Windows, you should use ssh extension in vscode. Let's follow [tutorial](https://code.visualstudio.com/docs/remote/ssh-tutorial).
 
+### environment setting on linux/ubuntu
+
+Linux machine must have `aptitude` and `docker` packages.
+
 ### workspace
 
 Prepare workspace according to the [document](https://code.visualstudio.com/docs/editor/workspaces). ONE-vscode has been developed based on workspace.
