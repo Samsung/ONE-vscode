@@ -82,6 +82,17 @@ suite('Backend', function() {
           assert.strictEqual(cmd.str(), expectedStr);
         });
       });
+
+      suite('#run()', function() {
+        test('returns Commend with cfg', function() {
+          let dt = new DebianToolchain(info);
+          let cmd = dt.run('file.cfg');
+          assert.strictEqual(cmd.length, 3);
+          assert.deepStrictEqual(cmd[0], 'onecc');
+          assert.deepStrictEqual(cmd[1], '--config');
+          assert.deepStrictEqual(cmd[2], 'file.cfg');
+        });
+      });
     });
   });
 });

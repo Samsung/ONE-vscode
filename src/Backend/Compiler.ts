@@ -58,9 +58,6 @@ interface Compiler {
    */
   getInstalledToolchains(toolchainType: string): Toolchains;
 
-  // compiler jobs
-  compile(cfg: string): Command;
-
   /**
    * @brief Method to get command that prepares environment before calling getToolchains()
    * @detail If multiple commands are needed, Command with shell script containing multiple commands
@@ -86,13 +83,6 @@ class CompilerBase implements Compiler {
 
   getInstalledToolchains(toolchainType: string): Toolchains {
     throw Error('Invalid getInstalledToolchains call');
-  }
-
-  compile(cfg: string): Command {
-    let cmd = new Command('onecc');
-    cmd.push('--config');
-    cmd.push(cfg);
-    return cmd;
   }
 
   prerequisitesForGetToolchains(): Command {

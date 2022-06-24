@@ -121,6 +121,13 @@ class DebianToolchain implements Toolchain {
     cmd.push('echo $?');
     return cmd;
   }
+  run(cfg: string): Command {
+    this.prepare();
+    let cmd = new Command('onecc');
+    cmd.push('--config');
+    cmd.push(cfg);
+    return cmd;
+  }
 };
 
 export {DebianRepo, DebianArch, DebianToolchain};
