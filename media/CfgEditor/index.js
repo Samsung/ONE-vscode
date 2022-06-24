@@ -366,12 +366,24 @@ function registerCopyQuantOptions() {
 function registerCodegenOptions() {
   const codegenBackend = document.getElementById('codegenBackend');
   const codegenCommand = document.getElementById('codegenCommand');
+  const codegenSaveAllocations = document.getElementById('codegenSaveAllocations');
 
   codegenBackend.addEventListener('change', function() {
     updateCodegen();
     applyUpdates();
   });
   codegenCommand.addEventListener('change', function() {
+    updateCodegen();
+    applyUpdates();
+  });
+  codegenSaveAllocations.addEventListener('click', function() {
+    const option = '--save-allocations';
+    if (codegenCommand.value.match(new RegExp(`(?:^| )${option}(?:$| )`)) === null) {
+      codegenCommand.value += ` ${option}`;
+      codegenSaveAllocations.checked = true;
+    } else if (!codegenSaveAllocations.checked) {
+      codegenCommand.value = codegenCommand.value.replace(new RegExp(`(?:^| )${option}`), '');
+    }
     updateCodegen();
     applyUpdates();
   });
