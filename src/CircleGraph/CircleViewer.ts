@@ -90,7 +90,7 @@ export class CircleViewerProvider implements
       webviewOptions: {
         retainContextWhenHidden: true,
       },
-      supportsMultipleEditorsPerDocument: true,
+      supportsMultipleEditorsPerDocument: false,
     };
 
     return vscode.window.registerCustomEditorProvider(
