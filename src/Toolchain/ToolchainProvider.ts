@@ -17,6 +17,10 @@
 import * as vscode from 'vscode';
 
 import {Toolchain} from '../Backend/Toolchain';
+import {DebianToolchain} from '../Backend/ToolchainImpl/DebianToolchain';
+import {Job, JobCallback} from '../Project/Job';
+import {JobInstall} from '../Project/JobInstall';
+import {JobUninstall} from '../Project/JobUninstall';
 import {Logger} from '../Utils/Logger';
 import {showInstallQuickInput} from '../View/InstallQuickInput';
 
@@ -103,8 +107,42 @@ export class ToolchainProvider implements vscode.TreeDataProvider<ToolchainNode>
 
   install() {
     showInstallQuickInput().then(
-        () => {
-          this.refresh();
+        ([toolchainEnv, toolchain]) => {
+          const installed =
+              toolchainEnv.listInstalled().filter(value => value instanceof DebianToolchain);
+          if (installed.length > 1) {
+            Logger.error(this.tag, 'Installed debian toolchain must be unique');
+            vscode.window.showErrorMessage('Installed debian toolchain must be unique');
+          } else if (installed.length === 1) {
+            vscode.window
+                .showInformationMessage(
+                    'Do you want to remove the existing and re-install? Backend toolchain can be installed only once.',
+                    'Yes', 'No')
+                .then((answer) => {
+                  if (answer === 'Yes') {
+                    const jobs: Array<Job> = [];
+                    jobs.push(new JobUninstall(installed[0].uninstall()));
+                    jobs.push(new JobInstall(toolchain.install()));
+                    const name = `${toolchain.info.name}-${toolchain.info.version ?.str()}`;
+                    toolchainEnv.request(jobs).then(
+                        () => {
+                          this.refresh();
+                          vscode.window.showInformationMessage(`Install ${name} successfully`);
+                        },
+                        () => {
+                          Logger.error(this.tag, 'Installation is failed');
+                          vscode.window.showErrorMessage('Installation is failed');
+                        });
+                  } else {
+                    Logger.info(this.tag, 'Installation is canceled');
+                  }
+                });
+          } else {
+            toolchainEnv.install(toolchain).then(() => this.refresh(), () => {
+              Logger.error(this.tag, 'Installation is failed');
+              vscode.window.showErrorMessage('Installation is failed');
+            });
+          }
         },
         () => {
           Logger.info(this.tag, 'Installation is canceled.');
