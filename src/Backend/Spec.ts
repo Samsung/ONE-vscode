@@ -27,8 +27,9 @@ import {Command} from './Command';
 class DeviceSpec {
   // TODO: make this properties more specific or new prorperty can be added.
   hw: string;  // Currently this value comes from 'uname -m', but this could be updated
-  sw: string;  // Currently this value comes from 'cat /etc/os-release' with $(NAME), but this could be updated
-  bridge: BridgeSpec|undefined; // this will be used to access on this spec.
+  sw: string;  // Currently this value comes from 'cat /etc/os-release' with $(NAME), but this could
+               // be updated
+  bridge: BridgeSpec|undefined;  // this will be used to access on this spec.
 
   constructor(hw: string, sw: string, bridge: BridgeSpec|undefined) {
     this.hw = hw;

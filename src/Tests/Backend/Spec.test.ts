@@ -15,37 +15,37 @@
  */
 
 import {assert, should} from 'chai';
-import {DeviceSpec, BridgeSpec } from '../../Backend/Spec';
+
+import {BridgeSpec, DeviceSpec} from '../../Backend/Spec';
 
 suite('Spec', function() {
-    suite('DeviceSpec', function() {
-      suite('#contructor()', function() {
-        const hw: string = "TestHW";
-        const sw: string = "TestOS";
-        const testSpec = new DeviceSpec(hw, sw, undefined);
-        assert.isObject<DeviceSpec>(testSpec);
-        assert.strictEqual(testSpec.hw, hw);
-        assert.strictEqual(testSpec.sw, sw);
-        assert.strictEqual(testSpec.bridge, undefined);
-      });
-      suite('#satisfied()', function(){
-        const executorSpec = new DeviceSpec("arm", "Tizen",undefined);
-        const dummySpec1 = new DeviceSpec("armv7l","Tizen 7.0.0 (Tizen7/TV)", undefined);
-        const dummySpec2 = new DeviceSpec("x86_64","Ubuntu 20.04.4 LTS", undefined);
-        assert.isTrue(executorSpec.satisfied(dummySpec1));
-        assert.isFalse(executorSpec.satisfied(dummySpec2));
-      });
+  suite('DeviceSpec', function() {
+    suite('#contructor()', function() {
+      const hw: string = 'TestHW';
+      const sw: string = 'TestOS';
+      const testSpec = new DeviceSpec(hw, sw, undefined);
+      assert.isObject<DeviceSpec>(testSpec);
+      assert.strictEqual(testSpec.hw, hw);
+      assert.strictEqual(testSpec.sw, sw);
+      assert.strictEqual(testSpec.bridge, undefined);
     });
-    suite('BridgeSpec', function(){
-      suite('#constructor()', function(){
-        const dummyDeviceList = "testDeiveList";
-        const dummyShell = "bash";
-        const testBridgeSpec = new BridgeSpec("test", dummyDeviceList, dummyShell);
-        assert.isObject<BridgeSpec>(testBridgeSpec);
-        assert.strictEqual(testBridgeSpec.name, "test");
-        assert.strictEqual(testBridgeSpec.deviceListCmd.str(), dummyDeviceList);
-        assert.strictEqual(testBridgeSpec.shellCmd.str(), dummyShell);
-      });
+    suite('#satisfied()', function() {
+      const executorSpec = new DeviceSpec('arm', 'Tizen', undefined);
+      const dummySpec1 = new DeviceSpec('armv7l', 'Tizen 7.0.0 (Tizen7/TV)', undefined);
+      const dummySpec2 = new DeviceSpec('x86_64', 'Ubuntu 20.04.4 LTS', undefined);
+      assert.isTrue(executorSpec.satisfied(dummySpec1));
+      assert.isFalse(executorSpec.satisfied(dummySpec2));
     });
   });
-  
+  suite('BridgeSpec', function() {
+    suite('#constructor()', function() {
+      const dummyDeviceList = 'testDeiveList';
+      const dummyShell = 'bash';
+      const testBridgeSpec = new BridgeSpec('test', dummyDeviceList, dummyShell);
+      assert.isObject<BridgeSpec>(testBridgeSpec);
+      assert.strictEqual(testBridgeSpec.name, 'test');
+      assert.strictEqual(testBridgeSpec.deviceListCmd.str(), dummyDeviceList);
+      assert.strictEqual(testBridgeSpec.shellCmd.str(), dummyShell);
+    });
+  });
+});
