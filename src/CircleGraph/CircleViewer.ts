@@ -42,6 +42,7 @@ class CircleViewer extends CircleGraphCtrl {
  */
 class CircleViewerDocument implements vscode.CustomDocument {
   private readonly _uri: vscode.Uri;
+  private _circleViewer: CircleViewer|undefined;
 
   static async create(uri: vscode.Uri):
       Promise<CircleViewerDocument|PromiseLike<CircleViewerDocument>> {
@@ -50,6 +51,7 @@ class CircleViewerDocument implements vscode.CustomDocument {
 
   private constructor(uri: vscode.Uri) {
     this._uri = uri;
+    this._circleViewer = undefined;
   }
 
   public get uri() {
@@ -58,7 +60,18 @@ class CircleViewerDocument implements vscode.CustomDocument {
 
   // CustomDocument implements
   dispose(): void {
-    // TODO
+    if (this._circleViewer) {
+      this._circleViewer.disposeGraphCtrl();
+      this._circleViewer = undefined;
+    }
+  }
+
+  public openView(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
+    if (this._circleViewer === undefined) {
+      this._circleViewer = new CircleViewer(panel, extensionUri);
+      this._circleViewer.initGraphCtrl(this.uri.path, undefined);
+      this._circleViewer.loadContent();
+    }
   }
 };
 
@@ -70,7 +83,6 @@ export class CircleViewerProvider implements
   public static readonly viewType = 'onevscode.circleViewer';
 
   private _context: vscode.ExtensionContext;
-  private _circleViewer: CircleViewer|undefined;
 
   public static register(context: vscode.ExtensionContext): vscode.Disposable {
     let provider = new CircleViewerProvider(context);
@@ -87,7 +99,6 @@ export class CircleViewerProvider implements
 
   constructor(private readonly context: vscode.ExtensionContext) {
     this._context = context;
-    this._circleViewer = undefined;
   }
 
   // CustomReadonlyEditorProvider implements
@@ -108,10 +119,6 @@ export class CircleViewerProvider implements
   async resolveCustomEditor(
       document: CircleViewerDocument, webviewPanel: vscode.WebviewPanel,
       _token: vscode.CancellationToken): Promise<void> {
-    if (this._circleViewer === undefined) {
-      this._circleViewer = new CircleViewer(webviewPanel, this._context.extensionUri);
-      this._circleViewer.initGraphCtrl(document.uri.path, undefined);
-      this._circleViewer.loadContent();
-    }
+    document.openView(webviewPanel, this._context.extensionUri);
   }
 };
