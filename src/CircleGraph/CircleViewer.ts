@@ -33,6 +33,10 @@ class CircleViewer extends CircleGraphCtrl {
   public loadContent() {
     this._panel.webview.html = this.getHtmlForWebview(this._panel.webview);
   }
+
+  public owner(panel: vscode.WebviewPanel) {
+    return this._panel === panel;
+  }
 }
 
 /**
@@ -42,7 +46,7 @@ class CircleViewer extends CircleGraphCtrl {
  */
 class CircleViewerDocument implements vscode.CustomDocument {
   private readonly _uri: vscode.Uri;
-  private _circleViewer: CircleViewer|undefined;
+  private _circleViewer: CircleViewer[];
 
   static async create(uri: vscode.Uri):
       Promise<CircleViewerDocument|PromiseLike<CircleViewerDocument>> {
@@ -51,7 +55,7 @@ class CircleViewerDocument implements vscode.CustomDocument {
 
   private constructor(uri: vscode.Uri) {
     this._uri = uri;
-    this._circleViewer = undefined;
+    this._circleViewer = [];
   }
 
   public get uri() {
@@ -60,18 +64,29 @@ class CircleViewerDocument implements vscode.CustomDocument {
 
   // CustomDocument implements
   dispose(): void {
-    if (this._circleViewer) {
-      this._circleViewer.disposeGraphCtrl();
-      this._circleViewer = undefined;
-    }
+    // NOTE panel is closed before document and this is just for safety
+    this._circleViewer.forEach((view) => {
+      view.disposeGraphCtrl();
+    });
+    this._circleViewer = [];
   }
 
   public openView(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
-    if (this._circleViewer === undefined) {
-      this._circleViewer = new CircleViewer(panel, extensionUri);
-      this._circleViewer.initGraphCtrl(this.uri.path, undefined);
-      this._circleViewer.loadContent();
-    }
+    let view = new CircleViewer(panel, extensionUri);
+    view.initGraphCtrl(this.uri.path, undefined);
+    view.loadContent();
+    this._circleViewer.push(view);
+
+    panel.onDidDispose(() => {
+      // TODO make faster
+      this._circleViewer.forEach((view, index) => {
+        if (view.owner(panel)) {
+          view.disposeGraphCtrl();
+          this._circleViewer.splice(index, 1);
+          return true;  // break forEach
+        }
+      });
+    });
   }
 };
 
@@ -90,7 +105,7 @@ export class CircleViewerProvider implements
       webviewOptions: {
         retainContextWhenHidden: true,
       },
-      supportsMultipleEditorsPerDocument: false,
+      supportsMultipleEditorsPerDocument: true,
     };
 
     return vscode.window.registerCustomEditorProvider(
