@@ -111,10 +111,10 @@ zoomOutBtn.addEventListener('click', () => {
 
 const captureBtn = document.querySelector('.capture-btn');
 captureBtn.addEventListener(
-    'click',
-    () => {
-        // TODO capture inside vscode extension webview
-    });
+  'click',
+  () => {
+    // TODO capture inside vscode extension webview
+  });
 
 function changeSlider(inputValue, inputMax, inputMin) {
   if (inputMax === inputValue) {
