@@ -71,6 +71,16 @@
           }
         ],
         "priority": "default"
+      },
+      {
+        "viewType": "onevscode.circleViewer",
+        "displayName": "Circle Viewer",
+        "selector": [
+          {
+            "filenamePattern": "*.circle"
+          }
+        ],
+        "priority": "default"
       }
     ],
     "commands": [
