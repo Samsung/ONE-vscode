@@ -294,44 +294,28 @@ limitations under the License.
                 </div>
                 <div class="option">
                     <vscode-text-field id="DefaultQuantQuantConfig" startIcon="true" size="50" placeholder="">
-                        Quantization Config File
+                        <span>Quantization Config File<span slot="start" class="codicon codicon-question" style="cursor: pointer"></span></span> 
                         <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
                     </vscode-text-field>
                 </div>
                 <div class="option">
                     <vscode-text-field id="DefaultQuantInputData" startIcon="true" size="50" placeholder="">
-                        Input Data
+                        <span>Input Data<span slot="end" class="codicon codicon-question" style="cursor: pointer"></span></span>
                         <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
                     </vscode-text-field>
                 </div>
                 <div class="option">
                     <vscode-radio-group id="DefaultQuantInputDataFormat">
-                        <label slot="label">Input Data Format</label>
+                        <label slot="label">Input Data Format<span slot="end" class="codicon codicon-question" style="cursor: pointer"></span></label>
                         <vscode-radio value="h5">h5</vscode-radio>
                         <vscode-radio value="list">list</vscode-radio>
                         <vscode-radio value="dir">dir</vscode-radio>
                     </vscode-radio-group>
                 </div>
                 <div class="option">
-                    <vscode-text-field id="DefaultQuantMinPercentile" startIcon="true" size="30" placeholder="(default : 1.0)">
-                        Min Percentile
-                    </vscode-text-field>
-                </div>
-                <div class="option">
-                    <vscode-text-field id="DefaultQuantMaxPercentile" startIcon="true" size="30" placeholder="(default : 99.0)">
-                        Max Percentile
-                    </vscode-text-field>
-                </div>
-                <div class="option">
-                    <vscode-radio-group id="DefaultQuantMode">
-                        <label slot="label">Mode</label>
-                        <vscode-radio value="percentile">percentile</vscode-radio>
-                    </vscode-radio-group>
-                </div>
-                <div class="option">
                     <vscode-radio-group id="DefaultQuantInputType">
                         <label slot="label">Input Type</label>
-                        <vscode-radio value="default">default</vscode-radio>
+                        <vscode-radio value="default">quantized data type</vscode-radio>
                         <vscode-radio value="uint8">uint8</vscode-radio>
                         <vscode-radio value="int16">int16</vscode-radio>
                         <vscode-radio value="float32">float32</vscode-radio>
@@ -340,7 +324,7 @@ limitations under the License.
                 <div class="option">
                     <vscode-radio-group id="DefaultQuantOutputType">
                         <label slot="label">Output Type</label>
-                        <vscode-radio value="default">default</vscode-radio>
+                        <vscode-radio value="default">quantized data type</vscode-radio>
                         <vscode-radio value="uint8">uint8</vscode-radio>
                         <vscode-radio value="int16">int16</vscode-radio>
                         <vscode-radio value="float32">float32</vscode-radio>
@@ -350,6 +334,25 @@ limitations under the License.
             <div class="advanced" id="optionQuantizeDefaultQuantAdvanced">
                 <div class="title">
                     <span>Advanced Options</span>
+                </div>
+                <div class="option">
+                    <vscode-radio-group id="DefaultQuantMode">
+                        <label slot="label">Mode<span slot="end" class="codicon codicon-question" style="cursor: pointer"></span></label>
+                        <vscode-radio value="percentile">percentile</vscode-radio>
+                        <vscode-radio value="movingAvg">moving average</vscode-radio>
+                    </vscode-radio-group>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="DefaultQuantMinPercentile" startIcon="true" size="30" placeholder="(default : 1.0)">
+                        Min Percentile
+                        <span slot="end" class="codicon codicon-question" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="DefaultQuantMaxPercentile" startIcon="true" size="30" placeholder="(default : 99.0)">
+                        Max Percentile
+                        <span slot="end" class="codicon codicon-question" style="cursor: pointer"></span>
+                    </vscode-text-field>
                 </div>
                 <div class="option">
                     <vscode-checkbox id="DefaultQuantVerbose">
