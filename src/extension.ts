@@ -18,7 +18,6 @@ import * as vscode from 'vscode';
 
 import {backendRegistrationApi} from './Backend/Backend';
 import {CfgEditorPanel} from './CfgEditor/CfgEditorPanel';
-import {CircleGraphPanel} from './CircleGraph/CircleGraph';
 import {CircleViewerProvider} from './CircleGraph/CircleViewer';
 import {decoder} from './Circlereader/Circlereader';
 import {Circletracer} from './Circletracer';
@@ -137,11 +136,6 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(disposableOneCircleTracer);
 
   context.subscriptions.push(MondrianEditorProvider.register(context));
-
-  let disposableGraphPenel = vscode.commands.registerCommand('one.viewer.circleGraph', () => {
-    CircleGraphPanel.createOrShow(context.extensionUri, undefined);
-  });
-  context.subscriptions.push(disposableGraphPenel);
 
   context.subscriptions.push(PartEditorProvider.register(context));
   context.subscriptions.push(PartGraphSelPanel.register(context));
