@@ -1,8 +1,19 @@
-.vscode/**
-.vscode-test/**
+# Dir to exclude for packaging
+.github
+.vscode
+.vscode-test
+infra
+# TODO Consider remove src. currently src has md files and some json files.
+# src
 out/Tests/**
-.gitignore
+
+# Files to exclude for packaging
+**/.gitignore
+**/.clang-format
+**/.eslint*
+**/.htmlhintrc
 **/tsconfig.json
 **/.eslintrc.json
+**/format.patch
 **/*.map
 **/*.ts
