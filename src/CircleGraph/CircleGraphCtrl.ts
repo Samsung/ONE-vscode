@@ -43,6 +43,8 @@ export class MessageDefs {
   // selection
   public static readonly names = 'names';
   public static readonly tensors = 'tensors';
+  // partiton of backends
+  public static readonly partition = 'partition';
 };
 
 export interface CircleGraphEvent {
@@ -120,7 +122,13 @@ export class CircleGraphCtrl {
   public setSelection(names: string[]) {
     this._selectionNames = names;
 
-    this.applySelection();
+    if (this.isReady()) {
+      this.applySelection();
+    }
+  }
+
+  public setPartition(partition: any) {
+    this._webview.postMessage({command: MessageDefs.partition, partition: partition});
   }
 
   private registerEventHandlers() {
@@ -219,6 +227,8 @@ export class CircleGraphCtrl {
     if (this._eventHandler) {
       this._eventHandler.onFinishLoadModel();
     }
+
+    this.applySelection();
   }
 
   /**
@@ -338,8 +348,13 @@ export class CircleGraphCtrl {
     html = this.updateExternalUri(html, webview, '%gzip.js%', 'gzip.js');
     html = this.updateExternalUri(html, webview, '%tar.js%', 'tar.js');
     // for circle format
-    html = this.updateExternalUri(html, webview, '%circle.js%', 'circle.js');
-    html = this.updateExternalUri(html, webview, '%circle-schema.js%', 'circle-schema.js');
+    if (this._viewMode === 'viewer') {
+      html = this.updateExternalUri(html, webview, '%circle.js%', 'circle.js');
+      html = this.updateExternalUri(html, webview, '%circle-schema.js%', 'circle-schema.js');
+    } else {
+      html = this.updateUri(html, webview, '%circle.js%', 'circle.js');
+      html = this.updateUri(html, webview, '%circle-schema.js%', 'circle-schema.js');
+    }
     // modified for one-vscode
     html = this.updateUri(html, webview, '%index.js%', 'index.js');
     html = this.updateUri(html, webview, '%view.js%', 'view.js');

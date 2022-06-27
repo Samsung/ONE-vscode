@@ -434,7 +434,9 @@ view.View = class {
 
     select(selection) {
         if (this._host._mode === viewMode.viewer) {
-            this.clearSelection();
+            this._clearSelection();
+        } else if (this._host._mode === viewMode.selector) {
+            this._clearSelection();
         }
         if (selection && selection.length > 0) {
             const container = this._getElementById('graph');
@@ -455,6 +457,44 @@ view.View = class {
             container.scrollTo({left: left, top: top, behavior: 'smooth'});
         }
     }
+
+    /*
+    selectClick(selection) {
+        console.log('!!! this._keyCtrl=', this._keyCtrl);
+        let toggle = false;
+        if (this._host._mode === viewMode.viewer) {
+            this._clearSelection();
+        } else if (this._host._mode === viewMode.selector) {
+            // TODO shiftKey?
+            if (this._keyCtrl) {
+                toggle = true;
+            } else {
+                this._clearSelection();
+            }
+        }
+        if (selection && selection.length > 0) {
+            if (toggle) {
+                for (const element of selection) {
+                    let index = this._selection.indexOf(element);
+                    if (index >= 0) {
+                        element.classList.remove('select');
+                        this._selection.splice(index, 1);
+                    } else {
+                        element.classList.add('select');
+                        this._selection.push(element);
+                    }
+                }
+            } else {
+                for (const element of selection) {
+                    element.classList.add('select');
+                    this._selection.push(element);
+                }
+            }
+        }
+        // request host to handle selection change
+        this._host.onView('selection');
+    }
+    */
 
     _clearSelection() {
         while (this._selection.length > 0) {
@@ -487,27 +527,37 @@ view.View = class {
     }
 
     /**
-     * @brief toggleSelect will toggle selection of the node
+     * @brief toggleSelect will select or toggle select with CtrlKey down
      * @param viewNode view.Node instance
+     * @note  works on host mode is viewMode.selector
      */
     toggleSelect(viewNode) {
-        if (viewNode) {
-            // toggle for viewNode
-            let index = this._selectionNodes.indexOf(viewNode);
-            if (index > -1) {
-                // de-select
-                this._selectionNodes.splice(index, 1);
+        if (viewNode && this._host._mode === viewMode.selector) {
+            if (this._keyCtrl) {
+                // toggle selection
+                let index = this._selectionNodes.indexOf(viewNode);
+                if (index > -1) {
+                    // de-select
+                    this._selectionNodes.splice(index, 1);
+                } else {
+                    this._selectionNodes.push(viewNode);
+                }
+                // toggle for element
+                const element = viewNode.element;  // member of grapher.Node
+                index = this._selection.indexOf(element);
+                if (index > -1) {
+                    // de-select
+                    element.classList.remove('select');
+                    this._selection.splice(index, 1);
+                } else {
+                    element.classList.add('select');
+                    this._selection.push(element);
+                }
             } else {
+                this._clearSelection();
+
                 this._selectionNodes.push(viewNode);
-            }
-            // toggle for element
-            const element = viewNode.element;  // member of grapher.Node
-            index = this._selection.indexOf(element);
-            if (index > -1) {
-                // de-select
-                element.classList.remove('select');
-                this._selection.splice(index, 1);
-            } else {
+                const element = viewNode.element;  // member of grapher.Node
                 element.classList.add('select');
                 this._selection.push(element);
             }
@@ -574,8 +624,10 @@ view.View = class {
             // selection is by names
             const names = selection.names;
 
-            this._graph.nodes.forEach((node) => {
+            for (const nodeId of this._graph.nodes.keys()) {
+                const node = this._graph.node(nodeId);
                 if (node.label.value._outputs) {
+                    let found = false;
                     node.label.value._outputs.forEach((output) => {
                         output._arguments.forEach((arg) => {
                             // NOTE name is tensor_name + tensor_index, in circle.js
@@ -583,14 +635,80 @@ view.View = class {
                             const name = mixed[0];
                             if (names.includes(name)) {
                                 this.selectViewNode(node.label);
+                                found = true;
                                 return true;  // break forEach
                             }
                         });
+                        if (found) {
+                            return true;
+                        }
                     });
                 }
-            });
+            }
         }
         // TODO select with others
+    }
+
+    setNodeBackend(node, backend) {
+        let circleNode = node.label.value;
+        if (circleNode) {
+            circleNode._backend = backend;
+        }
+        const g = node.label.element.childNodes[0];
+        const styles = g.classList;
+        styles.remove('node-item-backend-cpu');
+        styles.remove('node-item-backend-acl_cl');
+        styles.remove('node-item-backend-trix');
+        if (backend) {
+            styles.add('node-item-backend-' + backend.toLowerCase());
+        }
+    }
+
+    /**
+     * @brief set partition information to whole graph
+     */
+    setPartition(message) {
+        // NOTE opname has only nodes that are assigned to a backend
+        //      that is, not all nodes are listed.
+        //      from this, when setting graph view nodes, previous set is not cleared.
+        //      to solve this, we can (1) clear for all nodes then set backend
+        //      (2) include unassigned nodes with empty backend
+        //      (3) interate all graph nodes and set if exist in opname, clear if not.
+        //      here, (3) is implemented
+
+        if (!message.hasOwnProperty('partition')) {
+            return;
+        }
+        const partition = message.partition;
+        const opname = partition.OPNAME;
+        // NOTE opname maybe undefined if there is no assignment
+
+        for (const nodeId of this._graph.nodes.keys()) {
+            const node = this._graph.node(nodeId);
+            if (node.label.value._outputs) {
+                // NOTE node.label = view.Node
+                // NOTE node.label.value = circle.Node
+                let backendFound = undefined;
+                if (opname) {
+                    node.label.value._outputs.forEach((output) => {
+                        output._arguments.forEach((arg) => {
+                            // NOTE name is tensor_name + tensor_index, in circle.js
+                            const mixed = arg._name.split(/\n/);
+                            const name = mixed[0];
+                            const backend = opname[name];
+                            if (backend !== undefined) {
+                                backendFound = backend;
+                                return true;
+                            }
+                        });
+                        if (backendFound) {
+                            return true;
+                        }
+                    });
+                }
+                this.setNodeBackend(node, backendFound);
+            }
+        }
     }
 
     error(err, name, screen) {
@@ -1234,8 +1352,9 @@ view.Graph = class extends grapher.Graph {
 view.Node = class extends grapher.Node {
     constructor(context, value) {
         super();
-        this.context = context;
-        this.value = value;
+        this.context = context;  // view.Graph
+        this.value = value;      // circle.Node
+        console.log('!!! value=', value);
         view.Node.counter = view.Node.counter || 0;
         this.id = 'node-' +
             (value.name ? 'name-' + value.name : 'id-' + (view.Node.counter++).toString());
@@ -1263,11 +1382,15 @@ view.Node = class extends grapher.Node {
         const header = this.header();
         const styles = ['node-item-type'];
         const type = node.type;
-        const category = type && type.category ? type.category : '';
-        if (category) {
-            if (host._mode === viewMode.viewer) {
+        if (host._mode === viewMode.viewer) {
+            const category = type && type.category ? type.category : '';
+            if (category) {
                 styles.push('node-item-type-' + category.toLowerCase());
             }
+        } else if (host._mode === viewMode.selector) {
+            // TODO fix this
+            // const backend = 'CPU';
+            // styles.push('node-item-backend-' + backend.toLowerCase());
         }
         if (typeof type.name !== 'string' || !type.name.split) {  // #416
             const identifier = this.context.model && this.context.model.identifier ?
@@ -1288,7 +1411,7 @@ view.Node = class extends grapher.Node {
         if (host._mode === viewMode.viewer) {
             title.on('click', () => this.context.view.showNodeProperties(node, null));
         } else if (host._mode === viewMode.selector) {
-            // toggle select with click
+            // select/toggle with click
             title.on('click', () => {
                 this.context.view.toggleSelect(this);
             });

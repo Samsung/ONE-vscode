@@ -78,7 +78,16 @@ editor.Editor = class {
           // when .part file was edited through text editor
           this.handleUpdatePartition(message);
           break;
+
+        case 'selectWithNames':
+          // when selection has changed from graph view
+          this.handleSelectWithNames(message);
+          break;
       }
+    });
+
+    this.document.getElementById('circle-nodes').addEventListener('change', () => {
+      this.fowardSelection();
     });
 
     // backend combobox change
@@ -105,10 +114,11 @@ editor.Editor = class {
       this.updateDocument();
     });
 
-    // set backend by graph-view
+    // show graph view with identical node selection
     this.document.getElementById('circle-graph').addEventListener('click', (e) => {
-      let beName = this.currentBackendName();
-      vscode.postMessage({command: 'selectByGraph', backend: beName});
+      let names = this.getSelectionNames();
+      console.log('!!! selectByGraph', names);
+      vscode.postMessage({command: 'selectByGraph', selection: names});
     });
   }
 
@@ -164,7 +174,7 @@ editor.Editor = class {
       // filter out empty string
       if (backend.length > 0) {
         let opt = this.document.createElement('option');
-        opt.text = `(${idx}) ` + backend;
+        opt.text = `(${idx}) ${backend}`;
         opt.value = idx;
         opt.style = 'color:' + becolor;
         listbox.options.add(opt);
@@ -223,6 +233,44 @@ editor.Editor = class {
 
     this.updateOperatorsBackend();
     this.refershOpListbox();
+  }
+
+  /**
+   * @brief select with names from outside
+   * @note  message.selection is Array of names
+   */
+  handleSelectWithNames(message) {
+    const selection = message.selection;
+
+    // initial fill operators listbox with name and becode as 0
+    const listbox = this.document.getElementById('circle-nodes');
+    for (let i = 0; i < listbox.options.length; i++) {
+      let opt = listbox.options[i];
+      let idx = opt.value;
+      opt.selected = (selection.includes(this.operators[idx].name));
+    };
+  }
+
+  getSelectionNames() {
+    let listbox = this.document.getElementById('circle-nodes');
+    let names = '';
+    for (let i = 0; i < listbox.options.length; i++) {
+      let opt = listbox.options[i];
+      if (opt.selected) {
+        let idx = opt.value;
+        if (names !== '') {
+          names = names + '\n';
+        }
+        names = names + this.operators[idx].name;
+      }
+    }
+    return names;
+  }
+
+  fowardSelection() {
+    let names = this.getSelectionNames();
+    vscode.postMessage({command: 'forwardSelection', selection: names});
+    // console.log("PE selection:", names);
   }
 
   updateDefaultCheckbox() {

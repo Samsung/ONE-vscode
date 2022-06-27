@@ -47,7 +47,6 @@ class PartEditor implements PartGraphEvent {
   private _modelFolderPath: string;
   private _backEndNames: string[] = [];
   private _backEndColors: string[] = [];
-  private _backEndForGraph: string;
   private _eventHandler: PartEditorEvent|undefined;
 
   constructor(doc: vscode.TextDocument, panel: vscode.WebviewPanel, id: number) {
@@ -63,7 +62,6 @@ class PartEditor implements PartGraphEvent {
     this._modelFileName = path.basename(fileNameExt, fileExt) + '.circle';
     this._modelFolderPath = this._document.fileName.substring(0, lastSlash);
     this._modelFilePath = this._modelFolderPath + this._modelFileName;
-    this._backEndForGraph = '';
     this._eventHandler = undefined;
   }
 
@@ -81,10 +79,7 @@ class PartEditor implements PartGraphEvent {
     });
 
     this._panel.onDidDispose(() => {
-      if (this._document) {
-        vscode.commands.executeCommand(
-            PartGraphSelPanel.cmdClose, this._document.fileName, this._id);
-      }
+      vscode.commands.executeCommand(PartGraphSelPanel.cmdClose, this._document.fileName, this._id);
 
       if (this._eventHandler) {
         this._eventHandler.onEditorDispose(this);
@@ -124,7 +119,12 @@ class PartEditor implements PartGraphEvent {
 
         case 'selectByGraph':
           // when user wants graph view
-          this.handleSelectByGraph(message.backend);
+          this.handleSelectByGraph(message);
+          return;
+
+        case 'forwardSelection':
+          // when operators listbox selection has changed
+          this.handleForwardSelection(message.selection);
           return;
       }
     });
@@ -143,8 +143,7 @@ class PartEditor implements PartGraphEvent {
       this._webview.postMessage({command: 'updatePartition', part: content});
 
       vscode.commands.executeCommand(
-          PartGraphSelPanel.cmdUpdate, this._document.fileName, this._id, this._document.getText(),
-          this._backEndForGraph);
+          PartGraphSelPanel.cmdUpdate, this._document.fileName, this._id, this._document.getText());
     }
   }
 
@@ -156,13 +155,15 @@ class PartEditor implements PartGraphEvent {
     return partition;
   }
 
-  private handleSelectByGraph(backend: string) {
+  private handleSelectByGraph(message: any) {
     if (this._document) {
-      this._backEndForGraph = backend;
-
+      let names = message.selection;
+      if (typeof names !== 'string') {
+        names = '';
+      }
       vscode.commands.executeCommand(
-          PartGraphSelPanel.cmdOpen, this._document.fileName, this._document.getText(), backend,
-          this);
+          PartGraphSelPanel.cmdOpen, this._document.fileName, this._id, this._document.getText(),
+          names, this);
     }
   }
 
@@ -273,28 +274,19 @@ class PartEditor implements PartGraphEvent {
     }
   }
 
+  private handleForwardSelection(selection: string) {
+    if (this._document) {
+      vscode.commands.executeCommand(
+          PartGraphSelPanel.cmdFwdSelection, this._document.fileName, this._id, selection);
+    }
+  }
+
   // PartGraphEvent implements
   public onSelection(names: string[], tensors: string[]) {
-    if (this._document) {
-      let content = ini.parse(this._document.getText());
+    // TODO select web view listbox selection
+    console.log('!!! onSelection', names);
 
-      // previous node that was for this backend may have been reset
-      for (let name in content.OPNAME) {
-        if (content.OPNAME[name] === this._backEndForGraph) {
-          if (!names.includes(name)) {
-            delete content.OPNAME[name];
-          }
-        }
-      }
-      names.forEach((name) => {
-        content.OPNAME[name] = this._backEndForGraph;
-      });
-
-      let text = ini.stringify(content);
-      const edit = new vscode.WorkspaceEdit();
-      edit.replace(this._document.uri, new vscode.Range(0, 0, this._document.lineCount, 0), text);
-      vscode.workspace.applyEdit(edit);
-    };
+    this._webview.postMessage({command: 'selectWithNames', selection: names});
   }
 }
 
