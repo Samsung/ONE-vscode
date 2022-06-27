@@ -16,16 +16,27 @@
 
 import * as vscode from 'vscode';
 
+import {Logger} from './Logger';
+
 export class Balloon {
+  static seeLogBtn = 'See logs';
+
+  static handleBtn(selection: string|undefined) {
+    if (selection === Balloon.seeLogBtn) {
+      Logger.show();
+    }
+    // Ignore 'OK' button
+  }
+
   static error(msg: string) {
-    vscode.window.showErrorMessage(msg);
+    vscode.window.showErrorMessage(msg, 'OK', Balloon.seeLogBtn).then(Balloon.handleBtn);
   }
 
   static info(msg: string) {
-    vscode.window.showInformationMessage(msg);
+    vscode.window.showInformationMessage(msg, 'OK', Balloon.seeLogBtn).then(Balloon.handleBtn);
   }
 
   static warning(msg: string) {
-    vscode.window.showWarningMessage(msg);
+    vscode.window.showWarningMessage(msg, 'OK', Balloon.seeLogBtn).then(Balloon.handleBtn);
   }
 }
