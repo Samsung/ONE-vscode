@@ -17,18 +17,22 @@
 import {Command} from './Command';
 
 /**
- * Spec is a bundle of imformation that could be used for certain objective.
+ * Spec is a bundle of information that could be used for checking whether something to require is
+ * satisfied with a certain objective.
  */
+
 // TODO: Split DeviceSpec and BridgeSpec.
+
 /**
- * DeviceSpec is a Spec to specify device instance.
- * Each Device have matching DeviceSpec.
+ * DeviceSpec is a Spec to specify a device.
+ * Each instance for each device should have a matching DeviceSpec.
  */
 class DeviceSpec {
   // TODO: make this properties more specific or new prorperty can be added.
-  hw: string;  // Currently this value comes from 'uname -m', but this could be updated
-  sw: string;  // Currently this value comes from 'cat /etc/os-release' with $(NAME), but this could
-               // be updated
+  // Currently `hw` comes from 'uname -m', but this could be updated
+  hw: string;
+  // Currently `sw` comes from 'cat /etc/os-release' with $(NAME), but this could be updated
+  sw: string;
   bridge: BridgeSpec|undefined;  // this will be used to access on this spec.
 
   constructor(hw: string, sw: string, bridge: BridgeSpec|undefined) {
@@ -37,9 +41,9 @@ class DeviceSpec {
     this.bridge = bridge;
   }
 
+  // This will be used on check Executor Spec could cover.
   satisfied(spec: DeviceSpec): boolean {
     // TODO Specify how to check spec satisfied.
-    // This will be used on check Executor Spec could cover.
     if (spec.hw.includes(this.hw) && spec.sw.includes(this.sw)) {
       return true;
     }
@@ -49,7 +53,7 @@ class DeviceSpec {
 }
 
 /**
- * BridgeSpec is a Spec that is used for acess on certain Device.
+ * BridgeSpec is a Spec that is used for acess on a device.
  */
 class BridgeSpec {
   // TODO: Add Spec check command to match with given DeviceSpec
@@ -82,6 +86,6 @@ class TizenDeviceSpec extends DeviceSpec {
 
 const supportedSpecs = new Array<DeviceSpec>(
     new HostPCSpec('x86_64', 'Ubuntu 18') /* SimulatorSpec */,
-    new TizenDeviceSpec('armv7l', 'Tizen') /* TizenTVSpec */);
+    new TizenDeviceSpec('armv7l', 'Tizen 7.0.0') /* TizenTVSpec */);
 
-export {DeviceSpec, BridgeSpec, supportedSpecs};
+export {DeviceSpec, BridgeSpec, HostPCSpec, TizenDeviceSpec, sdbSpec, supportedSpecs};

@@ -16,7 +16,7 @@
 
 import {assert, should} from 'chai';
 
-import {BridgeSpec, DeviceSpec} from '../../Backend/Spec';
+import {BridgeSpec, DeviceSpec, HostPCSpec, sdbSpec, TizenDeviceSpec} from '../../Backend/Spec';
 
 suite('Spec', function() {
   suite('DeviceSpec', function() {
@@ -31,10 +31,32 @@ suite('Spec', function() {
     });
     suite('#satisfied()', function() {
       const executorSpec = new DeviceSpec('arm', 'Tizen', undefined);
-      const dummySpec1 = new DeviceSpec('armv7l', 'Tizen 7.0.0 (Tizen7/TV)', undefined);
-      const dummySpec2 = new DeviceSpec('x86_64', 'Ubuntu 20.04.4 LTS', undefined);
+      const dummySpec1 = new TizenDeviceSpec('armv7l', 'Tizen 7.0.0 (Tizen7/TV)');
+      const dummySpec2 = new HostPCSpec('x86_64', 'Ubuntu 20.04.4 LTS');
       assert.isTrue(executorSpec.satisfied(dummySpec1));
       assert.isFalse(executorSpec.satisfied(dummySpec2));
+    });
+  });
+  suite('TizenDeviceSpec', function() {
+    suite('#contructor()', function() {
+      const hw: string = 'TestHW';
+      const sw: string = 'TestOS';
+      const testSpec = new TizenDeviceSpec(hw, sw);
+      assert.isObject<TizenDeviceSpec>(testSpec);
+      assert.strictEqual(testSpec.hw, hw);
+      assert.strictEqual(testSpec.sw, sw);
+      assert.strictEqual(testSpec.bridge, sdbSpec);
+    });
+  });
+  suite('HostPCSpec', function() {
+    suite('#contructor()', function() {
+      const hw: string = 'TestHW';
+      const sw: string = 'TestOS';
+      const testSpec = new HostPCSpec(hw, sw);
+      assert.isObject<HostPCSpec>(testSpec);
+      assert.strictEqual(testSpec.hw, hw);
+      assert.strictEqual(testSpec.sw, sw);
+      assert.strictEqual(testSpec.bridge, undefined);
     });
   });
   suite('BridgeSpec', function() {
@@ -47,5 +69,13 @@ suite('Spec', function() {
       assert.strictEqual(testBridgeSpec.deviceListCmd.str(), dummyDeviceList);
       assert.strictEqual(testBridgeSpec.shellCmd.str(), dummyShell);
     });
+  });
+  suite('sdbSpec', function() {
+    assert.isObject<BridgeSpec>(sdbSpec);
+    assert.strictEqual(sdbSpec.name, 'sdb');
+    assert.strictEqual(
+        sdbSpec.deviceListCmd.str(),
+        'sdb devices | grep -v devices | grep device | awk \'{print $1}\'');
+    assert.strictEqual(sdbSpec.shellCmd.str(), 'sdb shell');
   });
 });
