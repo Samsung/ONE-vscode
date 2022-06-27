@@ -3,7 +3,8 @@
 .vscode
 .vscode-test
 infra
-src
+# TODO Consider remove src. currently src has md files and some json files.
+# src
 out/Tests/**
 
 # Files to exclude for packaging
