@@ -31,9 +31,9 @@ editor.Backend = class {
  * @brief editor.Operator stores model operator records
  */
 editor.Operator = class {
-  constructor(name, code) {
-    this.name = name;
-    this.code = code;
+  constructor(name, becode) {
+    this.name = name;      // name of operator
+    this.becode = becode;  // backend code of operator
   }
 };
 
@@ -177,7 +177,7 @@ editor.Editor = class {
 
     const itemOpNames = message.names.split(/\r?\n/);
 
-    // initial fill operators listbox with name and code as 0
+    // initial fill operators listbox with name and becode as 0
     const listbox = this.document.getElementById('circle-nodes');
     for (let idx = 0; idx < itemOpNames.length; idx++) {
       const name = itemOpNames[idx];
@@ -187,8 +187,8 @@ editor.Editor = class {
         opt.value = idx;
         listbox.options.add(opt);
 
-        // add name with default code(0) as of now
-        // code will be updated after document partition is received
+        // add name with default becode(0) as of now
+        // becode will be updated after document partition is received
         this.operators.push(new editor.Operator(name, 0));
       }
     };
@@ -243,7 +243,7 @@ editor.Editor = class {
       if (opt.selected) {
         let idx = opt.value;
         opt.text = `(${beCode}) ` + this.operators[idx].name;
-        this.operators[idx].code = beCode;
+        this.operators[idx].becode = beCode;
       }
     }
   }
@@ -271,7 +271,7 @@ editor.Editor = class {
   }
 
   /**
-   * @brief apply document partition to this.operators code
+   * @brief apply document partition to this.operators becode
    */
   updateOperatorsBackend() {
     // must clear first as this.partition.OPNAME may not have all nodes
@@ -297,17 +297,17 @@ editor.Editor = class {
       let opt = listbox.options[i];
 
       let idx = opt.value;
-      let beCode = this.operators[idx].code;
+      let beCode = this.operators[idx].becode;
       opt.text = `(${beCode}) ` + this.operators[idx].name;
     }
   }
 
   /**
-   * @brief clear operator code of backend to default(0)
+   * @brief clear operator becode to default(0)
    */
   clearOperatorsCode() {
     for (let idx = 0; idx < this.operators.length; idx++) {
-      this.operators[idx].code = 0;
+      this.operators[idx].becode = 0;
     }
   }
 
@@ -326,13 +326,13 @@ editor.Editor = class {
   }
 
   /**
-   * @brief set operator code to backend code
+   * @brief set operator becode to backend code
    */
   setOperatorBeCode(operator, beCode) {
     for (let idx = 0; idx < this.operators.length; idx++) {
       let op = this.operators[idx];
       if (operator === op.name) {
-        this.operators[idx].code = beCode;
+        this.operators[idx].becode = beCode;
         return;
       }
     }
@@ -344,7 +344,7 @@ editor.Editor = class {
   makeOpNameSection() {
     let items = {};
     for (let idx = 0; idx < this.operators.length; idx++) {
-      let beCode = this.operators[idx].code;
+      let beCode = this.operators[idx].becode;
       if (beCode !== 0) {
         let backend = this.backends[beCode].name;
         items[this.operators[idx].name] = backend;
