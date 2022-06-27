@@ -24,8 +24,7 @@
 
 ### Cfg Editor
 
-- Introduce Optimize Step
-- Introduce Quantize Step
-- Introduce Summary tab(stretch)
-- Implement switch button between GUI editor and text editor
+- Editor is upgrade with whole new UI.
+- Optimize section is now supported.
+- Quantize section is now supported.
 - Bugfix
