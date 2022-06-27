@@ -1,8 +1,18 @@
-.vscode/**
-.vscode-test/**
+# Dir to exclude for packaging
+.github
+.vscode
+.vscode-test
+infra
+src
 out/Tests/**
-.gitignore
+
+# Files to exclude for packaging
+**/.gitignore
+**/.clang-format
+**/.eslint*
+**/.htmlhintrc
 **/tsconfig.json
 **/.eslintrc.json
+**/format.patch
 **/*.map
 **/*.ts
