@@ -199,11 +199,6 @@
         "command": "one.viewer.circleTracer",
         "title": "circle tracer",
         "category": "ONE"
-      },
-      {
-        "command": "one.viewer.circleGraph",
-        "title": "circle graph view",
-        "category": "ONE"
       }
     ],
     "menus": {
