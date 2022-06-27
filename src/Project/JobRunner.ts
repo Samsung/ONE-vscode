@@ -18,9 +18,11 @@ import {EventEmitter} from 'events';
 import * as vscode from 'vscode';
 
 import {Balloon} from '../Utils/Balloon';
+import * as helpers from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
 import {Job} from './Job';
+import {JobConfig} from './JobConfig';
 import {ToolArgs} from './ToolArgs';
 import {ToolRunner} from './ToolRunner';
 import {WorkJobs} from './WorkJobs';
@@ -31,7 +33,6 @@ const K_CLEANUP: string = 'cleanup';
 export class JobRunner extends EventEmitter {
   tag = this.constructor.name;  // logging tag
   jobs: WorkJobs = [];
-  cwd: string = '';
   running: boolean = false;
   toolRunner: ToolRunner;
   private progressTimer?: NodeJS.Timeout;
@@ -45,9 +46,10 @@ export class JobRunner extends EventEmitter {
     this.on(K_CLEANUP, this.onCleanup);
   }
 
-  private invoke(job: Job, path: string) {
+  private invoke(job: Job) {
     let tool: string = job.tool;
     let toolArgs: ToolArgs = job.toolArgs;
+    let workDir: string = job.workDir;
     let success = job.successCallback;
     let failure = job.failureCallback;
 
@@ -64,10 +66,11 @@ export class JobRunner extends EventEmitter {
       // This trick will be disappeared after Old jobs are removed
       toolArgs.unshift(tool);
       tool = 'onecc';
+      workDir = helpers.obtainWorkspaceRoot();
     }
 
-    Logger.info(this.tag, 'Run tool:', tool, 'args:', toolArgs, 'cwd:', path, 'root:', job.root);
-    const runner = this.toolRunner.getRunner(job.name, tool, toolArgs, path, job.root);
+    Logger.info(this.tag, 'Run tool:', tool, 'args:', toolArgs, 'cwd:', workDir, 'root:', job.root);
+    const runner = this.toolRunner.getRunner(job.name, tool, toolArgs, workDir, job.root);
 
     runner
         .then(() => {
@@ -93,7 +96,7 @@ export class JobRunner extends EventEmitter {
       this.emit(K_CLEANUP);
       return;
     }
-    this.invoke(job, this.cwd);
+    this.invoke(job);
   }
 
   private onCleanup() {
@@ -101,7 +104,7 @@ export class JobRunner extends EventEmitter {
     process.env.userp = '';
   }
 
-  public start(path: string, jobs: WorkJobs) {
+  public start(jobs: WorkJobs) {
     // TODO maybe there is better way to handle already running jobs
     if (this.running) {
       Balloon.error('ONE compile in progress');
@@ -127,7 +130,6 @@ export class JobRunner extends EventEmitter {
 
     this.running = true;
     this.jobs = jobs;
-    this.cwd = path;
     this.emit(K_INVOKE);
   }
 }

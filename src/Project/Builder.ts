@@ -54,19 +54,7 @@ export class Builder implements BuilderJob {
 
   // called from user interface
   public build(context: vscode.ExtensionContext) {
-    try {
-      this.currentWorkspace = helpers.obtainWorkspaceRoot();
-    } catch (e: unknown) {
-      let errmsg = 'Failed to obtain workspace root';
-      if (e instanceof Error) {
-        errmsg = e.message;
-      }
-      // TODO add more type for e if changed in obtainWorkspaceRoot
-      Balloon.error(errmsg);
-      return;
-    }
-
-    this.workFlow.start(this.currentWorkspace);
+    this.workFlow.start();
   }
 
   // called from user interface

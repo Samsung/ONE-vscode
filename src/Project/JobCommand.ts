@@ -29,6 +29,7 @@ class JobCommand implements Job {
   tool: string;
   toolArgs: ToolArgs;
   root: boolean;
+  workDir: string;
   successCallback?: JobCallback;
   failureCallback?: JobCallback;
 
@@ -37,6 +38,7 @@ class JobCommand implements Job {
     this.jobType = Job.Type.tUndefined;
     this.name = '';
     this.valid = false;
+    this.workDir = require('os').homedir();
 
     // init by cmd
     assert(cmd.length > 0);

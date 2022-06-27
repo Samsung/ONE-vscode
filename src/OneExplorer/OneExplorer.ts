@@ -523,8 +523,7 @@ export class OneExplorer {
       vscode.commands.registerCommand(
           'one.explorer.runCfg',
           (oneNode: OneNode) => {
-            const oneccRunner = new OneccRunner(oneNode.node.uri);
-            oneccRunner.run();
+            vscode.commands.executeCommand('one.toolchain.runCfg', oneNode.node.uri.fsPath);
           }),
       vscode.commands.registerCommand(
           'one.explorer.rename', (oneNode: OneNode) => oneTreeDataProvider.rename(oneNode)),

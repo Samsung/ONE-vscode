@@ -18,7 +18,6 @@ import {assert} from 'chai';
 
 import {JobRunner} from '../../Project/JobRunner';
 import {WorkJobs} from '../../Project/WorkJobs';
-import {obtainWorkspaceRoot} from '../../Utils/Helpers';
 import {MockJob} from '../MockJob';
 
 suite('Project', function() {
@@ -27,7 +26,6 @@ suite('Project', function() {
       suite('#start()', function() {
         test('jobs are done', function(done) {
           let jobRunner = new JobRunner();
-          const workspaceRoot: string = obtainWorkspaceRoot();
           let workJobs = new WorkJobs();
           workJobs.push(new MockJob('mockup'));
           workJobs.push(new MockJob('mockup'));
@@ -38,7 +36,7 @@ suite('Project', function() {
             assert.strictEqual(workJobs.length, 0);
             done();
           });
-          jobRunner.start(workspaceRoot, workJobs);
+          jobRunner.start(workJobs);
         });
       });
     });

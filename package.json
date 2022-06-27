@@ -161,6 +161,12 @@
         "icon": "$(x)"
       },
       {
+        "command": "one.toolchain.setDefaultToolchain",
+        "title": "Set Default Toolchain",
+        "category": "ONE",
+        "icon": "$(check)"
+      },
+      {
         "command": "one.toolchain.runCfg",
         "title": "Run"
       },
@@ -261,8 +267,13 @@
           "group": "inline"
         },
         {
-          "command": "one.toolchain.uninstall",
+          "command": "one.toolchain.setDefaultToolchain",
           "when": "view == ToolchainView && viewItem == toolchain",
+          "group": "inline"
+        },
+        {
+          "command": "one.toolchain.uninstall",
+          "when": "view == ToolchainView && viewItem =~ /toolchain/",
           "group": "inline"
         }
       ],
@@ -347,6 +358,10 @@
         },
         {
           "command": "one.toolchain.runCfg",
+          "when": "false"
+        },
+        {
+          "command": "one.toolchain.setDefaultToolchain",
           "when": "false"
         },
         {
