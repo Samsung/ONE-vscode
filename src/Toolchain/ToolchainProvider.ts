@@ -108,8 +108,11 @@ export class ToolchainProvider implements vscode.TreeDataProvider<ToolchainNode>
   install() {
     showInstallQuickInput().then(
         ([toolchainEnv, toolchain]) => {
-          const installed =
-              toolchainEnv.listInstalled().filter(value => value instanceof DebianToolchain);
+          // NOTE(jyoung)
+          // The `DebianToolchain` of the backend and the `DebianToolchain` of this project
+          // are not recognized as the same object by `instanceof` function.
+          const installed = toolchainEnv.listInstalled().filter(
+              value => value.constructor.name === 'DebianToolchain');
           if (installed.length > 1) {
             Logger.error(this.tag, 'Installed debian toolchain must be unique');
             vscode.window.showErrorMessage('Installed debian toolchain must be unique');
