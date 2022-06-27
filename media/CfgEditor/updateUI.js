@@ -55,6 +55,40 @@ export function updateImportUI() {
   }
 }
 
+export function updateQuantizeUI() {
+  const actionType = document.getElementById('quantizeActionType');
+  const defaultQuantBasicOptions = document.getElementById('optionQuantizeDefaultQuantBasic');
+  const defaultQuantAdvancedOptions = document.getElementById('optionQuantizeDefaultQuantAdvanced');
+  const forceQuantBasicOptions = document.getElementById('optionQuantizeForceQuantBasic');
+  const forceQuantAdvancedOptions = document.getElementById('optionQuantizeForceQuantAdvanced');
+  const copyQuantBasicOptions = document.getElementById('optionQuantizeCopyQuantBasic');
+  const copyQuantAdvancedOptions = document.getElementById('optionQuantizeCopyQuantAdvanced');
+
+  defaultQuantBasicOptions.style.display = 'none';
+  defaultQuantAdvancedOptions.style.display = 'none';
+  forceQuantBasicOptions.style.display = 'none';
+  forceQuantAdvancedOptions.style.display = 'none';
+  copyQuantBasicOptions.style.display = 'none';
+  copyQuantAdvancedOptions.style.display = 'none';
+
+  switch (actionType.value) {
+    case 'defaultQuant':
+      defaultQuantBasicOptions.style.display = 'block';
+      defaultQuantAdvancedOptions.style.display = 'block';
+      break;
+    case 'forceQuant':
+      forceQuantBasicOptions.style.display = 'block';
+      forceQuantAdvancedOptions.style.display = 'block';
+      break;
+    case 'copyQuant':
+      copyQuantBasicOptions.style.display = 'block';
+      copyQuantAdvancedOptions.style.display = 'block';
+      break;
+    default:
+      break;
+  }
+}
+
 export function updateStepUI(step) {
   const allOptionPanels = document.querySelectorAll('.optionPanel .options');
   allOptionPanels.forEach(function(panel) {

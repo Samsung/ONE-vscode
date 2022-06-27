@@ -15,7 +15,7 @@
  */
 
 import oneOptimizationList from './one-optimizations.json' assert {type : 'json'};
-import {updateImportUI} from './updateUI.js';
+import {updateImportUI, updateQuantizeUI} from './updateUI.js';
 
 export function displayCfgToEditor(cfg) {
   // 'one-build' is replaced to 'onecc' when loaded
@@ -108,7 +108,44 @@ export function displayCfgToEditor(cfg) {
     document.getElementById('checkboxOptimize' + optName).checked = cfgBoolean(oneOptimize?.[optName]);
   }
 
-  // TODO Implement for quantize
+  const oneQuantize = cfg['one-quantize'];
+  if (oneQuantize?.['force_quantparam'] === 'True') {
+    document.getElementById('quantizeActionType').value = 'forceQuant';
+    document.getElementById('ForceQuantInputPath').value = cfgString(oneQuantize?.['input_path']);
+    document.getElementById('ForceQuantOutputPath').value = cfgString(oneQuantize?.['output_path']);
+    document.getElementById('ForceQuantTensorName').value = cfgString(oneQuantize?.['tensor_name']);
+    document.getElementById('ForceQuantScale').value = cfgString(oneQuantize?.['scale']);
+    document.getElementById('ForceQuantZeroPoint').value = cfgString(oneQuantize?.['zero_point']);
+    document.getElementById('ForceQuantVerbose').checked = cfgBoolean(oneQuantize?.['verbose']);
+  } else if (oneQuantize?.['copy_quantparam'] === 'True') {
+    document.getElementById('quantizeActionType').value = 'copyQuant';
+    document.getElementById('CopyQuantInputPath').value = cfgString(oneQuantize?.['input_path']);
+    document.getElementById('CopyQuantOutputPath').value = cfgString(oneQuantize?.['output_path']);
+    document.getElementById('CopyQuantSrcTensorName').value = cfgString(oneQuantize?.['src_tensor_name']);
+    document.getElementById('CopyQuantDstTensorName').value = cfgString(oneQuantize?.['dst_tensor_name']);
+    document.getElementById('CopyQuantVerbose').checked = cfgBoolean(oneQuantize?.['verbose']);
+  } else {
+    document.getElementById('quantizeActionType').value = 'defaultQuant';
+    document.getElementById('DefaultQuantInputPath').value = cfgString(oneQuantize?.['input_path']);
+    document.getElementById('DefaultQuantOutputPath').value = cfgString(oneQuantize?.['output_path']);
+    document.getElementById('DefaultQuantInputModelDtype').value = cfgString(oneQuantize?.['input_model_dtype'], 'float32');
+    document.getElementById('DefaultQuantQuantizedDtype').value = cfgString(oneQuantize?.['quantized_dtype'], 'uint8');
+    document.getElementById('DefaultQuantGranularity').value = cfgString(oneQuantize?.['granularity'], 'layer');
+    document.getElementById('DefaultQuantQuantConfig').value = cfgString(oneQuantize?.['quant_config']);
+    document.getElementById('DefaultQuantInputData').value = cfgString(oneQuantize?.['input_data']);
+    document.getElementById('DefaultQuantInputDataFormat').value = cfgString(oneQuantize?.['input_data_format'], 'h5');
+    document.getElementById('DefaultQuantMinPercentile').value = cfgString(oneQuantize?.['min_percentile'], '1.0');
+    document.getElementById('DefaultQuantMaxPercentile').value = cfgString(oneQuantize?.['max_percentile'], '99.0');
+    document.getElementById('DefaultQuantMode').value = cfgString(oneQuantize?.['mode'], 'percentile');
+    document.getElementById('DefaultQuantInputType').value = cfgString(oneQuantize?.['input_type'], 'default');
+    document.getElementById('DefaultQuantOutputType').value = cfgString(oneQuantize?.['output_type'], 'default');
+    document.getElementById('DefaultQuantVerbose').checked = cfgBoolean(oneQuantize?.['verbose']);
+    document.getElementById('DefaultQuantSaveIntermediate').checked = cfgBoolean(oneQuantize?.['save_intermediate']);
+    document.getElementById('DefaultQuantGenerateProfileData').checked = cfgBoolean(oneQuantize?.['generate_profile_data']);
+    document.getElementById('DefaultQuantTFStyleMaxpool').checked = cfgBoolean(oneQuantize?.['TF-style_maxpool']);
+  }
+
+  updateQuantizeUI();
 
   // one-codegen Section
   const oneCodegen = cfg['one-codegen'];
@@ -121,9 +158,9 @@ export function displayCfgToEditor(cfg) {
   document.getElementById('profileCommand').value = cfgString(oneProfile?.['command']);
 }
 
-function cfgString(str) {
+function cfgString(str, defaultStr = '') {
   if (str === null || str === undefined) {
-    return '';
+    return defaultStr;
   }
   return str.trim();
 }

@@ -16,8 +16,8 @@
 
 import {displayCfgToEditor} from './displaycfg.js';
 import oneOptimizationList from './one-optimizations.json' assert {type : 'json'};
-import {applyUpdates, updateCodegen, updateImportInputModelType, updateImportKERAS, updateImportONNX, updateImportPB, updateImportSAVED, updateImportTFLITE, updateOptimize, updateProfile, updateSteps} from './updateContent.js';
-import {updateImportUI, updateStepUI} from './updateUI.js';
+import {applyUpdates, updateCodegen, updateImportInputModelType, updateImportKERAS, updateImportONNX, updateImportPB, updateImportSAVED, updateImportTFLITE, updateOptimize, updateProfile, updateQuantizeActionType, updateQuantizeDefault, updateSteps} from './updateContent.js';
+import {updateImportUI, updateQuantizeUI, updateStepUI} from './updateUI.js';
 
 // Just like a regular webpage we need to wait for the webview
 // DOM to load before we can reference any of the HTML elements
@@ -29,6 +29,7 @@ function main() {
   registerSteps();
   registerImportOptions();
   registerOptimizeOptions();
+  registerQuantizeOptions();
   registerCodegenOptions();
   registerProfileOptions();
 
@@ -69,8 +70,7 @@ function registerSteps() {
   });
   checkboxQuantize.addEventListener('click', function() {
     updateSteps();
-    // TODO Implement this
-    // UpdateQuantize();
+    updateQuantizeActionType();
     applyUpdates();
   });
   checkboxCodegen.addEventListener('click', function() {
@@ -268,6 +268,99 @@ function registerOptimizeOptions() {
       applyUpdates();
     });
   }
+}
+
+function registerQuantizeOptions() {
+  const quantActionType = document.getElementById('quantizeActionType');
+  quantActionType.addEventListener('click', function() {
+    updateQuantizeUI();
+    updateQuantizeActionType();
+    applyUpdates();
+  });
+
+  registerDefaultQuantOptions();
+  registerForceQuantOptions();
+  registerCopyQuantOptions();
+}
+
+function registerDefaultQuantOptions() {
+  const defaultQuantRadioButtonList = [
+    'DefaultQuantInputModelDtype', 'DefaultQuantQuantizedDtype', 'DefaultQuantGranularity',
+    'DefaultQuantInputDataFormat', 'DefaultQuantMode', 'DefaultQuantInputType',
+    'DefaultQuantOutputType'
+  ];
+  const defaultQuantCheckboxList = [
+    'DefaultQuantVerbose', 'DefaultQuantSaveIntermediate', 'DefaultQuantGenerateProfileData',
+    'DefaultQuantTFStyleMaxpool'
+  ];
+  const defaultQuantTextFieldList = [
+    'DefaultQuantInputPath',
+    'DefaultQuantOutputPath',
+    'DefaultQuantQuantConfig',
+    'DefaultQuantInputData',
+    'DefaultQuantMinPercentile',
+    'DefaultQuantMaxPercentile',
+  ];
+
+  defaultQuantRadioButtonList.forEach((id) => {
+    document.getElementById(id).addEventListener('click', function() {
+      updateQuantizeDefault();
+      applyUpdates();
+    });
+  });
+  defaultQuantCheckboxList.forEach((id) => {
+    document.getElementById(id).addEventListener('click', function() {
+      updateQuantizeDefault();
+      applyUpdates();
+    });
+  });
+  defaultQuantTextFieldList.forEach((id) => {
+    document.getElementById(id).addEventListener('change', function() {
+      updateQuantizeDefault();
+      applyUpdates();
+    });
+  });
+}
+
+function registerForceQuantOptions() {
+  const forceQuantCheckboxList = ['ForceQuantVerbose'];
+  const forceQuantTextFieldList = [
+    'ForceQuantInputPath', 'ForceQuantOutputPath', 'ForceQuantTensorName', 'ForceQuantScale',
+    'ForceQuantZeroPoint'
+  ];
+
+  forceQuantCheckboxList.forEach((id) => {
+    document.getElementById(id).addEventListener('click', function() {
+      updateQuantizeDefault();
+      applyUpdates();
+    });
+  });
+  forceQuantTextFieldList.forEach((id) => {
+    document.getElementById(id).addEventListener('change', function() {
+      updateQuantizeDefault();
+      applyUpdates();
+    });
+  });
+}
+
+function registerCopyQuantOptions() {
+  const copyQuantCheckboxList = ['CopyQuantVerbose'];
+  const copyQuantTextFieldList = [
+    'CopyQuantInputPath', 'CopyQuantOutputPath', 'CopyQuantSrcTensorName', 'CopyQuantDstTensorName'
+  ];
+
+  copyQuantCheckboxList.forEach((id) => {
+    document.getElementById(id).addEventListener('click', function() {
+      updateQuantizeDefault();
+      applyUpdates();
+    });
+  });
+  copyQuantTextFieldList.forEach((id) => {
+    document.getElementById(id).addEventListener('change', function() {
+      updateQuantizeDefault();
+      applyUpdates();
+    });
+  });
 }
 
 function registerCodegenOptions() {
