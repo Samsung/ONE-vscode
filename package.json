@@ -277,6 +277,34 @@
       ],
       "commandPalette": [
         {
+          "command": "one.explorer.refresh",
+          "when": "false"
+        },
+        {
+          "command": "one.explorer.collapseAll",
+          "when": "false"
+        },
+        {
+          "command": "one.explorer.createCfg",
+          "when": "false"
+        },
+        {
+          "command": "one.explorer.runCfg",
+          "when": "false"
+        },
+        {
+          "command": "one.explorer.rename",
+          "when": "false"
+        },
+        {
+          "command": "one.explorer.openContainingFolder",
+          "when": "false"
+        },
+        {
+          "command": "one.explorer.openAsText",
+          "when": "false"
+        },
+        {
           "command": "one.toolchain.runCfg",
           "when": "false"
         }
