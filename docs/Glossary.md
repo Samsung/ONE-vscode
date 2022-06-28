@@ -38,6 +38,6 @@ The word `Backend` is used to a concept to wrap `Toolchain` and others that rela
 
 ### Config File(*.cfg)
 
-The above `Compile Steps` is described in a config file. The config file is basically based on [ini](https://en.wikipedia.org/wiki/INI_file).
+The above `Compile Steps` is described in a ONE config file. The ONE config file is basically based on [ini](https://en.wikipedia.org/wiki/INI_file) format.
 
 <img src="https://user-images.githubusercontent.com/24720192/172993683-677690f3-49b5-454e-8912-31b89b8cdc2e.gif" width=500 />
