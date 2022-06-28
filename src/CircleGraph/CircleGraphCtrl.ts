@@ -36,6 +36,7 @@ export class MessageDefs {
   public static readonly finishload = 'finishload';
   public static readonly selection = 'selection';
   public static readonly error = 'error';
+  public static readonly colorTheme = 'colorTheme';
   // loadmodel type
   public static readonly modelpath = 'modelpath';
   public static readonly uint8array = 'uint8array';
@@ -84,6 +85,14 @@ export class CircleGraphCtrl {
     this._state = CtrlStatus.init;
 
     this.registerEventHandlers();
+
+    vscode.workspace.onDidChangeConfiguration(e => {
+      if (e.affectsConfiguration('workbench.colorTheme')) {
+        if (this.isReady()) {
+          this._webview.postMessage({command: MessageDefs.colorTheme});
+        }
+      }
+    });
   }
 
   public disposeGraphCtrl() {
