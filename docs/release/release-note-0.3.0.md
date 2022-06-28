@@ -24,7 +24,7 @@
 
 ### Cfg Editor
 
-- Editor is upgrade with whole new UI.
+- Editor is upgraded with whole new UI.
 - Optimize section is now supported.
 - Quantize section is now supported.
 - Bugfix
