@@ -2,7 +2,7 @@
 
 ## ONE-vscode
 
-### OneExplorerView
+### ONE Explorer View
 
 - More commands are supported.
   - [Open with Text Editor] command
