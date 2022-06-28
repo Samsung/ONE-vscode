@@ -131,6 +131,9 @@ host.BrowserHost = class {
                 case 'selection':
                     this._msgSelection(message);
                     break;
+                case 'colorTheme':
+                    this._msgColorTheme(message);
+                    break;
             }
         });
 
@@ -477,6 +480,10 @@ host.BrowserHost = class {
 
     _msgSelection(message) {
         this._view.setSelection(message);
+    }
+
+    _msgColorTheme(message) {
+        // TODO implement
     }
 };
 
