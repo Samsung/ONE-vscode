@@ -110,8 +110,7 @@ export class JobRunner extends EventEmitter {
 
     Logger.show();
     vscode.window.withProgress(
-        {location: vscode.ProgressLocation.Notification, title: 'Running...', cancellable: false},
-        (progress) => {
+        {location: vscode.ProgressLocation.Notification, cancellable: false}, (progress) => {
           // TODO(jyoung): Implement to request cancel job.
           return new Promise<void>(resolve => {
             this.progress = progress;
