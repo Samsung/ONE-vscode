@@ -20,7 +20,7 @@ The word `Backend` is used to a concept to wrap `Toolchain` and others that rela
 
 `ONE Explorer View` is a tree view for NN models and config file.
 
-<img src="https://user-images.githubusercontent.com/17171963/172789165-1a66e890-5f8f-49db-98fa-57f61f62281c.gif" width=600 />
+<img src="https://user-images.githubusercontent.com/10216715/176106887-8eb4c22a-0804-41ea-978a-f01642b61791.gif" width=600 />
 
 ### Compile
 
