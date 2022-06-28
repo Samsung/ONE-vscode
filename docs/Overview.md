@@ -15,7 +15,7 @@ This tutorial introduces you to VS Code as a ONE environment, primarily how to c
 
 ## UX Guidelines
 
-<img src="https://user-images.githubusercontent.com/7223627/175224054-0df3109a-f4ef-4a12-a7be-ab50f01b77af.png" width=500 />
+<img src="https://user-images.githubusercontent.com/7223627/175224054-0df3109a-f4ef-4a12-a7be-ab50f01b77af.png" width=600 />
 
 If you are not familiar with terms of vscode, you can read [userinterface](https://code.visualstudio.com/docs/getstarted/userinterface) in vscode.
 
@@ -23,9 +23,9 @@ If you are not familiar with terms of vscode, you can read [userinterface](https
 
 ### One explorer view
 
-### Toolchain explorer view
+### Toolchain view
 
-### Device explorer view
+### Target Device view
 
 ### Output log view
 
@@ -33,7 +33,7 @@ If you are not familiar with terms of vscode, you can read [userinterface](https
 
 ### Install toolchain
 
-<img src="https://user-images.githubusercontent.com/7223627/174947559-71ab213c-68c4-4700-bcec-e55f6a2203bf.gif" width=500 />
+<img src="https://user-images.githubusercontent.com/7223627/174947559-71ab213c-68c4-4700-bcec-e55f6a2203bf.gif" width=600 />
 
 ### Compile NN model using config file
 

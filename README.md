@@ -24,19 +24,15 @@ Through these activities, ONE-vscode can provide a differentiation that cannot b
 
 ## Features
 
-<img src="https://user-images.githubusercontent.com/7223627/175224054-0df3109a-f4ef-4a12-a7be-ab50f01b77af.png" width=500 />
+ONE Explorer View
 
-- Install toolchain
+<img src="https://user-images.githubusercontent.com/7223627/175224054-0df3109a-f4ef-4a12-a7be-ab50f01b77af.png" width=600 />
 
-<img src="https://user-images.githubusercontent.com/7223627/174947559-71ab213c-68c4-4700-bcec-e55f6a2203bf.gif" width=500 />
+Toolchain View
+- The following image shows an example of installing some toolchain provided by a backend provider
 
-- Compile NN model using config file
+<img src="https://user-images.githubusercontent.com/7223627/174947559-71ab213c-68c4-4700-bcec-e55f6a2203bf.gif" width=600 />
 
-- Setup available NPU backend device
-
-- Inference backend model
-
-- Profile backend model
 
 ## Contribution
 

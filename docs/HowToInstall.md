@@ -9,7 +9,6 @@ ONE-vscode is an [extension](https://code.visualstudio.com/docs/editor/extension
 Let's install vscode.
 - You can download vscode [HERE](https://code.visualstudio.com/download)
 - Official document: [setup](https://code.visualstudio.com/docs/setup/setup-overview)
-- (You should also install npm for vscode)
 
 ### ssh extension in vscode
 
@@ -17,7 +16,7 @@ Now [ONE](https://github.com/Samsung/ONE) officially releases on linux/ubuntu on
 
 ### environment setting on linux/ubuntu
 
-Linux machine must have `aptitude` and `docker` packages.
+Linux machine must have `aptitude` package.
 
 ### workspace
 
@@ -32,13 +31,13 @@ Typically, a workspace for ONE-vscode has the following files:
 
 ## How to install?
 
-If you are a user(who just wants to use ONE-vscode not to develop ONE-vscode), installing ONE-vscode is enough. Let's install ONE-vscode with vsix file.
+If you are a user(who just wants to use ONE-vscode not to develop ONE-vscode), installing ONE-vscode and a backend extension is enough. Let's install ONE-vscode with vsix file.
 
 ### Installing with GUI
 
 Extensions(Ctrl+Shift+x) -> Views and More Actions -> Install from VSIX
 
-<img src="https://user-images.githubusercontent.com/10216715/174781792-fa3fbe47-708b-4977-974c-578b65f689ee.gif" width=500 />
+<img src="https://user-images.githubusercontent.com/10216715/174781792-fa3fbe47-708b-4977-974c-578b65f689ee.gif" width=600 />
 
 ### Installing with CLI
 
@@ -60,40 +59,16 @@ ms-vscode-remote.vscode-remote-extensionpack
 Samsung.one-vscode  # YOU MUST SEE THIS
 ```
 
-### How to get vsix?
+### How to get the vsix package?
 
-If you want to use the latest version of ONE-vscode, let's do the following:
+Find the official vsix package: [Release Page](https://github.com/Samsung/ONE-vscode/releases)
 
-#### Install vsce
+Some developers may want to build the latest vsix file by themselves. In such case, read [How To Build From Source](./HowToBuildFromSource.md) document.
 
-[vsce](https://code.visualstudio.com/api/working-with-extensions/publishing-extension) is `Visual Studio Code Extension`.
+### Installing a backend extension
 
-```console
-$ npm install -g vsce
-```
+To make ONE-vscode work feature-rich, you should install a backend extension. Now it supports by the in-house project.
 
-git clone `ONE-vscode`
+### Reload
 
-```console
-$ git clone https://github.com/Samsung/ONE-vscode.git
-```
-
-```console
-ONE-vscode$ npm install
-...
-
-ONE-vscode$ vsce package
-Executing prepublish script 'npm run vscode:prepublish'...
-
-> one-vscode@0.1.0 vscode:prepublish
-> npm run compile
-
-
-> one-vscode@0.1.0 compile
-> tsc -p ./
-
-This extension consists of 1282 files, out of which 653 are JavaScript files. For performance reasons, you should bundle your extension: https://aka.ms/vscode-bundle-extension . You should also exclude unnecessary files by adding them to your .vscodeignore: https://aka.ms/vscode-vscodeignore
- DONE  Packaged: /home/dragon/Works/ONE-vscode/one-vscode-0.1.0.vsix (1282 files, 340.49MB)
-```
-
-Now you get the latest vsix file.
+Please reload vscode after intalling ONE-vscode.
