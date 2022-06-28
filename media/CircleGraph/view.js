@@ -126,6 +126,16 @@ view.View = class {
         }
     }
 
+    applyThemeColor() {
+        let body = this._host._document.body;
+        let theme = this._theme;
+        if (theme === 'vscode-dark') {
+            body.classList.add('vscode-dark');
+        } else {
+            body.classList.remove('vscode-dark');
+        }
+    }
+
     show(page) {
         this.updateThemeColor();
 
