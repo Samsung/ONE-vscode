@@ -121,61 +121,58 @@ https://github.com/lutzroeder/netron/blob/ae449ff55642636e6a1eef092eda34ffcba1c6
 
 @keyframes pulse { from { stroke-dashoffset: 100px; } to { stroke-dashoffset: 0; } }
 
-@media (prefers-color-scheme: dark) {
+.vscode-dark .edge-label { fill: #b2b2b2; }
+.vscode-dark .edge-path { stroke: #888; }
+.vscode-dark #arrowhead-vee { fill: #888; }
 
-    .edge-label { fill: #b2b2b2; }
-    .edge-path { stroke: #888; }
-    #arrowhead-vee { fill: #888; }
+.vscode-dark .node path { stroke: #1d1d1d; }
+.vscode-dark .node line { stroke: #1d1d1d; }
 
-    .node path { stroke: #1d1d1d; }
-    .node line { stroke: #1d1d1d; }
+.vscode-dark .select .node.border { stroke: #1e90ff; }
+.vscode-dark .select.edge-path { stroke: #1e90ff; }
+.vscode-dark #arrowhead-vee-select { fill: #1e90ff }
 
-    .select .node.border { stroke: #b00; }
-    .select.edge-path { stroke: #b00; }
-    #arrowhead-vee-select { fill: #b00 }
-
-    .node-item-function path { fill: #404040; }
-    .node-item-function text { fill: #dfdfdfdf; }
-    .node-item-function:hover { cursor: pointer; }
-    .node-item-function:hover path { fill: #666666; }
+.vscode-dark .node-item-function path { fill: #404040; }
+.vscode-dark .node-item-function text { fill: #dfdfdfdf; }
+.vscode-dark .node-item-function:hover { cursor: pointer; }
+.vscode-dark .node-item-function:hover path { fill: #666666; }
     
-    .node-item-type path { fill: #303030; }
-    .node-item-type text { fill: #dfdfdf; }
-    .node-item-type:hover { cursor: pointer; }
-    .node-item-type:hover path { fill: #808080; }
-    .node-item-type:hover text { fill: #dfdfdf; }
+.vscode-dark .node-item-type path { fill: #303030; }
+.vscode-dark .node-item-type text { fill: #dfdfdf; }
+.vscode-dark .node-item-type:hover { cursor: pointer; }
+.vscode-dark .node-item-type:hover path { fill: #808080; }
+.vscode-dark .node-item-type:hover text { fill: #dfdfdf; }
 
-    .node-item path { stroke: #fff; }
-    .node-item text { fill: #dfdfdf; }
+.vscode-dark .node-item path { stroke: #fff; }
+.vscode-dark .node-item text { fill: #dfdfdf; }
 
-    .node-attribute text { fill: #b2b2b2; }
-    .node-attribute path { fill: #2d2d2d; }
-    .node-attribute:hover path { fill: #666666; }
+.vscode-dark .node-attribute text { fill: #b2b2b2; }
+.vscode-dark .node-attribute path { fill: #2d2d2d; }
+.vscode-dark .node-attribute:hover path { fill: #666666; }
 
-    .graph-item-input path { fill: #404040; }
-    .graph-item-input:hover { cursor: pointer; }
-    .graph-item-input:hover path { fill: #666666; }
+.vscode-dark .graph-item-input path { fill: #404040; }
+.vscode-dark .graph-item-input:hover { cursor: pointer; }
+.vscode-dark .graph-item-input:hover path { fill: #666666; }
 
-    .graph-item-output path { fill: #404040; }
-    .graph-item-output:hover { cursor: pointer; }
-    .graph-item-output:hover path { fill: #666666; }
+.vscode-dark .graph-item-output path { fill: #404040; }
+.vscode-dark .graph-item-output:hover { cursor: pointer; }
+.vscode-dark .graph-item-output:hover path { fill: #666666; }
 
-    .node-item-input path { fill: #404040; }
-    .node-item-input:hover path { fill: #666666; }
-    .node-item-constant path { fill: #4b4b4b; }
-    .node-item-constant:hover path { fill: #666666; }
+.vscode-dark .node-item-input path { fill: #404040; }
+.vscode-dark .node-item-input:hover path { fill: #666666; }
+.vscode-dark .node-item-constant path { fill: #4b4b4b; }
+.vscode-dark .node-item-constant:hover path { fill: #666666; }
 
-    .node-item-type-layer path { fill: rgba(51, 85, 136, 0.7); }
-    .node-item-type-activation path { fill: rgba(75, 27, 22, 0.7); }
-    .node-item-type-activation path { fill: rgba(75, 27, 22, 0.7); }
-    .node-item-type-pool path { fill: rgba(51, 85, 51, 0.7); }
-    .node-item-type-pool path { fill: rgba(51, 85, 51, 0.7); }
-    .node-item-type-normalization path { fill: rgba(51, 85, 68, 0.7); }
-    .node-item-type-dropout path { fill: rgba(69, 71, 112, 0.7); }
-    .node-item-type-shape path { fill: rgba(108, 79, 71, 0.7); }
-    .node-item-type-tensor path { fill: rgba(89, 66, 59, 0.7); }
-    .node-item-type-transform path { fill: rgba(51, 85, 68, 0.7); }
-    .node-item-type-data path { fill: rgba(85, 85, 85, 0.7); }
-    .node-item-type-quantization path { fill: rgb(80, 40, 0, 0.7); }
-    .node-item-type-custom path { fill: rgb(64, 64, 64, 0.7); }
-}
+.vscode-dark .node-item-type-layer path { fill: rgba(51, 85, 136, 0.7); }
+.vscode-dark .node-item-type-activation path { fill: rgba(75, 27, 22, 0.7); }
+.vscode-dark .node-item-type-activation path { fill: rgba(75, 27, 22, 0.7); }
+.vscode-dark .node-item-type-pool path { fill: rgba(51, 85, 51, 0.7); }
+.vscode-dark .node-item-type-pool path { fill: rgba(51, 85, 51, 0.7); }
+.vscode-dark .node-item-type-normalization path { fill: rgba(51, 85, 68, 0.7); }
+.vscode-dark .node-item-type-dropout path { fill: rgba(69, 71, 112, 0.7); }
+.vscode-dark .node-item-type-shape path { fill: rgba(108, 79, 71, 0.7); }
+.vscode-dark .node-item-type-tensor path { fill: rgba(89, 66, 59, 0.7); }
+.vscode-dark .node-item-type-transform path { fill: rgba(51, 85, 68, 0.7); }
+.vscode-dark .node-item-type-data path { fill: rgba(85, 85, 85, 0.7); }
+.vscode-dark .node-item-type-quantization path { fill: rgb(80, 40, 0, 0.7); }
+.vscode-dark .node-item-type-custom path { fill: rgb(64, 64, 64, 0.7); }
