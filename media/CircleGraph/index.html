@@ -136,31 +136,28 @@ button { font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI"
 .default .logo { display: none; }
 .default .graph { display: flex; opacity: 1; }
 .default .toolbar { display: table; }
-@media (prefers-color-scheme: dark) {
-:root { color-scheme: dark; }
-.default { background-color: #404040; }
-.graph { background-color: #404040; }
-.welcome { background-color: #1e1e1e; color: #888888; }
-.welcome .logo-stroke { stroke: #888888; }
-.welcome .logo-fill { fill: #888888; }
-.welcome .logo-border { stroke: #000000; }
-.welcome .logo-glyph { fill: #888888; }
-.welcome .logo-spinner-stroke { stroke: #ffffff; }
-.welcome .logo button { color: #888888; background-color: #1e1e1e; border-color: #888888; }
-.welcome .logo button:hover { color: #1e1e1e; background-color: #888888; }
-.welcome .consent-message { color: #888888; display: none; opacity: 0; }
-.icon .border { stroke: #1d1d1d; }
-.icon .stroke { stroke: #aaaaaa; }
-.icon:hover .stroke { stroke: #dfdfdf; }
-.dropdown { background-color: #373737; border-color: #000000; }
-.dropdown button { color: #ffffff; }
-.dropdown button:hover { color: #ffffff; background-color: #1d59d1; }
-.dropdown .separator { border-color: #5a5a5a; }
-.toolbar-back-button { background: #aaaaaa; border-color: #aaaaaa; color: #333333; }
-.toolbar-back-button:hover { background: #dfdfdf; border-color: #dfdfdf; }
-.toolbar-name-button { background: #404040; border-color: #aaaaaa; color: #cccccc; }
-.toolbar-name-button:hover { color: #dfdfdf; }
-}
+.vscode-dark.default { background-color: #404040; padding: 0px; }
+.vscode-dark .graph { background-color: #404040; }
+.vscode-dark.welcome { background-color: #1e1e1e; color: #888888; }
+.vscode-dark.welcome .logo-stroke { stroke: #888888; }
+.vscode-dark.welcome .logo-fill { fill: #888888; }
+.vscode-dark.welcome .logo-border { stroke: #000000; }
+.vscode-dark.welcome .logo-glyph { fill: #888888; }
+.vscode-dark.welcome .logo-spinner-stroke { stroke: #ffffff; }
+.vscode-dark.welcome .logo button { color: #888888; background-color: #1e1e1e; border-color: #888888; }
+.vscode-dark.welcome .logo button:hover { color: #1e1e1e; background-color: #888888; }
+.vscode-dark.welcome .consent-message { color: #888888; display: none; opacity: 0; }
+.vscode-dark .icon .border { stroke: #1d1d1d; }
+.vscode-dark .icon .stroke { stroke: #aaaaaa; }
+.vscode-dark .icon:hover .stroke { stroke: #dfdfdf; }
+.vscode-dark .dropdown { background-color: #373737; border-color: #000000; }
+.vscode-dark .dropdown button { color: #ffffff; }
+.vscode-dark .dropdown button:hover { color: #ffffff; background-color: #1d59d1; }
+.vscode-dark .dropdown .separator { border-color: #5a5a5a; }
+.vscode-dark .toolbar-back-button { background: #aaaaaa; border-color: #aaaaaa; color: #333333; }
+.vscode-dark .toolbar-back-button:hover { background: #dfdfdf; border-color: #dfdfdf; }
+.vscode-dark .toolbar-name-button { background: #404040; border-color: #aaaaaa; color: #cccccc; }
+.vscode-dark .toolbar-name-button:hover { color: #dfdfdf; }
 @media all and (max-width: 640px) {
 .welcome .logo { width: 240px; }
 .welcome .logo-text { opacity: 0; }
