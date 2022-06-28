@@ -115,9 +115,9 @@ https://github.com/lutzroeder/netron/blob/ae449ff55642636e6a1eef092eda34ffcba1c6
 
 .cluster rect { stroke: #000; fill: #000; fill-opacity: 0.02; stroke-opacity: 0.06; stroke-width: 1px; }
 
-.select .node.border { stroke: #e00; stroke-width: 2px; }
-.select.edge-path { stroke: #e00; stroke-width: 2px; marker-end: url("#arrowhead-vee-select"); }
-#arrowhead-vee-select { fill: #e00; }
+.select .node.border { stroke: #0060c0; stroke-width: 3px; }
+.select.edge-path { stroke: #0060c0; stroke-width: 3px; marker-end: url("#arrowhead-vee-select"); }
+#arrowhead-vee-select { fill: #0060c0; }
 
 @keyframes pulse { from { stroke-dashoffset: 100px; } to { stroke-dashoffset: 0; } }
 
