@@ -73,6 +73,7 @@ view.View = class {
                 this._selectionNodes = [];  // selection of view.Node
                 this._sidebar = new sidebar.Sidebar(this._host, id);
                 this._searchText = '';
+                this._theme = undefined;
                 this._modelFactoryService = new view.ModelFactoryService(this._host);
                 this._getElementById('zoom-in-button').addEventListener('click', () => {
                     this.zoomIn();
@@ -115,7 +116,19 @@ view.View = class {
             });
     }
 
+    updateThemeColor() {
+        let body = this._host._document.body;
+        let theme = body.getAttribute('data-vscode-theme-kind');
+        if (theme === 'vscode-dark') {
+            this._theme = theme;
+        } else {
+            this._theme = undefined;
+        }
+    }
+
     show(page) {
+        this.updateThemeColor();
+
         if (!page) {
             page = (!this._model && !this.activeGraph) ? 'welcome' : 'default';
         }
@@ -123,7 +136,11 @@ view.View = class {
         if (this._sidebar) {
             this._sidebar.close();
         }
-        this._host.document.body.setAttribute('class', page);
+        let classValue = page;
+        if (this._theme) {
+            classValue = classValue + ' ' + this._theme;
+        }
+        this._host.document.body.setAttribute('class', classValue);
         if (page === 'default') {
             const container = this._getElementById('graph');
             if (container) {
