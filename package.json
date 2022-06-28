@@ -144,19 +144,19 @@
       },
       {
         "command": "one.toolchain.refresh",
-        "title": "Refresh",
+        "title": "Toolchain Refresh",
         "category": "ONE",
         "icon": "$(refresh)"
       },
       {
         "command": "one.toolchain.install",
-        "title": "Install",
+        "title": "Toolchain Install",
         "category": "ONE",
         "icon": "$(add)"
       },
       {
         "command": "one.toolchain.uninstall",
-        "title": "Uninstall",
+        "title": "Toolchain Uninstall",
         "category": "ONE",
         "icon": "$(x)"
       },
@@ -302,6 +302,10 @@
         },
         {
           "command": "one.explorer.openAsText",
+          "when": "false"
+        },
+        {
+          "command": "one.toolchain.uninstall",
           "when": "false"
         },
         {
