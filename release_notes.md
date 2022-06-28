@@ -4,13 +4,11 @@
 
 ### OneExplorerView
 
-- Support more commands
+- More commands are supported.
   - [Open with Text Editor] command
   - [Open Containing Folder] command
   - [Collapse All] command
-- [Improve Create Config] command
-- Prevent errors on soft link / virtualenv .cfg file
-- Rename related files automatically on cfg edit
+- Improve [Create Config] command
 
 ### Toolchain
 
