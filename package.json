@@ -91,12 +91,6 @@
         "icon": "$(refresh)"
       },
       {
-        "command": "one.explorer.collapseAll",
-        "title": "Collapse Folders in ONE Explorer",
-        "category": "ONE",
-        "icon": "$(collapse-all)"
-      },
-      {
         "command": "one.explorer.createCfg",
         "title": "Create new ONE configuration",
         "category": "ONE",
@@ -209,11 +203,6 @@
           "group": "navigation"
         },
         {
-          "command": "one.explorer.collapseAll",
-          "when": "view == OneExplorerView",
-          "group": "navigation"
-        },
-        {
           "command": "one.toolchain.refresh",
           "when": "view == ToolchainView",
           "group": "navigation"
@@ -278,10 +267,6 @@
       "commandPalette": [
         {
           "command": "one.explorer.refresh",
-          "when": "false"
-        },
-        {
-          "command": "one.explorer.collapseAll",
           "when": "false"
         },
         {
