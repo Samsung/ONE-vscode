@@ -98,32 +98,6 @@ button { font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI"
 .dropdown button { display: block; border: none; border-radius: 0; background-color: transparent; color: black; width: 100%; text-align: left; padding: 4px 12px 5px 12px; white-space: no-wrap; font-size: 12px; }
 .dropdown button:hover { color: #ffffff; background-color: #2e6bd2; }
 .dropdown .separator { margin-top: 2px; margin-bottom: 2px; border-top: 1px; border-bottom: 0; border-style: solid; border-color: #e5e5e5; }
-.about { background-color: #ffffff; }
-.about { overflow: hidden; }
-.about .logo { background-color: #ececec; color: #242424; width: 320px; height: 170px; padding: 40px; opacity: 1.0; border-radius: 5px; border: 0.5px solid #cccccc; box-shadow: 0 0 30px #ddd; }
-.about.desktop .logo { border: None; border-radius: 0px; }
-.about.desktop .graph { display: none; opacity: 0; }
-.about.desktop .transparent { display: none; opacity: 0; }
-.about.desktop .toolbar { display: none; opacity: 0; }
-.about .logo-name { opacity: 0; }
-.about .logo-text { top: -130px; width: 320px; }
-.about .logo-icon { left: 136px; top: -108px; width: 60px; height: 60px; }
-.about .logo-stroke { stroke: #242424; }
-.about .logo-fill { fill: #242424; }
-.about .logo-border { stroke: #242424; }
-.about .logo-glyph { fill: #242424; }
-.about .logo-message { top: 112px; padding-left: 40px; padding-right: 40px; }
-.about a { text-decoration: none; color: #242424; }
-.about a:visited { color: inherit; }
-.about a:hover { color: #242424; }
-.about .logo-github { top: 130px; width: 24px; height: 24px; }
-.about .open-file-button { display: none; }
-.about .github-button { display: none; }
-.about .consent-message { display: none; }
-.about .consent-accept-button { display: none; }
-.about .graph { display: flex; opacity: 1; }
-.about .toolbar { display: block; opacity: 1; }
-.about .transparent { display: block; opacity: 0.5; }
 .welcome { background-color: #ececec; color: #242424; }
 .welcome .logo { width: 582px; height: 128px; }
 .welcome .logo-text { top: -57px; width: 582px; transition: 0.1s; }
@@ -166,14 +140,6 @@ button { font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI"
 :root { color-scheme: dark; }
 .default { background-color: #404040; }
 .graph { background-color: #404040; }
-.about { background-color: #404040; }
-.about .logo { background-color: #2d2d2d; color: #dfdfdf; border-color: #000000; box-shadow: 0 0 30px #333; }
-.about a { color: #dfdfdf; }
-.about a:hover { color: #ffffff; }
-.about .logo-stroke { stroke: #dfdfdf; }
-.about .logo-fill { fill: #dfdfdf; }
-.about .logo-border { stroke: #dfdfdf; }
-.about .logo-glyph { fill: #dfdfdf; }
 .welcome { background-color: #1e1e1e; color: #888888; }
 .welcome .logo-stroke { stroke: #888888; }
 .welcome .logo-fill { fill: #888888; }
@@ -205,8 +171,6 @@ button { font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI"
 .welcome .logo .github-button { top: 270px; left: 0; }
 .welcome .logo .consent-message { top: 140px; }
 .welcome .logo .consent-accept-button { top: 310px; }
-.about .logo { border-radius: 0; border-left: 0px; border-right: 0px; width: 100%; padding-left: 0; padding-right: 0; }
-.about.desktop .logo { width: 320px; padding: 40px; }
 }
 @media only screen and (max-device-width: 1024px) {
 .toolbar-button { width: 32px; height: 32px; }
