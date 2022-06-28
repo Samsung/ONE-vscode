@@ -16,16 +16,45 @@
 
 import * as vscode from 'vscode';
 
+import {Logger} from './Logger';
+
 export class Balloon {
-  static error(msg: string) {
-    vscode.window.showErrorMessage(msg);
+  static seeLogBtn = 'See log';
+
+  static handleBtn(selection: string|undefined) {
+    if (selection === Balloon.seeLogBtn) {
+      Logger.show();
+    }
+    // Ignore 'OK' button
   }
 
-  static info(msg: string) {
-    vscode.window.showInformationMessage(msg);
+  // Error notification message shows 'See log' button by default
+  static error(msg: string, showSeeLogBtn: boolean = true) {
+    let func = vscode.window.showErrorMessage;
+    if (showSeeLogBtn) {
+      func(msg, 'OK', Balloon.seeLogBtn).then(Balloon.handleBtn);
+    } else {
+      func(msg, 'OK');
+    }
   }
 
-  static warning(msg: string) {
-    vscode.window.showWarningMessage(msg);
+  // Info notification message does not show 'See log' button by default
+  static info(msg: string, showSeeLogBtn: boolean = false) {
+    let func = vscode.window.showInformationMessage;
+    if (showSeeLogBtn) {
+      func(msg, 'OK', Balloon.seeLogBtn).then(Balloon.handleBtn);
+    } else {
+      func(msg, 'OK');
+    }
+  }
+
+  // Warning notification message shows 'See log' button by default
+  static warning(msg: string, showSeeLogBtn: boolean = true) {
+    let func = vscode.window.showWarningMessage;
+    if (showSeeLogBtn) {
+      func(msg, 'OK', Balloon.seeLogBtn).then(Balloon.handleBtn);
+    } else {
+      func(msg, 'OK');
+    }
   }
 }
