@@ -483,7 +483,8 @@ host.BrowserHost = class {
     }
 
     _msgColorTheme(message) {
-        // TODO implement
+        this._view.updateThemeColor();
+        this._view.applyThemeColor();
     }
 };
 
