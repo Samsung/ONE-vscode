@@ -24,6 +24,7 @@ class CtrlStatus {
   public static readonly init = 0;
   public static readonly loading = 1;
   public static readonly ready = 2;
+  public static readonly disposed = 3;
 }
 
 export class MessageDefs {
@@ -86,6 +87,7 @@ export class CircleGraphCtrl {
   }
 
   public disposeGraphCtrl() {
+    this._state = CtrlStatus.disposed;
     while (this._ctrlDisposables.length) {
       const x = this._ctrlDisposables.pop();
       if (x) {
