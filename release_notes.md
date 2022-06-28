@@ -10,7 +10,7 @@
   - [Collapse All] command
 - Improve [Create Config] command
 
-### Toolchain
+### Toolchain View
 
 - Show Installable Toolchains on ToolchainView
   - official release version
