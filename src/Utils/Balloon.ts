@@ -19,7 +19,7 @@ import * as vscode from 'vscode';
 import {Logger} from './Logger';
 
 export class Balloon {
-  static seeLogBtn = 'See logs';
+  static seeLogBtn = 'See log';
 
   static handleBtn(selection: string|undefined) {
     if (selection === Balloon.seeLogBtn) {
@@ -28,15 +28,33 @@ export class Balloon {
     // Ignore 'OK' button
   }
 
-  static error(msg: string) {
-    vscode.window.showErrorMessage(msg, 'OK', Balloon.seeLogBtn).then(Balloon.handleBtn);
+  // Error notification message shows 'See log' button by default
+  static error(msg: string, showSeeLogBtn: boolean = true) {
+    let func = vscode.window.showErrorMessage;
+    if (showSeeLogBtn) {
+      func(msg, 'OK', Balloon.seeLogBtn).then(Balloon.handleBtn);
+    } else {
+      func(msg, 'OK');
+    }
   }
 
-  static info(msg: string) {
-    vscode.window.showInformationMessage(msg, 'OK', Balloon.seeLogBtn).then(Balloon.handleBtn);
+  // Info notification message does not show 'See log' button by default
+  static info(msg: string, showSeeLogBtn: boolean = false) {
+    let func = vscode.window.showInformationMessage;
+    if (showSeeLogBtn) {
+      func(msg, 'OK', Balloon.seeLogBtn).then(Balloon.handleBtn);
+    } else {
+      func(msg, 'OK');
+    }
   }
 
-  static warning(msg: string) {
-    vscode.window.showWarningMessage(msg, 'OK', Balloon.seeLogBtn).then(Balloon.handleBtn);
+  // Warning notification message shows 'See log' button by default
+  static warning(msg: string, showSeeLogBtn: boolean = true) {
+    let func = vscode.window.showWarningMessage;
+    if (showSeeLogBtn) {
+      func(msg, 'OK', Balloon.seeLogBtn).then(Balloon.handleBtn);
+    } else {
+      func(msg, 'OK');
+    }
   }
 }
