@@ -45,6 +45,7 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider, Part
   private _modelFileName: string;
   private _modelFolderPath: string;
   private _backEndNames: string[] = [];
+  private _backEndColors: string[] = [];
   private _backEndForGraph: string;
 
   public static register(context: vscode.ExtensionContext): vscode.Disposable {
@@ -135,6 +136,7 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider, Part
     // TODO revise to get from backend
     // item 0 is initial default backend
     this._backEndNames = ['CPU', 'CPU', 'ACL_CL', 'TRIX'];
+    this._backEndColors = ['#303030', '#808000', '#800000', '#008080'];
 
     webviewPanel.webview.options = this.getWebviewOptions(this._extensionUri),
     webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview);
@@ -174,11 +176,15 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider, Part
 
   private handleRequestBackends() {
     let backends = '';
+    let colors = '';
     this._backEndNames.forEach((item) => {
       backends = backends + item + '\n';
     });
+    this._backEndColors.forEach((item) => {
+      colors = colors + item + '\n';
+    });
     if (this._webview) {
-      this._webview.postMessage({command: 'resultBackends', backends: backends});
+      this._webview.postMessage({command: 'resultBackends', backends: backends, colors: colors});
     }
   }
 
