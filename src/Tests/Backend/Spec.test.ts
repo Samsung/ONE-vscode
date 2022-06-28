@@ -39,8 +39,8 @@ suite('Spec', function() {
   });
   suite('TizenDeviceSpec', function() {
     suite('#contructor()', function() {
-      const hw: string = 'TestHW';
-      const sw: string = 'TestOS';
+      const hw: string = 'armv7l';
+      const sw: string = 'Tizen 7.0.0';
       const testSpec = new TizenDeviceSpec(hw, sw);
       assert.isObject<TizenDeviceSpec>(testSpec);
       assert.strictEqual(testSpec.hw, hw);
@@ -50,8 +50,8 @@ suite('Spec', function() {
   });
   suite('HostPCSpec', function() {
     suite('#contructor()', function() {
-      const hw: string = 'TestHW';
-      const sw: string = 'TestOS';
+      const hw: string = 'x86_64';
+      const sw: string = 'Ubuntu 18';
       const testSpec = new HostPCSpec(hw, sw);
       assert.isObject<HostPCSpec>(testSpec);
       assert.strictEqual(testSpec.hw, hw);
