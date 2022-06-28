@@ -18,6 +18,8 @@ import * as vscode from 'vscode';
 
 type MsgList = (number|boolean|string|object)[];
 
+const isDebugMode = process.env.VSCODE_DEBUG_MODE === 'true';
+
 export class Logger {
   static outputChannel = vscode.window.createOutputChannel('ONE-VSCode');
   static firstFocus: boolean;
@@ -75,8 +77,10 @@ export class Logger {
    * @brief Print log with prefix '[time][tag][severity]' where severity = 'debug'
    */
   public static debug(tag: string, ...msgs: MsgList) {
-    const severity = 'debug';
-    Logger.log(severity, tag, ...msgs);
+    if (isDebugMode) {
+      const severity = 'debug';
+      Logger.log(severity, tag, ...msgs);
+    }
   }
 
   /**
