@@ -266,6 +266,30 @@
       ],
       "commandPalette": [
         {
+          "command": "one.backend.infer",
+          "when": "false"
+        },
+        {
+          "command": "one.device.register",
+          "when": "false"
+        },
+        {
+          "command": "one.editor.openCfg",
+          "when": "false"
+        },
+        {
+          "command": "one.editor.openCfgAsText",
+          "when": "false"
+        },
+        {
+          "command": "one.editor.openCfgWithLegacyEditor",
+          "when": "false"
+        },
+        {
+          "command": "one.editor.toggleCodelens",
+          "when": "false"
+        },
+        {
           "command": "one.explorer.refresh",
           "when": "false"
         },
@@ -290,11 +314,23 @@
           "when": "false"
         },
         {
+          "command": "one.project.import",
+          "when": "false"
+        },
+        {
           "command": "one.toolchain.uninstall",
           "when": "false"
         },
         {
           "command": "one.toolchain.runCfg",
+          "when": "false"
+        },
+        {
+          "command": "one.viewer.circleTracer",
+          "when": "false"
+        },
+        {
+          "command": "one.viewer.jsonTracer",
           "when": "false"
         }
       ]
