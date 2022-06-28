@@ -12,7 +12,7 @@ The word `Backend` is used to a concept to wrap `Toolchain` and others that rela
 
 ### Toolchain
 
-`Toolchain` is a collection of tool. Now you could think it as `ONE` itself.
+`Toolchain` is a collection of tools. Now you could think it as `ONE` itself.
 
 <img src="https://user-images.githubusercontent.com/7223627/172834540-945ed5f9-82b0-4388-bd46-4ea10587d701.gif" width=500 />
 
