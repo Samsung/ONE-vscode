@@ -440,7 +440,7 @@ input_path=${modelName}.${extName}
       for (const baseModel of baseModels) {
         if (this.comparePath(baseModel.fsPath, baseModelNode.path)) {
           const pairNode = new Node(NodeType.config, [], vscode.Uri.file(conf));
-          Logger.info('OneExplorer', `DerivedModels : ${derivedModels}`);
+          Logger.debug('OneExplorer', `DerivedModels : ${derivedModels}`);
 
           derivedModels ?.forEach(derivedModel => {
                            // Display only the existing node
