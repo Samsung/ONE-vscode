@@ -35,6 +35,7 @@ type Partition = {
 class PartEditor implements PartGraphEvent {
   private _document: vscode.TextDocument;
   private _panel: vscode.WebviewPanel;
+  private _id: number;
   private _webview: vscode.Webview;
   private _disposables: vscode.Disposable[] = [];
   private _modelFilePath: string;
@@ -44,9 +45,10 @@ class PartEditor implements PartGraphEvent {
   private _backEndColors: string[] = [];
   private _backEndForGraph: string;
 
-  constructor(doc: vscode.TextDocument, panel: vscode.WebviewPanel) {
+  constructor(doc: vscode.TextDocument, panel: vscode.WebviewPanel, id: number) {
     this._document = doc;
     this._panel = panel;
+    this._id = id;
     this._webview = panel.webview;
 
     const lastSlash = this._document.fileName.lastIndexOf(path.sep) + 1;
@@ -72,7 +74,8 @@ class PartEditor implements PartGraphEvent {
 
     this._panel.onDidDispose(() => {
       if (this._document) {
-        vscode.commands.executeCommand(PartGraphSelPanel.cmdClose, this._document.fileName);
+        vscode.commands.executeCommand(
+            PartGraphSelPanel.cmdClose, this._document.fileName, this._id);
       }
       changeDocumentSubscription.dispose();
     });
@@ -126,7 +129,7 @@ class PartEditor implements PartGraphEvent {
       this._webview.postMessage({command: 'updatePartition', part: content});
 
       vscode.commands.executeCommand(
-          PartGraphSelPanel.cmdUpdate, this._document.fileName, this._document.getText(),
+          PartGraphSelPanel.cmdUpdate, this._document.fileName, this._id, this._document.getText(),
           this._backEndForGraph);
     }
   }
@@ -290,6 +293,8 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
   public static readonly viewType = 'onevscode.part-editor';
   public static readonly folderMediaPartEditor = 'media/PartEditor';
 
+  private static nextId: number = 1;
+
   private readonly _extensionUri: vscode.Uri;
 
   private _partEditors: PartEditor[] = [];
@@ -311,7 +316,7 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
   public async resolveCustomTextEditor(
       document: vscode.TextDocument, webviewPanel: vscode.WebviewPanel,
       token: vscode.CancellationToken): Promise<void> {
-    let partEditor = new PartEditor(document, webviewPanel);
+    let partEditor = new PartEditor(document, webviewPanel, PartEditorProvider.nextId++);
     this._partEditors.push(partEditor);
 
     partEditor.registerHandlers();
