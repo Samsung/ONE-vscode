@@ -286,21 +286,11 @@ class PartEditor implements PartGraphEvent {
   }
 }
 
-export class PartEditorProvider implements vscode.CustomTextEditorProvider, PartGraphEvent {
+export class PartEditorProvider implements vscode.CustomTextEditorProvider {
   public static readonly viewType = 'onevscode.part-editor';
   public static readonly folderMediaPartEditor = 'media/PartEditor';
 
   private readonly _extensionUri: vscode.Uri;
-
-  private _webview: vscode.Webview|undefined;
-  private _disposables: vscode.Disposable[] = [];
-  private _document: vscode.TextDocument|undefined;
-  private _modelFilePath: string;
-  private _modelFileName: string;
-  private _modelFolderPath: string;
-  private _backEndNames: string[] = [];
-  private _backEndColors: string[] = [];
-  private _backEndForGraph: string;
 
   private _partEditors: PartEditor[] = [];
 
@@ -316,12 +306,6 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider, Part
 
   constructor(private readonly context: vscode.ExtensionContext) {
     this._extensionUri = context.extensionUri;
-    this._document = undefined;
-    this._webview = undefined;
-    this._modelFilePath = '';
-    this._modelFileName = '';
-    this._modelFolderPath = '';
-    this._backEndForGraph = '';
   }
 
   public async resolveCustomTextEditor(
@@ -335,148 +319,6 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider, Part
 
     webviewPanel.webview.options = this.getWebviewOptions(this._extensionUri),
     webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, partEditor);
-  }
-
-  private updateWebview() {
-    if (this._document && this._webview) {
-      let content = ini.parse(this._document.getText());
-      this._webview.postMessage({command: 'updatePartition', part: content});
-
-      vscode.commands.executeCommand(
-          PartGraphSelPanel.cmdUpdate, this._document.fileName, this._document.getText(),
-          this._backEndForGraph);
-    }
-  }
-
-  private makeDefaultPartiton() {
-    let partition: Partition = {};
-
-    partition.backends = this._backEndNames.slice(1, this._backEndNames.length).join(',');
-    partition.default = this._backEndNames[0];
-    partition.comply = 'opname';
-    return partition;
-  }
-
-  private handleSelectByGraph(backend: string) {
-    if (this._document) {
-      this._backEndForGraph = backend;
-
-      vscode.commands.executeCommand(
-          PartGraphSelPanel.cmdOpen, this._document.fileName, this._document.getText(), backend,
-          this);
-    }
-  }
-
-  private handleRequestBackends() {
-    let backends = '';
-    let colors = '';
-    this._backEndNames.forEach((item) => {
-      backends = backends + item + '\n';
-    });
-    this._backEndColors.forEach((item) => {
-      colors = colors + item + '\n';
-    });
-    if (this._webview) {
-      this._webview.postMessage({command: 'resultBackends', backends: backends, colors: colors});
-    }
-  }
-
-  private handleRequestOpNames() {
-    const K_DATA: string = 'data';
-    const K_EXIT: string = 'exit';
-    const K_ERROR: string = 'error';
-    // TODO integrate with Toolchain
-    const tool = '/usr/share/one/bin/circle-operator';
-    const toolargs = ['--name', this._modelFilePath];
-    let result: string = '';
-    let error: string = '';
-
-    let runPromise = new Promise<string>((resolve, reject) => {
-      let cmd = cp.spawn(tool, toolargs, {cwd: this._modelFolderPath});
-
-      cmd.stdout.on(K_DATA, (data: any) => {
-        let str = data.toString();
-        if (str.length > 0) {
-          result = result + str;
-        }
-      });
-
-      cmd.stderr.on(K_DATA, (data: any) => {
-        error = result + data.toString();
-        Logger.error('Partition', error);
-      });
-
-      cmd.on(K_EXIT, (code: any) => {
-        let codestr = code.toString();
-        if (codestr === '0') {
-          resolve(result);
-        } else {
-          let msg = 'Failed to load model: ' + this._modelFileName;
-          Balloon.error(msg);
-          reject(msg);
-        }
-      });
-
-      cmd.on(K_ERROR, (err) => {
-        let msg = 'Failed to run circle-operator: ' + this._modelFileName;
-        Balloon.error(msg);
-        reject(msg);
-      });
-    });
-
-    runPromise
-        .then((result) => {
-          if (this._webview) {
-            this._webview.postMessage({command: 'resultOpNames', names: result});
-          }
-        })
-        .catch((error) => {
-          Logger.error('Partition', error);
-        });
-  }
-
-  private handleRequestPartition() {
-    if (this._document && this._webview) {
-      let content = ini.parse(this._document.getText());
-      this._webview.postMessage({command: 'resultPartition', part: content});
-    }
-  }
-
-  private isValidPartition(partition: any) {
-    if (!partition) {
-      return false;
-    }
-    if (!partition.backends || !partition.default || !partition.comply) {
-      return false;
-    }
-    return true;
-  }
-
-  private handleUpdateDocument(message: any) {
-    if (this._document) {
-      let partContent = ini.parse(this._document.getText());
-
-      if (!this.isValidPartition(partContent.partition)) {
-        partContent['partition'] = this.makeDefaultPartiton();
-      }
-
-      if (message.hasOwnProperty('opname')) {
-        partContent.OPNAME = message.opname;
-      }
-      if (message.hasOwnProperty('partition')) {
-        partContent.partition = message.partition;
-      }
-
-      let text = ini.stringify(partContent);
-      const edit = new vscode.WorkspaceEdit();
-      edit.replace(this._document.uri, new vscode.Range(0, 0, this._document.lineCount, 0), text);
-      vscode.workspace.applyEdit(edit);
-    }
-  }
-
-  private handleUpdateBackend(backend: string) {
-    this._backEndForGraph = backend;
-    this.updateWebview();
   }
 
   private getHtmlForWebview(webview: vscode.Webview, partEditor: PartEditor) {
@@ -522,30 +364,6 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider, Part
       // 'media/PartEditor' directory.
       localResourceRoots:
           [vscode.Uri.joinPath(extensionUri, PartEditorProvider.folderMediaPartEditor)]
-    };
-  }
-
-  // PartGraphEvent implements
-  public onSelection(names: string[], tensors: string[]) {
-    if (this._document) {
-      let content = ini.parse(this._document.getText());
-
-      // previous node that was for this backend may have been reset
-      for (let name in content.OPNAME) {
-        if (content.OPNAME[name] === this._backEndForGraph) {
-          if (!names.includes(name)) {
-            delete content.OPNAME[name];
-          }
-        }
-      }
-      names.forEach((name) => {
-        content.OPNAME[name] = this._backEndForGraph;
-      });
-
-      let text = ini.stringify(content);
-      const edit = new vscode.WorkspaceEdit();
-      edit.replace(this._document.uri, new vscode.Range(0, 0, this._document.lineCount, 0), text);
-      vscode.workspace.applyEdit(edit);
     };
   }
 };
