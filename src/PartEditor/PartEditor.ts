@@ -302,6 +302,8 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider, Part
   private _backEndColors: string[] = [];
   private _backEndForGraph: string;
 
+  private _partEditors: PartEditor[] = [];
+
   public static register(context: vscode.ExtensionContext): vscode.Disposable {
     const provider = new PartEditorProvider(context);
     const providerRegistration =
@@ -325,77 +327,14 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider, Part
   public async resolveCustomTextEditor(
       document: vscode.TextDocument, webviewPanel: vscode.WebviewPanel,
       token: vscode.CancellationToken): Promise<void> {
-    this._webview = webviewPanel.webview;
+    let partEditor = new PartEditor(document, webviewPanel);
+    this._partEditors.push(partEditor);
 
-    const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(e => {
-      if (e.document.uri.toString() === document.uri.toString()) {
-        this.updateWebview();
-      }
-    });
-
-    webviewPanel.onDidDispose(() => {
-      if (this._document) {
-        vscode.commands.executeCommand(PartGraphSelPanel.cmdClose, this._document.fileName);
-      }
-      changeDocumentSubscription.dispose();
-    });
-
-    webviewPanel.onDidChangeViewState(
-        e => {
-            // TODO implement
-        },
-        null, this._disposables);
-
-    // Receive message from the webview.
-    webviewPanel.webview.onDidReceiveMessage(message => {
-      switch (message.command) {
-        case 'requestBackends':
-          this.handleRequestBackends();
-          return;
-
-        case 'requestOpNames':
-          this.handleRequestOpNames();
-          return;
-
-        case 'requestPartition':
-          this.handleRequestPartition();
-          return;
-
-        case 'updateDocument':
-          this.handleUpdateDocument(message);
-          return;
-
-        case 'selectByGraph':
-          this.handleSelectByGraph(message.backend);
-          return;
-
-        case 'updateBackend':
-          this.handleUpdateBackend(message.backend);
-          return;
-      }
-    });
-
-    this._document = document;
-
-    if (this._document) {
-      const lastSlash = this._document.fileName.lastIndexOf(path.sep) + 1;
-      const fileNameExt = this._document.fileName.substring(lastSlash);
-      const fileExt = path.extname(fileNameExt);
-
-      this._modelFileName = path.basename(fileNameExt, fileExt) + '.circle';
-      this._modelFolderPath = this._document.fileName.substring(0, lastSlash);
-      this._modelFilePath = this._modelFolderPath + this._modelFileName;
-    }
-
-    // TODO revise to get from backend
-    // item 0 is initial default backend
-    this._backEndNames = ['CPU', 'CPU', 'ACL_CL', 'TRIX'];
-    this._backEndColors = ['#303030', '#808000', '#800000', '#008080'];
+    partEditor.registerHandlers();
+    partEditor.loadContent();
 
     webviewPanel.webview.options = this.getWebviewOptions(this._extensionUri),
-    webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview);
-
-    this.updateWebview();
+    webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, partEditor);
   }
 
   private updateWebview() {
@@ -540,7 +479,7 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider, Part
     this.updateWebview();
   }
 
-  private getHtmlForWebview(webview: vscode.Webview) {
+  private getHtmlForWebview(webview: vscode.Webview, partEditor: PartEditor) {
     const htmlPath = this.getMediaPath('index.html');
     let html = fs.readFileSync(htmlPath.fsPath, {encoding: 'utf-8'});
 
@@ -551,7 +490,7 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider, Part
     html = this.updateUri(html, webview, '%index.css%', 'index.css');
     html = this.updateUri(html, webview, '%index.js%', 'index.js');
 
-    html = this.updateText(html, webview, '%MODEL_NAME%', this._modelFileName);
+    html = this.updateText(html, webview, '%MODEL_NAME%', partEditor.modelFileName);
 
     return html;
   }
