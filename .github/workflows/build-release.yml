@@ -236,7 +236,7 @@ jobs:
         with:
           tag_name: ${{ github.event.inputs.tag }}
           release_name: Release ${{ github.event.inputs.tag }}
-          body_path: ./release_notes.md
+          body_path: ./infra/release/release_note.md
           draft: ${{ github.event.inputs.draft }}
           prerelease: ${{ github.event.inputs.prerelease }}
       - name: Upload artifact
