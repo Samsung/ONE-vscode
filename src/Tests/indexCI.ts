@@ -49,6 +49,7 @@ import * as path from 'path';
 // NOTE: indexCI.ts is copied from index.ts. On CI, some tests have limitations so they have to be
 // excluded. This function does it.
 export function run(): Promise<void> {
+  //const mocha = new Mocha({ui: 'tdd', color: true, fgrep: '@Use-onecc', invert: true, reporter: 'xunit', reporterOptions: { output: 'result.xml' }});
   const mocha = new Mocha({ui: 'tdd', color: true, fgrep: '@Use-onecc', invert: true});
 
   const testsRoot = path.resolve(__dirname, '.');

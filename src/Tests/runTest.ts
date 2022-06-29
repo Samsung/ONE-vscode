@@ -57,7 +57,7 @@ async function main() {
     // NOTE: Fix the version to 1.64.0 to avoid some errors by the latest version
     // TODO: Remove the limitation of the version
     await runTests({
-      version: '1.64.0',
+      version: '1.48.0',
       extensionDevelopmentPath,
       extensionTestsPath: extensionTestsPath,
       launchArgs: [testWorkspace]
