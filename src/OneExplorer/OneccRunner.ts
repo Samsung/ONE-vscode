@@ -20,6 +20,7 @@ import * as vscode from 'vscode';
 
 import {ToolArgs} from '../Project/ToolArgs';
 import {SuccessResult, ToolRunner} from '../Project/ToolRunner';
+import {Balloon} from '../Utils/Balloon';
 
 export class OneccRunner extends EventEmitter {
   private startRunningOnecc: string = 'START_RUNNING_ONECC';
@@ -70,8 +71,7 @@ export class OneccRunner extends EventEmitter {
               this.emit(this.finishedRunningOnecc, value);
             })
             .catch(value => {
-              vscode.window.showErrorMessage(
-                  `Error occured while running: 'onecc --config ${this.cfgUri.fsPath}'`);
+              Balloon.error(`Error occured while running: 'onecc --config ${this.cfgUri.fsPath}'`);
               reject();
             });
       });
@@ -82,9 +82,9 @@ export class OneccRunner extends EventEmitter {
 
   private onFinishedRunningOnecc(val: SuccessResult) {
     if (val.exitCode !== undefined && val.exitCode === 0) {
-      vscode.window.showInformationMessage(`Successfully completed.`);
+      Balloon.info(`Successfully completed.`);
     } else if (val.intentionallyKilled !== undefined && val.intentionallyKilled === true) {
-      vscode.window.showInformationMessage(`The job was cancelled.`);
+      Balloon.info(`The job was cancelled.`);
     } else {
       throw Error('unexpected value onFinishedRunningOnecc');
     }
