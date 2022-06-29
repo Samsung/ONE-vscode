@@ -53,7 +53,7 @@ class DeviceSpec {
 }
 
 /**
- * BridgeSpec is a Spec that is used for acess on a device.
+ * BridgeSpec is a Spec that is used for access on a device.
  */
 class BridgeSpec {
   // TODO: Add Spec check command to match with given DeviceSpec
