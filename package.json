@@ -370,14 +370,20 @@
       "ts-node/register",
       "source-map-support/register"
     ],
-    "include": [
-      "src/**/*.ts",
-      "out/**/*.js"
-    ],
+    "all": true,
     "exclude": [
-      "src/Tests/**/*.test.ts",
-      "out/Tests/**/*.test.js"
+      "node_modules/**",
+      "**/*.d.ts",
+      ".{github,nyc_output,vscode,vscode-test}",
+      "{media,infra}/**",
+      "coverage/**",
+      "src/Tests/**"
     ],
+    "include": [
+      "**/*.js",
+      "**/*.ts"
+    ],
+    "instrument": true,
     "reporter": [
       "html",
       "text",
