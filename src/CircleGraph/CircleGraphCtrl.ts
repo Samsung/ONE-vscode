@@ -120,7 +120,9 @@ export class CircleGraphCtrl {
   public setSelection(names: string[]) {
     this._selectionNames = names;
 
-    this.applySelection();
+    if (this.isReady()) {
+      this.applySelection();
+    }
   }
 
   private registerEventHandlers() {
@@ -219,6 +221,8 @@ export class CircleGraphCtrl {
     if (this._eventHandler) {
       this._eventHandler.onFinishLoadModel();
     }
+
+    this.applySelection();
   }
 
   /**

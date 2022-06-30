@@ -59,17 +59,16 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
 
     let disposableGraphPenel = vscode.commands.registerCommand(
         PartGraphSelPanel.cmdOpen,
-        (filePath: string, id: number, docText: string, backend: string,
-         handler: PartGraphEvent) => {
+        (filePath: string, id: number, docText: string, names: string, handler: PartGraphEvent) => {
           PartGraphSelPanel.createOrShow(
-              context.extensionUri, filePath, id, docText, backend, handler);
+              context.extensionUri, filePath, id, docText, names, handler);
         });
 
     return disposableGraphPenel;
   };
 
   public static createOrShow(
-      extensionUri: vscode.Uri, docPath: string, id: number, docText: string, backend: string,
+      extensionUri: vscode.Uri, docPath: string, id: number, docText: string, names: string,
       handler: PartGraphEvent|undefined) {
     const column =
         vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
@@ -87,11 +86,11 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
         PartGraphSelPanel.viewType, 'Graph select nodes', column || vscode.ViewColumn.Three,
         {retainContextWhenHidden: true});
 
-    const circleGraph =
-        new PartGraphSelPanel(panel, extensionUri, docPath, id, docText, backend, handler);
+    const circleGraph = new PartGraphSelPanel(panel, extensionUri, docPath, id, docText, handler);
 
     PartGraphSelPanel.panels.push(circleGraph);
     circleGraph.loadContent();
+    circleGraph.onForwardSelection(names);
   }
 
   private static findSelPanel(docPath: string, id: number): PartGraphSelPanel|undefined {
@@ -132,7 +131,7 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
 
   private constructor(
       panel: vscode.WebviewPanel, extensionUri: vscode.Uri, docPath: string, id: number,
-      docText: string, backend: string, handler: PartGraphEvent|undefined) {
+      docText: string, handler: PartGraphEvent|undefined) {
     super(extensionUri, panel.webview);
 
     let parsedPath = path.parse(docPath);
@@ -143,7 +142,7 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
     this._ownerId = id;
     this._documentText = docText;
     this._modelPath = fileBase + '.circle';
-    this._backendFromEdit = backend;
+    this._backendFromEdit = '';
     this._partEventHandler = handler;
 
     // Listen for when the panel is disposed
@@ -200,16 +199,17 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
   }
 
   public onFinishLoadModel() {
-    // this is good time to set selection state of the graph
+    // TODO implement
+  }
+
+  public onForwardSelection(selection: string) {
     let selections: string[] = [];
-    let content = ini.parse(this._documentText);
-    for (let name in content.OPNAME) {
-      if (content.OPNAME[name] === this._backendFromEdit) {
-        selections.push(name);
+    let items = selection.split(/\r?\n/);
+    for (let idx = 0; idx < items.length; idx++) {
+      if (items[idx].length > 0) {
+        selections.push(items[idx]);
       }
     }
-
-    // call CircleGraphCtrl method to refect selection state for all nodes
     this.setSelection(selections);
   }
 
