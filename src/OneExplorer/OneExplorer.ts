@@ -232,7 +232,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
   delete(oneNode: OneNode): void {
     if (oneNode.node.type === NodeType.directory) {
       vscode.window
-          .showWarningMessage(
+          .showInformationMessage(
               `Are you sure you want to delete '${
                   path.parse(oneNode.node.path).base}' and its contents?`,
               {detail: `You can restore this file from the Trash.`, modal: true}, 'Move to Trash')
@@ -246,7 +246,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
           .then(() => this.refresh());
     } else {
       vscode.window
-          .showWarningMessage(
+          .showInformationMessage(
               `Are you sure you want to delete '${path.parse(oneNode.node.path).base}'?`,
               {detail: `You can restore this file from the Trash.`, modal: true}, 'Move to Trash')
           .then(ans => {
