@@ -1230,10 +1230,11 @@ view.Node = class extends grapher.Node {
         this._add(this.value);
     }
 
-    get class
-    () {
+    // clang-format off
+    get class() {
         return 'graph-node';
     }
+    // clang-format on
 
     get inputs() {
         return this.value.inputs;
