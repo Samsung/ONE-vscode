@@ -1244,12 +1244,17 @@ view.Node = class extends grapher.Node {
     }
 
     _add(node) {
+        // NOTE this.context = view.Graph
+        //      this.context.view = view
+        const host = this.context.view._host;
         const header = this.header();
         const styles = ['node-item-type'];
         const type = node.type;
         const category = type && type.category ? type.category : '';
         if (category) {
-            styles.push('node-item-type-' + category.toLowerCase());
+            if (host._mode === viewMode.viewer) {
+                styles.push('node-item-type-' + category.toLowerCase());
+            }
         }
         if (typeof type.name !== 'string' || !type.name.split) {  // #416
             const identifier = this.context.model && this.context.model.identifier ?
