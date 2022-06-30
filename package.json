@@ -314,6 +314,10 @@
           "when": "false"
         },
         {
+          "command": "one.project.build",
+          "when": "false"
+        },
+        {
           "command": "one.project.import",
           "when": "false"
         },
