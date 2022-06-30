@@ -1285,9 +1285,6 @@ view.Node = class extends grapher.Node {
             (node.name || node.location);
         const title = header.add(null, styles, content, tooltip);
 
-        // this.context = view.Graph
-        // this.context.view = view
-        const host = this.context.view._host;
         if (host._mode === viewMode.viewer) {
             title.on('click', () => this.context.view.showNodeProperties(node, null));
         } else if (host._mode === viewMode.selector) {
