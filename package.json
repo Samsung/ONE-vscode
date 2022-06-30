@@ -128,6 +128,11 @@
         "category": "ONE"
       },
       {
+        "command": "one.explorer.delete",
+        "title": "Delete",
+        "category": "ONE"
+      },
+      {
         "command": "one.explorer.openContainingFolder",
         "title": "Open Containing Folder",
         "category": "ONE"
@@ -236,6 +241,11 @@
           "group": "navigation"
         },
         {
+          "command": "one.explorer.delete",
+          "when": "view == OneExplorerView",
+          "group": "navigation"
+        },
+        {
           "command": "one.explorer.openContainingFolder",
           "when": "view == OneExplorerView",
           "group": "navigation"
@@ -309,6 +319,10 @@
         },
         {
           "command": "one.explorer.rename",
+          "when": "false"
+        },
+        {
+          "command": "one.explorer.delete",
           "when": "false"
         },
         {
