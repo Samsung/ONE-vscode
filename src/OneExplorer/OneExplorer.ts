@@ -150,17 +150,25 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
   private fileWatcher =
       vscode.workspace.createFileSystemWatcher(`**/*.{cfg,tflite,onnx,circle,tvn}`);
 
+  private tree : Node | undefined;
+
   constructor(private workspaceRoot: vscode.Uri) {
     const fileWatchersEvents =
         [this.fileWatcher.onDidCreate, this.fileWatcher.onDidChange, this.fileWatcher.onDidDelete];
 
     for (let event of fileWatchersEvents) {
-      event(() => this._onDidChangeTreeData.fire());
+      event(() => this.refresh());
     }
   }
 
-  refresh(): void {
-    this._onDidChangeTreeData.fire();
+  refresh(oneNode: OneNode | void): void {
+    if(!oneNode){
+      // refresh the root
+      this.tree = undefined;
+      oneNode = this.tree;
+    }
+
+    this._onDidChangeTreeData.fire(oneNode);
   }
 
   // TODO: Add move()
@@ -283,7 +291,7 @@ input_path=${modelName}.${extName}
           vscode.workspace.fs.writeFile(uri, content)
               .then(() => {
                 return new Promise<vscode.Uri>(resolve => {
-                  this.refresh();
+                  this.refresh(oneNode);
 
                   // Wait until the refresh event listeners are handled
                   // TODO: Add an event after revising refresh commmand
@@ -347,10 +355,12 @@ input_path=${modelName}.${extName}
   }
 
   private getTree(rootPath: vscode.Uri): Node {
-    const node = new Node(NodeType.directory, [], rootPath);
+    if(!this.tree) {
+      this.tree =  new Node(NodeType.directory, [], rootPath);
+      this.searchNode(this.tree);
+    }
 
-    this.searchNode(node);
-    return node;
+    return this.tree;
   }
 
   /**
@@ -463,6 +473,12 @@ export class OneExplorer {
   public workspaceRoot: vscode.Uri = vscode.Uri.file(obtainWorkspaceRoot());
   public treeView: vscode.TreeView<OneNode|undefined>|undefined;
 
+  private reveal(oneNode: OneNode): Thenable<void> | undefined{
+    if(oneNode){
+      return this.treeView?.reveal(oneNode, {focus:true, select: true, expand: true});
+    }
+  }
+
   constructor(context: vscode.ExtensionContext) {
     // NOTE: Fix `obtainWorksapceRoot` if non-null assertion is false
     const oneTreeDataProvider = new OneTreeDataProvider(this.workspaceRoot!);
@@ -470,6 +486,8 @@ export class OneExplorer {
     this.treeView = vscode.window.createTreeView(
         'OneExplorerView',
         {treeDataProvider: oneTreeDataProvider, showCollapseAll: true, canSelectMany: true});
+    
+    this.treeView.onDidChangeSelection(()=>{Logger.debug("onDidChangeSelection");});
 
     const subscribeDisposals = (disposals: vscode.Disposable[]) => {
       for (const disposal of disposals) {
@@ -479,6 +497,7 @@ export class OneExplorer {
 
     subscribeDisposals([
       this.treeView,
+      vscode.commands.registerCommand('one.explorer.reveal', (oneNode: OneNode) => this.reveal(oneNode)),
       vscode.commands.registerCommand('one.explorer.open', (file) => this.openFile(file)),
       vscode.commands.registerCommand(
           'one.explorer.openAsText', (oneNode: OneNode) => this.openWithTextEditor(oneNode.node)),
