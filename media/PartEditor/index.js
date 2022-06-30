@@ -84,7 +84,6 @@ editor.Editor = class {
     // backend combobox change
     this.document.getElementById('circle-be').addEventListener('change', () => {
       this.updateDefaultCheckbox();
-      this.updateBackend();
       this.updateBeComboColor();
     });
 
@@ -137,11 +136,6 @@ editor.Editor = class {
     let opname = this.makeOpNameSection();
 
     vscode.postMessage({command: 'updateDocument', partition: partition, opname: opname});
-  }
-
-  updateBackend() {
-    let beName = this.currentBackendName();
-    vscode.postMessage({command: 'updateBackend', backend: beName});
   }
 
   updateBeComboColor() {
