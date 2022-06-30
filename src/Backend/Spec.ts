@@ -56,9 +56,10 @@ class DeviceSpec {
  * BridgeSpec is a Spec that is used for access on a device.
  */
 class BridgeSpec {
-  // TODO: Add Spec check command to match with given DeviceSpec
   name: string;
+  // This will return Command to get TargetDevice List.
   deviceListCmd: Command;
+  // This will return Command to run on TargetDevice.
   shellCmd: Command;
   // TODO add more command for this.
   constructor(name: string, listCommand: string, shellCommand: string) {
