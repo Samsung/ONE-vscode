@@ -528,9 +528,9 @@ view.View = class {
      * @brief getSelection returns array of circle.Node that are selected
      */
     getSelection() {
-        var selectionNodes = [];
-        var selectionTensors = [];
-        var index;
+        let selectionNodes = [];
+        let selectionTensors = [];
+        let index;
         for (index = 0; index < this._selectionNodes.length; index++) {
             var node = this._selectionNodes[index];
             if (node.value.outputs) {
