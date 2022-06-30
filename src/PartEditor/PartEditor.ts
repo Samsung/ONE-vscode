@@ -126,10 +126,6 @@ class PartEditor implements PartGraphEvent {
           // when user wants graph view
           this.handleSelectByGraph(message.backend);
           return;
-
-        case 'updateBackend':
-          this.handleUpdateBackend(message.backend);
-          return;
       }
     });
   }
@@ -275,11 +271,6 @@ class PartEditor implements PartGraphEvent {
       edit.replace(this._document.uri, new vscode.Range(0, 0, this._document.lineCount, 0), text);
       vscode.workspace.applyEdit(edit);
     }
-  }
-
-  private handleUpdateBackend(backend: string) {
-    this._backEndForGraph = backend;
-    this.updateWebview();
   }
 
   // PartGraphEvent implements
