@@ -32,6 +32,10 @@ type Partition = {
   comply?: {};
 };
 
+export interface PartEditorEvent {
+  onEditorDispose(e: PartEditor): void;
+}
+
 class PartEditor implements PartGraphEvent {
   private _document: vscode.TextDocument;
   private _panel: vscode.WebviewPanel;
@@ -44,6 +48,7 @@ class PartEditor implements PartGraphEvent {
   private _backEndNames: string[] = [];
   private _backEndColors: string[] = [];
   private _backEndForGraph: string;
+  private _eventHandler: PartEditorEvent|undefined;
 
   constructor(doc: vscode.TextDocument, panel: vscode.WebviewPanel, id: number) {
     this._document = doc;
@@ -59,13 +64,16 @@ class PartEditor implements PartGraphEvent {
     this._modelFolderPath = this._document.fileName.substring(0, lastSlash);
     this._modelFilePath = this._modelFolderPath + this._modelFileName;
     this._backEndForGraph = '';
+    this._eventHandler = undefined;
   }
 
   get modelFileName() {
     return this._modelFileName;
   }
 
-  public registerHandlers() {
+  public registerHandlers(handler: PartEditorEvent) {
+    this._eventHandler = handler;
+
     const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(e => {
       if (e.document.uri.toString() === this._document.uri.toString()) {
         this.updateWebview();
@@ -77,6 +85,11 @@ class PartEditor implements PartGraphEvent {
         vscode.commands.executeCommand(
             PartGraphSelPanel.cmdClose, this._document.fileName, this._id);
       }
+
+      if (this._eventHandler) {
+        this._eventHandler.onEditorDispose(this);
+      }
+
       changeDocumentSubscription.dispose();
     });
 
@@ -289,7 +302,7 @@ class PartEditor implements PartGraphEvent {
   }
 }
 
-export class PartEditorProvider implements vscode.CustomTextEditorProvider {
+export class PartEditorProvider implements vscode.CustomTextEditorProvider, PartEditorEvent {
   public static readonly viewType = 'onevscode.part-editor';
   public static readonly folderMediaPartEditor = 'media/PartEditor';
 
@@ -319,11 +332,20 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider {
     let partEditor = new PartEditor(document, webviewPanel, PartEditorProvider.nextId++);
     this._partEditors.push(partEditor);
 
-    partEditor.registerHandlers();
+    partEditor.registerHandlers(this);
     partEditor.loadContent();
 
     webviewPanel.webview.options = this.getWebviewOptions(this._extensionUri),
     webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, partEditor);
+  }
+
+  public onEditorDispose(e: PartEditor) {
+    this._partEditors.forEach((editor, index) => {
+      if (e === editor) {
+        this._partEditors.splice(index, 1);
+        return true;
+      }
+    });
   }
 
   private getHtmlForWebview(webview: vscode.Webview, partEditor: PartEditor) {
