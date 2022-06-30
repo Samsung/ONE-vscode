@@ -32,8 +32,9 @@ editor.Backend = class {
  * @brief editor.Operator stores model operator records
  */
 editor.Operator = class {
-  constructor(name, becode) {
+  constructor(name, opcode, becode) {
     this.name = name;      // name of operator
+    this.opcode = opcode;  // name of opcode, e.g. 'CONV_2D'
     this.becode = becode;  // backend code of operator
   }
 };
@@ -194,16 +195,18 @@ editor.Editor = class {
     // initial fill operators listbox with name and becode as 0
     const listbox = this.document.getElementById('circle-nodes');
     for (let idx = 0; idx < itemOpNames.length; idx++) {
-      const name = itemOpNames[idx];
-      if (name.length > 0) {
+      if (itemOpNames[idx].length > 0) {
+        const codename = itemOpNames[idx].split(',');
+        const opcode = codename[0];
+        const name = codename[1];
         let opt = this.document.createElement('option');
-        opt.text = '(0) ' + name;
+        opt.text = `(0) [${opcode}] ${name}`;
         opt.value = idx;
         listbox.options.add(opt);
 
         // add name with default becode(0) as of now
         // becode will be updated after document partition is received
-        this.operators.push(new editor.Operator(name, 0));
+        this.operators.push(new editor.Operator(name, opcode, 0));
       }
     };
 
@@ -256,7 +259,9 @@ editor.Editor = class {
       let opt = listbox.options[i];
       if (opt.selected) {
         let idx = opt.value;
-        opt.text = `(${beCode}) ` + this.operators[idx].name;
+        let name = this.operators[idx].name;
+        let opcode = this.operators[idx].opcode;
+        opt.text = `(${beCode}) [${opcode}] ${name}`;
         this.operators[idx].becode = beCode;
         opt.style = 'color:' + this.backends[beCode].color;
       }
@@ -313,7 +318,9 @@ editor.Editor = class {
 
       let idx = opt.value;
       let beCode = this.operators[idx].becode;
-      opt.text = `(${beCode}) ` + this.operators[idx].name;
+      let opcode = this.operators[idx].opcode;
+      let name = this.operators[idx].name;
+      opt.text = `(${beCode}) [${opcode}] ${name}`;
       opt.style = 'color:' + this.backends[beCode].color;
     }
   }
