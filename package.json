@@ -118,8 +118,9 @@
       },
       {
         "command": "one.explorer.runCfg",
-        "title": "Run",
-        "category": "ONE"
+        "title": "Run with the toolchain",
+        "category": "ONE",
+        "icon": "$(play)"
       },
       {
         "command": "one.explorer.rename",
@@ -223,6 +224,11 @@
           "command": "one.explorer.runCfg",
           "when": "view == OneExplorerView && viewItem == config",
           "group": "navigation"
+        },
+        {
+          "command": "one.explorer.runCfg",
+          "when": "view == OneExplorerView && viewItem == config",
+          "group": "inline"
         },
         {
           "command": "one.explorer.rename",
