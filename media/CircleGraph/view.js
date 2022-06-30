@@ -110,6 +110,9 @@ view.View = class {
                             'touchstart', (e) => this._touchStartHandler(e), {passive: true});
                         break;
                 }
+                // key state
+                this._keyCtrl = false;
+                this._keyShift = false;
             })
             .catch((err) => {
                 this.error(err, null, null);
@@ -331,6 +334,12 @@ view.View = class {
                     delete this._mousePosition;
                     document.addEventListener('click', clickHandler, true);
                 }
+                // delay reset key status as view.Node's 'click' event is fired
+                // after this method
+                setTimeout(() => {
+                    this._keyCtrl = false;
+                    this._keyShift = false;
+                }, 1);
             };
             const clickHandler = (e) => {
                 e.stopPropagation();
@@ -339,6 +348,9 @@ view.View = class {
             container.addEventListener('mousemove', mouseMoveHandler);
             container.addEventListener('mouseup', mouseUpHandler);
             container.addEventListener('mouseleave', mouseUpHandler);
+
+            this._keyShift = e.shiftKey;
+            this._keyCtrl = e.ctrlKey;
         }
     }
 
