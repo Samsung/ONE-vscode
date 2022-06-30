@@ -90,22 +90,27 @@ class PartEditor implements PartGraphEvent {
     this._panel.webview.onDidReceiveMessage(message => {
       switch (message.command) {
         case 'requestBackends':
+          // when initialization, request backend list
           this.handleRequestBackends();
           return;
 
         case 'requestOpNames':
+          // after 'requestBackends', request operator names to fill listbox
           this.handleRequestOpNames();
           return;
 
         case 'requestPartition':
+          // after 'requestOpNames', request partition info; op -> backend
           this.handleRequestPartition();
           return;
 
         case 'updateDocument':
+          // when partition has changed
           this.handleUpdateDocument(message);
           return;
 
         case 'selectByGraph':
+          // when user wants graph view
           this.handleSelectByGraph(message.backend);
           return;
 
