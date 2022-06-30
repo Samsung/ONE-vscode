@@ -150,17 +150,30 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
   private fileWatcher =
       vscode.workspace.createFileSystemWatcher(`**/*.{cfg,tflite,onnx,circle,tvn}`);
 
+  private tree: Node|undefined;
+
   constructor(private workspaceRoot: vscode.Uri) {
     const fileWatchersEvents =
         [this.fileWatcher.onDidCreate, this.fileWatcher.onDidChange, this.fileWatcher.onDidDelete];
 
     for (let event of fileWatchersEvents) {
-      event(() => this._onDidChangeTreeData.fire());
+      event(() => this.refresh());
     }
   }
 
-  refresh(): void {
-    this._onDidChangeTreeData.fire();
+  /**
+   * Refresh the tree under the given oneNode
+   * @param oneNode A start node to rebuild. The sub-tree under the node will be rebuilt.
+   *                If not given, the whole tree will be rebuilt.
+   */
+  refresh(oneNode: OneNode|void): void {
+    if (!oneNode) {
+      // refresh the root
+      this.tree = undefined;
+      oneNode = this.tree;
+    }
+
+    this._onDidChangeTreeData.fire(oneNode);
   }
 
   // TODO: Add move()
@@ -283,7 +296,7 @@ input_path=${modelName}.${extName}
           vscode.workspace.fs.writeFile(uri, content)
               .then(() => {
                 return new Promise<vscode.Uri>(resolve => {
-                  this.refresh();
+                  this.refresh(oneNode);
 
                   // Wait until the refresh event listeners are handled
                   // TODO: Add an event after revising refresh commmand
@@ -347,10 +360,12 @@ input_path=${modelName}.${extName}
   }
 
   private getTree(rootPath: vscode.Uri): Node {
-    const node = new Node(NodeType.directory, [], rootPath);
+    if (!this.tree) {
+      this.tree = new Node(NodeType.directory, [], rootPath);
+      this.searchNode(this.tree);
+    }
 
-    this.searchNode(node);
-    return node;
+    return this.tree;
   }
 
   /**
