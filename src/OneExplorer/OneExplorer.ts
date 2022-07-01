@@ -312,7 +312,11 @@ input_path=${modelName}.${extName}
     if (element) {
       return Promise.resolve(this.getNode(element.node));
     } else {
-      return Promise.resolve(this.getNode(this.getTree(this.workspaceRoot)));
+      return new Promise(resolve=>{
+        this.getTree(this.workspaceRoot).then(treeNode=>{
+          resolve(this.getNode(treeNode));
+        });
+      });
     }
   }
 
@@ -346,10 +350,10 @@ input_path=${modelName}.${extName}
     return node.childNodes.map(node => toOneNode(node));
   }
 
-  private getTree(rootPath: vscode.Uri): Node {
+  private async getTree(rootPath: vscode.Uri): Promise<Node> {
     const node = new Node(NodeType.directory, [], rootPath);
 
-    this.searchNode(node);
+    await this.searchDirNode(node);
     return node;
   }
 
@@ -357,30 +361,70 @@ input_path=${modelName}.${extName}
    * Construct a tree under the given node
    * @returns void
    */
-  private searchNode(node: Node) {
-    const files = fs.readdirSync(node.path);
+  private async searchDirNode(node: Node) {
+    const isSymlink = (ftype: vscode.FileType) => {
+      return ftype === (ftype | vscode.FileType.SymbolicLink);
+    };
 
-    for (const fname of files) {
-      const fpath = path.join(node.path, fname);
-      const fstat = fs.statSync(fpath);
+    const isDirectory = (fname: string, ftype :vscode.FileType) => {
+      // NOTE
+      // THIS EXTENSION DOES NOT PARSE SYMBOLIC LINKS
+      // Why? To avoid the extension dies because of circular symbolic link
+      //
+      // TODO find another way to parse valid symlinks
+      
+      return (ftype === vscode.FileType.Directory) || (ftype === (vscode.FileType.Directory | vscode.FileType.SymbolicLink));
+      
+      //return (ftype === vscode.FileType.Directory && !isSymlink(ftype));
+    };
 
-      if (fstat.isDirectory()) {
-        const childNode = new Node(NodeType.directory, [], vscode.Uri.file(fpath));
+    const isBaseModel = (fname: string, ftype :vscode.FileType) => {
+      return (ftype === vscode.FileType.File &&
+        (fname.endsWith('.pb') || fname.endsWith('.tflite') || fname.endsWith('.onnx')));
+    };
 
-        this.searchNode(childNode);
-        if (childNode.childNodes.length > 0) {
-          node.childNodes.push(childNode);
-        }
-      } else if (
-          fstat.isFile() &&
-          (fname.endsWith('.pb') || fname.endsWith('.tflite') || fname.endsWith('.onnx'))) {
-        const childNode = new Node(NodeType.baseModel, [], vscode.Uri.file(fpath));
+    let p : Promise<void>[] = [];
+    await vscode.workspace.fs.readDirectory(node.uri).then(files=>{
 
-        this.searchPairConfig(childNode);
+      files.filter(value=>isDirectory(value[0], value[1])).forEach(fstat=>{
+        const [fname, ftype] = fstat;
+        const newNode = new Node(NodeType.directory, [], vscode.Uri.file(path.join(node.path, fname)));
+        
+        Logger.debug('OneExplorer', ftype, path.join(node.path, fname));
 
-        node.childNodes.push(childNode);
+        p.push(
+          this.searchDirNode(newNode).then((resolve)=>{
+            if (newNode.childNodes.length > 0) {
+              Logger.debug('OneExplorer', ftype, path.join(node.path, fname), " length > 0 ");
+              node.childNodes.push(newNode);
+            }
+            else {
+              Logger.debug('OneExplorer', ftype, path.join(node.path, fname), " length == 0");
+            }
+          }));
+      });
+
+      files.filter(value=>isBaseModel(value[0], value[1])).forEach(fstat=>{
+        const [fname, ftype] = fstat;
+        const newNode = new Node(NodeType.baseModel, [], vscode.Uri.file(path.join(node.path, fname)));
+
+        p.push(
+          new Promise(resolve=>{
+            Logger.debug('OneExplorer', path.join(node.path, fname), "Model!");
+            this.searchPairConfig(newNode);
+            node.childNodes.push(newNode);
+            resolve();
+            }));
+          });
+    });
+
+    return Promise.all(p).then((p)=>
+    {
+      if(p.length > 0){
+        Logger.debug('OneExplorer', node.path, "PROMISE DONE!");
       }
-    }
+    });
+
   }
 
   /**
@@ -418,9 +462,11 @@ input_path=${modelName}.${extName}
       let children: string[] = [];
       if (fs.statSync(root).isDirectory()) {
         fs.readdirSync(root).forEach(val => {
+          Logger.debug('OneExplorer', `3`);
           children = children.concat(readdirSyncRecursive(path.join(root, val)));
         });
       }
+
       return children;
     };
 
@@ -431,7 +477,7 @@ input_path=${modelName}.${extName}
     for (const conf of confs) {
       const parsedObj = ConfigObj.parse(vscode.Uri.file(conf));
       if (!parsedObj) {
-        Logger.info('OneExplorer', `Failed to open file ${conf}`);
+        Logger.debug('OneExplorer', `Failed to open file ${conf}`);
         continue;
       }
 
