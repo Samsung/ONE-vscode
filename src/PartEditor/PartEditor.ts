@@ -124,7 +124,7 @@ class PartEditor implements PartGraphEvent {
 
         case 'selectByGraph':
           // when user wants graph view
-          this.handleSelectByGraph(message.backend);
+          this.handleSelectByGraph(message);
           return;
       }
     });
@@ -156,13 +156,15 @@ class PartEditor implements PartGraphEvent {
     return partition;
   }
 
-  private handleSelectByGraph(backend: string) {
+  private handleSelectByGraph(message: any) {
     if (this._document) {
-      this._backEndForGraph = backend;
-
+      let names = message.selection;
+      if (typeof names !== 'string') {
+        names = '';
+      }
       vscode.commands.executeCommand(
-          PartGraphSelPanel.cmdOpen, this._document.fileName, this._document.getText(), backend,
-          this);
+          PartGraphSelPanel.cmdOpen, this._document.fileName, this._id, this._document.getText(),
+          names, this);
     }
   }
 

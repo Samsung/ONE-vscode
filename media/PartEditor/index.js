@@ -105,10 +105,10 @@ editor.Editor = class {
       this.updateDocument();
     });
 
-    // set backend by graph-view
+    // show graph view with identical node selection
     this.document.getElementById('circle-graph').addEventListener('click', (e) => {
-      let beName = this.currentBackendName();
-      vscode.postMessage({command: 'selectByGraph', backend: beName});
+      let names = this.getSelectionNames();
+      vscode.postMessage({command: 'selectByGraph', selection: names});
     });
   }
 
@@ -223,6 +223,22 @@ editor.Editor = class {
 
     this.updateOperatorsBackend();
     this.refershOpListbox();
+  }
+
+  getSelectionNames() {
+    let listbox = this.document.getElementById('circle-nodes');
+    let names = '';
+    for (let i = 0; i < listbox.options.length; i++) {
+      let opt = listbox.options[i];
+      if (opt.selected) {
+        let idx = opt.value;
+        if (names !== '') {
+          names = names + '\n';
+        }
+        names = names + this.operators[idx].name;
+      }
+    }
+    return names;
   }
 
   updateDefaultCheckbox() {
