@@ -239,27 +239,15 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
     const approval = 'Move to Trash';
     const recursive = isDirectory ? true : false;
 
-    if (oneNode.node.type === NodeType.directory) {
-      vscode.window.showInformationMessage(title, {detail: detail, modal: true}, approval)
-          .then(ans => {
-            if (ans === approval) {
-              Logger.info('OneExplorer', `Delete '${oneNode.node.name}'.`);
-              return vscode.workspace.fs.delete(
-                  oneNode.node.uri, {recursive: recursive, useTrash: true});
-            }
-          })
-          .then(() => this.refresh());
-    } else {
-      vscode.window.showInformationMessage(title, {detail: detail, modal: true}, approval)
-          .then(ans => {
-            if (ans === approval) {
-              Logger.info('OneExplorer', `Delete '${oneNode.node.name}'.`);
-              return vscode.workspace.fs.delete(
-                  oneNode.node.uri, {recursive: recursive, useTrash: true});
-            }
-          })
-          .then(() => this.refresh());
-    }
+    vscode.window.showInformationMessage(title, {detail: detail, modal: true}, approval)
+        .then(ans => {
+          if (ans === approval) {
+            Logger.info('OneExplorer', `Delete '${oneNode.node.name}'.`);
+            return vscode.workspace.fs.delete(
+                oneNode.node.uri, {recursive: recursive, useTrash: true});
+          }
+        })
+        .then(() => this.refresh());
   }
 
   /**
