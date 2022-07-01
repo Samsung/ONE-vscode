@@ -135,6 +135,9 @@ host.BrowserHost = class {
                 case 'colorTheme':
                     this._msgColorTheme(message);
                     break;
+                case 'partition':
+                    this._msgPartition(message);
+                    break;
             }
         });
 
@@ -486,6 +489,10 @@ host.BrowserHost = class {
     _msgColorTheme(message) {
         this._view.updateThemeColor();
         this._view.applyThemeColor();
+    }
+
+    _msgPartition(message) {
+        this._view.setPartition(message);
     }
 
     _addStyleForBackend() {
