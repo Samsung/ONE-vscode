@@ -47,7 +47,6 @@ class PartEditor implements PartGraphEvent {
   private _modelFolderPath: string;
   private _backEndNames: string[] = [];
   private _backEndColors: string[] = [];
-  private _backEndForGraph: string;
   private _eventHandler: PartEditorEvent|undefined;
 
   constructor(doc: vscode.TextDocument, panel: vscode.WebviewPanel, id: number) {
@@ -63,7 +62,6 @@ class PartEditor implements PartGraphEvent {
     this._modelFileName = path.basename(fileNameExt, fileExt) + '.circle';
     this._modelFolderPath = this._document.fileName.substring(0, lastSlash);
     this._modelFilePath = this._modelFolderPath + this._modelFileName;
-    this._backEndForGraph = '';
     this._eventHandler = undefined;
   }
 
