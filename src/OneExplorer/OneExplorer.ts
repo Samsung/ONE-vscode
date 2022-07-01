@@ -166,11 +166,10 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
    * @param oneNode A start node to rebuild. The sub-tree under the node will be rebuilt.
    *                If not given, the whole tree will be rebuilt.
    */
-  refresh(oneNode: OneNode|void): void {
+  refresh(oneNode?: OneNode): void {
     if (!oneNode) {
       // refresh the root
       this.tree = undefined;
-      oneNode = this.tree;
     }
 
     this._onDidChangeTreeData.fire(oneNode);
