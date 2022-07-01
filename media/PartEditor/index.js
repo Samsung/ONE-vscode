@@ -78,6 +78,11 @@ editor.Editor = class {
           // when .part file was edited through text editor
           this.handleUpdatePartition(message);
           break;
+
+        case 'selectWithNames':
+          // when selection has changed from graph view
+          this.handleSelectWithNames(message);
+          break;
       }
     });
 
@@ -227,6 +232,22 @@ editor.Editor = class {
 
     this.updateOperatorsBackend();
     this.refershOpListbox();
+  }
+
+  /**
+   * @brief select with names from outside
+   * @note  message.selection is Array of names
+   */
+  handleSelectWithNames(message) {
+    const selection = message.selection;
+
+    // initial fill operators listbox with name and becode as 0
+    const listbox = this.document.getElementById('circle-nodes');
+    for (let i = 0; i < listbox.options.length; i++) {
+      let opt = listbox.options[i];
+      let idx = opt.value;
+      opt.selected = (selection.includes(this.operators[idx].name));
+    };
   }
 
   getSelectionNames() {
