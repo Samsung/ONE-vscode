@@ -487,27 +487,37 @@ view.View = class {
     }
 
     /**
-     * @brief toggleSelect will toggle selection of the node
+     * @brief toggleSelect will select or toggle select with CtrlKey down
      * @param viewNode view.Node instance
+     * @note  works on host mode is viewMode.selector
      */
     toggleSelect(viewNode) {
-        if (viewNode) {
-            // toggle for viewNode
-            let index = this._selectionNodes.indexOf(viewNode);
-            if (index > -1) {
-                // de-select
-                this._selectionNodes.splice(index, 1);
+        if (viewNode && this._host._mode === viewMode.selector) {
+            if (this._keyCtrl) {
+                // toggle selection
+                let index = this._selectionNodes.indexOf(viewNode);
+                if (index > -1) {
+                    // de-select
+                    this._selectionNodes.splice(index, 1);
+                } else {
+                    this._selectionNodes.push(viewNode);
+                }
+                // toggle for element
+                const element = viewNode.element;  // member of grapher.Node
+                index = this._selection.indexOf(element);
+                if (index > -1) {
+                    // de-select
+                    element.classList.remove('select');
+                    this._selection.splice(index, 1);
+                } else {
+                    element.classList.add('select');
+                    this._selection.push(element);
+                }
             } else {
+                this._clearSelection();
+
                 this._selectionNodes.push(viewNode);
-            }
-            // toggle for element
-            const element = viewNode.element;  // member of grapher.Node
-            index = this._selection.indexOf(element);
-            if (index > -1) {
-                // de-select
-                element.classList.remove('select');
-                this._selection.splice(index, 1);
-            } else {
+                const element = viewNode.element;  // member of grapher.Node
                 element.classList.add('select');
                 this._selection.push(element);
             }
