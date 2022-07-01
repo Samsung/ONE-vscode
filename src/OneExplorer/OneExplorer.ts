@@ -234,9 +234,9 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
           if (newname) {
             const dirpath = path.dirname(oneNode.node.uri.fsPath);
             const newpath = `${dirpath}/${newname}`;
-            vscode.workspace.fs.rename(oneNode.node.uri, vscode.Uri.file(newpath));
-
-            this.refresh();
+            vscode.workspace.fs.rename(oneNode.node.uri, vscode.Uri.file(newpath)).then(
+              ()=>this.refresh(oneNode);
+            );
           }
         });
   }
@@ -527,7 +527,13 @@ export class OneExplorer {
             oneccRunner.run();
           }),
       vscode.commands.registerCommand(
-          'one.explorer.rename', (oneNode: OneNode) => oneTreeDataProvider.rename(oneNode)),
+        'one.explorer.rename', () => {
+          this.treeView!.selection.forEach(oneNode=>{
+            if(oneNode) {
+              oneTreeDataProvider.rename(oneNode);
+            }
+          });
+        }),
       vscode.commands.registerCommand(
           'one.explorer.openContainingFolder',
           (oneNode: OneNode) => oneTreeDataProvider.openContainingFolder(oneNode)),
@@ -543,4 +549,26 @@ export class OneExplorer {
   private openWithTextEditor(node: Node) {
     vscode.commands.executeCommand('vscode.openWith', node.uri, 'default');
   }
+
+
+	// private openResource(resource: vscode.Uri): void {
+	// 	vscode.window.showTextDocument(resource);
+	// }
+
+	// private reveal(): Thenable<void> {
+	// 	const node = this.getNode();
+	// 	if (node) {
+	// 		return this.treeView.reveal(node);
+	// 	}
+	// 	return null;
+	// }
+
+	// private getNode(): OneNode {
+	// 	if (vscode.window.activeTextEditor) {
+	// 		//if (vscode.window.activeTextEditor.document.uri.scheme === 'ftp') {
+	// 			return { resource: vscode.window.activeTextEditor.document.uri, isDirectory: false };
+	// 		//}
+	// 	}
+	// 	return null;
+	// }
 }
