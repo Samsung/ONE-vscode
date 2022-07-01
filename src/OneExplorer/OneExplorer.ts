@@ -168,7 +168,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
    */
   refresh(oneNode?: OneNode): void {
     if (!oneNode) {
-      // refresh the root
+      // Reset the root in order to build from scratch (at OneTreeDataProvider.getTree)
       this.tree = undefined;
     }
 
