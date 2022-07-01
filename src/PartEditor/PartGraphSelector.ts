@@ -29,6 +29,7 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
   public static readonly cmdOpen = 'one.part.openGraphSelector';
   public static readonly cmdUpdate = 'one.part.updateGraphSelector';
   public static readonly cmdClose = 'one.part.closeGraphSelector';
+  public static readonly cmdFwdSelection = 'one.part.fwdSelection';
   public static readonly folderMediaCircleGraph = 'media/CircleGraph';
 
   public static panels: PartGraphSelPanel[] = [];
@@ -56,6 +57,12 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
           PartGraphSelPanel.closeByOwner(context.extensionUri, filePath, id);
         });
     context.subscriptions.push(disposableCmdClose);
+
+    let disposableCmdFwdSelection = vscode.commands.registerCommand(
+        PartGraphSelPanel.cmdFwdSelection, (filePath: string, id: number, selection: string) => {
+          PartGraphSelPanel.forwardSelectionByOwner(context.extensionUri, filePath, id, selection);
+        });
+    context.subscriptions.push(disposableCmdFwdSelection);
 
     let disposableGraphPenel = vscode.commands.registerCommand(
         PartGraphSelPanel.cmdOpen,
@@ -126,6 +133,17 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
     let selPanel = PartGraphSelPanel.findSelPanel(docPath, id);
     if (selPanel) {
       selPanel.dispose();
+    }
+  }
+
+  /**
+   * @brief called when owner selection state of nodes has changed
+   */
+  public static forwardSelectionByOwner(
+      extensionUri: vscode.Uri, docPath: string, id: number, selection: string) {
+    let selPanel = PartGraphSelPanel.findSelPanel(docPath, id);
+    if (selPanel) {
+      selPanel.onForwardSelection(selection);
     }
   }
 
