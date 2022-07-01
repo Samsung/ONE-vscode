@@ -143,8 +143,7 @@ class PartEditor implements PartGraphEvent {
       this._webview.postMessage({command: 'updatePartition', part: content});
 
       vscode.commands.executeCommand(
-          PartGraphSelPanel.cmdUpdate, this._document.fileName, this._id, this._document.getText(),
-          this._backEndForGraph);
+          PartGraphSelPanel.cmdUpdate, this._document.fileName, this._id, this._document.getText());
     }
   }
 
