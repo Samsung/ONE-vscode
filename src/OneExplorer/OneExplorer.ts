@@ -230,30 +230,32 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
   }
 
   delete(oneNode: OneNode): void {
+    const isDirectory = (oneNode.node.type === NodeType.directory);
+    const title =
+        `Are you sure you want to delete '${path.parse(oneNode.node.path).base}'` + isDirectory ?
+        'and its contents?' :
+        '?';
+    const detail = `You can restore this file from the Trash.`;
+    const approval = 'Move to Trash';
+    const recursive = isDirectory ? true : false;
+
     if (oneNode.node.type === NodeType.directory) {
-      vscode.window
-          .showInformationMessage(
-              `Are you sure you want to delete '${
-                  path.parse(oneNode.node.path).base}' and its contents?`,
-              {detail: `You can restore this file from the Trash.`, modal: true}, 'Move to Trash')
+      vscode.window.showInformationMessage(title, {detail: detail, modal: true}, approval)
           .then(ans => {
-            if (ans === 'Move to Trash') {
-              Logger.debug('OneExplorer', `Delete '${path.parse(oneNode.node.path).base}'.`);
+            if (ans === approval) {
+              Logger.info('OneExplorer', `Delete '${oneNode.node.name}'.`);
               return vscode.workspace.fs.delete(
-                  oneNode.node.uri, {recursive: true, useTrash: true});
+                  oneNode.node.uri, {recursive: recursive, useTrash: true});
             }
           })
           .then(() => this.refresh());
     } else {
-      vscode.window
-          .showInformationMessage(
-              `Are you sure you want to delete '${path.parse(oneNode.node.path).base}'?`,
-              {detail: `You can restore this file from the Trash.`, modal: true}, 'Move to Trash')
+      vscode.window.showInformationMessage(title, {detail: detail, modal: true}, approval)
           .then(ans => {
-            if (ans === 'Move to Trash') {
-              Logger.debug('OneExplorer', `Delete '${path.parse(oneNode.node.path).base}'.`);
+            if (ans === approval) {
+              Logger.info('OneExplorer', `Delete '${oneNode.node.name}'.`);
               return vscode.workspace.fs.delete(
-                  oneNode.node.uri, {recursive: false, useTrash: true});
+                  oneNode.node.uri, {recursive: recursive, useTrash: true});
             }
           })
           .then(() => this.refresh());
