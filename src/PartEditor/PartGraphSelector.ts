@@ -120,7 +120,7 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
     if (selPanel) {
       selPanel._documentText = docText;
       if (selPanel.isReady()) {
-        selPanel.onFinishLoadModel();
+        selPanel.applyDocumentToGraph();
       }
     }
   }
@@ -235,5 +235,10 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
 
   private loadContent() {
     this._panel.webview.html = this.getHtmlForWebview(this._panel.webview);
+  }
+
+  private applyDocumentToGraph() {
+    let content = ini.parse(this._documentText);
+    this.setPartition(content);
   }
 };
