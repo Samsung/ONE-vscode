@@ -82,8 +82,10 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
 
     // Otherwise, create a new panel.
     // TODO revise 'vscode.ViewColumn.Three' to appropriate value
+    const lastSlash = docPath.lastIndexOf(path.sep) + 1;
+    const fileNameExt = docPath.substring(lastSlash);
     const panel = vscode.window.createWebviewPanel(
-        PartGraphSelPanel.viewType, 'Graph select nodes', column || vscode.ViewColumn.Three,
+        PartGraphSelPanel.viewType, fileNameExt, column || vscode.ViewColumn.Three,
         {retainContextWhenHidden: true});
 
     const graphSelPanel = new PartGraphSelPanel(panel, extensionUri, docPath, id, docText, handler);
