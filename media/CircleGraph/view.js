@@ -603,6 +603,69 @@ view.View = class {
         // TODO select with others
     }
 
+    setNodeBackend(node, backend) {
+        let circleNode = node.label.value;
+        if (circleNode) {
+            circleNode._backend = backend;
+        }
+        const g = node.label.element.childNodes[0];
+        const styles = g.classList;
+        // TODO revise this with information from extension
+        styles.remove('node-item-backend-cpu');
+        styles.remove('node-item-backend-acl_cl');
+        styles.remove('node-item-backend-trix');
+        if (backend) {
+            styles.add('node-item-backend-' + backend.toLowerCase());
+        }
+    }
+
+    /**
+     * @brief set partition information to whole graph
+     */
+    setPartition(message) {
+        // NOTE opname has only nodes that are assigned to a backend
+        //      that is, not all nodes are listed.
+        //      from this, when setting graph view nodes, previous set is not cleared.
+        //      to solve this, we can (1) clear for all nodes then set backend
+        //      (2) include unassigned nodes with empty backend
+        //      (3) interate all graph nodes and set if exist in opname, clear if not.
+        //      here, (3) is implemented
+
+        if (!message.hasOwnProperty('partition')) {
+            return;
+        }
+        const partition = message.partition;
+        const opname = partition.OPNAME;
+        // NOTE opname maybe undefined if there is no assignment
+
+        for (const nodeId of this._graph.nodes.keys()) {
+            const node = this._graph.node(nodeId);
+            if (node.label.value._outputs) {
+                // NOTE node.label = view.Node
+                // NOTE node.label.value = circle.Node
+                let backendFound = undefined;
+                if (opname) {
+                    node.label.value._outputs.forEach((output) => {
+                        output._arguments.forEach((arg) => {
+                            // NOTE name is tensor_name + tensor_index, in circle.js
+                            const mixed = arg._name.split(/\n/);
+                            const name = mixed[0];
+                            const backend = opname[name];
+                            if (backend !== undefined) {
+                                backendFound = backend;
+                                return true;
+                            }
+                        });
+                        if (backendFound) {
+                            return true;
+                        }
+                    });
+                }
+                this.setNodeBackend(node, backendFound);
+            }
+        }
+    }
+
     error(err, name, screen) {
         if (this._sidebar) {
             this._sidebar.close();
