@@ -43,6 +43,8 @@ export class MessageDefs {
   // selection
   public static readonly names = 'names';
   public static readonly tensors = 'tensors';
+  // partiton of backends
+  public static readonly partition = 'partition';
 };
 
 export interface CircleGraphEvent {
@@ -123,6 +125,10 @@ export class CircleGraphCtrl {
     if (this.isReady()) {
       this.applySelection();
     }
+  }
+
+  public setPartition(partition: any) {
+    this._webview.postMessage({command: MessageDefs.partition, partition: partition});
   }
 
   private registerEventHandlers() {
