@@ -126,6 +126,11 @@ class PartEditor implements PartGraphEvent {
           // when user wants graph view
           this.handleSelectByGraph(message);
           return;
+
+        case 'forwardSelection':
+          // when operators listbox selection has changed
+          this.handleForwardSelection(message.selection);
+          return;
       }
     });
   }
@@ -271,6 +276,13 @@ class PartEditor implements PartGraphEvent {
       const edit = new vscode.WorkspaceEdit();
       edit.replace(this._document.uri, new vscode.Range(0, 0, this._document.lineCount, 0), text);
       vscode.workspace.applyEdit(edit);
+    }
+  }
+
+  private handleForwardSelection(selection: string) {
+    if (this._document) {
+      vscode.commands.executeCommand(
+          PartGraphSelPanel.cmdFwdSelection, this._document.fileName, this._id, selection);
     }
   }
 

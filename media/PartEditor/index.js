@@ -81,6 +81,10 @@ editor.Editor = class {
       }
     });
 
+    this.document.getElementById('circle-nodes').addEventListener('change', () => {
+      this.fowardSelection();
+    });
+
     // backend combobox change
     this.document.getElementById('circle-be').addEventListener('change', () => {
       this.updateDefaultCheckbox();
@@ -239,6 +243,11 @@ editor.Editor = class {
       }
     }
     return names;
+  }
+
+  fowardSelection() {
+    let names = this.getSelectionNames();
+    vscode.postMessage({command: 'forwardSelection', selection: names});
   }
 
   updateDefaultCheckbox() {
