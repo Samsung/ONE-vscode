@@ -164,7 +164,7 @@ editor.Editor = class {
       // filter out empty string
       if (backend.length > 0) {
         let opt = this.document.createElement('option');
-        opt.text = `(${idx}) ` + backend;
+        opt.text = `(${idx}) ${backend}`;
         opt.value = idx;
         opt.style = 'color:' + becolor;
         listbox.options.add(opt);
