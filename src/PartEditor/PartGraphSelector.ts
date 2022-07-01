@@ -86,11 +86,11 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
         PartGraphSelPanel.viewType, 'Graph select nodes', column || vscode.ViewColumn.Three,
         {retainContextWhenHidden: true});
 
-    const circleGraph = new PartGraphSelPanel(panel, extensionUri, docPath, id, docText, handler);
+    const graphSelPanel = new PartGraphSelPanel(panel, extensionUri, docPath, id, docText, handler);
 
-    PartGraphSelPanel.panels.push(circleGraph);
-    circleGraph.loadContent();
-    circleGraph.onForwardSelection(names);
+    PartGraphSelPanel.panels.push(graphSelPanel);
+    graphSelPanel.loadContent();
+    graphSelPanel.onForwardSelection(names);
   }
 
   private static findSelPanel(docPath: string, id: number): PartGraphSelPanel|undefined {
