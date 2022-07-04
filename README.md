@@ -1,3 +1,4 @@
+![GitHub commit activity](https://img.shields.io/github/commit-activity/w/Samsung/ONE-vscode?color=light%20green)
 [![Gitter](https://img.shields.io/gitter/room/Samsung/ONE-vscode?color=orange)](https://gitter.im/Samsung/ONE-vscode)
 
 # **ONE**-vscode
@@ -14,3 +15,29 @@ In addition, we are trying to have a well-designed structure ourselves so that v
 
 Through these activities, ONE-vscode can provide a differentiation that cannot be experienced only with the existing CLI by linking the toolchain with the execution environment, ONE Runtime, or a target simulator corresponding to the backend compiler. This will eventually lead to fun and high productivity for developers.
 
+## Overview and tutorials
+
+- [ONE-vscode extension overview](./docs/Overview.md)
+- [How to install?](./docs/HowToInstall.md)
+- [How to use?](./docs/HowToUse.md)
+- [Glossary](./docs/Glossary.md)
+
+## Features
+
+ONE Explorer View
+
+<img src="./docs/res/README_ONE_Explorer_View.png" width=600 />
+
+Toolchain View
+- The following image shows an example of installing some toolchain provided by a backend provider
+
+<img src="./docs/res/README_Toolchain_View.gif" width=600 />
+
+
+## Contribution
+
+(TBD)
+
+## License
+
+[Apache License 2.0](https://github.com/Samsung/ONE-vscode/blob/main/LICENSE)
