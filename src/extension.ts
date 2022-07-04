@@ -28,7 +28,7 @@ import {HoverProvider} from './Editor/HoverProvider';
 import {runInferenceQuickInput} from './Execute/executeQuickInput';
 import {Jsontracer} from './Jsontracer';
 import {MondrianEditorProvider} from './Mondrian/MondrianEditor';
-import {OneExplorer} from './OneExplorer/OneExplorer';
+import {initOneExplorer} from './OneExplorer/OneExplorer';
 import {PartEditorProvider} from './PartEditor/PartEditor';
 import {PartGraphSelPanel} from './PartEditor/PartGraphSelector';
 import {Project} from './Project';
@@ -40,7 +40,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   Logger.info(tag, 'one-vscode activate OK');
 
-  new OneExplorer(context);
+  initOneExplorer(context);
 
   // ONE view
   const toolchainProvier = new ToolchainProvider();

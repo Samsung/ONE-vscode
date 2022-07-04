@@ -15,7 +15,6 @@
  */
 
 import * as fs from 'fs';
-import * as ini from 'ini';
 import * as path from 'path';
 import {TextEncoder} from 'util';
 import * as vscode from 'vscode';
@@ -499,54 +498,49 @@ input_path=${modelName}.${extName}
   }
 }
 
-export class OneExplorer {
+export function initOneExplorer(context: vscode.ExtensionContext) {
   // TODO Support multi-root workspace
-  public workspaceRoot: vscode.Uri = vscode.Uri.file(obtainWorkspaceRoot());
-  public treeView: vscode.TreeView<OneNode|undefined>|undefined;
+  let workspaceRoot: vscode.Uri = vscode.Uri.file(obtainWorkspaceRoot());
+  // NOTE: Fix `obtainWorksapceRoot` if non-null assertion is false
+  const oneTreeDataProvider = new OneTreeDataProvider(workspaceRoot!);
 
-  constructor(context: vscode.ExtensionContext) {
-    // NOTE: Fix `obtainWorksapceRoot` if non-null assertion is false
-    const oneTreeDataProvider = new OneTreeDataProvider(this.workspaceRoot!);
+  let treeView: vscode.TreeView<OneNode|undefined>|undefined = vscode.window.createTreeView(
+      'OneExplorerView',
+      {treeDataProvider: oneTreeDataProvider, showCollapseAll: true, canSelectMany: true});
 
-    this.treeView = vscode.window.createTreeView(
-        'OneExplorerView',
-        {treeDataProvider: oneTreeDataProvider, showCollapseAll: true, canSelectMany: true});
+  const subscribeDisposals = (disposals: vscode.Disposable[]) => {
+    for (const disposal of disposals) {
+      context.subscriptions.push(disposal);
+    }
+  };
 
-    const subscribeDisposals = (disposals: vscode.Disposable[]) => {
-      for (const disposal of disposals) {
-        context.subscriptions.push(disposal);
-      }
-    };
-
-    subscribeDisposals([
-      this.treeView,
-      vscode.commands.registerCommand('one.explorer.open', (file) => this.openFile(file)),
-      vscode.commands.registerCommand(
-          'one.explorer.openAsText', (oneNode: OneNode) => this.openWithTextEditor(oneNode.node)),
-      vscode.commands.registerCommand('one.explorer.refresh', () => oneTreeDataProvider.refresh()),
-      vscode.commands.registerCommand(
-          'one.explorer.createCfg', (oneNode: OneNode) => oneTreeDataProvider.createCfg(oneNode)),
-      vscode.commands.registerCommand(
-          'one.explorer.runCfg',
-          (oneNode: OneNode) => {
-            const oneccRunner = new OneccRunner(oneNode.node.uri);
-            oneccRunner.run();
-          }),
-      vscode.commands.registerCommand(
-          'one.explorer.rename', (oneNode: OneNode) => oneTreeDataProvider.rename(oneNode)),
-      vscode.commands.registerCommand(
-          'one.explorer.openContainingFolder',
-          (oneNode: OneNode) => oneTreeDataProvider.openContainingFolder(oneNode)),
-      vscode.commands.registerCommand(
-          'one.explorer.delete', (oneNode: OneNode) => oneTreeDataProvider.delete(oneNode)),
-    ]);
-  }
-
-  private openFile(node: Node) {
-    vscode.commands.executeCommand('vscode.openWith', node.uri, CfgEditorPanel.viewType);
-  }
-
-  private openWithTextEditor(node: Node) {
-    vscode.commands.executeCommand('vscode.openWith', node.uri, 'default');
-  }
+  subscribeDisposals([
+    treeView,
+    vscode.commands.registerCommand(
+        'one.explorer.open',
+        (file) => {
+          vscode.commands.executeCommand('vscode.openWith', file.uri, CfgEditorPanel.viewType);
+        }),
+    vscode.commands.registerCommand(
+        'one.explorer.openAsText',
+        (oneNode: OneNode) => {
+          vscode.commands.executeCommand('vscode.openWith', oneNode.node.uri, 'default');
+        }),
+    vscode.commands.registerCommand('one.explorer.refresh', () => oneTreeDataProvider.refresh()),
+    vscode.commands.registerCommand(
+        'one.explorer.createCfg', (oneNode: OneNode) => oneTreeDataProvider.createCfg(oneNode)),
+    vscode.commands.registerCommand(
+        'one.explorer.runCfg',
+        (oneNode: OneNode) => {
+          const oneccRunner = new OneccRunner(oneNode.node.uri);
+          oneccRunner.run();
+        }),
+    vscode.commands.registerCommand(
+        'one.explorer.rename', (oneNode: OneNode) => oneTreeDataProvider.rename(oneNode)),
+    vscode.commands.registerCommand(
+        'one.explorer.openContainingFolder',
+        (oneNode: OneNode) => oneTreeDataProvider.openContainingFolder(oneNode)),
+    vscode.commands.registerCommand(
+        'one.explorer.delete', (oneNode: OneNode) => oneTreeDataProvider.delete(oneNode)),
+  ]);
 }
