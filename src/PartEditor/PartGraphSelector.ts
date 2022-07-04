@@ -215,7 +215,10 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
   }
 
   public onFinishLoadModel() {
-    // TODO implement
+    // TODO set selection here?
+
+    // set node backend assignment
+    this.applyDocumentToGraph();
   }
 
   public onForwardSelection(selection: string) {
