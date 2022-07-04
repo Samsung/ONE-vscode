@@ -1321,8 +1321,8 @@ view.Graph = class extends grapher.Graph {
 view.Node = class extends grapher.Node {
     constructor(context, value) {
         super();
-        this.context = context;
-        this.value = value;
+        this.context = context;  // view.Graph
+        this.value = value;      // circle.Node
         view.Node.counter = view.Node.counter || 0;
         this.id = 'node-' +
             (value.name ? 'name-' + value.name : 'id-' + (view.Node.counter++).toString());
