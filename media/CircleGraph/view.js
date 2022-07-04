@@ -586,7 +586,8 @@ view.View = class {
             const names = selection.names;
             let scrollToSelects = [];  // elements to make visible by scroll to
 
-            this._graph.nodes.forEach((node) => {
+            for (const nodeId of this._graph.nodes.keys()) {
+                const node = this._graph.node(nodeId);
                 if (node.label.value._outputs) {
                     let found = false;
                     node.label.value._outputs.forEach((output) => {
@@ -608,7 +609,7 @@ view.View = class {
                         }
                     });
                 }
-            });
+            }
             if (this._scrollToSelected) {
                 // make elements to be visible
                 this.scrollToSelection(scrollToSelects);
