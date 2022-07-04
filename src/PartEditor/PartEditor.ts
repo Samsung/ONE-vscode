@@ -20,6 +20,7 @@ import * as ini from 'ini';
 import * as path from 'path';
 import * as vscode from 'vscode';
 
+import {BackendColor} from '../CircleGraph/BackendColor';
 import {Balloon} from '../Utils/Balloon';
 import {getNonce} from '../Utils/external/Nonce';
 import {Logger} from '../Utils/Logger';
@@ -161,23 +162,51 @@ class PartEditor implements PartGraphEvent {
       if (typeof names !== 'string') {
         names = '';
       }
+      let backends: BackendColor[] = [];
+      for (let idx = 1; idx < this._backEndNames.length; idx++) {
+        let backend: BackendColor = {};
+        backend.name = this._backEndNames[idx];
+        backend.color = this.toRGBColor(this._backEndColors[idx]);
+        backend.theme = '';
+        backends.push(backend);
+      }
+      for (let idx = 1; idx < this._backEndNames.length; idx++) {
+        let backend: BackendColor = {};
+        backend.name = this._backEndNames[idx];
+        backend.color = this.toRGBColor(this._backEndColors[idx]);
+        backend.theme = 'vscode-dark';
+        backends.push(backend);
+      }
       vscode.commands.executeCommand(
           PartGraphSelPanel.cmdOpen, this._document.fileName, this._id, this._document.getText(),
-          names, this);
+          names, backends, this);
     }
   }
 
+  private toRGBColor(color: string) {
+    if (color.substring(0, 1) === '#') {
+      let code = color.substring(1);
+      if (code.length === 6) {
+        let codeR = parseInt('0x' + code.substring(0, 2), 16);
+        let codeG = parseInt('0x' + code.substring(2, 4), 16);
+        let codeB = parseInt('0x' + code.substring(4, 6), 16);
+        let rgbColor = `rgb(${codeR}, ${codeG}, ${codeB})`;
+        return rgbColor;
+      }
+    }
+    return color;
+  }
+
   private handleRequestBackends() {
-    let backends = '';
-    let colors = '';
-    this._backEndNames.forEach((item) => {
-      backends = backends + item + '\n';
-    });
-    this._backEndColors.forEach((item) => {
-      colors = colors + item + '\n';
-    });
+    let backends: BackendColor[] = [];
+    for (let idx = 0; idx < this._backEndNames.length; idx++) {
+      let backend: BackendColor = {};
+      backend.name = this._backEndNames[idx];
+      backend.color = this._backEndColors[idx];
+      backends.push(backend);
+    }
     if (this._webview) {
-      this._webview.postMessage({command: 'resultBackends', backends: backends, colors: colors});
+      this._webview.postMessage({command: 'resultBackends', backends: backends});
     }
   }
 

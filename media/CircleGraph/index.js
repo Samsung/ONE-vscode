@@ -79,11 +79,13 @@ host.BrowserHost = class {
         this._modelData = [];
         this._modelPath = '';
 
+        // backends
+        this._backends = [];
+
         // default mode of viewer
         this._mode = viewMode.viewer;
         if (__viewMode === 'selector') {
             this._mode = viewMode.selector;
-            this._addStyleForBackend();
         }
     }
 
@@ -137,6 +139,9 @@ host.BrowserHost = class {
                     break;
                 case 'partition':
                     this._msgPartition(message);
+                    break;
+                case 'backendColor':
+                    this._msgBackendColor(message);
                     break;
             }
         });
@@ -495,20 +500,31 @@ host.BrowserHost = class {
         this._view.setPartition(message);
     }
 
-    _addStyleForBackend() {
-        let styleBackend = '';
-        // TODO generate colors from backend colors
-        const s11 = '.node-item-backend-';
-        const s12 = '.vscode-dark .node-item-backend-';
-        const s2 = ' path { fill: ';
-        const s3 = '; }\n';
-        styleBackend = styleBackend + s11 + 'cpu' + s2 + 'rgb(144, 144, 0)' + s3;
-        styleBackend = styleBackend + s11 + 'acl_cl' + s2 + 'rgb(144, 0, 0)' + s3;
-        styleBackend = styleBackend + s11 + 'trix' + s2 + 'rgb(0, 144, 144)' + s3;
-        styleBackend = styleBackend + s12 + 'cpu' + s2 + 'rgb(128, 128, 0)' + s3;
-        styleBackend = styleBackend + s12 + 'acl_cl' + s2 + 'rgb(128, 0, 0)' + s3;
-        styleBackend = styleBackend + s12 + 'trix' + s2 + 'rgb(0, 128, 128)' + s3;
+    _msgBackendColor(message) {
+        const backends = message.backends;
 
+        // build name of backends
+        backends.forEach((item) => {
+            if (!item.theme || item.theme === '') {
+                this._backends.push(item.name);
+            }
+        });
+
+        // build style for graph nodes
+        let styleBackend = '';
+        backends.forEach((item) => {
+            const name = item.name.toLowerCase();
+            const styleNode = `.node-item-backend-${name} path { fill: ${item.color}; }\n`;
+
+            if (item.theme && item.theme !== '') {
+                const styleBody = `.${item.theme} `;
+                styleBackend = styleBackend + styleBody + styleNode;
+            } else {
+                styleBackend = styleBackend + styleNode;
+            }
+        });
+        console.log('!!! style from msg');
+        console.log(styleBackend);
         let style = this._document.createElement('style');
         style.innerHTML = styleBackend;
         this._document.head.appendChild(style);
@@ -1067,4 +1083,5 @@ if (!('scrollBehavior' in window.document.documentElement.style)) {
 
 window.addEventListener('load', () => {
     window.__view__ = new view.View(new host.BrowserHost());
+    vscode.postMessage({command: 'pageloaded'});
 });

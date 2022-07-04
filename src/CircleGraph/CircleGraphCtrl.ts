@@ -19,6 +19,7 @@ import * as vscode from 'vscode';
 
 import {Balloon} from '../Utils/Balloon';
 import {getNonce} from '../Utils/external/Nonce';
+import {BackendColor} from './BackendColor';
 
 class CtrlStatus {
   public static readonly init = 0;
@@ -32,9 +33,11 @@ export class MessageDefs {
   public static readonly alert = 'alert';
   public static readonly request = 'request';
   public static readonly response = 'response';
+  public static readonly pageloaded = 'pageloaded';
   public static readonly loadmodel = 'loadmodel';
   public static readonly finishload = 'finishload';
   public static readonly selection = 'selection';
+  public static readonly backendColor = 'backendColor';
   public static readonly error = 'error';
   public static readonly colorTheme = 'colorTheme';
   // loadmodel type
@@ -48,6 +51,7 @@ export class MessageDefs {
 };
 
 export interface CircleGraphEvent {
+  onPageLoaded(): void;
   onSelection(names: string[], tensors: string[]): void;
   onStartLoadModel(): void;
   onFinishLoadModel(): void;
@@ -131,6 +135,10 @@ export class CircleGraphCtrl {
     this._webview.postMessage({command: MessageDefs.partition, partition: partition});
   }
 
+  public sendBackendColor(backends: BackendColor[]) {
+    this._webview.postMessage({command: MessageDefs.backendColor, backends: backends});
+  }
+
   private registerEventHandlers() {
     // Handle messages from the webview
     this._webview.onDidReceiveMessage(message => {
@@ -141,6 +149,9 @@ export class CircleGraphCtrl {
         case MessageDefs.request:
           this.handleRequest(message.url, message.encoding);
           return;
+        case MessageDefs.pageloaded:
+          this.handlePageLoaded();
+          break;
         case MessageDefs.loadmodel:
           this.handleLoadModel(parseInt(message.offset));  // to number
           return;
@@ -247,6 +258,15 @@ export class CircleGraphCtrl {
 
     // cleanup
     this._selectionNames = undefined;
+  }
+
+  /**
+   * @brief handlePageLoaded is called when window.load event is called
+   */
+  private handlePageLoaded() {
+    if (this._eventHandler) {
+      this._eventHandler.onPageLoaded();
+    }
   }
 
   /**
