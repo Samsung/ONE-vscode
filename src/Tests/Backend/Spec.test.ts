@@ -62,7 +62,7 @@ suite('Spec', function() {
   suite('BridgeSpec', function() {
     suite('#constructor()', function() {
       const dummyDeviceList = 'testDeiveList';
-      const dummyShell = 'bash';
+      const dummyShell = 'testBridgeShell';
       const testBridgeSpec = new BridgeSpec('test', dummyDeviceList, dummyShell);
       assert.isObject<BridgeSpec>(testBridgeSpec);
       assert.strictEqual(testBridgeSpec.name, 'test');
