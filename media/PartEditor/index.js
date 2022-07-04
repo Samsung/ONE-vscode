@@ -176,7 +176,7 @@ editor.Editor = class {
         opt.text = `(${idx}) ${backend}`;
         opt.value = idx;
         opt.style = 'color:' + becolor;
-        listbox.options.add(opt);
+        listbox.add(opt);
 
         this.backends.push(new editor.Backend(backend, becolor));
         this.beToCode[backend] = idx;
@@ -205,7 +205,7 @@ editor.Editor = class {
         let opt = this.document.createElement('option');
         opt.text = `(0) [${opcode}] ${name}`;
         opt.value = idx;
-        listbox.options.add(opt);
+        listbox.add(opt);
 
         // add name with default becode(0) as of now
         // becode will be updated after document partition is received
@@ -253,15 +253,13 @@ editor.Editor = class {
   getSelectionNames() {
     let listbox = this.document.getElementById('circle-nodes');
     let names = '';
-    for (let i = 0; i < listbox.options.length; i++) {
-      let opt = listbox.options[i];
-      if (opt.selected) {
-        let idx = opt.value;
-        if (names !== '') {
-          names = names + '\n';
-        }
-        names = names + this.operators[idx].name;
+    let selectedOptions = listbox.selectedOptions;
+    for (let i = 0; i < selectedOptions.length; i++) {
+      let idx = selectedOptions[i].value;
+      if (names !== '') {
+        names = names + '\n';
       }
+      names = names + this.operators[idx].name;
     }
     return names;
   }
@@ -295,16 +293,16 @@ editor.Editor = class {
 
   updateSelectedBackendCode(beCode) {
     let listbox = this.document.getElementById('circle-nodes');
-    for (let i = 0; i < listbox.options.length; i++) {
-      let opt = listbox.options[i];
-      if (opt.selected) {
-        let idx = opt.value;
-        let name = this.operators[idx].name;
-        let opcode = this.operators[idx].opcode;
-        opt.text = `(${beCode}) [${opcode}] ${name}`;
-        this.operators[idx].becode = beCode;
-        opt.style = 'color:' + this.backends[beCode].color;
-      }
+    let selectedOptions = listbox.selectedOptions;
+    for (let i = 0; i < selectedOptions.length; i++) {
+      let selected = selectedOptions[i];
+      let idx = selected.value;
+      let name = this.operators[idx].name;
+      let opcode = this.operators[idx].opcode;
+
+      selected.text = `(${beCode}) [${opcode}] ${name}`;
+      this.operators[idx].becode = beCode;
+      selected.style = 'color:' + this.backends[beCode].color;
     }
   }
 
