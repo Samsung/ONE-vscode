@@ -135,7 +135,7 @@ export class OneNode extends vscode.TreeItem {
 
     this.command = getCustomViewType(node) ? {
       command: 'vscode.openWith',
-      title: 'Open File',
+      title: 'Open with Custom Viewer',
       arguments: [node.uri, getCustomViewType(node)]
     } :
                                              undefined;
