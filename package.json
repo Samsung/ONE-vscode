@@ -83,6 +83,13 @@
         "priority": "default"
       }
     ],
+    "keybindings": [
+      {
+        "command": "one.explorer.rename",
+        "key": "f2",
+        "when": "focusedView == OneExplorerView"
+      }
+    ],
     "commands": [
       {
         "command": "one.explorer.refresh",
@@ -237,7 +244,12 @@
         },
         {
           "command": "one.explorer.rename",
-          "when": "view == OneExplorerView && viewItem != directory",
+          "when": "view == OneExplorerView",
+          "group": "navigation"
+        },
+        {
+          "command": "one.explorer.delete",
+          "when": "view == OneExplorerView",
           "group": "navigation"
         },
         {

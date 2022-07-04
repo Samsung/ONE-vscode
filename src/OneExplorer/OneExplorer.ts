@@ -84,6 +84,7 @@ class Node {
   type: NodeType;
   childNodes: Node[];
   uri: vscode.Uri;
+  parentOneNode: OneNode | undefined;
 
   constructor(type: NodeType, childNodes: Node[], uri: vscode.Uri) {
     this.type = type;
@@ -137,6 +138,7 @@ export class OneNode extends vscode.TreeItem {
     // However, resourceExtname returns info of vscode Explorer view (not of OneExplorer).
     //    "when": "view == OneExplorerView && viewItem == config"
     this.contextValue = nodeTypeToStr(node.type);
+    Logger.info("OneExplorerContextValue", this.contextValue);
   }
 }
 
@@ -159,6 +161,10 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
     for (let event of fileWatchersEvents) {
       event(() => this.refresh());
     }
+  }
+
+  getParent(oneNode: OneNode): OneNode | undefined {
+    return oneNode.node.parentOneNode;
   }
 
   /**
@@ -185,7 +191,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
    * Rename a file of all types of nodes (baseModel, derivedModel, config) excepts for directory.
    * It only alters the file name, not the path.
    */
-  rename(oneNode: OneNode): void {
+  rename(oneNode: OneNode): Thenable<void> {
     // TODO: prohibit special characters for security ('..', '*', etc)
     let warningMessage;
     if (oneNode.node.type === NodeType.baseModel) {
@@ -217,7 +223,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
       }
     };
 
-    vscode.window
+    return vscode.window
         .showInputBox({
           title: 'Enter a file name:',
           value: `${path.basename(oneNode.node.uri.fsPath)}`,
@@ -234,9 +240,10 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
           if (newname) {
             const dirpath = path.dirname(oneNode.node.uri.fsPath);
             const newpath = `${dirpath}/${newname}`;
-            vscode.workspace.fs.rename(oneNode.node.uri, vscode.Uri.file(newpath));
-
-            this.refresh();
+            return vscode.workspace.fs.rename(oneNode.node.uri, vscode.Uri.file(newpath)).then(
+              // Refresh the whole tree
+              ()=>this.refresh()
+            );
           }
         });
   }
@@ -343,7 +350,10 @@ input_path=${modelName}.${extName}
     }
 
     if (element) {
-      return Promise.resolve(this.getNode(element.node));
+      return Promise.resolve(this.getNode(element.node).map(oneNode=>{
+        oneNode.node.parentOneNode=element;
+        return oneNode;
+      }));
     } else {
       return Promise.resolve(this.getNode(this.getTree(this.workspaceRoot)));
     }
@@ -512,6 +522,10 @@ export class OneExplorer {
       }
     };
 
+    this.treeView.onDidChangeSelection(()=>{
+      Logger.info("OneExplorer", this.treeView!.selection);
+    });
+
     subscribeDisposals([
       this.treeView,
       vscode.commands.registerCommand('one.explorer.open', (file) => this.openFile(file)),
@@ -527,7 +541,12 @@ export class OneExplorer {
             oneccRunner.run();
           }),
       vscode.commands.registerCommand(
-          'one.explorer.rename', (oneNode: OneNode) => oneTreeDataProvider.rename(oneNode)),
+        'one.explorer.rename',  () => {
+          // TODO Support multiselection renaming
+          if(this.treeView!.selection[0] !== undefined){
+            oneTreeDataProvider.rename(this.treeView!.selection[0]);
+          }
+        }),
       vscode.commands.registerCommand(
           'one.explorer.openContainingFolder',
           (oneNode: OneNode) => oneTreeDataProvider.openContainingFolder(oneNode)),
@@ -543,4 +562,26 @@ export class OneExplorer {
   private openWithTextEditor(node: Node) {
     vscode.commands.executeCommand('vscode.openWith', node.uri, 'default');
   }
+
+
+	// private openResource(resource: vscode.Uri): void {
+	// 	vscode.window.showTextDocument(resource);
+	// }
+
+	// private reveal(): Thenable<void> {
+	// 	const node = this.getNode();
+	// 	if (node) {
+	// 		return this.treeView.reveal(node);
+	// 	}
+	// 	return null;
+	// }
+
+	// private getNode(): OneNode {
+	// 	if (vscode.window.activeTextEditor) {
+	// 		//if (vscode.window.activeTextEditor.document.uri.scheme === 'ftp') {
+	// 			return { resource: vscode.window.activeTextEditor.document.uri, isDirectory: false };
+	// 		//}
+	// 	}
+	// 	return null;
+	// }
 }
