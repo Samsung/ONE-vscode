@@ -104,12 +104,10 @@ suite('Project', function() {
         for (let i = 0; i < simultaneousTrials; i++) {
           let args = new ToolArgs();
           args.push('1');  // 1 sec
-          try {
-            toolRunner.getRunner('sleep', 'sleep', args, '.');
-          } catch (err) {
-            // cannot make process
+          const runner = toolRunner.getRunner('sleep', 'sleep', args, '.');
+          runner.then((val: SuccessResult) => {}).catch(exitcode => {
             errCount++;
-          }
+          });
         }
 
         assert.equal(errCount, errorAmongTrials);
