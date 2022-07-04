@@ -586,6 +586,7 @@ view.View = class {
 
             this._graph.nodes.forEach((node) => {
                 if (node.label.value._outputs) {
+                    let found = false;
                     node.label.value._outputs.forEach((output) => {
                         output._arguments.forEach((arg) => {
                             // NOTE name is tensor_name + tensor_index, in circle.js
@@ -593,9 +594,13 @@ view.View = class {
                             const name = mixed[0];
                             if (names.includes(name)) {
                                 this.selectViewNode(node.label);
+                                found = true;
                                 return true;  // break forEach
                             }
                         });
+                        if (found) {
+                            return true;
+                        }
                     });
                 }
             });
