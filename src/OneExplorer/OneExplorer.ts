@@ -133,12 +133,13 @@ export class OneNode extends vscode.TreeItem {
       }
     };
 
-    this.command = getCustomViewType(node) ? {
-      command: 'vscode.openWith',
-      title: 'Open with Custom Viewer',
-      arguments: [node.uri, getCustomViewType(node)]
-    } :
-                                             undefined;
+    if (getCustomViewType(node) !== undefined) {
+      this.command = {
+        command: 'vscode.openWith',
+        title: 'Open with Custom Viewer',
+        arguments: [node.uri, getCustomViewType(node)]
+      };
+    }
 
     if (node.type === NodeType.config) {
       this.iconPath = new vscode.ThemeIcon('gear');
