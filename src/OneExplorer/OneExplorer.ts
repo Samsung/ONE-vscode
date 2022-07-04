@@ -241,6 +241,27 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
         });
   }
 
+  delete(oneNode: OneNode): void {
+    const isDirectory = (oneNode.node.type === NodeType.directory);
+    const title =
+        `Are you sure you want to delete '${path.parse(oneNode.node.path).base}'` + isDirectory ?
+        'and its contents?' :
+        '?';
+    const detail = `You can restore this file from the Trash.`;
+    const approval = 'Move to Trash';
+    const recursive = isDirectory ? true : false;
+
+    vscode.window.showInformationMessage(title, {detail: detail, modal: true}, approval)
+        .then(ans => {
+          if (ans === approval) {
+            Logger.info('OneExplorer', `Delete '${oneNode.node.name}'.`);
+            return vscode.workspace.fs.delete(
+                oneNode.node.uri, {recursive: recursive, useTrash: true});
+          }
+        })
+        .then(() => this.refresh());
+  }
+
   /**
    * Create ONE configuration file for a base model
    * Input box is prefilled as <base model's name>.cfg
@@ -510,6 +531,8 @@ export class OneExplorer {
       vscode.commands.registerCommand(
           'one.explorer.openContainingFolder',
           (oneNode: OneNode) => oneTreeDataProvider.openContainingFolder(oneNode)),
+      vscode.commands.registerCommand(
+          'one.explorer.delete', (oneNode: OneNode) => oneTreeDataProvider.delete(oneNode)),
     ]);
   }
 
