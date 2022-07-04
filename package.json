@@ -244,7 +244,7 @@
         },
         {
           "command": "one.explorer.rename",
-          "when": "view == OneExplorerView && viewItem != directory",
+          "when": "view == OneExplorerView",
           "group": "navigation"
         },
         {
