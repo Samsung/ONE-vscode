@@ -74,6 +74,7 @@ view.View = class {
                 this._sidebar = new sidebar.Sidebar(this._host, id);
                 this._searchText = '';
                 this._theme = undefined;
+                this._scrollToSelected = true;  // TODO add menu for this
                 this._modelFactoryService = new view.ModelFactoryService(this._host);
                 this._getElementById('zoom-in-button').addEventListener('click', () => {
                     this.zoomIn();
@@ -583,6 +584,7 @@ view.View = class {
         if (selection.hasOwnProperty('names')) {
             // selection is by names
             const names = selection.names;
+            let scrollToSelects = [];  // elements to make visible by scroll to
 
             this._graph.nodes.forEach((node) => {
                 if (node.label.value._outputs) {
@@ -594,6 +596,9 @@ view.View = class {
                             const name = mixed[0];
                             if (names.includes(name)) {
                                 this.selectViewNode(node.label);
+                                if (this._scrollToSelected) {
+                                    scrollToSelects.push(node.label.element);
+                                }
                                 found = true;
                                 return true;  // break forEach
                             }
@@ -604,6 +609,10 @@ view.View = class {
                     });
                 }
             });
+            if (this._scrollToSelected) {
+                // make elements to be visible
+                this.scrollToSelection(scrollToSelects);
+            }
         }
         // TODO select with others
     }
