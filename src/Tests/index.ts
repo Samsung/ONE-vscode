@@ -68,11 +68,11 @@ export function run(): Promise<void> {
   // TODO: Enable to get string to filter from package.json
   const testFilter = '';
   let mocha = new Mocha({ui: 'tdd', color: true, fgrep: testFilter});
-  const isCoverage: string | undefined = env.isCoverage;
+  const isCoverage: string|undefined = env.isCoverage;
   if (isCoverage !== undefined && isCoverage === 'true') {
-    mocha.reporter('mocha-xunit-reporter', { output: 'mocha_result.xml' });
+    mocha.reporter('mocha-xunit-reporter', {output: 'mocha_result.xml'});
   }
-  const isCiTeste: string | undefined = env.isCiTest;
+  const isCiTeste: string|undefined = env.isCiTest;
   if (isCiTeste !== undefined && isCiTeste === 'true') {
     mocha.fgrep('@Use-onecc');
     mocha.invert();

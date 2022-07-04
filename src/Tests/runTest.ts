@@ -68,10 +68,7 @@ async function main() {
       extensionDevelopmentPath,
       extensionTestsPath: extensionTestsPath,
       launchArgs: [testWorkspace],
-      extensionTestsEnv: {
-        isCoverage: String(isCoverage),
-        isCiTest: String(isCiTest)
-      }
+      extensionTestsEnv: {isCoverage: String(isCoverage), isCiTest: String(isCiTest)}
     });
   } catch (err) {
     console.error('Failed to run tests: ');
