@@ -2,10 +2,12 @@ name: Check PR Format
 
 on:
   pull_request:
-    branches: [ main ]
+    branched: [ no_test ]
 
 jobs:
   check-format:
+    if: ${{ ! contains(github.event.pull_request.labels.*.name, 'PR/NO TEST') }}
+
     runs-on: ubuntu-20.04
 
     steps:

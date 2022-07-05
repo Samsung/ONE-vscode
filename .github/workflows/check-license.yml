@@ -2,11 +2,13 @@ name: License Verification
 
 on:
   pull_request_target:
-    branches: [ main ]
+    branched: [ no_test ]
     paths: [ 'package.json' ]
 
 jobs:
   license_verification:
+    if: ${{ ! contains(github.event.pull_request.labels.*.name, 'PR/NO TEST') }}
+
     runs-on: ${{ matrix.os }}
 
     strategy:
