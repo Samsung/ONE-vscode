@@ -159,17 +159,17 @@ editor.Editor = class {
    * @brief fill 'circle-be' combobox with backends
    */
   handleResultBackends(message) {
-    const backendNames = message.backends.split(/\r?\n/);
-    const backendColors = message.colors.split(/\r?\n/);
+    // NOTE backends is BackendColor[] of src/CirclrGraph/BackendColor
+    const backends = message.backends;
 
     // NOTE idx 0 is default which we do not add to the list
-    this.backends.push(new editor.Backend(backendNames[0], backendColors[0]));
+    this.backends.push(new editor.Backend(backends[0].name, backends[0].color));
 
     // initial fill op backend listbox
     const listbox = this.document.getElementById('circle-be');
-    for (let idx = 1; idx < backendNames.length; idx++) {
-      const backend = backendNames[idx];
-      const becolor = backendColors[idx];
+    for (let idx = 1; idx < backends.length; idx++) {
+      const backend = backends[idx].name;
+      const becolor = backends[idx].color;
       // filter out empty string
       if (backend.length > 0) {
         let opt = this.document.createElement('option');

@@ -198,16 +198,15 @@ class PartEditor implements PartGraphEvent {
   }
 
   private handleRequestBackends() {
-    let backends = '';
-    let colors = '';
-    this._backEndNames.forEach((item) => {
-      backends = backends + item + '\n';
-    });
-    this._backEndColors.forEach((item) => {
-      colors = colors + item + '\n';
-    });
+    let backends: BackendColor[] = [];
+    for (let idx = 0; idx < this._backEndNames.length; idx++) {
+      let backend: BackendColor = {};
+      backend.name = this._backEndNames[idx];
+      backend.color = this._backEndColors[idx];
+      backends.push(backend);
+    }
     if (this._webview) {
-      this._webview.postMessage({command: 'resultBackends', backends: backends, colors: colors});
+      this._webview.postMessage({command: 'resultBackends', backends: backends});
     }
   }
 
