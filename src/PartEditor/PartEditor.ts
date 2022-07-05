@@ -139,7 +139,7 @@ class PartEditor implements PartGraphEvent {
   }
 
   private updateWebview() {
-    if (this._document && this._panel.webview) {
+    if (this._panel.webview) {
       let content = ini.parse(this._document.getText());
       this._webview.postMessage({command: 'updatePartition', part: content});
 
@@ -157,30 +157,28 @@ class PartEditor implements PartGraphEvent {
   }
 
   private handleSelectByGraph(message: any) {
-    if (this._document) {
-      let names = message.selection;
-      if (typeof names !== 'string') {
-        names = '';
-      }
-      let backends: BackendColor[] = [];
-      for (let idx = 1; idx < this._backEndNames.length; idx++) {
-        let backend: BackendColor = {};
-        backend.name = this._backEndNames[idx];
-        backend.color = this.toRGBColor(this._backEndColors[idx]);
-        backend.theme = '';
-        backends.push(backend);
-      }
-      for (let idx = 1; idx < this._backEndNames.length; idx++) {
-        let backend: BackendColor = {};
-        backend.name = this._backEndNames[idx];
-        backend.color = this.toRGBColor(this._backEndColors[idx]);
-        backend.theme = 'vscode-dark';
-        backends.push(backend);
-      }
-      vscode.commands.executeCommand(
-          PartGraphSelPanel.cmdOpen, this._document.fileName, this._id, this._document.getText(),
-          names, backends, this);
+    let names = message.selection;
+    if (typeof names !== 'string') {
+      names = '';
     }
+    let backends: BackendColor[] = [];
+    for (let idx = 1; idx < this._backEndNames.length; idx++) {
+      let backend: BackendColor = {};
+      backend.name = this._backEndNames[idx];
+      backend.color = this.toRGBColor(this._backEndColors[idx]);
+      backend.theme = '';
+      backends.push(backend);
+    }
+    for (let idx = 1; idx < this._backEndNames.length; idx++) {
+      let backend: BackendColor = {};
+      backend.name = this._backEndNames[idx];
+      backend.color = this.toRGBColor(this._backEndColors[idx]);
+      backend.theme = 'vscode-dark';
+      backends.push(backend);
+    }
+    vscode.commands.executeCommand(
+        PartGraphSelPanel.cmdOpen, this._document.fileName, this._id, this._document.getText(),
+        names, backends, this);
   }
 
   private toRGBColor(color: string) {
@@ -265,7 +263,7 @@ class PartEditor implements PartGraphEvent {
   }
 
   private handleRequestPartition() {
-    if (this._document && this._webview) {
+    if (this._webview) {
       let content = ini.parse(this._document.getText());
       this._webview.postMessage({command: 'resultPartition', part: content});
     }
@@ -282,32 +280,28 @@ class PartEditor implements PartGraphEvent {
   }
 
   private handleUpdateDocument(message: any) {
-    if (this._document) {
-      let partContent = ini.parse(this._document.getText());
+    let partContent = ini.parse(this._document.getText());
 
-      if (!this.isValidPartition(partContent.partition)) {
-        partContent['partition'] = this.makeDefaultPartiton();
-      }
-
-      if (message.hasOwnProperty('opname')) {
-        partContent.OPNAME = message.opname;
-      }
-      if (message.hasOwnProperty('partition')) {
-        partContent.partition = message.partition;
-      }
-
-      let text = ini.stringify(partContent);
-      const edit = new vscode.WorkspaceEdit();
-      edit.replace(this._document.uri, new vscode.Range(0, 0, this._document.lineCount, 0), text);
-      vscode.workspace.applyEdit(edit);
+    if (!this.isValidPartition(partContent.partition)) {
+      partContent['partition'] = this.makeDefaultPartiton();
     }
+
+    if (message.hasOwnProperty('opname')) {
+      partContent.OPNAME = message.opname;
+    }
+    if (message.hasOwnProperty('partition')) {
+      partContent.partition = message.partition;
+    }
+
+    let text = ini.stringify(partContent);
+    const edit = new vscode.WorkspaceEdit();
+    edit.replace(this._document.uri, new vscode.Range(0, 0, this._document.lineCount, 0), text);
+    vscode.workspace.applyEdit(edit);
   }
 
   private handleForwardSelection(selection: string) {
-    if (this._document) {
-      vscode.commands.executeCommand(
-          PartGraphSelPanel.cmdFwdSelection, this._document.fileName, this._id, selection);
-    }
+    vscode.commands.executeCommand(
+        PartGraphSelPanel.cmdFwdSelection, this._document.fileName, this._id, selection);
   }
 
   // PartGraphEvent implements
