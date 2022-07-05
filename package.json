@@ -16,6 +16,16 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+		"viewsWelcome": [
+      {
+        "view": "OneExplorerView",
+        "contents": "Open folder which includes models and configuration files.\n[Open Folder](Command:workbench.action.files.openFolder)\nFollowing types of models will be displayed.\n- *.tflite, *pb and *.onnx\n- Additional file types which are described by backend.\n\nTo learn more about ONE-vscode extension usage [read our docs](https://github.com/Samsung/ONE-vscode/blob/main/docs/HowToUse.md)."
+      },
+      {
+        "view": "ToolchainView",
+        "contents": "Register already installed toolchain or install a new toolchain.\n[Register Toolchain](Command:one.toolchain.refresh)\n\n[Install Toolchain](Command:one.toolchain.install)"
+      }
+    ],
     "viewsContainers": {
       "activitybar": [
         {
