@@ -79,6 +79,9 @@ host.BrowserHost = class {
         this._modelData = [];
         this._modelPath = '';
 
+        // backends
+        this._backends = [];
+
         // default mode of viewer
         this._mode = viewMode.viewer;
         if (__viewMode === 'selector') {
@@ -499,6 +502,13 @@ host.BrowserHost = class {
 
     _msgBackendColor(message) {
         const backends = message.backends;
+
+        // build name of backends
+        backends.forEach((item) => {
+            if (!item.theme || item.theme === '') {
+                this._backends.push(item.name);
+            }
+        });
 
         // build style for graph nodes
         let styleBackend = '';

@@ -624,13 +624,14 @@ view.View = class {
             circleNode._backend = backend;
         }
         const g = node.label.element.childNodes[0];
+        const prefix = 'node-item-backend-';
         const styles = g.classList;
-        // TODO revise this with information from extension
-        styles.remove('node-item-backend-cpu');
-        styles.remove('node-item-backend-acl_cl');
-        styles.remove('node-item-backend-trix');
+        // clear existing styles for backend
+        this._host._backends.forEach((item) => {
+            styles.remove(prefix + item.toLowerCase());
+        });
         if (backend) {
-            styles.add('node-item-backend-' + backend.toLowerCase());
+            styles.add(prefix + backend.toLowerCase());
         }
     }
 
