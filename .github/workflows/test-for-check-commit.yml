@@ -1,0 +1,68 @@
+name: Check Commit Test
+
+on:
+  pull_request_target:
+    branches: [ no_test ]
+
+jobs:
+  check-label:
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'PR/NO TEST') }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Fail to stop PR check
+        run: exit 1
+
+  check-signed-off-by:
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'PR/NO TEST') }}
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          ref: refs/pull/${{ github.event.number }}/merge
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - run: npm install
+
+      - run: |
+          ROLL_BACK_COUNT=$(( ${{ github.event.pull_request.commits }} - 1 ))
+          git log --format=%B -n 1 ${{ github.event.pull_request.head.sha }}~${ROLL_BACK_COUNT} > main_commit_msg
+
+      - run: npx ts-node infra/commit/signed-off-by-checker.ts main_commit_msg
+
+      - if: ${{ hashFiles('signed_off_by_checker.fail') }}
+        run: |
+          cat signed_off_by_checker.fail
+          exit 1
+
+  check-no-body:
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'PR/NO TEST') }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          ref: refs/pull/${{ github.event.number }}/merge
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - run: npm install
+
+      - run: |
+          ROLL_BACK_COUNT=$(( ${{ github.event.pull_request.commits }} - 1 ))
+          git log --format=%B -n 1 ${{ github.event.pull_request.head.sha }}~${ROLL_BACK_COUNT} > main_commit_msg
+
+      - run: npx ts-node infra/commit/no-body-checker.ts main_commit_msg
+
+      - if: ${{ hashFiles('no_body_checker.fail') }}
+        run: |
+          cat no_body_checker.fail
+          exit 1
