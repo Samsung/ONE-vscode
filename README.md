@@ -24,12 +24,13 @@ Through these activities, ONE-vscode can provide a differentiation that cannot b
 
 ## Features
 
-ONE Explorer View
+### ONE Explorer View
 
 <img src="./docs/res/README_ONE_Explorer_View.png" width=600 />
 
-Toolchain View
-- The following image shows an example of installing some toolchain provided by a backend provider
+### Toolchain View
+
+The following image shows an example of installing some toolchain provided by a backend provider
 
 <img src="./docs/res/README_Toolchain_View.gif" width=600 />
 
