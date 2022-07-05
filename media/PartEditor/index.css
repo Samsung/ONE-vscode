@@ -28,8 +28,19 @@
   vertical-align: top;
 }
 
-.names_list {
+.names_title {
+  display: flex;
+  justify-content: space-between;
+  width: 300px;
+  padding-bottom: 4px;
+}
+
+.names_find {
+  width: 180px;
   overflow: scroll;
+}
+
+.names_list {
   width: 300px;
   overflow: scroll;
 }

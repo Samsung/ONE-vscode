@@ -47,6 +47,8 @@ editor.Editor = class {
     this.operators = [];  // array of editor.Operator
     this.partition = {};  // current partition from document
     this.beToCode = {};   // backend string to code, for search performance
+    this.findTimer = undefined;
+    this.findText = '';
   }
 
   initialize() {
@@ -119,6 +121,11 @@ editor.Editor = class {
       let names = this.getSelectionNames();
       vscode.postMessage({command: 'selectByGraph', selection: names});
     });
+
+    // find operators with text
+    this.document.getElementById('find-node').addEventListener('input', (e) => {
+      this.findNodes();
+    });
   }
 
   currentBackendName() {
@@ -153,6 +160,19 @@ editor.Editor = class {
     let beCode = becombobox.options[idx].value;
     let color = this.backends[beCode].color;
     becombobox.style = 'color:' + color;
+  }
+
+  findNodes() {
+    const findEdit = this.document.getElementById('find-node');
+    if (this.findTimer) {
+      this.window.clearTimeout(this.findTimer);
+      this.findTimer = undefined;
+    }
+    this.findTimer = this.window.setTimeout(() => {
+      console.log('Search:', findEdit.value);
+      this.findText = findEdit.value;
+      this.refillOpListbox();
+    }, 500);
   }
 
   /**
@@ -360,6 +380,29 @@ editor.Editor = class {
       let name = this.operators[idx].name;
       opt.text = `(${beCode}) [${opcode}] ${name}`;
       opt.style = 'color:' + this.backends[beCode].color;
+    }
+  }
+
+  /**
+   * @brief refill listbox item text findText
+   */
+  refillOpListbox() {
+    let listbox = this.document.getElementById('circle-nodes');
+    // clear all options
+    listbox.options.length = 0;
+    // fill with matching find
+    for (let idx = 0; idx < this.operators.length; idx++) {
+      const beCode = this.operators[idx].becode;
+      const opcode = this.operators[idx].opcode;
+      const name = this.operators[idx].name;
+
+      if (this.findText === '' || name.includes(this.findText) || opcode.includes(this.findText)) {
+        let opt = this.document.createElement('option');
+        opt.text = `(${beCode}) [${opcode}] ${name}`;
+        opt.value = idx;
+        opt.style = 'color:' + this.backends[beCode].color;
+        listbox.add(opt);
+      }
     }
   }
 
