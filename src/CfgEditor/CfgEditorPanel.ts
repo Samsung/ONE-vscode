@@ -40,14 +40,14 @@ Some part of this code refers to
 https://github.com/microsoft/vscode-extension-samples/blob/2556c82cb333cf65d372bd01ac30c35ea1898a0e/custom-editor-sample/src/catScratchEditor.ts
 */
 
-import * as ini from 'ini';
 import * as vscode from 'vscode';
-import {getNonce} from '../Utils/external/Nonce';
-import {getUri} from '../Utils/external/Uri';
+import {CfgData} from './CfgData';
+import {CfgHtmlBuilder} from './CfgHtmlBuilder';
+
 
 export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
   private _disposables: vscode.Disposable[] = [];
-  private _oneConfig: any = undefined;
+  private _oneConfig: CfgData = new CfgData();
 
   public static readonly viewType = 'cfg.editor';
 
@@ -64,42 +64,60 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
 
   constructor(private readonly context: vscode.ExtensionContext) {}
 
-  private updateWebview(document: vscode.TextDocument, webviewPanel: vscode.WebviewPanel) {
-    this._oneConfig = ini.parse(document.getText());
-
-    // TODO Separate handling deprecated elements
-    // NOTE 'one-build' will be deprecated.
-    //      Therefore, when only 'one-build' is used, it will be replaced to 'onecc'.
-    if (this._oneConfig['onecc'] === undefined && this._oneConfig['one-build'] !== undefined) {
-      this._oneConfig['onecc'] = ini.parse(ini.stringify(this._oneConfig['one-build']));
-      delete this._oneConfig['one-build'];
-    }
-    // NOTE 'input_dtype' is deprecated.
-    //      Therefore, when only 'input_dtype' is used, it will be replaced to 'onecc'.
-    if (this._oneConfig['one-quantize']?.['input_dtype'] !== undefined) {
-      if (this._oneConfig['one-quantize']['input_model_dtype'] === undefined) {
-        this._oneConfig['one-quantize']['input_model_dtype'] =
-            this._oneConfig['one-quantize']['input_dtype'];
-      }
-      delete this._oneConfig['one-quantize']['input_dtype'];
-    }
-
-    webviewPanel.webview.postMessage({type: 'displayCfgToEditor', text: this._oneConfig});
-  };
-
   public async resolveCustomTextEditor(
       document: vscode.TextDocument, webviewPanel: vscode.WebviewPanel,
       _token: vscode.CancellationToken): Promise<void> {
-    webviewPanel.webview.options = {
+    await this.initWebview(document, webviewPanel.webview);
+    this.initWebviewPanel(document, webviewPanel);
+    this.updateWebview(document, webviewPanel.webview);
+  };
+
+  private async initWebview(document: vscode.TextDocument, webview: vscode.Webview): Promise<void> {
+    webview.options = {
       enableScripts: true,
     };
-    vscode.commands.executeCommand('setContext', CfgEditorPanel.viewType, true);
 
-    webviewPanel.webview.html = await this._getHtmlForWebview(webviewPanel.webview);
+    {
+      let htmlBuilder = new CfgHtmlBuilder(webview, this.context.extensionUri);
+      webview.html = await htmlBuilder.build();
+    }
+
+    // Receive message from the webview.
+    webview.onDidReceiveMessage(e => {
+      switch (e.type) {
+        case 'requestDisplayCfg':
+          this.updateWebview(document, webview);
+          break;
+        case 'setParam':
+          this._oneConfig.setParam(e.section, e.param, e.value);
+          break;
+        case 'setSection':
+          this._oneConfig.setSection(e.section, e.param);
+          break;
+        case 'updateDocument':
+          if (this._oneConfig.isSame(document.getText()) === false) {
+            let sortedCfg = this._oneConfig.getSorted();
+
+            // TODO Optimize this to modify only changed lines
+            const edit = new vscode.WorkspaceEdit();
+            edit.replace(
+                document.uri, new vscode.Range(0, 0, document.lineCount, 0),
+                sortedCfg.getStringfied());
+            vscode.workspace.applyEdit(edit);
+          }
+          break;
+        default:
+          break;
+      }
+    });
+  }
+
+  private initWebviewPanel(document: vscode.TextDocument, webviewPanel: vscode.WebviewPanel): void {
+    vscode.commands.executeCommand('setContext', CfgEditorPanel.viewType, true);
 
     const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(e => {
       if (e.contentChanges.length > 0 && e.document.uri.toString() === document.uri.toString()) {
-        this.updateWebview(document, webviewPanel);
+        this.updateWebview(document, webviewPanel.webview);
       }
     });
 
@@ -117,110 +135,10 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
       }
       vscode.commands.executeCommand('setContext', CfgEditorPanel.viewType, false);
     });
+  }
 
-    // Receive message from the webview.
-    webviewPanel.webview.onDidReceiveMessage(e => {
-      switch (e.type) {
-        case 'requestDisplayCfg':
-          this.updateWebview(document, webviewPanel);
-          break;
-        case 'setParam':
-          if (this._oneConfig[e.section] === undefined) {
-            this._oneConfig[e.section] = {};
-          }
-          if (this._oneConfig[e.section][e.param] === undefined) {
-            this._oneConfig[e.section][e.param] = '';
-          }
-          this._oneConfig[e.section][e.param] = e.value;
-          break;
-        case 'setSection':
-          this._oneConfig[e.section] = ini.parse(e.param);
-          break;
-        case 'updateDocument':
-          let isSame = true;
-          const iniDocument = ini.parse(document.getText());
-          for (const [sectionName, section] of Object.entries(this._oneConfig)) {
-            for (const [paramName, param] of Object.entries(section as any)) {
-              if (iniDocument[sectionName] !== undefined &&
-                  iniDocument[sectionName][paramName] === param) {
-                continue;
-              }
-              isSame = false;
-              break;
-            }
-          }
-          for (const [sectionName, section] of Object.entries(iniDocument)) {
-            for (const [paramName, param] of Object.entries(section as any)) {
-              if (this._oneConfig[sectionName] !== undefined &&
-                  this._oneConfig[sectionName][paramName] === param) {
-                continue;
-              }
-              isSame = false;
-              break;
-            }
-          }
-
-          if (isSame === false) {
-            // cfg file is written along with the order of array elements
-            let sortedCfg: any = {};
-            const sections = [
-              'onecc', 'one-import-tf', 'one-import-tflite', 'one-import-bcq', 'one-import-onnx',
-              'one-optimize', 'one-quantize', 'one-codegen', 'one-profile'
-            ];
-            sections.forEach((section) => {
-              if (this._oneConfig[section] !== undefined) {
-                sortedCfg[section] = this._oneConfig[section];
-              }
-            });
-
-            // TODO Optimize this to modify only changed lines
-            const edit = new vscode.WorkspaceEdit();
-            edit.replace(
-                document.uri, new vscode.Range(0, 0, document.lineCount, 0),
-                ini.stringify(sortedCfg));
-            vscode.workspace.applyEdit(edit);
-          }
-          break;
-        default:
-          break;
-      }
-    });
-  };
-
-  private async _getHtmlForWebview(webview: vscode.Webview) {
-    const nonce = getNonce();
-
-    const toolkitUri = getUri(webview, this.context.extensionUri, [
-      'node_modules',
-      '@vscode',
-      'webview-ui-toolkit',
-      'dist',
-      'toolkit.js',
-    ]);
-    const codiconUri = getUri(webview, this.context.extensionUri, [
-      'node_modules',
-      '@vscode',
-      'codicons',
-      'dist',
-      'codicon.css',
-    ]);
-    const jsUri = getUri(webview, this.context.extensionUri, ['media', 'CfgEditor', 'index.js']);
-
-    const cssUri =
-        getUri(webview, this.context.extensionUri, ['media', 'CfgEditor', 'cfgeditor.css']);
-
-    const htmlPath =
-        vscode.Uri.joinPath(this.context.extensionUri, 'media/CfgEditor/cfgeditor.html');
-    let html = Buffer.from(await vscode.workspace.fs.readFile(htmlPath)).toString();
-
-    // Apply js and cs to html
-    html = html.replace(/\${nonce}/g, `${nonce}`);
-    html = html.replace(/\${webview.cspSource}/g, `${webview.cspSource}`);
-    html = html.replace(/\${toolkitUri}/g, `${toolkitUri}`);
-    html = html.replace(/\${codiconUri}/g, `${codiconUri}`);
-    html = html.replace(/\${jsUri}/g, `${jsUri}`);
-    html = html.replace(/\${cssUri}/g, `${cssUri}`);
-
-    return html;
+  private updateWebview(document: vscode.TextDocument, webview: vscode.Webview): void {
+    this._oneConfig.updateWithStringifiedText(document.getText());
+    webview.postMessage({type: 'displayCfgToEditor', text: this._oneConfig.getOneConfig()});
   };
 }
