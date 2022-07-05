@@ -208,7 +208,7 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
    * CircleGraphEvent interface implementations
    */
   public onPageLoaded() {
-    // TODO implement
+    this.sendBackendColor(this._backendColors);
   }
 
   public onSelection(names: string[], tensors: string[]) {

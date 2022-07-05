@@ -83,7 +83,6 @@ host.BrowserHost = class {
         this._mode = viewMode.viewer;
         if (__viewMode === 'selector') {
             this._mode = viewMode.selector;
-            this._addStyleForBackend();
         }
     }
 
@@ -137,6 +136,9 @@ host.BrowserHost = class {
                     break;
                 case 'partition':
                     this._msgPartition(message);
+                    break;
+                case 'backendColor':
+                    this._msgBackendColor(message);
                     break;
             }
         });
@@ -493,6 +495,27 @@ host.BrowserHost = class {
 
     _msgPartition(message) {
         this._view.setPartition(message);
+    }
+
+    _msgBackendColor(message) {
+        const backends = message.backends;
+
+        // build style for graph nodes
+        let styleBackend = '';
+        backends.forEach((item) => {
+            const name = item.name.toLowerCase();
+            const styleNode = `.node-item-backend-${name} path { fill: ${item.color}; }\n`;
+
+            if (item.theme && item.theme !== '') {
+                const styleBody = `.${item.theme} `;
+                styleBackend = styleBackend + styleBody + styleNode;
+            } else {
+                styleBackend = styleBackend + styleNode;
+            }
+        });
+        let style = this._document.createElement('style');
+        style.innerHTML = styleBackend;
+        this._document.head.appendChild(style);
     }
 
     _addStyleForBackend() {
