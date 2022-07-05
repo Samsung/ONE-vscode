@@ -1067,4 +1067,5 @@ if (!('scrollBehavior' in window.document.documentElement.style)) {
 
 window.addEventListener('load', () => {
     window.__view__ = new view.View(new host.BrowserHost());
+    vscode.postMessage({command: 'pageloaded'});
 });

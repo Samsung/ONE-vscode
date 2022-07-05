@@ -207,6 +207,10 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
   /**
    * CircleGraphEvent interface implementations
    */
+  public onPageLoaded() {
+    // TODO implement
+  }
+
   public onSelection(names: string[], tensors: string[]) {
     // we need to update the document, but not save to file.
     // pass to owner to handle this.
