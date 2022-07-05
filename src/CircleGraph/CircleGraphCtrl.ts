@@ -19,6 +19,7 @@ import * as vscode from 'vscode';
 
 import {Balloon} from '../Utils/Balloon';
 import {getNonce} from '../Utils/external/Nonce';
+import {BackendColor} from './BackendColor';
 
 class CtrlStatus {
   public static readonly init = 0;
@@ -36,6 +37,7 @@ export class MessageDefs {
   public static readonly loadmodel = 'loadmodel';
   public static readonly finishload = 'finishload';
   public static readonly selection = 'selection';
+  public static readonly backendColor = 'backendColor';
   public static readonly error = 'error';
   public static readonly colorTheme = 'colorTheme';
   // loadmodel type
@@ -131,6 +133,10 @@ export class CircleGraphCtrl {
 
   public setPartition(partition: any) {
     this._webview.postMessage({command: MessageDefs.partition, partition: partition});
+  }
+
+  public sendBackendColor(backends: BackendColor[]) {
+    this._webview.postMessage({command: MessageDefs.backendColor, backends: backends});
   }
 
   private registerEventHandlers() {
