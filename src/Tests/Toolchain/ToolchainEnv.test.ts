@@ -16,43 +16,8 @@
 
 import {assert} from 'chai';
 
-import {CompilerBase} from '../../Backend/Compiler';
-import {ToolchainInfo, Toolchains} from '../../Backend/Toolchain';
-import {DebianToolchain} from '../../Backend/ToolchainImpl/DebianToolchain';
 import {ToolchainEnv} from '../../Toolchain/ToolchainEnv';
-
-const mocCompilerType: string = 'test';
-
-class MockCompiler extends CompilerBase {
-  // TODO: What toolchain is necessary as tests?
-  installedToolchain: DebianToolchain;
-  availableToolchain: DebianToolchain;
-
-  constructor() {
-    super();
-    this.installedToolchain =
-        new DebianToolchain(new ToolchainInfo('npm', 'package manager for Node.js'));
-    this.availableToolchain = new DebianToolchain(
-        new ToolchainInfo('nodejs', 'Node.js event-based server-side javascript engine'));
-  }
-  getToolchainTypes(): string[] {
-    return [mocCompilerType];
-  }
-  getToolchains(toolchainType: string, start: number, count: number): Toolchains {
-    // TODO(jyoung): Support start and count parameters
-    if (toolchainType === mocCompilerType) {
-      assert(count === 1, 'Count must be 1');
-      return [this.availableToolchain];
-    }
-    return [];
-  }
-  getInstalledToolchains(toolchainType: string): Toolchains {
-    if (toolchainType === mocCompilerType) {
-      return [this.installedToolchain];
-    }
-    return [];
-  }
-};
+import {MockCompiler} from '../MockCompiler';
 
 suite('Toolchain', function() {
   suite('ToolchainEnv', function() {
