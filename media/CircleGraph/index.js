@@ -517,25 +517,6 @@ host.BrowserHost = class {
         style.innerHTML = styleBackend;
         this._document.head.appendChild(style);
     }
-
-    _addStyleForBackend() {
-        let styleBackend = '';
-        // TODO generate colors from backend colors
-        const s11 = '.node-item-backend-';
-        const s12 = '.vscode-dark .node-item-backend-';
-        const s2 = ' path { fill: ';
-        const s3 = '; }\n';
-        styleBackend = styleBackend + s11 + 'cpu' + s2 + 'rgb(144, 144, 0)' + s3;
-        styleBackend = styleBackend + s11 + 'acl_cl' + s2 + 'rgb(144, 0, 0)' + s3;
-        styleBackend = styleBackend + s11 + 'trix' + s2 + 'rgb(0, 144, 144)' + s3;
-        styleBackend = styleBackend + s12 + 'cpu' + s2 + 'rgb(128, 128, 0)' + s3;
-        styleBackend = styleBackend + s12 + 'acl_cl' + s2 + 'rgb(128, 0, 0)' + s3;
-        styleBackend = styleBackend + s12 + 'trix' + s2 + 'rgb(0, 128, 128)' + s3;
-
-        let style = this._document.createElement('style');
-        style.innerHTML = styleBackend;
-        this._document.head.appendChild(style);
-    }
 };
 
 host.Dropdown = class {
