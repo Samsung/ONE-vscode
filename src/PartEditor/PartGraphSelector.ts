@@ -18,6 +18,7 @@ import * as ini from 'ini';
 import * as path from 'path';
 import * as vscode from 'vscode';
 
+import {BackendColor} from '../CircleGraph/BackendColor';
 import {CircleGraphCtrl, CircleGraphEvent} from '../CircleGraph/CircleGraphCtrl';
 
 export interface PartGraphEvent {
@@ -40,6 +41,7 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
   private _ownerId: number;       // id of owner
   private _documentText: string;  // part document
   private _modelPath: string;     // circle file path
+  private _backendColors: BackendColor[];
   private _partEventHandler: PartGraphEvent|undefined;
 
   public static register(context: vscode.ExtensionContext): vscode.Disposable {
@@ -64,9 +66,10 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
 
     let disposableGraphPenel = vscode.commands.registerCommand(
         PartGraphSelPanel.cmdOpen,
-        (filePath: string, id: number, docText: string, names: string, handler: PartGraphEvent) => {
+        (filePath: string, id: number, docText: string, names: string, backends: BackendColor[],
+         handler: PartGraphEvent) => {
           PartGraphSelPanel.createOrShow(
-              context.extensionUri, filePath, id, docText, names, handler);
+              context.extensionUri, filePath, id, docText, names, backends, handler);
         });
 
     return disposableGraphPenel;
@@ -74,7 +77,7 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
 
   public static createOrShow(
       extensionUri: vscode.Uri, docPath: string, id: number, docText: string, names: string,
-      handler: PartGraphEvent|undefined) {
+      backends: BackendColor[], handler: PartGraphEvent|undefined) {
     const column =
         vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
 
@@ -93,7 +96,8 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
         PartGraphSelPanel.viewType, fileNameExt, column || vscode.ViewColumn.Three,
         {retainContextWhenHidden: true});
 
-    const graphSelPanel = new PartGraphSelPanel(panel, extensionUri, docPath, id, docText, handler);
+    const graphSelPanel =
+        new PartGraphSelPanel(panel, extensionUri, docPath, id, docText, backends, handler);
 
     PartGraphSelPanel.panels.push(graphSelPanel);
     graphSelPanel.loadContent();
@@ -148,7 +152,7 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
 
   private constructor(
       panel: vscode.WebviewPanel, extensionUri: vscode.Uri, docPath: string, id: number,
-      docText: string, handler: PartGraphEvent|undefined) {
+      docText: string, backends: BackendColor[], handler: PartGraphEvent|undefined) {
     super(extensionUri, panel.webview);
 
     let parsedPath = path.parse(docPath);
@@ -159,6 +163,7 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
     this._ownerId = id;
     this._documentText = docText;
     this._modelPath = fileBase + '.circle';
+    this._backendColors = backends;
     this._partEventHandler = handler;
 
     // Listen for when the panel is disposed
