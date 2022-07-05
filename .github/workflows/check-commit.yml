@@ -6,6 +6,8 @@ on:
 
 jobs:
   check-signed-off-by:
+    if: ${{ ! contains(github.event.pull_request.labels.*.name, 'PR/NO TEST') }}
+
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -30,6 +32,8 @@ jobs:
           exit 1
 
   check-no-body:
+    if: ${{ ! contains(github.event.pull_request.labels.*.name, 'PR/NO TEST') }}
+
     runs-on: ubuntu-latest
 
     steps:
