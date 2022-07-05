@@ -17,7 +17,7 @@
 import {assert} from 'chai';
 import {DeviceSpec, HostPCSpec, TizenDeviceSpec} from '../../Backend/Spec';
 
-import {RealDeviceInstance} from '../../Execute/RealDeviceInstance';
+import {DeviceInstance} from '../../Execute/DeviceInstance';
 
 suite('RealDeviceInstance', function() {
   suite('RealDeviceInstance', function() {
@@ -26,8 +26,8 @@ suite('RealDeviceInstance', function() {
       const hw: string = 'TestHW';
       const sw: string = 'TestOS';
       const testSpec = new DeviceSpec(hw, sw, undefined);
-      const testRealDevice = new RealDeviceInstance(deviceName, testSpec);
-      assert.isObject<RealDeviceInstance>(testRealDevice);
+      const testRealDevice = new DeviceInstance(deviceName, testSpec);
+      assert.isObject<DeviceInstance>(testRealDevice);
       assert.strictEqual(testRealDevice.spec, testSpec);
       assert.strictEqual(testRealDevice.name, deviceName);
     });
@@ -39,8 +39,8 @@ suite('RealDeviceInstance', function() {
       const hw: string = 'armv7l';
       const sw: string = 'Tizen 7.0.0';
       const testSpec = new TizenDeviceSpec(hw, sw);
-      const tizenTV = new RealDeviceInstance(deviceName, testSpec);
-      assert.isObject<RealDeviceInstance>(tizenTV);
+      const tizenTV = new DeviceInstance(deviceName, testSpec);
+      assert.isObject<DeviceInstance>(tizenTV);
       assert.strictEqual(tizenTV.spec, testSpec);
       assert.strictEqual(tizenTV.name, deviceName);
     });
@@ -52,8 +52,8 @@ suite('RealDeviceInstance', function() {
       const hw: string = 'x86_64';
       const sw: string = 'Ubuntu 18';
       const testSpec = new HostPCSpec(hw, sw);
-      const hostPC = new RealDeviceInstance(deviceName, testSpec);
-      assert.isObject<RealDeviceInstance>(hostPC);
+      const hostPC = new DeviceInstance(deviceName, testSpec);
+      assert.isObject<DeviceInstance>(hostPC);
       assert.strictEqual(hostPC.spec, testSpec);
       assert.strictEqual(hostPC.name, deviceName);
     });

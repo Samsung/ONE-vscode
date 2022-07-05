@@ -21,7 +21,7 @@ import {DeviceSpec} from '../Backend/Spec';
 // the dtv's spec can be just only one
 // However, each dtv should be handled one by one
 // At the time, this class expresses an instance for a real device
-class RealDeviceInstance {
+class DeviceInstance {
   name: string;
   spec: DeviceSpec;
   constructor(name: string, spec: DeviceSpec) {
@@ -30,4 +30,4 @@ class RealDeviceInstance {
   }
 };
 
-export {RealDeviceInstance};
+export {DeviceInstance};
