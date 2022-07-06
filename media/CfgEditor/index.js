@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-// IMPORTANT : Do not separate this file into multiple files
+// CAUTION : Do not separate this file into multiple files
 //
 // This file had been divided into several files.
-// However, this cause unintened behavior when cfg editor is opened at ssh environment.
+// However, in remote-ssh environment, cfg editor did not display cfg file content at all.
+// The only way to trigger displaying cfg file content was modifying cfg.
+//
 // The exact cause is not configured, but integrating the separated files as one works well.
-// Just guess that the performance was really different.
-// In conclusion, if someone really wants to split this file into multiple,
-// please ensure that cfg editor works well in ssh environment.
+// Only guess is that the performance was really bad.
+//
+// In conclusion, please do not separate thie file into multiple.
+// if someone really wants to split this file,
+// then please ensure that cfg editor works well in remote-ssh environment.
 
 (function() {
 
