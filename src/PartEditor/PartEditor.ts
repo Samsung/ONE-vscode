@@ -82,7 +82,8 @@ class PartEditor implements PartGraphEvent {
     });
 
     this._panel.onDidDispose(() => {
-      vscode.commands.executeCommand(PartGraphSelPanel.cmdClose, this._document.fileName, this._id);
+      const args: PartGraphCmdCloseArgs = {docPath: this._document.fileName, id: this._id};
+      vscode.commands.executeCommand(PartGraphSelPanel.cmdClose, args);
 
       if (this._eventHandler) {
         this._eventHandler.onEditorDispose(this);
