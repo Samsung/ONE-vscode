@@ -178,9 +178,14 @@ class PartEditor implements PartGraphEvent {
       backend.theme = 'vscode-dark';
       backends.push(backend);
     }
-    vscode.commands.executeCommand(
-        PartGraphSelPanel.cmdOpen, this._document.fileName, this._id, this._document.getText(),
-        names, backends, this);
+    const args: PartGraphCmdOpenArgs = {
+      docPath: this._document.fileName,
+      id: this._id,
+      docText: this._document.getText(),
+      names: names,
+      backends: backends
+    };
+    vscode.commands.executeCommand(PartGraphSelPanel.cmdOpen, args, this);
   }
 
   private toRGBColor(color: string) {
