@@ -63,8 +63,8 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
   public static register(context: vscode.ExtensionContext): vscode.Disposable {
     // TODO add more commands
     let disposableCmdUpdate = vscode.commands.registerCommand(
-        PartGraphSelPanel.cmdUpdate, (filePath: string, id: number, docText: string) => {
-          PartGraphSelPanel.updateByOwner(context.extensionUri, filePath, id, docText);
+        PartGraphSelPanel.cmdUpdate, (args: PartGraphCmdUpdateArgs) => {
+          PartGraphSelPanel.updateByOwner(context.extensionUri, args);
         });
     context.subscriptions.push(disposableCmdUpdate);
 
@@ -75,8 +75,8 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
     context.subscriptions.push(disposableCmdClose);
 
     let disposableCmdFwdSelection = vscode.commands.registerCommand(
-        PartGraphSelPanel.cmdFwdSelection, (filePath: string, id: number, selection: string) => {
-          PartGraphSelPanel.forwardSelectionByOwner(context.extensionUri, filePath, id, selection);
+        PartGraphSelPanel.cmdFwdSelection, (args: PartGraphCmdFwdSelArgs) => {
+          PartGraphSelPanel.forwardSelectionByOwner(context.extensionUri, args);
         });
     context.subscriptions.push(disposableCmdFwdSelection);
 
@@ -134,11 +134,10 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
   /**
    * @brief called when owner has changed the document or received document has changed
    */
-  public static updateByOwner(
-      extensionUri: vscode.Uri, docPath: string, id: number, docText: string) {
-    let selPanel = PartGraphSelPanel.findSelPanel(docPath, id);
+  public static updateByOwner(extensionUri: vscode.Uri, args: PartGraphCmdUpdateArgs) {
+    let selPanel = PartGraphSelPanel.findSelPanel(args.docPath, args.id);
     if (selPanel) {
-      selPanel._documentText = docText;
+      selPanel._documentText = args.docText;
       if (selPanel.isReady()) {
         selPanel.applyDocumentToGraph();
       }
@@ -158,11 +157,10 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
   /**
    * @brief called when owner selection state of nodes has changed
    */
-  public static forwardSelectionByOwner(
-      extensionUri: vscode.Uri, docPath: string, id: number, selection: string) {
-    let selPanel = PartGraphSelPanel.findSelPanel(docPath, id);
+  public static forwardSelectionByOwner(extensionUri: vscode.Uri, args: PartGraphCmdFwdSelArgs) {
+    let selPanel = PartGraphSelPanel.findSelPanel(args.docPath, args.id);
     if (selPanel) {
-      selPanel.onForwardSelection(selection);
+      selPanel.onForwardSelection(args.selection);
     }
   }
 
