@@ -72,8 +72,8 @@ export function run(): Promise<void> {
   if (isCoverage !== undefined && isCoverage === 'true') {
     mocha.reporter('mocha-xunit-reporter', {output: 'mocha_result.xml'});
   }
-  const isCiTeste: string|undefined = env.isCiTest;
-  if (isCiTeste !== undefined && isCiTeste === 'true') {
+  const isCiTest: string|undefined = env.isCiTest;
+  if (isCiTest !== undefined && isCiTest === 'true') {
     mocha.fgrep('@Use-onecc');
     mocha.invert();
   }
