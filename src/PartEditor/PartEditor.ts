@@ -26,6 +26,8 @@ import {getNonce} from '../Utils/external/Nonce';
 import {Logger} from '../Utils/Logger';
 
 import {PartGraphEvent, PartGraphSelPanel} from './PartGraphSelector';
+import {PartGraphCmdCloseArgs, PartGraphCmdOpenArgs} from './PartGraphSelector';
+import {PartGraphCmdFwdSelArgs, PartGraphCmdUpdateArgs} from './PartGraphSelector';
 
 type Partition = {
   backends?: {};
@@ -80,7 +82,8 @@ class PartEditor implements PartGraphEvent {
     });
 
     this._panel.onDidDispose(() => {
-      vscode.commands.executeCommand(PartGraphSelPanel.cmdClose, this._document.fileName, this._id);
+      let args: PartGraphCmdCloseArgs = {docPath: this._document.fileName, id: this._id};
+      vscode.commands.executeCommand(PartGraphSelPanel.cmdClose, args);
 
       if (this._eventHandler) {
         this._eventHandler.onEditorDispose(this);
@@ -143,8 +146,12 @@ class PartEditor implements PartGraphEvent {
       let content = ini.parse(this._document.getText());
       this._webview.postMessage({command: 'updatePartition', part: content});
 
-      vscode.commands.executeCommand(
-          PartGraphSelPanel.cmdUpdate, this._document.fileName, this._id, this._document.getText());
+      let args: PartGraphCmdUpdateArgs = {
+        docPath: this._document.fileName,
+        id: this._id,
+        docText: this._document.getText()
+      };
+      vscode.commands.executeCommand(PartGraphSelPanel.cmdUpdate, args);
     }
   }
 
@@ -176,9 +183,14 @@ class PartEditor implements PartGraphEvent {
       backend.theme = 'vscode-dark';
       backends.push(backend);
     }
-    vscode.commands.executeCommand(
-        PartGraphSelPanel.cmdOpen, this._document.fileName, this._id, this._document.getText(),
-        names, backends, this);
+    let args: PartGraphCmdOpenArgs = {
+      docPath: this._document.fileName,
+      id: this._id,
+      docText: this._document.getText(),
+      names: names,
+      backends: backends
+    };
+    vscode.commands.executeCommand(PartGraphSelPanel.cmdOpen, args, this);
   }
 
   private toRGBColor(color: string) {
@@ -300,8 +312,12 @@ class PartEditor implements PartGraphEvent {
   }
 
   private handleForwardSelection(selection: string) {
-    vscode.commands.executeCommand(
-        PartGraphSelPanel.cmdFwdSelection, this._document.fileName, this._id, selection);
+    let args: PartGraphCmdFwdSelArgs = {
+      docPath: this._document.fileName,
+      id: this._id,
+      selection: selection
+    };
+    vscode.commands.executeCommand(PartGraphSelPanel.cmdFwdSelection, args);
   }
 
   // PartGraphEvent implements
