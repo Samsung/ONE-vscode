@@ -146,8 +146,12 @@ class PartEditor implements PartGraphEvent {
       let content = ini.parse(this._document.getText());
       this._webview.postMessage({command: 'updatePartition', part: content});
 
-      vscode.commands.executeCommand(
-          PartGraphSelPanel.cmdUpdate, this._document.fileName, this._id, this._document.getText());
+      const args: PartGraphCmdUpdateArgs = {
+        docPath: this._document.fileName,
+        id: this._id,
+        docText: this._document.getText()
+      };
+      vscode.commands.executeCommand(PartGraphSelPanel.cmdUpdate, args);
     }
   }
 
@@ -308,8 +312,12 @@ class PartEditor implements PartGraphEvent {
   }
 
   private handleForwardSelection(selection: string) {
-    vscode.commands.executeCommand(
-        PartGraphSelPanel.cmdFwdSelection, this._document.fileName, this._id, selection);
+    const args: PartGraphCmdFwdSelArgs = {
+      docPath: this._document.fileName,
+      id: this._id,
+      selection: selection
+    };
+    vscode.commands.executeCommand(PartGraphSelPanel.cmdFwdSelection, args);
   }
 
   // PartGraphEvent implements
