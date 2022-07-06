@@ -20,7 +20,7 @@ import {DeviceSpec} from '../Backend/Spec';
  * `Device` class
  * a class to handle and access Device.
  * Each Device has single `DeviceSpec`, which could be same with other device.
- * Eash Device has a name to specify with other device with same `DeviceSpec`.
+ * Each Device has a name to specify with other device with same `DeviceSpec`.
  *
  * for example, Device A, B, C connected on, and A and B are TizenTV and C is HostPC.
  * then we could access this as below
