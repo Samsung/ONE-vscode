@@ -188,7 +188,8 @@ class PartEditor implements PartGraphEvent {
       id: this._id,
       docText: this._document.getText(),
       names: names,
-      backends: backends
+      backends: backends,
+      viewColumn: this._panel.viewColumn
     };
     vscode.commands.executeCommand(PartGraphSelPanel.cmdOpen, args, this);
   }
