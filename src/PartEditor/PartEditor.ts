@@ -26,6 +26,8 @@ import {getNonce} from '../Utils/external/Nonce';
 import {Logger} from '../Utils/Logger';
 
 import {PartGraphEvent, PartGraphSelPanel} from './PartGraphSelector';
+import {PartGraphCmdCloseArgs, PartGraphCmdOpenArgs} from './PartGraphSelector';
+import {PartGraphCmdFwdSelArgs, PartGraphCmdUpdateArgs} from './PartGraphSelector';
 
 type Partition = {
   backends?: {};

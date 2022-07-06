@@ -25,6 +25,22 @@ export interface PartGraphEvent {
   onSelection(names: string[], tensors: string[]): void;
 }
 
+export type PartGraphCmdOpenArgs = {
+  docPath: string; id: number; docText: string; names: string; backends: BackendColor[];
+};
+
+export type PartGraphCmdUpdateArgs = {
+  docPath: string, id: number, docText: string;
+};
+
+export type PartGraphCmdFwdSelArgs = {
+  docPath: string, id: number, selection: string;
+};
+
+export type PartGraphCmdCloseArgs = {
+  docPath: string, id: number;
+};
+
 export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEvent {
   public static readonly viewType = 'PartGraphSelector';
   public static readonly cmdOpen = 'one.part.openGraphSelector';
