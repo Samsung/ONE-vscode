@@ -157,7 +157,8 @@ export class ToolRunner {
     return oneccRealPath;
   }
 
-  public getRunner(name: string, tool: string, toolargs: ToolArgs, path: string, root?: boolean) {
+  public getRunner(
+      name: string, tool: string, toolargs: ToolArgs, path: string, root: boolean = false) {
     if (this.isRunning()) {
       const msg = `Error: Running: ${name}. Process is already running.`;
       Logger.error(this.tag, msg);
@@ -168,7 +169,7 @@ export class ToolRunner {
 
     return new Promise<SuccessResult>((resolve, reject) => {
       Logger.info(this.tag, 'Running: ' + name);
-      if (root) {
+      if (root === true) {
         // NOTE
         // To run the root command job, it must requires a password in `process.env.userp`
         // environment.
