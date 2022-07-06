@@ -17,43 +17,43 @@
 import {assert} from 'chai';
 import {DeviceSpec, HostPCSpec, TizenDeviceSpec} from '../../Backend/Spec';
 
-import {DeviceInstance} from '../../Execute/DeviceInstance';
+import {Device} from '../../Execute/Device';
 
-suite('RealDeviceInstance', function() {
-  suite('RealDeviceInstance', function() {
+suite('Device', function() {
+  suite('Device', function() {
     suite('#contructor()', function() {
-      const deviceName: string = 'testDeviceInstance';
+      const deviceName: string = 'testDevice';
       const hw: string = 'TestHW';
       const sw: string = 'TestOS';
       const testSpec = new DeviceSpec(hw, sw, undefined);
-      const testRealDevice = new DeviceInstance(deviceName, testSpec);
-      assert.isObject<DeviceInstance>(testRealDevice);
-      assert.strictEqual(testRealDevice.spec, testSpec);
-      assert.strictEqual(testRealDevice.name, deviceName);
+      const testDevice = new Device(deviceName, testSpec);
+      assert.isObject<Device>(testDevice);
+      assert.strictEqual(testDevice.spec, testSpec);
+      assert.strictEqual(testDevice.name, deviceName);
     });
   });
 
-  suite('TizenRealTVRealDevice', function() {
+  suite('TizenTVDevice', function() {
     suite('#contructor()', function() {
       const deviceName: string = '127.0.0.1:26101';
       const hw: string = 'armv7l';
       const sw: string = 'Tizen 7.0.0';
       const testSpec = new TizenDeviceSpec(hw, sw);
-      const tizenTV = new DeviceInstance(deviceName, testSpec);
-      assert.isObject<DeviceInstance>(tizenTV);
+      const tizenTV = new Device(deviceName, testSpec);
+      assert.isObject<Device>(tizenTV);
       assert.strictEqual(tizenTV.spec, testSpec);
       assert.strictEqual(tizenTV.name, deviceName);
     });
   });
 
-  suite('HostPCRealDevice', function() {
+  suite('HostPCDevice', function() {
     suite('#constructor()', function() {
-      const deviceName: string = 'hostpc-test-DeskTop';
+      const deviceName: string = 'hostPC-test-DeskTop';
       const hw: string = 'x86_64';
       const sw: string = 'Ubuntu 18';
       const testSpec = new HostPCSpec(hw, sw);
-      const hostPC = new DeviceInstance(deviceName, testSpec);
-      assert.isObject<DeviceInstance>(hostPC);
+      const hostPC = new Device(deviceName, testSpec);
+      assert.isObject<Device>(hostPC);
       assert.strictEqual(hostPC.spec, testSpec);
       assert.strictEqual(hostPC.name, deviceName);
     });

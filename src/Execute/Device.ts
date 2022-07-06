@@ -16,12 +16,20 @@
 
 import {DeviceSpec} from '../Backend/Spec';
 
-// What is `RealDeviceInstance` class?
-// Suppose a case that some tizen tvs are. dtv0, dtv1, ... dtvn_1
-// the dtv's spec can be just only one
-// However, each dtv should be handled one by one
-// At the time, this class expresses an instance for a real device
-class DeviceInstance {
+/**
+ * `Device` class
+ * a class to handle and access Device.
+ * Each Device has single `DeviceSpec`, which could be same with other device.
+ * Eash Device has a name to specify with other device with same `DeviceSpec`.
+ *
+ * for example, Device A, B, C connected on, and A and B are TizenTV and C is HostPC.
+ * then we could access this as below
+ *
+ * const deviceA = new Device("A", TizenDeviceSpec);
+ * const deviceB = new Device("B", TizenDeviceSpec);
+ * const deviceC = new Device("C", HostPCSpec);
+ */
+class Device {
   name: string;
   spec: DeviceSpec;
   constructor(name: string, spec: DeviceSpec) {
@@ -30,4 +38,4 @@ class DeviceInstance {
   }
 };
 
-export {DeviceInstance};
+export {Device};
