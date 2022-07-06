@@ -18,99 +18,144 @@ import * as vscode from 'vscode';
 
 import {Backend} from '../Backend/API';
 import {globalBackendMap} from '../Backend/Backend';
+import {Executor} from '../Backend/Executor';
 import {Logger} from '../Utils/Logger';
 import {MultiStepInput} from '../Utils/MultiStepInput';
 
 const logTag = 'InferenceQuickInput';
 
 interface State {
-  backend: Backend;
-  modelPath: vscode.Uri;
-  inputSpec: string;
   selectedItem: vscode.QuickPickItem;
-  error: string|undefined;
 }
 
-async function shouldResume(): Promise<boolean> {
-  // Could show a notification with the option to resume.
-  return new Promise<boolean>(
-      (resolve, reject) => {
-          // noop
-      });
-}
+class InferenceQuickInput {
+  backend: Backend|undefined = undefined;
+  modelPath: vscode.Uri|undefined = undefined;
+  inputSpec: string|undefined = undefined;
+  error: string|undefined = undefined;
 
-async function pickBackend(input: MultiStepInput, state: Partial<State>) {
-  const backends: vscode.QuickPickItem[] = Object.keys(globalBackendMap).map(label => ({label}));
-  state.selectedItem = await input.showQuickPick({
-    title: 'Choose Executor Toolchain',
-    step: 1,
-    totalSteps: 3,
-    placeholder: 'Select a Backend',
-    items: backends,
-    shouldResume: shouldResume
-  });
-  state.backend = globalBackendMap[state.selectedItem.label];
-  if (state.backend === undefined) {
-    state.error = 'Backend to infer is not chosen. Please check once again.';
+  constructor() {}
+
+  getBackend(): Backend {
+    if (this.error !== undefined || this.backend === undefined) {
+      throw new Error('wrong calling');
+    }
+    return this.backend as Backend;
+  }
+
+  getModelPath(): vscode.Uri {
+    if (this.error !== undefined || this.modelPath === undefined) {
+      throw new Error('wrong calling');
+    }
+    return this.modelPath as vscode.Uri;
+  }
+
+  getInputSpec(): string {
+    if (this.error !== undefined || this.inputSpec === undefined) {
+      throw new Error('wrong calling');
+    }
+    return this.inputSpec as string;
+  }
+
+  getError(): string|undefined {
+    return this.error;
+  }
+
+  async shouldResume(): Promise<boolean> {
+    // Could show a notification with the option to resume.
+    return new Promise<boolean>(
+        (resolve, reject) => {
+            // noop
+        });
+  }
+
+  getAllBackendNames(): string[] {
+    return Object.keys(globalBackendMap);
+  }
+
+  getQuickPickItems(items: string[]): vscode.QuickPickItem[] {
+    return items.map(label => ({label}));
+  }
+
+  getBackendFromGlobal(key: string): Backend {
+    return globalBackendMap[key];
+  }
+
+  async pickBackend(input: MultiStepInput, state: Partial<State>) {
+    const items = this.getQuickPickItems(this.getAllBackendNames());
+    state.selectedItem = await input.showQuickPick({
+      title: 'Choose Executor Toolchain',
+      step: 1,
+      totalSteps: 3,
+      placeholder: 'Select a Backend',
+      items: items,
+      shouldResume: this.shouldResume
+    });
+
+    this.backend = this.getBackendFromGlobal(state.selectedItem.label);
+
+    if (this.backend === undefined) {
+      this.error = 'Backend to infer is not chosen. Please check once again.';
+      return undefined;
+    }
+    if (this.backend.executor() === undefined) {
+      this.error = 'Backend executor is not set yet. Please check once again.';
+      return undefined;
+    }
+  }
+
+  getFilter(executor: Executor): {[name: string]: string[]} {
+    // List files which are filtered with executable extensions
+    return {backendName: executor.getExecutableExt()};
+  }
+
+  // TODO: Use quickPick window with fast grep child process
+  async selectInputModel(input: MultiStepInput, state: Partial<State>) {
+    const backend: Backend = this.backend as Backend;
+    const executor = backend.executor() as Executor;
+    const filter = this.getFilter(executor);
+
+    const fileUri = await vscode.window.showOpenDialog({
+      title: 'Select Model to Infer',
+      canSelectMany: false,
+      openLabel: 'Select Model to Infer',
+      filters: filter
+    });
+
+    if (fileUri && fileUri[0]) {
+      this.modelPath = fileUri[0];
+      return;
+    }
+
+    Logger.warn(logTag, 'No model has been selected');
+    this.error = 'No model has been selected. Please check once again.';
     return undefined;
   }
-  if (state.backend.executor() === undefined) {
-    state.error = 'Backend executor is not set yet. Please check once again.';
-    return undefined;
+
+  getInputSpecKeys(): string[] {
+    return ['any', 'non-zero', 'positive'];
+  }
+
+  // TODO: enable the backend-driven option steps by backend extension
+  async selectInputSpec(input: MultiStepInput, state: Partial<State>): Promise<void> {
+    const items = this.getQuickPickItems(this.getInputSpecKeys());
+    state.selectedItem = await input.showQuickPick({
+      title: 'Enter Backend Specific Options',
+      step: 3,
+      totalSteps: 3,
+      placeholder: 'Select Random Input Spec',
+      items: items,
+      shouldResume: this.shouldResume
+    });
+    this.inputSpec = state.selectedItem.label;
+  }
+
+  async collectInputs(): Promise<void> {
+    const state = {selectedItem: undefined} as Partial<State>;
+    await MultiStepInput.run(input => this.pickBackend(input, state));
+    await MultiStepInput.run(input => this.selectInputModel(input, state));
+    await MultiStepInput.run(input => this.selectInputSpec(input, state));
   }
 }
 
-// TODO: Use quickPick window with fast grep child process
-async function selectInputModel(input: MultiStepInput, state: Partial<State>) {
-  const backend: Backend = state.backend as Backend;
-  let backendName: string = backend.name();
-  const executor = backend.executor();
-  let filter: {[name: string]: string[]} = {};
-  // List files which are filtered with executable extensions
-  if (executor) {
-    filter = {backendName: executor.getExecutableExt()};
-  }
-
-  const fileUri = await vscode.window.showOpenDialog({
-    title: `Select Model to Infer`,
-    canSelectMany: false,
-    openLabel: 'Select Model to Infer',
-    filters: filter
-  });
-
-  state.modelPath = undefined;
-  if (fileUri && fileUri[0]) {
-    state.modelPath = fileUri[0];
-    return;
-  }
-
-  Logger.warn(logTag, 'No model has been selected');
-  state.error = 'No model has been selected. Please check once again.';
-  return undefined;
-}
-
-// TODO: enable the backend-driven option steps by backend extension
-async function selectInputSpec(input: MultiStepInput, state: Partial<State>): Promise<void> {
-  const inputSpecKeys: vscode.QuickPickItem[] =
-      ['any', 'non-zero', 'positive'].map(label => ({label}));
-
-  state.selectedItem = await input.showQuickPick({
-    title: 'Enter Backend Specific Options',
-    step: 3,
-    totalSteps: 3,
-    placeholder: 'Select Random Input Spec',
-    items: inputSpecKeys,
-    shouldResume: shouldResume
-  });
-  state.inputSpec = state.selectedItem.label;
-}
-
-async function collectInputs(): Promise<State> {
-  const state = {error: undefined} as Partial<State>;
-  await MultiStepInput.run(input => pickBackend(input, state));
-  await MultiStepInput.run(input => selectInputModel(input, state));
-  await MultiStepInput.run(input => selectInputSpec(input, state));
-  return state as State;
-}
-
-export {State, collectInputs};
+export {State, InferenceQuickInput};
