@@ -20,10 +20,12 @@ import {Backend} from '../../Backend/API';
 import {backendRegistrationApi, globalBackendMap} from '../../Backend/Backend';
 import {Compiler, CompilerBase} from '../../Backend/Compiler';
 import {Executor, ExecutorBase} from '../../Backend/Executor';
+import {gToolchainEnvMap} from '../../Toolchain/ToolchainEnv';
 
+const backendName = 'Mockup';
 class BackendMockup implements Backend {
   name(): string {
-    return 'Mockup';
+    return backendName;
   }
   compiler(): Compiler|undefined {
     return new CompilerBase();
@@ -48,9 +50,18 @@ suite('Backend', function() {
       assert.strictEqual(entries.length, 1);
       // this runs once
       for (const [key, value] of entries) {
-        assert.strictEqual(key, 'Mockup');
+        assert.strictEqual(key, backendName);
         assert.deepStrictEqual(value, backend);
       }
     });
+  });
+
+  teardown(function() {
+    if (globalBackendMap[backendName] !== undefined) {
+      delete globalBackendMap[backendName];
+    }
+    if (gToolchainEnvMap[backendName] !== undefined) {
+      delete gToolchainEnvMap[backendName];
+    }
   });
 });
