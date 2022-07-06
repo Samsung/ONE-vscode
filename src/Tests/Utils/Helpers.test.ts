@@ -23,14 +23,20 @@ suite('Utils', function() {
   suite('Helpers', function() {
     suite('#obtainWorkspaceRoot()', function() {
       test('returns workspaceRoot as string', function() {
-        const workspaceRoot: string = obtainWorkspaceRoot();
+        const workspaceRoot: string|undefined = obtainWorkspaceRoot();
+        if (!workspaceRoot) {
+          assert.fail('Need workspace');
+        }
         assert.isNotNull(workspaceRoot);
         assert.isString(workspaceRoot);
       });
     });
     suite('#loadCfgFile()', function() {
       test('returns cfgIni object', function() {
-        const workspaceRoot: string = obtainWorkspaceRoot();
+        const workspaceRoot: string|undefined = obtainWorkspaceRoot();
+        if (!workspaceRoot) {
+          assert.fail('Need workspace');
+        }
         const cfgFile = join(workspaceRoot, 'res', 'samples', 'cfg', 'inception_v3.cfg');
         const cfgIni = loadCfgFile(cfgFile);
         assert.isNotNull(cfgIni);

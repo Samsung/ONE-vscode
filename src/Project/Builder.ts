@@ -27,7 +27,6 @@ import {WorkFlow} from './WorkFlow';
 
 export class Builder implements BuilderJob {
   workFlow: WorkFlow;  // our build WorkFlow
-  currentWorkspace: string = '';
   builderCfgFile: BuilderCfgFile;
 
   constructor() {
@@ -54,19 +53,14 @@ export class Builder implements BuilderJob {
 
   // called from user interface
   public build(context: vscode.ExtensionContext) {
-    try {
-      this.currentWorkspace = helpers.obtainWorkspaceRoot();
-    } catch (e: unknown) {
+    const workspaceRoot: string|undefined = helpers.obtainWorkspaceRoot();
+    if (!workspaceRoot) {
       let errmsg = 'Failed to obtain workspace root';
-      if (e instanceof Error) {
-        errmsg = e.message;
-      }
       // TODO add more type for e if changed in obtainWorkspaceRoot
       Balloon.error(errmsg);
       return;
     }
-
-    this.workFlow.start(this.currentWorkspace);
+    this.workFlow.start(workspaceRoot);
   }
 
   // called from user interface

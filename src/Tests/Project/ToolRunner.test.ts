@@ -43,7 +43,10 @@ suite('Project', function() {
           if (oneccPath === undefined) {
             assert.fail('oneccPath should be string type');
           }
-          const workspaceRoot: string = obtainWorkspaceRoot();
+          const workspaceRoot: string|undefined = obtainWorkspaceRoot();
+          if (!workspaceRoot) {
+            assert.fail('Need workspace');
+          }
           const runner = toolRunner.getRunner(job.name, oneccPath, job.toolArgs, workspaceRoot);
           assert.isNotNull(runner);
           runner
@@ -130,7 +133,11 @@ suite('Project', function() {
         let args = new ToolArgs();
         args.push('10');  // sec
 
-        const runner = toolRunner.getRunner('long process', 'sleep', args, obtainWorkspaceRoot());
+        const workspaceRoot: string|undefined = obtainWorkspaceRoot();
+        if (!workspaceRoot) {
+          assert.fail('Need workspace');
+        }
+        const runner = toolRunner.getRunner('long process', 'sleep', args, workspaceRoot);
         runner
             .then((val: SuccessResult) => {
               assert.equal(val.intentionallyKilled, true);
@@ -156,7 +163,11 @@ suite('Project', function() {
         let args = new ToolArgs();
         args.push('0.01');  // 0.01 sec
 
-        const runner = toolRunner.getRunner('long process', 'sleep', args, obtainWorkspaceRoot());
+        const workspaceRoot: string|undefined = obtainWorkspaceRoot();
+        if (!workspaceRoot) {
+          assert.fail('Need workspace');
+        }
+        const runner = toolRunner.getRunner('long process', 'sleep', args, workspaceRoot);
         runner
             .then((val: SuccessResult) => {
               assert.equal(val.exitCode, 0);

@@ -51,12 +51,12 @@ export class RealPath {
  * @brief Get Workspace root folder as string
  * @note  will throw if not working in workspace mode.
  */
-export function obtainWorkspaceRoot(): string {
+export function obtainWorkspaceRoot(): string|undefined {
   const workspaceFolders = vscode.workspace.workspaceFolders;
   if (!workspaceFolders) {
     Logger.error(logTag, 'obtainWorkspaceRoot: NO workspaceFolders');
     // TODO revise message
-    throw new Error('Need workspace');
+    return;
   }
 
   // TODO support active workspace among the multiple workspaceFolders
@@ -68,7 +68,7 @@ export function obtainWorkspaceRoot(): string {
   if (!workspaceRoot) {
     Logger.error(logTag, 'obtainWorkspaceRoot: NO workspaceRoot');
     // TODO revise message
-    throw new Error('Need workspace');
+    return;
   }
   Logger.info(logTag, 'obtainWorkspaceRoot:', workspaceRoot);
 

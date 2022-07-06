@@ -495,12 +495,17 @@ input_path=${modelName}.${extName}
 
 export class OneExplorer {
   // TODO Support multi-root workspace
-  public workspaceRoot: vscode.Uri = vscode.Uri.file(obtainWorkspaceRoot());
+  public workspaceRoot: vscode.Uri;
   public treeView: vscode.TreeView<OneNode|undefined>|undefined;
 
   constructor(context: vscode.ExtensionContext) {
+    let workspaceRoot = obtainWorkspaceRoot();
+    if (!workspaceRoot) {
+      throw new Error('Need workspace');
+    }
+    this.workspaceRoot = vscode.Uri.file(workspaceRoot);
     // NOTE: Fix `obtainWorksapceRoot` if non-null assertion is false
-    const oneTreeDataProvider = new OneTreeDataProvider(this.workspaceRoot!);
+    const oneTreeDataProvider = new OneTreeDataProvider(this.workspaceRoot);
 
     this.treeView = vscode.window.createTreeView(
         'OneExplorerView',

@@ -64,17 +64,15 @@ class Env implements BuilderJob {
       throw Error('Env is not yet prepared');
     }
 
-    try {
-      this.currentWorkspace = helpers.obtainWorkspaceRoot();
-    } catch (e: unknown) {
+    const workspaceRoot = helpers.obtainWorkspaceRoot();
+    if (!workspaceRoot) {
       let errmsg = 'Failed to obtain workspace root';
-      if (e instanceof Error) {
-        errmsg = e.message;
-      }
       // TODO add more type for e if changed in obtainWorkspaceRoot
       Balloon.error(errmsg);
       return;
     }
+
+    this.currentWorkspace = workspaceRoot;
 
     const rootJobs = this.workFlow.jobs.filter(j => j.root === true);
     if (rootJobs.length > 0) {

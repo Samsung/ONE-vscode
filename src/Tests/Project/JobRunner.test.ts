@@ -27,7 +27,10 @@ suite('Project', function() {
       suite('#start()', function() {
         test('jobs are done', function(done) {
           let jobRunner = new JobRunner();
-          const workspaceRoot: string = obtainWorkspaceRoot();
+          const workspaceRoot: string|undefined = obtainWorkspaceRoot();
+          if (!workspaceRoot) {
+            assert.fail('Need workspace');
+          }
           let workJobs = new WorkJobs();
           workJobs.push(new MockJob('mockup'));
           workJobs.push(new MockJob('mockup'));
