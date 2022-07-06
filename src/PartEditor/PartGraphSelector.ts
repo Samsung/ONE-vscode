@@ -69,8 +69,8 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
     context.subscriptions.push(disposableCmdUpdate);
 
     let disposableCmdClose = vscode.commands.registerCommand(
-        PartGraphSelPanel.cmdClose, (filePath: string, id: number) => {
-          PartGraphSelPanel.closeByOwner(context.extensionUri, filePath, id);
+        PartGraphSelPanel.cmdClose, (args: PartGraphCmdCloseArgs) => {
+          PartGraphSelPanel.closeByOwner(context.extensionUri, args);
         });
     context.subscriptions.push(disposableCmdClose);
 
@@ -143,8 +143,8 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
   /**
    * @brief called when owner is closing
    */
-  public static closeByOwner(extensionUri: vscode.Uri, docPath: string, id: number) {
-    let selPanel = PartGraphSelPanel.findSelPanel(docPath, id);
+  public static closeByOwner(extensionUri: vscode.Uri, args: PartGraphCmdCloseArgs) {
+    let selPanel = PartGraphSelPanel.findSelPanel(args.docPath, args.id);
     if (selPanel) {
       selPanel.dispose();
     }
