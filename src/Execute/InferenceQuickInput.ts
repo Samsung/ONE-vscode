@@ -72,7 +72,7 @@ async function selectInputModel(input: MultiStepInput, state: Partial<State>) {
   }
 
   const fileUri = await vscode.window.showOpenDialog({
-    title: `Select Model to Infer (2/3)`,
+    title: `Select Model to Infer`,
     canSelectMany: false,
     openLabel: 'Select Model to Infer',
     filters: filter
