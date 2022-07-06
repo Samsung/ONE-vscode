@@ -396,8 +396,11 @@ editor.Editor = class {
       const beCode = this.operators[idx].becode;
       const opcode = this.operators[idx].opcode;
       const name = this.operators[idx].name;
+      const bopcode = `[${opcode}]`;
+      // TODO what about beCode search like '(0)' ?
+      // https://github.com/Samsung/ONE-vscode/issues/962#issuecomment-1175661118
 
-      if (this.findText === '' || name.includes(this.findText) || opcode.includes(this.findText)) {
+      if (this.findText === '' || name.includes(this.findText) || bopcode.includes(this.findText)) {
         let opt = this.document.createElement('option');
         opt.text = `(${beCode}) [${opcode}] ${name}`;
         opt.value = idx;
