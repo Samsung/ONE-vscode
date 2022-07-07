@@ -15,35 +15,93 @@
  */
 
 import {assert} from 'chai';
+import * as vscode from 'vscode';
 
+import {Backend} from '../../Backend/API';
+import {backendRegistrationApi, globalBackendMap} from '../../Backend/Backend';
+import {Command} from '../../Backend/Command';
+import {Compiler, CompilerBase} from '../../Backend/Compiler';
+import {Executor, ExecutorBase} from '../../Backend/Executor';
+import {Toolchains} from '../../Backend/Toolchain';
 import {InferenceRunner} from '../../Execute/InferenceRunner';
+import {gToolchainEnvMap} from '../../Toolchain/ToolchainEnv';
+
+// TODO: Move it to Mockup
+const backendName = 'Mockup';
+const inferenceRunner = 'inferenceRunner';
+class BackendMockup implements Backend {
+  name(): string {
+    return backendName;
+  }
+  compiler(): Compiler|undefined {
+    return new CompilerBase();
+  }
+
+  executor(): Executor|undefined {
+    class MockupExecutor implements Executor {
+      getExecutableExt(): string[] {
+        throw new Error('Method not implemented.');
+      }
+      toolchains(): Toolchains {
+        throw new Error('Method not implemented.');
+      }
+      runInference(_modelPath: string, _options?: string[]|undefined): Command {
+        let args = [_modelPath].concat(_options as string[]);
+        let cmd = new Command(inferenceRunner, args);
+        return cmd;
+      }
+    };
+    return new MockupExecutor();
+  }
+};
 
 suite('Execute', function() {
   // NOTE: InferenceRunner has two roles for running inference and showing ui
   // However, we cannot test the ui until now
   // Therefore, we focus on testing things not ui
   suite('InferenceRunner', function() {
-    suite('#constructor()', function() {
-      test('', function() {
+    const backend = new BackendMockup();
+    const modelPath = vscode.Uri.parse('file:///model.path');
+    const inputSpec = 'any';
 
+
+    setup(function() {
+      let registrationAPI = backendRegistrationApi();
+      registrationAPI.registerBackend(backend);
+    });
+
+    teardown(function() {
+      if (globalBackendMap[backendName] !== undefined) {
+        delete globalBackendMap[backendName];
+      }
+      if (gToolchainEnvMap[backendName] !== undefined) {
+        delete gToolchainEnvMap[backendName];
+      }
+    });
+
+    suite('#constructor()', function() {
+      test('is constructed with params', function() {
+        let runner = new InferenceRunner(backend, modelPath, inputSpec);
+        assert.strictEqual(runner.backend, backend);
+        assert.strictEqual(runner.modelPath, modelPath);
+        assert.strictEqual(runner.inputSpec, inputSpec);
       });
     });
 
     suite('#getInferenceCmd()', function() {
-      test('', function() {
-
+      test('gets inference command', function() {
+        let runner = new InferenceRunner(backend, modelPath, inputSpec);
+        let cmd = runner.getInferenceCmd();
+        let expected = `${inferenceRunner} ${modelPath.path} --input-spec ${inputSpec}`;
+        assert.strictEqual(cmd.str(), expected);
       });
     });
 
     suite('#getOutFileName()', function() {
-      test('', function() {
-
-      });
-    });
-
-    suite('#getInferenceTask()', function() {
-      test('', function() {
-
+      test('gets outfile name', function() {
+        let runner = new InferenceRunner(backend, modelPath, inputSpec);
+        let expected = `${modelPath.path}.infer.log`;
+        assert.strictEqual(runner.getOutFileName(), expected);
       });
     });
   });

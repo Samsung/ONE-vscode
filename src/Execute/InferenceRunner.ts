@@ -47,6 +47,7 @@ class InferenceRunner {
     return `${this.modelPath.path}.infer.log`;
   }
 
+  // TODO: It's possible divide to inferance and others
   getInferenceTask(cmd: Command, outFileName: string): Task {
     return (resolve, reject) => {
       exec(cmd.str() + ' > ' + outFileName, (error, stdout, stderr) => {
