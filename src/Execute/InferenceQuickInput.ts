@@ -104,16 +104,16 @@ class InferenceQuickInput {
     }
   }
 
-  getFilter(executor: Executor): {[name: string]: string[]} {
+  getFilter(): {[name: string]: string[]} {
+    const backend: Backend = this.backend as Backend;
+    const executor = backend.executor() as Executor;
     // List files which are filtered with executable extensions
     return {backendName: executor.getExecutableExt()};
   }
 
   // TODO: Use quickPick window with fast grep child process
   async selectInputModel(input: MultiStepInput, state: Partial<State>) {
-    const backend: Backend = this.backend as Backend;
-    const executor = backend.executor() as Executor;
-    const filter = this.getFilter(executor);
+    const filter = this.getFilter();
 
     const fileUri = await vscode.window.showOpenDialog({
       title: 'Select Model to Infer',

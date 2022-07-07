@@ -22,8 +22,8 @@ import {Compiler, CompilerBase} from '../../Backend/Compiler';
 import {Executor, ExecutorBase} from '../../Backend/Executor';
 import {gToolchainEnvMap} from '../../Toolchain/ToolchainEnv';
 
+// TODO: Move it to Mockup
 const backendName = 'Mockup';
-// TODO: Move it to MockupBackend
 class BackendMockup implements Backend {
   name(): string {
     return backendName;

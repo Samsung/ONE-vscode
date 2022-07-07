@@ -19,9 +19,9 @@ import {assert} from 'chai';
 import {InferenceRunner} from '../../Execute/InferenceRunner';
 
 suite('Execute', function() {
-    // NOTE: InferenceRunner has two roles for running inference and showing ui
-    // However, we cannot test the ui until now
-    // Therefore, we focus on testing things not ui
+  // NOTE: InferenceRunner has two roles for running inference and showing ui
+  // However, we cannot test the ui until now
+  // Therefore, we focus on testing things not ui
   suite('InferenceRunner', function() {
     suite('#constructor()', function() {
       test('', function() {
