@@ -479,6 +479,8 @@ host.BrowserHost = class {
                 this._view._host._open(file1, [file1]);
                 this._loadingModelArray = [];
                 this._view.show('default');
+
+                this._modelData = [];
             } else {
                 // request next packet
                 vscode.postMessage({command: 'loadmodel', offset: offset + length});
