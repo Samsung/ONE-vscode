@@ -17,9 +17,9 @@
 import {strict as assert} from 'assert';
 
 import {Compiler} from '../Backend/Compiler';
-import {Toolchain, Toolchains} from '../Backend/Toolchain';
+import {Toolchain} from '../Backend/Toolchain';
 import {BuilderJob} from '../Project/BuilderJob';
-import {Job, JobCallback} from '../Project/Job';
+import {Job} from '../Project/Job';
 import {JobConfig} from '../Project/JobConfig';
 import {JobInstall} from '../Project/JobInstall';
 import {JobPrerequisites} from '../Project/JobPrerequisites';
@@ -140,7 +140,7 @@ class ToolchainEnv extends Env {
   }
 
   prerequisites(): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
+    return new Promise<boolean>((resolve) => {
       const jobs: Array<Job> = [];
       const job = new JobPrerequisites(this.compiler.prerequisitesForGetToolchains());
       job.successCallback = () => resolve(true);

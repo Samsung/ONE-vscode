@@ -17,8 +17,7 @@
 import * as vscode from 'vscode';
 
 import {Toolchain} from '../Backend/Toolchain';
-import {DebianToolchain} from '../Backend/ToolchainImpl/DebianToolchain';
-import {Job, JobCallback} from '../Project/Job';
+import {Job} from '../Project/Job';
 import {JobInstall} from '../Project/JobInstall';
 import {JobUninstall} from '../Project/JobUninstall';
 import {Logger} from '../Utils/Logger';
@@ -30,6 +29,8 @@ enum NodeType {
   backend,
   toolchain,
 }
+
+type ToolchainTreeData = ToolchainNode|undefined|void;
 
 export class ToolchainNode extends vscode.TreeItem {
   constructor(
@@ -60,12 +61,9 @@ export class ToolchainNode extends vscode.TreeItem {
 export class ToolchainProvider implements vscode.TreeDataProvider<ToolchainNode> {
   tag = this.constructor.name;  // logging tag
 
-  private _onDidChangeTreeData: vscode.EventEmitter<ToolchainNode|undefined|void> =
-      new vscode.EventEmitter<ToolchainNode|undefined|void>();
-  readonly onDidChangeTreeData?: vscode.Event<ToolchainNode|undefined|void> =
-      this._onDidChangeTreeData.event;
-
-  constructor() {}
+  private _onDidChangeTreeData: vscode.EventEmitter<ToolchainTreeData> =
+      new vscode.EventEmitter<ToolchainTreeData>();
+  readonly onDidChangeTreeData?: vscode.Event<ToolchainTreeData> = this._onDidChangeTreeData.event;
 
   getTreeItem(element: ToolchainNode): vscode.TreeItem {
     return element;
@@ -161,7 +159,7 @@ export class ToolchainProvider implements vscode.TreeDataProvider<ToolchainNode>
     });
   }
 
-  run(cfg: string) {
+  run(_cfg: string) {
     throw Error('Not implemented yet');
   }
 }
