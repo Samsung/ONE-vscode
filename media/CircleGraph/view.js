@@ -760,6 +760,21 @@ view.View = class {
         });
     }
 
+    reset() {
+        this._sidebar.close();
+
+        const canvas = this._getElementById('canvas');
+        while (canvas.lastChild) {
+            canvas.removeChild(canvas.lastChild);
+        }
+
+        this._model = null;
+        this._graph = null;
+        this._graphs = [];
+        this._selection = [];
+        this._selectionNodes = [];
+    }
+
     _updateActiveGraph(graph) {
         this._sidebar.close();
         if (this._model) {
