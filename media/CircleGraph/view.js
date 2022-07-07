@@ -201,6 +201,7 @@ view.View = class {
                 if (hostMode === viewMode.viewer) {
                     this.select(selection);
                 } else if (hostMode === viewMode.selector) {
+                    this.selectToggle(selection);
                     this.scrollToSelection(selection);
                     // TODO maybe toggle selection
                 }
@@ -454,6 +455,37 @@ view.View = class {
             const left = (container.scrollLeft + x - rect.left) - (rect.width / 2);
             const top = (container.scrollTop + y - rect.top) - (rect.height / 2);
             container.scrollTo({left: left, top: top, behavior: 'smooth'});
+        }
+    }
+
+    selectToggle(selection) {
+        if (this._host._mode !== viewMode.selector) {
+            return;
+        }
+        if (selection && selection.length > 0) {
+            const container = this._getElementById('graph');
+            let x = 0;
+            let y = 0;
+            for (const element of selection) {
+                let index = this._selection.indexOf(element);
+
+                if (index > -1) {
+                    // de-select
+                    element.classList.remove('select');
+                    this._selection.splice(index, 1);
+                } else {
+                    element.classList.add('select');
+                    this._selection.push(element);
+                }
+                const rect = element.getBoundingClientRect();
+                x += rect.left + (rect.width / 2);
+                y += rect.top + (rect.height / 2);
+            }
+            x = x / selection.length;
+            y = y / selection.length;
+            const rect = container.getBoundingClientRect();
+            const left = (container.scrollLeft + x - rect.left) - (rect.width / 2);
+            const top = (container.scrollTop + y - rect.top) - (rect.height / 2);
         }
     }
 

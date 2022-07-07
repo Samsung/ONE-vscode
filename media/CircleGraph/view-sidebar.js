@@ -1345,7 +1345,8 @@ sidebar.FindSidebar = class {
         for (const node of this._graph.nodes.values()) {
             const label = node.label;
             const initializers = [];
-            if (label.class === 'graph-node' || label.class === 'graph-input') {
+            if (this._host._mode === viewMode.viewer &&
+                (label.class === 'graph-node' || label.class === 'graph-input')) {
                 for (const input of label.inputs) {
                     for (const argument of input.arguments) {
                         if (argument.name && !edges.has(argument.name)) {
@@ -1400,15 +1401,35 @@ sidebar.FindSidebar = class {
             if (label.class === 'graph-node') {
                 const name = label.value.name;
                 const type = label.value.type.name;
+                let nameOut = undefined;
+                if (this._host._mode === viewMode.selector) {
+                    for (const output of label.outputs) {
+                        if (!nameOut) {
+                            for (const argument of output.arguments) {
+                                if (!nameOut) {
+                                    nameOut = ' ' + argument.name.split('\n')[0];
+                                    console.log('!!! nameOut', nameOut);
+                                }
+                            }
+                        }
+                    }
+                }
                 if (!nodes.has(label.id) &&
-                    ((name && callback(name) || (type && callback(type))))) {
+                    ((name && callback(name) || (type && callback(type)) ||
+                      (nameOut && callback(nameOut))))) {
                     const nameItem = this._host.document.createElement('li');
                     nameItem.innerText = '\u25A2 ' + (name || '[' + type + ']');
+                    if (nameOut) {
+                        nameItem.innerText = nameItem.innerText + nameOut;
+                    }
                     nameItem.id = label.id;
                     this._resultElement.appendChild(nameItem);
                     nodes.add(label.id);
                 }
             }
+            // TODO fix indent
+            // clang-format off
+            if (this._host._mode === viewMode.viewer) {
             for (const argument of initializers) {
                 if (argument.name) {
                     const initializeItem = this._host.document.createElement('li');
@@ -1418,11 +1439,14 @@ sidebar.FindSidebar = class {
                     this._resultElement.appendChild(initializeItem);
                 }
             }
+            }
+            // clang-format on
         }
 
         for (const node of this._graph.nodes.values()) {
             const label = node.label;
-            if (label.class === 'graph-node' || label.class === 'graph-output') {
+            if (this._host._mode === viewMode.viewer &&
+                (label.class === 'graph-node' || label.class === 'graph-output')) {
                 for (const output of label.outputs) {
                     for (const argument of output.arguments) {
                         if (argument.name && !edges.has(argument.name) &&
