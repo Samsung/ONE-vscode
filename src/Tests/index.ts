@@ -44,6 +44,8 @@
 import {glob} from 'glob';
 import Mocha from 'mocha';
 import * as path from 'path';
+// NOTE: env[key] causes some error. Use env.key
+import {env} from 'process';
 
 export function run(): Promise<void> {
   // FOR DEVELOPERS,
@@ -62,9 +64,19 @@ export function run(): Promise<void> {
   //
   // (2) Filter with a test name
   // const testFilter = "Returns parsed object";
-
+  //
+  // TODO: Enable to get string to filter from package.json
   const testFilter = '';
-  const mocha = new Mocha({fgrep: testFilter, ui: 'tdd', color: true});
+  let mocha = new Mocha({ui: 'tdd', color: true, fgrep: testFilter});
+  const isCoverage: string|undefined = env.isCoverage;
+  if (isCoverage !== undefined && isCoverage === 'true') {
+    mocha.reporter('mocha-xunit-reporter', {output: 'mocha_result.xml'});
+  }
+  const isCiTest: string|undefined = env.isCiTest;
+  if (isCiTest !== undefined && isCiTest === 'true') {
+    mocha.fgrep('@Use-onecc');
+    mocha.invert();
+  }
 
   const testsRoot = path.resolve(__dirname, '.');
 
