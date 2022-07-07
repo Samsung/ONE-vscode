@@ -283,7 +283,7 @@
       "commandPalette": [
         {
           "command": "one.backend.infer",
-          "when": "true"
+          "when": "false"
         },
         {
           "command": "one.device.register",
