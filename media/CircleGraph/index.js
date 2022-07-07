@@ -143,6 +143,9 @@ host.BrowserHost = class {
                 case 'backendColor':
                     this._msgBackendColor(message);
                     break;
+                case 'reload':
+                    this._msgReload(message);
+                    break;
             }
         });
 
@@ -526,6 +529,14 @@ host.BrowserHost = class {
         let style = this._document.createElement('style');
         style.innerHTML = styleBackend;
         this._document.head.appendChild(style);
+    }
+
+    _msgReload(message) {
+        this._modelData = [];
+
+        this._view.reset();
+        this._view.show('welcome spinner');
+        vscode.postMessage({command: 'loadmodel', offset: '0'});
     }
 };
 
