@@ -34,6 +34,10 @@ export type PartGraphCmdUpdateArgs = {
   docPath: string, id: number, docText: string;
 };
 
+export type PartGraphCmdReloadArgs = {
+  docPath: string, id: number, docText: string;
+};
+
 export type PartGraphCmdFwdSelArgs = {
   docPath: string, id: number, selection: string;
 };
@@ -46,6 +50,7 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
   public static readonly viewType = 'PartGraphSelector';
   public static readonly cmdOpen = 'one.part.openGraphSelector';
   public static readonly cmdUpdate = 'one.part.updateGraphSelector';
+  public static readonly cmdReload = 'one.part.reloadGraphSelector';
   public static readonly cmdClose = 'one.part.closeGraphSelector';
   public static readonly cmdFwdSelection = 'one.part.fwdSelection';
   public static readonly folderMediaCircleGraph = 'media/CircleGraph';
@@ -63,6 +68,12 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
 
   public static register(context: vscode.ExtensionContext): vscode.Disposable {
     // TODO add more commands
+    let disposableCmdReload = vscode.commands.registerCommand(
+        PartGraphSelPanel.cmdReload, (args: PartGraphCmdReloadArgs) => {
+          PartGraphSelPanel.reloadByOwner(context.extensionUri, args);
+        });
+    context.subscriptions.push(disposableCmdReload);
+
     let disposableCmdUpdate = vscode.commands.registerCommand(
         PartGraphSelPanel.cmdUpdate, (args: PartGraphCmdUpdateArgs) => {
           PartGraphSelPanel.updateByOwner(context.extensionUri, args);
@@ -140,6 +151,17 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
       if (selPanel.isReady()) {
         selPanel.applyDocumentToGraph();
       }
+    }
+  }
+
+  /**
+   * @brief called when circle file has changed
+   */
+  public static reloadByOwner(extensionUri: vscode.Uri, args: PartGraphCmdReloadArgs) {
+    let selPanel = PartGraphSelPanel.findSelPanel(args.docPath, args.id);
+    if (selPanel) {
+      selPanel._documentText = args.docText;
+      selPanel.reloadModel();
     }
   }
 
