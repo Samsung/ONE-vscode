@@ -19,34 +19,44 @@ import {assert} from 'chai';
 import {InferenceQuickInput} from '../../Execute/InferenceQuickInput';
 
 suite('Execute', function() {
+    // NOTE: InferenceQuickInput has a role for QuickInput
+    // However, we cannot test the ui until now
+    // Therefore, we focus on testing things not ui
   suite('InferenceQuickInput', function() {
-    suite('#constructor()', function() {
-      test('', function() {
 
+
+    suite('#constructor()', function() {
+      test('is constructed', function() {
+        let quickInput = new InferenceQuickInput();
+        assert.instanceOf(quickInput, InferenceQuickInput);
       });
     });
 
     suite('#getBackend()', function() {
-      test('', function() {
-
+      test('throw error when backend is undefined', function() {
+        let quickInput = new InferenceQuickInput();
+        assert.throw(() => {quickInput.getBackend();});
       });
     });
 
     suite('#getModelPath()', function() {
-      test('', function() {
-
+        test('throw error when modelPath is undefined', function() {
+            let quickInput = new InferenceQuickInput();
+        assert.throw(() => {quickInput.getModelPath();});
       });
     });
 
     suite('#getInputSpec()', function() {
-      test('', function() {
-
+        test('throw error when inputSpec is undefined', function() {
+            let quickInput = new InferenceQuickInput();
+        assert.throw(() => {quickInput.getInputSpec();});
       });
     });
 
     suite('#getError()', function() {
-      test('', function() {
-
+      test('returns error', function() {
+        let quickInput = new InferenceQuickInput();
+        assert.strictEqual(quickInput.getError(), undefined);
       });
     });
 
