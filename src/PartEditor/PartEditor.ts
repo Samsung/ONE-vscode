@@ -28,6 +28,7 @@ import {Logger} from '../Utils/Logger';
 import {PartGraphEvent, PartGraphSelPanel} from './PartGraphSelector';
 import {PartGraphCmdCloseArgs, PartGraphCmdOpenArgs} from './PartGraphSelector';
 import {PartGraphCmdFwdSelArgs, PartGraphCmdUpdateArgs} from './PartGraphSelector';
+import {PartGraphCmdReloadArgs} from './PartGraphSelector';
 
 type Partition = {
   backends?: {};
@@ -50,6 +51,8 @@ class PartEditor implements PartGraphEvent {
   private _modelFolderPath: string;
   private _backEndNames: string[] = [];
   private _backEndColors: string[] = [];
+  private _modelWatcher: vscode.FileSystemWatcher|undefined;
+  private _reloadTimer: NodeJS.Timer|undefined;
   private _eventHandler: PartEditorEvent|undefined;
 
   constructor(doc: vscode.TextDocument, panel: vscode.WebviewPanel, id: number) {
@@ -65,6 +68,7 @@ class PartEditor implements PartGraphEvent {
     this._modelFileName = path.basename(fileNameExt, fileExt) + '.circle';
     this._modelFolderPath = this._document.fileName.substring(0, lastSlash);
     this._modelFilePath = this._modelFolderPath + this._modelFileName;
+    this._modelWatcher = undefined;
     this._eventHandler = undefined;
   }
 
@@ -132,6 +136,14 @@ class PartEditor implements PartGraphEvent {
           return;
       }
     });
+
+    const parsedPath = path.parse(this._document.fileName);
+    const circleFile = path.join(parsedPath.dir, parsedPath.name) + '.circle';
+
+    this._modelWatcher = vscode.workspace.createFileSystemWatcher(circleFile);
+    this._disposables.push(this._modelWatcher);
+    this._modelWatcher.onDidChange(() => this.reloadModel());
+    this._modelWatcher.onDidCreate(() => this.reloadModel());
   }
 
   public loadContent() {
@@ -153,6 +165,24 @@ class PartEditor implements PartGraphEvent {
       };
       vscode.commands.executeCommand(PartGraphSelPanel.cmdUpdate, args);
     }
+  }
+
+  private reloadModel() {
+    console.log('!!! reloadModel');
+
+    if (this._reloadTimer) {
+      clearTimeout(this._reloadTimer);
+    }
+    this._reloadTimer = setTimeout(() => {
+      this.handleRequestOpNames();
+
+      const args: PartGraphCmdReloadArgs = {
+        docPath: this._document.fileName,
+        id: this._id,
+        docText: this._document.getText()
+      };
+      vscode.commands.executeCommand(PartGraphSelPanel.cmdReload, args);
+    }, 500);
   }
 
   private makeDefaultPartiton() {

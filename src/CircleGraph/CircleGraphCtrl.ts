@@ -36,6 +36,7 @@ export class MessageDefs {
   public static readonly pageloaded = 'pageloaded';
   public static readonly loadmodel = 'loadmodel';
   public static readonly finishload = 'finishload';
+  public static readonly reload = 'reload';
   public static readonly selection = 'selection';
   public static readonly backendColor = 'backendColor';
   public static readonly error = 'error';
@@ -137,6 +138,10 @@ export class CircleGraphCtrl {
 
   public sendBackendColor(backends: BackendColor[]) {
     this._webview.postMessage({command: MessageDefs.backendColor, backends: backends});
+  }
+
+  public reloadModel() {
+    this._webview.postMessage({command: MessageDefs.reload});
   }
 
   private registerEventHandlers() {

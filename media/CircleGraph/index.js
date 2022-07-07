@@ -143,6 +143,9 @@ host.BrowserHost = class {
                 case 'backendColor':
                     this._msgBackendColor(message);
                     break;
+                case 'reload':
+                    this._msgReload(message);
+                    break;
             }
         });
 
@@ -476,6 +479,8 @@ host.BrowserHost = class {
                 this._view._host._open(file1, [file1]);
                 this._loadingModelArray = [];
                 this._view.show('default');
+
+                this._modelData = [];
             } else {
                 // request next packet
                 vscode.postMessage({command: 'loadmodel', offset: offset + length});
@@ -526,6 +531,14 @@ host.BrowserHost = class {
         let style = this._document.createElement('style');
         style.innerHTML = styleBackend;
         this._document.head.appendChild(style);
+    }
+
+    _msgReload(message) {
+        this._modelData = [];
+
+        this._view.reset();
+        this._view.show('welcome spinner');
+        vscode.postMessage({command: 'loadmodel', offset: '0'});
     }
 };
 
