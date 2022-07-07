@@ -42,9 +42,9 @@ interface Artifact {
 }
 
 /**
- * 'ArtifactLocator' is to find artifact's absolute path
+ * 'Locator' is to grep matching paths inside Ini Object
  */
-export class ArtifactLocator {
+export class Locator {
   /**
    * The section of ini to find the targetted file
    * If not given, locator searches the whole section
@@ -58,54 +58,28 @@ export class ArtifactLocator {
   key?: string;
 
   /**
-   * (optional)
-   * A search function to find the file in a space-seperated word sequence
-   *
-   * If undefined, locator searches with 'ext' within the given ['section']['key'] field.
-   * Refer to `this.searchEndsWithExt`
+   * A mapper function to map a value to filenames
+   * @param value: Object[section][key]
+   * @return an array of searched string
    */
-  search: (arg: string) => string[];
+  mapper: (value: string) => string[];
 
   /**
-   * A target artifact
+   * @param mapper A mapper function to map 'obj[section][key]' to filenames
+   * @param section (optional) if not given, locator searches the whole section
+   * @param key (optional) if not given, locator searches the whole key
    */
-  artifact: Artifact;
-
-  /**
-   * A default search function
-   * @param content [this.section][this.key] value
-   * @returns string file name array
-   */
-  private searchEndsWithExt = (content: string): string[] => {
-    // Don't remove this. It's to prevent an 'content.cplit is not a function' error.
-    // TODO Find more straightforward way to resolve an error
-    content = content + '';
-
-    const fileNames = content.split(' ').filter(val => val.endsWith(this.artifact.ext));
-    return fileNames;
-  };
-
-  /**
-   * @param artifact
-   * @param section if not given, locator searches the whole section
-   * @param key if not given, locator searches the whole key
-   * @param search if not given, locator searches with 'artifact.ext' within the given
-   *     ['section']['key'] field.
-   */
-  constructor(
-      artifact: Artifact, section?: string, key?: string, search?: (arg: string) => string[]) {
-    this.artifact = artifact;
+  constructor(mapper: (value: string) => string[], section?: string, key?: string) {
     this.section = section;
     this.key = key;
-
-    this.search = search ? search : this.searchEndsWithExt;
+    this.mapper = mapper;
   }
 
   /**
-   * Search a file path with 'this.artifact.ext' inside iniObj[this.section][this.key] or using
-   * 'this.search'.
-   * @param iniObj
-   * @returns
+   * Locate paths inside iniObj[this.section][this.key] using 'this.mapper'.
+   * @param iniObj a parsed ini object
+   * @param dir a directory of ini file
+   * @returns an array of file path, without any duplication in the list
    *
    * EXAMPLE - file
    *
@@ -118,9 +92,8 @@ export class ArtifactLocator {
    * iniObj[one-import-tflite]['input_file'] === "model.tflite"
    * iniObj[one-import-tflite]['input_file'] === "model.circle"
    */
-  public run(iniObj: object, dir: string): Artifact[] {
-    let ret: Artifact[] = [];
-
+  public locate(iniObj: object, dir: string): string[] {
+    // Get file names from iniObj
     const getFileNames = (): string[] => {
       let fileNames: string[] = [];
 
@@ -131,14 +104,15 @@ export class ArtifactLocator {
         const keys: string[] = this.key ? [this.key] : Object.keys(sectionObj);
 
         keys.forEach(key => {
-          const content: string = sectionObj[key as keyof typeof iniObj];
-          fileNames = fileNames.concat(this.search(content));
+          const value: string = sectionObj[key as keyof typeof iniObj];
+          fileNames = fileNames.concat(this.mapper(value));
         });
       });
 
       return fileNames;
     };
 
+    // Get file paths by joining dir
     const getFilePaths = (fileNames: string[]): string[] => {
       let filePaths: string[] = [];
       fileNames.forEach((fileName) => {
@@ -157,48 +131,61 @@ export class ArtifactLocator {
     // Get file paths by joining directory path
     let filePaths: string[] = getFilePaths(fileNames);
 
-    // Remove duplicated fileNames
+    // Remove duplication in filePaths
     filePaths = [...new Set(filePaths)];
 
-    filePaths.forEach(filePath => {
-      // Clone this.artifact
-      let artifact: Artifact = Object.assign({}, this.artifact);
-
-      artifact.path = filePath;
-      ret.push(artifact);
-    });
-
-    return ret;
+    return filePaths;
   }
 };
 
-export class ArtifactLocatorRunner {
-  private locators: ArtifactLocator[] = [];
 
-  // Registor a locator
-  public register(locator: ArtifactLocator): void {
-    this.locators.push(locator);
-  }
+// TODO Move to backend side with some modification
+export class LocatorRunner {
+  private artifactLocators: {artifact: Artifact, locator: Locator}[] = [];
 
-  // TODO Move to each backend
+  /**
+   * A helper function to grep a filename ends with 'ext' within the given 'content' string.
+   */
+  public static searchWithExt = (ext: string, content: string): string[] => {
+    // Don't remove this. It's to prevent an 'content.cplit is not a function' error.
+    // TODO Find more straightforward way to resolve an error
+    content = content + '';
+
+    const fileNames = content.split(' ').filter(val => val.endsWith(ext));
+    return fileNames;
+  };
+
   constructor() {
-    this.locators.push(new ArtifactLocator({type: 'circle', ext: '.circle'}));
-    this.locators.push(new ArtifactLocator({type: 'tvn', ext: '.tvn'}));
+    this.artifactLocators.push({
+      artifact: {type: 'circle', ext: '.circle'},
+      locator: new Locator((value: string) => LocatorRunner.searchWithExt('.circle', value))
+    });
+
+    this.artifactLocators.push({
+      artifact: {type: 'tvn', ext: '.tvn'},
+      locator: new Locator((value: string) => LocatorRunner.searchWithExt('.tvn', value))
+    });
   }
 
   /**
-   * Runs registered locator runners which parses iniObj and find the fileNames
+   * Run registered locators
    * @param iniObj
    * @param dir
-   * @returns Artifact[] where each of and Artifact.path is filled
+   * @returns Artifact[] with paths
    */
   public run(iniObj: object, dir: string): Artifact[] {
     let artifacts: Artifact[] = [];
 
     // Get Artifacts with {type, ext, path}
-    for (let loc of this.locators) {
-      artifacts = artifacts.concat(loc.run(iniObj, dir));
-    }
+    this.artifactLocators.forEach(({artifact, locator}) => {
+      let filePaths: string[] = locator.locate(iniObj, dir);
+      filePaths.map(filePath => {
+        // Clone this.artifact
+        let newArtifact: Artifact = Object.assign({}, artifact);
+        newArtifact.path = filePath;
+        artifacts.push(newArtifact);
+      });
+    });
 
     return artifacts;
   }
@@ -356,7 +343,7 @@ export class ConfigObj {
    * @param uri cfg uri is required to calculate absolute path
    */
   private static parseDerivedModels = (uri: vscode.Uri, iniObj: object): vscode.Uri[] => {
-    let artifacts: Artifact[] = (new ArtifactLocatorRunner).run(iniObj, path.dirname(uri.fsPath));
+    let artifacts: Artifact[] = (new LocatorRunner).run(iniObj, path.dirname(uri.fsPath));
 
     // Return as list of uri
     return artifacts.map(artifact => vscode.Uri.file(artifact.path!));
