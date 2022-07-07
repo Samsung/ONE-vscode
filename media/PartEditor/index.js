@@ -477,3 +477,8 @@ window.addEventListener('load', () => {
   window.__editor__ = new editor.Editor();
   window.__editor__.initialize();
 });
+
+// disable context menu
+window.addEventListener('contextmenu', (e) => {
+  e.stopImmediatePropagation();
+}, true);

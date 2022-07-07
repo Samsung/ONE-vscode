@@ -1083,3 +1083,9 @@ window.addEventListener('load', () => {
     window.__view__ = new view.View(new host.BrowserHost());
     vscode.postMessage({command: 'pageloaded'});
 });
+
+// disable context menu
+// TODO set backend with context menu?
+window.addEventListener('contextmenu', (e) => {
+    e.stopImmediatePropagation();
+}, true);
