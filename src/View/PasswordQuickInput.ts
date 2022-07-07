@@ -21,17 +21,17 @@ function containsNonAscii(str: string): boolean {
   return !/^[\u0000-\u007f]*$/.test(str);
 }
 
-async function validateInputIsAscii(input: string): Promise<string|undefined> {
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  return containsNonAscii(input) ? 'Password contains non-ASCII characters' : undefined;
-}
-
 async function showPasswordQuickInput(): Promise<string|undefined> {
   return await vscode.window.showInputBox({
     title: 'Enter password',
     password: true,
     validateInput: validateInputIsAscii,
   });
+
+  async function validateInputIsAscii(input: string): Promise<string|undefined> {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    return containsNonAscii(input) ? 'Password contains non-ASCII characters' : undefined;
+  }
 }
 
-export {showPasswordQuickInput, validateInputIsAscii, containsNonAscii};
+export {showPasswordQuickInput, containsNonAscii};
