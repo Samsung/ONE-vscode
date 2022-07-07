@@ -27,6 +27,7 @@ export interface PartGraphEvent {
 
 export type PartGraphCmdOpenArgs = {
   docPath: string; id: number; docText: string; names: string; backends: BackendColor[];
+  viewColumn: vscode.ViewColumn | undefined;
 };
 
 export type PartGraphCmdUpdateArgs = {
@@ -90,8 +91,12 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
 
   public static createOrShow(
       extensionUri: vscode.Uri, args: PartGraphCmdOpenArgs, handler: PartGraphEvent|undefined) {
-    const column =
-        vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
+    let column = args.viewColumn;
+    if (column) {
+      if (column >= vscode.ViewColumn.One) {
+        column = column + 1;
+      }
+    }
 
     // search for existing panel
     const oldPanel = PartGraphSelPanel.findSelPanel(args.docPath, args.id);
@@ -101,11 +106,10 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
     }
 
     // Otherwise, create a new panel.
-    // TODO revise 'vscode.ViewColumn.Three' to appropriate value
     const lastSlash = args.docPath.lastIndexOf(path.sep) + 1;
     const fileNameExt = args.docPath.substring(lastSlash);
     const panel = vscode.window.createWebviewPanel(
-        PartGraphSelPanel.viewType, fileNameExt, column || vscode.ViewColumn.Three,
+        PartGraphSelPanel.viewType, fileNameExt, column || vscode.ViewColumn.Two,
         {retainContextWhenHidden: true});
 
     const graphSelPanel = new PartGraphSelPanel(panel, extensionUri, args, handler);
