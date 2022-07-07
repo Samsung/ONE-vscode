@@ -218,6 +218,8 @@ editor.Editor = class {
 
     // initial fill operators listbox with name and becode as 0
     const listbox = this.document.getElementById('circle-nodes');
+
+    listbox.options.length = 0;
     for (let idx = 0; idx < itemOpNames.length; idx++) {
       if (itemOpNames[idx].length > 0) {
         const codename = itemOpNames[idx].split(',');
