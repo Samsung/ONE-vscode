@@ -22,6 +22,7 @@ import * as helpers from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
 import {Job} from './Job';
+import {JobConfig} from './JobConfig';
 import {ToolArgs} from './ToolArgs';
 import {ToolRunner} from './ToolRunner';
 import {WorkJobs} from './WorkJobs';
@@ -72,7 +73,13 @@ export class JobRunner extends EventEmitter {
     const runner = this.toolRunner.getRunner(job.name, tool, toolArgs, workDir, job.root);
 
     runner
-        .then(() => {
+        .then((value) => {
+          if (value.intentionallyKilled) {
+            Balloon.info('The job was cancelled.');
+            this.emit(K_CLEANUP);
+            return;
+          }
+
           if (success !== undefined) {
             success();
           }
@@ -110,10 +117,21 @@ export class JobRunner extends EventEmitter {
       return;
     }
 
+    let isCancellable = false;
+    const jobConfig = jobs.filter((value) => value instanceof JobConfig);
+    if (jobConfig.length === jobs.length) {
+      isCancellable = true;
+    }
+
     Logger.show();
     vscode.window.withProgress(
-        {location: vscode.ProgressLocation.Notification, cancellable: false}, (progress) => {
+        {location: vscode.ProgressLocation.Notification, cancellable: isCancellable},
+        (progress, token) => {
           // TODO(jyoung): Implement to request cancel job.
+          token.onCancellationRequested(() => {
+            this.toolRunner.kill();
+          });
+
           return new Promise<void>(resolve => {
             this.progress = progress;
             this.progressTimer = setInterval(() => {
