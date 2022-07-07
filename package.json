@@ -50,7 +50,7 @@
             "filenamePattern": "*.cfg"
           }
         ],
-        "priority": "default"
+        "priority": "option"
       },
       {
         "viewType": "onevscode.mondrianViewer",
