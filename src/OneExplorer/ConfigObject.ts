@@ -147,7 +147,7 @@ export class LocatorRunner {
    * A helper function to grep a filename ends with 'ext' within the given 'content' string.
    */
   public static searchWithExt = (ext: string, content: string): string[] => {
-    // Don't remove this. It's to prevent an 'content.cplit is not a function' error.
+    // Don't remove this. It's to prevent 'content.split is not a function' error.
     // TODO Find more straightforward way to resolve an error
     content = content + '';
 
