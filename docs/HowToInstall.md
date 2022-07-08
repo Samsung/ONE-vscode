@@ -7,8 +7,8 @@ ONE-vscode is an [extension](https://code.visualstudio.com/docs/editor/extension
 ### VS Code and its extensions
 
 Let's install vscode.
-- You can download vscode [HERE](https://code.visualstudio.com/download)
-- Official document: [setup](https://code.visualstudio.com/docs/setup/setup-overview)
+- You can download vscode [here](https://code.visualstudio.com/download)
+- Refer [official document](https://code.visualstudio.com/docs/setup/setup-overview) for installing vscode.
 
 ### ssh extension in vscode
 
