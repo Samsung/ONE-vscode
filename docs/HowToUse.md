@@ -18,6 +18,8 @@ Second, you need a NN model and a config file to run compiling. Now you can get 
 
 Last, you can compile the model by pushing Run button.
 
+Depends on backend, you may be able to infer or profile a model by 'running config'.
+
 <img src="https://user-images.githubusercontent.com/10216715/174796457-4dae4a77-04e1-4e5c-9453-77ebfb65182a.gif" width=600 />
 
 ## Trouble-shooting
