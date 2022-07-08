@@ -2,7 +2,7 @@
 
 Let's compile an example by using ONE-vscode.
 
-## Install toolchains
+## Install the toolchain
 
 First, you need ONE toolchains. Let's install ONE toolchains. (You should install the in-house backend to follow this.)
 
