@@ -28,7 +28,7 @@ The word `Backend` is used to a concept to wrap `Toolchain` and others that rela
 - Optimization: Try optimizing as possible by using `circle2circle`.
 - Quantization: Quantize `circle` model.
 - Codegen: Generate code as output for backend.
-- Profile: Profile it.
+- Profile: Profile output with backend.
 
 ### ONE Config File(*.cfg)
 
