@@ -6,13 +6,13 @@ A glossary for(or used in) ONE-vscode
 
 There are concepts only used in ONE-vscode. Let's investigate them.
 
-### Backend
-
-The word `Backend` is used to a concept to wrap `Toolchain` and others that related to `Toolchain`.
-
 ### Toolchain
 
 `Toolchain` is a collection of tools. Now you could think it as `ONE` itself.
+
+### Backend
+
+The word `Backend` is used to a concept to wrap `Toolchain` and others that related to `Toolchain`.
 
 ### ONE Explorer View
 
