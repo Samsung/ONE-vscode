@@ -15,6 +15,7 @@
  */
 
 import {strict as assert} from 'assert';
+import * as path from 'path';
 
 import {Compiler} from '../Backend/Compiler';
 import {Toolchain} from '../Backend/Toolchain';
@@ -64,18 +65,6 @@ class Env implements BuilderJob {
       throw Error('Env is not yet prepared');
     }
 
-    try {
-      this.currentWorkspace = helpers.obtainWorkspaceRoot();
-    } catch (e: unknown) {
-      let errmsg = 'Failed to obtain workspace root';
-      if (e instanceof Error) {
-        errmsg = e.message;
-      }
-      // TODO add more type for e if changed in obtainWorkspaceRoot
-      Balloon.error(errmsg);
-      return;
-    }
-
     const rootJobs = this.workFlow.jobs.filter(j => j.root === true);
     if (rootJobs.length > 0) {
       Logger.info(this.logTag, 'Showing password prompt');
@@ -86,10 +75,10 @@ class Env implements BuilderJob {
         }
         Logger.info(this.logTag, 'Got password response');
         process.env.userp = password;
-        this.workFlow.start(this.currentWorkspace);
+        this.workFlow.start();
       });
     } else {
-      this.workFlow.start(this.currentWorkspace);
+      this.workFlow.start();
     }
   }
 }
@@ -181,6 +170,7 @@ class ToolchainEnv extends Env {
     return new Promise<boolean>((resolve, reject) => {
       const jobs: Array<Job> = [];
       const job = new JobConfig(toolchain.run(cfg));
+      job.workDir = path.dirname(cfg);
       job.successCallback = () => resolve(true);
       job.failureCallback = () => reject();
       jobs.push(job);
