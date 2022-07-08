@@ -161,14 +161,10 @@ host.BrowserHost = class {
                 click: () => this._view.showModelProperties()
             });
             this._menu.add({});
-        }
-        this._menu.add(
-            {label: 'Find...', accelerator: 'CmdOrCtrl+F', click: () => this._view.find()});
-        if (this._mode === viewMode.selector) {
+            this._menu.add(
+                {label: 'Find...', accelerator: 'CmdOrCtrl+F', click: () => this._view.find()});
             this._menu.add({});
-            this._menu.add({label: 'Clear selection', click: () => this._view.clearSelection()});
         }
-        this._menu.add({});
         this._menu.add({
             label: () => this._view.options.attributes ? 'Hide Attributes' : 'Show Attributes',
             accelerator: 'CmdOrCtrl+D',
