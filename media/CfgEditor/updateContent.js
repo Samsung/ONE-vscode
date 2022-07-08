@@ -16,9 +16,6 @@
 
 import oneOptimizationList from './one-optimizations.json' assert {type : 'json'};
 
-// Get access to the VS Code API from within the webview context
-const vscode = acquireVsCodeApi();
-
 function iniKeyValueString(iniKey, iniValue, noEffectValue = undefined) {
   if (iniValue === null || iniValue === undefined) {
     return '';
@@ -39,10 +36,12 @@ function iniKeyValueString(iniKey, iniValue, noEffectValue = undefined) {
 }
 
 export function applyUpdates() {
+  const vscode = acquireVsCodeApi();
   vscode.postMessage({type: 'updateDocument'});
 }
 
 export function updateSteps() {
+  const vscode = acquireVsCodeApi();
   vscode.postMessage({type: 'setParam', section: 'onecc', param: 'one-import-tf', value: 'False'});
   vscode.postMessage(
       {type: 'setParam', section: 'onecc', param: 'one-import-tflite', value: 'False'});
@@ -119,6 +118,7 @@ export function updateImportInputModelType() {
 }
 
 export function updateImportPB() {
+  const vscode = acquireVsCodeApi();
   let content = '';
   content += iniKeyValueString('input_path', document.getElementById('PBInputPath').value);
   content += iniKeyValueString('output_path', document.getElementById('PBOutputPath').value);
@@ -132,6 +132,7 @@ export function updateImportPB() {
 }
 
 export function updateImportSAVED() {
+  const vscode = acquireVsCodeApi();
   let content = '';
   content += iniKeyValueString('input_path', document.getElementById('SAVEDInputPath').value);
   content += iniKeyValueString('output_path', document.getElementById('SAVEDOutputPath').value);
@@ -141,6 +142,7 @@ export function updateImportSAVED() {
 }
 
 export function updateImportKERAS() {
+  const vscode = acquireVsCodeApi();
   let content = '';
   content += iniKeyValueString('input_path', document.getElementById('KERASInputPath').value);
   content += iniKeyValueString('output_path', document.getElementById('KERASOutputPath').value);
@@ -150,6 +152,7 @@ export function updateImportKERAS() {
 }
 
 export function updateImportTFLITE() {
+  const vscode = acquireVsCodeApi();
   let content = '';
   content += iniKeyValueString('input_path', document.getElementById('TFLITEInputPath').value);
   content += iniKeyValueString('output_path', document.getElementById('TFLITEOutputPath').value);
@@ -158,6 +161,7 @@ export function updateImportTFLITE() {
 }
 
 export function updateImportONNX() {
+  const vscode = acquireVsCodeApi();
   let content = '';
   content += iniKeyValueString('input_path', document.getElementById('ONNXInputPath').value);
   content += iniKeyValueString('output_path', document.getElementById('ONNXOutputPath').value);
@@ -170,6 +174,7 @@ export function updateImportONNX() {
 }
 
 export function updateOptimize() {
+  const vscode = acquireVsCodeApi();
   let content = '';
   content += iniKeyValueString('input_path', document.getElementById('optimizeInputPath').value);
   content += iniKeyValueString('output_path', document.getElementById('optimizeOutputPath').value);
@@ -199,6 +204,7 @@ export function updateQuantizeActionType() {
 }
 
 export function updateQuantizeDefault() {
+  const vscode = acquireVsCodeApi();
   let content = '';
   content +=
       iniKeyValueString('input_path', document.getElementById('DefaultQuantInputPath').value);
@@ -245,6 +251,7 @@ export function updateQuantizeDefault() {
 }
 
 export function updateQuantizeForce() {
+  const vscode = acquireVsCodeApi();
   let content = '';
   content += iniKeyValueString('force_quantparam', true);
   content += iniKeyValueString('input_path', document.getElementById('ForceQuantInputPath').value);
@@ -260,6 +267,7 @@ export function updateQuantizeForce() {
 }
 
 export function updateQuantizeCopy() {
+  const vscode = acquireVsCodeApi();
   let content = '';
   content += iniKeyValueString('copy_quantparam', true);
   content += iniKeyValueString('input_path', document.getElementById('CopyQuantInputPath').value);
@@ -274,6 +282,7 @@ export function updateQuantizeCopy() {
 }
 
 export function updateCodegen() {
+  const vscode = acquireVsCodeApi();
   let content = '';
   content += iniKeyValueString('backend', document.getElementById('codegenBackend').value);
   content += iniKeyValueString('command', document.getElementById('codegenCommand').value);
@@ -282,6 +291,7 @@ export function updateCodegen() {
 }
 
 export function updateProfile() {
+  const vscode = acquireVsCodeApi();
   let content = '';
   content += iniKeyValueString('backend', document.getElementById('profileBackend').value);
   content += iniKeyValueString('command', document.getElementById('profileCommand').value);

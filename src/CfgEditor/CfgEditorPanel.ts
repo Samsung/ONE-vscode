@@ -121,6 +121,9 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
     // Receive message from the webview.
     webviewPanel.webview.onDidReceiveMessage(e => {
       switch (e.type) {
+        case 'requestDisplayCfg':
+          this.updateWebview(document, webviewPanel);
+          break;
         case 'setParam':
           if (this._oneConfig[e.section] === undefined) {
             this._oneConfig[e.section] = {};
@@ -182,8 +185,6 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
           break;
       }
     });
-
-    this.updateWebview(document, webviewPanel);
   };
 
   private async _getHtmlForWebview(webview: vscode.Webview) {

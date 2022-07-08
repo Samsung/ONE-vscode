@@ -44,6 +44,9 @@ function main() {
         break;
     }
   });
+
+  const vscode = acquireVsCodeApi();
+  vscode.postMessage({type: 'requestDisplayCfg'});
 }
 
 function registerSteps() {
