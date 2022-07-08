@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+const vscode = acquireVsCodeApi();
+
 import {displayCfgToEditor} from './displaycfg.js';
 import oneOptimizationList from './one-optimizations.json' assert {type : 'json'};
 import {applyUpdates, updateCodegen, updateImportInputModelType, updateImportKERAS, updateImportONNX, updateImportPB, updateImportSAVED, updateImportTFLITE, updateOptimize, updateProfile, updateQuantizeActionType, updateQuantizeDefault, updateSteps} from './updateContent.js';
@@ -44,6 +46,8 @@ function main() {
         break;
     }
   });
+
+  vscode.postMessage({type: 'requestDisplayCfg'});
 }
 
 function registerSteps() {

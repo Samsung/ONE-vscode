@@ -16,9 +16,6 @@
 
 import oneOptimizationList from './one-optimizations.json' assert {type : 'json'};
 
-// Get access to the VS Code API from within the webview context
-const vscode = acquireVsCodeApi();
-
 function iniKeyValueString(iniKey, iniValue, noEffectValue = undefined) {
   if (iniValue === null || iniValue === undefined) {
     return '';
