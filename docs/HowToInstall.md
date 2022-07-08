@@ -18,7 +18,7 @@ Now [ONE](https://github.com/Samsung/ONE) officially releases on linux/ubuntu on
 
 Linux machine must have `aptitude` package.
 
-### workspace
+### Workspace
 
 Prepare workspace according to the [document](https://code.visualstudio.com/docs/editor/workspaces). ONE-vscode has been developed based on workspace.
 Typically, a workspace for ONE-vscode has the following files:
