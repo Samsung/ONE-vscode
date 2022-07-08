@@ -4,7 +4,7 @@
 
 ONE-vscode is an [extension](https://code.visualstudio.com/docs/editor/extension-marketplace) of [vscode](https://code.visualstudio.com/). To use ONE-vscode, you should install vscode first.
 
-### vscode and its extensions
+### VS Code and its extensions
 
 Let's install vscode.
 - You can download vscode [HERE](https://code.visualstudio.com/download)
