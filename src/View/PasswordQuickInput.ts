@@ -16,16 +16,22 @@
 
 import * as vscode from 'vscode';
 
-export async function showPasswordQuickInput(): Promise<string|undefined> {
+// NOTE ASCII characters have codes ranging from u+0000 to u+007f
+function containsNonAscii(str: string): boolean {
+  return !/^[\u0000-\u007f]*$/.test(str);
+}
+
+async function showPasswordQuickInput(): Promise<string|undefined> {
   return await vscode.window.showInputBox({
     title: 'Enter password',
     password: true,
     validateInput: validateInputIsAscii,
   });
 
-  async function validateInputIsAscii(str: string) {
+  async function validateInputIsAscii(input: string): Promise<string|undefined> {
     await new Promise(resolve => setTimeout(resolve, 1000));
-    // NOTE ASCII characters have codes ranging from u+0000 to u+007f
-    return !/^[\u0000-\u007f]*$/.test(str) ? 'Password contains non-ASCII characters' : undefined;
+    return containsNonAscii(input) ? 'Password contains non-ASCII characters' : undefined;
   }
 }
+
+export {showPasswordQuickInput, containsNonAscii};
