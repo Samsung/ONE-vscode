@@ -55,7 +55,7 @@ export class ToolchainNode extends BaseNode {
       public readonly label: string, public readonly backend: string,
       public readonly toolchain: Toolchain) {
     super(label, vscode.TreeItemCollapsibleState.None);
-    this.iconPath = new vscode.ThemeIcon('circle-filled');
+    this.iconPath = new vscode.ThemeIcon('layers');
     this.description = toolchain.info.version ?.str();
     const dependency =
         toolchain.info.depends ?.map((t) => `${t.name} ${t.version.str()}`).join('\n').toString();
