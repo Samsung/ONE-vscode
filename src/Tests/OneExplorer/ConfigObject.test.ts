@@ -175,7 +175,6 @@ output_path=${derivedModelName2}
           assert.isArray(configObj!.obj.derivedModels);
 
           assert.strictEqual(configObj!.obj.baseModels.length, 1);
-          assert.strictEqual(configObj!.obj.derivedModels.length, 2);
 
           assert.strictEqual(configObj!.obj.baseModels[0].fsPath, baseModelPath);
 
@@ -183,6 +182,65 @@ output_path=${derivedModelName2}
                             .includes(derivedModelPath1));
           assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.fsPath)
                             .includes(derivedModelPath2));
+        }
+      });
+
+      test('Returns parsed object with derivedModels and check logs', function() {
+        const configName = 'model.cfg';
+        const baseModelName = 'model.tflite';
+        const derivedModelName1 = 'model.circle';
+        const derivedModelName2 = 'model.q8.circle';
+        const derivedModelName3 = 'model.circle.log';
+        const derivedModelName4 = 'model.q8.circle.log';
+
+        const content = `
+[onecc]
+one-import-tflite=True
+one-quantize=True
+[one-import-tflite]
+input_path=${baseModelName}
+output_path=${derivedModelName1}
+[one-quantize]
+input_path=${derivedModelName1}
+output_path=${derivedModelName2}
+        `;
+
+        // Write a file inside a temp directory
+        testBuilder.writeFileSync(configName, content);
+
+        // Get file paths inside the temp directory
+        const configPath = testBuilder.getPath(configName);
+        const baseModelPath = testBuilder.getPath(baseModelName);
+        const derivedModelPath1 = testBuilder.getPath(derivedModelName1);
+        const derivedModelPath2 = testBuilder.getPath(derivedModelName2);
+        const derivedModelPath3 = testBuilder.getPath(derivedModelName3);
+        const derivedModelPath4 = testBuilder.getPath(derivedModelName4);
+
+        const configObj = ConfigObj.createConfigObj(vscode.Uri.file(configPath));
+
+        // Validation
+        {
+          assert.isNotNull(configObj);
+          assert.isNotNull(configObj!.rawObj);
+          assert.isNotNull(configObj!.obj);
+
+          assert.isObject(configObj!.rawObj);
+          assert.isObject(configObj!.obj);
+          assert.isArray(configObj!.obj.baseModels);
+          assert.isArray(configObj!.obj.derivedModels);
+
+          assert.strictEqual(configObj!.obj.baseModels.length, 1);
+
+          assert.strictEqual(configObj!.obj.baseModels[0].fsPath, baseModelPath);
+
+          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.fsPath)
+                            .includes(derivedModelPath1));
+          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.fsPath)
+                            .includes(derivedModelPath2));
+          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.fsPath)
+                            .includes(derivedModelPath3));
+          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.fsPath)
+                            .includes(derivedModelPath4));
         }
       });
 
@@ -219,7 +277,6 @@ output_path=dummy/dummy/../..//${derivedModelName2}
         // Validation
         {
           assert.strictEqual(configObj!.obj.baseModels.length, 1);
-          assert.strictEqual(configObj!.obj.derivedModels.length, 2);
 
           assert.strictEqual(configObj!.obj.baseModels[0].fsPath, baseModelPath);
 
@@ -264,7 +321,6 @@ output_path=/dummy/dummy/../..//${derivedModelName2}
         // Validation
         {
           assert.strictEqual(configObj!.obj.baseModels.length, 1);
-          assert.strictEqual(configObj!.obj.derivedModels.length, 2);
 
           assert.notStrictEqual(configObj!.obj.baseModels[0].fsPath, baseModelPath);
 
@@ -311,7 +367,6 @@ output_path=/${derivedModelPath2}
         // Validation
         {
           assert.strictEqual(configObj!.obj.baseModels.length, 1);
-          assert.strictEqual(configObj!.obj.derivedModels.length, 2);
 
           assert.strictEqual(
               configObj!.obj.baseModels[0].fsPath, baseModelPath,
