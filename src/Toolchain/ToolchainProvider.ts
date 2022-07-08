@@ -162,4 +162,8 @@ export class ToolchainProvider implements vscode.TreeDataProvider<ToolchainNode>
   run(_cfg: string) {
     throw Error('Not implemented yet');
   }
+
+  setDefaultToolchain(_node: ToolchainNode) {
+    throw Error('Not implemented yet');
+  }
 }
