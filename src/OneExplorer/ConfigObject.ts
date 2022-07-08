@@ -20,6 +20,178 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 /**
+ * 'Artifact' means includes
+ *   - existing files to run ONE config (base model)
+ *   - result files after running ONE config (derived models, )
+ */
+interface Artifact {
+  /**
+   * An artifact's type
+   */
+  type: string;
+
+  /**
+   * A file extension
+   */
+  ext: string;
+
+  /**
+   * A full path in file system
+   */
+  path?: string
+}
+
+/**
+ * 'Locator' is to grep matching paths inside Ini Object
+ */
+export class Locator {
+  /**
+   * The section of ini to find the targetted file
+   * If not given, locator searches the whole section
+   */
+  section?: string;
+
+  /**
+   * The key inside section to find the targetted file
+   * If not given, locator searches the whole key
+   */
+  key?: string;
+
+  /**
+   * A mapper function to map a value to filenames
+   * @param value: Object[section][key]
+   * @return an array of searched string
+   */
+  mapper: (value: string) => string[];
+
+  /**
+   * @param mapper A mapper function to map 'obj[section][key]' to filenames
+   * @param section (optional) if not given, locator searches the whole section
+   * @param key (optional) if not given, locator searches the whole key
+   */
+  constructor(mapper: (value: string) => string[], section?: string, key?: string) {
+    this.section = section;
+    this.key = key;
+    this.mapper = mapper;
+  }
+
+  /**
+   * Locate paths inside iniObj[this.section][this.key] using 'this.mapper'.
+   * @param iniObj a parsed ini object
+   * @param dir a directory of ini file
+   * @returns an array of file path, without any duplication in the list
+   *
+   * EXAMPLE - file
+   *
+   * [one-import-tflite]            <--- section: "one-import-tflite"
+   *   input_file = "model.tflite"  <--- key: input_file
+   *   output_file = "model.circle" <--- key: output_file
+   *
+   * EXAMPLE - imported object
+   *
+   * iniObj[one-import-tflite]['input_file'] === "model.tflite"
+   * iniObj[one-import-tflite]['input_file'] === "model.circle"
+   */
+  public locate(iniObj: object, dir: string): string[] {
+    // Get file names from iniObj
+    const getFileNames = (): string[] => {
+      let fileNames: string[] = [];
+
+      const sections = this.section ? [this.section] : Object.keys(iniObj);
+      const sectionObjs = sections.map(section => iniObj[section as keyof typeof iniObj]);
+
+      sectionObjs.forEach(sectionObj => {
+        const keys: string[] = this.key ? [this.key] : Object.keys(sectionObj);
+
+        keys.forEach(key => {
+          const value: string = sectionObj[key as keyof typeof iniObj];
+          fileNames = fileNames.concat(this.mapper(value));
+        });
+      });
+
+      return fileNames;
+    };
+
+    // Get file paths by joining dir
+    const getFilePaths = (fileNames: string[]): string[] => {
+      let filePaths: string[] = [];
+      fileNames.forEach((fileName) => {
+        // In path, '..' or '//' are resolved here
+        const filePath = path.resolve(dir, fileName);
+
+        filePaths.push(filePath);
+      });
+
+      return filePaths;
+    };
+
+    // Get file names
+    let fileNames: string[] = getFileNames();
+
+    // Get file paths by joining directory path
+    let filePaths: string[] = getFilePaths(fileNames);
+
+    // Remove duplication in filePaths
+    filePaths = [...new Set(filePaths)];
+
+    return filePaths;
+  }
+};
+
+
+// TODO Move to backend side with some modification
+export class LocatorRunner {
+  private artifactLocators: {artifact: Artifact, locator: Locator}[] = [];
+
+  /**
+   * A helper function to grep a filename ends with 'ext' within the given 'content' string.
+   */
+  public static searchWithExt = (ext: string, content: string): string[] => {
+    // Don't remove this. It's to prevent 'content.split is not a function' error.
+    // TODO Find more straightforward way to resolve an error
+    content = content + '';
+
+    const fileNames = content.split(' ').filter(val => val.endsWith(ext));
+    return fileNames;
+  };
+
+  constructor() {
+    this.artifactLocators.push({
+      artifact: {type: 'circle', ext: '.circle'},
+      locator: new Locator((value: string) => LocatorRunner.searchWithExt('.circle', value))
+    });
+
+    this.artifactLocators.push({
+      artifact: {type: 'tvn', ext: '.tvn'},
+      locator: new Locator((value: string) => LocatorRunner.searchWithExt('.tvn', value))
+    });
+  }
+
+  /**
+   * Run registered locators
+   * @param iniObj
+   * @param dir
+   * @returns Artifact[] with paths
+   */
+  public run(iniObj: object, dir: string): Artifact[] {
+    let artifacts: Artifact[] = [];
+
+    // Get Artifacts with {type, ext, path}
+    this.artifactLocators.forEach(({artifact, locator}) => {
+      let filePaths: string[] = locator.locate(iniObj, dir);
+      filePaths.map(filePath => {
+        // Clone this.artifact
+        let newArtifact: Artifact = Object.assign({}, artifact);
+        newArtifact.path = filePath;
+        artifacts.push(newArtifact);
+      });
+    });
+
+    return artifacts;
+  }
+}
+
+/**
  * @brief Parsed .cfg file into an 'obj' which contains fields such as
  *        'baseModels' or 'derivedModels'
  *        The returned paths are all resolved. (No '..' in the path)
@@ -171,48 +343,9 @@ export class ConfigObj {
    * @param uri cfg uri is required to calculate absolute path
    */
   private static parseDerivedModels = (uri: vscode.Uri, iniObj: object): vscode.Uri[] => {
-    const derivedModelLocator = [
-      {section: 'one-import-tf', key: 'output_path'},
-      {section: 'one-import-tflite', key: 'output_path'},
-      {section: 'one-import-onnx', key: 'output_path'},
-      {section: 'one-import-bcq', key: 'output_path'},
-      {section: 'one-optimize', key: 'input_path'},
-      {section: 'one-optimize', key: 'output_path'},
-      {section: 'one-quantize', key: 'input_path'},
-      {section: 'one-quantize', key: 'output_path'},
-      {
-        section: 'one-codegen',
-        key: 'command',
-        filt: (str: string): string[] => {
-          // TODO Get ext list from backend
-          return str.split(' ').filter(
-              e => path.extname(e) === '.tvn' || path.extname(e) === '.circle');
-        }
-      },
-    ];
-
-    let derivedModels: string[] = [];
-    for (let loc of derivedModelLocator) {
-      let confSection = iniObj[loc.section as keyof typeof iniObj];
-      let confKey = confSection ?.[loc.key as keyof typeof iniObj] as string;
-      if (confKey) {
-        const greppedModels = loc.filt ? loc.filt(confKey) : [confKey];
-        for (let model of greppedModels) {
-          if (derivedModels.includes(model) === false) {
-            derivedModels.push(model);
-          }
-        }
-      }
-    }
-
-    // Get absolute paths by calculating from cfg file
-    // '..' or '//' are resolved here
-    derivedModels = derivedModels.map(relpath => path.resolve(path.dirname(uri.fsPath), relpath));
-
-    // Remove duplicated entries
-    derivedModels = [...new Set(derivedModels)];
+    let artifacts: Artifact[] = (new LocatorRunner).run(iniObj, path.dirname(uri.fsPath));
 
     // Return as list of uri
-    return derivedModels.map(abspath => vscode.Uri.file(abspath));
+    return artifacts.map(artifact => vscode.Uri.file(artifact.path!));
   };
 };
