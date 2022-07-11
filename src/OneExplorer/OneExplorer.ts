@@ -28,52 +28,58 @@ import {ConfigObj} from './ConfigObject';
 import {OneccRunner} from './OneccRunner';
 
 /**
- * Read an ini file
- * @param filePath
- * @returns `object` if file read is successful, or `null` if file open has failed
+ * NOTE
  *
- */
-function readIni(filePath: string): object|null {
-  let configRaw: string;
-  try {
-    configRaw = fs.readFileSync(filePath, 'utf-8');
-  } catch (e) {
-    console.error(e);
-    return null;
-  }
-
-  // TODO check if toString() is required
-  return ini.parse(configRaw.toString());
-}
-
-
-/**
- * The term is unique for OneExplorer.
- * It may not correspond to which of other modules.
+ * 'NodeType' for OneExplorer.
+ *
+ * DESCRIPTION
+ *
+ * OneExplorer makes a tree as below
+ *
+ * directory          (1)
+ *   ∟ baseModel      (1)
+ * ----------------------
+ *      ∟ config      (2)
+ *         ∟ derivedModel (2)
+ *
+ * RELATIONS
+ *
+ * (1) File System
+ *    OneExplorer shows directories and base models as they appear in file system.
+ *    Directories without any base model will not show up.
+ *
+ * (2) Config Contents
+ *    Configuration files(.cfg) and derivedModels appear as how they are specified in the cfg file.
+ *    Config files will be shown under the base model, whose path is specified in the config file.
+ *    derivedModels will be shown under the config whose path is specified in the config file.
+ *
  */
 enum NodeType {
   /**
-   * A base model from which ONE imports 'circle'.
-   * (.onnx, .tflite, .tf, ..)
-   */
-  baseModel,
-
-  /**
-   * All intermediate model files transformed(compiled/quantized/optimized) from a 'base model'.
-   * (.circle, .tvn, ...)
-   */
-  derivedModel,
-
-  /**
-   * A directory which contains any baseModel.
+   * A directory which contains one or more baseModel.
    */
   directory,
+
+  /**
+   * A base model from which ONE imports 'circle'.
+   * EXAMPLE: .onnx, .tflite, .tf
+   */
+  baseModel,
 
   /**
    * An ONE configuration file for onecc.
    * Which imports a targetted 'baseModel' (NOTE baseModel:config has 1:N relationship)
    */
   config,
+
+  /**
+   * All the result files obtained by running ONE config.
+   *
+   * EXAMPLE: .circle, .tvn, .log
+   *
+   * TODO Rename to more inclusive term
+   */
+  derivedModel,
 }
 
 function nodeTypeToStr(t: NodeType): string {
