@@ -22,6 +22,7 @@ import {backendRegistrationApi, globalBackendMap} from '../../Backend/Backend';
 import {Command} from '../../Backend/Command';
 import {Compiler, CompilerBase} from '../../Backend/Compiler';
 import {Executor, ExecutorBase} from '../../Backend/Executor';
+import { DeviceSpec } from '../../Backend/Spec';
 import {Toolchains} from '../../Backend/Toolchain';
 import {InferenceQuickInput} from '../../Execute/InferenceQuickInput';
 import {gToolchainEnvMap} from '../../Toolchain/ToolchainEnv';
@@ -39,6 +40,9 @@ class BackendMockup implements Backend {
 
   executor(): Executor|undefined {
     class MockupExecutor implements Executor {
+      name(): string{
+        return backendName;
+      }
       getExecutableExt(): string[] {
         return exts;
       }
@@ -47,6 +51,9 @@ class BackendMockup implements Backend {
       }
       runInference(_modelPath: string, _options?: string[]|undefined): Command {
         throw new Error('Method not implemented.');
+      }
+      require(): DeviceSpec {
+        return new DeviceSpec('MockupHW','MockSW',undefined);
       }
     };
     return new MockupExecutor();
