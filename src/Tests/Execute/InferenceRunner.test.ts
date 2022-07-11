@@ -22,7 +22,7 @@ import {backendRegistrationApi, globalBackendMap} from '../../Backend/Backend';
 import {Command} from '../../Backend/Command';
 import {Compiler, CompilerBase} from '../../Backend/Compiler';
 import {Executor, ExecutorBase} from '../../Backend/Executor';
-import { DeviceSpec } from '../../Backend/Spec';
+import {DeviceSpec} from '../../Backend/Spec';
 import {Toolchains} from '../../Backend/Toolchain';
 import {InferenceRunner} from '../../Execute/InferenceRunner';
 import {gToolchainEnvMap} from '../../Toolchain/ToolchainEnv';
@@ -40,7 +40,7 @@ class BackendMockup implements Backend {
 
   executor(): Executor|undefined {
     class MockupExecutor implements Executor {
-      name(): string{
+      name(): string {
         return backendName;
       }
       getExecutableExt(): string[] {
@@ -55,7 +55,7 @@ class BackendMockup implements Backend {
         return cmd;
       }
       require(): DeviceSpec {
-        return new DeviceSpec('MockupHW','MockSW',undefined);
+        return new DeviceSpec('MockupHW', 'MockSW', undefined);
       }
     };
     return new MockupExecutor();

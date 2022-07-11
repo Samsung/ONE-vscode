@@ -15,7 +15,7 @@
  */
 
 import {Command} from './Command';
-import { DeviceSpec } from './Spec';
+import {DeviceSpec} from './Spec';
 import {Toolchains} from './Toolchain';
 
 interface Executor {
@@ -30,7 +30,7 @@ interface Executor {
 
   // TODO: use cfg path to run onecc after one-infer landed
   runInference(_modelPath: string, _options?: string[]): Command;
-  
+
   // return deviceSpec that required for this Executor to run
   require(): DeviceSpec;
 }
