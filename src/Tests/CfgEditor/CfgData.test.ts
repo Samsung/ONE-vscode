@@ -210,8 +210,8 @@ output_path=./inception_v3_pb.circle
       test('gets sorted config', function() {
         let data = new CfgData();
         data.updateWithStringifiedText(sampleCfgText);
-        const sorted = data.getSorted();
-        const isSame: boolean = sorted.isSame(sampleCfgText2);
+        data.sort();
+        const isSame: boolean = data.isSame(sampleCfgText2);
         assert.isTrue(isSame);
       });
     });

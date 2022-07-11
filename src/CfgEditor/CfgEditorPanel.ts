@@ -96,13 +96,13 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
           break;
         case 'updateDocument':
           if (this._oneConfig.isSame(document.getText()) === false) {
-            let sortedCfg = this._oneConfig.getSorted();
+            this._oneConfig.sort();
 
             // TODO Optimize this to modify only changed lines
             const edit = new vscode.WorkspaceEdit();
             edit.replace(
                 document.uri, new vscode.Range(0, 0, document.lineCount, 0),
-                sortedCfg.getStringfied());
+                this._oneConfig.getStringfied());
             vscode.workspace.applyEdit(edit);
           }
           break;

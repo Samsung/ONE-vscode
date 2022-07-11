@@ -96,7 +96,7 @@ export class CfgData {
     return true;
   }
 
-  getSorted(): CfgData {
+  sort(): void {
     // cfg file is written along with the order of array elements
     let sorted: any = {};
     sections.forEach((section) => {
@@ -104,8 +104,6 @@ export class CfgData {
         sorted[section] = this._oneConfig[section];
       }
     });
-    let newCfg = new CfgData();
-    newCfg.updateWithParsedConfig(sorted);
-    return newCfg;
+    this.updateWithParsedConfig(sorted);
   }
 }
