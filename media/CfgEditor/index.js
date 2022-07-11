@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-const vscode = acquireVsCodeApi();
-
 import {displayCfgToEditor} from './displaycfg.js';
 import oneOptimizationList from './one-optimizations.json' assert {type : 'json'};
 import {applyUpdates, updateCodegen, updateImportInputModelType, updateImportKERAS, updateImportONNX, updateImportPB, updateImportSAVED, updateImportTFLITE, updateOptimize, updateProfile, updateQuantizeActionType, updateQuantizeDefault, updateSteps} from './updateContent.js';
 import {updateImportUI, updateQuantizeUI, updateStepUI} from './updateUI.js';
+import {postMessageToVsCode} from './vscodeapi.js';
 
 // Just like a regular webpage we need to wait for the webview
 // DOM to load before we can reference any of the HTML elements
@@ -47,7 +46,7 @@ function main() {
     }
   });
 
-  vscode.postMessage({type: 'requestDisplayCfg'});
+  postMessageToVsCode({type: 'requestDisplayCfg'});
 }
 
 function registerSteps() {
