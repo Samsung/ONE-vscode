@@ -18,6 +18,7 @@ import * as fs from 'fs';
 import * as ini from 'ini';
 import * as path from 'path';
 import * as vscode from 'vscode';
+import {Logger} from '../Utils/Logger';
 
 /**
  * 'Artifact' means includes
@@ -155,16 +156,8 @@ export class LocatorRunner {
     return fileNames;
   };
 
-  constructor() {
-    this.artifactLocators.push({
-      artifact: {type: 'circle', ext: '.circle'},
-      locator: new Locator((value: string) => LocatorRunner.searchWithExt('.circle', value))
-    });
-
-    this.artifactLocators.push({
-      artifact: {type: 'tvn', ext: '.tvn'},
-      locator: new Locator((value: string) => LocatorRunner.searchWithExt('.tvn', value))
-    });
+  public register(artifactLocator: {artifact: Artifact, locator: Locator}) {
+    this.artifactLocators.push(artifactLocator);
   }
 
   /**
@@ -224,7 +217,6 @@ export class ConfigObj {
   obj: {
     baseModels: vscode.Uri[],
     derivedModels: vscode.Uri[],
-    // TODO: Add more fields
   };
 
   private constructor(uri: vscode.Uri, rawObj: object) {
@@ -297,44 +289,49 @@ export class ConfigObj {
    * Parse base models written in the ini object and return the absolute path.
    *
    * @param uri cfg uri is required to calculate absolute path
+   *
    * ABOUT MULTIPLE BASE MODELS
+   *
    * onecc doesn't support multiple base models.
    * However, OneExplorer will show the config node below multiple base models
    * to prevent a case that users cannot find their faulty config files on ONE explorer.
    */
   private static parseBaseModels = (uri: vscode.Uri, iniObj: object): vscode.Uri[] => {
-    let baseModels: string[] = [];
+    const dir = path.dirname(uri.fsPath);
 
-    // TODO Get ext list from backend
-    for (const ext of ['tflite', 'pb', 'onnx']) {
-      let confSection = iniObj[`one-import-${ext}` as keyof typeof iniObj];
-      let confKey = confSection ?.['input_path' as keyof typeof iniObj] as string;
-      if (confKey) {
-        baseModels.push(confKey);
-      }
-    }
+    let locatorRunner = new LocatorRunner();
 
-    // Get absolute paths by calculating from cfg file
-    // '..' or '//' are resolved here
-    baseModels = baseModels!.map(relpath => path.resolve(path.dirname(uri.fsPath), relpath));
+    locatorRunner.register({
+      artifact: {type: 'model', ext: '.tflite'},
+      locator: new Locator((value: string) => LocatorRunner.searchWithExt('.tflite', value))
+    });
 
-    // Remove duplicated entries
-    baseModels = [...new Set(baseModels)];
+    locatorRunner.register({
+      artifact: {type: 'model', ext: '.pb'},
+      locator: new Locator((value: string) => LocatorRunner.searchWithExt('.pb', value))
+    });
 
-    if (baseModels.length > 1) {
+    locatorRunner.register({
+      artifact: {type: 'model', ext: '.onnx'},
+      locator: new Locator((value: string) => LocatorRunner.searchWithExt('.onnx', value))
+    });
+
+    let artifacts: Artifact[] = locatorRunner.run(iniObj, dir);
+
+    if (artifacts.length > 1) {
       // TODO Notify the error with a better UX
       // EX. put question mark next to the config icon
-      console.warn(`Warning: There are multiple input models in the configuration. (path: ${uri})`);
+      Logger.warn('OneExplorer', `There are multiple input models in the configuration(${uri}).`);
     }
 
-    if (baseModels.length === 0) {
+    if (artifacts.length === 0) {
       // TODO Notify the error with a better UX
       // EX. showing orphan nodes somewhere
-      console.warn(`Warning: There is no input model in the configuration. (path: ${uri})`);
+      Logger.warn('OneExplorer', `There is no input model in the configuration(${uri}).`);
     }
 
     // Return as list of uri
-    return baseModels.map(abspath => vscode.Uri.file(abspath));
+    return artifacts.map(artifact => vscode.Uri.file(artifact.path!));
   };
 
   /**
@@ -343,7 +340,21 @@ export class ConfigObj {
    * @param uri cfg uri is required to calculate absolute path
    */
   private static parseDerivedModels = (uri: vscode.Uri, iniObj: object): vscode.Uri[] => {
-    let artifacts: Artifact[] = (new LocatorRunner).run(iniObj, path.dirname(uri.fsPath));
+    const dir = path.dirname(uri.fsPath);
+
+    let locatorRunner = new LocatorRunner();
+
+    locatorRunner.register({
+      artifact: {type: 'model', ext: '.circle'},
+      locator: new Locator((value: string) => LocatorRunner.searchWithExt('.circle', value))
+    });
+
+    locatorRunner.register({
+      artifact: {type: 'model', ext: '.tvn'},
+      locator: new Locator((value: string) => LocatorRunner.searchWithExt('.tvn', value))
+    });
+
+    let artifacts: Artifact[] = locatorRunner.run(iniObj, dir);
 
     // Return as list of uri
     return artifacts.map(artifact => vscode.Uri.file(artifact.path!));
