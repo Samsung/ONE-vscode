@@ -158,7 +158,7 @@ export class ToolRunner {
   }
 
   public getRunner(
-      name: string, tool: string, toolargs: ToolArgs, path: string, root: boolean = false) {
+      name: string, tool: string, toolargs: ToolArgs, cwd: string, root: boolean = false) {
     if (this.isRunning()) {
       const msg = `Error: Running: ${name}. Process is already running.`;
       Logger.error(this.tag, msg);
@@ -175,9 +175,9 @@ export class ToolRunner {
         // environment.
         // TODO(jyoung): Need password encryption
         tool = `echo ${process.env.userp} | sudo -S ` + tool;
-        this.child = cp.spawn(tool, toolargs, {cwd: path, shell: true});
+        this.child = cp.spawn(tool, toolargs, {cwd: cwd, shell: true});
       } else {
-        this.child = cp.spawn(tool, toolargs, {cwd: path});
+        this.child = cp.spawn(tool, toolargs, {cwd: cwd});
       }
       this.handlePromise(resolve, reject);
     });

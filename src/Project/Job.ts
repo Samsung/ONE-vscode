@@ -27,6 +27,7 @@ export interface Job {
   tool: string;
   toolArgs: ToolArgs;
   root: boolean;
+  workDir: string;
   successCallback?: JobCallback;
   failureCallback?: JobCallback;
 }

@@ -24,6 +24,7 @@ export class JobBase implements Job, MixinInOutPaths {
   inputPath: string = '';
   outputPath: string = '';
   root: boolean = false;
+  workDir: string = '';
 
   public get valid(): boolean {
     throw Error('Invalid valid call');

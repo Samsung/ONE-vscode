@@ -20,7 +20,6 @@ import {JobRunner} from './JobRunner';
 import {WorkJobs} from './WorkJobs';
 
 export class WorkFlow {
-  workspace: string = '';
   jobs: WorkJobs;
   jobRunner: JobRunner;
 
@@ -51,7 +50,7 @@ export class WorkFlow {
 
   private startRunner() {
     let runJobs: WorkJobs = this.getRunJobs();
-    this.jobRunner.start(this.workspace, runJobs);
+    this.jobRunner.start(runJobs);
   }
 
   public addJob(job: Job) {
@@ -64,8 +63,7 @@ export class WorkFlow {
     }
   }
 
-  public start(workspace: string) {
-    this.workspace = workspace;
+  public start() {
     if (!this.validateJobs()) {
       return;
     }
