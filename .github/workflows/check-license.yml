@@ -7,6 +7,8 @@ on:
 
 jobs:
   license_verification:
+    if: ${{ ! contains(github.event.pull_request.labels.*.name, 'PR/NO TEST') }}
+
     runs-on: ${{ matrix.os }}
 
     strategy:
