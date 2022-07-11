@@ -51,7 +51,7 @@ suite('Utils', function() {
       });
     });
 
-    suite('#isEqual()', function() {
+    suite('#equal()', function() {
       test('compare practically the same paths', function() {
         const workspaceRoot = obtainWorkspaceRoot();
         let realPath0 = RealPath.createRealPath(`${workspaceRoot}`);
@@ -59,18 +59,26 @@ suite('Utils', function() {
 
         assert.isNotNull(realPath0);
         assert.isNotNull(realPath1);
-        assert.isTrue(RealPath.isEqual(realPath0!, realPath1!));
+        assert.isTrue(realPath0?.equal(realPath1!));
       });
     });
 
-    suite('#isEqual()', function() {
-      test('compare exactly the same paths', function() {
-        let realPath0 = RealPath.createRealPath('/');
-        let realPath1 = RealPath.createRealPath('/');
+    suite('#areEqual()', function() {
+      test('compare lexically the same paths', function() {
+        assert.isTrue(RealPath.areEqual('/', '/'));
+      });
+    });
 
-        assert.isNotNull(realPath0);
-        assert.isNotNull(realPath1);
-        assert.isTrue(RealPath.isEqual(realPath0!, realPath1!));
+    suite('#areEqual()', function() {
+      test('compare practically the same paths', function() {
+        assert.isTrue(RealPath.areEqual('/', '/dummy/..'));
+      });
+    });
+
+    suite('#exist()', function() {
+      test('check if the path exists', function() {
+        assert.isFalse(RealPath.exist('/dummy/not/exist'));
+        assert.isTrue(RealPath.exist('/'));
       });
     });
   });
