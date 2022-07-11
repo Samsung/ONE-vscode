@@ -54,10 +54,20 @@ interface InputBoxParameters {
   shouldResume: () => Thenable<boolean>;
 }
 
-export class MultiStepInput {
+class MultiStepInput {
   static async run<T>(start: InputStep) {
     const input = new MultiStepInput();
     return input.stepThrough(start);
+  }
+
+  static async runSteps<T>(steps: InputStep[]) {
+    if (steps.length === 0) {
+      throw new Error('not enough steps');
+    }
+    const input = new MultiStepInput();
+    input.steps = steps;
+    let start = input.steps.pop();
+    return input.stepThrough(start!);
   }
 
   private current?: QuickInput;
@@ -204,3 +214,5 @@ export class MultiStepInput {
     }
   }
 }
+
+export {MultiStepInput, InputStep};
