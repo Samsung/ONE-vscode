@@ -15,9 +15,13 @@
  */
 
 import {Command} from './Command';
+import {DeviceSpec} from './Spec';
 import {Toolchains} from './Toolchain';
 
 interface Executor {
+  // Executor unique name
+  name(): string;
+
   // exetensions of executable files
   getExecutableExt(): string[];
 
@@ -26,10 +30,17 @@ interface Executor {
 
   // TODO: use cfg path to run onecc after one-infer landed
   runInference(_modelPath: string, _options?: string[]): Command;
+
+  // return deviceSpec required for this Executor to run
+  require(): DeviceSpec;
 }
 
 // General excutor uses onecc so default jobs can be used
 class ExecutorBase implements Executor {
+  name(): string {
+    throw new Error('Name is not determined.');
+  }
+
   // exetensions of executable files
   getExecutableExt(): string[] {
     throw Error('Invalid toolchains call');
@@ -41,6 +52,10 @@ class ExecutorBase implements Executor {
 
   runInference(_modelPath: string, _options?: string[]): Command {
     throw Error('Invalid inference call');
+  }
+
+  require(): DeviceSpec {
+    throw new Error('NYI: need to define DeviceSpec for Executor.');
   }
 };
 
