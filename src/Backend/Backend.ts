@@ -35,7 +35,7 @@ let globalExecutorArray: Executor[] = [];
 
 function backendRegistrationApi() {
   const logTag = 'backendRegistrationApi';
-  return {
+  let registrationAPI = {
     registerBackend(backend: Backend) {
       const backendName = backend.name();
       assert(backendName.length > 0);
@@ -55,6 +55,8 @@ function backendRegistrationApi() {
       Logger.info(logTag, 'Executor', executor.name(), 'was registered into ONE-vscode.');
     }
   };
+
+  return registrationAPI;
 }
 
 export {globalBackendMap, globalExecutorArray, backendRegistrationApi};
