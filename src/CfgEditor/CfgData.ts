@@ -26,19 +26,23 @@ export class CfgData {
 
   constructor() {}
 
-  getOneConfig(): any {
+  // returns data decoded or parsed as object
+  getAsConfig(): any {
     return this._oneConfig;
   }
 
-  getStringfied(): string {
+  // returns data encoded or stringfied as string
+  getAsString(): string {
     return ini.stringify(this._oneConfig);
   }
 
-  updateWithParsedConfig(cfg: any): void {
+  // sets data with object decoded or parsed
+  setWithConfig(cfg: any): void {
     this._oneConfig = cfg;
   }
 
-  updateWithStringifiedText(text: string): void {
+  // sets data with string encoded or stringfied
+  setWithString(text: string): void {
     this._oneConfig = ini.parse(text);
 
     // TODO Separate handling deprecated elements
@@ -59,18 +63,19 @@ export class CfgData {
     }
   }
 
-  setParam(section: string, param: string, value: string): void {
+  updateSectionWithKeyValue(section: string, key: string, value: string): void {
     if (this._oneConfig[section] === undefined) {
       this._oneConfig[section] = {};
     }
-    if (this._oneConfig[section][param] === undefined) {
-      this._oneConfig[section][param] = '';
+    if (this._oneConfig[section][key] === undefined) {
+      this._oneConfig[section][key] = '';
     }
-    this._oneConfig[section][param] = value;
+    this._oneConfig[section][key] = value;
   }
 
-  setSection(section: string, paramStringified: string): void {
-    this._oneConfig[section] = ini.parse(paramStringified);
+  updateSectionWithValue(section: string, value: string): void {
+    // value should be encoded or stringfied
+    this._oneConfig[section] = ini.parse(value);
   }
 
   isSame(textStringified: string): boolean {
@@ -104,6 +109,6 @@ export class CfgData {
         sorted[section] = this._oneConfig[section];
       }
     });
-    this.updateWithParsedConfig(sorted);
+    this.setWithConfig(sorted);
   }
 }

@@ -89,10 +89,10 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
           this.updateWebview(document, webview);
           break;
         case 'setParam':
-          this._oneConfig.setParam(e.section, e.param, e.value);
+          this._oneConfig.updateSectionWithKeyValue(e.section, e.param, e.value);
           break;
         case 'setSection':
-          this._oneConfig.setSection(e.section, e.param);
+          this._oneConfig.updateSectionWithValue(e.section, e.param);
           break;
         case 'updateDocument':
           if (this._oneConfig.isSame(document.getText()) === false) {
@@ -102,7 +102,7 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
             const edit = new vscode.WorkspaceEdit();
             edit.replace(
                 document.uri, new vscode.Range(0, 0, document.lineCount, 0),
-                this._oneConfig.getStringfied());
+                this._oneConfig.getAsString());
             vscode.workspace.applyEdit(edit);
           }
           break;
@@ -138,7 +138,7 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
   }
 
   private updateWebview(document: vscode.TextDocument, webview: vscode.Webview): void {
-    this._oneConfig.updateWithStringifiedText(document.getText());
-    webview.postMessage({type: 'displayCfgToEditor', text: this._oneConfig.getOneConfig()});
+    this._oneConfig.setWithString(document.getText());
+    webview.postMessage({type: 'displayCfgToEditor', text: this._oneConfig.getAsConfig()});
   };
 }

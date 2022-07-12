@@ -106,12 +106,12 @@ suite('CfgEditor', function() {
       });
     });
 
-    suite('#updateWithParsedConfig()', function() {
-      test('updates with parsed config param', function() {
+    suite('#setWithConfig()', function() {
+      test('sets with decoded/parsed config param', function() {
         let data = new CfgData();
         const cfg = ini.parse(sampleCfgText);
-        data.updateWithParsedConfig(cfg);
-        const dataCfg = data.getOneConfig();
+        data.setWithConfig(cfg);
+        const dataCfg = data.getAsConfig();
         assert.strictEqual(dataCfg['onecc']['one-import-tf'], cfg['onecc']['one-import-tf']);
         assert.strictEqual(
             dataCfg['one-import-tflite']['input_path'], cfg['one-import-tflite']['input_path']);
@@ -120,11 +120,11 @@ suite('CfgEditor', function() {
       });
     });
 
-    suite('#updateWithStringifiedText()', function() {
-      test('updates with stringified text param', function() {
+    suite('#setWithString()', function() {
+      test('sets with encoded/stringified text param', function() {
         let data = new CfgData();
-        data.updateWithStringifiedText(sampleCfgText);
-        const dataCfg = data.getOneConfig();
+        data.setWithString(sampleCfgText);
+        const dataCfg = data.getAsConfig();
         const cfg = ini.parse(sampleCfgText);
         assert.strictEqual(dataCfg['onecc']['one-import-tf'], cfg['onecc']['one-import-tf']);
         assert.strictEqual(
@@ -134,12 +134,12 @@ suite('CfgEditor', function() {
       });
     });
 
-    suite('#getOneConfig()', function() {
-      test('gets OneConfig instance', function() {
+    suite('#getAsConfig()', function() {
+      test('gets OneConfig decoded/parsed', function() {
         let data = new CfgData();
         const cfg = ini.parse(sampleCfgText);
-        data.updateWithParsedConfig(cfg);
-        const dataCfg = data.getOneConfig();
+        data.setWithConfig(cfg);
+        const dataCfg = data.getAsConfig();
         assert.strictEqual(dataCfg['onecc']['one-import-tf'], cfg['onecc']['one-import-tf']);
         assert.strictEqual(
             dataCfg['one-import-tflite']['input_path'], cfg['one-import-tflite']['input_path']);
@@ -148,16 +148,16 @@ suite('CfgEditor', function() {
       });
     });
 
-    suite('#getStringfied()', function() {
-      test('gets string stringfied', function() {
+    suite('#getAsString()', function() {
+      test('gets string encoded/stringified', function() {
         let data = new CfgData();
-        data.updateWithStringifiedText(sampleCfgText);
-        const cfg1 = data.getOneConfig();
+        data.setWithString(sampleCfgText);
+        const cfg1 = data.getAsConfig();
 
-        const stringfied = data.getStringfied();
+        const stringfied = data.getAsString();
         let data2 = new CfgData();
-        data2.updateWithStringifiedText(stringfied);
-        const cfg2 = data2.getOneConfig();
+        data2.setWithString(stringfied);
+        const cfg2 = data2.getAsConfig();
 
         assert.strictEqual(cfg1['onecc']['one-import-tf'], cfg2['onecc']['one-import-tf']);
         assert.strictEqual(
@@ -167,49 +167,49 @@ suite('CfgEditor', function() {
       });
     });
 
-    suite('#setParam()', function() {
-      test('sets config with param', function() {
+    suite('#updateSectionWithKeyValue()', function() {
+      test('update section of config with key/value', function() {
         let data = new CfgData();
-        data.updateWithStringifiedText(sampleCfgText);
-        data.setParam('onecc', 'one-pack', 'True');
-        const cfg = data.getOneConfig();
+        data.setWithString(sampleCfgText);
+        data.updateSectionWithKeyValue('onecc', 'one-pack', 'True');
+        const cfg = data.getAsConfig();
         assert.strictEqual(cfg['onecc']['one-pack'], 'True');
       });
     });
 
-    suite('#setSection()', function() {
-      test('sets section', function() {
+    suite('#updateSectionWithValue()', function() {
+      test('update section of config with value encoded/stringified', function() {
         let data = new CfgData();
-        data.updateWithStringifiedText(sampleCfgText);
+        data.setWithString(sampleCfgText);
         const stringified: string = `
 input_path=./inception_v3.pb
 output_path=./inception_v3_pb.circle
         `;
-        data.setSection('one-import-tf', stringified);
-        const cfg = data.getOneConfig();
+        data.updateSectionWithValue('one-import-tf', stringified);
+        const cfg = data.getAsConfig();
         assert.strictEqual(cfg['one-import-tf']['input_path'], './inception_v3.pb');
       });
     });
 
     suite('#isSame()', function() {
-      test('is same to stringified', function() {
+      test('is same to string encoded/stringified', function() {
         let data = new CfgData();
-        data.updateWithStringifiedText(sampleCfgText);
+        data.setWithString(sampleCfgText);
         const isSame: boolean = data.isSame(sampleCfgText2);
         assert.isTrue(isSame);
       });
-      test('is not same to stringified', function() {
+      test('is not same to string encoded/stringified', function() {
         let data = new CfgData();
-        data.updateWithStringifiedText(sampleCfgText);
+        data.setWithString(sampleCfgText);
         const isSame: boolean = data.isSame(sampleCfgText3);
         assert.isNotTrue(isSame);
       });
     });
 
-    suite('#getSorted()', function() {
-      test('gets sorted config', function() {
+    suite('#sorted()', function() {
+      test('sorts config', function() {
         let data = new CfgData();
-        data.updateWithStringifiedText(sampleCfgText);
+        data.setWithString(sampleCfgText);
         data.sort();
         const isSame: boolean = data.isSame(sampleCfgText2);
         assert.isTrue(isSame);
