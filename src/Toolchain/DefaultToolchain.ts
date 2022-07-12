@@ -67,7 +67,7 @@ class DefaultToolchain {
     return this._toolchainEnv;
   }
 
-  equal(toolchain: Toolchain) {
+  isEqual(toolchain: Toolchain) {
     if (this._toolchain &&
         JSON.stringify(this._toolchain.info) === JSON.stringify(toolchain.info)) {
       return true;

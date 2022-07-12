@@ -4,13 +4,13 @@ Let's compile an example by using ONE-vscode.
 
 ## Install the toolchain
 
-First, you need the ONE toolchain. Let's install the ONE toolchain. (You should install the in-house backend to follow this.)
+You need the ONE toolchain. Let's install the ONE toolchain. (You should install the in-house backend to follow this.)
 
 <img src="https://user-images.githubusercontent.com/7223627/174947559-71ab213c-68c4-4700-bcec-e55f6a2203bf.gif" width=600 />
 
 ## Set default toolchain
 
-To compile model using ONE toolchain, you must specify the default toolchain. To specify a default toolchain, if you mouse up the toolchain item you want to use in Toolchain view, :heavy_check_mark: icon appears. Click this icon to specify it as default toolchain. If toolchain is specified as default toolchain, the icon changes.
+To compile model using ONE toolchain, you must specify the default toolchain. Default toolchain refers to which toolchain you will use to run ONE related tools. To specify a default toolchain, if you mouse up the toolchain item you want to use in Toolchain view, :heavy_check_mark: icon appears. Click this icon to specify it as default toolchain. If toolchain is specified as default toolchain, the icon changes.
 
 | Toolchain | Default Toolchain |
 |-----------|-------------------|
@@ -18,7 +18,7 @@ To compile model using ONE toolchain, you must specify the default toolchain. To
 
 ## Prepare a NN model and a config file
 
-Second, you need a NN model and a config file to run compiling. Now you can get one from [res/modelDir/truediv](../res/modelDir/truediv/). Add it to your workspace. Now you can see a model and a config.
+You need a NN model and a config file to run compiling. Now you can get one from [res/modelDir/truediv](../res/modelDir/truediv/). Add it to your workspace. Now you can see a model and a config.
 
 <img src="https://user-images.githubusercontent.com/10216715/174798969-eee44fea-bd71-4e6a-8e2c-9e1de37ad74a.gif" width=600 />
 

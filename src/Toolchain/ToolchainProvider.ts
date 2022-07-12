@@ -57,7 +57,7 @@ export class ToolchainNode extends BaseNode {
       public readonly label: string, public readonly backend: string,
       public readonly toolchain: Toolchain) {
     super(label, vscode.TreeItemCollapsibleState.None);
-    if (DefaultToolchain.getInstance().equal(toolchain)) {
+    if (DefaultToolchain.getInstance().isEqual(toolchain)) {
       this.iconPath = new vscode.ThemeIcon('layers-active');
       this.contextValue = 'toolchain-default';
     } else {
@@ -192,7 +192,7 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
     }
 
     gToolchainEnvMap[backendName].uninstall(tnode.toolchain).then(() => {
-      if (DefaultToolchain.getInstance().equal(tnode.toolchain)) {
+      if (DefaultToolchain.getInstance().isEqual(tnode.toolchain)) {
         Logger.info(this.tag, 'Default toolchain is cancelled.');
         DefaultToolchain.getInstance().unset();
       }
@@ -200,10 +200,9 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
     });
   }
 
-  run(cfg: string, backend?: string, toolchain?: Toolchain) {
-    const activeToolchainEnv =
-        backend ? gToolchainEnvMap[backend] : DefaultToolchain.getInstance().getToolchainEnv();
-    const activeToolchain = toolchain ? toolchain : DefaultToolchain.getInstance().getToolchain();
+  run(cfg: string) {
+    const activeToolchainEnv = DefaultToolchain.getInstance().getToolchainEnv();
+    const activeToolchain = DefaultToolchain.getInstance().getToolchain();
 
     if (!activeToolchainEnv || !activeToolchain) {
       this.error(
@@ -213,14 +212,9 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
             if (value === 'Instruction') {
               Logger.info(this.tag, 'Open ONE-vscode HowToUse document');
               vscode.env.openExternal(vscode.Uri.parse(
-                  'https://github.com/Samsung/ONE-vscode/blob/main/docs/HowToUse.md'));
+                  'https://github.com/Samsung/ONE-vscode/blob/main/docs/HowToUse.md#set-default-toolchain'));
             }
           });
-      return;
-    }
-
-    if (!activeToolchainEnv?.listInstalled().find(value => JSON.stringify(value.info) === JSON.stringify(activeToolchain.info))) {
-      this.error('Invalid Toolchain');
       return;
     }
 
