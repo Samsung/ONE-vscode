@@ -18,6 +18,8 @@ import * as fs from 'fs';
 import * as ini from 'ini';
 import * as path from 'path';
 import * as vscode from 'vscode';
+
+import {RealPath} from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
 /**
@@ -39,7 +41,7 @@ interface Artifact {
   /**
    * A full path in file system
    */
-  path?: string
+  path?: string;
 }
 
 /**
@@ -185,19 +187,18 @@ export class LocatorRunner {
 }
 
 /**
- * @brief Parsed .cfg file into an 'obj' which contains fields such as
- *        'baseModels' or 'derivedModels'
- *        The returned paths are all resolved. (No '..' in the path)
- *
- * @usage Direct Parse
- * ```
- * const {baseModels, derivedModels} = configObj.parse(uri);
+ * @brief A helper class to get parsed artifacts (baseModels, derivedModels)
+ *        The paths in the artifacts are all resolved. (No '..' in the path)
+
  * ```
  *
  * @usage Create Parsed Config Object
  *        (use a factory function `createConfigObj`)
  * ```
  * const configObj = createConfigObj(uri);
+ *
+ * const baseModels = configObj.getBaseModelsExists;
+ * const derivedModels = configObj.getDerivedModelsExists;
  * ```
  */
 export class ConfigObj {
@@ -215,37 +216,49 @@ export class ConfigObj {
    * a parsed config object
    */
   obj: {
-    baseModels: vscode.Uri[],
-    derivedModels: vscode.Uri[],
+    baseModels: Artifact[],
+    derivedModels: Artifact[],
   };
+
+  get getBaseModels() {
+    return this.obj.baseModels;
+  }
+
+  get getDerivedModels() {
+    return this.obj.baseModels;
+  }
+
+  /**
+   * Returns only the baseModels which exists in file system
+   */
+  get getBaseModelsExists() {
+    return this.obj.baseModels.filter(artifact => RealPath.exists(artifact.path!));
+  }
+
+  /**
+   * Returns only the derivedModels which exists in file system
+   */
+  get getDerivedModelsExists() {
+    return this.obj.derivedModels.filter(artifact => RealPath.exists(artifact.path!));
+  }
+
+  /**
+   * Return true if the `baseModelPath` is included in `baseModels`
+   */
+  public isChildOf(baseModelPath: string): boolean {
+    const found = this.obj.baseModels.map(artifact => artifact.path!)
+                      .find(path => RealPath.areEqual(baseModelPath, path!));
+
+    return found ? true : false;
+  }
 
   private constructor(uri: vscode.Uri, rawObj: object) {
     this.uri = uri;
     this.rawObj = rawObj;
     this.obj = {
-      baseModels: ConfigObj.parseBaseModels(uri, rawObj),
-      derivedModels: ConfigObj.parseDerivedModels(uri, rawObj)
+      baseModels: ConfigObj.parseBaseModels(uri.fsPath, rawObj),
+      derivedModels: ConfigObj.parseDerivedModels(uri.fsPath, rawObj)
     };
-  }
-
-  /**
-   * A simple parse function with directly `ConfigObj.obj` fields after parsing
-   * without keeping an ConfigObj instance.
-   *
-   * @param uri
-   * @returns `{baseModels, derivedModels}` or
-   *          `null` if failed to open/parse into ini object
-  }
-   */
-  public static parse(uri: vscode.Uri): {baseModels: vscode.Uri[],
-                                         derivedModels: vscode.Uri[]}|null {
-    const cfgObj = this.createConfigObj(uri);
-
-    if (!cfgObj) {
-      return null;
-    }
-
-    return cfgObj.obj;
   }
 
   /**
@@ -296,8 +309,8 @@ export class ConfigObj {
    * However, OneExplorer will show the config node below multiple base models
    * to prevent a case that users cannot find their faulty config files on ONE explorer.
    */
-  private static parseBaseModels = (uri: vscode.Uri, iniObj: object): vscode.Uri[] => {
-    const dir = path.dirname(uri.fsPath);
+  private static parseBaseModels = (filePath: string, iniObj: object): Artifact[] => {
+    const dir = path.dirname(filePath);
 
     let locatorRunner = new LocatorRunner();
 
@@ -321,17 +334,17 @@ export class ConfigObj {
     if (artifacts.length > 1) {
       // TODO Notify the error with a better UX
       // EX. put question mark next to the config icon
-      Logger.warn('OneExplorer', `There are multiple input models in the configuration(${uri}).`);
+      Logger.warn(
+          'OneExplorer', `There are multiple input models in the configuration(${filePath}).`);
     }
-
     if (artifacts.length === 0) {
       // TODO Notify the error with a better UX
       // EX. showing orphan nodes somewhere
-      Logger.warn('OneExplorer', `There is no input model in the configuration(${uri}).`);
+      Logger.warn('OneExplorer', `There is no input model in the configuration(${filePath}).`);
     }
 
     // Return as list of uri
-    return artifacts.map(artifact => vscode.Uri.file(artifact.path!));
+    return artifacts;
   };
 
   /**
@@ -339,8 +352,8 @@ export class ConfigObj {
    *
    * @param uri cfg uri is required to calculate absolute path
    */
-  private static parseDerivedModels = (uri: vscode.Uri, iniObj: object): vscode.Uri[] => {
-    const dir = path.dirname(uri.fsPath);
+  private static parseDerivedModels = (filePath: string, iniObj: object): Artifact[] => {
+    const dir = path.dirname(filePath);
 
     let locatorRunner = new LocatorRunner();
 
@@ -364,7 +377,6 @@ export class ConfigObj {
 
     let artifacts: Artifact[] = locatorRunner.run(iniObj, dir);
 
-    // Return as list of uri
-    return artifacts.map(artifact => vscode.Uri.file(artifact.path!));
+    return artifacts;
   };
 };
