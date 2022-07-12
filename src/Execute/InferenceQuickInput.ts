@@ -96,11 +96,11 @@ class InferenceQuickInput {
 
     if (this.backend === undefined) {
       this.error = 'Backend to infer is not chosen. Please check once again.';
-      return undefined;
+      return;
     }
     if (this.backend.executor() === undefined) {
       this.error = 'Backend executor is not set yet. Please check once again.';
-      return undefined;
+      return;
     }
   }
 
@@ -129,7 +129,6 @@ class InferenceQuickInput {
 
     Logger.warn(logTag, 'No model has been selected');
     this.error = 'No model has been selected. Please check once again.';
-    return undefined;
   }
 
   getInputSpecKeys(): string[] {
