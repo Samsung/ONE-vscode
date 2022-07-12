@@ -354,6 +354,14 @@ export class ConfigObj {
       locator: new Locator((value: string) => LocatorRunner.searchWithExt('.tvn', value))
     });
 
+    locatorRunner.register({
+      artifact: {type: 'log', ext: '.circle.log'},
+      locator: new Locator((value: string) => {
+        return LocatorRunner.searchWithExt('.circle', value)
+            .map(filepath => filepath.replace('.circle', '.circle.log'));
+      })
+    });
+
     let artifacts: Artifact[] = locatorRunner.run(iniObj, dir);
 
     // Return as list of uri
