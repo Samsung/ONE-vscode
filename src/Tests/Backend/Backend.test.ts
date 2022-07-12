@@ -50,6 +50,7 @@ suite('Backend', function() {
       let registrationAPI = backendRegistrationApi();
 
       assert.strictEqual(Object.entries(globalBackendMap).length, 0);
+      assert.strictEqual(globalExecutorArray.length, 0);
 
       let backend = new BackendMockup();
       registrationAPI.registerBackend(backend);
@@ -60,6 +61,10 @@ suite('Backend', function() {
       for (const [key, value] of entries) {
         assert.strictEqual(key, backendName);
         assert.deepStrictEqual(value, backend);
+      }
+      assert.strictEqual(globalExecutorArray.length, 1);
+      for (const executor of globalExecutorArray) {
+        assert.deepStrictEqual(executor, backend.executor());
       }
     });
     test('registers a executor', function() {
@@ -84,6 +89,8 @@ suite('Backend', function() {
     if (gToolchainEnvMap[backendName] !== undefined) {
       delete gToolchainEnvMap[backendName];
     }
-    globalExecutorArray.length = 0;
+    while (globalExecutorArray.length > 0) {
+      globalExecutorArray.pop();
+    }
   });
 });
