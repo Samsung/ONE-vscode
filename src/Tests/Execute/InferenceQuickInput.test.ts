@@ -156,7 +156,7 @@ suite('Execute', function() {
         let quickInput = new InferenceQuickInput();
         let names = ['item0', 'item1'];
         let items = quickInput.getQuickPickItems(names);
-        items.map((value, index, array) => {
+        items.forEach((value, index) => {
           assert.strictEqual(value.label, names[index]);
         });
       });
@@ -176,7 +176,7 @@ suite('Execute', function() {
         const expected = exts;
         let filter = quickInput.getFilter();
         assert.strictEqual(filter.backendName.length, expected.length);
-        filter.backendName.map((value, index, array) => {
+        filter.backendName.forEach((value, index) => {
           assert.strictEqual(value, expected[index]);
         });
       });
@@ -188,7 +188,7 @@ suite('Execute', function() {
         const actual = quickInput.getInputSpecKeys();
         const expected = ['any', 'non-zero', 'positive'];
         assert.strictEqual(actual.length, expected.length);
-        actual.map((value, index, array) => {
+        actual.forEach((value, index) => {
           assert.strictEqual(value, expected[index]);
         });
       });
