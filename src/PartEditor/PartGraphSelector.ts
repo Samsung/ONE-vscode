@@ -135,7 +135,7 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
     PartGraphSelPanel.panels.forEach((selpan) => {
       if (docPath === selpan._documentPath && id === selpan._ownerId) {
         result = selpan;
-        return true;  // break forEach
+        return;  // break forEach
       }
     });
     return result;
@@ -224,7 +224,7 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
     PartGraphSelPanel.panels.forEach((selPan, index) => {
       if (this._documentPath === selPan._documentPath && this._ownerId === selPan._ownerId) {
         PartGraphSelPanel.panels.splice(index, 1);
-        return true;  // break forEach
+        return;  // break forEach
       }
     });
 
