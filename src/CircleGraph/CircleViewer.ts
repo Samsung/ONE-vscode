@@ -83,7 +83,7 @@ class CircleViewerDocument implements vscode.CustomDocument {
         if (view.owner(panel)) {
           view.disposeGraphCtrl();
           this._circleViewer.splice(index, 1);
-          return true;  // break forEach
+          return;  // break forEach
         }
       });
     });
