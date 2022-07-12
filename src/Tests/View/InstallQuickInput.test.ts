@@ -132,7 +132,7 @@ suite('View', function() {
         let quickInput = new InstallQuickInput();
         let names = ['item0', 'item1'];
         let items = quickInput.getQuickPickItems(names);
-        items.map((value, index, array) => {
+        items.forEach((value, index) => {
           assert.strictEqual(value.label, names[index]);
         });
       });
