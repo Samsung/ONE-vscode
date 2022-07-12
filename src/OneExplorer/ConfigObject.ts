@@ -174,7 +174,7 @@ export class LocatorRunner {
     // Get Artifacts with {type, ext, path}
     this.artifactLocators.forEach(({artifact, locator}) => {
       let filePaths: string[] = locator.locate(iniObj, dir);
-      filePaths.map(filePath => {
+      filePaths.forEach(filePath => {
         // Clone this.artifact
         let newArtifact: Artifact = Object.assign({}, artifact);
         newArtifact.path = filePath;
