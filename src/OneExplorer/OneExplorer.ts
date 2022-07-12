@@ -21,6 +21,7 @@ import {TextEncoder} from 'util';
 import * as vscode from 'vscode';
 
 import {CfgEditorPanel} from '../CfgEditor/CfgEditorPanel';
+import {CircleViewerProvider} from '../CircleGraph/CircleViewer';
 import {obtainWorkspaceRoot, RealPath} from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
@@ -124,6 +125,27 @@ export class OneNode extends vscode.TreeItem {
     super(label, collapsibleState);
 
     this.tooltip = `${this.node.path}`;
+
+    /**
+     * Returns custom view type for each nodes
+     */
+    const getCustomViewType = (node: Node): string|undefined => {
+      if (node.type === NodeType.config) {
+        return CfgEditorPanel.viewType;
+      } else if (node.type === NodeType.derivedModel && node.ext === '.circle') {
+        return CircleViewerProvider.viewType;
+      } else {
+        return undefined;
+      }
+    };
+
+    if (getCustomViewType(node) !== undefined) {
+      this.command = {
+        command: 'vscode.openWith',
+        title: 'Open with Custom Viewer',
+        arguments: [node.uri, getCustomViewType(node)]
+      };
+    }
 
     if (node.type === NodeType.config) {
       this.iconPath = new vscode.ThemeIcon('gear');
@@ -368,17 +390,11 @@ input_path=${modelName}.${extName}
                                            vscode.TreeItemCollapsibleState.None,
             node);
       } else {  // (node.type == NodeType.config)
-        let oneNode = new OneNode(
+        return new OneNode(
             node.name,
             (node.childNodes.length > 0) ? vscode.TreeItemCollapsibleState.Collapsed :
                                            vscode.TreeItemCollapsibleState.None,
             node);
-        oneNode.command = {
-          command: 'one.explorer.open',
-          title: 'Open File',
-          arguments: [oneNode.node]
-        };
-        return oneNode;
       }
     };
 
@@ -520,6 +536,7 @@ export class OneExplorer {
 
     subscribeDisposals([
       this.treeView,
+      // TODO Remove
       vscode.commands.registerCommand('one.explorer.open', (file) => this.openFile(file)),
       vscode.commands.registerCommand(
           'one.explorer.openAsText', (oneNode: OneNode) => this.openWithTextEditor(oneNode.node)),
@@ -542,6 +559,7 @@ export class OneExplorer {
     ]);
   }
 
+  // TODO Remove
   private openFile(node: Node) {
     vscode.commands.executeCommand('vscode.openWith', node.uri, CfgEditorPanel.viewType);
   }
