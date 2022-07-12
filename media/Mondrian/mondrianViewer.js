@@ -203,7 +203,7 @@ function updateContent(data, viewer) {
   }
   segmentSelect.value = viewer.activeSegment;
 
-  for (alloc of data.segments[viewer.activeSegment].allocations) {
+  for (const alloc of data.segments[viewer.activeSegment].allocations) {
     if (alloc.alive_till > totalCycles) {
       totalCycles = alloc.alive_till;
     }
