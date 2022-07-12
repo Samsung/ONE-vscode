@@ -18,59 +18,53 @@ import * as vscode from 'vscode';
 
 /**
  * A helper module for `vscode.workspace.fs`
- * 
+ *
  * WHY TO USE THIS FS WRAPPER MODULE?
- * 
+ *
  * VS Code extension team recommends developers to use vscode.workspace.fs instead of fs
  * and not to use any syncronous functions to access file system.
- * 
+ *
  * Let's avoid using fs, especially syncronous functions.
  * Instead, use these helper functions.
- * 
+ *
  * Add more helper functions as you may.
  */
 
-export module fswrapper {
+export module fswrapper{
+
+  interface Stat{isDirectory: boolean, isFile: boolean, isSymbolic: boolean}
 
   /**
    * Replace fs.statSync
-   * 
+   *
    * @example Check whether it's a directory
    * ```
    * if(await fswrapper.stat(filePath)).isDirectory){...}
    * ```
    */
-  function stat(fsPath: string) : Thenable<{isDirectory: boolean, isFile: boolean, isSymbolic: boolean}>{
-    return vscode.workspace.fs.stat(vscode.Uri.file(fsPath)).then(
-      (fstat)=>{
-        const isDirectory : boolean = ((fstat.type | vscode.FileType.Directory) === fstat.type);
-        const isFile : boolean = ((fstat.type | vscode.FileType.File) === fstat.type);
-        const isSymbolic : boolean = ((fstat.type | vscode.FileType.SymbolicLink) === fstat.type);
-        return {
-          isDirectory : isDirectory,
-          isFile: isFile,
-          isSymbolic: isSymbolic
-        };
-      }
-    );
+  function stat(fsPath: string): Thenable<Stat> {
+    return vscode.workspace.fs.stat(vscode.Uri.file(fsPath)).then((fstat) => {
+      const isDirectory: boolean = ((fstat.type | vscode.FileType.Directory) === fstat.type);
+      const isFile: boolean = ((fstat.type | vscode.FileType.File) === fstat.type);
+      const isSymbolic: boolean = ((fstat.type | vscode.FileType.SymbolicLink) === fstat.type);
+      return {isDirectory: isDirectory, isFile: isFile, isSymbolic: isSymbolic} as Stat;
+    });
   }
 
   /**
    * Replace fs.readFilSync
    */
-  async function readFile(fsPath: string) : Promise<string>{
+  async function readFile(fsPath: string): Promise<string> {
     return (await vscode.workspace.fs.readFile(vscode.Uri.file(fsPath))).toString();
   }
 
   /**
    * Replace fs.existsSync
    */
-  function exists(fsPath: string) : Thenable<boolean> {
-    return vscode.workspace.fs.stat(vscode.Uri.file(fsPath)).then(
-      (fstat)=>{
-        return fstat.type === vscode.FileType.Unknown ? true: false;
-      }
-    );
+  function exists(fsPath: string): Thenable<boolean> {
+    return vscode.workspace.fs.stat(vscode.Uri.file(fsPath)).then((fstat) => {
+      return fstat.type === vscode.FileType.Unknown ? true : false;
+    });
   }
 
   // Support more
