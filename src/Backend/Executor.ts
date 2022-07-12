@@ -55,7 +55,7 @@ class ExecutorBase implements Executor {
   }
 
   require(): DeviceSpec {
-    throw new Error('Invalid DeviceSpec call.');
+    throw new Error('NYI: need to define DeviceSpec for Executor.');
   }
 };
 
