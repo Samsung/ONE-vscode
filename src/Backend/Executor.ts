@@ -31,14 +31,14 @@ interface Executor {
   // TODO: use cfg path to run onecc after one-infer landed
   runInference(_modelPath: string, _options?: string[]): Command;
 
-  // return deviceSpec that required for this Executor to run
+  // return deviceSpec required for this Executor to run
   require(): DeviceSpec;
 }
 
 // General excutor uses onecc so default jobs can be used
 class ExecutorBase implements Executor {
   name(): string {
-    throw new Error('Name are not determinded.');
+    throw new Error('Name is not determined.');
   }
 
   // exetensions of executable files
@@ -55,7 +55,7 @@ class ExecutorBase implements Executor {
   }
 
   require(): DeviceSpec {
-    throw new Error('Invalid require Spec call.');
+    throw new Error('Invalid DeviceSpec call.');
   }
 };
 
