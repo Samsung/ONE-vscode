@@ -15,6 +15,7 @@
  */
 
 import oneOptimizationList from './one-optimizations.json' assert {type : 'json'};
+import {postMessageToVsCode} from './vscodeapi.js';
 
 function iniKeyValueString(iniKey, iniValue, noEffectValue = undefined) {
   if (iniValue === null || iniValue === undefined) {
@@ -36,30 +37,31 @@ function iniKeyValueString(iniKey, iniValue, noEffectValue = undefined) {
 }
 
 export function applyUpdates() {
-  vscode.postMessage({type: 'updateDocument'});
+  postMessageToVsCode({type: 'updateDocument'});
 }
 
 export function updateSteps() {
-  vscode.postMessage({type: 'setParam', section: 'onecc', param: 'one-import-tf', value: 'False'});
-  vscode.postMessage(
+  postMessageToVsCode({type: 'setParam', section: 'onecc', param: 'one-import-tf', value: 'False'});
+  postMessageToVsCode(
       {type: 'setParam', section: 'onecc', param: 'one-import-tflite', value: 'False'});
-  vscode.postMessage({type: 'setParam', section: 'onecc', param: 'one-import-bcq', value: 'False'});
-  vscode.postMessage(
+  postMessageToVsCode(
+      {type: 'setParam', section: 'onecc', param: 'one-import-bcq', value: 'False'});
+  postMessageToVsCode(
       {type: 'setParam', section: 'onecc', param: 'one-import-onnx', value: 'False'});
   if (document.getElementById('checkboxImport').checked) {
     switch (document.getElementById('importInputModelType').value) {
       case 'pb':
       case 'saved':
       case 'keras':
-        vscode.postMessage(
+        postMessageToVsCode(
             {type: 'setParam', section: 'onecc', param: 'one-import-tf', value: 'True'});
         break;
       case 'tflite':
-        vscode.postMessage(
+        postMessageToVsCode(
             {type: 'setParam', section: 'onecc', param: 'one-import-tflite', value: 'True'});
         break;
       case 'onnx':
-        vscode.postMessage(
+        postMessageToVsCode(
             {type: 'setParam', section: 'onecc', param: 'one-import-onnx', value: 'True'});
         break;
       default:
@@ -67,25 +69,25 @@ export function updateSteps() {
     }
   }
 
-  vscode.postMessage({
+  postMessageToVsCode({
     type: 'setParam',
     section: 'onecc',
     param: 'one-optimize',
     value: document.getElementById('checkboxOptimize').checked ? 'True' : 'False'
   });
-  vscode.postMessage({
+  postMessageToVsCode({
     type: 'setParam',
     section: 'onecc',
     param: 'one-quantize',
     value: document.getElementById('checkboxQuantize').checked ? 'True' : 'False'
   });
-  vscode.postMessage({
+  postMessageToVsCode({
     type: 'setParam',
     section: 'onecc',
     param: 'one-codegen',
     value: document.getElementById('checkboxCodegen').checked ? 'True' : 'False'
   });
-  vscode.postMessage({
+  postMessageToVsCode({
     type: 'setParam',
     section: 'onecc',
     param: 'one-profile',
@@ -125,7 +127,7 @@ export function updateImportPB() {
   content += iniKeyValueString('output_arrays', document.getElementById('PBOutputArrays').value);
   content += iniKeyValueString('input_shapes', document.getElementById('PBInputShapes').value);
 
-  vscode.postMessage({type: 'setSection', section: 'one-import-tf', param: content});
+  postMessageToVsCode({type: 'setSection', section: 'one-import-tf', param: content});
 }
 
 export function updateImportSAVED() {
@@ -134,7 +136,7 @@ export function updateImportSAVED() {
   content += iniKeyValueString('output_path', document.getElementById('SAVEDOutputPath').value);
   content += iniKeyValueString('model_format', 'saved_model');
 
-  vscode.postMessage({type: 'setSection', section: 'one-import-tf', param: content});
+  postMessageToVsCode({type: 'setSection', section: 'one-import-tf', param: content});
 }
 
 export function updateImportKERAS() {
@@ -143,7 +145,7 @@ export function updateImportKERAS() {
   content += iniKeyValueString('output_path', document.getElementById('KERASOutputPath').value);
   content += iniKeyValueString('model_format', 'keras_model');
 
-  vscode.postMessage({type: 'setSection', section: 'one-import-tf', param: content});
+  postMessageToVsCode({type: 'setSection', section: 'one-import-tf', param: content});
 }
 
 export function updateImportTFLITE() {
@@ -151,7 +153,7 @@ export function updateImportTFLITE() {
   content += iniKeyValueString('input_path', document.getElementById('TFLITEInputPath').value);
   content += iniKeyValueString('output_path', document.getElementById('TFLITEOutputPath').value);
 
-  vscode.postMessage({type: 'setSection', section: 'one-import-tflite', param: content});
+  postMessageToVsCode({type: 'setSection', section: 'one-import-tflite', param: content});
 }
 
 export function updateImportONNX() {
@@ -163,7 +165,7 @@ export function updateImportONNX() {
   content += iniKeyValueString('unroll_rnn', document.getElementById('ONNXUnrollRNN').checked);
   content += iniKeyValueString('unroll_lstm', document.getElementById('ONNXUnrollLSTM').checked);
 
-  vscode.postMessage({type: 'setSection', section: 'one-import-onnx', param: content});
+  postMessageToVsCode({type: 'setSection', section: 'one-import-onnx', param: content});
 }
 
 export function updateOptimize() {
@@ -176,7 +178,7 @@ export function updateOptimize() {
         iniKeyValueString(optName, document.getElementById('checkboxOptimize' + optName).checked);
   }
 
-  vscode.postMessage({type: 'setSection', section: 'one-optimize', param: content});
+  postMessageToVsCode({type: 'setSection', section: 'one-optimize', param: content});
 }
 
 export function updateQuantizeActionType() {
@@ -238,7 +240,7 @@ export function updateQuantizeDefault() {
   content += iniKeyValueString(
       'TF-style_maxpool', document.getElementById('DefaultQuantTFStyleMaxpool').checked);
 
-  vscode.postMessage({type: 'setSection', section: 'one-quantize', param: content});
+  postMessageToVsCode({type: 'setSection', section: 'one-quantize', param: content});
 }
 
 export function updateQuantizeForce() {
@@ -253,7 +255,7 @@ export function updateQuantizeForce() {
   content += iniKeyValueString('zero_point', document.getElementById('ForceQuantZeroPoint').value);
   content += iniKeyValueString('verbose', document.getElementById('ForceQuantVerbose').checked);
 
-  vscode.postMessage({type: 'setSection', section: 'one-quantize', param: content});
+  postMessageToVsCode({type: 'setSection', section: 'one-quantize', param: content});
 }
 
 export function updateQuantizeCopy() {
@@ -267,7 +269,7 @@ export function updateQuantizeCopy() {
       iniKeyValueString('dst_tensor_name', document.getElementById('CopyQuantDstTensorName').value);
   content += iniKeyValueString('verbose', document.getElementById('CopyQuantVerbose').checked);
 
-  vscode.postMessage({type: 'setSection', section: 'one-quantize', param: content});
+  postMessageToVsCode({type: 'setSection', section: 'one-quantize', param: content});
 }
 
 export function updateCodegen() {
@@ -275,7 +277,7 @@ export function updateCodegen() {
   content += iniKeyValueString('backend', document.getElementById('codegenBackend').value);
   content += iniKeyValueString('command', document.getElementById('codegenCommand').value);
 
-  vscode.postMessage({type: 'setSection', section: 'one-codegen', param: content});
+  postMessageToVsCode({type: 'setSection', section: 'one-codegen', param: content});
 }
 
 export function updateProfile() {
@@ -283,5 +285,5 @@ export function updateProfile() {
   content += iniKeyValueString('backend', document.getElementById('profileBackend').value);
   content += iniKeyValueString('command', document.getElementById('profileCommand').value);
 
-  vscode.postMessage({type: 'setSection', section: 'one-profile', param: content});
+  postMessageToVsCode({type: 'setSection', section: 'one-profile', param: content});
 }
