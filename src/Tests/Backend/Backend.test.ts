@@ -17,7 +17,7 @@
 import {assert} from 'chai';
 
 import {Backend} from '../../Backend/API';
-import {backendRegistrationApi, globalBackendMap} from '../../Backend/Backend';
+import {backendRegistrationApi, globalBackendMap, globalExecutorArray} from '../../Backend/Backend';
 import {Compiler, CompilerBase} from '../../Backend/Compiler';
 import {Executor, ExecutorBase} from '../../Backend/Executor';
 import {gToolchainEnvMap} from '../../Toolchain/ToolchainEnv';
@@ -35,7 +35,14 @@ class BackendMockup implements Backend {
   executor(): Executor|undefined {
     return new ExecutorBase();
   }
-};
+}
+
+const executorName = 'Mockup';
+class ExecutorMockup extends ExecutorBase {
+  name(): string {
+    return executorName;
+  }
+}
 
 suite('Backend', function() {
   suite('backendRegistrationApi', function() {
@@ -55,6 +62,19 @@ suite('Backend', function() {
         assert.deepStrictEqual(value, backend);
       }
     });
+    test('registers a executor', function() {
+      let registrationAPI = backendRegistrationApi();
+
+      assert.strictEqual(globalExecutorArray.length, 0);
+      let executorMockup = new ExecutorMockup();
+      registrationAPI.registerExecutor(executorMockup);
+
+      assert.strictEqual(globalExecutorArray.length, 1);
+
+      for (const executor of globalExecutorArray) {
+        assert.deepStrictEqual(executor, executorMockup);
+      }
+    });
   });
 
   teardown(function() {
@@ -64,5 +84,6 @@ suite('Backend', function() {
     if (gToolchainEnvMap[backendName] !== undefined) {
       delete gToolchainEnvMap[backendName];
     }
+    globalExecutorArray.length = 0;
   });
 });
