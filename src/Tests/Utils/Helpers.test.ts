@@ -75,10 +75,10 @@ suite('Utils', function() {
       });
     });
 
-    suite('#exist()', function() {
+    suite('#exists()', function() {
       test('check if the path exists', function() {
-        assert.isFalse(RealPath.exist('/dummy/not/exist'));
-        assert.isTrue(RealPath.exist('/'));
+        assert.isFalse(RealPath.exists('/dummy/not/exist'));
+        assert.isTrue(RealPath.exists('/'));
       });
     });
   });

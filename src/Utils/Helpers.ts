@@ -57,7 +57,7 @@ export class RealPath {
     return fs.existsSync(absPath) ? new RealPath(absPath) : null;
   }
 
-  public static exist(rawPath: string|undefined): boolean {
+  public static exists(rawPath: string|undefined): boolean {
     if (!rawPath) {
       return false;
     }
