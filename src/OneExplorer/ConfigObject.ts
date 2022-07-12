@@ -27,7 +27,7 @@ import {Logger} from '../Utils/Logger';
  *   - existing files to run ONE config (base model)
  *   - result files after running ONE config (derived models, )
  */
-interface Artifact {
+export interface Artifact {
   /**
    * An artifact's type
    */

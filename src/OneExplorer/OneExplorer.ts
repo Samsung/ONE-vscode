@@ -23,7 +23,7 @@ import {CfgEditorPanel} from '../CfgEditor/CfgEditorPanel';
 import {obtainWorkspaceRoot, RealPath} from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
-import {ConfigObj} from './ConfigObject';
+import {Artifact, ConfigObj} from './ConfigObject';
 import {OneccRunner} from './OneccRunner';
 
 /**
@@ -405,45 +405,42 @@ input_path=${modelName}.${extName}
       const fstat = fs.statSync(fpath);
 
       if (fstat.isDirectory()) {
-        const childNode = new Node(NodeType.directory, [], vscode.Uri.file(fpath));
+        const dirNode = this.createDirectoryNode(fpath);
 
-        this.searchNode(childNode);
-        if (childNode.childNodes.length > 0) {
-          node.childNodes.push(childNode);
+        if (dirNode) {
+          node.childNodes.push(dirNode);
         }
       } else if (
           fstat.isFile() &&
           (fname.endsWith('.pb') || fname.endsWith('.tflite') || fname.endsWith('.onnx'))) {
-        const childNode = new Node(NodeType.baseModel, [], vscode.Uri.file(fpath));
+        const baseModelNode = this.createBaseModelNode(fpath);
 
-        this.searchPairConfig(childNode);
-
-        node.childNodes.push(childNode);
+        node.childNodes.push(baseModelNode);
       }
     }
   }
 
-  /**
-   * compare paths by normalization
-   * NOTE that '~'(home) is not supported
-   * TODO(dayo) support '~'
-   * TODO(dayo) extract file-relative functions as another module
-   */
-  private comparePath(path0: string, path1: string): boolean {
-    const absPath0 = path.resolve(path.normalize(path0));
-    const absPath1 = path.resolve(path.normalize(path1));
-    return absPath0 === absPath1;
+  private createDirectoryNode(fpath: string): Node|undefined {
+    let dirNode = new Node(NodeType.directory, [], vscode.Uri.file(fpath));
+
+    this.searchNode(dirNode);
+
+    return (dirNode.childNodes.length > 0) ? dirNode : undefined;
+  }
+
+  private createBaseModelNode(fpath: string): Node {
+    const baseModelNode = new Node(NodeType.baseModel, [], vscode.Uri.file(fpath));
+
+    this.searchConfig(baseModelNode);
+
+    return baseModelNode;
   }
 
   /**
-   * Search corresponding .cfg files inside the workspace
-   * for the given baseModelNode
-   *
-   * @param baseModelNode a Node of the base model
+   * Get the list of .cfg files wiithin this workspace
+   * TODO Move to constructor
    */
-  private searchPairConfig(baseModelNode: Node) {
-    console.assert(baseModelNode.type === NodeType.baseModel);
-
+  private getCfgList(root: string = this.workspaceRoot!.fsPath): string[] {
     /**
      * Returns every file inside directory
      * @todo Check soft link
@@ -465,14 +462,28 @@ input_path=${modelName}.${extName}
     };
 
     // Get the list of all the cfg files inside workspace root
-    const confs =
-        readdirSyncRecursive(this.workspaceRoot!.fsPath).filter(val => val.endsWith('.cfg'));
+    const cfgList = readdirSyncRecursive(root).filter(val => val.endsWith('.cfg'));
 
-    for (const conf of confs) {
-      const cfgObj = ConfigObj.createConfigObj(vscode.Uri.file(conf));
+    return cfgList;
+  }
+
+
+  /**
+   * Search corresponding .cfg files inside the workspace
+   * for the given baseModelNode
+   *
+   * @param baseModelNode a Node of the base model
+   */
+  private searchConfig(baseModelNode: Node) {
+    console.assert(baseModelNode.type === NodeType.baseModel);
+
+    const cfgList = this.getCfgList();
+
+    for (const cfg of cfgList) {
+      const cfgObj = ConfigObj.createConfigObj(vscode.Uri.file(cfg));
 
       if (!cfgObj) {
-        Logger.info('OneExplorer', `Failed to open file ${conf}`);
+        Logger.info('OneExplorer', `Failed to open file ${cfg}`);
         continue;
       }
 
@@ -480,22 +491,23 @@ input_path=${modelName}.${extName}
         continue;
       }
 
-      const {baseModels, derivedModels} = cfgObj.obj;
-
-      const pairNode = new Node(NodeType.config, [], vscode.Uri.file(conf));
-      Logger.debug('OneExplorer', `DerivedModels : ${derivedModels}`);
-
-      derivedModels ?.forEach(derivedModel => {
-                       // Display only the existing node
-                       const realPath = RealPath.createRealPath(derivedModel.path);
-                       if (realPath) {
-                         pairNode.childNodes.push(new Node(
-                             NodeType.derivedModel, [], vscode.Uri.file(realPath.absPath)));
-                       }
-                     });
+      const pairNode = this.createConfigNode(cfg, cfgObj.getDerivedModelsExists);
 
       baseModelNode.childNodes.push(pairNode);
     }
+  }
+
+  private createConfigNode(conf: string, derivedModels: Artifact[]): Node {
+    const pairNode = new Node(NodeType.config, [], vscode.Uri.file(conf));
+
+    Logger.debug('OneExplorer', `DerivedModels : ${derivedModels}`);
+
+    derivedModels.forEach(derivedModel => {
+      pairNode.childNodes.push(
+          new Node(NodeType.derivedModel, [], vscode.Uri.file(derivedModel.path)));
+    });
+
+    return pairNode;
   }
 }
 
