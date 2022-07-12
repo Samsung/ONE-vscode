@@ -344,7 +344,6 @@ input_path=${modelName}.${extName}
 
   getChildren(element?: OneNode): OneNode[]|Thenable<OneNode[]> {
     if (!this.workspaceRoot) {
-      vscode.window.showInformationMessage('Cannot find workspace root');
       return Promise.resolve([]);
     }
 
@@ -514,7 +513,17 @@ input_path=${modelName}.${extName}
 
 export function initOneExplorer(context: vscode.ExtensionContext) {
   // TODO Support multi-root workspace
-  let workspaceRoot: vscode.Uri = vscode.Uri.file(obtainWorkspaceRoot());
+  let workspaceRoot: vscode.Uri|undefined = undefined;
+  try {
+    workspaceRoot = vscode.Uri.file(obtainWorkspaceRoot());
+  } catch (e: unknown) {
+    if (e instanceof Error) {
+      Logger.error('OneExplorer', e.message);
+    } else {
+      throw e;
+    }
+  }
+
   // NOTE: Fix `obtainWorksapceRoot` if non-null assertion is false
   const oneTreeDataProvider = new OneTreeDataProvider(workspaceRoot!);
 
