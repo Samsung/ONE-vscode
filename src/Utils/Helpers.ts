@@ -36,14 +36,34 @@ export class RealPath {
     this.absPath = absPath;
   }
 
-  public static isEqual(path0: RealPath, path1: RealPath): boolean {
-    return path0.absPath === path1.absPath;
+  public static areEqual(path0: string, path1: string): boolean {
+    const realPath0 = this.createRealPath(path0);
+    const realPath1 = this.createRealPath(path1);
+
+    if (!realPath0 || !realPath1) {
+      return false;
+    }
+
+    return realPath0.equal(realPath1);
+  }
+
+  public equal(lhs: RealPath): boolean {
+    return this.absPath === lhs.absPath;
   }
 
   public static createRealPath(rawPath: string): RealPath|null {
     const absPath = path.resolve(path.normalize(rawPath));
 
     return fs.existsSync(absPath) ? new RealPath(absPath) : null;
+  }
+
+  public static exists(rawPath: string|undefined): boolean {
+    if (!rawPath) {
+      return false;
+    }
+    const absPath = path.resolve(path.normalize(rawPath));
+
+    return fs.existsSync(absPath) ? true : false;
   }
 }
 
