@@ -21,6 +21,19 @@ const sections = [
   'one-optimize', 'one-quantize', 'one-codegen', 'one-profile'
 ];
 
+// NOTE: Why is not function overloadding used? Its maintain costs expensive.
+// Compared to C++, TS supports function overloading very compilcated like
+// class TSClass {
+//   // declare function signatures to overload
+//   set(sth: A);
+//   set(sth: B);
+//   // implementation is the only one
+//   set(sth: unknown) {
+//     if (sth isInstanceOf(A)) { ... }
+//     else if (sth isInstanceOf(B)) { ... }
+//   }
+// }
+//
 export class CfgData {
   private _oneConfig: any = undefined;
 
@@ -39,13 +52,16 @@ export class CfgData {
   // sets data with object decoded or parsed
   setWithConfig(cfg: any): void {
     this._oneConfig = cfg;
+    this.resolveDeprecated();
   }
 
   // sets data with string encoded or stringfied
   setWithString(text: string): void {
     this._oneConfig = ini.parse(text);
+    this.resolveDeprecated();
+  }
 
-    // TODO Separate handling deprecated elements
+  resolveDeprecated(): void {
     // NOTE 'one-build' will be deprecated.
     //      Therefore, when only 'one-build' is used, it will be replaced to 'onecc'.
     if (this._oneConfig['onecc'] === undefined && this._oneConfig['one-build'] !== undefined) {
@@ -71,11 +87,13 @@ export class CfgData {
       this._oneConfig[section][key] = '';
     }
     this._oneConfig[section][key] = value;
+    this.resolveDeprecated();
   }
 
   updateSectionWithValue(section: string, value: string): void {
     // value should be encoded or stringfied
     this._oneConfig[section] = ini.parse(value);
+    this.resolveDeprecated();
   }
 
   isSame(textStringified: string): boolean {
