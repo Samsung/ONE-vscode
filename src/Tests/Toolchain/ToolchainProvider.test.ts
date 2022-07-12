@@ -129,7 +129,7 @@ suite('Toolchain', function() {
         let bnode: BackendNode = bnodes[0];
         let tnodes = NodeBuilder.createToolchainNodes(bnode);
         assert.strictEqual(tnodes.length, 1);
-        tnodes.map((tnode) => {
+        tnodes.forEach((tnode) => {
           assert.strictEqual(tnode.backendName, backendName);
         });
       });
@@ -183,7 +183,7 @@ suite('Toolchain', function() {
         let bnode: BackendNode = bnodes[0];
         provider.getChildren(bnode).then((tnodes) => {
           assert.strictEqual(tnodes.length, 1);
-          tnodes.map((tnode) => {
+          tnodes.forEach((tnode) => {
             assert.instanceOf(tnode, ToolchainNode);
           });
           done();
