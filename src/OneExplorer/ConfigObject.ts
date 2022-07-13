@@ -223,7 +223,7 @@ export class ConfigObj {
   }
 
   get getDerivedModels() {
-    return this.obj.baseModels;
+    return this.obj.derivedModels;
   }
 
   /**
