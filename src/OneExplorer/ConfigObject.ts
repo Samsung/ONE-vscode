@@ -41,7 +41,7 @@ interface Artifact {
   /**
    * A full path in file system
    */
-  path?: string;
+  path: string;
 }
 
 /**
@@ -144,7 +144,7 @@ export class Locator {
 
 // TODO Move to backend side with some modification
 export class LocatorRunner {
-  private artifactLocators: {artifact: Artifact, locator: Locator}[] = [];
+  private artifactLocators: {artifactAttr: {type: string, ext: string}, locator: Locator}[] = [];
 
   /**
    * A helper function to grep a filename ends with 'ext' within the given 'content' string.
@@ -158,7 +158,7 @@ export class LocatorRunner {
     return fileNames;
   };
 
-  public register(artifactLocator: {artifact: Artifact, locator: Locator}) {
+  public register(artifactLocator: {artifactAttr: {type: string, ext: string}, locator: Locator}) {
     this.artifactLocators.push(artifactLocator);
   }
 
@@ -172,13 +172,11 @@ export class LocatorRunner {
     let artifacts: Artifact[] = [];
 
     // Get Artifacts with {type, ext, path}
-    this.artifactLocators.forEach(({artifact, locator}) => {
+    this.artifactLocators.forEach(({artifactAttr, locator}) => {
       let filePaths: string[] = locator.locate(iniObj, dir);
       filePaths.forEach(filePath => {
-        // Clone this.artifact
-        let newArtifact: Artifact = Object.assign({}, artifact);
-        newArtifact.path = filePath;
-        artifacts.push(newArtifact);
+        let artifact: Artifact = {type: artifactAttr.type, ext: artifactAttr.ext, path: filePath};
+        artifacts.push(artifact);
       });
     });
 
@@ -232,22 +230,22 @@ export class ConfigObj {
    * Returns only the baseModels which exists in file system
    */
   get getBaseModelsExists() {
-    return this.obj.baseModels.filter(artifact => RealPath.exists(artifact.path!));
+    return this.obj.baseModels.filter(artifact => RealPath.exists(artifact.path));
   }
 
   /**
    * Returns only the derivedModels which exists in file system
    */
   get getDerivedModelsExists() {
-    return this.obj.derivedModels.filter(artifact => RealPath.exists(artifact.path!));
+    return this.obj.derivedModels.filter(artifact => RealPath.exists(artifact.path));
   }
 
   /**
    * Return true if the `baseModelPath` is included in `baseModels`
    */
   public isChildOf(baseModelPath: string): boolean {
-    const found = this.obj.baseModels.map(artifact => artifact.path!)
-                      .find(path => RealPath.areEqual(baseModelPath, path!));
+    const found = this.obj.baseModels.map(artifact => artifact.path)
+                      .find(path => RealPath.areEqual(baseModelPath, path));
 
     return found ? true : false;
   }
@@ -315,17 +313,17 @@ export class ConfigObj {
     let locatorRunner = new LocatorRunner();
 
     locatorRunner.register({
-      artifact: {type: 'model', ext: '.tflite'},
+      artifactAttr: {type: 'model', ext: '.tflite'},
       locator: new Locator((value: string) => LocatorRunner.searchWithExt('.tflite', value))
     });
 
     locatorRunner.register({
-      artifact: {type: 'model', ext: '.pb'},
+      artifactAttr: {type: 'model', ext: '.pb'},
       locator: new Locator((value: string) => LocatorRunner.searchWithExt('.pb', value))
     });
 
     locatorRunner.register({
-      artifact: {type: 'model', ext: '.onnx'},
+      artifactAttr: {type: 'model', ext: '.onnx'},
       locator: new Locator((value: string) => LocatorRunner.searchWithExt('.onnx', value))
     });
 
@@ -358,17 +356,17 @@ export class ConfigObj {
     let locatorRunner = new LocatorRunner();
 
     locatorRunner.register({
-      artifact: {type: 'model', ext: '.circle'},
+      artifactAttr: {type: 'model', ext: '.circle'},
       locator: new Locator((value: string) => LocatorRunner.searchWithExt('.circle', value))
     });
 
     locatorRunner.register({
-      artifact: {type: 'model', ext: '.tvn'},
+      artifactAttr: {type: 'model', ext: '.tvn'},
       locator: new Locator((value: string) => LocatorRunner.searchWithExt('.tvn', value))
     });
 
     locatorRunner.register({
-      artifact: {type: 'log', ext: '.circle.log'},
+      artifactAttr: {type: 'log', ext: '.circle.log'},
       locator: new Locator((value: string) => {
         return LocatorRunner.searchWithExt('.circle', value)
             .map(filepath => filepath.replace('.circle', '.circle.log'));

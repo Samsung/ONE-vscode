@@ -15,7 +15,6 @@
  */
 
 import * as fs from 'fs';
-import * as ini from 'ini';
 import * as path from 'path';
 import {TextEncoder} from 'util';
 import * as vscode from 'vscode';
@@ -488,7 +487,7 @@ input_path=${modelName}.${extName}
 
       derivedModels ?.forEach(derivedModel => {
                        // Display only the existing node
-                       const realPath = RealPath.createRealPath(derivedModel.path!);
+                       const realPath = RealPath.createRealPath(derivedModel.path);
                        if (realPath) {
                          pairNode.childNodes.push(new Node(
                              NodeType.derivedModel, [], vscode.Uri.file(realPath.absPath)));
