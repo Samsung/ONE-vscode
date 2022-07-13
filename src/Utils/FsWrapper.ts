@@ -15,6 +15,8 @@
  */
 
 import * as vscode from 'vscode';
+import * as vscode;
+import {Logger} from './Logger';
 
 /**
  * A helper module for `vscode.workspace.fs`
@@ -42,7 +44,7 @@ export module fswrapper{
    * if(await fswrapper.stat(filePath)).isDirectory){...}
    * ```
    */
-  function stat(fsPath: string): Thenable<Stat> {
+  export function stat(fsPath: string): Thenable<Stat> {
     return vscode.workspace.fs.stat(vscode.Uri.file(fsPath)).then((fstat) => {
       const isDirectory: boolean = ((fstat.type | vscode.FileType.Directory) === fstat.type);
       const isFile: boolean = ((fstat.type | vscode.FileType.File) === fstat.type);
@@ -52,19 +54,23 @@ export module fswrapper{
   }
 
   /**
-   * Replace fs.readFilSync
+   * Replace fs.readFileSync
    */
-  async function readFile(fsPath: string): Promise<string> {
+  export async function readFile(fsPath: string): Promise<string> {
     return (await vscode.workspace.fs.readFile(vscode.Uri.file(fsPath))).toString();
   }
 
   /**
    * Replace fs.existsSync
    */
-  function exists(fsPath: string): Thenable<boolean> {
-    return vscode.workspace.fs.stat(vscode.Uri.file(fsPath)).then((fstat) => {
-      return fstat.type === vscode.FileType.Unknown ? true : false;
-    });
+  export async function exists(fsPath: string): Promise<boolean> {
+    try {
+      await vscode.workspace.fs.stat(vscode.Uri.file(fsPath));
+      return true;
+    }
+    catch {
+      return false;
+    }
   }
 
   // Support more
