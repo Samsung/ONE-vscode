@@ -197,11 +197,6 @@
         "category": "ONE"
       },
       {
-        "command": "one.editor.toggleCodelens",
-        "title": "Toggle codelens for cfg",
-        "category": "ONE"
-      },
-      {
         "command": "one.viewer.circleTracer",
         "title": "circle tracer",
         "category": "ONE"
@@ -313,10 +308,6 @@
           "when": "false"
         },
         {
-          "command": "one.editor.toggleCodelens",
-          "when": "false"
-        },
-        {
           "command": "one.explorer.refresh",
           "when": "false"
         },
@@ -373,15 +364,6 @@
           "when": "false"
         }
       ]
-    },
-    "configuration": {
-      "title": "ONE",
-      "properties": {
-        "one-vscode.enableCodelens": {
-          "type": "boolean",
-          "default": true
-        }
-      }
     },
     "languages": [
       {
