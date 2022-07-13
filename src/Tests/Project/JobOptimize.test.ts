@@ -46,7 +46,6 @@ suite('Project', function() {
         let outputPath = 'output_path';
 
         // true bool args
-        let oO1: boolean = true;                          // O1
         let oConvertNchwToNhwc: boolean = true;           // convert_nchw_to_nhwc
         let oExpandBroadcastConst: boolean = true;        // expand_broadcast_const
         let oNchwToNhwcInputShape: boolean = true;        // nchw_to_nhwc_input_shape
@@ -101,7 +100,6 @@ suite('Project', function() {
         job.inputPath = inputPath;
         job.outputPath = outputPath;
         // add optimize options
-        job.oO1 = oO1;
         job.oConvertNchwToNhwc = oConvertNchwToNhwc;
         job.oExpandBroadcastConst = oExpandBroadcastConst;
         job.oNchwToNhwcInputShape = oNchwToNhwcInputShape;
@@ -153,7 +151,6 @@ suite('Project', function() {
           inputPath,
           '--output_path',
           outputPath,
-          '--O1',
           '--convert_nchw_to_nhwc',
           '--expand_broadcast_const',
           '--nchw_to_nhwc_input_shape',

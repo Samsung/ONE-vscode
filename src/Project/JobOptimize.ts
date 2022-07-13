@@ -19,7 +19,6 @@ import {JobBase} from './JobBase';
 import {ToolArgs} from './ToolArgs';
 
 export class JobOptimize extends JobBase {
-  oO1?: boolean = undefined;                          // O1
   oConvertNchwToNhwc?: boolean = undefined;           // convert_nchw_to_nhwc
   oExpandBroadcastConst?: boolean = undefined;        // expand_broadcast_const
   oNchwToNhwcInputShape?: boolean = undefined;        // nchw_to_nhwc_input_shape
@@ -90,7 +89,6 @@ export class JobOptimize extends JobBase {
 
     // add optimize options
     // clang-format off
-    if (this.oO1) { args.push('--O1'); }
     if (this.oConvertNchwToNhwc) { args.push('--convert_nchw_to_nhwc'); }
     if (this.oExpandBroadcastConst) { args.push('--expand_broadcast_const'); }
     if (this.oNchwToNhwcInputShape) { args.push('--nchw_to_nhwc_input_shape'); }
