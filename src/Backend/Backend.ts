@@ -18,6 +18,7 @@ const assert = require('assert');
 import {Backend} from './API';
 import {gToolchainEnvMap, ToolchainEnv} from '../Toolchain/ToolchainEnv';
 import {Logger} from '../Utils/Logger';
+import {Executor} from './Executor';
 
 /**
  * Interface of backend map
@@ -29,6 +30,8 @@ interface BackendMap {
 
 // List of backend extensions registered
 let globalBackendMap: BackendMap = {};
+// List of Executor extensions registered
+let globalExecutorArray: Executor[] = [];
 
 function backendRegistrationApi() {
   const logTag = 'backendRegistrationApi';
@@ -41,11 +44,19 @@ function backendRegistrationApi() {
       if (compiler) {
         gToolchainEnvMap[backend.name()] = new ToolchainEnv(compiler);
       }
+      const executor = backend.executor();
+      if (executor) {
+        globalExecutorArray.push(executor);
+      }
       Logger.info(logTag, 'Backend', backendName, 'was registered into ONE-vscode.');
+    },
+    registerExecutor(executor: Executor) {
+      globalExecutorArray.push(executor);
+      Logger.info(logTag, 'Executor', executor.name(), 'was registered into ONE-vscode.');
     }
   };
 
   return registrationAPI;
 }
 
-export {globalBackendMap, backendRegistrationApi};
+export {globalBackendMap, globalExecutorArray, backendRegistrationApi};

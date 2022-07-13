@@ -17,7 +17,7 @@
 import {assert} from 'chai';
 
 import {Backend} from '../../Backend/API';
-import {backendRegistrationApi, globalBackendMap} from '../../Backend/Backend';
+import {backendRegistrationApi, globalBackendMap, globalExecutorArray} from '../../Backend/Backend';
 import {Compiler, CompilerBase} from '../../Backend/Compiler';
 import {Executor, ExecutorBase} from '../../Backend/Executor';
 import {gToolchainEnvMap} from '../../Toolchain/ToolchainEnv';
@@ -35,7 +35,14 @@ class BackendMockup implements Backend {
   executor(): Executor|undefined {
     return new ExecutorBase();
   }
-};
+}
+
+const executorName = 'Mockup';
+class ExecutorMockup extends ExecutorBase {
+  name(): string {
+    return executorName;
+  }
+}
 
 suite('Backend', function() {
   suite('backendRegistrationApi', function() {
@@ -43,6 +50,7 @@ suite('Backend', function() {
       let registrationAPI = backendRegistrationApi();
 
       assert.strictEqual(Object.entries(globalBackendMap).length, 0);
+      assert.strictEqual(globalExecutorArray.length, 0);
 
       let backend = new BackendMockup();
       registrationAPI.registerBackend(backend);
@@ -54,6 +62,23 @@ suite('Backend', function() {
         assert.strictEqual(key, backendName);
         assert.deepStrictEqual(value, backend);
       }
+      assert.strictEqual(globalExecutorArray.length, 1);
+      for (const executor of globalExecutorArray) {
+        assert.deepStrictEqual(executor, backend.executor());
+      }
+    });
+    test('registers a executor', function() {
+      let registrationAPI = backendRegistrationApi();
+
+      assert.strictEqual(globalExecutorArray.length, 0);
+      let executorMockup = new ExecutorMockup();
+      registrationAPI.registerExecutor(executorMockup);
+
+      assert.strictEqual(globalExecutorArray.length, 1);
+
+      for (const executor of globalExecutorArray) {
+        assert.deepStrictEqual(executor, executorMockup);
+      }
     });
   });
 
@@ -63,6 +88,9 @@ suite('Backend', function() {
     }
     if (gToolchainEnvMap[backendName] !== undefined) {
       delete gToolchainEnvMap[backendName];
+    }
+    while (globalExecutorArray.length > 0) {
+      globalExecutorArray.pop();
     }
   });
 });
