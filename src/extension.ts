@@ -23,8 +23,6 @@ import {decoder} from './Circlereader/Circlereader';
 import {Circletracer} from './Circletracer';
 import {ConfigPanel} from './Config/ConfigPanel';
 import {createStatusBarItem} from './Config/ConfigStatusBar';
-import {CodelensProvider} from './Editor/CodelensProvider';
-import {HoverProvider} from './Editor/HoverProvider';
 import {runInferenceQuickInput} from './Execute/executeQuickInput';
 import {Jsontracer} from './Jsontracer';
 import {MondrianEditorProvider} from './Mondrian/MondrianEditor';
@@ -102,23 +100,6 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(disposableOneConfigurationSettings);
 
   createStatusBarItem(context);
-
-  let disposableToggleCodelens =
-      vscode.commands.registerCommand('one.editor.toggleCodelens', () => {
-        let codelensState =
-            vscode.workspace.getConfiguration('one-vscode').get('enableCodelens', true);
-        vscode.workspace.getConfiguration('one-vscode')
-            .update('enableCodelens', !codelensState, true);
-      });
-  context.subscriptions.push(disposableToggleCodelens);
-
-  let codelens = new CodelensProvider(context);
-  let disposableCodelens = vscode.languages.registerCodeLensProvider('ini', codelens);
-  context.subscriptions.push(disposableCodelens);
-
-  let hover = new HoverProvider();
-  let disposableHover = vscode.languages.registerHoverProvider('ini', hover);
-  context.subscriptions.push(disposableHover);
 
   let disposableOneCircleTracer = vscode.commands.registerCommand('one.viewer.circleTracer', () => {
     Logger.info(tag, 'one circle tracer...');
