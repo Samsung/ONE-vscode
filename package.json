@@ -91,6 +91,18 @@
         "icon": "$(refresh)"
       },
       {
+        "command": "one.explorer.hideExtra",
+        "title": "Hide Extra Files",
+        "category": "ONE",
+        "icon": "$(eye-closed)"
+      },
+      {
+        "command": "one.explorer.unhideExtra",
+        "title": "Unhide Extra Files",
+        "category": "ONE",
+        "icon": "$(eye)"
+      },
+      {
         "command": "one.explorer.createCfg",
         "title": "Create new ONE configuration",
         "category": "ONE",
@@ -207,7 +219,17 @@
         {
           "command": "one.explorer.refresh",
           "when": "view == OneExplorerView",
-          "group": "navigation"
+          "group": "navigation@0"
+        },
+        {
+          "command": "one.explorer.hideExtra",
+          "when": "view == OneExplorerView && !one.explorer:hasHidenExtra",
+          "group": "navigation@1"
+        },
+        {
+          "command": "one.explorer.unhideExtra",
+          "when": "view == OneExplorerView && one.explorer:hasHidenExtra",
+          "group": "navigation@1"
         },
         {
           "command": "one.toolchain.refresh",
