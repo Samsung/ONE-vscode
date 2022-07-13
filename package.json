@@ -375,20 +375,6 @@
           ".cfg"
         ]
       }
-    ],
-    "snippets": [
-      {
-        "language": "ini",
-        "path": "./src/Snippets/one-build.json"
-      },
-      {
-        "language": "ini",
-        "path": "./src/Snippets/onecc.json"
-      },
-      {
-        "language": "ini",
-        "path": "./src/Snippets/tools.json"
-      }
     ]
   },
   "nyc": {
