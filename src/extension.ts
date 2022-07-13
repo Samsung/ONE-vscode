@@ -21,8 +21,6 @@ import {CfgEditorPanel} from './CfgEditor/CfgEditorPanel';
 import {CircleViewerProvider} from './CircleGraph/CircleViewer';
 import {decoder} from './Circlereader/Circlereader';
 import {Circletracer} from './Circletracer';
-import {ConfigPanel} from './Config/ConfigPanel';
-import {createStatusBarItem} from './Config/ConfigStatusBar';
 import {runInferenceQuickInput} from './Execute/executeQuickInput';
 import {Jsontracer} from './Jsontracer';
 import {MondrianEditorProvider} from './Mondrian/MondrianEditor';
@@ -91,15 +89,6 @@ export function activate(context: vscode.ExtensionContext) {
     Jsontracer.createOrShow(context.extensionUri);
   });
   context.subscriptions.push(disposableOneJsontracer);
-
-  let disposableOneConfigurationSettings =
-      vscode.commands.registerCommand('one.editor.openCfgWithLegacyEditor', () => {
-        ConfigPanel.createOrShow(context);
-        Logger.info(tag, 'one configuration settings...');
-      });
-  context.subscriptions.push(disposableOneConfigurationSettings);
-
-  createStatusBarItem(context);
 
   let disposableOneCircleTracer = vscode.commands.registerCommand('one.viewer.circleTracer', () => {
     Logger.info(tag, 'one circle tracer...');

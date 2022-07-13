@@ -192,11 +192,6 @@
         "category": "ONE"
       },
       {
-        "command": "one.editor.openCfgWithLegacyEditor",
-        "title": "Open cfg in GUI (legacy)",
-        "category": "ONE"
-      },
-      {
         "command": "one.viewer.circleTracer",
         "title": "circle tracer",
         "category": "ONE"
@@ -301,10 +296,6 @@
         },
         {
           "command": "one.editor.openCfgAsText",
-          "when": "false"
-        },
-        {
-          "command": "one.editor.openCfgWithLegacyEditor",
           "when": "false"
         },
         {
