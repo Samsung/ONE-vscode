@@ -52,11 +52,24 @@ class DefaultToolchain {
   set(toolchainEnv: ToolchainEnv, toolchain: Toolchain) {
     this._toolchainEnv = toolchainEnv;
     this._toolchain = toolchain;
+    const name = `${toolchain.info.name}-${toolchain.info.version ?.str()}`;
+    vscode.window.showInformationMessage(`Set ${name} as a default toolchain.`, 'OK', `Instruction`)
+        .then((value) => {
+          if (value === 'Instruction') {
+            this.openDocument();
+          }
+        });
   }
 
   unset() {
     this._toolchainEnv = undefined;
     this._toolchain = undefined;
+  }
+
+  openDocument() {
+    const doc =
+        'https://github.com/Samsung/ONE-vscode/blob/main/docs/HowToUse.md#set-default-toolchain';
+    vscode.env.openExternal(vscode.Uri.parse(doc));
   }
 
   getToolchain(): Toolchain|undefined {

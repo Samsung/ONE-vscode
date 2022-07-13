@@ -91,6 +91,9 @@ export class NodeBuilder {
       return [];
     }
     const toolchains = gToolchainEnvMap[bnode.label].listInstalled();
+    if (Object.keys(gToolchainEnvMap).length === 1 && toolchains.length === 1) {
+      DefaultToolchain.getInstance().set(gToolchainEnvMap[backendName], toolchains[0]);
+    }
     return toolchains.filter((t) => t.info.version).map((t) => {
       let tnode = new ToolchainNode(t.info.name, backendName, t);
       return tnode;
@@ -133,7 +136,9 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
     const notifyInstalled = (toolchainEnv: ToolchainEnv, toolchain: Toolchain) => {
       const name = `${toolchain.info.name}-${toolchain.info.version ?.str()}`;
       vscode.window.showInformationMessage(`Install ${name} successfully`);
-      DefaultToolchain.getInstance().ask(toolchainEnv, toolchain).then(() => this.refresh());
+      if (Object.keys(gToolchainEnvMap).length > 1 || toolchainEnv.listInstalled().length > 1) {
+        DefaultToolchain.getInstance().ask(toolchainEnv, toolchain).then(() => this.refresh());
+      }
       this.refresh();
     };
 
@@ -207,12 +212,10 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
     if (!activeToolchainEnv || !activeToolchain) {
       this.error(
               'Default toolchain is not set. Please install toolchain and set the default toolchain.',
-              'Instruction', 'OK')
+              'OK', 'Instruction')
           .then((value) => {
             if (value === 'Instruction') {
-              Logger.info(this.tag, 'Open ONE-vscode HowToUse document');
-              vscode.env.openExternal(vscode.Uri.parse(
-                  'https://github.com/Samsung/ONE-vscode/blob/main/docs/HowToUse.md#set-default-toolchain'));
+              DefaultToolchain.getInstance().openDocument();
             }
           });
       return;
