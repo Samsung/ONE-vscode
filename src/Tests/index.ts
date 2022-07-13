@@ -46,6 +46,7 @@ import Mocha from 'mocha';
 import * as path from 'path';
 // NOTE: env[key] causes some error. Use env.key
 import {env} from 'process';
+import {mochaHooks} from './hooks';
 
 export function run(): Promise<void> {
   // FOR DEVELOPERS,
@@ -80,9 +81,8 @@ export function run(): Promise<void> {
 
   const testsRoot = path.resolve(__dirname, '.');
 
-  // adds hooks first
-  const hooks = 'hooks.js';
-  mocha.addFile(path.join(testsRoot, hooks));
+  mocha.globalSetup(mochaHooks.suiteSetup);
+  mocha.globalTeardown(mochaHooks.suiteTeardown);
 
   return new Promise((c, e) => {
     glob('**/**.test.js', {cwd: testsRoot}, (err: Error|null, files: Array<string>) => {
