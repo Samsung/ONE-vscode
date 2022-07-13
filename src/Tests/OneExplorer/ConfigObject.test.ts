@@ -130,7 +130,7 @@ input_path=${modelName}
           assert.strictEqual(configObj!.obj.baseModels.length, 1);
           assert.strictEqual(configObj!.obj.derivedModels.length, 0);
 
-          assert.strictEqual(configObj!.obj.baseModels[0].fsPath, modelPath);
+          assert.strictEqual(configObj!.obj.baseModels[0].path, modelPath);
         }
       });
 
@@ -176,11 +176,11 @@ output_path=${derivedModelName2}
 
           assert.strictEqual(configObj!.obj.baseModels.length, 1);
 
-          assert.strictEqual(configObj!.obj.baseModels[0].fsPath, baseModelPath);
+          assert.strictEqual(configObj!.obj.baseModels[0].path, baseModelPath);
 
-          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.fsPath)
+          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.path)
                             .includes(derivedModelPath1));
-          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.fsPath)
+          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.path)
                             .includes(derivedModelPath2));
         }
       });
@@ -231,15 +231,15 @@ output_path=${derivedModelName2}
 
           assert.strictEqual(configObj!.obj.baseModels.length, 1);
 
-          assert.strictEqual(configObj!.obj.baseModels[0].fsPath, baseModelPath);
+          assert.strictEqual(configObj!.obj.baseModels[0].path, baseModelPath);
 
-          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.fsPath)
+          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.path)
                             .includes(derivedModelPath1));
-          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.fsPath)
+          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.path)
                             .includes(derivedModelPath2));
-          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.fsPath)
+          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.path)
                             .includes(derivedModelPath3));
-          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.fsPath)
+          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.path)
                             .includes(derivedModelPath4));
         }
       });
@@ -278,11 +278,11 @@ output_path=dummy/dummy/../..//${derivedModelName2}
         {
           assert.strictEqual(configObj!.obj.baseModels.length, 1);
 
-          assert.strictEqual(configObj!.obj.baseModels[0].fsPath, baseModelPath);
+          assert.strictEqual(configObj!.obj.baseModels[0].path, baseModelPath);
 
-          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.fsPath)
+          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.path)
                             .includes(derivedModelPath1));
-          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.fsPath)
+          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.path)
                             .includes(derivedModelPath2));
         }
       });
@@ -322,11 +322,11 @@ output_path=/dummy/dummy/../..//${derivedModelName2}
         {
           assert.strictEqual(configObj!.obj.baseModels.length, 1);
 
-          assert.notStrictEqual(configObj!.obj.baseModels[0].fsPath, baseModelPath);
+          assert.notStrictEqual(configObj!.obj.baseModels[0].path, baseModelPath);
 
-          assert.isFalse(configObj!.obj.derivedModels.map(derivedModel => derivedModel.fsPath)
+          assert.isFalse(configObj!.obj.derivedModels.map(derivedModel => derivedModel.path)
                              .includes(derivedModelPath1));
-          assert.isFalse(configObj!.obj.derivedModels.map(derivedModel => derivedModel.fsPath)
+          assert.isFalse(configObj!.obj.derivedModels.map(derivedModel => derivedModel.path)
                              .includes(derivedModelPath2));
           ;
         }
@@ -369,12 +369,11 @@ output_path=/${derivedModelPath2}
           assert.strictEqual(configObj!.obj.baseModels.length, 1);
 
           assert.strictEqual(
-              configObj!.obj.baseModels[0].fsPath, baseModelPath,
-              configObj!.obj.baseModels[0].fsPath);
+              configObj!.obj.baseModels[0].path, baseModelPath, configObj!.obj.baseModels[0].path);
 
-          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.fsPath)
+          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.path)
                             .includes(derivedModelPath1));
-          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.fsPath)
+          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.path)
                             .includes(derivedModelPath2));
         }
       });

@@ -469,31 +469,32 @@ input_path=${modelName}.${extName}
         readdirSyncRecursive(this.workspaceRoot!.fsPath).filter(val => val.endsWith('.cfg'));
 
     for (const conf of confs) {
-      const parsedObj = ConfigObj.parse(vscode.Uri.file(conf));
-      if (!parsedObj) {
+      const cfgObj = ConfigObj.createConfigObj(vscode.Uri.file(conf));
+
+      if (!cfgObj) {
         Logger.info('OneExplorer', `Failed to open file ${conf}`);
         continue;
       }
 
-      const {baseModels, derivedModels} = parsedObj;
-
-      for (const baseModel of baseModels) {
-        if (this.comparePath(baseModel.fsPath, baseModelNode.path)) {
-          const pairNode = new Node(NodeType.config, [], vscode.Uri.file(conf));
-          Logger.debug('OneExplorer', `DerivedModels : ${derivedModels}`);
-
-          derivedModels ?.forEach(derivedModel => {
-                           // Display only the existing node
-                           const realPath = RealPath.createRealPath(derivedModel.fsPath);
-                           if (realPath) {
-                             pairNode.childNodes.push(new Node(
-                                 NodeType.derivedModel, [], vscode.Uri.file(realPath.absPath)));
-                           }
-                         });
-
-          baseModelNode.childNodes.push(pairNode);
-        }
+      if (!cfgObj.isChildOf(baseModelNode.path)) {
+        continue;
       }
+
+      const {baseModels, derivedModels} = cfgObj.obj;
+
+      const pairNode = new Node(NodeType.config, [], vscode.Uri.file(conf));
+      Logger.debug('OneExplorer', `DerivedModels : ${derivedModels}`);
+
+      derivedModels ?.forEach(derivedModel => {
+                       // Display only the existing node
+                       const realPath = RealPath.createRealPath(derivedModel.path);
+                       if (realPath) {
+                         pairNode.childNodes.push(new Node(
+                             NodeType.derivedModel, [], vscode.Uri.file(realPath.absPath)));
+                       }
+                     });
+
+      baseModelNode.childNodes.push(pairNode);
     }
   }
 }
