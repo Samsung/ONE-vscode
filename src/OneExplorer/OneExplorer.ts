@@ -158,7 +158,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
 
   private tree: Node|undefined;
 
-  constructor(private workspaceRoot: vscode.Uri) {
+  constructor(private workspaceRoot: vscode.Uri|undefined) {
     const fileWatchersEvents =
         [this.fileWatcher.onDidCreate, this.fileWatcher.onDidChange, this.fileWatcher.onDidDelete];
 
@@ -524,8 +524,7 @@ export function initOneExplorer(context: vscode.ExtensionContext) {
     }
   }
 
-  // NOTE: Fix `obtainWorksapceRoot` if non-null assertion is false
-  const oneTreeDataProvider = new OneTreeDataProvider(workspaceRoot!);
+  const oneTreeDataProvider = new OneTreeDataProvider(workspaceRoot);
 
   let treeView: vscode.TreeView<OneNode|undefined>|undefined = vscode.window.createTreeView(
       'OneExplorerView',
