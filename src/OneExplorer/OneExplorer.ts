@@ -39,7 +39,7 @@ import {OneccRunner} from './OneccRunner';
  *   ∟ baseModel      (1)
  * ----------------------
  *      ∟ config      (2)
- *         ∟ derivedModel (2)
+ *         ∟ product (2)
  *
  * RELATIONS
  *
@@ -48,9 +48,10 @@ import {OneccRunner} from './OneccRunner';
  *    Directories without any base model will not show up.
  *
  * (2) Config Contents
- *    Configuration files(.cfg) and derivedModels appear as how they are specified in the cfg file.
- *    Config files will be shown under the base model, whose path is specified in the config file.
- *    derivedModels will be shown under the config whose path is specified in the config file.
+ *    Configuration files(.cfg) and product files(output model, log, ..) appear as how they are
+ * specified in the cfg file. Config files will be shown under the base model, whose path is
+ * specified in the config file. products will be shown under the config whose path is specified in
+ * the config file.
  *
  */
 enum NodeType {
@@ -75,10 +76,8 @@ enum NodeType {
    * All the result files obtained by running ONE config.
    *
    * EXAMPLE: .circle, .tvn, .log
-   *
-   * TODO Rename to more inclusive term
    */
-  derivedModel,
+  product,
 }
 
 class Node {
@@ -131,7 +130,7 @@ export class OneNode extends vscode.TreeItem {
       this.iconPath = vscode.ThemeIcon.Folder;
     } else if (node.type === NodeType.baseModel) {
       this.iconPath = vscode.ThemeIcon.File;
-    } else if (node.type === NodeType.derivedModel) {
+    } else if (node.type === NodeType.product) {
       this.iconPath = vscode.ThemeIcon.File;
     }
 
@@ -188,7 +187,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
   }
 
   /**
-   * Rename a file of all types of nodes (baseModel, derivedModel, config) excepts for directory.
+   * Rename a file of all types of nodes (baseModel, product, config) excepts for directory.
    * It only alters the file name, not the path.
    */
   rename(oneNode: OneNode): void {
@@ -199,7 +198,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
       warningMessage = `WARNING! ${
           oneNode.node.childNodes.map(node => `'${node.name}'`)
               .toString()} will disappear from the view.`;
-    } else if (oneNode.node.type === NodeType.derivedModel) {
+    } else if (oneNode.node.type === NodeType.product) {
       // TODO automatically change the corresponding files
       warningMessage = `WARNING! '${oneNode.node.name}' may disappear from the view.`;
     }
@@ -359,7 +358,7 @@ input_path=${modelName}.${extName}
     const toOneNode = (node: Node): OneNode => {
       if (node.type === NodeType.directory) {
         return new OneNode(node.name, vscode.TreeItemCollapsibleState.Expanded, node);
-      } else if (node.type === NodeType.derivedModel) {
+      } else if (node.type === NodeType.product) {
         return new OneNode(node.name, vscode.TreeItemCollapsibleState.None, node);
       } else if (node.type === NodeType.baseModel) {
         return new OneNode(
@@ -491,20 +490,19 @@ input_path=${modelName}.${extName}
         continue;
       }
 
-      const pairNode = this.createConfigNode(cfg, cfgObj.getDerivedModelsExists);
+      const pairNode = this.createConfigNode(cfg, cfgObj.getProductsExists);
 
       baseModelNode.childNodes.push(pairNode);
     }
   }
 
-  private createConfigNode(conf: string, derivedModels: Artifact[]): Node {
+  private createConfigNode(conf: string, products: Artifact[]): Node {
     const pairNode = new Node(NodeType.config, [], vscode.Uri.file(conf));
 
-    Logger.debug('OneExplorer', `DerivedModels : ${derivedModels}`);
+    Logger.debug('OneExplorer', `Products : ${products}`);
 
-    derivedModels.forEach(derivedModel => {
-      pairNode.childNodes.push(
-          new Node(NodeType.derivedModel, [], vscode.Uri.file(derivedModel.path)));
+    products.forEach(product => {
+      pairNode.childNodes.push(new Node(NodeType.product, [], vscode.Uri.file(product.path)));
     });
 
 

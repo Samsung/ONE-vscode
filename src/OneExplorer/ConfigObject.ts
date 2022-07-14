@@ -185,7 +185,7 @@ export class LocatorRunner {
 }
 
 /**
- * @brief A helper class to get parsed artifacts (baseModels, derivedModels)
+ * @brief A helper class to get parsed artifacts (baseModels, products)
  *        The paths in the artifacts are all resolved. (No '..' in the path)
 
  * ```
@@ -196,7 +196,7 @@ export class LocatorRunner {
  * const configObj = createConfigObj(uri);
  *
  * const baseModels = configObj.getBaseModelsExists;
- * const derivedModels = configObj.getDerivedModelsExists;
+ * const products = configObj.getProductsExists;
  * ```
  */
 export class ConfigObj {
@@ -215,15 +215,15 @@ export class ConfigObj {
    */
   obj: {
     baseModels: Artifact[],
-    derivedModels: Artifact[],
+    products: Artifact[],
   };
 
   get getBaseModels() {
     return this.obj.baseModels;
   }
 
-  get getDerivedModels() {
-    return this.obj.derivedModels;
+  get getProducts() {
+    return this.obj.products;
   }
 
   /**
@@ -234,10 +234,10 @@ export class ConfigObj {
   }
 
   /**
-   * Returns only the derivedModels which exists in file system
+   * Returns only the products which exists in file system
    */
-  get getDerivedModelsExists() {
-    return this.obj.derivedModels.filter(artifact => RealPath.exists(artifact.path));
+  get getProductsExists() {
+    return this.obj.products.filter(artifact => RealPath.exists(artifact.path));
   }
 
   /**
@@ -255,7 +255,7 @@ export class ConfigObj {
     this.rawObj = rawObj;
     this.obj = {
       baseModels: ConfigObj.parseBaseModels(uri.fsPath, rawObj),
-      derivedModels: ConfigObj.parseDerivedModels(uri.fsPath, rawObj)
+      products: ConfigObj.parseProducts(uri.fsPath, rawObj)
     };
   }
 
@@ -350,7 +350,7 @@ export class ConfigObj {
    *
    * @param uri cfg uri is required to calculate absolute path
    */
-  private static parseDerivedModels = (filePath: string, iniObj: object): Artifact[] => {
+  private static parseProducts = (filePath: string, iniObj: object): Artifact[] => {
     const dir = path.dirname(filePath);
 
     let locatorRunner = new LocatorRunner();
