@@ -396,7 +396,6 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider, Part
     this._partEditors.forEach((editor, index) => {
       if (e === editor) {
         this._partEditors.splice(index, 1);
-        return;
       }
     });
   }
