@@ -20,6 +20,8 @@ import {TextEncoder} from 'util';
 import * as vscode from 'vscode';
 
 import {CfgEditorPanel} from '../CfgEditor/CfgEditorPanel';
+import {CircleViewerProvider} from '../CircleGraph/CircleViewer';
+import {MondrianEditorProvider} from '../Mondrian/MondrianEditor';
 import {obtainWorkspaceRoot, RealPath} from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
@@ -105,6 +107,12 @@ class Node {
   }
 
   get ext(): string {
+    if(this.name.endsWith(".tracealloc.json")){
+      return ".tracealloc.json";
+    }
+    else if(this.name.endsWith(".circle.log")){
+      return ".circle.log";
+    }
     return path.extname(this.uri.fsPath);
   }
 
@@ -125,14 +133,44 @@ export class OneNode extends vscode.TreeItem {
 
     this.tooltip = `${this.node.path}`;
 
+    /**
+     * Returns custom view type for each nodes
+     */
+    const getCustomViewType = (node: Node): string|undefined => {
+      if (node.type === NodeType.config) {
+        return CfgEditorPanel.viewType;
+      } else if (node.type === NodeType.derivedModel && node.ext === '.circle') {
+        return CircleViewerProvider.viewType;
+      } else if (node.ext === '.tracealloc.json') {
+        return 'onevscode.mondrianViewer';
+      } else if (node.ext === '.circle.log') {
+        // Text editor
+        return 'default';
+      } else {
+        return undefined;
+      }
+    };
+
+    if (getCustomViewType(node) !== undefined) {
+      this.command = {
+        command: 'vscode.openWith',
+        title: 'Open with Custom Viewer',
+        arguments: [node.uri, getCustomViewType(node)]
+      };
+    }
+
     if (node.type === NodeType.config) {
       this.iconPath = new vscode.ThemeIcon('gear');
     } else if (node.type === NodeType.directory) {
       this.iconPath = vscode.ThemeIcon.Folder;
     } else if (node.type === NodeType.baseModel) {
-      this.iconPath = vscode.ThemeIcon.File;
+      this.iconPath = new vscode.ThemeIcon('symbol-variable');
     } else if (node.type === NodeType.derivedModel) {
       this.iconPath = vscode.ThemeIcon.File;
+    } else if (node.type === NodeType.extra && node.ext === '.circle.log') {
+      this.iconPath = new vscode.ThemeIcon('file');
+    } else if (node.type === NodeType.extra && node.ext === '.tracealloc.json') {
+      this.iconPath = new vscode.ThemeIcon('graph-scatter');
     }
 
     // To show contextual menu on items in OneExplorer,
@@ -156,15 +194,32 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
   private fileWatcher =
       vscode.workspace.createFileSystemWatcher(`**/*.{cfg,tflite,onnx,circle,tvn}`);
 
+  public didHideExtra : boolean = false;
   private tree: Node|undefined;
 
   constructor(private workspaceRoot: vscode.Uri) {
+    vscode.commands.executeCommand('setContext', 'one.explorer:hasHidenExtra', this.didHideExtra);
+
     const fileWatchersEvents =
         [this.fileWatcher.onDidCreate, this.fileWatcher.onDidChange, this.fileWatcher.onDidDelete];
 
     for (let event of fileWatchersEvents) {
       event(() => this.refresh());
     }
+  }
+
+  hideExtra(): void {
+    this.didHideExtra = true;
+    
+    vscode.commands.executeCommand('setContext', 'one.explorer:hasHidenExtra', this.didHideExtra);
+    this.refresh();
+  }
+
+  unhideExtra(): void {
+    this.didHideExtra = false;
+    
+    vscode.commands.executeCommand('setContext', 'one.explorer:hasHidenExtra', this.didHideExtra);
+    this.refresh();
   }
 
   /**
@@ -356,7 +411,7 @@ input_path=${modelName}.${extName}
   }
 
   private getNode(node: Node): OneNode[] {
-    const toOneNode = (node: Node): OneNode => {
+    const toOneNode = (node: Node): OneNode | undefined => {
       if (node.type === NodeType.directory) {
         return new OneNode(node.name, vscode.TreeItemCollapsibleState.Expanded, node);
       } else if (node.type === NodeType.derivedModel) {
@@ -367,22 +422,23 @@ input_path=${modelName}.${extName}
             (node.childNodes.length > 0) ? vscode.TreeItemCollapsibleState.Collapsed :
                                            vscode.TreeItemCollapsibleState.None,
             node);
-      } else {  // (node.type == NodeType.config)
-        let oneNode = new OneNode(
+      } else if (node.type === NodeType.config) {
+        return new OneNode(
             node.name,
             (node.childNodes.length > 0) ? vscode.TreeItemCollapsibleState.Collapsed :
                                            vscode.TreeItemCollapsibleState.None,
             node);
-        oneNode.command = {
-          command: 'one.explorer.open',
-          title: 'Open File',
-          arguments: [oneNode.node]
-        };
-        return oneNode;
+      } else { //  if (node.type === NodeType.extra)
+        if(this.didHideExtra){
+          return undefined;
+        }
+        else {
+          return new OneNode(node.name, vscode.TreeItemCollapsibleState.None, node);
+        }
       }
     };
 
-    return node.childNodes.map(node => toOneNode(node));
+    return node.childNodes.map(node => toOneNode(node)!);
   }
 
   private getTree(rootPath: vscode.Uri): Node {
@@ -541,6 +597,8 @@ export function initOneExplorer(context: vscode.ExtensionContext) {
           vscode.commands.executeCommand('vscode.openWith', oneNode.node.uri, 'default');
         }),
     vscode.commands.registerCommand('one.explorer.refresh', () => oneTreeDataProvider.refresh()),
+    vscode.commands.registerCommand('one.explorer.hideExtra', () => oneTreeDataProvider.hideExtra()),
+    vscode.commands.registerCommand('one.explorer.unhideExtra', () => oneTreeDataProvider.unhideExtra()),
     vscode.commands.registerCommand(
         'one.explorer.createCfg', (oneNode: OneNode) => oneTreeDataProvider.createCfg(oneNode)),
     vscode.commands.registerCommand(
