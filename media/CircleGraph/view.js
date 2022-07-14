@@ -601,12 +601,8 @@ view.View = class {
                                     scrollToSelects.push(node.label.element);
                                 }
                                 found = true;
-                                return true;  // break forEach
                             }
                         });
-                        if (found) {
-                            return true;
-                        }
                     });
                 }
             }
