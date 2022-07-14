@@ -39,20 +39,20 @@ export function activate(context: vscode.ExtensionContext) {
   initOneExplorer(context);
 
   // ONE view
-  const toolchainProvier = new ToolchainProvider();
+  const toolchainProvider = new ToolchainProvider();
   context.subscriptions.push(
-      vscode.window.registerTreeDataProvider('ToolchainView', toolchainProvier));
+      vscode.window.registerTreeDataProvider('ToolchainView', toolchainProvider));
   context.subscriptions.push(
-      vscode.commands.registerCommand('one.toolchain.refresh', () => toolchainProvier.refresh()));
+      vscode.commands.registerCommand('one.toolchain.refresh', () => toolchainProvider.refresh()));
   context.subscriptions.push(
-      vscode.commands.registerCommand('one.toolchain.install', () => toolchainProvier.install()));
+      vscode.commands.registerCommand('one.toolchain.install', () => toolchainProvider.install()));
   context.subscriptions.push(vscode.commands.registerCommand(
-      'one.toolchain.uninstall', (node) => toolchainProvier.uninstall(node)));
+      'one.toolchain.uninstall', (node) => toolchainProvider.uninstall(node)));
   context.subscriptions.push(
-      vscode.commands.registerCommand('one.toolchain.runCfg', (cfg) => toolchainProvier.run(cfg)));
+      vscode.commands.registerCommand('one.toolchain.runCfg', (cfg) => toolchainProvider.run(cfg)));
   context.subscriptions.push(vscode.commands.registerCommand(
       'one.toolchain.setDefaultToolchain',
-      (toolchain) => toolchainProvier.setDefaultToolchain(toolchain)));
+      (toolchain) => toolchainProvider.setDefaultToolchain(toolchain)));
 
   // Target Device view
   let registerDevice = vscode.commands.registerCommand('one.device.register', () => {
