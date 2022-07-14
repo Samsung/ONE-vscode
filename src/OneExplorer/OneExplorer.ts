@@ -261,10 +261,10 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
         .then(ans => {
           if (ans === approval) {
             Logger.info('OneExplorer', `Delete '${oneNode.node.name}'.`);
-            vscode.workspace.fs.delete(oneNode.node.uri, {recursive: recursive, useTrash: true});
+            vscode.workspace.fs.delete(oneNode.node.uri, {recursive: recursive, useTrash: true})
+                .then(() => this.refresh());
           }
-        })
-        .then(() => this.refresh());
+        });
   }
 
   /**
