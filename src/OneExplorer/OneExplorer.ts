@@ -22,9 +22,37 @@ import * as vscode from 'vscode';
 import {CfgEditorPanel} from '../CfgEditor/CfgEditorPanel';
 import {obtainWorkspaceRoot, RealPath} from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
+import {ArtifactAttr, ConfigObj} from './ConfigObject';
 
-import {Artifact, ConfigObj} from './ConfigObject';
-import {OneccRunner} from './OneccRunner';
+/**
+ * Get the list of .cfg files wiithin the workspace
+ */
+function getCfgList(root: string = obtainWorkspaceRoot()): string[] {
+  /**
+   * Returns every file inside directory
+   * @todo Check soft link
+   * @param root
+   * @returns
+   */
+  const readdirSyncRecursive = (root: string): string[] => {
+    if (fs.statSync(root).isFile()) {
+      return [root];
+    }
+
+    let children: string[] = [];
+    if (fs.statSync(root).isDirectory()) {
+      fs.readdirSync(root).forEach(val => {
+        children = children.concat(readdirSyncRecursive(path.join(root, val)));
+      });
+    }
+    return children;
+  };
+
+  // Get the list of all the cfg files inside workspace root
+  const cfgList = readdirSyncRecursive(root).filter(val => val.endsWith('.cfg'));
+
+  return cfgList;
+}
 
 /**
  * NOTE
@@ -80,16 +108,21 @@ enum NodeType {
   product,
 }
 
-class Node {
-  type: NodeType;
+abstract class Node {
+  abstract readonly type: NodeType;
   childNodes: Node[];
   uri: vscode.Uri;
 
-  constructor(type: NodeType, childNodes: Node[], uri: vscode.Uri) {
-    this.type = type;
-    this.childNodes = childNodes;
+  abstract icon: vscode.ThemeIcon;
+  abstract openViewType: string|undefined;
+  abstract canHide: boolean;
+
+  constructor(uri: vscode.Uri) {
+    this.childNodes = [];
     this.uri = uri;
   }
+
+  abstract buildChildren: () => void;
 
   get path(): string {
     return this.uri.fsPath;
@@ -113,6 +146,179 @@ class Node {
   }
 }
 
+class NodeFactory {
+  static create(type: NodeType, fpath: string, attr?: ArtifactAttr): Node {
+    const uri = vscode.Uri.file(fpath);
+
+    let node: Node;
+    if (type === NodeType.directory) {
+      node = new DirectoryNode(uri);
+    } else if (type === NodeType.baseModel) {
+      node = new BaseModelNode(uri);
+    } else if (type === NodeType.config) {
+      node = new ConfigNode(uri);
+    } else if (type === NodeType.product) {
+      node = new ProductNode(uri);
+    } else {
+      throw Error('Undefined NodeType');
+    }
+
+    node.buildChildren();
+
+    return node;
+  }
+}
+
+class DirectoryNode extends Node {
+  readonly type = NodeType.directory;
+
+  readonly openViewType = undefined;
+  icon = vscode.ThemeIcon.Folder;
+  canHide = false;
+
+  constructor(
+      uri: vscode.Uri, icon: vscode.ThemeIcon = vscode.ThemeIcon.Folder, canHide: boolean = false) {
+    super(uri);
+
+    this.icon = icon;
+    this.canHide = canHide;
+  }
+
+  /**
+   * Build a sub-tree under the node
+   *
+   * directory          <- this
+   *   ∟ baseModel      <- children
+   *      ∟ config
+   *         ∟ product
+   */
+  buildChildren = (): void => {
+    const files = fs.readdirSync(this.path);
+
+    for (const fname of files) {
+      const fpath = path.join(this.path, fname);
+      const fstat = fs.statSync(fpath);
+
+      if (fstat.isDirectory()) {
+        const dirNode = NodeFactory.create(NodeType.directory, fpath);
+
+        if (dirNode && dirNode.childNodes.length > 0) {
+          this.childNodes.push(dirNode);
+        }
+      } else if (
+          fstat.isFile() &&
+          (fname.endsWith('.pb') || fname.endsWith('.tflite') || fname.endsWith('.onnx'))) {
+        const baseModelNode = NodeFactory.create(NodeType.baseModel, fpath);
+
+        this.childNodes.push(baseModelNode);
+      }
+    }
+  };
+}
+
+class BaseModelNode extends Node {
+  readonly type = NodeType.baseModel;
+
+  openViewType: string|undefined = undefined;
+  icon = vscode.ThemeIcon.File;
+  canHide = false;
+
+  constructor(
+      uri: vscode.Uri, openViewType: string|undefined = undefined,
+      icon: vscode.ThemeIcon = vscode.ThemeIcon.File, canHide: boolean = false) {
+    super(uri);
+
+    this.openViewType = openViewType;
+    this.icon = icon;
+    this.canHide = canHide;
+  }
+
+  /**
+   * Build a sub-tree under the node
+   *
+   * directory
+   *   ∟ baseModel      <- this
+   *      ∟ config      <- children
+   *         ∟ product
+   */
+  buildChildren = (): void => {
+    const configPaths = getCfgList().filter(cfg => {
+      const cfgObj = ConfigObj.createConfigObj(vscode.Uri.file(cfg));
+      if (!cfgObj) {
+        Logger.info('OneExplorer', `Failed to open file ${cfg}`);
+        return false;
+      }
+
+      return cfgObj.isChildOf(this.path);
+    });
+
+    configPaths.forEach(configPath => {
+      const configNode = NodeFactory.create(NodeType.config, configPath);
+
+      this.childNodes.push(configNode);
+    });
+  };
+}
+
+class ConfigNode extends Node {
+  readonly type = NodeType.config;
+
+  openViewType = 'cfg.editor';
+  icon = new vscode.ThemeIcon('gear');
+  canHide = false;
+
+  constructor(
+      uri: vscode.Uri, openViewType: string = 'cfg.editor',
+      icon: vscode.ThemeIcon = new vscode.ThemeIcon('gear'), canHide: boolean = false) {
+    super(uri);
+
+    this.openViewType = openViewType;
+    this.icon = icon;
+    this.canHide = canHide;
+  }
+
+  /**
+   * Build a sub-tree under the node
+   *
+   * directory
+   *   ∟ baseModel
+   *      ∟ config      <- this
+   *         ∟ product  <- children
+   */
+  buildChildren = (): void => {
+    const cfgObj = ConfigObj.createConfigObj(vscode.Uri.file(this.path));
+    const products = cfgObj!.getProductsExists;
+
+    products!.forEach(product => {
+      const productNode = NodeFactory.create(NodeType.product, product.path, product.attr);
+
+      this.childNodes.push(productNode);
+    });
+  };
+}
+
+class ProductNode extends Node {
+  readonly type = NodeType.product;
+
+  openViewType: string|undefined = undefined;
+  icon = vscode.ThemeIcon.File;
+  canHide = false;
+
+  constructor(
+      uri: vscode.Uri, openViewType: string|undefined = undefined,
+      icon: vscode.ThemeIcon = vscode.ThemeIcon.File, canHide: boolean = false) {
+    super(uri);
+
+    this.openViewType = openViewType;
+    this.icon = icon;
+    this.canHide = canHide;
+  }
+
+  buildChildren = (): void => {
+    // Do nothing
+  };
+}
+
 
 export class OneNode extends vscode.TreeItem {
   constructor(
@@ -124,15 +330,15 @@ export class OneNode extends vscode.TreeItem {
 
     this.tooltip = `${this.node.path}`;
 
-    if (node.type === NodeType.config) {
-      this.iconPath = new vscode.ThemeIcon('gear');
-    } else if (node.type === NodeType.directory) {
-      this.iconPath = vscode.ThemeIcon.Folder;
-    } else if (node.type === NodeType.baseModel) {
-      this.iconPath = vscode.ThemeIcon.File;
-    } else if (node.type === NodeType.product) {
-      this.iconPath = vscode.ThemeIcon.File;
+    if (node.openViewType) {
+      this.command = {
+        command: 'vscode.openWith',
+        title: 'Open with Custom Viewer',
+        arguments: [node.uri, node.openViewType]
+      };
     }
+
+    this.iconPath = node.icon;
 
     // To show contextual menu on items in OneExplorer,
     // we have to use "when" clause under "view/item/context" under "menus".
@@ -155,7 +361,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
   private fileWatcher =
       vscode.workspace.createFileSystemWatcher(`**/*.{cfg,tflite,onnx,circle,tvn}`);
 
-  private tree: Node|undefined;
+  private tree: DirectoryNode|undefined;
 
   constructor(private workspaceRoot: vscode.Uri) {
     const fileWatchersEvents =
@@ -366,149 +572,29 @@ input_path=${modelName}.${extName}
             (node.childNodes.length > 0) ? vscode.TreeItemCollapsibleState.Collapsed :
                                            vscode.TreeItemCollapsibleState.None,
             node);
-      } else {  // (node.type == NodeType.config)
-        let oneNode = new OneNode(
+      } else if (node.type === NodeType.config) {
+        return new OneNode(
             node.name,
             (node.childNodes.length > 0) ? vscode.TreeItemCollapsibleState.Collapsed :
                                            vscode.TreeItemCollapsibleState.None,
             node);
-        oneNode.command = {
-          command: 'one.explorer.open',
-          title: 'Open File',
-          arguments: [oneNode.node]
-        };
-        return oneNode;
+      } else {
+        throw Error('Undefined NodeType');
       }
     };
 
-    return node.childNodes.map(node => toOneNode(node));
+    return node.childNodes.map(node => toOneNode(node)!);
   }
 
   private getTree(rootPath: vscode.Uri): Node {
     if (!this.tree) {
-      this.tree = new Node(NodeType.directory, [], rootPath);
-      this.searchNode(this.tree);
+      this.tree = NodeFactory.create(NodeType.directory, rootPath.fsPath) as DirectoryNode;
+      this.tree.buildChildren();
     }
 
     return this.tree;
   }
-
-  /**
-   * Construct a tree under the given node
-   * @returns void
-   */
-  private searchNode(node: Node) {
-    const files = fs.readdirSync(node.path);
-
-    for (const fname of files) {
-      const fpath = path.join(node.path, fname);
-      const fstat = fs.statSync(fpath);
-
-      if (fstat.isDirectory()) {
-        const dirNode = this.createDirectoryNode(fpath);
-
-        if (dirNode) {
-          node.childNodes.push(dirNode);
-        }
-      } else if (
-          fstat.isFile() &&
-          (fname.endsWith('.pb') || fname.endsWith('.tflite') || fname.endsWith('.onnx'))) {
-        const baseModelNode = this.createBaseModelNode(fpath);
-
-        node.childNodes.push(baseModelNode);
-      }
-    }
-  }
-
-  private createDirectoryNode(fpath: string): Node|undefined {
-    let dirNode = new Node(NodeType.directory, [], vscode.Uri.file(fpath));
-
-    this.searchNode(dirNode);
-
-    return (dirNode.childNodes.length > 0) ? dirNode : undefined;
-  }
-
-  private createBaseModelNode(fpath: string): Node {
-    const baseModelNode = new Node(NodeType.baseModel, [], vscode.Uri.file(fpath));
-
-    this.searchConfig(baseModelNode);
-
-    return baseModelNode;
-  }
-
-  /**
-   * Get the list of .cfg files wiithin this workspace
-   * TODO Move to constructor
-   */
-  private getCfgList(root: string = this.workspaceRoot!.fsPath): string[] {
-    /**
-     * Returns every file inside directory
-     * @todo Check soft link
-     * @param root
-     * @returns
-     */
-    const readdirSyncRecursive = (root: string): string[] => {
-      if (fs.statSync(root).isFile()) {
-        return [root];
-      }
-
-      let children: string[] = [];
-      if (fs.statSync(root).isDirectory()) {
-        fs.readdirSync(root).forEach(val => {
-          children = children.concat(readdirSyncRecursive(path.join(root, val)));
-        });
-      }
-      return children;
-    };
-
-    // Get the list of all the cfg files inside workspace root
-    const cfgList = readdirSyncRecursive(root).filter(val => val.endsWith('.cfg'));
-
-    return cfgList;
-  }
-
-  /**
-   * Search corresponding .cfg files inside the workspace
-   * for the given baseModelNode
-   *
-   * @param baseModelNode a Node of the base model
-   */
-  private searchConfig(baseModelNode: Node) {
-    console.assert(baseModelNode.type === NodeType.baseModel);
-
-    const cfgList = this.getCfgList();
-
-    for (const cfg of cfgList) {
-      const cfgObj = ConfigObj.createConfigObj(vscode.Uri.file(cfg));
-
-      if (!cfgObj) {
-        Logger.info('OneExplorer', `Failed to open file ${cfg}`);
-        continue;
-      }
-
-      if (!cfgObj.isChildOf(baseModelNode.path)) {
-        continue;
-      }
-
-      const pairNode = this.createConfigNode(cfg, cfgObj.getProductsExists);
-
-      baseModelNode.childNodes.push(pairNode);
-    }
-  }
-
-  private createConfigNode(conf: string, products: Artifact[]): Node {
-    const pairNode = new Node(NodeType.config, [], vscode.Uri.file(conf));
-
-    Logger.debug('OneExplorer', `Products : ${products}`);
-
-    products.forEach(product => {
-      pairNode.childNodes.push(new Node(NodeType.product, [], vscode.Uri.file(product.path)));
-    });
-
-
-    return pairNode;
-  }
-}
+};
 
 export function initOneExplorer(context: vscode.ExtensionContext) {
   // TODO Support multi-root workspace
