@@ -125,20 +125,20 @@ input_path=${modelName}
           assert.isObject(configObj!.rawObj);
           assert.isObject(configObj!.obj);
           assert.isArray(configObj!.obj.baseModels);
-          assert.isArray(configObj!.obj.derivedModels);
+          assert.isArray(configObj!.obj.products);
 
           assert.strictEqual(configObj!.obj.baseModels.length, 1);
-          assert.strictEqual(configObj!.obj.derivedModels.length, 0);
+          assert.strictEqual(configObj!.obj.products.length, 0);
 
           assert.strictEqual(configObj!.obj.baseModels[0].path, modelPath);
         }
       });
 
-      test('Returns parsed object with derivedModels', function() {
+      test('Returns parsed object with products', function() {
         const configName = 'model.cfg';
         const baseModelName = 'model.tflite';
-        const derivedModelName1 = 'model.circle';
-        const derivedModelName2 = 'model.q8.circle';
+        const productName1 = 'model.circle';
+        const productName2 = 'model.q8.circle';
 
         const content = `
 [onecc]
@@ -146,10 +146,10 @@ one-import-tflite=True
 one-quantize=True
 [one-import-tflite]
 input_path=${baseModelName}
-output_path=${derivedModelName1}
+output_path=${productName1}
 [one-quantize]
-input_path=${derivedModelName1}
-output_path=${derivedModelName2}
+input_path=${productName1}
+output_path=${productName2}
         `;
 
         // Write a file inside a temp directory
@@ -158,8 +158,8 @@ output_path=${derivedModelName2}
         // Get file paths inside the temp directory
         const configPath = testBuilder.getPath(configName);
         const baseModelPath = testBuilder.getPath(baseModelName);
-        const derivedModelPath1 = testBuilder.getPath(derivedModelName1);
-        const derivedModelPath2 = testBuilder.getPath(derivedModelName2);
+        const productPath1 = testBuilder.getPath(productName1);
+        const productPath2 = testBuilder.getPath(productName2);
 
         const configObj = ConfigObj.createConfigObj(vscode.Uri.file(configPath));
 
@@ -172,26 +172,26 @@ output_path=${derivedModelName2}
           assert.isObject(configObj!.rawObj);
           assert.isObject(configObj!.obj);
           assert.isArray(configObj!.obj.baseModels);
-          assert.isArray(configObj!.obj.derivedModels);
+          assert.isArray(configObj!.obj.products);
 
           assert.strictEqual(configObj!.obj.baseModels.length, 1);
 
           assert.strictEqual(configObj!.obj.baseModels[0].path, baseModelPath);
 
-          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.path)
-                            .includes(derivedModelPath1));
-          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.path)
-                            .includes(derivedModelPath2));
+          assert.isTrue(
+              configObj!.obj.products.map(product => product.path).includes(productPath1));
+          assert.isTrue(
+              configObj!.obj.products.map(product => product.path).includes(productPath2));
         }
       });
 
-      test('Returns parsed object with derivedModels and check logs', function() {
+      test('Returns parsed object with products and check logs', function() {
         const configName = 'model.cfg';
         const baseModelName = 'model.tflite';
-        const derivedModelName1 = 'model.circle';
-        const derivedModelName2 = 'model.q8.circle';
-        const derivedModelName3 = 'model.circle.log';
-        const derivedModelName4 = 'model.q8.circle.log';
+        const productName1 = 'model.circle';
+        const productName2 = 'model.q8.circle';
+        const productName3 = 'model.circle.log';
+        const productName4 = 'model.q8.circle.log';
 
         const content = `
 [onecc]
@@ -199,10 +199,10 @@ one-import-tflite=True
 one-quantize=True
 [one-import-tflite]
 input_path=${baseModelName}
-output_path=${derivedModelName1}
+output_path=${productName1}
 [one-quantize]
-input_path=${derivedModelName1}
-output_path=${derivedModelName2}
+input_path=${productName1}
+output_path=${productName2}
         `;
 
         // Write a file inside a temp directory
@@ -211,10 +211,10 @@ output_path=${derivedModelName2}
         // Get file paths inside the temp directory
         const configPath = testBuilder.getPath(configName);
         const baseModelPath = testBuilder.getPath(baseModelName);
-        const derivedModelPath1 = testBuilder.getPath(derivedModelName1);
-        const derivedModelPath2 = testBuilder.getPath(derivedModelName2);
-        const derivedModelPath3 = testBuilder.getPath(derivedModelName3);
-        const derivedModelPath4 = testBuilder.getPath(derivedModelName4);
+        const productPath1 = testBuilder.getPath(productName1);
+        const productPath2 = testBuilder.getPath(productName2);
+        const productPath3 = testBuilder.getPath(productName3);
+        const productPath4 = testBuilder.getPath(productName4);
 
         const configObj = ConfigObj.createConfigObj(vscode.Uri.file(configPath));
 
@@ -227,28 +227,28 @@ output_path=${derivedModelName2}
           assert.isObject(configObj!.rawObj);
           assert.isObject(configObj!.obj);
           assert.isArray(configObj!.obj.baseModels);
-          assert.isArray(configObj!.obj.derivedModels);
+          assert.isArray(configObj!.obj.products);
 
           assert.strictEqual(configObj!.obj.baseModels.length, 1);
 
           assert.strictEqual(configObj!.obj.baseModels[0].path, baseModelPath);
 
-          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.path)
-                            .includes(derivedModelPath1));
-          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.path)
-                            .includes(derivedModelPath2));
-          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.path)
-                            .includes(derivedModelPath3));
-          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.path)
-                            .includes(derivedModelPath4));
+          assert.isTrue(
+              configObj!.obj.products.map(product => product.path).includes(productPath1));
+          assert.isTrue(
+              configObj!.obj.products.map(product => product.path).includes(productPath2));
+          assert.isTrue(
+              configObj!.obj.products.map(product => product.path).includes(productPath3));
+          assert.isTrue(
+              configObj!.obj.products.map(product => product.path).includes(productPath4));
         }
       });
 
       test('Parse config with detouring paths', function() {
         const configName = 'model.cfg';
         const baseModelName = 'model.tflite';
-        const derivedModelName1 = 'model.circle';
-        const derivedModelName2 = 'model.q8.circle';
+        const productName1 = 'model.circle';
+        const productName2 = 'model.q8.circle';
 
         // Detouring paths
         const content = `
@@ -257,10 +257,10 @@ one-import-tflite=True
 one-quantize=True
 [one-import-tflite]
 input_path=dummy/dummy/../../${baseModelName}
-output_path=dummy/dummy/../../${derivedModelName1}
+output_path=dummy/dummy/../../${productName1}
 [one-quantize]
-input_path=${derivedModelName1}
-output_path=dummy/dummy/../..//${derivedModelName2}
+input_path=${productName1}
+output_path=dummy/dummy/../..//${productName2}
         `;
 
         // Write a file inside a temp directory
@@ -269,8 +269,8 @@ output_path=dummy/dummy/../..//${derivedModelName2}
         // Get file paths inside the temp directory
         const configPath = testBuilder.getPath(configName);
         const baseModelPath = testBuilder.getPath(baseModelName);
-        const derivedModelPath1 = testBuilder.getPath(derivedModelName1);
-        const derivedModelPath2 = testBuilder.getPath(derivedModelName2);
+        const productPath1 = testBuilder.getPath(productName1);
+        const productPath2 = testBuilder.getPath(productName2);
 
         const configObj = ConfigObj.createConfigObj(vscode.Uri.file(configPath));
 
@@ -280,18 +280,18 @@ output_path=dummy/dummy/../..//${derivedModelName2}
 
           assert.strictEqual(configObj!.obj.baseModels[0].path, baseModelPath);
 
-          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.path)
-                            .includes(derivedModelPath1));
-          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.path)
-                            .includes(derivedModelPath2));
+          assert.isTrue(
+              configObj!.obj.products.map(product => product.path).includes(productPath1));
+          assert.isTrue(
+              configObj!.obj.products.map(product => product.path).includes(productPath2));
         }
       });
 
       test('NEG: Parse config with detouring paths with faulty absolute path', function() {
         const configName = 'model.cfg';
         const baseModelName = 'model.tflite';
-        const derivedModelName1 = 'model.circle';
-        const derivedModelName2 = 'model.q8.circle';
+        const productName1 = 'model.circle';
+        const productName2 = 'model.q8.circle';
 
         // Detouring paths with faulty absolute path
         // NOTE that path starts with '/' will be interpreted as an absolute path
@@ -301,10 +301,10 @@ one-import-tflite=True
 one-quantize=True
 [one-import-tflite]
 input_path=/dummy/dummy/../../${baseModelName}
-output_path=/dummy/dummy/../../${derivedModelName1}
+output_path=/dummy/dummy/../../${productName1}
 [one-quantize]
-input_path=/${derivedModelName1}
-output_path=/dummy/dummy/../..//${derivedModelName2}
+input_path=/${productName1}
+output_path=/dummy/dummy/../..//${productName2}
         `;
 
         // Write a file inside a temp directory
@@ -313,8 +313,8 @@ output_path=/dummy/dummy/../..//${derivedModelName2}
         // Get file paths inside the temp directory
         const configPath = testBuilder.getPath(configName);
         const baseModelPath = testBuilder.getPath(baseModelName);
-        const derivedModelPath1 = testBuilder.getPath(derivedModelName1);
-        const derivedModelPath2 = testBuilder.getPath(derivedModelName2);
+        const productPath1 = testBuilder.getPath(productName1);
+        const productPath2 = testBuilder.getPath(productName2);
 
         const configObj = ConfigObj.createConfigObj(vscode.Uri.file(configPath));
 
@@ -324,10 +324,10 @@ output_path=/dummy/dummy/../..//${derivedModelName2}
 
           assert.notStrictEqual(configObj!.obj.baseModels[0].path, baseModelPath);
 
-          assert.isFalse(configObj!.obj.derivedModels.map(derivedModel => derivedModel.path)
-                             .includes(derivedModelPath1));
-          assert.isFalse(configObj!.obj.derivedModels.map(derivedModel => derivedModel.path)
-                             .includes(derivedModelPath2));
+          assert.isFalse(
+              configObj!.obj.products.map(product => product.path).includes(productPath1));
+          assert.isFalse(
+              configObj!.obj.products.map(product => product.path).includes(productPath2));
           ;
         }
       });
@@ -336,14 +336,14 @@ output_path=/dummy/dummy/../..//${derivedModelName2}
       test('Parse config with absolute paths', function() {
         const configName = 'model.cfg';
         const baseModelName = 'model.tflite';
-        const derivedModelName1 = 'model.circle';
-        const derivedModelName2 = 'model.q8.circle';
+        const productName1 = 'model.circle';
+        const productName2 = 'model.q8.circle';
 
         // Get file paths inside the temp directory
         const configPath = testBuilder.getPath(configName);
         const baseModelPath = testBuilder.getPath(baseModelName);
-        const derivedModelPath1 = testBuilder.getPath(derivedModelName1);
-        const derivedModelPath2 = testBuilder.getPath(derivedModelName2);
+        const productPath1 = testBuilder.getPath(productName1);
+        const productPath2 = testBuilder.getPath(productName2);
 
         // Detouring paths
         const content = `
@@ -352,10 +352,10 @@ one-import-tflite=True
 one-quantize=True
 [one-import-tflite]
 input_path=/${baseModelPath}
-output_path=/${derivedModelPath1}
+output_path=/${productPath1}
 [one-quantize]
-input_path=/${derivedModelPath1}
-output_path=/${derivedModelPath2}
+input_path=/${productPath1}
+output_path=/${productPath2}
         `;
 
         // Write a file inside a temp directory
@@ -371,10 +371,10 @@ output_path=/${derivedModelPath2}
           assert.strictEqual(
               configObj!.obj.baseModels[0].path, baseModelPath, configObj!.obj.baseModels[0].path);
 
-          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.path)
-                            .includes(derivedModelPath1));
-          assert.isTrue(configObj!.obj.derivedModels.map(derivedModel => derivedModel.path)
-                            .includes(derivedModelPath2));
+          assert.isTrue(
+              configObj!.obj.products.map(product => product.path).includes(productPath1));
+          assert.isTrue(
+              configObj!.obj.products.map(product => product.path).includes(productPath2));
         }
       });
     });
