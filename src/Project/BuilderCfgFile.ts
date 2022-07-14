@@ -59,7 +59,6 @@ const K_COMMAND: string = 'command';
 // key for optimizations
 // NOTE eslint-disable is used to use lower case as-is
 /* eslint-disable */
-const K_OPT_O1: string = 'O1';
 const K_OPT_convert_nchw_to_nhwc: string = 'convert_nchw_to_nhwc';
 const K_OPT_expand_broadcast_const: string = 'expand_broadcast_const';
 const K_OPT_nchw_to_nhwc_input_shape: string = 'nchw_to_nhwc_input_shape';
@@ -192,7 +191,6 @@ export class BuilderCfgFile extends EventEmitter implements helpers.FileSelector
     optimize.inputPath = prop[K_INPUT_PATH];
     optimize.outputPath = prop[K_OUTPUT_PATH];
 
-    optimize.oO1 = prop[K_OPT_O1];
     optimize.oConvertNchwToNhwc = prop[K_OPT_convert_nchw_to_nhwc];
     optimize.oExpandBroadcastConst = prop[K_OPT_expand_broadcast_const];
     optimize.oNchwToNhwcInputShape = prop[K_OPT_nchw_to_nhwc_input_shape];

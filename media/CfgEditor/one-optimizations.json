@@ -1,7 +1,4 @@
 {
-  "O1": {
-    "description": "Enable O1 optimize options"
-  },
   "fold_add_v2": {
     "description": "This will fold AddV2 operators with constant inputs"
   },
