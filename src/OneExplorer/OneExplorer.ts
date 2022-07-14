@@ -20,6 +20,7 @@ import {TextEncoder} from 'util';
 import * as vscode from 'vscode';
 
 import {CfgEditorPanel} from '../CfgEditor/CfgEditorPanel';
+import {Balloon} from '../Utils/Balloon';
 import {obtainWorkspaceRoot, RealPath} from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
@@ -518,9 +519,14 @@ export function initOneExplorer(context: vscode.ExtensionContext) {
     workspaceRoot = vscode.Uri.file(obtainWorkspaceRoot());
   } catch (e: unknown) {
     if (e instanceof Error) {
-      Logger.error('OneExplorer', e.message);
+      if (e.message === 'Need workspace') {
+        Logger.info('OneExplorer', e.message);
+      } else {
+        Logger.error('OneExplorer', e.message);
+        Balloon.error('Something goes wrong while setting workspace.', true);
+      }
     } else {
-      throw e;
+      Logger.error('OneExplorer', 'Unknown error has been thrown.');
     }
   }
 
