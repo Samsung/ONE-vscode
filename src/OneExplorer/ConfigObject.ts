@@ -29,19 +29,33 @@ import {Logger} from '../Utils/Logger';
  */
 export interface Artifact {
   /**
-   * An artifact's type
+   * An artifact's attribute
    */
-  type: string;
+  attr: ArtifactAttr;
 
+  /**
+   * A full path in file system
+   */
+  path: string;
+}
+
+interface ArtifactAttr{
   /**
    * A file extension
    */
   ext: string;
 
   /**
-   * A full path in file system
    */
-  path: string;
+  icon?: vscode.ThemeIcon;
+
+  /**
+   */
+  viewType?: string;
+
+  /**
+   */
+  isExtra?: boolean;
 }
 
 /**
@@ -144,7 +158,7 @@ export class Locator {
 
 // TODO Move to backend side with some modification
 export class LocatorRunner {
-  private artifactLocators: {artifactAttr: {type: string, ext: string}, locator: Locator}[] = [];
+  private artifactLocators: {artifactAttr: ArtifactAttr, locator: Locator}[] = [];
 
   /**
    * A helper function to grep a filename ends with 'ext' within the given 'content' string.
@@ -158,7 +172,7 @@ export class LocatorRunner {
     return fileNames;
   };
 
-  public register(artifactLocator: {artifactAttr: {type: string, ext: string}, locator: Locator}) {
+  public register(artifactLocator: {artifactAttr: ArtifactAttr, locator: Locator}) {
     this.artifactLocators.push(artifactLocator);
   }
 
@@ -175,7 +189,7 @@ export class LocatorRunner {
     this.artifactLocators.forEach(({artifactAttr, locator}) => {
       let filePaths: string[] = locator.locate(iniObj, dir);
       filePaths.forEach(filePath => {
-        let artifact: Artifact = {type: artifactAttr.type, ext: artifactAttr.ext, path: filePath};
+        let artifact: Artifact = {attr: artifactAttr, path: filePath};
         artifacts.push(artifact);
       });
     });
@@ -313,17 +327,17 @@ export class ConfigObj {
     let locatorRunner = new LocatorRunner();
 
     locatorRunner.register({
-      artifactAttr: {type: 'model', ext: '.tflite'},
+      artifactAttr: {ext: '.tflite'},
       locator: new Locator((value: string) => LocatorRunner.searchWithExt('.tflite', value))
     });
 
     locatorRunner.register({
-      artifactAttr: {type: 'model', ext: '.pb'},
+      artifactAttr: {ext: '.pb'},
       locator: new Locator((value: string) => LocatorRunner.searchWithExt('.pb', value))
     });
 
     locatorRunner.register({
-      artifactAttr: {type: 'model', ext: '.onnx'},
+      artifactAttr: {ext: '.onnx'},
       locator: new Locator((value: string) => LocatorRunner.searchWithExt('.onnx', value))
     });
 
@@ -356,17 +370,17 @@ export class ConfigObj {
     let locatorRunner = new LocatorRunner();
 
     locatorRunner.register({
-      artifactAttr: {type: 'model', ext: '.circle'},
+      artifactAttr: {ext: '.circle'},
       locator: new Locator((value: string) => LocatorRunner.searchWithExt('.circle', value))
     });
 
     locatorRunner.register({
-      artifactAttr: {type: 'model', ext: '.tvn'},
+      artifactAttr: {ext: '.tvn'},
       locator: new Locator((value: string) => LocatorRunner.searchWithExt('.tvn', value))
     });
 
     locatorRunner.register({
-      artifactAttr: {type: 'log', ext: '.circle.log'},
+      artifactAttr: {ext: '.circle.log', viewType: 'default', icon: vscode.ThemeIcon.File, isExtra: true},
       locator: new Locator((value: string) => {
         return LocatorRunner.searchWithExt('.circle', value)
             .map(filepath => filepath.replace('.circle', '.circle.log'));

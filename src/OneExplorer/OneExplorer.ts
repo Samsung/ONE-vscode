@@ -20,6 +20,8 @@ import {TextEncoder} from 'util';
 import * as vscode from 'vscode';
 
 import {CfgEditorPanel} from '../CfgEditor/CfgEditorPanel';
+import {CircleViewerProvider} from '../CircleGraph/CircleViewer';
+import {MondrianEditorProvider} from '../Mondrian/MondrianEditor';
 import {obtainWorkspaceRoot, RealPath} from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
@@ -80,13 +82,30 @@ enum NodeType {
   product,
 }
 
-class Node {
-  type: NodeType;
+abstract class Node {
+  abstract readonly type: NodeType;
   childNodes: Node[];
   uri: vscode.Uri;
 
-  constructor(type: NodeType, childNodes: Node[], uri: vscode.Uri) {
-    this.type = type;
+  /**
+   * ABOUT EXTENDED EXTENSION (WITH MULTIPLE PERIODS, *.extended.ext) 
+   *
+   * Generally, filename extensions are defined from the last period.
+   * We defined our custom 'extended file extension' with multiple periods.
+   * 
+   * EXAMPLE
+   * 
+   * (File name)          model.circle.log
+   * (Extension)          .log
+   * (Extended Extension) .circle.log
+   */
+  abstract extendedExt?: string | undefined;
+  abstract viewType?: string | undefined;
+
+  abstract icon: vscode.ThemeIcon;
+  abstract isExtra: boolean;
+
+  constructor(childNodes: Node[], uri: vscode.Uri) {
     this.childNodes = childNodes;
     this.uri = uri;
   }
@@ -113,6 +132,100 @@ class Node {
   }
 }
 
+class DirectoryNode extends Node {
+  type = NodeType.directory;
+  extendedExt = undefined;
+  viewType = undefined;
+  icon = vscode.ThemeIcon.Folder;
+  isExtra = false;
+
+  constructor(childNodes: Node[], uri: vscode.Uri, icon?:vscode.ThemeIcon, isExtra?:boolean) {
+    super(childNodes, uri);
+
+    if(icon) {
+      this.icon = icon;
+    }
+    if(isExtra){
+      this.isExtra = isExtra;
+    }
+  }
+}
+
+class BaseModelNode extends Node {
+  type = NodeType.baseModel;
+  extendedExt : string|undefined= undefined;
+  viewType : string | undefined = undefined;
+  icon = new vscode.ThemeIcon('symbol-variable');
+  isExtra = false;
+
+  constructor(childNodes: Node[], uri: vscode.Uri, extendedExt?: string, viewType?: string, icon?:vscode.ThemeIcon, isExtra?:boolean) {
+    super(childNodes, uri);
+
+    if(extendedExt) {
+      this.extendedExt = extendedExt;
+    }
+    if(viewType) {
+      this.viewType = viewType;
+    }
+    if(icon) {
+      this.icon = icon;
+    }
+    if(isExtra){
+      this.isExtra = isExtra;
+    }
+  }
+}
+
+class ConfigNode extends Node {
+  type = NodeType.config;
+  extendedExt : string|undefined= undefined;
+  viewType = "cfg.editor";
+  icon = new vscode.ThemeIcon('gear');
+  isExtra = false;
+
+  constructor(childNodes: Node[], uri: vscode.Uri, extendedExt?: string, viewType?: string, icon?:vscode.ThemeIcon, isExtra?:boolean) {
+    super(childNodes, uri);
+
+    if(extendedExt) {
+      this.extendedExt = extendedExt;
+    }
+    if(viewType) {
+      this.viewType = viewType;
+    }
+    if(icon) {
+      this.icon = icon;
+    }
+    if(isExtra){
+      this.isExtra = isExtra;
+    }
+  }
+}
+
+class ProductNode extends Node {
+  type = NodeType.product;
+  extendedExt : string|undefined= undefined;
+  viewType : string|undefined= undefined;
+  icon = vscode.ThemeIcon.File;
+  isExtra = false;
+
+  constructor(childNodes: Node[], uri: vscode.Uri, extendedExt?: string, viewType?: string, icon?:vscode.ThemeIcon, isExtra?:boolean) {
+    super(childNodes, uri);
+
+    if(extendedExt) {
+      this.extendedExt = extendedExt;
+    }
+    if(viewType) {
+      this.viewType = viewType;
+    }
+    if(icon) {
+      this.icon = icon;
+    }
+    if(isExtra){
+      this.isExtra = isExtra;
+    }
+  }
+}
+
 
 export class OneNode extends vscode.TreeItem {
   constructor(
@@ -124,15 +237,24 @@ export class OneNode extends vscode.TreeItem {
 
     this.tooltip = `${this.node.path}`;
 
-    if (node.type === NodeType.config) {
-      this.iconPath = new vscode.ThemeIcon('gear');
-    } else if (node.type === NodeType.directory) {
-      this.iconPath = vscode.ThemeIcon.Folder;
-    } else if (node.type === NodeType.baseModel) {
-      this.iconPath = vscode.ThemeIcon.File;
-    } else if (node.type === NodeType.product) {
-      this.iconPath = vscode.ThemeIcon.File;
+    // const getCustomViewType = (node: Node): string|undefined => {
+    //   } else if (node.ext === '.tracealloc.json') {
+    //   } else if (node.ext === '.circle.log') {
+    // };
+
+    if(node.viewType){
+      this.command = {
+        command: 'vscode.openWith',
+        title: 'Open with Custom Viewer',
+        arguments: [node.uri, node.viewType]
+      };
     }
+
+    this.iconPath = node.icon;
+    // } else if (node.type === NodeType.product && node.ext === '.circle.log') {
+    //   this.iconPath = new vscode.ThemeIcon('file');
+    // } else if (node.type === NodeType.product && node.ext === '.tracealloc.json') {
+    //   this.iconPath = new vscode.ThemeIcon('graph-scatter');
 
     // To show contextual menu on items in OneExplorer,
     // we have to use "when" clause under "view/item/context" under "menus".
@@ -155,15 +277,32 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
   private fileWatcher =
       vscode.workspace.createFileSystemWatcher(`**/*.{cfg,tflite,onnx,circle,tvn}`);
 
+  public didHideExtra : boolean = false;
   private tree: Node|undefined;
 
   constructor(private workspaceRoot: vscode.Uri) {
+    vscode.commands.executeCommand('setContext', 'one.explorer:hasHidenExtra', this.didHideExtra);
+
     const fileWatchersEvents =
         [this.fileWatcher.onDidCreate, this.fileWatcher.onDidChange, this.fileWatcher.onDidDelete];
 
     for (let event of fileWatchersEvents) {
       event(() => this.refresh());
     }
+  }
+
+  hideExtra(): void {
+    this.didHideExtra = true;
+    
+    vscode.commands.executeCommand('setContext', 'one.explorer:hasHidenExtra', this.didHideExtra);
+    this.refresh();
+  }
+
+  unhideExtra(): void {
+    this.didHideExtra = false;
+    
+    vscode.commands.executeCommand('setContext', 'one.explorer:hasHidenExtra', this.didHideExtra);
+    this.refresh();
   }
 
   /**
@@ -355,7 +494,13 @@ input_path=${modelName}.${extName}
   }
 
   private getNode(node: Node): OneNode[] {
-    const toOneNode = (node: Node): OneNode => {
+    const toOneNode = (node: Node): OneNode | undefined => {
+      if(node.isExtra && this.didHideExtra)
+      {
+        // Hide node
+        return undefined;
+      }
+
       if (node.type === NodeType.directory) {
         return new OneNode(node.name, vscode.TreeItemCollapsibleState.Expanded, node);
       } else if (node.type === NodeType.product) {
@@ -366,27 +511,23 @@ input_path=${modelName}.${extName}
             (node.childNodes.length > 0) ? vscode.TreeItemCollapsibleState.Collapsed :
                                            vscode.TreeItemCollapsibleState.None,
             node);
-      } else {  // (node.type == NodeType.config)
-        let oneNode = new OneNode(
+      } else if (node.type === NodeType.config) {
+        return new OneNode(
             node.name,
             (node.childNodes.length > 0) ? vscode.TreeItemCollapsibleState.Collapsed :
                                            vscode.TreeItemCollapsibleState.None,
             node);
-        oneNode.command = {
-          command: 'one.explorer.open',
-          title: 'Open File',
-          arguments: [oneNode.node]
-        };
-        return oneNode;
+      } else{
+        throw Error("Undefined NodeType");
       }
     };
 
-    return node.childNodes.map(node => toOneNode(node));
+    return node.childNodes.map(node => toOneNode(node)!);
   }
 
   private getTree(rootPath: vscode.Uri): Node {
     if (!this.tree) {
-      this.tree = new Node(NodeType.directory, [], rootPath);
+      this.tree = new DirectoryNode([], rootPath);
       this.searchNode(this.tree);
     }
 
@@ -421,7 +562,7 @@ input_path=${modelName}.${extName}
   }
 
   private createDirectoryNode(fpath: string): Node|undefined {
-    let dirNode = new Node(NodeType.directory, [], vscode.Uri.file(fpath));
+    let dirNode = new DirectoryNode([], vscode.Uri.file(fpath));
 
     this.searchNode(dirNode);
 
@@ -429,7 +570,7 @@ input_path=${modelName}.${extName}
   }
 
   private createBaseModelNode(fpath: string): Node {
-    const baseModelNode = new Node(NodeType.baseModel, [], vscode.Uri.file(fpath));
+    const baseModelNode = new BaseModelNode([], vscode.Uri.file(fpath));
 
     this.searchConfig(baseModelNode);
 
@@ -497,12 +638,15 @@ input_path=${modelName}.${extName}
   }
 
   private createConfigNode(conf: string, products: Artifact[]): Node {
-    const pairNode = new Node(NodeType.config, [], vscode.Uri.file(conf));
+    const pairNode = new ConfigNode([], vscode.Uri.file(conf), '.cfg');
 
     Logger.debug('OneExplorer', `Products : ${products}`);
 
     products.forEach(product => {
-      pairNode.childNodes.push(new Node(NodeType.product, [], vscode.Uri.file(product.path)));
+      const {ext, viewType, icon, isExtra} = product.attr;
+
+      pairNode.childNodes.push(
+          new ProductNode([], vscode.Uri.file(product.path), ext, viewType, icon, isExtra));
     });
 
 
@@ -539,6 +683,8 @@ export function initOneExplorer(context: vscode.ExtensionContext) {
           vscode.commands.executeCommand('vscode.openWith', oneNode.node.uri, 'default');
         }),
     vscode.commands.registerCommand('one.explorer.refresh', () => oneTreeDataProvider.refresh()),
+    vscode.commands.registerCommand('one.explorer.hideExtra', () => oneTreeDataProvider.hideExtra()),
+    vscode.commands.registerCommand('one.explorer.unhideExtra', () => oneTreeDataProvider.unhideExtra()),
     vscode.commands.registerCommand(
         'one.explorer.createCfg', (oneNode: OneNode) => oneTreeDataProvider.createCfg(oneNode)),
     vscode.commands.registerCommand(
