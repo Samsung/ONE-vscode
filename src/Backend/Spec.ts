@@ -16,6 +16,7 @@
 
 import {Command} from './Command';
 
+const resDir = process.env.PWD + '/res';
 /**
  * Spec is a bundle of information that could be used for checking whether something to require is
  * satisfied with a certain objective.
@@ -70,8 +71,7 @@ class BridgeSpec {
 }
 
 // TODO add more BridgeSpec like docker or ADB......
-const sdbSpec = new BridgeSpec(
-    'sdb', 'sdb devices | grep -v devices | grep device | awk \'{print $1}\'', 'sdb shell');
+const sdbSpec = new BridgeSpec('sdb', resDir + '/script/sdbSpecList.sh', 'sdb shell');
 
 class HostPCSpec extends DeviceSpec {
   constructor(hw: string, sw: string) {
