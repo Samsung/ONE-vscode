@@ -669,12 +669,8 @@ view.View = class {
                             const backend = opname[name];
                             if (backend !== undefined) {
                                 backendFound = backend;
-                                return true;
                             }
                         });
-                        if (backendFound) {
-                            return true;
-                        }
                     });
                 }
                 this.setNodeBackend(node, backendFound);
