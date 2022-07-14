@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {assert, should} from 'chai';
+import {assert} from 'chai';
 
 import {BridgeSpec, DeviceSpec, HostPCSpec, sdbSpec, TizenDeviceSpec} from '../../Backend/Spec';
 
@@ -71,11 +71,10 @@ suite('Spec', function() {
     });
   });
   suite('sdbSpec', function() {
+    const deviceListCom = process.env.PWD + '/res/script/sdbSpecList.sh';
     assert.isObject<BridgeSpec>(sdbSpec);
     assert.strictEqual(sdbSpec.name, 'sdb');
-    assert.strictEqual(
-        sdbSpec.deviceListCmd.str(),
-        'sdb devices | grep -v devices | grep device | awk \'{print $1}\'');
+    assert.strictEqual(sdbSpec.deviceListCmd.str(), deviceListCom);
     assert.strictEqual(sdbSpec.shellCmd.str(), 'sdb shell');
   });
 });
