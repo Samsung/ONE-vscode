@@ -14,23 +14,15 @@
  * limitations under the License.
  */
 import {globalExecutorArray} from '../Backend/Backend';
-import {Executor} from '../Backend/Executor';
 import {Device} from './Device';
-
-interface DeviceExecutorSet {
-  [key: string]: Set<Executor>;
-}
 
 class ExecutionManager {
   allDevices: Device[];
-  availableDevices: DeviceExecutorSet;
 
   constructor(devices: Device[]) {
     this.allDevices = devices;
-    this.availableDevices = {};
     for (let device of this.allDevices) {
-      this.availableDevices[device.name] = new Set<Executor>();
-      this.checkAvailDevices(device);
+      device.refresh(globalExecutorArray);
     }
   }
 
@@ -41,14 +33,6 @@ class ExecutionManager {
       }
     }
     return undefined;
-  }
-
-  checkAvailDevices(device: Device): void {
-    for (let executor of globalExecutorArray) {
-      if (executor.require().satisfied(device.spec)) {
-        this.availableDevices[device.name].add(executor);
-      }
-    }
   }
 }
 
