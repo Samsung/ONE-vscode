@@ -30,11 +30,14 @@ import {PartGraphSelPanel} from './PartEditor/PartGraphSelector';
 import {Project} from './Project';
 import {ToolchainProvider} from './Toolchain/ToolchainProvider';
 import {Logger} from './Utils/Logger';
+import {trySpawnSync} from './TrySpawnSync';
 
 export function activate(context: vscode.ExtensionContext) {
   const tag = 'activate';
 
   Logger.info(tag, 'one-vscode activate OK');
+
+  trySpawnSync();
 
   initOneExplorer(context);
 
