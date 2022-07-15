@@ -27,12 +27,7 @@ class ExecutionManager {
   }
 
   findDevice(name: string): Device|undefined {
-    for (const device of this.allDevices) {
-      if (device.name === name) {
-        return device;
-      }
-    }
-    return undefined;
+return this.allDevices.find(device=>{ return device.name === name; });
   }
 }
 
