@@ -19,8 +19,6 @@ import * as vscode from 'vscode';
 import {backendRegistrationApi} from './Backend/Backend';
 import {CfgEditorPanel} from './CfgEditor/CfgEditorPanel';
 import {CircleViewerProvider} from './CircleGraph/CircleViewer';
-import {decoder} from './Circlereader/Circlereader';
-import {Circletracer} from './Circletracer';
 import {runInferenceQuickInput} from './Execute/executeQuickInput';
 import {Jsontracer} from './Jsontracer';
 import {MondrianEditorProvider} from './Mondrian/MondrianEditor';
@@ -89,24 +87,6 @@ export function activate(context: vscode.ExtensionContext) {
     Jsontracer.createOrShow(context.extensionUri);
   });
   context.subscriptions.push(disposableOneJsontracer);
-
-  let disposableOneCircleTracer = vscode.commands.registerCommand('one.viewer.circleTracer', () => {
-    Logger.info(tag, 'one circle tracer...');
-    const options: vscode.OpenDialogOptions = {
-      canSelectMany: false,
-      openLabel: 'Open',
-      /* eslint-disable */
-      filters: {'Circle files': ['circle'], 'All files': ['*']}
-      /* eslint-enable */
-    };
-    vscode.window.showOpenDialog(options).then(fileUri => {
-      if (fileUri && fileUri[0]) {
-        const circleToJson = decoder(fileUri[0].fsPath);
-        Circletracer.createOrShow(context.extensionUri, circleToJson);
-      }
-    });
-  });
-  context.subscriptions.push(disposableOneCircleTracer);
 
   context.subscriptions.push(MondrianEditorProvider.register(context));
 
