@@ -22,7 +22,7 @@ class ExecutionManager {
   constructor(devices: Device[]) {
     this.allDevices = devices;
     for (let device of this.allDevices) {
-      device.refresh(globalExecutorArray);
+      device.checkAvailExecutor(globalExecutorArray);
     }
   }
 

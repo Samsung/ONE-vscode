@@ -40,7 +40,7 @@ class Device {
     this.availableExecutor = new Set<Executor>();
   }
 
-  refresh(executorList: Executor[]): void {
+  checkAvailExecutor(executorList: Executor[]): void {
     for (const executor of executorList) {
       if (executor.require().satisfied(this.spec)) {
         this.availableExecutor.add(executor);
