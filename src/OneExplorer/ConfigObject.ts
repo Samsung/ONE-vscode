@@ -350,17 +350,17 @@ export class ConfigObj {
     let locatorRunner = new LocatorRunner();
 
     locatorRunner.register({
-      artifactAttr: {ext: '.tflite'},
+      artifactAttr: {ext: '.tflite', icon: new vscode.ThemeIcon('symbol-variable')},
       locator: new Locator((value: string) => LocatorRunner.searchWithExt('.tflite', value))
     });
 
     locatorRunner.register({
-      artifactAttr: {ext: '.pb'},
+      artifactAttr: {ext: '.pb', icon: new vscode.ThemeIcon('symbol-variable')},
       locator: new Locator((value: string) => LocatorRunner.searchWithExt('.pb', value))
     });
 
     locatorRunner.register({
-      artifactAttr: {ext: '.onnx'},
+      artifactAttr: {ext: '.onnx', icon: new vscode.ThemeIcon('symbol-variable')},
       locator: new Locator((value: string) => LocatorRunner.searchWithExt('.onnx', value))
     });
 
@@ -393,12 +393,12 @@ export class ConfigObj {
     let locatorRunner = new LocatorRunner();
 
     locatorRunner.register({
-      artifactAttr: {ext: '.circle'},
+      artifactAttr: {ext: '.circle', icon: new vscode.ThemeIcon('symbol-variable')},
       locator: new Locator((value: string) => LocatorRunner.searchWithExt('.circle', value))
     });
 
     locatorRunner.register({
-      artifactAttr: {ext: '.tvn'},
+      artifactAttr: {ext: '.tvn', icon: new vscode.ThemeIcon('symbol-variable')},
       locator: new Locator((value: string) => LocatorRunner.searchWithExt('.tvn', value))
     });
 
