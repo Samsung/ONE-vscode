@@ -359,12 +359,14 @@ editor.Editor = class {
     this.clearOperatorsCode();
 
     for (let name in this.partition.OPNAME) {
-      let backend = this.partition.OPNAME[name];
-      let beCode = this.backendCode(backend);
-      if (beCode !== -1) {
-        this.setOperatorBeCode(name, beCode);
-      } else {
-        this.setOperatorBeCode(name, 0);
+      if (this.partition.OPNAME.hasOwnProperty(name)) {
+        let backend = this.partition.OPNAME[name];
+        let beCode = this.backendCode(backend);
+        if (beCode !== -1) {
+          this.setOperatorBeCode(name, beCode);
+        } else {
+          this.setOperatorBeCode(name, 0);
+        }
       }
     };
   }
