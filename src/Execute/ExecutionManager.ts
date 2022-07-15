@@ -27,7 +27,9 @@ class ExecutionManager {
   }
 
   findDevice(name: string): Device|undefined {
-return this.allDevices.find(device=>{ return device.name === name; });
+    return this.allDevices.find(device => {
+      return device.name === name;
+    });
   }
 }
 

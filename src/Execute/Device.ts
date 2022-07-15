@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Executor } from '../Backend/Executor';
+import {Executor} from '../Backend/Executor';
 import {DeviceSpec} from '../Backend/Spec';
 
 /**
@@ -39,8 +39,8 @@ class Device {
     this.spec = spec;
     this.availableExecutor = new Set<Executor>();
   }
-  
-  refresh(executorList: Executor[]): void{
+
+  refresh(executorList: Executor[]): void {
     for (const executor of executorList) {
       if (executor.require().satisfied(this.spec)) {
         this.availableExecutor.add(executor);
