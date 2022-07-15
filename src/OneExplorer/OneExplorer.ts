@@ -20,6 +20,7 @@ import {TextEncoder} from 'util';
 import * as vscode from 'vscode';
 
 import {CfgEditorPanel} from '../CfgEditor/CfgEditorPanel';
+import {Balloon} from '../Utils/Balloon';
 import {obtainWorkspaceRoot, RealPath} from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
@@ -157,7 +158,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
 
   private tree: Node|undefined;
 
-  constructor(private workspaceRoot: vscode.Uri) {
+  constructor(private workspaceRoot: vscode.Uri|undefined) {
     const fileWatchersEvents =
         [this.fileWatcher.onDidCreate, this.fileWatcher.onDidChange, this.fileWatcher.onDidDelete];
 
@@ -342,7 +343,6 @@ input_path=${modelName}.${extName}
 
   getChildren(element?: OneNode): OneNode[]|Thenable<OneNode[]> {
     if (!this.workspaceRoot) {
-      vscode.window.showInformationMessage('Cannot find workspace root');
       return Promise.resolve([]);
     }
 
@@ -511,9 +511,23 @@ input_path=${modelName}.${extName}
 
 export function initOneExplorer(context: vscode.ExtensionContext) {
   // TODO Support multi-root workspace
-  let workspaceRoot: vscode.Uri = vscode.Uri.file(obtainWorkspaceRoot());
-  // NOTE: Fix `obtainWorksapceRoot` if non-null assertion is false
-  const oneTreeDataProvider = new OneTreeDataProvider(workspaceRoot!);
+  let workspaceRoot: vscode.Uri|undefined = undefined;
+  try {
+    workspaceRoot = vscode.Uri.file(obtainWorkspaceRoot());
+  } catch (e: unknown) {
+    if (e instanceof Error) {
+      if (e.message === 'Need workspace') {
+        Logger.info('OneExplorer', e.message);
+      } else {
+        Logger.error('OneExplorer', e.message);
+        Balloon.error('Something goes wrong while setting workspace.', true);
+      }
+    } else {
+      Logger.error('OneExplorer', 'Unknown error has been thrown.');
+    }
+  }
+
+  const oneTreeDataProvider = new OneTreeDataProvider(workspaceRoot);
 
   let treeView: vscode.TreeView<OneNode|undefined>|undefined = vscode.window.createTreeView(
       'OneExplorerView',
