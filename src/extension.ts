@@ -16,7 +16,7 @@
 
 import * as vscode from 'vscode';
 
-import {backendRegistrationApi} from './Backend/Backend';
+import {backendRegistrationApi} from './Backend/API';
 import {CfgEditorPanel} from './CfgEditor/CfgEditorPanel';
 import {CircleViewerProvider} from './CircleGraph/CircleViewer';
 import {decoder} from './Circlereader/Circlereader';

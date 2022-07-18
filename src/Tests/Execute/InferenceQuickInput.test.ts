@@ -17,8 +17,8 @@
 import {assert} from 'chai';
 import * as vscode from 'vscode';
 
-import {Backend} from '../../Backend/API';
-import {backendRegistrationApi, globalBackendMap} from '../../Backend/Backend';
+import {Backend} from '../../Backend/Backend';
+import {backendRegistrationApi, globalBackendMap} from '../../Backend/API';
 import {Command} from '../../Backend/Command';
 import {Compiler, CompilerBase} from '../../Backend/Compiler';
 import {Executor, ExecutorBase} from '../../Backend/Executor';
