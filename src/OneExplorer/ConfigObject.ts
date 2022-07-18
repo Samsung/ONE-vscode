@@ -210,6 +210,29 @@ export class LocatorRunner {
     return fileNames;
   };
 
+  /**
+   * @brief A helper function to grep a filename following to 'option' ends with 'ext'
+   * within the given 'content' string.
+   * @return string[] But practically the array size is only one or none
+   */
+  public static searchWithCommandOption =
+      (content: string, option?: string, ext?: string): string[] => {
+        // Don't remove this. It's to prevent 'content.split is not a function' error.
+        // TODO Find more straightforward way to resolve an error
+        content = content + '';
+
+        let fileName: string|undefined = content.split(' ').find((value, index, obj) => {
+          return index > 0 && obj[index - 1] === option;
+        });
+
+        // Check if the searched filename has the given ext
+        if (fileName && ext) {
+          fileName = fileName.endsWith(ext) ? fileName : undefined;
+        }
+
+        return fileName ? [fileName] : [];
+      };
+
   public register(artifactLocator: {artifactAttr: ArtifactAttr, locator: Locator}) {
     this.artifactLocators.push(artifactLocator);
   }
@@ -423,6 +446,15 @@ export class ConfigObj {
         return LocatorRunner.searchWithExt('.circle', value)
             .map(filepath => filepath.replace('.circle', '.circle.log'));
       })
+    });
+
+    locatorRunner.register({
+      artifactAttr: {ext: '.json', icon: vscode.ThemeIcon.File, canHide: true},
+      locator: new Locator(
+          (value: string) => {
+            return LocatorRunner.searchWithCommandOption(value, '--save-chrome-trace', '.json');
+          },
+          'one-profile', 'command')
     });
 
     let artifacts: Artifact[] = locatorRunner.run(iniObj, dir);
