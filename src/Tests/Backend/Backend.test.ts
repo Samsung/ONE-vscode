@@ -16,8 +16,8 @@
 
 import {assert} from 'chai';
 
-import {Backend} from '../../Backend/Backend';
 import {backendRegistrationApi, globalBackendMap, globalExecutorArray} from '../../Backend/API';
+import {Backend} from '../../Backend/Backend';
 import {Compiler, CompilerBase} from '../../Backend/Compiler';
 import {Executor, ExecutorBase} from '../../Backend/Executor';
 import {gToolchainEnvMap} from '../../Toolchain/ToolchainEnv';
