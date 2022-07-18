@@ -19,6 +19,7 @@ import * as vscode from 'vscode';
 import {backendRegistrationApi} from './Backend/Backend';
 import {CfgEditorPanel} from './CfgEditor/CfgEditorPanel';
 import {CircleViewerProvider} from './CircleGraph/CircleViewer';
+import {DeviceViewProvider} from './Execute/DeviceViewProvider';
 import {runInferenceQuickInput} from './Execute/executeQuickInput';
 import {Jsontracer} from './Jsontracer';
 import {MondrianEditorProvider} from './Mondrian/MondrianEditor';
@@ -53,8 +54,9 @@ export function activate(context: vscode.ExtensionContext) {
       (toolchain) => toolchainProvider.setDefaultToolchain(toolchain)));
 
   // Target Device view
-  let registerDevice = vscode.commands.registerCommand('one.device.register', () => {
-    Logger.info(tag, 'register-device: NYI');
+  const deviceViewProvider = new DeviceViewProvider(context, 'TargetDeviceView');
+  let registerDevice = vscode.commands.registerCommand('one.device.refresh', () => {
+    deviceViewProvider.refresh();
   });
   context.subscriptions.push(registerDevice);
 

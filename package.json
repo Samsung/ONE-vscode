@@ -171,10 +171,10 @@
         "title": "Run"
       },
       {
-        "command": "one.device.register",
-        "title": "Register",
+        "command": "one.device.refresh",
+        "title": "Refresh Device Config",
         "category": "ONE",
-        "icon": "$(add)"
+        "icon": "$(refresh)"
       },
       {
         "command": "one.project.build",
@@ -207,11 +207,6 @@
         {
           "command": "one.toolchain.install",
           "when": "view == ToolchainView",
-          "group": "navigation"
-        },
-        {
-          "command": "one.device.register",
-          "when": "view == TargetDeviceView",
           "group": "navigation"
         }
       ],
@@ -260,6 +255,16 @@
           "command": "one.toolchain.uninstall",
           "when": "view == ToolchainView && viewItem =~ /toolchain/",
           "group": "inline"
+        },
+        {
+          "command": "one.device.refresh",
+          "when": "view == TargetDeviceView && viewItem == executionManager",
+          "group": "inline"
+        },
+        {
+          "command": "one.device.refresh",
+          "when": "view == TargetDeviceView && viewItem == device",
+          "group": "inline"
         }
       ],
       "editor/title": [
@@ -282,7 +287,7 @@
           "when": "false"
         },
         {
-          "command": "one.device.register",
+          "command": "one.device.refresh",
           "when": "false"
         },
         {

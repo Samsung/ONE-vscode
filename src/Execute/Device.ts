@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import {Executor} from '../Backend/Executor';
 import {DeviceSpec} from '../Backend/Spec';
 
 /**
@@ -32,10 +33,20 @@ import {DeviceSpec} from '../Backend/Spec';
 class Device {
   name: string;
   spec: DeviceSpec;
+  availableExecutors: Set<Executor>;
   constructor(name: string, spec: DeviceSpec) {
     this.name = name;
     this.spec = spec;
+    this.availableExecutors = new Set<Executor>();
   }
-};
+
+  registerExecutor(executorList: Executor[]): void {
+    for (const executor of executorList) {
+      if (executor.require().satisfied(this.spec)) {
+        this.availableExecutors.add(executor);
+      }
+    }
+  }
+}
 
 export {Device};
