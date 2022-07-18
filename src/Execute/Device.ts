@@ -33,17 +33,18 @@ import {DeviceSpec} from '../Backend/Spec';
 class Device {
   name: string;
   spec: DeviceSpec;
-  availableExecutor: Set<Executor>;
+  availableExecutors: Set<Executor>;
   constructor(name: string, spec: DeviceSpec) {
     this.name = name;
     this.spec = spec;
-    this.availableExecutor = new Set<Executor>();
+    this.availableExecutors = new Set<Executor>();
   }
 
-  checkAvailExecutor(executorList: Executor[]): void {
+  // Register only available executor.
+  registerExecutor(executorList: Executor[]): void {
     for (const executor of executorList) {
       if (executor.require().satisfied(this.spec)) {
-        this.availableExecutor.add(executor);
+        this.availableExecutors.add(executor);
       }
     }
   }

@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {globalExecutorArray} from '../Backend/Backend';
+import { Executor } from '../Backend/Executor';
 import {Device} from './Device';
 
 class ExecutionManager {
   allDevices: Device[];
 
-  constructor(devices: Device[]) {
+  constructor(devices: Device[], executorList: Executor[]) {
     this.allDevices = devices;
     for (let device of this.allDevices) {
-      device.checkAvailExecutor(globalExecutorArray);
+      device.registerExecutor(executorList);
     }
   }
 
@@ -33,9 +33,4 @@ class ExecutionManager {
   }
 }
 
-// This ExecutionManagerMap will be used on Provider.
-interface ExecutionManagerMap {
-  [key: string]: ExecutionManager;
-}
-
-export {ExecutionManager, ExecutionManagerMap};
+export {ExecutionManager};
