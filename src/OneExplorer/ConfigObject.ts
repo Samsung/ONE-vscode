@@ -116,7 +116,7 @@ export class Locator {
   }
 
   /**
-   * Locate paths inside iniObj[this.section][this.key] using 'this.mapper'.
+   * @brief Locate paths inside iniObj[this.section][this.key] using 'this.mapper'.
    * @param iniObj a parsed ini object
    * @param dir a directory of ini file
    * @returns an array of file path, without any duplication in the list
@@ -137,18 +137,39 @@ export class Locator {
     const getFileNames = (): string[] => {
       let fileNames: string[] = [];
 
-      const sections = this.section ? [this.section] : Object.keys(iniObj);
-      const sectionObjs = sections.map(section => iniObj[section as keyof typeof iniObj]);
+      // If a section not given, search all sections
+      const sections: string[] = this.section ? [this.section] : Object.keys(iniObj);
 
-      sectionObjs.forEach(sectionObj => {
+      // Find valid iniObj[section] as object
+      const sectionObjs: object[] = sections
+                                        .map(
+                                            (section: string):
+                                                object|undefined => {
+                                                  return (section in iniObj) ?
+                                                      iniObj[section as keyof typeof iniObj] :
+                                                      undefined;
+                                                })
+                                        .filter(val => val) as object[];
+
+      sectionObjs.forEach((sectionObj: object) => {
+        // If a key not given, search all keys
         const keys: string[] = this.key ? [this.key] : Object.keys(sectionObj);
+        // Find valid sectionObj[key] as string
+        const keyStrs: string[] =
+            keys.map((key: string): string|undefined => {
+                  if (key in sectionObj &&
+                      typeof sectionObj[key as keyof typeof sectionObj] === 'string') {
+                    return sectionObj[key as keyof typeof sectionObj] as string;
+                  }
 
-        keys.forEach(key => {
-          const value: string = sectionObj[key as keyof typeof iniObj];
-          fileNames = fileNames.concat(this.mapper(value));
+                  return undefined;
+                }).filter(val => val) as string[];
+
+        // Run a mapper function for each string
+        keyStrs.forEach(keyStr => {
+          fileNames = fileNames.concat(this.mapper(keyStr));
         });
       });
-
       return fileNames;
     };
 
@@ -184,7 +205,7 @@ export class LocatorRunner {
   private artifactLocators: {artifactAttr: ArtifactAttr, locator: Locator}[] = [];
 
   /**
-   * A helper function to grep a filename ends with 'ext' within the given 'content' string.
+   * @brief A helper function to grep a filename ends with 'ext' within the given 'content' string.
    */
   public static searchWithExt = (ext: string, content: string): string[] => {
     // Don't remove this. It's to prevent 'content.split is not a function' error.
@@ -194,6 +215,29 @@ export class LocatorRunner {
     const fileNames = content.split(' ').filter(val => val.endsWith(ext));
     return fileNames;
   };
+
+  /**
+   * @brief A helper function to grep a filename following to 'option' ends with 'ext'
+   * within the given 'content' string.
+   * @return string[] But practically the array size is only one or none
+   */
+  public static searchWithCommandOption =
+      (content: string, option?: string, ext?: string): string[] => {
+        // Don't remove this. It's to prevent 'content.split is not a function' error.
+        // TODO Find more straightforward way to resolve an error
+        content = content + '';
+
+        let fileName: string|undefined = content.split(' ').find((value, index, obj) => {
+          return index > 0 && obj[index - 1] === option;
+        });
+
+        // Check if the searched filename has the given ext
+        if (fileName && ext) {
+          fileName = fileName.endsWith(ext) ? fileName : undefined;
+        }
+
+        return fileName ? [fileName] : [];
+      };
 
   public register(artifactLocator: {artifactAttr: ArtifactAttr, locator: Locator}) {
     this.artifactLocators.push(artifactLocator);
@@ -410,6 +454,15 @@ export class ConfigObj {
         return LocatorRunner.searchWithExt('.circle', value)
             .map(filepath => filepath.replace('.circle', '.circle.log'));
       })
+    });
+
+    locatorRunner.register({
+      artifactAttr: {ext: '.json', icon: vscode.ThemeIcon.File, canHide: true},
+      locator: new Locator(
+          (value: string) => {
+            return LocatorRunner.searchWithCommandOption(value, '--save-chrome-trace', '.json');
+          },
+          'one-profile', 'command')
     });
 
     let artifacts: Artifact[] = locatorRunner.run(iniObj, dir);
