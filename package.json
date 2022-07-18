@@ -190,11 +190,6 @@
         "command": "one.viewer.jsonTracer",
         "title": "json tracer",
         "category": "ONE"
-      },
-      {
-        "command": "one.viewer.circleTracer",
-        "title": "circle tracer",
-        "category": "ONE"
       }
     ],
     "menus": {
@@ -344,10 +339,6 @@
         },
         {
           "command": "one.toolchain.runCfg",
-          "when": "false"
-        },
-        {
-          "command": "one.viewer.circleTracer",
           "when": "false"
         },
         {
