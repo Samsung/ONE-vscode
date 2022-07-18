@@ -29,19 +29,56 @@ import {Logger} from '../Utils/Logger';
  */
 export interface Artifact {
   /**
-   * An artifact's type
+   * An artifact's attribute
    */
-  type: string;
-
-  /**
-   * A file extension
-   */
-  ext: string;
+  attr: ArtifactAttr;
 
   /**
    * A full path in file system
    */
   path: string;
+}
+
+export interface ArtifactAttr {
+  /**
+   * ABOUT EXTENDED EXTENSION (WITH MULTIPLE PERIODS, *.extended.ext)
+   *
+   * Generally, file name extensions are defined from the last period.
+   * Let's define 'extended file extension' with multiple periods.
+   *
+   * EXAMPLE
+   *
+   * (File name)          model.opt.circle.log
+   * (Extension)          .log
+   * (Extended Extension) .circle.log OR opt.circle.log (selective)
+   */
+  ext: string;
+
+  /**
+   * An icon for the artifact
+   *
+   * If not set, it is set by OneExplorer Node.
+   */
+  icon?: vscode.ThemeIcon;
+
+  /**
+   * A openViewType for the artifact
+   *
+   * It is used as an argument for 'vscode.openWith' command
+   * to open the file with specified editor.
+   *
+   * If not set, it is set by OneExplorer Node.
+   * If 'default'(string), open with text editor
+   *
+   * @reference vscode.openWith
+   */
+  openViewType?: string;
+
+  /**
+   * Hidden from the default view.
+   * The status can be unhide by command
+   */
+  canHide?: boolean;
 }
 
 /**
@@ -144,7 +181,7 @@ export class Locator {
 
 // TODO Move to backend side with some modification
 export class LocatorRunner {
-  private artifactLocators: {artifactAttr: {type: string, ext: string}, locator: Locator}[] = [];
+  private artifactLocators: {artifactAttr: ArtifactAttr, locator: Locator}[] = [];
 
   /**
    * A helper function to grep a filename ends with 'ext' within the given 'content' string.
@@ -158,7 +195,7 @@ export class LocatorRunner {
     return fileNames;
   };
 
-  public register(artifactLocator: {artifactAttr: {type: string, ext: string}, locator: Locator}) {
+  public register(artifactLocator: {artifactAttr: ArtifactAttr, locator: Locator}) {
     this.artifactLocators.push(artifactLocator);
   }
 
@@ -175,7 +212,7 @@ export class LocatorRunner {
     this.artifactLocators.forEach(({artifactAttr, locator}) => {
       let filePaths: string[] = locator.locate(iniObj, dir);
       filePaths.forEach(filePath => {
-        let artifact: Artifact = {type: artifactAttr.type, ext: artifactAttr.ext, path: filePath};
+        let artifact: Artifact = {attr: artifactAttr, path: filePath};
         artifacts.push(artifact);
       });
     });
@@ -313,17 +350,17 @@ export class ConfigObj {
     let locatorRunner = new LocatorRunner();
 
     locatorRunner.register({
-      artifactAttr: {type: 'model', ext: '.tflite'},
+      artifactAttr: {ext: '.tflite'},
       locator: new Locator((value: string) => LocatorRunner.searchWithExt('.tflite', value))
     });
 
     locatorRunner.register({
-      artifactAttr: {type: 'model', ext: '.pb'},
+      artifactAttr: {ext: '.pb'},
       locator: new Locator((value: string) => LocatorRunner.searchWithExt('.pb', value))
     });
 
     locatorRunner.register({
-      artifactAttr: {type: 'model', ext: '.onnx'},
+      artifactAttr: {ext: '.onnx'},
       locator: new Locator((value: string) => LocatorRunner.searchWithExt('.onnx', value))
     });
 
@@ -348,7 +385,7 @@ export class ConfigObj {
   /**
    * Find derived models written in the ini object and return the absolute path.
    *
-   * @param uri cfg uri is required to calculate absolute path
+   * @param filePath cfg file path is required to calculate absolute path
    */
   private static parseProducts = (filePath: string, iniObj: object): Artifact[] => {
     const dir = path.dirname(filePath);
@@ -356,17 +393,19 @@ export class ConfigObj {
     let locatorRunner = new LocatorRunner();
 
     locatorRunner.register({
-      artifactAttr: {type: 'model', ext: '.circle'},
+      artifactAttr: {ext: '.circle'},
       locator: new Locator((value: string) => LocatorRunner.searchWithExt('.circle', value))
     });
 
     locatorRunner.register({
-      artifactAttr: {type: 'model', ext: '.tvn'},
+      artifactAttr: {ext: '.tvn'},
       locator: new Locator((value: string) => LocatorRunner.searchWithExt('.tvn', value))
     });
 
     locatorRunner.register({
-      artifactAttr: {type: 'log', ext: '.circle.log'},
+      // 'default' view type is 'text editor' (vscode.openWith)
+      artifactAttr:
+          {ext: '.circle.log', openViewType: 'default', icon: vscode.ThemeIcon.File, canHide: true},
       locator: new Locator((value: string) => {
         return LocatorRunner.searchWithExt('.circle', value)
             .map(filepath => filepath.replace('.circle', '.circle.log'));
