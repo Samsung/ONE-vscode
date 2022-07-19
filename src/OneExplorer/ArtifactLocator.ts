@@ -130,6 +130,12 @@ export class Locator {
    * iniObj[one-import-tflite]['input_file'] === "model.circle"
    */
   public locate(iniObj: object, dir: string): string[] {
+    if (!path.isAbsolute(dir)) {
+      // NOTE Non-absolute path cannot reach here
+      // 'dir' must be an absolute path because it's existing config file's 'RealPath'
+      throw Error('FIX CALLER: dir argument should be an absolute path');
+    }
+
     // Get file names from iniObj
     const getFileNames = (): string[] => {
       let fileNames: string[] = [];
