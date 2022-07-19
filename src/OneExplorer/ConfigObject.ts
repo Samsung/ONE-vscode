@@ -25,8 +25,8 @@ import {Logger} from '../Utils/Logger';
 /**
  * 'Artifact'
  * The collective term is and inclusive, it includes two types of files:
- * (1) Pre-existing files to run ONE config (base model)
- * (2) Result files after running ONE config (derived models, )
+ * (1) Pre-existing files to run ONE config, a.k.a. base models (.tflite, .onnx, ...)
+ * (2) Result files after running ONE config, a.k.a. products (.circle, .log, ...)
  */
 export interface Artifact {
   /**
