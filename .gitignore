@@ -3,6 +3,8 @@ node_modules
 format.patch
 Makefile
 .vscode-test/**
+.nyc_output
+coverage
 
 # production for react-app
 build
