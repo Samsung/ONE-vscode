@@ -567,13 +567,7 @@ input_path=${modelName}.${extName}
         return new OneNode(node.name, vscode.TreeItemCollapsibleState.Expanded, node);
       } else if (node.type === NodeType.product) {
         return new OneNode(node.name, vscode.TreeItemCollapsibleState.None, node);
-      } else if (node.type === NodeType.baseModel) {
-        return new OneNode(
-            node.name,
-            (node.childNodes.length > 0) ? vscode.TreeItemCollapsibleState.Collapsed :
-                                           vscode.TreeItemCollapsibleState.None,
-            node);
-      } else if (node.type === NodeType.config) {
+      } else if (node.type === NodeType.baseModel || node.type === NodeType.config) {
         return new OneNode(
             node.name,
             (node.childNodes.length > 0) ? vscode.TreeItemCollapsibleState.Collapsed :
