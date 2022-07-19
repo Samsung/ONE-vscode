@@ -23,9 +23,10 @@ import {RealPath} from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
 /**
- * 'Artifact' means includes
- *   - existing files to run ONE config (base model)
- *   - result files after running ONE config (derived models, )
+ * 'Artifact'
+ * The collective term is and inclusive, it includes two types of files:
+ * (1) Pre-existing files to run ONE config, a.k.a. base models (.tflite, .onnx, ...)
+ * (2) Result files after running ONE config, a.k.a. products (.circle, .log, ...)
  */
 export interface Artifact {
   /**
@@ -98,7 +99,7 @@ export class Locator {
   key?: string;
 
   /**
-   * A mapper function to map a value to filenames
+   * @brief A mapper function to map a value to filenames
    * @param value: Object[section][key]
    * @return an array of searched string
    */
@@ -116,7 +117,8 @@ export class Locator {
   }
 
   /**
-   * Locate paths inside iniObj[this.section][this.key] using 'this.mapper'.
+   * @brief Locate paths inside iniObj[this.section][this.key] using 'this.mapper'
+   *
    * @param iniObj a parsed ini object
    * @param dir a directory of ini file
    * @returns an array of file path, without any duplication in the list
@@ -137,15 +139,28 @@ export class Locator {
     const getFileNames = (): string[] => {
       let fileNames: string[] = [];
 
+      // If a section not given, search all sections
       const sections = this.section ? [this.section] : Object.keys(iniObj);
-      const sectionObjs = sections.map(section => iniObj[section as keyof typeof iniObj]);
+
+      // Find valid iniObj[section] as object
+      const sectionObjs: object[] = sections.filter(section => (section in iniObj))
+                                        .map(section => iniObj[section as keyof typeof iniObj]);
 
       sectionObjs.forEach(sectionObj => {
+        // If a key not given, search all keys
         const keys: string[] = this.key ? [this.key] : Object.keys(sectionObj);
 
-        keys.forEach(key => {
-          const value: string = sectionObj[key as keyof typeof iniObj];
-          fileNames = fileNames.concat(this.mapper(value));
+        // Find valid sectionObj[key] as string
+        const keyStrs = keys.filter(key => (key in sectionObj))
+                            .map(key => sectionObj[key as keyof typeof iniObj])
+                            // NOTE keyObj may be a type of object.
+                            // Currently one config file doesn't define a ini file level more deeper
+                            // Let's filter them out.
+                            .filter(keyObj => typeof keyObj === 'string');
+
+        // Get filename
+        keyStrs.map(value => this.mapper(value)).forEach((fileName: string[]) => {
+          fileNames = fileNames.concat(fileName);
         });
       });
 
@@ -184,7 +199,7 @@ export class LocatorRunner {
   private artifactLocators: {artifactAttr: ArtifactAttr, locator: Locator}[] = [];
 
   /**
-   * A helper function to grep a filename ends with 'ext' within the given 'content' string.
+   * @brief A helper function to grep a filename ends with 'ext' within the given 'content' string.
    */
   public static searchWithExt = (ext: string, content: string): string[] => {
     // Don't remove this. It's to prevent 'content.split is not a function' error.
@@ -200,9 +215,8 @@ export class LocatorRunner {
   }
 
   /**
-   * Run registered locators
-   * @param iniObj
-   * @param dir
+   * @brief Run registered locators
+   *
    * @returns Artifact[] with paths
    */
   public run(iniObj: object, dir: string): Artifact[] {
@@ -224,8 +238,6 @@ export class LocatorRunner {
 /**
  * @brief A helper class to get parsed artifacts (baseModels, products)
  *        The paths in the artifacts are all resolved. (No '..' in the path)
-
- * ```
  *
  * @usage Create Parsed Config Object
  *        (use a factory function `createConfigObj`)
@@ -264,21 +276,21 @@ export class ConfigObj {
   }
 
   /**
-   * Returns only the baseModels which exists in file system
+   * @brief Returns only the baseModels which exists in file system
    */
   get getBaseModelsExists() {
     return this.obj.baseModels.filter(artifact => RealPath.exists(artifact.path));
   }
 
   /**
-   * Returns only the products which exists in file system
+   * @brief Returns only the products which exists in file system
    */
   get getProductsExists() {
     return this.obj.products.filter(artifact => RealPath.exists(artifact.path));
   }
 
   /**
-   * Return true if the `baseModelPath` is included in `baseModels`
+   * @brief Return true if the `baseModelPath` is included in `baseModels`
    */
   public isChildOf(baseModelPath: string): boolean {
     const found = this.obj.baseModels.map(artifact => artifact.path)
@@ -297,7 +309,7 @@ export class ConfigObj {
   }
 
   /**
-   * A factory function to create ConfigObj for the given uri.
+   * @brief A factory function to create ConfigObj for the given uri.
    *
    * @param uri
    * @returns `ConfObj` or
@@ -315,7 +327,8 @@ export class ConfigObj {
   }
 
   /**
-   * Import an ini file
+   * @brief Import an ini file
+   *
    * @param filePath
    * @returns `object` if file read is successful, or `null` if file open has failed
    *
@@ -334,7 +347,7 @@ export class ConfigObj {
   }
 
   /**
-   * Parse base models written in the ini object and return the absolute path.
+   * @brief Parse base models written in the ini object and return the absolute path.
    *
    * @param uri cfg uri is required to calculate absolute path
    *
@@ -383,7 +396,7 @@ export class ConfigObj {
   };
 
   /**
-   * Find derived models written in the ini object and return the absolute path.
+   * @brief Find derived models written in the ini object and return the absolute path.
    *
    * @param filePath cfg file path is required to calculate absolute path
    */
