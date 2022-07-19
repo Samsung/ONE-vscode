@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Executor } from '../Backend/Executor';
+import {Executor} from '../Backend/Executor';
 import {Device} from './Device';
 
 class ExecutionManager {
