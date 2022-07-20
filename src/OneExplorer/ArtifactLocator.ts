@@ -23,7 +23,7 @@ import * as vscode from 'vscode';
  * (1) Pre-existing files to run ONE config, a.k.a. base models (.tflite, .onnx, ...)
  * (2) Result files after running ONE config, a.k.a. products (.circle, .log, ...)
  */
-export interface Artifact {
+ export interface Artifact {
   /**
    * An artifact's attribute
    */
@@ -204,6 +204,29 @@ export class LocatorRunner {
     const fileNames = content.split(' ').filter(val => val.endsWith(ext));
     return fileNames;
   };
+
+  /**
+   * @brief A helper function to grep a filename following to 'option' ends with 'ext'
+   * within the given 'content' string.
+   * @return string[] But practically the array size is only one or none
+   */
+  public static searchWithCommandOption =
+      (content: string, option?: string, ext?: string): string[] => {
+        // Don't remove this. It's to prevent 'content.split is not a function' error.
+        // TODO Find more straightforward way to resolve an error
+        content = content + '';
+
+        let fileName: string|undefined = content.split(' ').find((value, index, obj) => {
+          return index > 0 && obj[index - 1] === option;
+        });
+
+        // Check if the searched filename has the given ext
+        if (fileName && ext) {
+          fileName = fileName.endsWith(ext) ? fileName : undefined;
+        }
+
+        return fileName ? [fileName] : [];
+      };
 
   public register(artifactLocator: {artifactAttr: ArtifactAttr, locator: Locator}) {
     this.artifactLocators.push(artifactLocator);
