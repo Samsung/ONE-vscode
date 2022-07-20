@@ -52,6 +52,8 @@ suite('DeviceManager', function() {
       const deviceManager = new DeviceManager(dummyDeviceList, dummyExecutorList);
       assert.isObject<DeviceManager>(deviceManager);
       assert.strictEqual(dummyDeviceList, deviceManager.allDevices);
+      assert.isTrue(deviceManager.allDevices[0].availableExecutors.has(dummyExecutorList[0]));
+      assert.isTrue(deviceManager.allDevices[2].availableExecutors.has(dummyExecutorList[1]));
     });
     suite('#findDevice()', function() {
       const deviceManager = new DeviceManager(dummyDeviceList, dummyExecutorList);
