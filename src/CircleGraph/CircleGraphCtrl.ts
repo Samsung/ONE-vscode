@@ -93,12 +93,9 @@ export class CircleGraphCtrl {
 
     this.registerEventHandlers();
 
+    const thiz = this;
     vscode.workspace.onDidChangeConfiguration(e => {
-      if (e.affectsConfiguration('workbench.colorTheme')) {
-        if (this.isReady()) {
-          this._webview.postMessage({command: MessageDefs.colorTheme});
-        }
-      }
+      thiz.handleChangeConfiguration(e);
     });
   }
 
@@ -168,6 +165,14 @@ export class CircleGraphCtrl {
           return;
       }
     }, null, this._ctrlDisposables);
+  }
+
+  protected handleChangeConfiguration(e: vscode.ConfigurationChangeEvent) {
+    if (e.affectsConfiguration('workbench.colorTheme')) {
+      if (this.isReady()) {
+        this._webview.postMessage({command: MessageDefs.colorTheme});
+      }
+    }
   }
 
   /**
