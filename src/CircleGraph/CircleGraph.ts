@@ -36,11 +36,12 @@ export class CircleGraphPanel extends CircleGraphCtrl {
       };
       vscode.window.showOpenDialog(options).then(fileUri => {
         if (fileUri && fileUri[0]) {
-          CircleGraphPanel.createOrShowContinue(extensionUri, fileUri[0].fsPath);
+          return CircleGraphPanel.createOrShowContinue(extensionUri, fileUri[0].fsPath);
         }
       });
+      return undefined;
     } else {
-      CircleGraphPanel.createOrShowContinue(extensionUri, modelPath);
+      return CircleGraphPanel.createOrShowContinue(extensionUri, modelPath);
     }
   }
 
@@ -55,7 +56,7 @@ export class CircleGraphPanel extends CircleGraphCtrl {
     // If we already have a panel, show it.
     if (CircleGraphPanel.currentPanel) {
       CircleGraphPanel.currentPanel._panel.reveal(column);
-      return;
+      return CircleGraphPanel.currentPanel;
     }
 
     // Otherwise, create a new panel.
@@ -67,6 +68,8 @@ export class CircleGraphPanel extends CircleGraphCtrl {
     circleGraph.setTitle('circle graph');
     circleGraph.loadContent();
     CircleGraphPanel.currentPanel = circleGraph;
+
+    return circleGraph;
   }
 
   private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, modelToLoad: string) {
