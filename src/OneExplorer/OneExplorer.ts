@@ -23,7 +23,8 @@ import {CfgEditorPanel} from '../CfgEditor/CfgEditorPanel';
 import {Balloon} from '../Utils/Balloon';
 import {obtainWorkspaceRoot, RealPath} from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
-import {ArtifactAttr, ConfigObj} from './ConfigObject';
+import {ArtifactAttr} from './ArtifactLocator';
+import {ConfigObj} from './ConfigObject';
 
 /**
  * Get the list of .cfg files wiithin the workspace
