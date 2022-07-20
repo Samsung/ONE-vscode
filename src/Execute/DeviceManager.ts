@@ -16,7 +16,7 @@
 import {Executor} from '../Backend/Executor';
 import {Device} from './Device';
 
-class ExecutionManager {
+class DeviceManager {
   allDevices: Device[];
 
   constructor(devices: Device[], executorList: Executor[]) {
@@ -33,4 +33,4 @@ class ExecutionManager {
   }
 }
 
-export {ExecutionManager};
+export {DeviceManager};
