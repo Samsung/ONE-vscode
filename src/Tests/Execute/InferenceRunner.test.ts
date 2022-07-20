@@ -30,7 +30,32 @@ import {gToolchainEnvMap} from '../../Toolchain/ToolchainEnv';
 // TODO: Move it to Mockup
 const backendName = 'Mockup';
 const inferenceRunner = 'inferenceRunner';
+
+class MockupExecutor implements Executor {
+  name(): string {
+    return backendName;
+  }
+  getExecutableExt(): string[] {
+    throw new Error('Method not implemented.');
+  }
+  toolchains(): Toolchains {
+    throw new Error('Method not implemented.');
+  }
+  runInference(_modelPath: string, _options?: string[]|undefined): Command {
+    let args = [_modelPath].concat(_options as string[]);
+    let cmd = new Command(inferenceRunner, args);
+    return cmd;
+  }
+  require(): DeviceSpec {
+    return new DeviceSpec('MockupHW', 'MockSW', undefined);
+  }
+}
+const mockupExecutor = new MockupExecutor();
 class BackendMockup implements Backend {
+  executorList: Executor[] = [];
+  constructor(executor: Executor) {
+    this.executorList.push(executor);
+  }
   name(): string {
     return backendName;
   }
@@ -38,27 +63,8 @@ class BackendMockup implements Backend {
     return new CompilerBase();
   }
 
-  executor(): Executor|undefined {
-    class MockupExecutor implements Executor {
-      name(): string {
-        return backendName;
-      }
-      getExecutableExt(): string[] {
-        throw new Error('Method not implemented.');
-      }
-      toolchains(): Toolchains {
-        throw new Error('Method not implemented.');
-      }
-      runInference(_modelPath: string, _options?: string[]|undefined): Command {
-        let args = [_modelPath].concat(_options as string[]);
-        let cmd = new Command(inferenceRunner, args);
-        return cmd;
-      }
-      require(): DeviceSpec {
-        return new DeviceSpec('MockupHW', 'MockSW', undefined);
-      }
-    };
-    return new MockupExecutor();
+  executors(): Executor[]|undefined {
+    return this.executorList;
   }
 };
 
@@ -67,7 +73,7 @@ suite('Execute', function() {
   // However, we cannot test the ui until now
   // Therefore, we focus on testing things not ui
   suite('InferenceRunner', function() {
-    const backend = new BackendMockup();
+    const backend = new BackendMockup(mockupExecutor);
     const modelPath = vscode.Uri.parse('file:///model.path');
     const inputSpec = 'any';
 
@@ -88,8 +94,9 @@ suite('Execute', function() {
 
     suite('#constructor()', function() {
       test('is constructed with params', function() {
-        let runner = new InferenceRunner(backend, modelPath, inputSpec);
+        let runner = new InferenceRunner(backend, mockupExecutor, modelPath, inputSpec);
         assert.strictEqual(runner.backend, backend);
+        assert.strictEqual(runner.executor, mockupExecutor);
         assert.strictEqual(runner.modelPath, modelPath);
         assert.strictEqual(runner.inputSpec, inputSpec);
       });
@@ -97,7 +104,7 @@ suite('Execute', function() {
 
     suite('#getInferenceCmd()', function() {
       test('gets inference command', function() {
-        let runner = new InferenceRunner(backend, modelPath, inputSpec);
+        let runner = new InferenceRunner(backend, mockupExecutor, modelPath, inputSpec);
         let cmd = runner.getInferenceCmd();
         let expected = `${inferenceRunner} ${modelPath.path} --input-spec ${inputSpec}`;
         assert.strictEqual(cmd.str(), expected);
@@ -106,7 +113,7 @@ suite('Execute', function() {
 
     suite('#getOutFileName()', function() {
       test('gets outfile name', function() {
-        let runner = new InferenceRunner(backend, modelPath, inputSpec);
+        let runner = new InferenceRunner(backend, mockupExecutor, modelPath, inputSpec);
         let expected = `${modelPath.path}.infer.log`;
         assert.strictEqual(runner.getOutFileName(), expected);
       });

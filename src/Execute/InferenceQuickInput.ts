@@ -30,6 +30,7 @@ interface State {
 
 class InferenceQuickInput {
   backend: Backend|undefined = undefined;
+  executor: Executor|undefined = undefined;
   modelPath: vscode.Uri|undefined = undefined;
   inputSpec: string|undefined = undefined;
   error: string|undefined = undefined;
@@ -41,6 +42,13 @@ class InferenceQuickInput {
       throw new Error('wrong calling');
     }
     return this.backend as Backend;
+  }
+
+  getExecutor(): Executor {
+    if (this.error !== undefined || this.executor === undefined) {
+      throw new Error('wrong calling');
+    }
+    return this.executor as Executor;
   }
 
   getModelPath(): vscode.Uri {
@@ -73,6 +81,17 @@ class InferenceQuickInput {
     return Object.keys(globalBackendMap);
   }
 
+  getAllExecutorNames(backend: Backend): string[] {
+    const executorList: string[] = [];
+    const executors = globalBackendMap[backend.name()].executors();
+    if (executors) {
+      for (const executor of executors) {
+        executorList.push(executor.name());
+      }
+    }
+    return executorList;
+  }
+
   getQuickPickItems(items: string[]): vscode.QuickPickItem[] {
     return items.map(label => ({label}));
   }
@@ -84,10 +103,10 @@ class InferenceQuickInput {
   async pickBackend(input: MultiStepInput, state: Partial<State>) {
     const items = this.getQuickPickItems(this.getAllBackendNames());
     state.selectedItem = await input.showQuickPick({
-      title: 'Choose Executor Toolchain',
+      title: 'Choose Executor',
       step: 1,
-      totalSteps: 3,
-      placeholder: 'Select a Backend',
+      totalSteps: 4,
+      placeholder: 'Select a Executor',
       items: items,
       shouldResume: this.shouldResume
     });
@@ -98,15 +117,36 @@ class InferenceQuickInput {
       this.error = 'Backend to infer is not chosen. Please check once again.';
       return;
     }
-    if (this.backend.executor() === undefined) {
+    if (this.backend.executors() === undefined) {
+      this.error = 'Backend executors is not set yet. Please check once again.';
+      return;
+    }
+  }
+
+  async pickExecutor(input: MultiStepInput, state: Partial<State>) {
+    const items = this.backend === undefined ?
+        [] :
+        this.getQuickPickItems(this.getAllExecutorNames(this.backend));
+    state.selectedItem = await input.showQuickPick({
+      title: 'Choose Executor Toolchain',
+      step: 2,
+      totalSteps: 4,
+      placeholder: 'Select a Backend',
+      items: items,
+      shouldResume: this.shouldResume
+    });
+    this.executor =
+        this.backend ?.executors() ?.find(executor => {
+                                      return executor.name() === state.selectedItem ?.label;
+                                    });
+    if (this.executor === undefined) {
       this.error = 'Backend executor is not set yet. Please check once again.';
       return;
     }
   }
 
   getFilter(): {[name: string]: string[]} {
-    const backend: Backend = this.backend as Backend;
-    const executor = backend.executor() as Executor;
+    const executor: Executor = this.executor as Executor;
     // List files which are filtered with executable extensions
     return {backendName: executor.getExecutableExt()};
   }
@@ -140,8 +180,8 @@ class InferenceQuickInput {
     const items = this.getQuickPickItems(this.getInputSpecKeys());
     state.selectedItem = await input.showQuickPick({
       title: 'Enter Backend Specific Options',
-      step: 3,
-      totalSteps: 3,
+      step: 4,
+      totalSteps: 4,
       placeholder: 'Select Random Input Spec',
       items: items,
       shouldResume: this.shouldResume
@@ -152,6 +192,7 @@ class InferenceQuickInput {
   async collectInputs(): Promise<void> {
     const state = {selectedItem: undefined} as Partial<State>;
     await MultiStepInput.run(input => this.pickBackend(input, state));
+    await MultiStepInput.run(input => this.pickExecutor(input, state));
     await MultiStepInput.run(input => this.selectInputModel(input, state));
     await MultiStepInput.run(input => this.selectInputSpec(input, state));
   }

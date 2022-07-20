@@ -30,7 +30,30 @@ import {gToolchainEnvMap} from '../../Toolchain/ToolchainEnv';
 // TODO: Move it to Mockup
 const backendName = 'Mockup';
 const exts = ['ext0', 'ext1', 'ext2'];
+
+class MockupExecutor implements Executor {
+  name(): string {
+    return backendName;
+  }
+  getExecutableExt(): string[] {
+    return exts;
+  }
+  toolchains(): Toolchains {
+    throw new Error('Method not implemented.');
+  }
+  runInference(_modelPath: string, _options?: string[]|undefined): Command {
+    throw new Error('Method not implemented.');
+  }
+  require(): DeviceSpec {
+    return new DeviceSpec('MockupHW', 'MockSW', undefined);
+  }
+};
+const mockupExecutor = new MockupExecutor();
 class BackendMockup implements Backend {
+  executorList: Executor[] = [];
+  constructor(executor: Executor) {
+    this.executorList.push(executor);
+  }
   name(): string {
     return backendName;
   }
@@ -38,25 +61,8 @@ class BackendMockup implements Backend {
     return new CompilerBase();
   }
 
-  executor(): Executor|undefined {
-    class MockupExecutor implements Executor {
-      name(): string {
-        return backendName;
-      }
-      getExecutableExt(): string[] {
-        return exts;
-      }
-      toolchains(): Toolchains {
-        throw new Error('Method not implemented.');
-      }
-      runInference(_modelPath: string, _options?: string[]|undefined): Command {
-        throw new Error('Method not implemented.');
-      }
-      require(): DeviceSpec {
-        return new DeviceSpec('MockupHW', 'MockSW', undefined);
-      }
-    };
-    return new MockupExecutor();
+  executors(): Executor[]|undefined {
+    return this.executorList;
   }
 };
 
@@ -65,7 +71,7 @@ suite('Execute', function() {
   // However, we cannot test the ui until now
   // Therefore, we focus on testing things not ui
   suite('InferenceQuickInput', function() {
-    const backend = new BackendMockup();
+    const backend = new BackendMockup(mockupExecutor);
     const modelPath = vscode.Uri.parse('file:///model.path');
     const inputSpec = 'any';
 
@@ -173,6 +179,7 @@ suite('Execute', function() {
       test('gets filter', function() {
         let quickInput = new InferenceQuickInput();
         quickInput.backend = backend;
+        quickInput.executor = mockupExecutor;
         const expected = exts;
         let filter = quickInput.getFilter();
         assert.strictEqual(filter.backendName.length, expected.length);

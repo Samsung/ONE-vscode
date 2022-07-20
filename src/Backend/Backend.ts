@@ -35,7 +35,7 @@ let globalExecutorArray: Executor[] = [];
 
 function backendRegistrationApi() {
   const logTag = 'backendRegistrationApi';
-  let registrationAPI = {
+  return {
     registerBackend(backend: Backend) {
       const backendName = backend.name();
       assert(backendName.length > 0);
@@ -44,9 +44,9 @@ function backendRegistrationApi() {
       if (compiler) {
         gToolchainEnvMap[backend.name()] = new ToolchainEnv(compiler);
       }
-      const executor = backend.executor();
-      if (executor) {
-        globalExecutorArray.push(executor);
+      const executors = backend.executors();
+      if (executors) {
+        globalExecutorArray.push(...executors);
       }
       Logger.info(logTag, 'Backend', backendName, 'was registered into ONE-vscode.');
     },
@@ -55,8 +55,6 @@ function backendRegistrationApi() {
       Logger.info(logTag, 'Executor', executor.name(), 'was registered into ONE-vscode.');
     }
   };
-
-  return registrationAPI;
 }
 
 export {globalBackendMap, globalExecutorArray, backendRegistrationApi};
