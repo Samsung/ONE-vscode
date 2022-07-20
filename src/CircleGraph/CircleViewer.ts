@@ -44,7 +44,7 @@ class CircleViewer extends CircleGraphCtrl {
  * @note  Actual content is handled by CircleGraphCtrl itself so documment
  *        only provides URI of the file
  */
-class CircleViewerDocument implements vscode.CustomDocument {
+export class CircleViewerDocument implements vscode.CustomDocument {
   private readonly _uri: vscode.Uri;
   private _circleViewer: CircleViewer[];
 
@@ -86,6 +86,8 @@ class CircleViewerDocument implements vscode.CustomDocument {
         }
       });
     });
+
+    return view;
   }
 };
 
