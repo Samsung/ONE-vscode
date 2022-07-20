@@ -585,7 +585,6 @@ input_path=${modelName}.${extName}
   private getTree(rootPath: vscode.Uri): Node {
     if (!this.tree) {
       this.tree = NodeFactory.create(NodeType.directory, rootPath.fsPath) as DirectoryNode;
-      this.tree.buildChildren();
     }
 
     return this.tree;
