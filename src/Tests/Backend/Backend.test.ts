@@ -67,19 +67,6 @@ suite('Backend', function() {
         assert.deepStrictEqual([executor], backend.executors());
       }
     });
-    test('registers a executor', function() {
-      let registrationAPI = backendRegistrationApi();
-
-      assert.strictEqual(globalExecutorArray.length, 0);
-      let executorMockup = new ExecutorMockup();
-      registrationAPI.registerExecutor(executorMockup);
-
-      assert.strictEqual(globalExecutorArray.length, 1);
-
-      for (const executor of globalExecutorArray) {
-        assert.deepStrictEqual(executor, executorMockup);
-      }
-    });
   });
 
   teardown(function() {
