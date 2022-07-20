@@ -16,8 +16,8 @@
 
 import * as vscode from 'vscode';
 
-import {Backend} from '../Backend/API';
-import {globalBackendMap} from '../Backend/Backend';
+import {globalBackendMap} from '../Backend/API';
+import {Backend} from '../Backend/Backend';
 import {Executor} from '../Backend/Executor';
 import {Logger} from '../Utils/Logger';
 import {MultiStepInput} from '../Utils/MultiStepInput';

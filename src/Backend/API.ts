@@ -14,28 +14,49 @@
  * limitations under the License.
  */
 
-import {Compiler} from './Compiler';
+const assert = require('assert');
+import {Backend} from './Backend';
+import {gToolchainEnvMap, ToolchainEnv} from '../Toolchain/ToolchainEnv';
+import {Logger} from '../Utils/Logger';
 import {Executor} from './Executor';
 
 /**
- * This file defines common API exposed by backend extension.
- *
- * Each backend extensions should implement Backend interface.
- * Through registration API of ONE-vscode extension, those backend extensions
- * needs to register implementation of Backend interface.
- *
- * TODO ONE-vscode and backend extensions have copies of this file. Check if this is really OK.
+ * Interface of backend map
+ * - Use Object class to use the only string key
  */
-
-// ** The scope of Backend is defined by each backend supporter **
-// A kind of proxy. Backend doesn't know where it-self is (local? remote? it doesn't know.)
-export interface Backend {
-  // backend's name. this doesn't mean the name of the toolchain
-  name(): string;
-
-  // compiler specs by being filled by impl
-  compiler(): Compiler|undefined;
-
-  // executor specs by being filled by impl
-  executor(): Executor|undefined;
+interface BackendMap {
+  [key: string]: Backend;
 }
+
+// List of backend extensions registered
+let globalBackendMap: BackendMap = {};
+// List of Executor extensions registered
+let globalExecutorArray: Executor[] = [];
+
+function backendRegistrationApi() {
+  const logTag = 'backendRegistrationApi';
+  let registrationAPI = {
+    registerBackend(backend: Backend) {
+      const backendName = backend.name();
+      assert(backendName.length > 0);
+      globalBackendMap[backendName] = backend;
+      const compiler = backend.compiler();
+      if (compiler) {
+        gToolchainEnvMap[backend.name()] = new ToolchainEnv(compiler);
+      }
+      const executor = backend.executor();
+      if (executor) {
+        globalExecutorArray.push(executor);
+      }
+      Logger.info(logTag, 'Backend', backendName, 'was registered into ONE-vscode.');
+    },
+    registerExecutor(executor: Executor) {
+      globalExecutorArray.push(executor);
+      Logger.info(logTag, 'Executor', executor.name(), 'was registered into ONE-vscode.');
+    }
+  };
+
+  return registrationAPI;
+}
+
+export {globalBackendMap, globalExecutorArray, backendRegistrationApi};

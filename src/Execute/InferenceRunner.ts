@@ -18,7 +18,7 @@ import {exec} from 'child_process';
 import {appendFileSync} from 'fs';
 import * as vscode from 'vscode';
 
-import {Backend} from '../Backend/API';
+import {Backend} from '../Backend/Backend';
 import {Command} from '../Backend/Command';
 import {Executor} from '../Backend/Executor';
 import {Logger} from '../Utils/Logger';
