@@ -23,7 +23,7 @@ import * as vscode from 'vscode';
  * (1) Pre-existing files to run ONE config, a.k.a. base models (.tflite, .onnx, ...)
  * (2) Result files after running ONE config, a.k.a. products (.circle, .log, ...)
  */
- export interface Artifact {
+export interface Artifact {
   /**
    * An artifact's attribute
    */
