@@ -38,6 +38,7 @@ export class CircleGraphPanel extends CircleGraphCtrl {
         if (fileUri && fileUri[0]) {
           return CircleGraphPanel.createOrShowContinue(extensionUri, fileUri[0].fsPath);
         }
+        return undefined;
       });
       return undefined;
     } else {
