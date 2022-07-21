@@ -290,9 +290,12 @@ function updateViewport(data, viewer) {
     box.style.right = ((viewport.cycles - alloc.alive_till) / viewport.cycles * 100) + '%';
     box.style.backgroundColor = boxColors[i % boxColors.length];
     box.addEventListener('mouseover', (event) => {
-      statusLineContainer.innerHTML =
-          `<b>Origin:</b> ${alloc.origin} | <b>Size:</b> ${alloc.size} | <b>Offset:</b> ${
-              alloc.offset} | <b>Lifetime:</b> ${alloc.alive_till - alloc.alive_from}`;
+      statusLineContainer.innerHTML = `<b>Origin:</b> ${
+          alloc.origin.length > 32 ? alloc.origin.substring(0, 32) + '…' : alloc.origin}
+          | <b>Size:</b> ${alloc.size}
+          | <b>Offset:</b> ${alloc.offset}
+          | <b>Lifetime:</b> ${alloc.alive_from} → ${alloc.alive_till} (${
+          alloc.alive_till - alloc.alive_from})`;
     });
     viewerContainer.appendChild(box);
   }
