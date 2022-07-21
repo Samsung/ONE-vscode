@@ -89,7 +89,7 @@ class TizenDeviceSpec extends DeviceSpec {
 }
 
 const supportedSpecs = new Array<DeviceSpec>(
-    new HostPCSpec('x86_64', 'Ubuntu 18') /* spec where simulator can run */,
+    new HostPCSpec('x86_64', 'Ubuntu 18.04') /* spec where simulator can run */,
     new TizenDeviceSpec('armv7l', 'Tizen 7.0.0') /* spec for Tizen TV */);
 
 export {DeviceSpec, BridgeSpec, HostPCSpec, TizenDeviceSpec, sdbSpec, supportedSpecs};
