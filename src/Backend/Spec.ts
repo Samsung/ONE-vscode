@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
+import * as vscode from 'vscode';
+
 import {Command} from './Command';
 
-const resDir = process.env.PWD + '/res';
+const extensionId = 'Samsung.one-vscode';
+const ext = vscode.extensions.getExtension(extensionId) as vscode.Extension<any>;
 /**
  * Spec is a bundle of information that could be used for checking whether something to require is
  * satisfied with a certain objective.
@@ -71,7 +74,7 @@ class BridgeSpec {
 }
 
 // TODO add more BridgeSpec like docker or ADB......
-const sdbSpec = new BridgeSpec('sdb', resDir + '/script/sdbSpecList.sh', 'sdb shell');
+const sdbSpec = new BridgeSpec('sdb', vscode.Uri.joinPath(ext?.extensionUri, 'res', 'script', 'sdbSpecList.sh').fsPath, 'sdb shell');
 
 class HostPCSpec extends DeviceSpec {
   constructor(hw: string, sw: string) {
