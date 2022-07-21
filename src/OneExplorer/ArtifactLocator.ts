@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import * as assert from 'assert';
 import * as path from 'path';
 import * as vscode from 'vscode';
 
@@ -130,11 +131,8 @@ export class Locator {
    * iniObj[one-import-tflite]['input_file'] === "model.circle"
    */
   public locate(iniObj: object, dir: string): string[] {
-    if (!path.isAbsolute(dir)) {
-      // NOTE Non-absolute path cannot reach here
-      // 'dir' must be an absolute path because it's existing config file's 'RealPath'
-      throw Error('FIX CALLER: dir argument should be an absolute path');
-    }
+    assert.strictEqual(
+        path.isAbsolute(dir), true, 'FIX CALLER: dir argument must be an absolute path');
 
     // Get file names from iniObj
     const getFileNames = (): string[] => {
@@ -203,6 +201,8 @@ export class LocatorRunner {
    * @brief A helper function to grep a filename ends with 'ext' within the given 'content' string.
    */
   public static searchWithExt = (ext: string, content: string): string[] => {
+    assert.notStrictEqual(ext.length, 0, 'FIX CALLER: ext must not be an empty string');
+
     // Don't remove this. It's to prevent 'content.split is not a function' error.
     // TODO Find more straightforward way to resolve an error
     content = content + '';
@@ -217,7 +217,9 @@ export class LocatorRunner {
    * @return string[] But practically the array size is only one or none
    */
   public static searchWithCommandOption =
-      (content: string, option?: string, ext?: string): string[] => {
+      (content: string, option: string, ext?: string): string[] => {
+        assert.notStrictEqual(option.length, 0, 'FIX CALLER: option must not be an empty string');
+
         // Don't remove this. It's to prevent 'content.split is not a function' error.
         // TODO Find more straightforward way to resolve an error
         content = content + '';
@@ -244,6 +246,9 @@ export class LocatorRunner {
    * @returns Artifact[] with paths
    */
   public run(iniObj: object, dir: string): Artifact[] {
+    assert.strictEqual(
+        path.isAbsolute(dir), true, 'FIX CALLER: dir argument must be an absolute path');
+
     let artifacts: Artifact[] = [];
 
     // Get Artifacts with {type, ext, path}
