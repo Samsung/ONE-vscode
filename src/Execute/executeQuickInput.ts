@@ -15,12 +15,14 @@
  */
 
 import * as vscode from 'vscode';
+import {BackendManager} from '../Backend/BackendManager';
 
 import {InferenceQuickInput} from './InferenceQuickInput';
 import {InferenceRunner} from './InferenceRunner';
 
-export async function runInferenceQuickInput(context: vscode.ExtensionContext): Promise<void> {
-  const quickInput = new InferenceQuickInput();
+export async function runInferenceQuickInput(
+    context: vscode.ExtensionContext, backendManager: BackendManager): Promise<void> {
+  const quickInput = new InferenceQuickInput(backendManager);
   await quickInput.collectInputs();
 
   const error = quickInput.getError();

@@ -16,7 +16,8 @@
 
 import * as vscode from 'vscode';
 
-import {backendRegistrationApi} from './Backend/API';
+import {Backend} from './Backend/Backend';
+import {BackendManager} from './Backend/BackendManager';
 import {CfgEditorPanel} from './CfgEditor/CfgEditorPanel';
 import {CircleViewerProvider} from './CircleGraph/CircleViewer';
 import {runInferenceQuickInput} from './Execute/executeQuickInput';
@@ -33,6 +34,9 @@ export function activate(context: vscode.ExtensionContext) {
   const tag = 'activate';
 
   Logger.info(tag, 'one-vscode activate OK');
+
+  const backendManager = new BackendManager();
+  context.subscriptions.push(backendManager);
 
   initOneExplorer(context);
 
@@ -60,7 +64,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   let inferenceCommand = vscode.commands.registerCommand('one.backend.infer', () => {
     Logger.info(tag, 'one infer model...');
-    runInferenceQuickInput(context);
+    runInferenceQuickInput(context, backendManager);
   });
   context.subscriptions.push(inferenceCommand);
 
@@ -95,8 +99,18 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(CircleViewerProvider.register(context));
 
-  // returning backend registration function that will be called by backend extensions
-  return backendRegistrationApi();
+  // RETURNING API
+  //
+  // Return one-vscode extension's api list
+  // The api is accessible via vscode.extensions.getExtension('one-vscode').exports
+  //
+  // REFERENCE
+  // https://code.visualstudio.com/api/references/vscode-api#extensions
+  return {
+    registerBackend(backend: Backend) {
+      backendManager.register(backend.name(), backend);
+    }
+  };
 }
 
 export function deactivate() {

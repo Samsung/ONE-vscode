@@ -16,8 +16,8 @@
 
 import * as vscode from 'vscode';
 
-import {globalBackendMap} from '../Backend/API';
 import {Backend} from '../Backend/Backend';
+import {BackendManager} from '../Backend/BackendManager';
 import {Executor} from '../Backend/Executor';
 import {Logger} from '../Utils/Logger';
 import {MultiStepInput} from '../Utils/MultiStepInput';
@@ -33,8 +33,11 @@ class InferenceQuickInput {
   modelPath: vscode.Uri|undefined = undefined;
   inputSpec: string|undefined = undefined;
   error: string|undefined = undefined;
+  backendManager: BackendManager;
 
-  constructor() {}
+  constructor(backendManager: BackendManager) {
+    this.backendManager = backendManager;
+  }
 
   getBackend(): Backend {
     if (this.error !== undefined || this.backend === undefined) {
@@ -69,20 +72,14 @@ class InferenceQuickInput {
         });
   }
 
-  getAllBackendNames(): string[] {
-    return Object.keys(globalBackendMap);
-  }
 
   getQuickPickItems(items: string[]): vscode.QuickPickItem[] {
     return items.map(label => ({label}));
   }
 
-  getBackendFromGlobal(key: string): Backend {
-    return globalBackendMap[key];
-  }
 
   async pickBackend(input: MultiStepInput, state: Partial<State>) {
-    const items = this.getQuickPickItems(this.getAllBackendNames());
+    const items = this.getQuickPickItems(this.backendManager.getBackendNames());
     state.selectedItem = await input.showQuickPick({
       title: 'Choose Executor Toolchain',
       step: 1,
@@ -92,7 +89,7 @@ class InferenceQuickInput {
       shouldResume: this.shouldResume
     });
 
-    this.backend = this.getBackendFromGlobal(state.selectedItem.label);
+    this.backend = this.backendManager.getBackend(state.selectedItem.label);
 
     if (this.backend === undefined) {
       this.error = 'Backend to infer is not chosen. Please check once again.';
