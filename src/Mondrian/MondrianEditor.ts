@@ -18,6 +18,7 @@ import * as vscode from 'vscode';
 import {getNonce} from '../Utils/external/Nonce';
 import {getUri} from '../Utils/external/Uri';
 
+/* istanbul ignore next */
 export class MondrianEditorProvider implements vscode.CustomTextEditorProvider {
   public static register(context: vscode.ExtensionContext): vscode.Disposable {
     const provider = new MondrianEditorProvider(context);
