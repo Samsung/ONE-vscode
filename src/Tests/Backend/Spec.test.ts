@@ -74,8 +74,7 @@ suite('Spec', function() {
   suite('sdbSpec', function() {
     const extensionId = 'Samsung.one-vscode';
     const ext = vscode.extensions.getExtension(extensionId) as vscode.Extension<any>;
-    const deviceListCom =
-        vscode.Uri.joinPath(ext!.extensionUri, 'res', 'script', 'sdbSpecList.sh').fsPath;
+    const deviceListCom = vscode.Uri.joinPath(ext!.extensionUri, 'script', 'sdbSpecList.sh').fsPath;
     assert.isObject<BridgeSpec>(sdbSpec);
     assert.strictEqual(sdbSpec.name, 'sdb');
     assert.strictEqual(sdbSpec.deviceListCmd.str(), deviceListCom);
