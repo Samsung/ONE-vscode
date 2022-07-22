@@ -21,6 +21,7 @@ type Task = (resolve: (value: unknown) => void, reject: (reason?: any) => void) 
 
 const logTag = 'InfernceShowBox';
 
+/* istanbul ignore next */
 class InfernceShowBox {
   constructor() {}
 
