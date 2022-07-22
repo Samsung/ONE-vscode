@@ -372,7 +372,8 @@
       ".{github,nyc_output,vscode,vscode-test}",
       "{media,infra}/**",
       "coverage/**",
-      "src/Tests/**"
+      "src/Tests/**",
+      "**/external/**"
     ],
     "include": [
       "src/**/*.ts",
