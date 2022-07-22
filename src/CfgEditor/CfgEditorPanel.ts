@@ -44,7 +44,7 @@ import * as vscode from 'vscode';
 import {CfgData} from './CfgData';
 import {CfgHtmlBuilder} from './CfgHtmlBuilder';
 
-
+/* istanbul ignore next */
 export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
   private _disposables: vscode.Disposable[] = [];
   private _oneConfig: CfgData = new CfgData();
