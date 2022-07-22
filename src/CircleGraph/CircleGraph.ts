@@ -18,6 +18,7 @@ import * as vscode from 'vscode';
 
 import {CircleGraphCtrl} from './CircleGraphCtrl';
 
+/* istanbul ignore next */
 export class CircleGraphPanel extends CircleGraphCtrl {
   public static currentPanel: CircleGraphPanel|undefined;
   public static readonly viewType = 'CircleGraphPanel';

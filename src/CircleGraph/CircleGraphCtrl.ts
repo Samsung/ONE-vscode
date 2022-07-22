@@ -58,6 +58,7 @@ export interface CircleGraphEvent {
   onFinishLoadModel(): void;
 }
 
+/* istanbul ignore next */
 export class CircleGraphCtrl {
   protected static readonly folderMediaCircleGraph = 'media/CircleGraph';
   protected static readonly folderMediaCircleGraphExt = 'media/CircleGraph/external';
