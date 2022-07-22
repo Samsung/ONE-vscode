@@ -22,7 +22,6 @@ import * as helpers from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
 import {Job} from './Job';
-import {JobConfig} from './JobConfig';
 import {ToolArgs} from './ToolArgs';
 import {ToolRunner} from './ToolRunner';
 import {WorkJobs} from './WorkJobs';
@@ -117,9 +116,10 @@ export class JobRunner extends EventEmitter {
       return;
     }
 
+    // Show the cancel button if all jobs are cancelable.
     let isCancellable = false;
-    const jobConfig = jobs.filter((value) => value instanceof JobConfig);
-    if (jobConfig.length === jobs.length) {
+    const jobCancelable = jobs.filter((value) => value.isCancelable);
+    if (jobCancelable.length === jobs.length) {
       isCancellable = true;
     }
 

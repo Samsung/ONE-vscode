@@ -28,6 +28,7 @@ class JobConfig extends JobCommand {
     this.jobType = Job.Type.tConfig;
     this.name = 'config';
     this.valid = true;
+    this.isCancelable = true;
   }
 }
 

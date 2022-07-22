@@ -28,6 +28,7 @@ export interface Job {
   toolArgs: ToolArgs;
   root: boolean;
   workDir: string;
+  isCancelable: boolean;
   successCallback?: JobCallback;
   failureCallback?: JobCallback;
 }
