@@ -15,20 +15,20 @@
  */
 
 import {Command} from '../Backend/Command';
-import {Job} from './Job';
-import {JobCommand} from './JobCommand';
+import {Job} from '../Project/Job';
+import {JobCommand} from '../Project/JobCommand';
 
-class JobInstall extends JobCommand {
+class JobPrerequisites extends JobCommand {
   jobType: Job.Type;
   name: string;
   valid: boolean;
 
   constructor(cmd: Command) {
     super(cmd);
-    this.jobType = Job.Type.tInstall;
-    this.name = 'install';
+    this.jobType = Job.Type.tPrerequisites;
+    this.name = 'prerequisites';
     this.valid = true;
   }
 }
 
-export {JobInstall};
+export {JobPrerequisites};

@@ -18,12 +18,12 @@ import * as vscode from 'vscode';
 
 import {Toolchain} from '../Backend/Toolchain';
 import {Job} from '../Project/Job';
-import {JobInstall} from '../Project/JobInstall';
-import {JobUninstall} from '../Project/JobUninstall';
 import {Logger} from '../Utils/Logger';
 import {showInstallQuickInput} from '../View/InstallQuickInput';
 
 import {DefaultToolchain} from './DefaultToolchain';
+import {JobInstall} from './JobInstall';
+import {JobUninstall} from './JobUninstall';
 import {gToolchainEnvMap, ToolchainEnv} from './ToolchainEnv';
 
 

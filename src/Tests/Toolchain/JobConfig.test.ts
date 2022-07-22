@@ -18,22 +18,22 @@ import {assert} from 'chai';
 
 import {Command} from '../../Backend/Command';
 import {Job} from '../../Project/Job';
-import {JobUninstall} from '../../Project/JobUninstall';
+import {JobConfig} from '../../Toolchain/JobConfig';
 
 suite('Project', function() {
-  suite('JobUninstall', function() {
+  suite('JobConfig', function() {
     suite('#contructor()', function() {
       test('is contructed with command', function() {
-        let cmd = new Command('apt-get');
-        cmd.push('purge');
-        cmd.push('pkgname');
+        let cmd = new Command('onecc');
+        cmd.push('--config');
+        cmd.push('file.cfg');
 
-        let job = new JobUninstall(cmd);
+        let job = new JobConfig(cmd);
         assert.deepStrictEqual(job.tool, cmd[0]);
         assert.deepStrictEqual(job.toolArgs[0], cmd[1]);
         assert.deepStrictEqual(job.toolArgs[1], cmd[2]);
-        assert.deepStrictEqual(job.name, 'uninstall');
-        assert.equal(job.jobType, Job.Type.tUninstall);
+        assert.deepStrictEqual(job.name, 'config');
+        assert.equal(job.jobType, Job.Type.tConfig);
         assert.isTrue(job.valid);
       });
     });
