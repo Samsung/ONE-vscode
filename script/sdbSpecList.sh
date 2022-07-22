@@ -6,9 +6,9 @@
 # On `sdb devices`, it will show result below.
 #
 # List of devices attached 
-# 192.168.223.1:26101 	device    	0
-# emulator-1            emulator    0
-# 192.168.224.1:26101 	device    	0
+# 1.2.3.4:26101 	device    	0
+# emulator-1            emulator        0
+# 1.2.3.4:26101 	device    	0
 #
 # First colmn is serialNumber which is unique key for device.
 # Second colmn is state.
