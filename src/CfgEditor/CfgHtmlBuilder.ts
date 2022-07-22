@@ -30,13 +30,27 @@ export class CfgHtmlBuilder {
 
   async build(): Promise<string> {
     const nonce = getNonce();
-    const toolkitUri = this.getToolkitUri();
-    const codiconUri = this.getCodiconUri();
-    const jsUri = this.getJsUri();
-    const cssUri = this.getCssUri();
-    const htmlUri = this.getHtmlUri();
+    const toolkitUri = getUri(this.webview, this.extensionUri, [
+      'node_modules',
+      '@vscode',
+      'webview-ui-toolkit',
+      'dist',
+      'toolkit.js',
+    ]);
 
-    let html = await this.getHtml(htmlUri);
+    const codiconUri = getUri(this.webview, this.extensionUri, [
+      'node_modules',
+      '@vscode',
+      'codicons',
+      'dist',
+      'codicon.css',
+    ]);
+
+    const jsUri = getUri(this.webview, this.extensionUri, ['media', 'CfgEditor', 'index.js']);
+    const cssUri = getUri(this.webview, this.extensionUri, ['media', 'CfgEditor', 'cfgeditor.css']);
+    const htmlUri = vscode.Uri.joinPath(this.extensionUri, 'media/CfgEditor/cfgeditor.html');
+
+    let html = Buffer.from(await vscode.workspace.fs.readFile(htmlUri)).toString();
 
     // TODO: extract this to replaceHtml() function
     // Apply js and cs to html
@@ -49,40 +63,4 @@ export class CfgHtmlBuilder {
 
     return html;
   };
-
-  getToolkitUri(): vscode.Uri {
-    return getUri(this.webview, this.extensionUri, [
-      'node_modules',
-      '@vscode',
-      'webview-ui-toolkit',
-      'dist',
-      'toolkit.js',
-    ]);
-  }
-
-  getCodiconUri(): vscode.Uri {
-    return getUri(this.webview, this.extensionUri, [
-      'node_modules',
-      '@vscode',
-      'codicons',
-      'dist',
-      'codicon.css',
-    ]);
-  }
-
-  getJsUri(): vscode.Uri {
-    return getUri(this.webview, this.extensionUri, ['media', 'CfgEditor', 'index.js']);
-  }
-
-  getCssUri(): vscode.Uri {
-    return getUri(this.webview, this.extensionUri, ['media', 'CfgEditor', 'cfgeditor.css']);
-  }
-
-  getHtmlUri(): vscode.Uri {
-    return vscode.Uri.joinPath(this.extensionUri, 'media/CfgEditor/cfgeditor.html');
-  }
-
-  async getHtml(htmlUri: vscode.Uri): Promise<string> {
-    return Buffer.from(await vscode.workspace.fs.readFile(htmlUri)).toString();
-  }
 }
