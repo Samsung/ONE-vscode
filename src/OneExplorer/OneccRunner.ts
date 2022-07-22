@@ -22,6 +22,7 @@ import {ToolArgs} from '../Project/ToolArgs';
 import {SuccessResult, ToolRunner} from '../Project/ToolRunner';
 import {Balloon} from '../Utils/Balloon';
 
+/* istanbul ignore next */
 export class OneccRunner extends EventEmitter {
   private startRunningOnecc: string = 'START_RUNNING_ONECC';
   private finishedRunningOnecc: string = 'FINISHED_RUNNING_ONECC';

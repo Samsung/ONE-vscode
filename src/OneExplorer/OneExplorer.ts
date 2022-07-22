@@ -376,6 +376,7 @@ export class OneNode extends vscode.TreeItem {
   }
 }
 
+/* istanbul ignore next */
 export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
   private _onDidChangeTreeData: vscode.EventEmitter<OneNode|undefined|void> =
       new vscode.EventEmitter<OneNode|undefined|void>();
@@ -612,6 +613,7 @@ input_path=${modelName}.${extName}
   }
 };
 
+/* istanbul ignore next */
 export function initOneExplorer(context: vscode.ExtensionContext) {
   // TODO Support multi-root workspace
   let workspaceRoot: vscode.Uri|undefined = undefined;
