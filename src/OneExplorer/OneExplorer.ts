@@ -221,18 +221,25 @@ class BaseModelNode extends Node {
   readonly type = NodeType.baseModel;
 
   // Do not open file as default
-  openViewType: string|undefined = undefined;
+  static defaultOpenViewType = undefined;
   // Display 'symbol-variable' icon to represent model file as default
-  icon = new vscode.ThemeIcon('symbol-variable');
+  static defaultIcon = new vscode.ThemeIcon('symbol-variable');
   // Show file always as default
-  canHide = false;
+  static defaultCanHide = false;
 
-  constructor(uri: vscode.Uri, openViewType?: string, icon?: vscode.ThemeIcon, canHide?: boolean) {
+  openViewType: string|undefined = BaseModelNode.defaultOpenViewType;
+  icon = BaseModelNode.defaultIcon;
+  canHide = BaseModelNode.defaultCanHide;
+
+  constructor(
+      uri: vscode.Uri, openViewType: string|undefined = BaseModelNode.defaultOpenViewType,
+      icon: vscode.ThemeIcon = BaseModelNode.defaultIcon,
+      canHide: boolean = BaseModelNode.defaultCanHide) {
     super(uri);
 
-    this.openViewType = openViewType ? openViewType : this.openViewType;
-    this.icon = icon ? icon : this.icon;
-    this.canHide = canHide ? canHide : this.canHide;
+    this.openViewType = openViewType;
+    this.icon = icon;
+    this.canHide = canHide;
   }
 
   /**
@@ -266,18 +273,25 @@ class ConfigNode extends Node {
   readonly type = NodeType.config;
 
   // Open file with cfg.editor as default
-  openViewType = 'cfg.editor';
+  static defaultOpenViewType = 'cfg.editor';
   // Display gear icon as default
-  icon = new vscode.ThemeIcon('gear');
+  static defaultIcon = new vscode.ThemeIcon('gear');
   // Show file always as default
-  canHide = false;
+  static defaultCanHide = false;
 
-  constructor(uri: vscode.Uri, openViewType?: string, icon?: vscode.ThemeIcon, canHide?: boolean) {
+  openViewType = ConfigNode.defaultOpenViewType;
+  icon = ConfigNode.defaultIcon;
+  canHide = ConfigNode.defaultCanHide;
+
+  constructor(
+      uri: vscode.Uri, openViewType: string = ConfigNode.defaultOpenViewType,
+      icon: vscode.ThemeIcon = ConfigNode.defaultIcon,
+      canHide: boolean = ConfigNode.defaultCanHide) {
     super(uri);
 
-    this.openViewType = openViewType ? openViewType : this.openViewType;
-    this.icon = icon ? icon : this.icon;
-    this.canHide = canHide ? canHide : this.canHide;
+    this.openViewType = openViewType;
+    this.icon = icon;
+    this.canHide = canHide;
   }
 
   /**
@@ -304,18 +318,25 @@ class ProductNode extends Node {
   readonly type = NodeType.product;
 
   // Do not open file as default
-  openViewType: string|undefined = undefined;
+  static defaultOpenViewType = undefined;
   // Display file icon as default
-  icon = vscode.ThemeIcon.File;
+  static defaultIcon = vscode.ThemeIcon.File;
   // Show file always as default
-  canHide = false;
+  static defaultCanHide = false;
 
-  constructor(uri: vscode.Uri, openViewType?: string, icon?: vscode.ThemeIcon, canHide?: boolean) {
+  openViewType: string|undefined = ProductNode.defaultOpenViewType;
+  icon = ProductNode.defaultIcon;
+  canHide = ProductNode.defaultCanHide;
+
+  constructor(
+      uri: vscode.Uri, openViewType: string|undefined = ProductNode.defaultOpenViewType,
+      icon: vscode.ThemeIcon = ProductNode.defaultIcon,
+      canHide: boolean = ProductNode.defaultCanHide) {
     super(uri);
 
-    this.openViewType = openViewType ? openViewType : this.openViewType;
-    this.icon = icon ? icon : this.icon;
-    this.canHide = canHide ? canHide : this.canHide;
+    this.openViewType = openViewType;
+    this.icon = icon;
+    this.canHide = canHide;
   }
 
   buildChildren = (): void => {
