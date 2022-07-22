@@ -22,6 +22,7 @@ import {CircleGraphCtrl} from './CircleGraphCtrl';
 /**
  * @brief Viewer control with CircleGraphCtrl
  */
+/* istanbul ignore next */
 class CircleViewer extends CircleGraphCtrl {
   private readonly _panel: vscode.WebviewPanel;
 
@@ -44,6 +45,7 @@ class CircleViewer extends CircleGraphCtrl {
  * @note  Actual content is handled by CircleGraphCtrl itself so documment
  *        only provides URI of the file
  */
+/* istanbul ignore next */
 export class CircleViewerDocument implements vscode.CustomDocument {
   private readonly _uri: vscode.Uri;
   private _circleViewer: CircleViewer[];
@@ -94,6 +96,7 @@ export class CircleViewerDocument implements vscode.CustomDocument {
 /**
  * @brief Circle model viewer readonly Provider
  */
+/* istanbul ignore next */
 export class CircleViewerProvider implements
     vscode.CustomReadonlyEditorProvider<CircleViewerDocument> {
   public static readonly viewType = 'onevscode.circleViewer';
