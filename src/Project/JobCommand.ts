@@ -30,6 +30,7 @@ class JobCommand implements Job {
   toolArgs: ToolArgs;
   root: boolean;
   workDir: string;
+  isCancelable: boolean;
   successCallback?: JobCallback;
   failureCallback?: JobCallback;
 
@@ -39,6 +40,7 @@ class JobCommand implements Job {
     this.name = '';
     this.valid = false;
     this.workDir = require('os').homedir();
+    this.isCancelable = false;
 
     // init by cmd
     assert(cmd.length > 0);
