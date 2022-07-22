@@ -74,7 +74,9 @@ class BridgeSpec {
 }
 
 // TODO add more BridgeSpec like docker or ADB......
-const sdbSpec = new BridgeSpec('sdb', vscode.Uri.joinPath(ext?.extensionUri, 'res', 'script', 'sdbSpecList.sh').fsPath, 'sdb shell');
+const sdbSpec = new BridgeSpec(
+    'sdb', vscode.Uri.joinPath(ext!.extensionUri, 'res', 'script', 'sdbSpecList.sh').fsPath,
+    'sdb shell');
 
 class HostPCSpec extends DeviceSpec {
   constructor(hw: string, sw: string) {
