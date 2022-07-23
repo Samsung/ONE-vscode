@@ -16,7 +16,7 @@
 
 import {displayCfgToEditor} from './displaycfg.js';
 import oneOptimizationList from './one-optimizations.json' assert {type : 'json'};
-import {applyUpdates, updateCodegen, updateImportInputModelType, updateImportKERAS, updateImportONNX, updateImportPB, updateImportSAVED, updateImportTFLITE, updateOptimize, updateProfile, updateQuantizeActionType, updateQuantizeDefault, updateSteps} from './updateContent.js';
+import {applyUpdates, updateCodegen, updateImportInputModelType, updateImportKERAS, updateImportONNX, updateImportPB, updateImportSAVED, updateImportTFLITE, updateOptimize, updateProfile, updateQuantizeActionType, updateQuantizeCopy, updateQuantizeDefault, updateQuantizeForce, updateSteps} from './updateContent.js';
 import {updateImportUI, updateQuantizeUI, updateStepUI} from './updateUI.js';
 import {postMessageToVsCode} from './vscodeapi.js';
 
@@ -33,6 +33,7 @@ function main() {
   registerQuantizeOptions();
   registerCodegenOptions();
   registerProfileOptions();
+  registerCodiconEvents();
 
   // event from vscode extension
   window.addEventListener('message', event => {
@@ -40,6 +41,22 @@ function main() {
     switch (message.type) {
       case 'displayCfgToEditor':
         displayCfgToEditor(message.text);
+        break;
+      case 'applyDialogPath':
+        document.getElementById(message.elemID).value = message.path;
+        switch (message.step) {
+          case 'ImportPB': updateImportPB(); break;
+          case 'ImportSAVED': updateImportSAVED(); break;
+          case 'ImportKERAS': updateImportKERAS(); break;
+          case 'ImportTFLITE': updateImportTFLITE(); break;
+          case 'ImportONNX': updateImportONNX(); break;
+          case 'Optimize': updateOptimize(); break;
+          case 'QuantizeDefault': updateQuantizeDefault(); break;
+          case 'QuantizeForce': updateQuantizeForce(); break;
+          case 'QuantizeCopy': updateQuantizeCopy(); break;
+          default: break;
+        }
+        applyUpdates();
         break;
       default:
         break;
@@ -134,23 +151,27 @@ function registerPBOptions() {
     updateImportPB();
     applyUpdates();
   });
-  pbInputPath.addEventListener('change', function() {
+  pbInputPath.addEventListener('input', function() {
     updateImportPB();
     applyUpdates();
   });
-  pbOutputPath.addEventListener('change', function() {
+  pbInputPath.addEventListener('select', function() {
     updateImportPB();
     applyUpdates();
   });
-  pbInputArrays.addEventListener('change', function() {
+  pbOutputPath.addEventListener('input', function() {
     updateImportPB();
     applyUpdates();
   });
-  pbOutputArrays.addEventListener('change', function() {
+  pbInputArrays.addEventListener('input', function() {
     updateImportPB();
     applyUpdates();
   });
-  pbInputShapes.addEventListener('change', function() {
+  pbOutputArrays.addEventListener('input', function() {
+    updateImportPB();
+    applyUpdates();
+  });
+  pbInputShapes.addEventListener('input', function() {
     updateImportPB();
     applyUpdates();
   });
@@ -160,11 +181,11 @@ function registerSAVEDOptions() {
   const savedInputPath = document.getElementById('SAVEDInputPath');
   const savedOutputPath = document.getElementById('SAVEDOutputPath');
 
-  savedInputPath.addEventListener('change', function() {
+  savedInputPath.addEventListener('input', function() {
     updateImportSAVED();
     applyUpdates();
   });
-  savedOutputPath.addEventListener('change', function() {
+  savedOutputPath.addEventListener('input', function() {
     updateImportSAVED();
     applyUpdates();
   });
@@ -174,11 +195,11 @@ function registerKERASOptions() {
   const kerasInputPath = document.getElementById('KERASInputPath');
   const kerasOutputPath = document.getElementById('KERASOutputPath');
 
-  kerasInputPath.addEventListener('change', function() {
+  kerasInputPath.addEventListener('input', function() {
     updateImportKERAS();
     applyUpdates();
   });
-  kerasOutputPath.addEventListener('change', function() {
+  kerasOutputPath.addEventListener('input', function() {
     updateImportKERAS();
     applyUpdates();
   });
@@ -188,11 +209,11 @@ function registerTFLITEOptions() {
   const tfliteInputPath = document.getElementById('TFLITEInputPath');
   const tfliteOutputPath = document.getElementById('TFLITEOutputPath');
 
-  tfliteInputPath.addEventListener('change', function() {
+  tfliteInputPath.addEventListener('input', function() {
     updateImportTFLITE();
     applyUpdates();
   });
-  tfliteOutputPath.addEventListener('change', function() {
+  tfliteOutputPath.addEventListener('input', function() {
     updateImportTFLITE();
     applyUpdates();
   });
@@ -205,11 +226,11 @@ function registerONNXOptions() {
   const onnxUnrollRNN = document.getElementById('ONNXUnrollRNN');
   const onnxUnrollLSTM = document.getElementById('ONNXUnrollLSTM');
 
-  onnxInputPath.addEventListener('change', function() {
+  onnxInputPath.addEventListener('input', function() {
     updateImportONNX();
     applyUpdates();
   });
-  onnxOutputPath.addEventListener('change', function() {
+  onnxOutputPath.addEventListener('input', function() {
     updateImportONNX();
     applyUpdates();
   });
@@ -232,12 +253,12 @@ function registerOptimizeOptions() {
   const optimizeOutputPath = document.getElementById('optimizeOutputPath');
   const basicOptimizeTable = document.getElementById('basicOptimizeTable');
 
-  optimizeInputPath.addEventListener('change', function() {
+  optimizeInputPath.addEventListener('input', function() {
     updateOptimize();
     applyUpdates();
   });
 
-  optimizeOutputPath.addEventListener('change', function() {
+  optimizeOutputPath.addEventListener('input', function() {
     updateOptimize();
     applyUpdates();
   });
@@ -318,7 +339,7 @@ function registerDefaultQuantOptions() {
     });
   });
   defaultQuantTextFieldList.forEach((id) => {
-    document.getElementById(id).addEventListener('change', function() {
+    document.getElementById(id).addEventListener('input', function() {
       updateQuantizeDefault();
       applyUpdates();
     });
@@ -339,7 +360,7 @@ function registerForceQuantOptions() {
     });
   });
   forceQuantTextFieldList.forEach((id) => {
-    document.getElementById(id).addEventListener('change', function() {
+    document.getElementById(id).addEventListener('input', function() {
       updateQuantizeDefault();
       applyUpdates();
     });
@@ -359,7 +380,7 @@ function registerCopyQuantOptions() {
     });
   });
   copyQuantTextFieldList.forEach((id) => {
-    document.getElementById(id).addEventListener('change', function() {
+    document.getElementById(id).addEventListener('input', function() {
       updateQuantizeDefault();
       applyUpdates();
     });
@@ -370,11 +391,11 @@ function registerCodegenOptions() {
   const codegenBackend = document.getElementById('codegenBackend');
   const codegenCommand = document.getElementById('codegenCommand');
 
-  codegenBackend.addEventListener('change', function() {
+  codegenBackend.addEventListener('input', function() {
     updateCodegen();
     applyUpdates();
   });
-  codegenCommand.addEventListener('change', function() {
+  codegenCommand.addEventListener('input', function() {
     updateCodegen();
     applyUpdates();
   });
@@ -384,12 +405,77 @@ function registerProfileOptions() {
   const profileBackend = document.getElementById('profileBackend');
   const profileCommand = document.getElementById('profileCommand');
 
-  profileBackend.addEventListener('change', function() {
+  profileBackend.addEventListener('input', function() {
     updateProfile();
     applyUpdates();
   });
-  profileCommand.addEventListener('change', function() {
+  profileCommand.addEventListener('input', function() {
     updateProfile();
     applyUpdates();
   });
+}
+
+function registerCodiconEvents() {
+  document.getElementById('PBInputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({type: 'getPathByDialog', isFolder: false, ext: ['pb'], oldPath: document.getElementById('PBInputPath').value, postStep: "ImportPB", postElemID: 'PBInputPath'});
+  });
+  document.getElementById('PBOutputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({type: 'getPathByDialog', isFolder: false, ext: ['circle'], oldPath: document.getElementById('PBOutputPath').value, postStep: "ImportPB", postElemID: 'PBOutputPath'});
+  });
+  document.getElementById('SAVEDInputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({type: 'getPathByDialog', isFolder: true, ext: [], oldPath: document.getElementById('SAVEDInputPath').value, postStep: "ImportSAVED", postElemID: 'SAVEDInputPath'});
+  });  
+  document.getElementById('SAVEDOutputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({type: 'getPathByDialog', isFolder: false, ext: ['circle'], oldPath: document.getElementById('SAVEDOutputPath').value, postStep: "ImportSAVED", postElemID: 'SAVEDOutputPath'});
+  });
+  document.getElementById('KERASInputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({type: 'getPathByDialog', isFolder: false, ext: ['h5'], oldPath: document.getElementById('KERASInputPath').value, postStep: "ImportKERAS", postElemID: 'KERASInputPath'});
+  });
+  document.getElementById('KERASOutputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({type: 'getPathByDialog', isFolder: false, ext: ['circle'], oldPath: document.getElementById('KERASOutputPath').value, postStep: "ImportKERAS", postElemID: 'KERASOutputPath'});
+  });
+  document.getElementById('TFLITEInputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({type: 'getPathByDialog', isFolder: false, ext: ['tflite'], oldPath: document.getElementById('TFLITEInputPath').value, postStep: "ImportTFLITE", postElemID: 'TFLITEInputPath'});
+  });
+  document.getElementById('TFLITEOutputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({type: 'getPathByDialog', isFolder: false, ext: ['circle'], oldPath: document.getElementById('TFLITEOutputPath').value, postStep: "ImportTFLITE", postElemID: 'TFLITEOutputPath'});
+  });
+  document.getElementById('ONNXInputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({type: 'getPathByDialog', isFolder: false, ext: ['onnx'], oldPath: document.getElementById('ONNXInputPath').value, postStep: "ImportONNX", postElemID: 'ONNXInputPath'});
+  });
+  document.getElementById('ONNXOutputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({type: 'getPathByDialog', isFolder: false, ext: ['circle'], oldPath: document.getElementById('ONNXOutputPath').value, postStep: "ImportONNX", postElemID: 'ONNXOutputPath'});
+  });
+  document.getElementById('optimizeInputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({type: 'getPathByDialog', isFolder: false, ext: ['circle'], oldPath: document.getElementById('optimizeInputPath').value, postStep: "Optimize", postElemID: 'optimizeInputPath'});
+  });
+  document.getElementById('optimizeOutputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({type: 'getPathByDialog', isFolder: false, ext: ['circle'], oldPath: document.getElementById('optimizeOutputPath').value, postStep: "Optimize", postElemID: 'optimizeOutputPath'});
+  });
+  document.getElementById('DefaultQuantInputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({type: 'getPathByDialog', isFolder: false, ext: ['circle'], oldPath: document.getElementById('DefaultQuantInputPath').value, postStep: "QuantizeDefault", postElemID: 'DefaultQuantInputPath'});
+  });
+  document.getElementById('DefaultQuantOutputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({type: 'getPathByDialog', isFolder: false, ext: ['circle'], oldPath: document.getElementById('DefaultQuantOutputPath').value, postStep: "QuantizeDefault", postElemID: 'DefaultQuantOutputPath'});
+  });
+  document.getElementById('DefaultQuantQuantConfigSearch').addEventListener('click', function() {
+    postMessageToVsCode({type: 'getPathByDialog', isFolder: false, ext: ['json'], oldPath: document.getElementById('DefaultQuantQuantConfig').value, postStep: "QuantizeDefault", postElemID: 'DefaultQuantQuantConfig'});
+  });
+  document.getElementById('DefaultQuantInputDataSearch').addEventListener('click', function() {
+    postMessageToVsCode({type: 'getPathByDialog', isFolder: document.getElementById('DefaultQuantInputDataFormat').value === 'dir', ext: ['h5'], oldPath: document.getElementById('DefaultQuantInputData').value, postStep: "QuantizeDefault", postElemID: 'DefaultQuantInputData'});
+  });
+  document.getElementById('ForceQuantInputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({type: 'getPathByDialog', isFolder: false, ext: ['circle'], oldPath: document.getElementById('ForceQuantInputPath').value, postStep: "QuantizeForce", postElemID: 'ForceQuantInputPath'});
+  });
+  document.getElementById('ForceQuantOutputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({type: 'getPathByDialog', isFolder: false, ext: ['circle'], oldPath: document.getElementById('ForceQuantOutputPath').value, postStep: "QuantizeForce", postElemID: 'ForceQuantOutputPath'});
+  });
+  document.getElementById('CopyQuantInputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({type: 'getPathByDialog', isFolder: false, ext: ['circle'], oldPath: document.getElementById('CopyQuantInputPath').value, postStep: "QuantizeCopy", postElemID: 'CopyQuantInputPath'});
+  });
+  document.getElementById('CopyQuantOutputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({type: 'getPathByDialog', isFolder: false, ext: ['circle'], oldPath: document.getElementById('CopyQuantOutputPath').value, postStep: "QuantizeCopy", postElemID: 'CopyQuantOutputPath'});
+  });
+
+  //document.getElementById('PBInputArrays').addEventListener('mouseover', )
 }

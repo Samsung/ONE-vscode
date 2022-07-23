@@ -89,15 +89,15 @@ limitations under the License.
             </div>
             <div class="basic" id="optionImportPBBasic">
                 <div class="option">
-                    <vscode-text-field id="PBInputPath" startIcon="true" size="50" placeholder="">
+                    <vscode-text-field id="PBInputPath" startIcon="true" size="55" placeholder="">
                         Input Path
-                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        <span id="PBInputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
                     </vscode-text-field>
                 </div>
                 <div class="option">
-                    <vscode-text-field id="PBOutputPath" startIcon="true" size="50" placeholder="">
+                    <vscode-text-field id="PBOutputPath" startIcon="true" size="55" placeholder="">
                         Output Path
-                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        <span id="PBOutputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
                     </vscode-text-field>
                 </div>
                 <div class="option">
@@ -108,15 +108,13 @@ limitations under the License.
                     </vscode-radio-group>
                 </div>
                 <div class="option">
-                    <vscode-text-field id="PBInputArrays" startIcon="true" size="50" placeholder="semi-colon separated input names">
+                    <vscode-text-field id="PBInputArrays" startIcon="true" size="55" placeholder="semi-colon separated input names">
                         Input Arrays
-                        <span slot="end" class="codicon codicon-question" style="cursor: pointer"></span>
                     </vscode-text-field>
                 </div>
                 <div class="option">
-                    <vscode-text-field id="PBOutputArrays" startIcon="true" size="50" placeholder="semi-colon separated output names">
+                    <vscode-text-field id="PBOutputArrays" startIcon="true" size="55" placeholder="semi-colon separated output names">
                         Output Arrays
-                        <span slot="end" class="codicon codicon-question" style="cursor: pointer"></span>
                     </vscode-text-field>
                 </div>
             </div>
@@ -125,65 +123,64 @@ limitations under the License.
                     <span>Advanced Options</span>
                 </div>
                 <div class="option">
-                    <vscode-text-field id="PBInputShapes" startIcon="true" size="50" placeholder="semi-colon separated input shapes (e.g. 1,299,299,3;1,1001)">
+                    <vscode-text-field id="PBInputShapes" startIcon="true" size="55" placeholder="semi-colon separated input shapes (e.g. 1,299,299,3;1,1001)">
                         Input Shapes (Optional)
-                        <span slot="end" class="codicon codicon-question" style="cursor: pointer"></span>
                     </vscode-text-field>
                 </div>
             </div>
             <div class="basic" id="optionImportSAVEDBasic">
                 <div class="option">
-                    <vscode-text-field id="SAVEDInputPath" startIcon="true" size="50" placeholder="">
+                    <vscode-text-field id="SAVEDInputPath" startIcon="true" size="55" placeholder="">
                         Input Path
-                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        <span id="SAVEDInputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
                     </vscode-text-field>
                 </div>
                 <div class="option">
-                    <vscode-text-field id="SAVEDOutputPath" startIcon="true" size="50" placeholder="">
+                    <vscode-text-field id="SAVEDOutputPath" startIcon="true" size="55" placeholder="">
                         Output Path
-                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        <span id="SAVEDOutputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
                     </vscode-text-field>
                 </div>
             </div>
             <div class="basic" id="optionImportKERASBasic">
                 <div class="option">
-                    <vscode-text-field id="KERASInputPath" startIcon="true" size="50" placeholder="">
+                    <vscode-text-field id="KERASInputPath" startIcon="true" size="55" placeholder="">
                         Input Path
-                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        <span id="KERASInputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
                     </vscode-text-field>
                 </div>
                 <div class="option">
-                    <vscode-text-field id="KERASOutputPath" startIcon="true" size="50" placeholder="">
+                    <vscode-text-field id="KERASOutputPath" startIcon="true" size="55" placeholder="">
                         Output Path
-                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        <span id="KERASOutputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
                     </vscode-text-field>
                 </div>
             </div>
             <div class="basic" id="optionImportTFLITEBasic">
                 <div class="option">
-                    <vscode-text-field id="TFLITEInputPath" startIcon="true" size="50" placeholder="">
+                    <vscode-text-field id="TFLITEInputPath" startIcon="true" size="55" placeholder="">
                         Input Path
-                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        <span id="TFLITEInputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
                     </vscode-text-field>
                 </div>
                 <div class="option">
-                    <vscode-text-field id="TFLITEOutputPath" startIcon="true" size="50" placeholder="">
+                    <vscode-text-field id="TFLITEOutputPath" startIcon="true" size="55" placeholder="">
                         Output Path
-                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        <span id="TFLITEOutputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
                     </vscode-text-field>
                 </div>
             </div>
             <div class="basic" id="optionImportONNXBasic">
                 <div class="option">
-                    <vscode-text-field id="ONNXInputPath" startIcon="true" size="50" placeholder="">
+                    <vscode-text-field id="ONNXInputPath" startIcon="true" size="55" placeholder="">
                         Input Path
-                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        <span id="ONNXInputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
                     </vscode-text-field>
                 </div>
                 <div class="option">
-                    <vscode-text-field id="ONNXOutputPath" startIcon="true" size="50" placeholder="">
+                    <vscode-text-field id="ONNXOutputPath" startIcon="true" size="55" placeholder="">
                         Output Path
-                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        <span id="ONNXOutputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
                     </vscode-text-field>
                 </div>
             </div>
@@ -195,19 +192,31 @@ limitations under the License.
                     <vscode-checkbox id="ONNXSaveIntermediate">
                         Save Intermediate
                     </vscode-checkbox>
-                    <span class="codicon codicon-question" style="cursor: pointer"></span>
+                    <span class="codicon codicon-question" style="cursor: pointer">
+                        <span class="help">
+                            Intermediate files are not removed after compilation.
+                        </span>
+                    </span>
                 </div>
                 <div class="option">
                     <vscode-checkbox id="ONNXUnrollRNN">
                         Unroll RNN
                     </vscode-checkbox>
-                    <span class="codicon codicon-question" style="cursor: pointer"></span>
+                    <span class="codicon codicon-question" style="cursor: pointer">
+                        <span class="help">
+                            RNN operation in ONNX file is unrolled so that there is no control flow in the graph
+                        </span>
+                    </span>                    
                 </div>
                 <div class="option">
                     <vscode-checkbox id="ONNXUnrollLSTM">
                         Unroll LSTM
                     </vscode-checkbox>
-                    <span class="codicon codicon-question" style="cursor: pointer"></span>
+                    <span class="codicon codicon-question" style="cursor: pointer">
+                        <span class="help">
+                            LSTM operation in ONNX file is unrolled so that there is no control flow in the graph
+                        </span>
+                    </span>                    
                 </div>
             </div>
         </div>
@@ -217,22 +226,21 @@ limitations under the License.
                     Basic Options
                 </div>
                 <div class="option">
-                    <vscode-text-field id="optimizeInputPath" startIcon="true" size="50" placeholder="">
+                    <vscode-text-field id="optimizeInputPath" startIcon="true" size="55" placeholder="">
                         Input Path
-                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        <span id="optimizeInputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
                     </vscode-text-field>
                 </div>
                 <div class="option">
-                    <vscode-text-field id="optimizeOutputPath" startIcon="true" size="50" placeholder="">
+                    <vscode-text-field id="optimizeOutputPath" startIcon="true" size="55" placeholder="">
                         Output Path
-                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        <span id="optimizeOutputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
                     </vscode-text-field>
                 </div>
             </div>
             <div class="advanced">
                 <div class="title">
                     Optimization Parameters
-                    <span slot="end" class="codicon codicon-question" style="cursor: pointer"></span>
                 </div>
                 <div class="option">
                     <vscode-data-grid id="basicOptimizeTable" generate-header="default" aria-label="Default Header" grid-template-columns="5% 40% 55%">
@@ -261,15 +269,15 @@ limitations under the License.
             </div>
             <div class="basic" id="optionQuantizeDefaultQuantBasic">
                 <div class="option">
-                    <vscode-text-field id="DefaultQuantInputPath" startIcon="true" size="50" placeholder="">
+                    <vscode-text-field id="DefaultQuantInputPath" startIcon="true" size="55" placeholder="">
                         Input Path
-                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        <span id="DefaultQuantInputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
                     </vscode-text-field>
                 </div>
                 <div class="option">
-                    <vscode-text-field id="DefaultQuantOutputPath" startIcon="true" size="50" placeholder="">
+                    <vscode-text-field id="DefaultQuantOutputPath" startIcon="true" size="55" placeholder="">
                         Output Path
-                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        <span id="DefaultQuantOutputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
                     </vscode-text-field>
                 </div>
                 <div class="option">
@@ -293,20 +301,39 @@ limitations under the License.
                     </vscode-radio-group>
                 </div>
                 <div class="option">
-                    <vscode-text-field id="DefaultQuantQuantConfig" startIcon="true" size="50" placeholder="">
-                        <span>Quantization Config File<span slot="start" class="codicon codicon-question" style="cursor: pointer"></span></span> 
-                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    <vscode-text-field id="DefaultQuantQuantConfig" startIcon="true" size="55" placeholder="">
+                        <span>Quantization Config File</span>
+                        <span class="codicon codicon-question" style="cursor: pointer">
+                            <span class="help">
+                                This file is for mixed-precision quantization.<br>
+                                Not mandatory option.
+                            </span>
+                        </span>                        
+                        <span id="DefaultQuantQuantConfigSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
                     </vscode-text-field>
                 </div>
                 <div class="option">
-                    <vscode-text-field id="DefaultQuantInputData" startIcon="true" size="50" placeholder="">
-                        <span>Input Data<span slot="end" class="codicon codicon-question" style="cursor: pointer"></span></span>
-                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    <vscode-text-field id="DefaultQuantInputData" startIcon="true" size="55" placeholder="">
+                        <span>Input Data</span>
+                        <span class="codicon codicon-question" style="cursor: pointer">
+                            <span class="help">
+                                Dataset used to quantize activation.<br>
+                                If not given, random data will be used for quantization, which significantly degrades the accuracy of the model.
+                            </span>
+                        </span>
+                        <span id="DefaultQuantInputDataSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
                     </vscode-text-field>
                 </div>
                 <div class="option">
+                    <span>Input Data Format</span>
+                    <span class="codicon codicon-question" style="cursor: pointer">
+                        <span class="help">
+                            <li>h5 : HDF5 format file</li>
+                            <li>list : a text file where a file path of input data is written in each line</li>
+                            <li>dir : a directory where input data are saved</li>
+                        </span>
+                    </span>
                     <vscode-radio-group id="DefaultQuantInputDataFormat">
-                        <label slot="label">Input Data Format<span slot="end" class="codicon codicon-question" style="cursor: pointer"></span></label>
                         <vscode-radio value="h5">h5</vscode-radio>
                         <vscode-radio value="list">list</vscode-radio>
                         <vscode-radio value="dir">dir</vscode-radio>
@@ -336,8 +363,15 @@ limitations under the License.
                     <span>Advanced Options</span>
                 </div>
                 <div class="option">
+                    <span>Mode</span>
+                    <span class="codicon codicon-question" style="cursor: pointer">
+                        <span class="help">
+                            Calibration algorithm for post-training quantization.<br>
+                            <li>percentile : uses the n-th percentiles as min/max values.</li>
+                            <li>moving_average : records the moving average of min/max.</li>
+                        </span>
+                    </span>
                     <vscode-radio-group id="DefaultQuantMode">
-                        <label slot="label">Mode<span slot="end" class="codicon codicon-question" style="cursor: pointer"></span></label>
                         <vscode-radio value="percentile">percentile</vscode-radio>
                         <vscode-radio value="movingAvg">moving average</vscode-radio>
                     </vscode-radio-group>
@@ -345,13 +379,11 @@ limitations under the License.
                 <div class="option">
                     <vscode-text-field id="DefaultQuantMinPercentile" startIcon="true" size="30" placeholder="(default : 1.0)">
                         Min Percentile
-                        <span slot="end" class="codicon codicon-question" style="cursor: pointer"></span>
                     </vscode-text-field>
                 </div>
                 <div class="option">
                     <vscode-text-field id="DefaultQuantMaxPercentile" startIcon="true" size="30" placeholder="(default : 99.0)">
                         Max Percentile
-                        <span slot="end" class="codicon codicon-question" style="cursor: pointer"></span>
                     </vscode-text-field>
                 </div>
                 <div class="option">
@@ -373,27 +405,31 @@ limitations under the License.
                     <vscode-checkbox id="DefaultQuantTFStyleMaxpool">
                         TF-style Maxpool
                     </vscode-checkbox>
-                    <span slot="end" class="codicon codicon-question" style="cursor: pointer"></span>
+                    <span slot="end" class="codicon codicon-question" style="cursor: pointer">
+                        <span class="help">
+                            Force MaxPool Op to have the same input/output quantparams.<br>
+                            This option can degrade accuracy of some models.
+                        </span>
+                    </span>
                 </div>
                 <!-- TODO Evaluate Result Option -->
             </div>
             <div class="basic" id="optionQuantizeForceQuantBasic">
                 <div class="option">
-                    <vscode-text-field id="ForceQuantInputPath" startIcon="true" size="50" placeholder="">
+                    <vscode-text-field id="ForceQuantInputPath" startIcon="true" size="55" placeholder="">
                         Input Path
-                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        <span id="ForceQuantInputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
                     </vscode-text-field>
                 </div>
                 <div class="option">
-                    <vscode-text-field id="ForceQuantOutputPath" startIcon="true" size="50" placeholder="">
+                    <vscode-text-field id="ForceQuantOutputPath" startIcon="true" size="55" placeholder="">
                         Output Path
-                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        <span id="ForceQuantOutputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
                     </vscode-text-field>
                 </div>
                 <div class="option">
-                    <vscode-text-field id="ForceQuantTensorName" startIcon="true" size="50" placeholder="">
+                    <vscode-text-field id="ForceQuantTensorName" startIcon="true" size="55" placeholder="">
                         Tensor Name
-                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
                     </vscode-text-field>
                 </div>
                 <div class="option">
@@ -419,24 +455,24 @@ limitations under the License.
             </div>
             <div class="basic" id="optionQuantizeCopyQuantBasic">
                 <div class="option">
-                    <vscode-text-field id="CopyQuantInputPath" startIcon="true" size="50" placeholder="">
+                    <vscode-text-field id="CopyQuantInputPath" startIcon="true" size="55" placeholder="">
                         Input Path
-                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        <span id="CopyQuantInputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
                     </vscode-text-field>
                 </div>
                 <div class="option">
-                    <vscode-text-field id="CopyQuantOutputPath" startIcon="true" size="50" placeholder="">
+                    <vscode-text-field id="CopyQuantOutputPath" startIcon="true" size="55" placeholder="">
                         Output Path
-                        <span slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                        <span id="CopyQuantOutputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
                     </vscode-text-field>
                 </div>
                 <div class="option">
-                    <vscode-text-field id="CopyQuantSrcTensorName" startIcon="true" size="50" placeholder="">
+                    <vscode-text-field id="CopyQuantSrcTensorName" startIcon="true" size="55" placeholder="">
                         Source Tensor Name
                     </vscode-text-field>
                 </div>
                 <div class="option">
-                    <vscode-text-field id="CopyQuantDstTensorName" startIcon="true" size="50" placeholder="">
+                    <vscode-text-field id="CopyQuantDstTensorName" startIcon="true" size="55" placeholder="">
                         Destination Tensor Name
                     </vscode-text-field>
                 </div>
@@ -463,7 +499,7 @@ limitations under the License.
                     </vscode-text-field>
                 </div>
                 <div class="option">
-                    <vscode-text-field id="codegenCommand" startIcon="true" size="50" placeholder="CLI command to execute">
+                    <vscode-text-field id="codegenCommand" startIcon="true" size="55" placeholder="CLI command to execute">
                         Command
                     </vscode-text-field>           
                 </div>
@@ -480,7 +516,7 @@ limitations under the License.
                     </vscode-text-field>
                 </div>
                 <div class="option">
-                    <vscode-text-field id="profileCommand" startIcon="true" size="50" placeholder="CLI command to execute">
+                    <vscode-text-field id="profileCommand" startIcon="true" size="55" placeholder="CLI command to execute">
                         Command
                     </vscode-text-field>           
                 </div>

@@ -106,6 +106,24 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
             vscode.workspace.applyEdit(edit);
           }
           break;
+        case 'getPathByDialog':
+            const dialogOptions = {
+              canSelectMany: false,
+              canSelectFolders: e.isFolder,
+              openLabel: 'Open',
+              filters: {
+                'target files': e.ext,
+                'All files': ['*']
+              }
+            };
+            let newPath = e.oldPath;
+            vscode.window.showOpenDialog(dialogOptions).then(fileUri => {
+              if (fileUri && fileUri[0]) {
+                newPath = fileUri[0].fsPath.toString();
+                webview.postMessage({type: 'applyDialogPath', step: e.postStep, elemID: e.postElemID, path: newPath});
+              }
+            });
+          break;
         default:
           break;
       }
