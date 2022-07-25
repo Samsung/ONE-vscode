@@ -35,6 +35,13 @@ class BackendMockup implements Backend {
   executor(): Executor|undefined {
     return new ExecutorBase();
   }
+  executors(): Executor[] {
+    const exec = this.executor();
+    if (exec) {
+      return [exec];
+    }
+    return [];
+  }
 }
 
 const executorName = 'Mockup';
@@ -66,6 +73,7 @@ suite('Backend', function() {
       for (const executor of globalExecutorArray) {
         assert.deepStrictEqual(executor, backend.executor());
       }
+      assert.deepStrictEqual(backend.executors(), globalExecutorArray);
     });
     test('registers a executor', function() {
       let registrationAPI = backendRegistrationApi();
