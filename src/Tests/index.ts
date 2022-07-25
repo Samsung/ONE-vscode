@@ -66,7 +66,7 @@ export function run(): Promise<void> {
   // const testFilter = "Returns parsed object";
   //
   // TODO: Enable to get string to filter from package.json
-  const testFilter = '';
+  const testFilter = 'OneExplorer';
   let mocha = new Mocha({ui: 'tdd', color: true, fgrep: testFilter});
   const isCoverage: string|undefined = env.isCoverage;
   if (isCoverage !== undefined && isCoverage === 'true') {

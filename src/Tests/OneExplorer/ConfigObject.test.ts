@@ -18,6 +18,11 @@ import {assert} from 'chai';
 import * as fs from 'fs';
 import * as vscode from 'vscode';
 import {ConfigObj} from '../../OneExplorer/ConfigObject';
+import {Artifact} from '../../OneExplorer/ArtifactLocator';
+
+const rewire = require('rewire');
+const _importIni = rewire('../../OneExplorer/ConfigObject').__get__('ConfigObj.importIni');
+const _parseBaseModels = rewire('../../OneExplorer/ConfigObject').__get__('ConfigObj.parseBaseModels');
 
 class TestBuilder {
   static testCount = 0;
@@ -87,6 +92,41 @@ suite('OneExplorer', function() {
       testBuilder.tearDown();
     });
 
+    suite('#importIni()', function(){
+      test('NEG: Returns null when file read failed', function(){
+        const imported = _importIni('/tmp/one-vscode.test/invalid/path');
+
+        // Validation
+        { assert.isNull(imported); }
+      });
+    });
+
+    suite('#parseBaseModels()', function(){
+      test('NEG: Return empty array when iniObj is empty', function(){
+        const baseModels = _parseBaseModels("/", {});
+
+        // Validation
+        {
+          assert.isArray(baseModels);
+          assert.strictEqual(baseModels.length, 0);
+        }
+      });
+
+      test('abcdef',function(){
+        const iniObj = {
+          "one-import-tflite":{
+            "input_path": "model.tflite"
+          }
+        };
+
+        const baseModels : Artifact[] = _parseBaseModels("/", iniObj);
+
+        // Validation
+        {
+          assert.strictEqual(baseModels[0].path, "/model.tflite");
+        }
+      });
+    });
     suite('#createConfigObj()', function() {
       test('NEG: Returns null when file read failed', function() {
         const configObj =

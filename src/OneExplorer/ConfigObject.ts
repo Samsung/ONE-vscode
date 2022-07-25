@@ -227,4 +227,8 @@ export class ConfigObj {
 
     return artifacts;
   };
+  
+  // Export private functions for unit testing
+  static _parseBaseModels = ConfigObj.parseBaseModels;
+  static _parseDerivedModels = ConfigObj.parseBaseModels;
 };
