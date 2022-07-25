@@ -36,7 +36,7 @@ class BackendMockup implements Backend {
     return new CompilerBase();
   }
 
-  executors(): Executor[]|undefined {
+  executors(): Executor[] {
     return [this.executor];
   }
 }

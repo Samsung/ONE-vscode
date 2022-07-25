@@ -37,5 +37,5 @@ export interface Backend {
   compiler(): Compiler|undefined;
 
   // executor specs by being filled by impl
-  executors(): Executor[]|undefined;
+  executors(): Executor[];
 }

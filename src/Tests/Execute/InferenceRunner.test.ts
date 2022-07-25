@@ -61,7 +61,7 @@ class BackendMockup implements Backend {
     return new CompilerBase();
   }
 
-  executors(): Executor[]|undefined {
+  executors(): Executor[] {
     return [this.executor];
   }
 };
@@ -104,7 +104,7 @@ suite('Execute', function() {
     suite('#getInferenceCmd()', function() {
       test('gets inference command', function() {
         let runner = new InferenceRunner(
-            backend, (backend.executors() as Executor[])[0], modelPath, inputSpec);
+            backend, backend.executors()[0], modelPath, inputSpec);
         let cmd = runner.getInferenceCmd();
         let expected = `${inferenceRunner} ${modelPath.path} --input-spec ${inputSpec}`;
         assert.strictEqual(cmd.str(), expected);
@@ -114,7 +114,7 @@ suite('Execute', function() {
     suite('#getOutFileName()', function() {
       test('gets outfile name', function() {
         let runner = new InferenceRunner(
-            backend, (backend.executors() as Executor[])[0], modelPath, inputSpec);
+            backend, backend.executors()[0], modelPath, inputSpec);
         let expected = `${modelPath.path}.infer.log`;
         assert.strictEqual(runner.getOutFileName(), expected);
       });
