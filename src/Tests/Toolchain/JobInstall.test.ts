@@ -18,22 +18,22 @@ import {assert} from 'chai';
 
 import {Command} from '../../Backend/Command';
 import {Job} from '../../Project/Job';
-import {JobConfig} from '../../Project/JobConfig';
+import {JobInstall} from '../../Toolchain/JobInstall';
 
 suite('Project', function() {
-  suite('JobConfig', function() {
+  suite('JobInstall', function() {
     suite('#contructor()', function() {
       test('is contructed with command', function() {
-        let cmd = new Command('onecc');
-        cmd.push('--config');
-        cmd.push('file.cfg');
+        let cmd = new Command('apt-get');
+        cmd.push('install');
+        cmd.push('pkgname');
 
-        let job = new JobConfig(cmd);
+        let job = new JobInstall(cmd);
         assert.deepStrictEqual(job.tool, cmd[0]);
         assert.deepStrictEqual(job.toolArgs[0], cmd[1]);
         assert.deepStrictEqual(job.toolArgs[1], cmd[2]);
-        assert.deepStrictEqual(job.name, 'config');
-        assert.equal(job.jobType, Job.Type.tConfig);
+        assert.deepStrictEqual(job.name, 'install');
+        assert.equal(job.jobType, Job.Type.tInstall);
         assert.isTrue(job.valid);
       });
     });

@@ -21,15 +21,16 @@ import {Compiler} from '../Backend/Compiler';
 import {Toolchain} from '../Backend/Toolchain';
 import {BuilderJob} from '../Project/BuilderJob';
 import {Job} from '../Project/Job';
-import {JobConfig} from '../Project/JobConfig';
-import {JobInstall} from '../Project/JobInstall';
-import {JobPrerequisites} from '../Project/JobPrerequisites';
-import {JobUninstall} from '../Project/JobUninstall';
 import {WorkFlow} from '../Project/WorkFlow';
 import {Balloon} from '../Utils/Balloon';
 import * as helpers from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 import {showPasswordQuickInput} from '../View/PasswordQuickInput';
+
+import {JobConfig} from './JobConfig';
+import {JobInstall} from './JobInstall';
+import {JobPrerequisites} from './JobPrerequisites';
+import {JobUninstall} from './JobUninstall';
 
 class Env implements BuilderJob {
   logTag = 'Env';

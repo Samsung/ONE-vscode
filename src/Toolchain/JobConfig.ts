@@ -15,8 +15,8 @@
  */
 
 import {Command} from '../Backend/Command';
-import {Job} from './Job';
-import {JobCommand} from './JobCommand';
+import {Job} from '../Project/Job';
+import {JobCommand} from '../Project/JobCommand';
 
 class JobConfig extends JobCommand {
   jobType: Job.Type;
