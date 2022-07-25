@@ -30,6 +30,7 @@ export async function runInferenceQuickInput(context: vscode.ExtensionContext): 
   }
 
   const runner = new InferenceRunner(
-      quickInput.getBackend(), quickInput.getModelPath(), quickInput.getInputSpec());
+      quickInput.getBackend(), quickInput.getExecutor(), quickInput.getModelPath(),
+      quickInput.getInputSpec());
   await runner.runInference();
 }

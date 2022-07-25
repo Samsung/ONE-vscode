@@ -29,17 +29,19 @@ const logTag = 'InferenceRunner';
 
 class InferenceRunner {
   backend: Backend;
+  executor: Executor;
   modelPath: vscode.Uri;
   inputSpec: string;
 
-  constructor(backend: Backend, modelPath: vscode.Uri, inputSpec: string) {
+  constructor(backend: Backend, executor: Executor, modelPath: vscode.Uri, inputSpec: string) {
     this.backend = backend;
+    this.executor = executor;
     this.modelPath = modelPath;
     this.inputSpec = inputSpec;
   }
 
   getInferenceCmd(): Command {
-    const executor = this.backend.executor() as Executor;
+    const executor = this.executor as Executor;
     return executor.runInference(this.modelPath.path, ['--input-spec', this.inputSpec]);
   }
 

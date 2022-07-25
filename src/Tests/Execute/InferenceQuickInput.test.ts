@@ -38,7 +38,7 @@ class BackendMockup implements Backend {
     return new CompilerBase();
   }
 
-  executor(): Executor|undefined {
+  executors(): Executor[]|undefined {
     class MockupExecutor implements Executor {
       name(): string {
         return backendName;
@@ -56,7 +56,7 @@ class BackendMockup implements Backend {
         return new DeviceSpec('MockupHW', 'MockSW', undefined);
       }
     };
-    return new MockupExecutor();
+    return [new MockupExecutor()];
   }
 };
 
@@ -173,6 +173,7 @@ suite('Execute', function() {
       test('gets filter', function() {
         let quickInput = new InferenceQuickInput();
         quickInput.backend = backend;
+        quickInput.executor = (backend.executors() as Executor[])[0];
         const expected = exts;
         let filter = quickInput.getFilter();
         assert.strictEqual(filter.backendName.length, expected.length);
