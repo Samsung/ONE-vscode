@@ -61,56 +61,15 @@ suite('CfgEditor', function() {
       });
     });
 
-    suite('#getToolkitUri()', function() {
-      test('gets Toolkit uri', function() {
+    suite('#build()', function() {
+      test('NEG: getHTML cannot find HTML Uri', async function() {
         const htmlBuilder = new CfgHtmlBuilder(webview, extensionUri);
-        const expected = uri + 'node_modules/%40vscode/webview-ui-toolkit/dist/toolkit.js';
-        assert.strictEqual(htmlBuilder.getToolkitUri().toString(), expected);
+        try {
+          await htmlBuilder.build();
+        } catch (err: any) {
+          assert.strictEqual(err.name, 'EntryNotFound (FileSystemError)');
+        }
       });
     });
-
-    suite('#getCodiconUri()', function() {
-      test('gets Codicon uri', function() {
-        const htmlBuilder = new CfgHtmlBuilder(webview, extensionUri);
-        const expected = uri + 'node_modules/%40vscode/codicons/dist/codicon.css';
-        assert.strictEqual(htmlBuilder.getCodiconUri().toString(), expected);
-      });
-    });
-
-    suite('#getJsUri()', function() {
-      test('gets JS uri', function() {
-        const htmlBuilder = new CfgHtmlBuilder(webview, extensionUri);
-        const expected = uri + 'media/CfgEditor/index.js';
-        assert.strictEqual(htmlBuilder.getJsUri().toString(), expected);
-      });
-    });
-
-    suite('#getCssUri()', function() {
-      test('gets CSS uri', function() {
-        const htmlBuilder = new CfgHtmlBuilder(webview, extensionUri);
-        const expected = uri + 'media/CfgEditor/cfgeditor.css';
-        assert.strictEqual(htmlBuilder.getCssUri().toString(), expected);
-      });
-    });
-
-    suite('#getHtmlUri()', function() {
-      test('gets HTML uri', function() {
-        const htmlBuilder = new CfgHtmlBuilder(webview, extensionUri);
-        const expected = uri + 'media/CfgEditor/cfgeditor.html';
-        assert.strictEqual(htmlBuilder.getHtmlUri().toString(), expected);
-      });
-    });
-
-    // TODO: Enable this
-    // suite('#getHtml()', function() {
-    //   test('gets HTML', function() {
-    //   });
-    // });
-
-    // TODO: Enable this
-    // suite('#build()', function() {
-    //   test('', function() {
-    //   });
-    // });
   });
 });

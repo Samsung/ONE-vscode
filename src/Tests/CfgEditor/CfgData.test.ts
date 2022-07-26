@@ -20,8 +20,8 @@ import * as ini from 'ini';
 import {CfgData} from '../../CfgEditor/CfgData';
 
 // NOTE
-// sampleCfgText and sampleCfgText2 are the same
-// but sampleCfgText3 is different from them.
+// sampleCfgText and sampleCfgText2 are the same.
+// But others are different.
 const sampleCfgText = `
 [onecc]
 one-import-tf=False
@@ -97,6 +97,69 @@ backend=dummy
 command=-o inception_v3_pb.bin ./inception_v3_pb.q8.circle
 `;
 
+const sampleCfgText4 = `
+[onecc]
+one-import-tf=False
+one-import-tflite=True
+one-import-bcq=False
+one-import-onnx=False
+one-optimize=False
+one-quantize=True
+one-pack=False
+one-codegen=True
+
+[one-import-tflite]
+input_path=./inception_v3.tflite
+output_path=./inception_v3_tflite.circle
+
+[one-quantize]
+input_path=./inception_v3_tflite.circle
+output_path=./inception_v3_tflite.q8.circle
+granularity=channel
+
+[one-codegen]
+backend=dummy
+command=-o inception_v3_tflite.bin ./inception_v3_tflite.q8.circle
+
+[one-profile]
+backend=dummy
+command=command
+`;
+
+const deprecatedSampleCfgText = `
+[one-build]
+one-import-tf=False
+one-import-tflite=False
+one-import-bcq=False
+one-import-onnx=False
+one-optimize=False
+one-quantize=True
+one-pack=False
+one-codegen=False
+
+[one-quantize]
+input_path=./inception_v3_tflite.circle
+output_path=./inception_v3_tflite.q8.circle
+input_dtype=uint8
+`;
+
+const resolvedSampleCfgText = `
+[onecc]
+one-import-tf=False
+one-import-tflite=False
+one-import-bcq=False
+one-import-onnx=False
+one-optimize=False
+one-quantize=True
+one-pack=False
+one-codegen=False
+
+[one-quantize]
+input_path=./inception_v3_tflite.circle
+output_path=./inception_v3_tflite.q8.circle
+input_model_dtype=uint8
+`;
+
 suite('CfgEditor', function() {
   suite('CfgData', function() {
     suite('#constructor()', function() {
@@ -167,13 +230,36 @@ suite('CfgEditor', function() {
       });
     });
 
+    suite('#resolveDeprecated()', function() {
+      test('resolve deprecated keys', function() {
+        let data = new CfgData();
+        data.setWithString(deprecatedSampleCfgText);
+        const isSame: boolean = data.isSame(resolvedSampleCfgText);
+        assert.isTrue(isSame);
+      });
+    });
+
     suite('#updateSectionWithKeyValue()', function() {
-      test('update section of config with key/value', function() {
+      test('update key of section which already exists', function() {
         let data = new CfgData();
         data.setWithString(sampleCfgText);
         data.updateSectionWithKeyValue('onecc', 'one-pack', 'True');
         const cfg = data.getAsConfig();
         assert.strictEqual(cfg['onecc']['one-pack'], 'True');
+      });
+      test('update section which is not written', function() {
+        let data = new CfgData();
+        data.setWithString(sampleCfgText);
+        data.updateSectionWithKeyValue('one-profile', 'backend', 'dummy');
+        const cfg = data.getAsConfig();
+        assert.strictEqual(cfg['one-profile']['backend'], 'dummy');
+      });
+      test('update key which is not written', function() {
+        let data = new CfgData();
+        data.setWithString(sampleCfgText);
+        data.updateSectionWithKeyValue('one-quantize', 'input_model_dtype', 'uint8');
+        const cfg = data.getAsConfig();
+        assert.strictEqual(cfg['one-quantize']['input_model_dtype'], 'uint8');
       });
     });
 
@@ -202,6 +288,12 @@ output_path=./inception_v3_pb.circle
         let data = new CfgData();
         data.setWithString(sampleCfgText);
         const isSame: boolean = data.isSame(sampleCfgText3);
+        assert.isNotTrue(isSame);
+      });
+      test('is not same to string encoded/stringified - 2', function() {
+        let data = new CfgData();
+        data.setWithString(sampleCfgText);
+        const isSame: boolean = data.isSame(sampleCfgText4);
         assert.isNotTrue(isSame);
       });
     });
