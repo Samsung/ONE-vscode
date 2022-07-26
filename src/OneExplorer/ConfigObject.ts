@@ -145,6 +145,8 @@ export class ConfigObj {
    * onecc doesn't support multiple base models.
    * However, OneExplorer will show the config node below multiple base models
    * to prevent a case that users cannot find their faulty config files on ONE explorer.
+   *
+   * TODO Move to backend
    */
   private static parseBaseModels = (filePath: string, iniObj: object): Artifact[] => {
     const dir = path.dirname(filePath);
@@ -188,6 +190,8 @@ export class ConfigObj {
    * @brief Find derived models written in the ini object and return the absolute path.
    *
    * @param filePath cfg file path is required to calculate absolute path
+   *
+   * TODO Move to backend
    */
   private static parseProducts = (filePath: string, iniObj: object): Artifact[] => {
     const dir = path.dirname(filePath);
