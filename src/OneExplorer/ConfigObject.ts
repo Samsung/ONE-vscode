@@ -205,6 +205,30 @@ export class ConfigObj {
     });
 
     locatorRunner.register({
+      artifactAttr: {ext: '.tv2m', icon: new vscode.ThemeIcon('symbol-method'), canHide: true},
+      locator: new Locator((value: string) => {
+        return LocatorRunner.searchWithExt('.tvn', value)
+            .map(filepath => filepath.replace('.tvn', '.tv2m'));
+      })
+    });
+
+    locatorRunner.register({
+      artifactAttr: {ext: '.tv2o', icon: new vscode.ThemeIcon('symbol-method'), canHide: true},
+      locator: new Locator((value: string) => {
+        return LocatorRunner.searchWithExt('.tvn', value)
+            .map(filepath => filepath.replace('.tvn', '.tv2o'));
+      })
+    });
+
+    locatorRunner.register({
+      artifactAttr: {ext: '.tv2w', icon: new vscode.ThemeIcon('symbol-method'), canHide: true},
+      locator: new Locator((value: string) => {
+        return LocatorRunner.searchWithExt('.tvn', value)
+            .map(filepath => filepath.replace('.tvn', '.tv2w'));
+      })
+    });
+
+    locatorRunner.register({
       // 'default' view type is 'text editor' (vscode.openWith)
       artifactAttr:
           {ext: '.circle.log', openViewType: 'default', icon: vscode.ThemeIcon.File, canHide: true},
