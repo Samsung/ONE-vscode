@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import * as vscode from 'vscode';
 const assert = require('assert');
 import {Backend} from './Backend';
 import {gToolchainEnvMap, ToolchainEnv} from '../Toolchain/ToolchainEnv';
@@ -49,6 +50,7 @@ function backendRegistrationApi() {
         globalExecutorArray.push(executor);
       }
       Logger.info(logTag, 'Backend', backendName, 'was registered into ONE-vscode.');
+      vscode.commands.executeCommand('one.toolchain.refresh');
     },
     registerExecutor(executor: Executor) {
       globalExecutorArray.push(executor);
