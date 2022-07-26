@@ -56,6 +56,8 @@ function getCfgList(root: string = obtainWorkspaceRoot()): string[] {
   return cfgList;
 }
 
+export const _getCfgList = getCfgList;
+
 /**
  * NOTE
  *
@@ -345,7 +347,7 @@ class ProductNode extends Node {
 }
 
 
-export class OneNode extends vscode.TreeItem {
+class OneNode extends vscode.TreeItem {
   constructor(
       public readonly label: string,
       public readonly collapsibleState: vscode.TreeItemCollapsibleState,
