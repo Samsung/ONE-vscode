@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import {assert, should} from 'chai';
+import {assert} from 'chai';
+import * as vscode from 'vscode';
 
 import {BridgeSpec, DeviceSpec, HostPCSpec, sdbSpec, TizenDeviceSpec} from '../../Backend/Spec';
 
@@ -71,11 +72,12 @@ suite('Spec', function() {
     });
   });
   suite('sdbSpec', function() {
+    const extensionId = 'Samsung.one-vscode';
+    const ext = vscode.extensions.getExtension(extensionId) as vscode.Extension<any>;
+    const deviceListCom = vscode.Uri.joinPath(ext!.extensionUri, 'script', 'sdbSpecList.sh').fsPath;
     assert.isObject<BridgeSpec>(sdbSpec);
     assert.strictEqual(sdbSpec.name, 'sdb');
-    assert.strictEqual(
-        sdbSpec.deviceListCmd.str(),
-        'sdb devices | grep -v devices | grep device | awk \'{print $1}\'');
+    assert.strictEqual(sdbSpec.deviceListCmd.str(), deviceListCom);
     assert.strictEqual(sdbSpec.shellCmd.str(), 'sdb shell');
   });
 });
