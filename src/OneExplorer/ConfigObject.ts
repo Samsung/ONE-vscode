@@ -145,6 +145,8 @@ export class ConfigObj {
    * onecc doesn't support multiple base models.
    * However, OneExplorer will show the config node below multiple base models
    * to prevent a case that users cannot find their faulty config files on ONE explorer.
+   *
+   * TODO Move to backend
    */
   private static parseBaseModels = (filePath: string, iniObj: object): Artifact[] => {
     const dir = path.dirname(filePath);
@@ -188,6 +190,8 @@ export class ConfigObj {
    * @brief Find derived models written in the ini object and return the absolute path.
    *
    * @param filePath cfg file path is required to calculate absolute path
+   *
+   * TODO Move to backend
    */
   private static parseProducts = (filePath: string, iniObj: object): Artifact[] => {
     const dir = path.dirname(filePath);
@@ -202,6 +206,30 @@ export class ConfigObj {
     locatorRunner.register({
       artifactAttr: {ext: '.tvn', icon: new vscode.ThemeIcon('symbol-variable')},
       locator: new Locator((value: string) => LocatorRunner.searchWithExt('.tvn', value))
+    });
+
+    locatorRunner.register({
+      artifactAttr: {ext: '.tv2m', icon: new vscode.ThemeIcon('symbol-method'), canHide: true},
+      locator: new Locator((value: string) => {
+        return LocatorRunner.searchWithExt('.tvn', value)
+            .map(filepath => filepath.replace('.tvn', '.tv2m'));
+      })
+    });
+
+    locatorRunner.register({
+      artifactAttr: {ext: '.tv2o', icon: new vscode.ThemeIcon('symbol-method'), canHide: true},
+      locator: new Locator((value: string) => {
+        return LocatorRunner.searchWithExt('.tvn', value)
+            .map(filepath => filepath.replace('.tvn', '.tv2o'));
+      })
+    });
+
+    locatorRunner.register({
+      artifactAttr: {ext: '.tv2w', icon: new vscode.ThemeIcon('symbol-method'), canHide: true},
+      locator: new Locator((value: string) => {
+        return LocatorRunner.searchWithExt('.tvn', value)
+            .map(filepath => filepath.replace('.tvn', '.tv2w'));
+      })
     });
 
     locatorRunner.register({
