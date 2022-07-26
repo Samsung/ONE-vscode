@@ -18,7 +18,6 @@ import {EventEmitter} from 'events';
 import * as vscode from 'vscode';
 
 import {Balloon} from '../Utils/Balloon';
-import * as helpers from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
 import {Job} from './Job';
@@ -54,18 +53,6 @@ export class JobRunner extends EventEmitter {
 
     if (this.progress) {
       this.progress.report({message: `Running ${job.name}...`});
-    }
-
-    // TODO: Remove this and deprecate old Jobs like JobQuantize
-    if (job.jobType >= Job.Type.tImportTF && job.jobType <= Job.Type.tCodegen) {
-      // This is tricky. Now old jobs like `JobQuantize` are
-      // tool: quantize, toolArgs: options
-      // and the `tool` & `toolArgs` are only getter(not setter.)
-      // So the `quantize` is shifted to new ToolArgs.
-      // This trick will be disappeared after Old jobs are removed
-      toolArgs.unshift(tool);
-      tool = 'onecc';
-      workDir = helpers.obtainWorkspaceRoot();
     }
 
     Logger.info(this.tag, 'Run tool:', tool, 'args:', toolArgs, 'cwd:', workDir, 'root:', job.root);
