@@ -103,20 +103,6 @@
         "icon": "$(add)"
       },
       {
-        "command": "one.editor.openCfg",
-        "title": "Open cfg in GUI",
-        "category": "ONE",
-        "icon": "$(go-to-file)",
-        "_comment": "NYI"
-      },
-      {
-        "command": "one.editor.openCfgAsText",
-        "title": "Open cfg in Text Editor",
-        "category": "ONE",
-        "icon": "$(go-to-file)",
-        "_comment": "NYI"
-      },
-      {
         "command": "one.backend.infer",
         "title": "Infer",
         "category": "ONE",
@@ -268,20 +254,6 @@
           "group": "inline"
         }
       ],
-      "editor/title": [
-        {
-          "command": "one.editor.openCfg",
-          "group": "navigation",
-          "when": "resourceExtname == .cfg && !cfg.editor",
-          "_comment": "NYI"
-        },
-        {
-          "command": "one.editor.openCfgAsText",
-          "group": "navigation",
-          "when": "resourceExtname == .cfg && cfg.editor",
-          "_comment": "NYI"
-        }
-      ],
       "commandPalette": [
         {
           "command": "one.backend.infer",
@@ -289,14 +261,6 @@
         },
         {
           "command": "one.device.register",
-          "when": "false"
-        },
-        {
-          "command": "one.editor.openCfg",
-          "when": "false"
-        },
-        {
-          "command": "one.editor.openCfgAsText",
           "when": "false"
         },
         {
