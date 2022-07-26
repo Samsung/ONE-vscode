@@ -38,4 +38,9 @@ export interface Backend {
 
   // executor specs by being filled by impl
   executor(): Executor|undefined;
+
+  // TODO: This API will replace `executor()` and update Comment.
+  // this will return array only contains executor() result.
+  // if `executor()` return undefined, return [].
+  executors(): Executor[];
 }

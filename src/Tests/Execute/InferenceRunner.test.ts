@@ -21,7 +21,7 @@ import {backendRegistrationApi, globalBackendMap} from '../../Backend/API';
 import {Backend} from '../../Backend/Backend';
 import {Command} from '../../Backend/Command';
 import {Compiler, CompilerBase} from '../../Backend/Compiler';
-import {Executor, ExecutorBase} from '../../Backend/Executor';
+import {Executor} from '../../Backend/Executor';
 import {DeviceSpec} from '../../Backend/Spec';
 import {Toolchains} from '../../Backend/Toolchain';
 import {InferenceRunner} from '../../Execute/InferenceRunner';
@@ -59,6 +59,13 @@ class BackendMockup implements Backend {
       }
     };
     return new MockupExecutor();
+  }
+  executors(): Executor[] {
+    const exec = this.executor();
+    if (exec) {
+      return [exec];
+    }
+    return [];
   }
 };
 
