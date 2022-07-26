@@ -53,7 +53,9 @@ export function activate(context: vscode.ExtensionContext) {
       (toolchain) => toolchainProvider.setDefaultToolchain(toolchain)));
 
   // Target Device view
-  const deviceViewProvider = new DeviceViewProvider(context, 'TargetDeviceView');
+  const deviceViewProvider = new DeviceViewProvider();
+  context.subscriptions.push(
+      vscode.window.registerTreeDataProvider('TargetDeviceView', deviceViewProvider));
   let registerDevice = vscode.commands.registerCommand('one.device.refresh', () => {
     deviceViewProvider.refresh();
   });

@@ -34,9 +34,9 @@ interface DevicesManagerMap {
 
 // TODO: Make this as a config.
 // This variable will save host type
-const deviceManagerList = ['local'];
+export const deviceManagerList = ['local'];
 
-enum NodeType {
+export enum NodeType {
   /**
    * A Execution system that contains multiple Devices.
    */
@@ -55,7 +55,7 @@ enum NodeType {
   none,
 }
 
-class DeviceViewNode extends vscode.TreeItem {
+export class DeviceViewNode extends vscode.TreeItem {
   type: NodeType;
   managerName: string;
   constructor(
@@ -91,14 +91,14 @@ export class DeviceViewProvider implements vscode.TreeDataProvider<DeviceViewNod
   private _onDidChangeTreeData: vscode.EventEmitter<DeviceTreeView> =
       new vscode.EventEmitter<DeviceViewNode>();
   readonly onDidChangeTreeData: vscode.Event<DeviceTreeView> = this._onDidChangeTreeData.event;
-  getTreeItem(element: DeviceViewNode): vscode.TreeItem|Thenable<vscode.TreeItem> {
+  getTreeItem(element: DeviceViewNode): vscode.TreeItem {
     return element;
   }
-  getChildren(element?: DeviceViewNode|undefined): vscode.ProviderResult<DeviceViewNode[]> {
+  getChildren(element?: DeviceViewNode|undefined): DeviceViewNode[] {
     return this.getNodes(element);
   }
 
-  getNodes(element: DeviceViewNode|undefined): DeviceViewNode[] {
+  private getNodes(element: DeviceViewNode|undefined): DeviceViewNode[] {
     const rtnList: DeviceViewNode[] = [];
     if (!element) {
       for (const managerName of deviceManagerList) {
@@ -132,7 +132,7 @@ export class DeviceViewProvider implements vscode.TreeDataProvider<DeviceViewNod
     return rtnList;
   }
 
-  getDevicesPromise(cmd: Command, deviceSpec: DeviceSpec): Promise<Device[]> {
+  private getDevicesPromise(cmd: Command, deviceSpec: DeviceSpec): Promise<Device[]> {
     return new Promise<Device[]>((resolve, reject) => {
       let result: string = '';
       let error: string = '';
@@ -168,7 +168,7 @@ export class DeviceViewProvider implements vscode.TreeDataProvider<DeviceViewNod
     });
   }
 
-  reloadDeviceManager(deviceMan: string, callback: Function): void {
+  private reloadDeviceManager(deviceMan: string, callback: Function): void {
     const listCmds: Promise<Device[]>[] = [];
     const deviceList: Device[] = [];
     for (const deviceSpec of supportedSpecs) {
@@ -188,12 +188,10 @@ export class DeviceViewProvider implements vscode.TreeDataProvider<DeviceViewNod
     });
   }
 
-  constructor(context: vscode.ExtensionContext, viewId: string) {
-    // Before Device list get, set as a loading state.
-    // Currently, only local DeviceManager supported.
+  constructor() {
     for (const deviceMan of deviceManagerList) {
       this.reloadDeviceManager(deviceMan, function(provider: DeviceViewProvider) {
-        context.subscriptions.push(vscode.window.registerTreeDataProvider(viewId, provider));
+        provider._onDidChangeTreeData.fire();
       });
     }
   }
