@@ -44,15 +44,11 @@ function backendRegistrationApi() {
       if (compiler) {
         gToolchainEnvMap[backend.name()] = new ToolchainEnv(compiler);
       }
-      const executor = backend.executor();
-      if (executor) {
-        globalExecutorArray.push(executor);
+      const executors = backend.executors();
+      if (executors) {
+        globalExecutorArray.push(...executors);
       }
       Logger.info(logTag, 'Backend', backendName, 'was registered into ONE-vscode.');
-    },
-    registerExecutor(executor: Executor) {
-      globalExecutorArray.push(executor);
-      Logger.info(logTag, 'Executor', executor.name(), 'was registered into ONE-vscode.');
     }
   };
 

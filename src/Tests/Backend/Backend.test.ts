@@ -25,6 +25,10 @@ import {gToolchainEnvMap} from '../../Toolchain/ToolchainEnv';
 // TODO: Move it to Mockup
 const backendName = 'Mockup';
 class BackendMockup implements Backend {
+  executor: ExecutorMockup;
+  constructor(executor: ExecutorMockup) {
+    this.executor = executor;
+  }
   name(): string {
     return backendName;
   }
@@ -32,8 +36,8 @@ class BackendMockup implements Backend {
     return new CompilerBase();
   }
 
-  executor(): Executor|undefined {
-    return new ExecutorBase();
+  executors(): Executor[] {
+    return [this.executor];
   }
 }
 
@@ -52,7 +56,8 @@ suite('Backend', function() {
       assert.strictEqual(Object.entries(globalBackendMap).length, 0);
       assert.strictEqual(globalExecutorArray.length, 0);
 
-      let backend = new BackendMockup();
+      let executor = new ExecutorMockup();
+      let backend = new BackendMockup(executor);
       registrationAPI.registerBackend(backend);
 
       const entries = Object.entries(globalBackendMap);
@@ -63,22 +68,7 @@ suite('Backend', function() {
         assert.deepStrictEqual(value, backend);
       }
       assert.strictEqual(globalExecutorArray.length, 1);
-      for (const executor of globalExecutorArray) {
-        assert.deepStrictEqual(executor, backend.executor());
-      }
-    });
-    test('registers a executor', function() {
-      let registrationAPI = backendRegistrationApi();
-
-      assert.strictEqual(globalExecutorArray.length, 0);
-      let executorMockup = new ExecutorMockup();
-      registrationAPI.registerExecutor(executorMockup);
-
-      assert.strictEqual(globalExecutorArray.length, 1);
-
-      for (const executor of globalExecutorArray) {
-        assert.deepStrictEqual(executor, executorMockup);
-      }
+      assert.strictEqual(globalExecutorArray[0], executor);
     });
   });
 
