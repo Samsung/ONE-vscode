@@ -96,15 +96,10 @@ suite('OneExplorer', function() {
         { assert.isNull(configObj); }
       });
 
-      test('Returns parsed object', function() {
+      test('NEG: Create config of a file without any valid content', function() {
         const configName = 'model.cfg';
-        const modelName = 'model.tflite';
-
         const content = `
-[onecc]
-one-import-tflite=True
-[one-import-tflite]
-input_path=${modelName}
+        empty content
         `;
 
         // Write a file inside temp directory
@@ -112,7 +107,6 @@ input_path=${modelName}
 
         // Get file paths inside the temp directory
         const configPath = testBuilder.getPath(configName);
-        const modelPath = testBuilder.getPath(modelName);
 
         const configObj = ConfigObj.createConfigObj(vscode.Uri.file(configPath));
 
@@ -125,25 +119,146 @@ input_path=${modelName}
           assert.isObject(configObj!.rawObj);
           assert.isObject(configObj!.obj);
           assert.isArray(configObj!.obj.baseModels);
-          assert.isArray(configObj!.obj.products);
+          assert.isArray(configObj?.getProducts);
+          assert.isArray(configObj!.getBaseModels);
+          assert.isArray(configObj!.getProducts);
+          assert.isArray(configObj!.getBaseModelsExists);
+          assert.isArray(configObj!.getProductsExists);
 
-          assert.strictEqual(configObj!.obj.baseModels.length, 1);
-          assert.strictEqual(configObj!.obj.products.length, 0);
+          assert.strictEqual(configObj!.getBaseModels.length, 0);
+          assert.strictEqual(configObj!.getProducts.length, 0);
+        }
+      });
+    });
 
-          assert.strictEqual(configObj!.obj.baseModels[0].path, modelPath);
+    suite('#one-import-onnx section', function() {
+      test('Parse basic example', function() {
+        const configName = 'model.cfg';
+        const modelName = 'model.onnx';
+
+        const content = `
+[one-import-onnx]
+input_path=${modelName}
+        `;
+
+        // Write a file inside temp directory
+        testBuilder.writeFileSync(configName, content);
+        testBuilder.writeFileSync(modelName, '');
+
+        // Get file paths inside the temp directory
+        const configPath = testBuilder.getPath(configName);
+        const modelPath = testBuilder.getPath(modelName);
+
+        const configObj = ConfigObj.createConfigObj(vscode.Uri.file(configPath));
+
+        // Validation
+        {
+          assert.strictEqual(configObj?.getBaseModels.length, 1);
+          assert.strictEqual(configObj?.getProducts.length, 0);
+
+          assert.isTrue(configObj?.isChildOf(modelPath));
+          assert.isTrue(
+            configObj?.getBaseModels.map(baseModel => baseModel.path).includes(modelPath));
+          assert.isTrue(
+            configObj?.getBaseModelsExists.map(baseModel => baseModel.path).includes(modelPath));
         }
       });
 
-      test('Returns parsed object with products', function() {
+      test('NEG: Parse config with invalid ext', function() {
+        const configName = 'model.cfg';
+        // ERROR INJECTION
+        // Invalid ext '.rectangle' instead of '.circle'
+        const productName = 'model.rectangle';
+
+        const content = `
+[one-import-onnx]
+output_path=${productName}
+        `;
+
+        // Write a file inside a temp directory
+        testBuilder.writeFileSync(configName, content);
+
+        // Get file paths inside the temp directory
+        const configPath = testBuilder.getPath(configName);
+        const configObj = ConfigObj.createConfigObj(vscode.Uri.file(configPath));
+
+        // Validation
+        {
+          assert.strictEqual(configObj?.getBaseModels.length, 0);
+          assert.strictEqual(configObj?.getProducts.length, 0);
+        }
+      });
+    });
+
+    suite('#one-import-tflite section', function() {
+      test('Parse basic example', function() {
+        const configName = 'model.cfg';
+        const modelName = 'model.tflite';
+
+        const content = `
+[one-import-tflite]
+input_path=${modelName}
+        `;
+
+        // Write a file inside temp directory
+        testBuilder.writeFileSync(configName, content);
+        testBuilder.writeFileSync(modelName, '');
+
+        // Get file paths inside the temp directory
+        const configPath = testBuilder.getPath(configName);
+        const modelPath = testBuilder.getPath(modelName);
+
+        const configObj = ConfigObj.createConfigObj(vscode.Uri.file(configPath));
+
+        // Validation
+        {
+          assert.strictEqual(configObj?.getBaseModels.length, 1);
+          assert.strictEqual(configObj?.getProducts.length, 0);
+
+          assert.isTrue(configObj?.isChildOf(modelPath));
+          assert.isTrue(
+            configObj?.getBaseModels.map(baseModel => baseModel.path).includes(modelPath));
+          assert.isTrue(
+            configObj?.getBaseModelsExists.map(baseModel => baseModel.path).includes(modelPath));
+        }
+      });
+
+      test('NEG: Parse config with invalid ext', function() {
+        const configName = 'model.cfg';
+        // ERROR INJECTION
+        // Invalid ext '.rectangle' instead of '.circle'
+        const productName1 = 'model.rectangle';
+        const productName2 = 'model.opt.rectangle';
+
+        const content = `
+[one-import-tflite]
+input_path=${productName1}
+output_path=${productName2}
+        `;
+
+        // Write a file inside a temp directory
+        testBuilder.writeFileSync(configName, content);
+
+        // Get file paths inside the temp directory
+        const configPath = testBuilder.getPath(configName);
+        const configObj = ConfigObj.createConfigObj(vscode.Uri.file(configPath));
+
+        // Validation
+        {
+          assert.strictEqual(configObj?.getBaseModels.length, 0);
+          assert.strictEqual(configObj?.getProducts.length, 0);
+        }
+      });
+    });
+
+    suite('#one-quantize section', function() {
+      test('Parse basic example', function() {
         const configName = 'model.cfg';
         const baseModelName = 'model.tflite';
         const productName1 = 'model.circle';
         const productName2 = 'model.q8.circle';
 
         const content = `
-[onecc]
-one-import-tflite=True
-one-quantize=True
 [one-import-tflite]
 input_path=${baseModelName}
 output_path=${productName1}
@@ -165,27 +280,46 @@ output_path=${productName2}
 
         // Validation
         {
-          assert.isNotNull(configObj);
-          assert.isNotNull(configObj!.rawObj);
-          assert.isNotNull(configObj!.obj);
-
-          assert.isObject(configObj!.rawObj);
-          assert.isObject(configObj!.obj);
-          assert.isArray(configObj!.obj.baseModels);
-          assert.isArray(configObj!.obj.products);
-
-          assert.strictEqual(configObj!.obj.baseModels.length, 1);
-
-          assert.strictEqual(configObj!.obj.baseModels[0].path, baseModelPath);
+          assert.strictEqual(configObj?.getBaseModels.length, 1);
+          assert.notStrictEqual(configObj?.getProducts.length, 0);
 
           assert.isTrue(
-              configObj!.obj.products.map(product => product.path).includes(productPath1));
+            configObj?.getBaseModels.map(baseModel => baseModel.path).includes(baseModelPath));
           assert.isTrue(
-              configObj!.obj.products.map(product => product.path).includes(productPath2));
+              configObj?.getProducts.map(product => product.path).includes(productPath1));
+          assert.isTrue(
+              configObj?.getProducts.map(product => product.path).includes(productPath2));
         }
       });
 
-      test('Returns parsed object with products and check logs', function() {
+      test('NEG: Parse config with invalid ext', function() {
+        const configName = 'model.cfg';
+        // ERROR INJECTION
+        // Invalid ext '.rectangle' instead of '.circle'
+        const productName1 = 'model.rectangle';
+        const productName2 = 'model.opt.rectangle';
+
+        const content = `
+[one-quantize]
+input_path=${productName1}
+output_path=${productName2}
+        `;
+
+        // Write a file inside a temp directory
+        testBuilder.writeFileSync(configName, content);
+
+        // Get file paths inside the temp directory
+        const configPath = testBuilder.getPath(configName);
+        const configObj = ConfigObj.createConfigObj(vscode.Uri.file(configPath));
+
+        // Validation
+        {
+          assert.strictEqual(configObj?.getBaseModels.length, 0);
+          assert.strictEqual(configObj?.getProducts.length, 0);
+        }
+      });
+
+      test('Check *.log files', function() {
         const configName = 'model.cfg';
         const baseModelName = 'model.tflite';
         const productName1 = 'model.circle';
@@ -194,9 +328,6 @@ output_path=${productName2}
         const productName4 = 'model.q8.circle.log';
 
         const content = `
-[onecc]
-one-import-tflite=True
-one-quantize=True
 [one-import-tflite]
 input_path=${baseModelName}
 output_path=${productName1}
@@ -220,27 +351,19 @@ output_path=${productName2}
 
         // Validation
         {
-          assert.isNotNull(configObj);
-          assert.isNotNull(configObj!.rawObj);
-          assert.isNotNull(configObj!.obj);
-
-          assert.isObject(configObj!.rawObj);
-          assert.isObject(configObj!.obj);
-          assert.isArray(configObj!.obj.baseModels);
-          assert.isArray(configObj!.obj.products);
-
-          assert.strictEqual(configObj!.obj.baseModels.length, 1);
-
-          assert.strictEqual(configObj!.obj.baseModels[0].path, baseModelPath);
+          assert.strictEqual(configObj?.getBaseModels.length, 1);
+          assert.notStrictEqual(configObj?.getProducts.length, 0);
 
           assert.isTrue(
-              configObj!.obj.products.map(product => product.path).includes(productPath1));
+              configObj?.getBaseModels.map(baseModel => baseModel.path).includes(baseModelPath));
           assert.isTrue(
-              configObj!.obj.products.map(product => product.path).includes(productPath2));
+              configObj?.getProducts.map(product => product.path).includes(productPath1));
           assert.isTrue(
-              configObj!.obj.products.map(product => product.path).includes(productPath3));
+              configObj?.getProducts.map(product => product.path).includes(productPath2));
           assert.isTrue(
-              configObj!.obj.products.map(product => product.path).includes(productPath4));
+              configObj?.getProducts.map(product => product.path).includes(productPath3));
+          assert.isTrue(
+              configObj?.getProducts.map(product => product.path).includes(productPath4));
         }
       });
 
@@ -252,9 +375,6 @@ output_path=${productName2}
 
         // Detouring paths
         const content = `
-[onecc]
-one-import-tflite=True
-one-quantize=True
 [one-import-tflite]
 input_path=dummy/dummy/../../${baseModelName}
 output_path=dummy/dummy/../../${productName1}
@@ -276,14 +396,15 @@ output_path=dummy/dummy/../..//${productName2}
 
         // Validation
         {
-          assert.strictEqual(configObj!.obj.baseModels.length, 1);
-
-          assert.strictEqual(configObj!.obj.baseModels[0].path, baseModelPath);
+          assert.strictEqual(configObj?.getBaseModels.length, 1);
+          assert.notStrictEqual(configObj?.getProducts.length, 0);
 
           assert.isTrue(
-              configObj!.obj.products.map(product => product.path).includes(productPath1));
+              configObj?.getBaseModels.map(baseModel => baseModel.path).includes(baseModelPath));
           assert.isTrue(
-              configObj!.obj.products.map(product => product.path).includes(productPath2));
+              configObj?.getProducts.map(product => product.path).includes(productPath1));
+          assert.isTrue(
+              configObj?.getProducts.map(product => product.path).includes(productPath2));
         }
       });
 
@@ -296,9 +417,6 @@ output_path=dummy/dummy/../..//${productName2}
         // Detouring paths with faulty absolute path
         // NOTE that path starts with '/' will be interpreted as an absolute path
         const content = `
-[onecc]
-one-import-tflite=True
-one-quantize=True
 [one-import-tflite]
 input_path=/dummy/dummy/../../${baseModelName}
 output_path=/dummy/dummy/../../${productName1}
@@ -320,18 +438,17 @@ output_path=/dummy/dummy/../..//${productName2}
 
         // Validation
         {
-          assert.strictEqual(configObj!.obj.baseModels.length, 1);
+          assert.strictEqual(configObj?.getBaseModels.length, 1);
+          assert.notStrictEqual(configObj?.getProducts.length, 0);
 
-          assert.notStrictEqual(configObj!.obj.baseModels[0].path, baseModelPath);
-
+          assert.notStrictEqual(configObj?.getBaseModels[0].path, baseModelPath);
           assert.isFalse(
-              configObj!.obj.products.map(product => product.path).includes(productPath1));
+              configObj?.getProducts.map(product => product.path).includes(productPath1));
           assert.isFalse(
-              configObj!.obj.products.map(product => product.path).includes(productPath2));
+              configObj?.getProducts.map(product => product.path).includes(productPath2));
           ;
         }
       });
-
 
       test('Parse config with absolute paths', function() {
         const configName = 'model.cfg';
@@ -347,9 +464,6 @@ output_path=/dummy/dummy/../..//${productName2}
 
         // Detouring paths
         const content = `
-[onecc]
-one-import-tflite=True
-one-quantize=True
 [one-import-tflite]
 input_path=/${baseModelPath}
 output_path=/${productPath1}
@@ -361,20 +475,304 @@ output_path=/${productPath2}
         // Write a file inside a temp directory
         testBuilder.writeFileSync(configName, content);
 
+        const configObj = ConfigObj.createConfigObj(vscode.Uri.file(configPath));
+
+        // Validation
+        {
+          assert.strictEqual(configObj?.getBaseModels.length, 1);
+          assert.notStrictEqual(configObj?.getProducts.length, 0);
+
+          assert.strictEqual(
+              configObj?.getBaseModels[0].path, baseModelPath);
+          assert.isTrue(
+              configObj?.getProducts.map(product => product.path).includes(productPath1));
+          assert.isTrue(
+              configObj?.getProducts.map(product => product.path).includes(productPath2));
+        }
+      });
+
+      test('Parse config with exising paths', function() {
+        const configName = 'model.cfg';
+        const baseModelName = 'model.tflite';
+        const productName1 = 'model.circle';
+        const productName2 = 'model.q8.circle';
+
+        // Get file paths inside the temp directory
+        const configPath = testBuilder.getPath(configName);
+        const baseModelPath = testBuilder.getPath(baseModelName);
+        const productPath1 = testBuilder.getPath(productName1);
+        const productPath2 = testBuilder.getPath(productName2);
+
+        // Detouring paths
+        const content = `
+[one-import-tflite]
+input_path=/${baseModelPath}
+output_path=/${productPath1}
+[one-quantize]
+input_path=/${productPath1}
+output_path=/${productPath2}
+        `;
+
+        // Write a file inside a temp directory
+        testBuilder.writeFileSync(configName, content);
+        testBuilder.writeFileSync(baseModelName, '');
+        testBuilder.writeFileSync(productName1, '');
+        testBuilder.writeFileSync(productName2, '');
 
         const configObj = ConfigObj.createConfigObj(vscode.Uri.file(configPath));
 
         // Validation
         {
-          assert.strictEqual(configObj!.obj.baseModels.length, 1);
-
-          assert.strictEqual(
-              configObj!.obj.baseModels[0].path, baseModelPath, configObj!.obj.baseModels[0].path);
+          assert.strictEqual(configObj?.getBaseModels.length, 1);
+          assert.notStrictEqual(configObj?.getProducts.length, 0);
 
           assert.isTrue(
-              configObj!.obj.products.map(product => product.path).includes(productPath1));
+              configObj?.getBaseModels.map(baseModel => baseModel.path).includes(baseModelPath));
           assert.isTrue(
-              configObj!.obj.products.map(product => product.path).includes(productPath2));
+              configObj?.getProductsExists.map(product => product.path).includes(productPath1));
+          assert.isTrue(
+              configObj?.getProductsExists.map(product => product.path).includes(productPath2));
+        }
+      });
+
+      test('NEG: Parse config with non-exising paths', function() {
+        const configName = 'model.cfg';
+        const baseModelName = 'model.tflite';
+        const productName1 = 'model.circle';
+        const productName2 = 'model.q8.circle';
+
+        // Get file paths inside the temp directory
+        const configPath = testBuilder.getPath(configName);
+        const baseModelPath = testBuilder.getPath(baseModelName);
+        const productPath1 = testBuilder.getPath(productName1);
+        const productPath2 = testBuilder.getPath(productName2);
+
+        // Detouring paths
+        const content = `
+[one-import-tflite]
+input_path=/${baseModelPath}
+output_path=/${productPath1}
+[one-quantize]
+input_path=/${productPath1}
+output_path=/${productPath2}
+        `;
+
+        // Write a file inside a temp directory
+        testBuilder.writeFileSync(configName, content);
+
+        const configObj = ConfigObj.createConfigObj(vscode.Uri.file(configPath));
+
+        // Validation
+        {
+          assert.strictEqual(configObj?.getBaseModels.length, 1);
+          assert.strictEqual(configObj?.getBaseModelsExists.length, 0);
+
+          assert.notStrictEqual(configObj?.getProducts.length, 0);
+          assert.strictEqual(configObj?.getBaseModelsExists.length, 0);
+        }
+      });
+    });
+
+    suite('#one-optimize section', function() {
+      test('Parse basic example', function() {
+        const configName = 'model.cfg';
+        const productName1 = 'model.circle';
+        const productName2 = 'model.opt.circle';
+
+        const content = `
+[one-optimize]
+input_path=${productName1}
+output_path=${productName2}
+        `;
+
+        // Write a file inside a temp directory
+        testBuilder.writeFileSync(configName, content);
+
+        // Get file paths inside the temp directory
+        const configPath = testBuilder.getPath(configName);
+        const productPath1 = testBuilder.getPath(productName1);
+        const productPath2 = testBuilder.getPath(productName2);
+
+        const configObj = ConfigObj.createConfigObj(vscode.Uri.file(configPath));
+
+        // Validation
+        {
+          assert.strictEqual(configObj?.getBaseModels.length, 0);
+          assert.notStrictEqual(configObj?.getProducts.length, 0);
+
+          assert.isTrue(
+              configObj?.getProducts.map(baseModel => baseModel.path).includes(productPath1));
+          assert.isTrue(
+              configObj?.getProducts.map(product => product.path).includes(productPath2));
+        }
+      });
+
+      test('NEG: Parse config with invalid ext', function() {
+        const configName = 'model.cfg';
+        // ERROR INJECTION
+        // Invalid ext '.rectangle' instead of '.circle'
+        const productName1 = 'model.rectangle';
+        const productName2 = 'model.opt.rectangle';
+
+        const content = `
+[one-optimize]
+input_path=${productName1}
+output_path=${productName2}
+        `;
+
+        // Write a file inside a temp directory
+        testBuilder.writeFileSync(configName, content);
+
+        // Get file paths inside the temp directory
+        const configPath = testBuilder.getPath(configName);
+        const configObj = ConfigObj.createConfigObj(vscode.Uri.file(configPath));
+
+        // Validation
+        {
+          assert.strictEqual(configObj?.getBaseModels.length, 0);
+          assert.strictEqual(configObj?.getProducts.length, 0);
+        }
+      });
+    });
+
+    suite('#one-codegen section', function() {
+      test('Parse basic example', function() {
+        const configName = 'model.cfg';
+        const productName = 'model.tvn';
+
+        const content = `
+[one-codegen]
+backend=dummy
+command=${productName}
+        `;
+
+        // Write a file inside a temp directory
+        testBuilder.writeFileSync(configName, content);
+
+        // Get file paths inside the temp directory
+        const configPath = testBuilder.getPath(configName);
+        const productPath = testBuilder.getPath(productName);
+
+        const configObj = ConfigObj.createConfigObj(vscode.Uri.file(configPath));
+
+        // Validation
+        {
+          assert.strictEqual(configObj?.getBaseModels.length, 0);
+          assert.notStrictEqual(configObj?.getProducts.length, 0);
+
+          assert.isTrue(
+              configObj?.getProducts.map(product => product.path).includes(productPath));
+        }
+      });
+
+      test('NEG: Parse config with invalid ext', function() {
+        const configName = 'model.cfg';
+        // ERROR INJECTION
+        // Invalid ext '.rectangle' instead of '.tvn'
+        const productName = 'model.rectangle';
+
+        const content = `
+[one-codegen]
+backend=dummy
+command=${productName}
+        `;
+
+        // Write a file inside a temp directory
+        testBuilder.writeFileSync(configName, content);
+
+        // Get file paths inside the temp directory
+        const configPath = testBuilder.getPath(configName);
+        const configObj = ConfigObj.createConfigObj(vscode.Uri.file(configPath));
+
+        // Validation
+        {
+          assert.strictEqual(configObj?.getBaseModels.length, 0);
+          assert.strictEqual(configObj?.getProducts.length, 0);
+        }
+      });
+    });
+
+    suite('#one-profile section', function() {
+      test('Parse basic example', function() {
+        const configName = 'model.cfg';
+        const traceName = 'trace.json';
+
+        const content = `
+[one-profile]
+command=--save-chrome-trace ${traceName}
+        `;
+
+        // Write a file inside a temp directory
+        testBuilder.writeFileSync(configName, content);
+
+        // Get file paths inside the temp directory
+        const configPath = testBuilder.getPath(configName);
+        const tracePath = testBuilder.getPath(traceName);
+
+        const configObj = ConfigObj.createConfigObj(vscode.Uri.file(configPath));
+
+        // Validation
+        {
+          assert.strictEqual(configObj?.getBaseModels.length, 0);
+          assert.notStrictEqual(configObj?.getProducts.length, 0);
+
+          assert.isTrue(
+              configObj?.getProducts.map(product => product.path).includes(tracePath));
+        }
+      });
+
+      test('NEG: Unmatching ext (not .json)', function() {
+        const configName = 'model.cfg';
+        const traceName = 'trace.unexpected';
+
+        const content = `
+[one-profile]
+command=--save-chrome-trace ${traceName}
+        `;
+
+        // Write a file inside a temp directory
+        testBuilder.writeFileSync(configName, content);
+
+        // Get file paths inside the temp directory
+        const configPath = testBuilder.getPath(configName);
+        const tracePath = testBuilder.getPath(traceName);
+
+        const configObj = ConfigObj.createConfigObj(vscode.Uri.file(configPath));
+
+        // Validation
+        {
+          assert.strictEqual(configObj?.getBaseModels.length, 0);
+          assert.strictEqual(configObj?.getProducts.length, 0);
+        }
+      });
+
+      test(`NEG: Typo in a key 'command'`, function() {
+        const configName = 'model.cfg';
+        const traceName = 'trace.json';
+
+        // INJECTED DEFECT
+        // 'commands' intead of 'command'
+        //
+        // EXPECTED BEHAVIOR
+        // trace.json not found
+        const content = `
+[one-profile]
+commands=--save-chrome-trace ${traceName}
+        `;
+
+        // Write a file inside a temp directory
+        testBuilder.writeFileSync(configName, content);
+
+        // Get file paths inside the temp directory
+        const configPath = testBuilder.getPath(configName);
+        const tracePath = testBuilder.getPath(traceName);
+
+        const configObj = ConfigObj.createConfigObj(vscode.Uri.file(configPath));
+
+        // Validation
+        {
+          assert.strictEqual(configObj?.getBaseModels.length, 0);
+          assert.strictEqual(configObj?.getProducts.length, 0);
         }
       });
     });
