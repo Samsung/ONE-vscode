@@ -388,14 +388,31 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
       vscode.workspace.createFileSystemWatcher(`**/*.{cfg,tflite,onnx,circle,tvn}`);
 
   private tree: DirectoryNode|undefined;
+  public didHideExtra: boolean = false;
 
   constructor(private workspaceRoot: vscode.Uri|undefined) {
+    vscode.commands.executeCommand('setContext', 'one.explorer:didHideExtra', this.didHideExtra);
+
     const fileWatchersEvents =
         [this.fileWatcher.onDidCreate, this.fileWatcher.onDidChange, this.fileWatcher.onDidDelete];
 
     for (let event of fileWatchersEvents) {
       event(() => this.refresh());
     }
+  }
+
+  hideExtra(): void {
+    this.didHideExtra = true;
+
+    vscode.commands.executeCommand('setContext', 'one.explorer:didHideExtra', this.didHideExtra);
+    this.refresh();
+  }
+
+  unhideExtra(): void {
+    this.didHideExtra = false;
+
+    vscode.commands.executeCommand('setContext', 'one.explorer:didHideExtra', this.didHideExtra);
+    this.refresh();
   }
 
   /**
@@ -585,7 +602,11 @@ input_path=${modelName}.${extName}
   }
 
   private getNode(node: Node): OneNode[] {
-    const toOneNode = (node: Node): OneNode => {
+    const toOneNode = (node: Node): OneNode|undefined => {
+      if (this.didHideExtra && node.canHide) {
+        return undefined;
+      }
+
       if (node.type === NodeType.directory) {
         return new OneNode(node.name, vscode.TreeItemCollapsibleState.Expanded, node);
       } else if (node.type === NodeType.product) {
@@ -657,6 +678,10 @@ export function initOneExplorer(context: vscode.ExtensionContext) {
           vscode.commands.executeCommand('vscode.openWith', oneNode.node.uri, 'default');
         }),
     vscode.commands.registerCommand('one.explorer.refresh', () => oneTreeDataProvider.refresh()),
+    vscode.commands.registerCommand(
+        'one.explorer.hideExtra', () => oneTreeDataProvider.hideExtra()),
+    vscode.commands.registerCommand(
+        'one.explorer.unhideExtra', () => oneTreeDataProvider.unhideExtra()),
     vscode.commands.registerCommand(
         'one.explorer.createCfg', (oneNode: OneNode) => oneTreeDataProvider.createCfg(oneNode)),
     vscode.commands.registerCommand(
