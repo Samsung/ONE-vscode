@@ -171,3 +171,21 @@ label {
 .optionPanel .options .advanced .option {
   margin-bottom: 5px;
 }
+
+.codicon.codicon-question .help {
+  visibility: hidden;
+  width: auto;
+  background-color: var(--vscode-editorSuggestWidget-background);
+  color: var(--vscode-editorSuggestWidget-foreground);
+  border: 2px solid var(--vscode-editorSuggestWidget-border);
+  font-size: small;
+  text-align: left;
+  position: absolute;
+  z-index: 1;
+  margin-left: 10px;
+  padding: 6px 6px 10px 8px;
+}
+
+.codicon.codicon-question:hover .help {
+  visibility: visible;
+}
