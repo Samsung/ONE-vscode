@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import {Job} from './Job';
+import {Job} from '../Job/Job';
+import {ToolArgs} from '../Job/ToolArgs';
+
 import {JobBase} from './JobBase';
-import {ToolArgs} from './ToolArgs';
 
 export class JobPack extends JobBase {
   // TODO add pack options

@@ -16,11 +16,11 @@
 
 import {assert} from 'chai';
 
-import {JobRunner} from '../../Project/JobRunner';
-import {WorkJobs} from '../../Project/WorkJobs';
+import {JobRunner} from '../../Job/JobRunner';
+import {WorkJobs} from '../../Job/WorkJobs';
 import {MockJob} from '../MockJob';
 
-suite('Project', function() {
+suite('Job', function() {
   suite('JobRunner', function() {
     suite('@Use-onecc', function() {
       suite('#start()', function() {

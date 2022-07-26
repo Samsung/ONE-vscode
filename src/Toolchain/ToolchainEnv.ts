@@ -19,9 +19,9 @@ import * as path from 'path';
 
 import {Compiler} from '../Backend/Compiler';
 import {Toolchain} from '../Backend/Toolchain';
-import {BuilderJob} from '../Project/BuilderJob';
-import {Job} from '../Project/Job';
-import {WorkFlow} from '../Project/WorkFlow';
+import {BuilderJob} from '../Job/BuilderJob';
+import {Job} from '../Job/Job';
+import {WorkFlow} from '../Job/WorkFlow';
 import {Balloon} from '../Utils/Balloon';
 import * as helpers from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';

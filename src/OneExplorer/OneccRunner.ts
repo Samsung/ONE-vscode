@@ -18,8 +18,8 @@ import {EventEmitter} from 'events';
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-import {ToolArgs} from '../Project/ToolArgs';
-import {SuccessResult, ToolRunner} from '../Project/ToolRunner';
+import {ToolArgs} from '../Job/ToolArgs';
+import {SuccessResult, ToolRunner} from '../Job/ToolRunner';
 import {Balloon} from '../Utils/Balloon';
 
 /* istanbul ignore next */

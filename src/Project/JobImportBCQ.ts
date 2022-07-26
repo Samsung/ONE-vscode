@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import {Job} from '../Job/Job';
+import {ToolArgs} from '../Job/ToolArgs';
 import {Logger} from '../Utils/Logger';
 
-import {Job} from './Job';
 import {JobImport} from './JobImport';
-import {ToolArgs} from './ToolArgs';
 
 export class JobImportBCQ extends JobImport {
   inputArrays?: string = undefined;

@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import {Job} from './Job';
+import {Job} from '../Job/Job';
+import {ToolArgs} from '../Job/ToolArgs';
+
 import {JobImport} from './JobImport';
-import {ToolArgs} from './ToolArgs';
 
 export class JobImportTF extends JobImport {
   inputArrays?: string = undefined;

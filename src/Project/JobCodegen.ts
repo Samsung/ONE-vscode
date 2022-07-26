@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import {Job} from '../Job/Job';
+import {ToolArgs} from '../Job/ToolArgs';
 import {Logger} from '../Utils/Logger';
 
-import {Job} from './Job';
 import {JobBase} from './JobBase';
-import {ToolArgs} from './ToolArgs';
 
 export class JobCodegen extends JobBase {
   backend: string = '';

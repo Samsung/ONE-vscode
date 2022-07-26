@@ -17,7 +17,7 @@
 import {assert} from 'chai';
 
 import {Command} from '../../Backend/Command';
-import {Job} from '../../Project/Job';
+import {Job} from '../../Job/Job';
 import {JobUninstall} from '../../Toolchain/JobUninstall';
 
 suite('Project', function() {

@@ -15,9 +15,9 @@
  */
 
 import {assert} from 'chai';
-import {ToolArgs} from '../../Project/ToolArgs';
+import {ToolArgs} from '../../Job/ToolArgs';
 
-suite('Project', function() {
+suite('Job', function() {
   suite('ToolArgs', function() {
     suite('#add()', function() {
       test('adds option without value', function() {

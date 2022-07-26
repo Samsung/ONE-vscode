@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import {Job} from './Job';
+import {Job} from '../Job/Job';
+import {ToolArgs} from '../Job/ToolArgs';
+
 import {MixinInOutPaths} from './JobMixins';
-import {ToolArgs} from './ToolArgs';
 
 export class JobBase implements Job, MixinInOutPaths {
   jobType: Job.Type = Job.Type.tUndefined;

@@ -17,11 +17,11 @@
 import {EventEmitter} from 'events';
 import * as vscode from 'vscode';
 
+import {BuilderJob} from '../Job/BuilderJob';
 import {Balloon} from '../Utils/Balloon';
 import * as helpers from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
-import {BuilderJob} from './BuilderJob';
 import {JobCodegen} from './JobCodegen';
 import {JobImportBCQ} from './JobImportBCQ';
 import {JobImportONNX} from './JobImportONNX';
