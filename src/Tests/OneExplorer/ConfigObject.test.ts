@@ -67,8 +67,8 @@ class TestBuilder {
       fs.rmdirSync(this.testDir!, {recursive: true});
       console.log(`Test directory is removed successfully. (${this.testDir})`);
     } catch (e) {
+      // Do not throw to proceed the test
       console.error('Cannot remove the test directory');
-      throw e;
     } finally {
       console.log(`Test ${this.testLabel} - Done`);
     }
