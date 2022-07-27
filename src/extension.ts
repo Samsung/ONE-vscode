@@ -25,7 +25,6 @@ import {MondrianEditorProvider} from './Mondrian/MondrianEditor';
 import {initOneExplorer} from './OneExplorer/OneExplorer';
 import {PartEditorProvider} from './PartEditor/PartEditor';
 import {PartGraphSelPanel} from './PartEditor/PartGraphSelector';
-import {Project} from './Project';
 import {ToolchainProvider} from './Toolchain/ToolchainProvider';
 import {Logger} from './Utils/Logger';
 
@@ -65,22 +64,6 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(inferenceCommand);
 
   context.subscriptions.push(CfgEditorPanel.register(context));
-
-  let projectBuilder = new Project.Builder();
-
-  projectBuilder.init();
-
-  let disposableOneBuild = vscode.commands.registerCommand('one.project.build', () => {
-    Logger.info(tag, 'one build...');
-    projectBuilder.build(context);
-  });
-  context.subscriptions.push(disposableOneBuild);
-
-  let disposableOneImport = vscode.commands.registerCommand('one.project.import', () => {
-    Logger.info(tag, 'one import...');
-    projectBuilder.import(context);
-  });
-  context.subscriptions.push(disposableOneImport);
 
   let disposableOneJsontracer = vscode.commands.registerCommand('one.viewer.jsonTracer', () => {
     Logger.info(tag, 'one json tracer...');

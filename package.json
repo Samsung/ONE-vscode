@@ -183,16 +183,6 @@
         "icon": "$(add)"
       },
       {
-        "command": "one.project.build",
-        "title": "build",
-        "category": "ONE"
-      },
-      {
-        "command": "one.project.import",
-        "title": "cfg import",
-        "category": "ONE"
-      },
-      {
         "command": "one.viewer.jsonTracer",
         "title": "json tracer",
         "category": "ONE"
@@ -329,14 +319,6 @@
         },
         {
           "command": "one.explorer.openAsText",
-          "when": "false"
-        },
-        {
-          "command": "one.project.build",
-          "when": "false"
-        },
-        {
-          "command": "one.project.import",
           "when": "false"
         },
         {

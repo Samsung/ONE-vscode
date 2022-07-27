@@ -45,21 +45,10 @@ export namespace Job {
 
 export const enum Type {
   tUndefined = 0,  // TODO maybe use Job.jobType = undefined?
-  // TODO: Deprecate
-  tImportTF = 1,
-  tImportTFLite,
-  tImportONNX,
-  tImportBCQ,
-  tOptimize,
-  tQuantize,
-  tPack,
-  tCodegen,
-  // New Job Types
   tConfig,
   tPrerequisites,
   tInstall,
   tUninstall,
-  tInstalled,
   // TODO add more
 }
 
