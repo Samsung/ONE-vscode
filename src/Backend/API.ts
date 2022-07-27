@@ -50,6 +50,9 @@ function backendRegistrationApi() {
         globalExecutorArray.push(executor);
       }
       Logger.info(logTag, 'Backend', backendName, 'was registered into ONE-vscode.');
+      // NOTE: This might not 100% guaratee the activating extension has been done.
+      //   - link: https://github.com/Samsung/ONE-vscode/pull/1101#issuecomment-1195099002
+      // TODO: Consider better way to refresh toolchainView after backend's registration.
       vscode.commands.executeCommand('one.toolchain.refresh');
     },
     registerExecutor(executor: Executor) {
