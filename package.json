@@ -164,7 +164,7 @@
       },
       {
         "command": "one.device.refresh",
-        "title": "Refresh all Device",
+        "title": "Refresh all devices",
         "category": "ONE",
         "icon": "$(refresh)"
       },
