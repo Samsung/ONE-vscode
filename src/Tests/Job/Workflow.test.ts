@@ -15,10 +15,10 @@
  */
 
 import {assert} from 'chai';
-import {WorkFlow} from '../../Project/WorkFlow';
+import {WorkFlow} from '../../Job/WorkFlow';
 import {MockJob} from '../MockJob';
 
-suite('Project', function() {
+suite('Job', function() {
   suite('WorkFlow', function() {
     // jobs for WorkFlow
     const name0 = 'job0';

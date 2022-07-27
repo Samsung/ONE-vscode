@@ -15,7 +15,7 @@
  */
 
 import {assert} from 'chai';
-import {Job} from '../../Project/Job';
+import {Job} from '../../Job/Job';
 import {JobImportTF} from '../../Project/JobImportTF';
 
 suite('Project', function() {

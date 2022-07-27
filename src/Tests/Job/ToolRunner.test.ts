@@ -17,12 +17,12 @@
 import {assert} from 'chai';
 import {join} from 'path';
 
-import {ToolArgs} from '../../Project/ToolArgs';
-import {SuccessResult, ToolRunner} from '../../Project/ToolRunner';
+import {ToolArgs} from '../../Job/ToolArgs';
+import {SuccessResult, ToolRunner} from '../../Job/ToolRunner';
 import {obtainWorkspaceRoot} from '../../Utils/Helpers';
 import {MockJob} from '../MockJob';
 
-suite('Project', function() {
+suite('Job', function() {
   suite('ToolRunner', function() {
     suite('@Use-onecc', function() {
       suite('#getOneccPath()', function() {
@@ -34,26 +34,6 @@ suite('Project', function() {
                       (actual?.endsWith('onecc')));
         });
       });
-      suite('#getRunner()', function() {
-        test('returns runner as Promise<string>', function(done) {
-          let job = new MockJob('mockup');
-          let toolRunner = new ToolRunner();
-          const oneccPath = toolRunner.getOneccPath();
-          // oneccPath could be string or undefined. Avoid compiling error
-          if (oneccPath === undefined) {
-            assert.fail('oneccPath should be string type');
-          }
-          const workspaceRoot: string = obtainWorkspaceRoot();
-          const runner = toolRunner.getRunner(job.name, oneccPath, job.toolArgs, workspaceRoot);
-          assert.isNotNull(runner);
-          runner
-              .then(function(res: SuccessResult) {
-                assert.ok(res.exitCode === 0);
-                done();
-              })
-              .catch(done);
-        });
-      });
     });  // @use-onecc
 
     const wait = async function(sec: number) {
@@ -61,6 +41,19 @@ suite('Project', function() {
     };
 
     suite(`#getRunner()`, function() {
+      test('returns runner as Promise<string>', function(done) {
+        let job = new MockJob('mockup');
+        let toolRunner = new ToolRunner();
+        const runner = toolRunner.getRunner(job.name, job.tool, job.toolArgs, job.workDir);
+        assert.isNotNull(runner);
+        runner
+            .then(function(res: SuccessResult) {
+              assert.ok(res.exitCode === 0);
+              done();
+            })
+            .catch(done);
+      });
+
       test('NEG: calling sequence', async function() {
         let toolRunner = new ToolRunner();
         {

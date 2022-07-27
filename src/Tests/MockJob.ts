@@ -14,29 +14,31 @@
  * limitations under the License.
  */
 
-import {JobBase} from '../Project/JobBase';
-import {ToolArgs} from '../Project/ToolArgs';
+import {Job} from '../Job/Job';
+import {ToolArgs} from '../Job/ToolArgs';
 
-// Job for mock-up
-export class MockJob extends JobBase {
+export class MockJob implements Job {
+  jobType: Job.Type = Job.Type.tUndefined;
+  name: string;
+  root: boolean = false;
+  workDir: string = require('os').homedir();
+  isCancelable: boolean = false;
+
   constructor(name: string) {
-    super();
     this.name = name;
   }
 
-  public get valid() {
+  public get valid(): boolean {
     return true;
   }
 
-  public get tool() {
-    // Just use `onecc` as dummy
-    return 'onecc';
+  public get tool(): string {
+    return 'ls';
   }
 
-  public get toolArgs() {
-    // Just use `-h` of `onecc` as dummy
+  public get toolArgs(): ToolArgs {
     let args = new ToolArgs();
-    args.push('-h');
+    args.push('-al');
     return args;
   }
 }

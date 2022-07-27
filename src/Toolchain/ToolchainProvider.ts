@@ -17,7 +17,7 @@
 import * as vscode from 'vscode';
 
 import {Toolchain} from '../Backend/Toolchain';
-import {Job} from '../Project/Job';
+import {Job} from '../Job/Job';
 import {Logger} from '../Utils/Logger';
 import {showInstallQuickInput} from '../View/InstallQuickInput';
 

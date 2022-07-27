@@ -16,14 +16,14 @@
 
 import * as vscode from 'vscode';
 
+import {BuilderJob} from '../Job/BuilderJob';
+import {Job} from '../Job/Job';
+import {WorkFlow} from '../Job/WorkFlow';
 import {Balloon} from '../Utils/Balloon';
 import * as helpers from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
 import {BuilderCfgFile} from './BuilderCfgFile';
-import {BuilderJob} from './BuilderJob';
-import {Job} from './Job';
-import {WorkFlow} from './WorkFlow';
 
 export class Builder implements BuilderJob {
   workFlow: WorkFlow;  // our build WorkFlow
