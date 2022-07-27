@@ -239,11 +239,16 @@ class InstallQuickInput {
     const versionGroups = this.getQuickPickItems(versions);
     const updateButton = new InnerButton(new vscode.ThemeIcon('refresh'), 'Update version list');
 
+    let placeholder = 'Pick toolchain version';
+    if (versions.length === 0) {
+      placeholder = 'No available toolchain version';
+    }
+
     state.selectedItem = await input.showQuickPick({
       title: this.title,
       step: InstallQuickInputStep.pickVersion,
       totalSteps: InstallQuickInputStep.pickVersion,
-      placeholder: 'Pick toolchain version',
+      placeholder: placeholder,
       items: versionGroups,
       buttons: [updateButton],
       shouldResume: shouldResume
