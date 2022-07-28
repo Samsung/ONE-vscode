@@ -103,7 +103,7 @@
         "icon": "$(eye)"
       },
       {
-        "command": "one.explorer.unhideExtra",
+        "command": "one.explorer.showExtra",
         "title": "Unhide Extra Files",
         "category": "ONE",
         "icon": "$(eye-closed)"
@@ -213,7 +213,7 @@
           "group": "navigation@1"
         },
         {
-          "command": "one.explorer.unhideExtra",
+          "command": "one.explorer.showExtra",
           "when": "view == OneExplorerView && one.explorer:didHideExtra",
           "group": "navigation@1"
         },
@@ -348,7 +348,7 @@
           "when": "false"
         },
         {
-          "command": "one.explorer.unhideExtra",
+          "command": "one.explorer.showExtra",
           "when": "false"
         },
         {

@@ -408,7 +408,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
     this.refresh();
   }
 
-  unhideExtra(): void {
+  showExtra(): void {
     this.didHideExtra = false;
 
     vscode.commands.executeCommand('setContext', 'one.explorer:didHideExtra', this.didHideExtra);
@@ -681,7 +681,7 @@ export function initOneExplorer(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
         'one.explorer.hideExtra', () => oneTreeDataProvider.hideExtra()),
     vscode.commands.registerCommand(
-        'one.explorer.unhideExtra', () => oneTreeDataProvider.unhideExtra()),
+        'one.explorer.showExtra', () => oneTreeDataProvider.showExtra()),
     vscode.commands.registerCommand(
         'one.explorer.createCfg', (oneNode: OneNode) => oneTreeDataProvider.createCfg(oneNode)),
     vscode.commands.registerCommand(
