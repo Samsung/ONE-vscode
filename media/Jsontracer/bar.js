@@ -57,7 +57,7 @@ export default function renderBar(timeLimit, data) {
   bar.style.width = `${data.dur / timeLimit * 100}%`;
   bar.style.backgroundColor = `${data.backgroundColor}`;
 
-  Object.keys(data).map(key => {
+  Object.keys(data).forEach(key => {
     if (key === 'args') {
       const args = data[key];
       const argList = Object.keys(args).map(key => {

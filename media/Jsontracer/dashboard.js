@@ -50,7 +50,7 @@ import renderRuler from './ruler.js';
 
 export default function renderDashboard(utility, timeLimit, digit, data) {
   renderRuler(timeLimit, digit);
-  Object.keys(data).map(key => {
+  Object.keys(data).forEach(key => {
     renderLevel(timeLimit, key, utility[key], data[key]);
   });
 }

@@ -72,7 +72,7 @@ export default function renderLevel(timeLimit, title, usage, data) {
   levelContainer.append(levelHeader);
   graph.append(levelContainer);
 
-  Object.keys(data).map(key => {
+  Object.keys(data).forEach(key => {
     renderCategory(timeLimit, key, data[key]);
   });
 }
