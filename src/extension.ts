@@ -15,6 +15,7 @@
  */
 
 import * as vscode from 'vscode';
+import * as fs from 'fs';
 
 import {backendRegistrationApi} from './Backend/API';
 import {CfgEditorPanel} from './CfgEditor/CfgEditorPanel';
@@ -28,12 +29,46 @@ import {PartGraphSelPanel} from './PartEditor/PartGraphSelector';
 import {Project} from './Project';
 import {ToolchainProvider} from './Toolchain/ToolchainProvider';
 import {Logger} from './Utils/Logger';
+import { openInBrowser, postAMessage } from './Jsontracer/OpenTrace';
+
+export function catcoding(context: vscode.ExtensionContext) {
+  context.subscriptions.push(
+    vscode.commands.registerCommand('catCoding.start', () => {
+      const panel = vscode.window.createWebviewPanel(
+        'catCoding',
+        'Cat Coding',
+        vscode.ViewColumn.One,
+        {
+          enableScripts: true
+        }
+      );
+
+      panel.webview.html = fs.readFileSync('/home/dayo/git/ONE-vscode/src/example.html', {encoding: 'utf-8'}); 
+      panel.webview.onDidReceiveMessage(
+        message => {
+          vscode.window.showInformationMessage(message,{modal:true});
+        },
+        undefined,
+        context.subscriptions
+      );
+    })
+  );
+}
+
 
 export function activate(context: vscode.ExtensionContext) {
   const tag = 'activate';
 
   Logger.info(tag, 'one-vscode activate OK');
 
+  // (1) Open in webview example (FAILED)
+  //catcoding(context);
+
+  // (2) Open in a browser (main page only)
+  //postAMessage();
+
+  // (3) Open in a browser, with an insecurely hosted uri
+  openInBrowser(vscode.Uri.file('MYJSONFILE'));
   initOneExplorer(context);
 
   // ONE view
