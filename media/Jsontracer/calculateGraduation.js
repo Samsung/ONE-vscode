@@ -53,8 +53,8 @@ export default function calculateGraduation(graduation) {
   } else if (graduation > 0) {
     return Math.round(graduation * 1000 * 10) / 10 + 'ns';
   } else if (graduation === 0) {
-    return 0;
+    return '0';
   } else {
-    console.log('[WARNING] graduation is negative');
+    return 'graduation error';
   }
 }

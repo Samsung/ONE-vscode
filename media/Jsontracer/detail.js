@@ -56,7 +56,7 @@ export function renderSingleDetail(data) {
   const ul = document.createElement('ul');
   ul.className = 'detail';
 
-  Object.keys(data).map((key) => {
+  Object.keys(data).forEach((key) => {
     // invisible backgroundColor and pk
     if (key === 'backgroundColor' || key === 'pk') {
       return;
