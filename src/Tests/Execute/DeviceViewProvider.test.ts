@@ -27,7 +27,7 @@ suite('DeviceViewNode', function() {
         const collapsibleState = vscode.TreeItemCollapsibleState.Expanded;
         const managerName = 'local';
         let node = new DeviceViewNode(label, collapsibleState, NodeType.deviceManager, managerName);
-        assert.strictEqual(node.labal, label);
+        assert.strictEqual(node.label, label);
         assert.strictEqual(node.collapsibleState, collapsibleState);
         assert.strictEqual(node.nodetype, NodeType.deviceManager);
         assert.strictEqual(node.managerName, managerName);
@@ -41,7 +41,7 @@ suite('DeviceViewNode', function() {
         const collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
         const managerName = 'local';
         let node = new DeviceViewNode(label, collapsibleState, NodeType.device, managerName);
-        assert.strictEqual(node.labal, label);
+        assert.strictEqual(node.label, label);
         assert.strictEqual(node.collapsibleState, collapsibleState);
         assert.strictEqual(node.nodetype, NodeType.device);
         assert.strictEqual(node.managerName, managerName);
@@ -55,7 +55,7 @@ suite('DeviceViewNode', function() {
         const collapsibleState = vscode.TreeItemCollapsibleState.None;
         const managerName = 'local';
         let node = new DeviceViewNode(label, collapsibleState, NodeType.executor, managerName);
-        assert.strictEqual(node.labal, label);
+        assert.strictEqual(node.label, label);
         assert.strictEqual(node.collapsibleState, collapsibleState);
         assert.strictEqual(node.nodetype, NodeType.executor);
         assert.strictEqual(node.managerName, managerName);
@@ -69,7 +69,7 @@ suite('DeviceViewNode', function() {
         const collapsibleState = vscode.TreeItemCollapsibleState.None;
         const managerName = '';
         let node = new DeviceViewNode(label, collapsibleState, NodeType.none, managerName);
-        assert.strictEqual(node.labal, label);
+        assert.strictEqual(node.label, label);
         assert.strictEqual(node.collapsibleState, collapsibleState);
         assert.strictEqual(node.nodetype, NodeType.none);
         assert.strictEqual(node.managerName, managerName);
@@ -102,7 +102,7 @@ suite('DeviceViewProvider', function() {
       let deviceManagers = provider.getChildren();
       assert.strictEqual(deviceManagers.length, deviceManagerList.length);
       for (let index = 0; index < deviceManagers.length; index++) {
-        assert.strictEqual(deviceManagers[index].labal, deviceManagerList[index]);
+        assert.strictEqual(deviceManagers[index].label, deviceManagerList[index]);
       }
     });
     test('get Children under deviceManager Node', function() {

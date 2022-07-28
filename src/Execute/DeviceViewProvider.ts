@@ -59,10 +59,10 @@ export class DeviceViewNode extends vscode.TreeItem {
   type: NodeType;
   managerName: string;
   constructor(
-      public readonly labal: string,
+      public readonly label: string,
       public readonly collapsibleState: vscode.TreeItemCollapsibleState,
       public readonly nodetype: NodeType, public readonly manager: string) {
-    super(labal, collapsibleState);
+    super(label, collapsibleState);
     this.type = nodetype;
     this.managerName = manager;
     switch (this.type) {
@@ -114,7 +114,7 @@ export class DeviceViewProvider implements vscode.TreeDataProvider<DeviceViewNod
             element.managerName));
       }
     } else if (element.type === NodeType.device) {
-      const device = this.deviceManagerMap[element.managerName].findDevice(element.labal);
+      const device = this.deviceManagerMap[element.managerName].findDevice(element.label);
       const executorList = device ?.availableExecutors;
       if (executorList) {
         for (const executor of executorList) {
