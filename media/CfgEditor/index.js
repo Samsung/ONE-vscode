@@ -16,7 +16,7 @@
 
 import {displayCfgToEditor} from './displaycfg.js';
 import oneOptimizationList from './one-optimizations.json' assert {type : 'json'};
-import {applyUpdates, updateCodegen, updateImportInputModelType, updateImportKERAS, updateImportONNX, updateImportPB, updateImportSAVED, updateImportTFLITE, updateOptimize, updateProfile, updateQuantizeActionType, updateQuantizeDefault, updateSteps} from './updateContent.js';
+import {applyUpdates, updateCodegen, updateImportInputModelType, updateImportKERAS, updateImportONNX, updateImportPB, updateImportSAVED, updateImportTFLITE, updateOptimize, updateProfile, updateQuantizeActionType, updateQuantizeCopy, updateQuantizeDefault, updateQuantizeForce, updateSteps} from './updateContent.js';
 import {updateImportUI, updateQuantizeUI, updateStepUI} from './updateUI.js';
 import {postMessageToVsCode} from './vscodeapi.js';
 
@@ -33,6 +33,7 @@ function main() {
   registerQuantizeOptions();
   registerCodegenOptions();
   registerProfileOptions();
+  registerCodiconEvents();
 
   // event from vscode extension
   window.addEventListener('message', event => {
@@ -40,6 +41,41 @@ function main() {
     switch (message.type) {
       case 'displayCfgToEditor':
         displayCfgToEditor(message.text);
+        break;
+      case 'applyDialogPath':
+        document.getElementById(message.elemID).value = message.path;
+        switch (message.step) {
+          case 'ImportPB':
+            updateImportPB();
+            break;
+          case 'ImportSAVED':
+            updateImportSAVED();
+            break;
+          case 'ImportKERAS':
+            updateImportKERAS();
+            break;
+          case 'ImportTFLITE':
+            updateImportTFLITE();
+            break;
+          case 'ImportONNX':
+            updateImportONNX();
+            break;
+          case 'Optimize':
+            updateOptimize();
+            break;
+          case 'QuantizeDefault':
+            updateQuantizeDefault();
+            break;
+          case 'QuantizeForce':
+            updateQuantizeForce();
+            break;
+          case 'QuantizeCopy':
+            updateQuantizeCopy();
+            break;
+          default:
+            break;
+        }
+        applyUpdates();
         break;
       default:
         break;
@@ -391,5 +427,208 @@ function registerProfileOptions() {
   profileCommand.addEventListener('change', function() {
     updateProfile();
     applyUpdates();
+  });
+}
+
+function registerCodiconEvents() {
+  document.getElementById('PBInputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({
+      type: 'getPathByDialog',
+      isFolder: false,
+      ext: ['pb'],
+      oldPath: document.getElementById('PBInputPath').value,
+      postStep: 'ImportPB',
+      postElemID: 'PBInputPath'
+    });
+  });
+  document.getElementById('PBOutputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({
+      type: 'getPathByDialog',
+      isFolder: false,
+      ext: ['circle'],
+      oldPath: document.getElementById('PBOutputPath').value,
+      postStep: 'ImportPB',
+      postElemID: 'PBOutputPath'
+    });
+  });
+  document.getElementById('SAVEDInputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({
+      type: 'getPathByDialog',
+      isFolder: true,
+      ext: [],
+      oldPath: document.getElementById('SAVEDInputPath').value,
+      postStep: 'ImportSAVED',
+      postElemID: 'SAVEDInputPath'
+    });
+  });
+  document.getElementById('SAVEDOutputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({
+      type: 'getPathByDialog',
+      isFolder: false,
+      ext: ['circle'],
+      oldPath: document.getElementById('SAVEDOutputPath').value,
+      postStep: 'ImportSAVED',
+      postElemID: 'SAVEDOutputPath'
+    });
+  });
+  document.getElementById('KERASInputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({
+      type: 'getPathByDialog',
+      isFolder: false,
+      ext: ['h5'],
+      oldPath: document.getElementById('KERASInputPath').value,
+      postStep: 'ImportKERAS',
+      postElemID: 'KERASInputPath'
+    });
+  });
+  document.getElementById('KERASOutputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({
+      type: 'getPathByDialog',
+      isFolder: false,
+      ext: ['circle'],
+      oldPath: document.getElementById('KERASOutputPath').value,
+      postStep: 'ImportKERAS',
+      postElemID: 'KERASOutputPath'
+    });
+  });
+  document.getElementById('TFLITEInputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({
+      type: 'getPathByDialog',
+      isFolder: false,
+      ext: ['tflite'],
+      oldPath: document.getElementById('TFLITEInputPath').value,
+      postStep: 'ImportTFLITE',
+      postElemID: 'TFLITEInputPath'
+    });
+  });
+  document.getElementById('TFLITEOutputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({
+      type: 'getPathByDialog',
+      isFolder: false,
+      ext: ['circle'],
+      oldPath: document.getElementById('TFLITEOutputPath').value,
+      postStep: 'ImportTFLITE',
+      postElemID: 'TFLITEOutputPath'
+    });
+  });
+  document.getElementById('ONNXInputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({
+      type: 'getPathByDialog',
+      isFolder: false,
+      ext: ['onnx'],
+      oldPath: document.getElementById('ONNXInputPath').value,
+      postStep: 'ImportONNX',
+      postElemID: 'ONNXInputPath'
+    });
+  });
+  document.getElementById('ONNXOutputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({
+      type: 'getPathByDialog',
+      isFolder: false,
+      ext: ['circle'],
+      oldPath: document.getElementById('ONNXOutputPath').value,
+      postStep: 'ImportONNX',
+      postElemID: 'ONNXOutputPath'
+    });
+  });
+  document.getElementById('optimizeInputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({
+      type: 'getPathByDialog',
+      isFolder: false,
+      ext: ['circle'],
+      oldPath: document.getElementById('optimizeInputPath').value,
+      postStep: 'Optimize',
+      postElemID: 'optimizeInputPath'
+    });
+  });
+  document.getElementById('optimizeOutputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({
+      type: 'getPathByDialog',
+      isFolder: false,
+      ext: ['circle'],
+      oldPath: document.getElementById('optimizeOutputPath').value,
+      postStep: 'Optimize',
+      postElemID: 'optimizeOutputPath'
+    });
+  });
+  document.getElementById('DefaultQuantInputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({
+      type: 'getPathByDialog',
+      isFolder: false,
+      ext: ['circle'],
+      oldPath: document.getElementById('DefaultQuantInputPath').value,
+      postStep: 'QuantizeDefault',
+      postElemID: 'DefaultQuantInputPath'
+    });
+  });
+  document.getElementById('DefaultQuantOutputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({
+      type: 'getPathByDialog',
+      isFolder: false,
+      ext: ['circle'],
+      oldPath: document.getElementById('DefaultQuantOutputPath').value,
+      postStep: 'QuantizeDefault',
+      postElemID: 'DefaultQuantOutputPath'
+    });
+  });
+  document.getElementById('DefaultQuantQuantConfigSearch').addEventListener('click', function() {
+    postMessageToVsCode({
+      type: 'getPathByDialog',
+      isFolder: false,
+      ext: ['json'],
+      oldPath: document.getElementById('DefaultQuantQuantConfig').value,
+      postStep: 'QuantizeDefault',
+      postElemID: 'DefaultQuantQuantConfig'
+    });
+  });
+  document.getElementById('DefaultQuantInputDataSearch').addEventListener('click', function() {
+    postMessageToVsCode({
+      type: 'getPathByDialog',
+      isFolder: document.getElementById('DefaultQuantInputDataFormat').value === 'dir',
+      ext: ['h5'],
+      oldPath: document.getElementById('DefaultQuantInputData').value,
+      postStep: 'QuantizeDefault',
+      postElemID: 'DefaultQuantInputData'
+    });
+  });
+  document.getElementById('ForceQuantInputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({
+      type: 'getPathByDialog',
+      isFolder: false,
+      ext: ['circle'],
+      oldPath: document.getElementById('ForceQuantInputPath').value,
+      postStep: 'QuantizeForce',
+      postElemID: 'ForceQuantInputPath'
+    });
+  });
+  document.getElementById('ForceQuantOutputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({
+      type: 'getPathByDialog',
+      isFolder: false,
+      ext: ['circle'],
+      oldPath: document.getElementById('ForceQuantOutputPath').value,
+      postStep: 'QuantizeForce',
+      postElemID: 'ForceQuantOutputPath'
+    });
+  });
+  document.getElementById('CopyQuantInputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({
+      type: 'getPathByDialog',
+      isFolder: false,
+      ext: ['circle'],
+      oldPath: document.getElementById('CopyQuantInputPath').value,
+      postStep: 'QuantizeCopy',
+      postElemID: 'CopyQuantInputPath'
+    });
+  });
+  document.getElementById('CopyQuantOutputPathSearch').addEventListener('click', function() {
+    postMessageToVsCode({
+      type: 'getPathByDialog',
+      isFolder: false,
+      ext: ['circle'],
+      oldPath: document.getElementById('CopyQuantOutputPath').value,
+      postStep: 'QuantizeCopy',
+      postElemID: 'CopyQuantOutputPath'
+    });
   });
 }
