@@ -14,6 +14,7 @@ out/Tests/**
 **/.htmlhintrc
 **/tsconfig.json
 **/.eslintrc.json
+**/.stylelintrc.yml
 **/format.patch
 **/*.map
 **/*.ts
