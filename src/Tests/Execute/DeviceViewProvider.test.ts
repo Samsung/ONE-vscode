@@ -98,43 +98,54 @@ suite('DeviceViewProvider', function() {
   });
   suite('#getChildren', function() {
     test('get Children under undfined', function() {
-      let provider = new DeviceViewProvider();
-      let deviceManagers = provider.getChildren();
-      assert.strictEqual(deviceManagers.length, deviceManagerList.length);
-      for (let index = 0; index < deviceManagers.length; index++) {
-        assert.strictEqual(deviceManagers[index].label, deviceManagerList[index]);
-      }
+      let provider = new DeviceViewProvider(function() {
+        let deviceManagers = provider.getChildren();
+        assert.strictEqual(deviceManagers.length, deviceManagerList.length);
+        for (let index = 0; index < deviceManagers.length; index++) {
+          assert.strictEqual(deviceManagers[index].label, deviceManagerList[index]);
+        }
+      });
     });
     test('get Children under deviceManager Node', function() {
-      let provider = new DeviceViewProvider();
-      for (const key in provider.deviceManagerMap) {
-        if (Object.prototype.hasOwnProperty.call(provider.deviceManagerMap, key)) {
-          const element = provider.deviceManagerMap[key];
-          const label = key;
-          const collapsibleState = vscode.TreeItemCollapsibleState.Expanded;
-          const managerName = key;
-          let node =
-              new DeviceViewNode(label, collapsibleState, NodeType.deviceManager, managerName);
-          let result = provider.getChildren(node);
-          assert.strictEqual(result.length, element.allDevices.length);
-        }
-      }
-    });
-    test('get Children under Device Node', function() {
-      let provider = new DeviceViewProvider();
-      for (const key in provider.deviceManagerMap) {
-        if (Object.prototype.hasOwnProperty.call(provider.deviceManagerMap, key)) {
-          const element = provider.deviceManagerMap[key];
-          for (const device of element.allDevices) {
-            const label = device.name;
-            const collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
+      let provider = new DeviceViewProvider(function() {
+        for (const key in provider.deviceManagerMap) {
+          if (Object.prototype.hasOwnProperty.call(provider.deviceManagerMap, key)) {
+            const element = provider.deviceManagerMap[key];
+            const label = key;
+            const collapsibleState = vscode.TreeItemCollapsibleState.Expanded;
             const managerName = key;
-            let node = new DeviceViewNode(label, collapsibleState, NodeType.device, managerName);
+            let node =
+                new DeviceViewNode(label, collapsibleState, NodeType.deviceManager, managerName);
             let result = provider.getChildren(node);
-                    assert.strictEqual(result.length, element.findDevice(label)?.availableExecutors.size);
+            assert.strictEqual(result.length, element.allDevices.length);
           }
         }
-      }
+      });
+    });
+    test('get Children under Device Node', function() {
+      let provider = new DeviceViewProvider(function() {
+        for (const key in provider.deviceManagerMap) {
+          if (Object.prototype.hasOwnProperty.call(provider.deviceManagerMap, key)) {
+            const element = provider.deviceManagerMap[key];
+            for (const device of element.allDevices) {
+              const label = device.name;
+              const collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
+              const managerName = key;
+              let node = new DeviceViewNode(label, collapsibleState, NodeType.device, managerName);
+              let result = provider.getChildren(node);
+              assert.strictEqual(result.length, element.findDevice(label)?.availableExecutors.size);
+            }
+          }
+        }
+      });
+    });
+  });
+  suite('#refresh', function() {
+    test('refresh all view', function() {
+      let provider = new DeviceViewProvider();
+      let preDeviceManagerMap = provider.deviceManagerMap;
+      provider.refresh();
+      assert.deepStrictEqual(preDeviceManagerMap, provider.deviceManagerMap);
     });
   });
 });

@@ -16,7 +16,7 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
-		"viewsWelcome": [
+    "viewsWelcome": [
       {
         "view": "OneExplorerView",
         "contents": "Open folder which includes models and configuration files.\n[Open Folder](Command:workbench.action.files.openFolder)\nFollowing types of models will be displayed.\n- *.tflite, *pb and *.onnx\n- Intermediate and compiled models of backend(s).\n\nTo learn more about ONE-vscode extension usage [read our docs](https://github.com/Samsung/ONE-vscode/blob/main/docs/HowToUse.md)."
@@ -357,6 +357,7 @@
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
+    "@types/app-root-path": "^1.2.4",
     "@types/chai": "^4.3.0",
     "@types/glob": "^7.1.3",
     "@types/ini": "^1.3.31",
@@ -386,6 +387,7 @@
   "dependencies": {
     "@vscode/codicons": "^0.0.29",
     "@vscode/webview-ui-toolkit": "^0.9.3",
+    "app-root-path": "^3.0.0",
     "configparser": "^0.3.9",
     "ini": "^2.0.0",
     "which": "^2.0.2"
