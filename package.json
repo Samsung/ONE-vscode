@@ -163,10 +163,10 @@
         "title": "Run"
       },
       {
-        "command": "one.device.register",
-        "title": "Register",
+        "command": "one.device.refresh",
+        "title": "Refresh all devices",
         "category": "ONE",
-        "icon": "$(add)"
+        "icon": "$(refresh)"
       },
       {
         "command": "one.viewer.jsonTracer",
@@ -192,7 +192,7 @@
           "group": "navigation"
         },
         {
-          "command": "one.device.register",
+          "command": "one.device.refresh",
           "when": "view == TargetDeviceView",
           "group": "navigation"
         }
@@ -250,7 +250,7 @@
           "when": "false"
         },
         {
-          "command": "one.device.register",
+          "command": "one.device.refresh",
           "when": "false"
         },
         {

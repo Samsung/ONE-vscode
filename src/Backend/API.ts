@@ -54,6 +54,7 @@ function backendRegistrationApi() {
       //   - link: https://github.com/Samsung/ONE-vscode/pull/1101#issuecomment-1195099002
       // TODO: Consider better way to refresh toolchainView after backend's registration.
       vscode.commands.executeCommand('one.toolchain.refresh');
+      vscode.commands.executeCommand('one.device.refresh');
     },
     registerExecutor(executor: Executor) {
       globalExecutorArray.push(executor);
