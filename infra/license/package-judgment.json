@@ -54,7 +54,19 @@
       "permitted": "yes"
     },
 
+    "type-fest@0.6.0": {
+      "licenses": "(MIT OR CC0-1.0)",
+      "repository": "https://github.com/sindresorhus/type-fest",
+      "permitted": "yes"
+    },
+
     "type-fest@0.8.1": {
+      "licenses": "(MIT OR CC0-1.0)",
+      "repository": "https://github.com/sindresorhus/type-fest",
+      "permitted": "yes"
+    },
+
+    "type-fest@0.18.1": {
       "licenses": "(MIT OR CC0-1.0)",
       "repository": "https://github.com/sindresorhus/type-fest",
       "permitted": "yes"
