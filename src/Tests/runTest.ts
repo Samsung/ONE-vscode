@@ -45,30 +45,19 @@ import {runTests} from '@vscode/test-electron';
 import * as path from 'path';
 import {argv} from 'process';
 
-// NOTE: Fix the version to 1.64.0 to avoid some errors by the latest version
-// TODO: Remove the limitation of the version
-const codeVersionForGeneral: string = '1.64.0';
-
-// NOTE: Fix the version to 1.48.0 to avoid some nyc errors by the version > 1.48.0
-// TODO: Remove the limitation of the version
-const codeVersionForCoverage: string = '1.48.0';
-
 async function main() {
   const args: string[] = (argv.length > 2 && argv.slice(2)) || new Array<string>();
-  const isCoverage: boolean = args.includes('coverage') ? true : false;
-  const codeVersion: string = isCoverage ? codeVersionForCoverage : codeVersionForGeneral;
-  const isCiTest: boolean = args.includes('ci') ? true : false;
+  const isCoverage: string = args.includes('coverage') ? 'true' : 'false';
+  const isCiTest: string = args.includes('ci') ? 'true' : 'false';
 
   try {
     const extensionDevelopmentPath = path.resolve(__dirname, '../../');
     const extensionTestsPath = path.resolve(extensionDevelopmentPath, 'out', 'Tests', 'index');
-    const testWorkspace = path.resolve(extensionDevelopmentPath);
     await runTests({
-      version: codeVersion,
       extensionDevelopmentPath,
       extensionTestsPath: extensionTestsPath,
-      launchArgs: [testWorkspace],
-      extensionTestsEnv: {isCoverage: String(isCoverage), isCiTest: String(isCiTest)}
+      launchArgs: [extensionDevelopmentPath],
+      extensionTestsEnv: {isCoverage: isCoverage, isCiTest: isCiTest}
     });
   } catch (err) {
     console.error('Failed to run tests: ');

@@ -311,35 +311,6 @@
       }
     ]
   },
-  "nyc": {
-    "extends": "@istanbuljs/nyc-config-typescript",
-    "require": [
-      "ts-node/register",
-      "source-map-support/register"
-    ],
-    "all": true,
-    "exclude": [
-      "node_modules/**",
-      "**/*.d.ts",
-      ".{github,nyc_output,vscode,vscode-test}",
-      "{media,infra}/**",
-      "coverage/**",
-      "src/Tests/**",
-      "**/external/**"
-    ],
-    "include": [
-      "src/**/*.ts",
-      "out/**/*.js"
-    ],
-    "instrument": true,
-    "reporter": [
-      "cobertura",
-      "lcov",
-      "html",
-      "text",
-      "text-summary"
-    ]
-  },
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
@@ -352,7 +323,7 @@
     "unittest": "node ./out/Tests/runTest.js",
     "test": "npm run unittest",
     "test-no-screen": "DISPLAY=:44 xvfb-run --server-num 44 npm run test",
-    "coverage": "nyc npm run test coverage",
+    "coverage": "npm run test coverage",
     "clean": "rm -rf out"
   },
   "devDependencies": {
