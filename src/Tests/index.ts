@@ -1,24 +1,25 @@
 /*
- * Copyright (c) Microsoft Corporation
- *
- * All rights reserved.
- *
  * MIT License
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
- * associated documentation files (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge, publish, distribute,
- * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+ * Copyright (c) Microsoft Corporation. All rights reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all copies or
- * substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
- * NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE
  */
 /*
  * Copyright (c) 2022 Samsung Electronics Co., Ltd. All Rights Reserved
@@ -35,19 +36,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+// This file referenced
+// https://github.com/microsoft/vscode-js-debug/blob/95d772b31e87ed4069e0d9242f424925792e96e9/src/test/testRunner.ts
 
-/*
- * This file comes from
- * https://github.com/microsoft/vscode-extension-samples/blob/ba9a56e68277b6ba0ae3ee4593b6a864ba158b1f/helloworld-test-sample/src/test/suite/index.ts
- */
-
-import {glob} from 'glob';
+import * as glob from 'glob';
 import Mocha from 'mocha';
-import * as path from 'path';
+import {join} from 'path';
 // NOTE: env[key] causes some error. Use env.key
 import {env} from 'process';
 
-export function run(): Promise<void> {
+function setupCoverage() {
+  const NYC = require('nyc');
+  const nyc = new NYC({
+    extends: '@istanbuljs/nyc-config-typescript',
+    cwd: join(__dirname, '..', '..'),
+    exclude: [
+      '**/Tests/**',
+      '**/external/**'
+    ],
+    include: [
+      'src/**/*.ts',
+      'out/**/*.js'
+    ],
+    reporter: [
+      'cobertura',
+      'lcov',
+      'html',
+      'text',
+      'text-summary'
+    ],
+    all: true,
+    instrument: true,
+    hookRequire: true,
+    hookRunInContext: true,
+    hookRunInThisContext: true,
+    cache: false
+  });
+
+  nyc.reset();
+  nyc.wrap();
+
+  return nyc;
+}
+
+export async function run(): Promise<void> {
+  const nyc = setupCoverage();
+
   // FOR DEVELOPERS,
   //
   // To run a selective unit test, add a fgrep option below.
@@ -67,43 +101,32 @@ export function run(): Promise<void> {
   //
   // TODO: Enable to get string to filter from package.json
   const testFilter = '';
-  let mocha = new Mocha({ui: 'tdd', color: true, fgrep: testFilter});
-  const isCoverage: string|undefined = env.isCoverage;
-  if (isCoverage !== undefined && isCoverage === 'true') {
-    mocha.reporter('mocha-xunit-reporter', {output: 'mocha_result.xml'});
-  }
-  const isCiTest: string|undefined = env.isCiTest;
-  if (isCiTest !== undefined && isCiTest === 'true') {
-    mocha.fgrep('@Use-onecc');
-    mocha.invert();
+  const mochaOpts: Mocha.MochaOptions = {ui: 'tdd', color: true, fgrep: testFilter};
+
+  const runner = new Mocha(mochaOpts);
+
+  if (env.isCiTest === 'true') {
+    runner.fgrep('@Use-onecc').invert();
   }
 
-  const testsRoot = path.resolve(__dirname, '.');
+  const options = {cwd: __dirname};
+  const files = glob.sync('**/**.test.js', options);
 
-  // adds hooks first
-  const hooks = 'hooks.js';
-  mocha.addFile(path.join(testsRoot, hooks));
+  for (const file of files) {
+    runner.addFile(join(__dirname, file));
+  }
 
-  return new Promise((c, e) => {
-    glob('**/**.test.js', {cwd: testsRoot}, (err: Error|null, files: Array<string>) => {
-      if (err) {
-        e(err);
-      } else {
-        files.forEach(f => mocha.addFile(path.resolve(testsRoot, f)));
-
-        try {
-          mocha.run(failures => {
-            if (failures > 0) {
-              e(new Error(`${failures} tests failed.`));
-            } else {
-              c();
-            }
-          });
-        } catch (err) {
-          console.error(err);
-          e(err);
-        }
-      }
-    });
-  });
+  try {
+    await new Promise(
+        (resolve, reject) => runner.run(
+            failures =>
+                failures ? reject(new Error(`${failures} tests failed`)) : resolve(undefined),
+            ),
+    );
+  } finally {
+    if (env.isCoverage === 'true') {
+      nyc.writeCoverageFile();
+      await nyc.report();
+    }
+  }
 }
