@@ -90,7 +90,7 @@ export function obtainWorkspaceRoot(): string {
     // TODO revise message
     throw new Error('Need workspace');
   }
-  Logger.info(logTag, 'obtainWorkspaceRoot:', workspaceRoot);
+  Logger.debug(logTag, 'obtainWorkspaceRoot:', workspaceRoot);
 
   return workspaceRoot;
 }
