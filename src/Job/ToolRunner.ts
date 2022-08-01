@@ -17,6 +17,7 @@
 import * as cp from 'child_process';
 import * as fs from 'fs';
 import {Logger} from '../Utils/Logger';
+import {pipedSpawn} from '../Utils/PipedSpawn';
 import {ToolArgs} from './ToolArgs';
 
 const path = require('path');
@@ -52,7 +53,7 @@ export class ToolRunner {
   tag = this.constructor.name;  // logging tag
 
   // This variable is undefined while a prcess is not running
-  private child: cp.ChildProcessWithoutNullStreams|undefined = undefined;
+  private child: cp.ChildProcess|undefined = undefined;
 
   // When the spawned process was killed by kill() method, set this true
   // This value must be set to false when starting a process
@@ -62,11 +63,11 @@ export class ToolRunner {
       resolve: (value: SuccessResult|PromiseLike<SuccessResult>) => void,
       reject: (value: ErrorResult|PromiseLike<ErrorResult>) => void) {
     // stdout
-    this.child!.stdout.on(K_DATA, (data: any) => {
+    this.child!.stdout!.on(K_DATA, (data: any) => {
       Logger.append(data.toString());
     });
     // stderr
-    this.child!.stderr.on(K_DATA, (data: any) => {
+    this.child!.stderr!.on(K_DATA, (data: any) => {
       Logger.append(data.toString());
     });
 
@@ -174,8 +175,12 @@ export class ToolRunner {
         // To run the root command job, it must requires a password in `process.env.userp`
         // environment.
         // TODO(jyoung): Need password encryption
-        tool = `echo ${process.env.userp} | sudo -S ` + tool;
-        this.child = cp.spawn(tool, toolargs, {cwd: cwd, shell: true});
+        if (process.env.userp === undefined) {
+          throw Error('Cannot find required environment variable');
+        }
+        // sudo -S gets pw from stdin
+        const args = ['-S', tool].concat(toolargs);
+        this.child = pipedSpawn('echo', [process.env.userp], {cwd: cwd}, 'sudo', args, {cwd: cwd});
       } else {
         this.child = cp.spawn(tool, toolargs, {cwd: cwd});
       }
