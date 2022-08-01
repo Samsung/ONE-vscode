@@ -40,6 +40,7 @@ export interface PartEditorEvent {
   onEditorDispose(e: PartEditor): void;
 }
 
+/* istanbul ignore next */
 class PartEditor implements PartGraphEvent {
   private _document: vscode.TextDocument;
   private _panel: vscode.WebviewPanel;
@@ -355,6 +356,7 @@ class PartEditor implements PartGraphEvent {
   }
 }
 
+/* istanbul ignore next */
 export class PartEditorProvider implements vscode.CustomTextEditorProvider, PartEditorEvent {
   public static readonly viewType = 'onevscode.part-editor';
   public static readonly folderMediaPartEditor = 'media/PartEditor';

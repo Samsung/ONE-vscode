@@ -46,6 +46,7 @@ export type PartGraphCmdCloseArgs = {
   docPath: string, id: number;
 };
 
+/* istanbul ignore next */
 export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEvent {
   public static readonly viewType = 'PartGraphSelector';
   public static readonly cmdOpen = 'one.part.openGraphSelector';
