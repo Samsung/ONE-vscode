@@ -170,23 +170,23 @@ function registerPBOptions() {
     updateImportPB();
     applyUpdates();
   });
-  pbInputPath.addEventListener('change', function() {
+  pbInputPath.addEventListener('input', function() {
     updateImportPB();
     applyUpdates();
   });
-  pbOutputPath.addEventListener('change', function() {
+  pbOutputPath.addEventListener('input', function() {
     updateImportPB();
     applyUpdates();
   });
-  pbInputArrays.addEventListener('change', function() {
+  pbInputArrays.addEventListener('input', function() {
     updateImportPB();
     applyUpdates();
   });
-  pbOutputArrays.addEventListener('change', function() {
+  pbOutputArrays.addEventListener('input', function() {
     updateImportPB();
     applyUpdates();
   });
-  pbInputShapes.addEventListener('change', function() {
+  pbInputShapes.addEventListener('input', function() {
     updateImportPB();
     applyUpdates();
   });
@@ -196,11 +196,11 @@ function registerSAVEDOptions() {
   const savedInputPath = document.getElementById('SAVEDInputPath');
   const savedOutputPath = document.getElementById('SAVEDOutputPath');
 
-  savedInputPath.addEventListener('change', function() {
+  savedInputPath.addEventListener('input', function() {
     updateImportSAVED();
     applyUpdates();
   });
-  savedOutputPath.addEventListener('change', function() {
+  savedOutputPath.addEventListener('input', function() {
     updateImportSAVED();
     applyUpdates();
   });
@@ -210,11 +210,11 @@ function registerKERASOptions() {
   const kerasInputPath = document.getElementById('KERASInputPath');
   const kerasOutputPath = document.getElementById('KERASOutputPath');
 
-  kerasInputPath.addEventListener('change', function() {
+  kerasInputPath.addEventListener('input', function() {
     updateImportKERAS();
     applyUpdates();
   });
-  kerasOutputPath.addEventListener('change', function() {
+  kerasOutputPath.addEventListener('input', function() {
     updateImportKERAS();
     applyUpdates();
   });
@@ -224,11 +224,11 @@ function registerTFLITEOptions() {
   const tfliteInputPath = document.getElementById('TFLITEInputPath');
   const tfliteOutputPath = document.getElementById('TFLITEOutputPath');
 
-  tfliteInputPath.addEventListener('change', function() {
+  tfliteInputPath.addEventListener('input', function() {
     updateImportTFLITE();
     applyUpdates();
   });
-  tfliteOutputPath.addEventListener('change', function() {
+  tfliteOutputPath.addEventListener('input', function() {
     updateImportTFLITE();
     applyUpdates();
   });
@@ -241,11 +241,11 @@ function registerONNXOptions() {
   const onnxUnrollRNN = document.getElementById('ONNXUnrollRNN');
   const onnxUnrollLSTM = document.getElementById('ONNXUnrollLSTM');
 
-  onnxInputPath.addEventListener('change', function() {
+  onnxInputPath.addEventListener('input', function() {
     updateImportONNX();
     applyUpdates();
   });
-  onnxOutputPath.addEventListener('change', function() {
+  onnxOutputPath.addEventListener('input', function() {
     updateImportONNX();
     applyUpdates();
   });
@@ -268,12 +268,12 @@ function registerOptimizeOptions() {
   const optimizeOutputPath = document.getElementById('optimizeOutputPath');
   const basicOptimizeTable = document.getElementById('basicOptimizeTable');
 
-  optimizeInputPath.addEventListener('change', function() {
+  optimizeInputPath.addEventListener('input', function() {
     updateOptimize();
     applyUpdates();
   });
 
-  optimizeOutputPath.addEventListener('change', function() {
+  optimizeOutputPath.addEventListener('input', function() {
     updateOptimize();
     applyUpdates();
   });
@@ -354,7 +354,7 @@ function registerDefaultQuantOptions() {
     });
   });
   defaultQuantTextFieldList.forEach((id) => {
-    document.getElementById(id).addEventListener('change', function() {
+    document.getElementById(id).addEventListener('input', function() {
       updateQuantizeDefault();
       applyUpdates();
     });
@@ -375,7 +375,7 @@ function registerForceQuantOptions() {
     });
   });
   forceQuantTextFieldList.forEach((id) => {
-    document.getElementById(id).addEventListener('change', function() {
+    document.getElementById(id).addEventListener('input', function() {
       updateQuantizeDefault();
       applyUpdates();
     });
@@ -395,7 +395,7 @@ function registerCopyQuantOptions() {
     });
   });
   copyQuantTextFieldList.forEach((id) => {
-    document.getElementById(id).addEventListener('change', function() {
+    document.getElementById(id).addEventListener('input', function() {
       updateQuantizeDefault();
       applyUpdates();
     });
@@ -406,11 +406,11 @@ function registerCodegenOptions() {
   const codegenBackend = document.getElementById('codegenBackend');
   const codegenCommand = document.getElementById('codegenCommand');
 
-  codegenBackend.addEventListener('change', function() {
+  codegenBackend.addEventListener('input', function() {
     updateCodegen();
     applyUpdates();
   });
-  codegenCommand.addEventListener('change', function() {
+  codegenCommand.addEventListener('input', function() {
     updateCodegen();
     applyUpdates();
   });
@@ -420,11 +420,11 @@ function registerProfileOptions() {
   const profileBackend = document.getElementById('profileBackend');
   const profileCommand = document.getElementById('profileCommand');
 
-  profileBackend.addEventListener('change', function() {
+  profileBackend.addEventListener('input', function() {
     updateProfile();
     applyUpdates();
   });
-  profileCommand.addEventListener('change', function() {
+  profileCommand.addEventListener('input', function() {
     updateProfile();
     applyUpdates();
   });
