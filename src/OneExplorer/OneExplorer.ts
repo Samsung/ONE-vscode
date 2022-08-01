@@ -619,6 +619,7 @@ export function initOneExplorer(context: vscode.ExtensionContext) {
   let workspaceRoot: vscode.Uri|undefined = undefined;
   try {
     workspaceRoot = vscode.Uri.file(obtainWorkspaceRoot());
+    Logger.info('OneExplorer', `workspace: ${workspaceRoot.fsPath}`);
   } catch (e: unknown) {
     if (e instanceof Error) {
       if (e.message === 'Need workspace') {
