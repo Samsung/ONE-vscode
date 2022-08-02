@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import * as appRoot from 'app-root-path';
 import {assert} from 'chai';
-import * as vscode from 'vscode';
 
 import {BridgeSpec, DeviceSpec, HostPCSpec, sdbSpec, TizenDeviceSpec} from '../../Backend/Spec';
 
@@ -72,9 +72,7 @@ suite('Spec', function() {
     });
   });
   suite('sdbSpec', function() {
-    const extensionId = 'Samsung.one-vscode';
-    const ext = vscode.extensions.getExtension(extensionId) as vscode.Extension<any>;
-    const deviceListCom = vscode.Uri.joinPath(ext!.extensionUri, 'script', 'sdbSpecList.sh').fsPath;
+    const deviceListCom = appRoot + '/script/sdbSpecList.sh';
     assert.isObject<BridgeSpec>(sdbSpec);
     assert.strictEqual(sdbSpec.name, 'sdb');
     assert.strictEqual(sdbSpec.deviceListCmd.str(), deviceListCom);

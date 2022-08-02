@@ -188,10 +188,14 @@ export class DeviceViewProvider implements vscode.TreeDataProvider<DeviceViewNod
     });
   }
 
-  constructor() {
+  constructor(_callback?: Function|undefined) {
     for (const deviceMan of deviceManagerList) {
       this.reloadDeviceManager(deviceMan, function(provider: DeviceViewProvider) {
-        provider._onDidChangeTreeData.fire();
+        if (_callback) {
+          _callback();
+        } else {
+          provider._onDidChangeTreeData.fire();
+        }
       });
     }
   }
