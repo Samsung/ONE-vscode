@@ -160,6 +160,31 @@ output_path=./inception_v3_tflite.q8.circle
 input_model_dtype=uint8
 `;
 
+const deprecatedOnebuildCfgText = `
+[one-build]
+one-import-tf=False
+one-import-tflite=False
+one-import-bcq=False
+one-import-onnx=False
+one-optimize=False
+one-quantize=True
+one-pack=False
+one-codegen=False
+`;
+
+const deprecatedQuantCfgText = `
+[one-quantize]
+input_path=./inception_v3_tflite.circle
+output_path=./inception_v3_tflite.q8.circle
+input_dtype=uint8
+`;
+
+const noTopLevelSectionCfgText = `
+[one-profile]
+backend=dummy
+command=command
+`;
+
 suite('CfgEditor', function() {
   suite('CfgData', function() {
     suite('#constructor()', function() {
@@ -181,6 +206,31 @@ suite('CfgEditor', function() {
         assert.strictEqual(
             dataCfg['one-quantize']['granularity'], cfg['one-quantize']['granularity']);
       });
+
+      test('NEG: try to set with config using deprecated input_dtype', function() {
+        let data = new CfgData();
+        const cfg = ini.parse(deprecatedSampleCfgText);
+        data.setWithConfig(cfg);
+        const dataCfg = data.getAsConfig();
+        assert.strictEqual(dataCfg['one-quantize']['input_dtype'], undefined);
+      });
+
+      test('NEG: try to set with config using deprecated one-build', function() {
+        let data = new CfgData();
+        const cfg = ini.parse(deprecatedOnebuildCfgText);
+        data.setWithConfig(cfg);
+        const dataCfg = data.getAsConfig();
+        assert.strictEqual(dataCfg['one-build'], undefined);
+      });
+
+      test('NEG: try to set with config using deprecated input_dtype and one-build', function() {
+        let data = new CfgData();
+        const cfg = ini.parse(deprecatedQuantCfgText);
+        data.setWithConfig(cfg);
+        const dataCfg = data.getAsConfig();
+        assert.strictEqual(dataCfg['one-quantize']['input_dtype'], undefined);
+        assert.strictEqual(dataCfg['one-build'], undefined);
+      });
     });
 
     suite('#setWithString()', function() {
@@ -194,6 +244,28 @@ suite('CfgEditor', function() {
             dataCfg['one-import-tflite']['input_path'], cfg['one-import-tflite']['input_path']);
         assert.strictEqual(
             dataCfg['one-quantize']['granularity'], cfg['one-quantize']['granularity']);
+      });
+
+      test('NEG: try to set with string using deprecated input_dtype', function() {
+        let data = new CfgData();
+        data.setWithString(deprecatedQuantCfgText);
+        const dataCfg = data.getAsConfig();
+        assert.strictEqual(dataCfg['one-quantize']['input_dtype'], undefined);
+      });
+
+      test('NEG: try to set with string using deprecated one-build', function() {
+        let data = new CfgData();
+        data.setWithString(deprecatedOnebuildCfgText);
+        const dataCfg = data.getAsConfig();
+        assert.strictEqual(dataCfg['one-build'], undefined);
+      });
+
+      test('NEG: try to set with string using deprecated input_dtype and one-build', function() {
+        let data = new CfgData();
+        data.setWithString(deprecatedSampleCfgText);
+        const dataCfg = data.getAsConfig();
+        assert.strictEqual(dataCfg['one-quantize']['input_dtype'], undefined);
+        assert.strictEqual(dataCfg['one-build'], undefined);
       });
     });
 
@@ -237,6 +309,20 @@ suite('CfgEditor', function() {
         const isSame: boolean = data.isSame(resolvedSampleCfgText);
         assert.isTrue(isSame);
       });
+
+      test('NEG: already resolved keys', function() {
+        let data = new CfgData();
+        data.setWithString(sampleCfgText);
+        const isSame: boolean = data.isSame(sampleCfgText);
+        assert.isTrue(isSame);
+      });
+
+      test('NEG: no deprecated keys to resolve', function() {
+        let data = new CfgData();
+        data.setWithString(noTopLevelSectionCfgText);
+        const isSame: boolean = data.isSame(noTopLevelSectionCfgText);
+        assert.isTrue(isSame);
+      });
     });
 
     suite('#updateSectionWithKeyValue()', function() {
@@ -261,6 +347,34 @@ suite('CfgEditor', function() {
         const cfg = data.getAsConfig();
         assert.strictEqual(cfg['one-quantize']['input_model_dtype'], 'uint8');
       });
+      test('NEG: try to update not existing deprecated input_dtype', function() {
+        let data = new CfgData();
+        data.setWithString(sampleCfgText);
+        data.updateSectionWithKeyValue('one-quantize', 'input_dtype', 'uint8');
+        const cfg = data.getAsConfig();
+        assert.strictEqual(cfg['one-quantize']['input_dtype'], undefined);
+      });
+      test('NEG: try to update not existing deprecated one-build', function() {
+        let data = new CfgData();
+        data.setWithString(sampleCfgText);
+        data.updateSectionWithKeyValue('one-build', 'one-import-tf', 'True');
+        const cfg = data.getAsConfig();
+        assert.strictEqual(cfg['one-build'], undefined);
+      });
+      test('NEG: try to update existed deprecated input_dtype', function() {
+        let data = new CfgData();
+        data.setWithString(deprecatedQuantCfgText);
+        data.updateSectionWithKeyValue('one-quantize', 'input_dtype', 'uint8');
+        const cfg = data.getAsConfig();
+        assert.strictEqual(cfg['one-quantize']['input_dtype'], undefined);
+      });
+      test('NEG: try to update existed deprecated one-build', function() {
+        let data = new CfgData();
+        data.setWithString(deprecatedOnebuildCfgText);
+        data.updateSectionWithKeyValue('one-build', 'one-import-tf', 'True');
+        const cfg = data.getAsConfig();
+        assert.strictEqual(cfg['one-build'], undefined);
+      });
     });
 
     suite('#updateSectionWithValue()', function() {
@@ -274,6 +388,38 @@ output_path=./inception_v3_pb.circle
         data.updateSectionWithValue('one-import-tf', stringified);
         const cfg = data.getAsConfig();
         assert.strictEqual(cfg['one-import-tf']['input_path'], './inception_v3.pb');
+      });
+      test('NEG: try to update not existing deprecated input_dtype', function() {
+        let data = new CfgData();
+        data.setWithString(sampleCfgText);
+        const stringified: string = 'input_dtype=uint8';
+        data.updateSectionWithValue('one-quantize', stringified);
+        const cfg = data.getAsConfig();
+        assert.strictEqual(cfg['one-quantize']['input_dtype'], undefined);
+      });
+      test('NEG: try to update not existing deprecated one-build', function() {
+        let data = new CfgData();
+        data.setWithString(sampleCfgText);
+        const stringified: string = 'one-import-tf=False';
+        data.updateSectionWithValue('one-build', stringified);
+        const cfg = data.getAsConfig();
+        assert.strictEqual(cfg['one-build'], undefined);
+      });
+      test('NEG: try to update existed deprecated input_dtype', function() {
+        let data = new CfgData();
+        data.setWithString(deprecatedQuantCfgText);
+        const stringified: string = 'input_dtype=uint8';
+        data.updateSectionWithValue('one-quantize', stringified);
+        const cfg = data.getAsConfig();
+        assert.strictEqual(cfg['one-quantize']['input_dtype'], undefined);
+      });
+      test('NEG: try to update existed deprecated one-build', function() {
+        let data = new CfgData();
+        data.setWithString(deprecatedOnebuildCfgText);
+        const stringified: string = 'one-import-tf=False';
+        data.updateSectionWithValue('one-build', stringified);
+        const cfg = data.getAsConfig();
+        assert.strictEqual(cfg['one-build'], undefined);
       });
     });
 
