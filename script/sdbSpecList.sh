@@ -19,4 +19,14 @@
 # We only need serialNumber, So use `awk` to pick serialNumber information.
 #
 
-sdb devices | awk 'NR > 1 {if ($2 == "device") print $1}'
+SDB=$(which sdb)
+
+# Check SDB installed on this host.
+if [ -z "$SDB" ]
+then
+    # if not installed, return exitcode 127 which means `Command not found.`
+    echo "sdb command not found."
+    return 127
+fi
+
+$SDB devices | awk 'NR > 1 {if ($2 == "device") print $1}'

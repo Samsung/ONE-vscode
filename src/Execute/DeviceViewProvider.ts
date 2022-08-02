@@ -162,7 +162,7 @@ export class DeviceViewProvider implements vscode.TreeDataProvider<DeviceViewNod
       });
       cmdSpawn.stderr.on('data', (data: any) => {
         error = result + data.toString();
-        Logger.error('DeviceList', error);
+        Logger.warn('DeviceList', error);
       });
       cmdSpawn.on('exit', (code: any) => {
         let codestr = code.toString();
@@ -174,13 +174,15 @@ export class DeviceViewProvider implements vscode.TreeDataProvider<DeviceViewNod
           }
           resolve(devices);
         } else {
-          Balloon.error('Device list commnand failed!');
-          reject('Device list commnand failed!');
+          Logger.warn('DeviceList', result);
+          resolve([]);
         }
       });
-      cmdSpawn.on('error', (_err: any) => {
-        Balloon.error('Device list commnand failed!');
-        reject('Device list commnand failed!');
+      cmdSpawn.on('error', (err: any) => {
+        Logger.warn(
+            'DeviceList',
+            'Device List Get script make some error. please check below error: ' + err);
+        resolve([]);
       });
     });
   }
