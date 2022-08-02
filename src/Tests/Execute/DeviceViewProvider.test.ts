@@ -16,6 +16,8 @@
 
 import {assert} from 'chai';
 import * as vscode from 'vscode';
+import {globalExecutorArray} from '../../Backend/API';
+import {ExecutorBase} from '../../Backend/Executor';
 import {deviceManagerList, DeviceViewNode, DeviceViewProvider, NodeType} from '../../Execute/DeviceViewProvider';
 
 
@@ -97,44 +99,65 @@ suite('DeviceViewProvider', function() {
     });
   });
   suite('#getChildren', function() {
-    test('get Children under undfined', function() {
+    test('get Children under undfined', function(done) {
       let provider = new DeviceViewProvider();
-      let deviceManagers = provider.getChildren();
-      assert.strictEqual(deviceManagers.length, deviceManagerList.length);
-      for (let index = 0; index < deviceManagers.length; index++) {
-        assert.strictEqual(deviceManagers[index].label, deviceManagerList[index]);
-      }
-    });
-    test('get Children under deviceManager Node', function() {
-      let provider = new DeviceViewProvider();
-      for (const key in provider.deviceManagerMap) {
-        if (Object.prototype.hasOwnProperty.call(provider.deviceManagerMap, key)) {
-          const element = provider.deviceManagerMap[key];
-          const label = key;
-          const collapsibleState = vscode.TreeItemCollapsibleState.Expanded;
-          const managerName = key;
-          let node =
-              new DeviceViewNode(label, collapsibleState, NodeType.deviceManager, managerName);
-          let result = provider.getChildren(node);
-          assert.strictEqual(result.length, element.allDevices.length);
+      provider.loadDeviceManager('local', function(_provider: DeviceViewProvider) {
+        let deviceManagers = provider.getChildren();
+        assert.strictEqual(deviceManagers.length, deviceManagerList.length);
+        for (let index = 0; index < deviceManagers.length; index++) {
+          assert.strictEqual(deviceManagers[index].label, deviceManagerList[index]);
         }
-      }
+        done();
+      });
     });
-    test('get Children under Device Node', function() {
+    test('get Children under deviceManager Node', function(done) {
       let provider = new DeviceViewProvider();
-      for (const key in provider.deviceManagerMap) {
-        if (Object.prototype.hasOwnProperty.call(provider.deviceManagerMap, key)) {
-          const element = provider.deviceManagerMap[key];
-          for (const device of element.allDevices) {
-            const label = device.name;
-            const collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
+      provider.loadDeviceManager('local', function(_provider: DeviceViewProvider) {
+        for (const key in provider.deviceManagerMap) {
+          if (Object.prototype.hasOwnProperty.call(provider.deviceManagerMap, key)) {
+            const element = provider.deviceManagerMap[key];
+            const label = key;
+            const collapsibleState = vscode.TreeItemCollapsibleState.Expanded;
             const managerName = key;
-            let node = new DeviceViewNode(label, collapsibleState, NodeType.device, managerName);
+            let node =
+                new DeviceViewNode(label, collapsibleState, NodeType.deviceManager, managerName);
             let result = provider.getChildren(node);
-                    assert.strictEqual(result.length, element.findDevice(label)?.availableExecutors.size);
+            assert.strictEqual(result.length, element.allDevices.length);
           }
         }
-      }
+        done();
+      });
+    });
+    test('get Children under Device Node', function(done) {
+      let provider = new DeviceViewProvider();
+      provider.loadDeviceManager('local', function(_provider: DeviceViewProvider) {
+        for (const key in provider.deviceManagerMap) {
+          if (Object.prototype.hasOwnProperty.call(provider.deviceManagerMap, key)) {
+            const element = provider.deviceManagerMap[key];
+            for (const device of element.allDevices) {
+              const label = device.name;
+              const collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
+              const managerName = key;
+              let node = new DeviceViewNode(label, collapsibleState, NodeType.device, managerName);
+              let result = provider.getChildren(node);
+              // as currently no executor registered on this test,
+              // this will return single view with 'No subtree available'.
+              assert.strictEqual(result.length, 1);
+              assert.strictEqual(result[0].label, 'No subtree available');
+              assert.strictEqual(result[0].collapsibleState, vscode.TreeItemCollapsibleState.None);
+              assert.strictEqual(result[0].nodetype, NodeType.none);
+              assert.strictEqual(result[0].managerName, '');
+            }
+          }
+        }
+        done();
+      });
+    });
+    suite('#refresh', function() {
+      let provider = new DeviceViewProvider();
+      let preDeviceManagerMap = provider.deviceManagerMap;
+      provider.refresh();
+      assert.deepStrictEqual(preDeviceManagerMap, provider.deviceManagerMap);
     });
   });
 });

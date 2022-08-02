@@ -169,7 +169,7 @@ export class DeviceViewProvider implements vscode.TreeDataProvider<DeviceViewNod
     });
   }
 
-  private reloadDeviceManager(deviceMan: string, callback: Function): void {
+  loadDeviceManager(deviceMan: string, callback: Function): void {
     const listCmds: Promise<Device[]>[] = [];
     const deviceList: Device[] = [];
     for (const deviceSpec of supportedSpecs) {
@@ -204,7 +204,7 @@ export class DeviceViewProvider implements vscode.TreeDataProvider<DeviceViewNod
 
   constructor() {
     for (const deviceMan of deviceManagerList) {
-      this.reloadDeviceManager(deviceMan, function(provider: DeviceViewProvider) {
+      this.loadDeviceManager(deviceMan, function(provider: DeviceViewProvider) {
         provider._onDidChangeTreeData.fire();
       });
     }
@@ -215,7 +215,7 @@ export class DeviceViewProvider implements vscode.TreeDataProvider<DeviceViewNod
     // This for cluse should become method that get Connected Device unique name form
     // `supportedSpecs`
     for (const deviceMan of deviceManagerList) {
-      this.reloadDeviceManager(deviceMan, function(provider: DeviceViewProvider) {
+      this.loadDeviceManager(deviceMan, function(provider: DeviceViewProvider) {
         provider._onDidChangeTreeData.fire();
       });
     }
