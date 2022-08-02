@@ -175,6 +175,16 @@ div.mondrian-sidepanel.mondrian-sidepanel-enabled {
   align-content: start;
 }
 
+div.mondrian-sidepanel vscode-text-area::part(label),
+div.mondrian-sidepanel vscode-text-field::part(label) {
+  cursor: auto;
+}
+
+div.mondrian-sidepanel vscode-text-area::part(control),
+div.mondrian-sidepanel vscode-text-field::part(control) {
+  cursor: text;
+}
+
 vscode-text-area.mondrian-sidepanel-origin {
   grid-column: 1 / span 2;
 }
