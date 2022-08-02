@@ -209,6 +209,19 @@ export class ConfigObj {
     });
 
     locatorRunner.register({
+      artifactAttr: {
+        ext: '.tracealloc.json',
+        icon: new vscode.ThemeIcon('graph'),
+        openViewType: 'onevscode.mondrianViewer',
+        canHide: true
+      },
+      locator: new Locator((value: string) => {
+        return LocatorRunner.searchWithExt('.tvn', value)
+            .map(filepath => filepath.replace('.tvn', '.tracealloc.json'));
+      })
+    });
+
+    locatorRunner.register({
       artifactAttr: {ext: '.tv2m', icon: new vscode.ThemeIcon('symbol-method'), canHide: true},
       locator: new Locator((value: string) => {
         return LocatorRunner.searchWithExt('.tvn', value)
