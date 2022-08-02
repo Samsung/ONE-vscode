@@ -690,6 +690,52 @@ command=${productName}
           assert.strictEqual(configObj?.getProducts.length, 0);
         }
       });
+
+      test('Check extra files', function() {
+        const configName = 'model.cfg';
+        const productName = 'model.tvn';
+
+        const extraName1 = 'model.tv2w';
+        const extraName2 = 'model.tv2m';
+        const extraName3 = 'model.tv2o';
+        const extraName4 = 'model.tracealloc.json';
+
+        const content = `
+[one-codegen]
+backend=dummy
+command=--save-temps --save-allocations ${productName}
+        `;
+
+        // Write a file inside a temp directory
+        testBuilder.writeFileSync(configName, content);
+
+        // Get file paths inside the temp directory
+        const configPath = testBuilder.getPath(configName);
+        const productPath = testBuilder.getPath(productName);
+        const extra1Path = testBuilder.getPath(extraName1);
+        const extra2Path = testBuilder.getPath(extraName2);
+        const extra3Path = testBuilder.getPath(extraName3);
+        const extra4Path = testBuilder.getPath(extraName4);
+
+        const configObj = ConfigObj.createConfigObj(vscode.Uri.file(configPath));
+
+        // Validation
+        {
+          assert.strictEqual(configObj?.getBaseModels.length, 0);
+          assert.notStrictEqual(configObj?.getProducts.length, 0);
+
+          assert.isTrue(
+              configObj?.getProducts.map(product => product.path).includes(productPath));
+          assert.isTrue(
+              configObj?.getProducts.map(product => product.path).includes(extra1Path));
+          assert.isTrue(
+              configObj?.getProducts.map(product => product.path).includes(extra2Path));
+          assert.isTrue(
+              configObj?.getProducts.map(product => product.path).includes(extra3Path));
+          assert.isTrue(
+              configObj?.getProducts.map(product => product.path).includes(extra4Path));
+        }
+      });
     });
 
     suite('#one-profile section', function() {
