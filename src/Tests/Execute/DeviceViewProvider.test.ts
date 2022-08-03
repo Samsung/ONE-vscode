@@ -22,7 +22,7 @@ import {deviceManagerList, DeviceViewNode, DeviceViewProvider, NodeType} from '.
 suite('DeviceViewNode', function() {
   suite('#constructor()', function() {
     suite('NodeType:deviceManager', function() {
-      test('is constructed with params', function() {
+      test('is constructed with params with deviceManager', function() {
         const label = 'local';
         const collapsibleState = vscode.TreeItemCollapsibleState.Expanded;
         const managerName = 'local';
@@ -36,7 +36,7 @@ suite('DeviceViewNode', function() {
       });
     });
     suite('NodeType:device', function() {
-      test('is constructed with params', function() {
+      test('is constructed with params with device', function() {
         const label = 'hostPC';
         const collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
         const managerName = 'local';
@@ -50,7 +50,7 @@ suite('DeviceViewNode', function() {
       });
     });
     suite('NodeType:executor', function() {
-      test('is constructed with params', function() {
+      test('is constructed with params with executor', function() {
         const label = 'MockupSimulator';
         const collapsibleState = vscode.TreeItemCollapsibleState.None;
         const managerName = 'local';
@@ -64,7 +64,7 @@ suite('DeviceViewNode', function() {
       });
     });
     suite('NodeType:none', function() {
-      test('is constructed with params', function() {
+      test('is constructed with params with none', function() {
         const label = 'None';
         const collapsibleState = vscode.TreeItemCollapsibleState.None;
         const managerName = '';
@@ -80,7 +80,7 @@ suite('DeviceViewNode', function() {
 
 suite('DeviceViewProvider', function() {
   suite('#constructor()', function() {
-    test('is constructed with params', function() {
+    test('is constructed with params without anything', function() {
       let provider = new DeviceViewProvider();
       assert.instanceOf(provider, DeviceViewProvider);
     });

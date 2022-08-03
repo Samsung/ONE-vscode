@@ -132,7 +132,7 @@ suite('OneExplorer', function() {
     });
 
     suite('#one-import-onnx section', function() {
-      test('Parse basic example', function() {
+      test('Parse basic example with one-import-onnx', function() {
         const configName = 'model.cfg';
         const modelName = 'model.onnx';
 
@@ -164,7 +164,7 @@ input_path=${modelName}
         }
       });
 
-      test('NEG: Parse config with invalid ext', function() {
+      test('NEG: Parse config with invalid ext with one-import-onnx', function() {
         const configName = 'model.cfg';
         // ERROR INJECTION
         // Invalid ext '.rectangle' instead of '.circle'
@@ -191,7 +191,7 @@ output_path=${productName}
     });
 
     suite('#one-import-tflite section', function() {
-      test('Parse basic example', function() {
+      test('Parse basic example with one-import-tflite', function() {
         const configName = 'model.cfg';
         const modelName = 'model.tflite';
 
@@ -223,7 +223,7 @@ input_path=${modelName}
         }
       });
 
-      test('NEG: Parse config with invalid ext', function() {
+      test('NEG: Parse config with invalid ext with one-import-tflite', function() {
         const configName = 'model.cfg';
         // ERROR INJECTION
         // Invalid ext '.rectangle' instead of '.circle'
@@ -252,7 +252,7 @@ output_path=${productName2}
     });
 
     suite('#one-quantize section', function() {
-      test('Parse basic example', function() {
+      test('Parse basic example with one-quantize', function() {
         const configName = 'model.cfg';
         const baseModelName = 'model.tflite';
         const productName1 = 'model.circle';
@@ -292,7 +292,7 @@ output_path=${productName2}
         }
       });
 
-      test('NEG: Parse config with invalid ext', function() {
+      test('NEG: Parse config with invalid ext with one-quantize', function() {
         const configName = 'model.cfg';
         // ERROR INJECTION
         // Invalid ext '.rectangle' instead of '.circle'
@@ -574,7 +574,7 @@ output_path=/${productPath2}
     });
 
     suite('#one-optimize section', function() {
-      test('Parse basic example', function() {
+      test('Parse basic example with one-optimize', function() {
         const configName = 'model.cfg';
         const productName1 = 'model.circle';
         const productName2 = 'model.opt.circle';
@@ -607,7 +607,7 @@ output_path=${productName2}
         }
       });
 
-      test('NEG: Parse config with invalid ext', function() {
+      test('NEG: Parse config with invalid ext with one-optimize', function() {
         const configName = 'model.cfg';
         // ERROR INJECTION
         // Invalid ext '.rectangle' instead of '.circle'
@@ -636,7 +636,7 @@ output_path=${productName2}
     });
 
     suite('#one-codegen section', function() {
-      test('Parse basic example', function() {
+      test('Parse basic example with one-codegen', function() {
         const configName = 'model.cfg';
         const productName = 'model.tvn';
 
@@ -665,7 +665,7 @@ command=${productName}
         }
       });
 
-      test('NEG: Parse config with invalid ext', function() {
+      test('NEG: Parse config with invalid ext with one-codegen', function() {
         const configName = 'model.cfg';
         // ERROR INJECTION
         // Invalid ext '.rectangle' instead of '.tvn'
@@ -739,7 +739,7 @@ command=--save-temps --save-allocations ${productName}
     });
 
     suite('#one-profile section', function() {
-      test('Parse basic example', function() {
+      test('Parse basic example with one-profile', function() {
         const configName = 'model.cfg';
         const traceName = 'trace.json';
 

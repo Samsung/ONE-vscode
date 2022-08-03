@@ -75,7 +75,7 @@ suite('Toolchain', function() {
 
   suite('BaseNode', function() {
     suite('#constructor()', function() {
-      test('is constructed with params', function() {
+      test('is constructed with params using base_node', function() {
         const label = 'base_node';
         const collapsibleState = vscode.TreeItemCollapsibleState.None;
         let node = new BaseNode(label, collapsibleState);
@@ -87,7 +87,7 @@ suite('Toolchain', function() {
 
   suite('BackendNode', function() {
     suite('#constructor()', function() {
-      test('is constructed with params', function() {
+      test('is constructed with params using backend_node', function() {
         const label = 'backend_node';
         const collapsibleState = vscode.TreeItemCollapsibleState.Expanded;
         let node = new BackendNode(label);
@@ -99,7 +99,7 @@ suite('Toolchain', function() {
 
   suite('ToolchainNode', function() {
     suite('#constructor()', function() {
-      test('is constructed with params', function() {
+      test('is constructed with params using dummy_backend', function() {
         const label = 'backend_node';
         const backend = 'dummy_backend';
         const toolchain =
@@ -138,7 +138,7 @@ suite('Toolchain', function() {
 
   suite('ToolchainProvider', function() {
     suite('#constructor()', function() {
-      test('is constructed with params', function() {
+      test('is constructed', function() {
         let provider = new ToolchainProvider();
         assert.instanceOf(provider, ToolchainProvider);
       });

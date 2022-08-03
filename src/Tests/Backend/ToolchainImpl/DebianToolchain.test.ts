@@ -47,7 +47,7 @@ suite('Backend', function() {
       });
 
       suite('#prepare()', function() {
-        test('', function() {
+        test('prepare DebianToolchain', function() {
           let dt = new DebianToolchain(info);
           dt.prepare();
           assert.strictEqual(dt.ready, true);
@@ -55,7 +55,7 @@ suite('Backend', function() {
       });
 
       suite('#install()', function() {
-        test('', function() {
+        test('install DebianToolchain', function() {
           let dt = new DebianToolchain(info);
           let cmd = dt.install();
           const expectedStr =
@@ -66,7 +66,7 @@ suite('Backend', function() {
       });
 
       suite('#uninstall()', function() {
-        test('', function() {
+        test('uninstall DebianToolchain', function() {
           let dt = new DebianToolchain(info);
           let cmd = dt.uninstall();
           const expectedStr = `sudo aptitude purge ${name} -q -y`;
@@ -75,7 +75,7 @@ suite('Backend', function() {
       });
 
       suite('#installed()', function() {
-        test('', function() {
+        test('check DebianToolchain installed', function() {
           let dt = new DebianToolchain(info);
           let cmd = dt.installed();
           const expectedStr = `dpkg-query --show ${name}=${version.str()} && echo $?`;

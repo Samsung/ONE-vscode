@@ -24,39 +24,40 @@ suite('Backend', function() {
         const executor = new ExecutorBase();
 
         pass();
+        assert.ok(true);
       });
     });
 
     suite('#name()', function() {
-      test('NEG: throws by dummy executor base', function() {
+      test('NEG: throws by dummy executor base by name', function() {
         const executor = new ExecutorBase();
         assert.throw(() => executor.name());
       });
     });
 
     suite('#getExecutableExt()', function() {
-      test('NEG: throws by dummy executor base', function() {
+      test('NEG: throws in dummy executor base by getExecutableExt', function() {
         const executor = new ExecutorBase();
         assert.throw(() => executor.getExecutableExt());
       });
     });
 
     suite('#require()', function() {
-      test('NEG: throws by dummy executor base', function() {
+      test('NEG: throws in dummy executor base by require', function() {
         const executor = new ExecutorBase();
         assert.throw(() => executor.require());
       });
     });
 
     suite('#runInference()', function() {
-      test('NEG: throws by dummy executor base', function() {
+      test('NEG: throws in dummy executor base by runInference', function() {
         const executor = new ExecutorBase();
         assert.throw(() => executor.runInference(''));
       });
     });
 
     suite('#toolchains()', function() {
-      test('NEG: throws by dummy executor base', function() {
+      test('NEG: throws in dummy executor base by toolchains', function() {
         const executor = new ExecutorBase();
         assert.throw(() => executor.toolchains());
       });

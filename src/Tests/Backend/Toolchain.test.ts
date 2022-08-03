@@ -26,6 +26,7 @@ suite('Backend', function() {
         const toolchain = new Toolchain(toolchainInfo);
 
         pass();
+        assert.ok(true);
       });
     });
 
@@ -39,7 +40,7 @@ suite('Backend', function() {
     });
 
     suite('#install()', function() {
-      test('NEG: throws by dummy toolchain', function() {
+      test('NEG: throws by dummy toolchain by install', function() {
         const toolchain = new Toolchain(toolchainInfo);
         assert.throw(() => toolchain.install());
       });
@@ -47,21 +48,21 @@ suite('Backend', function() {
 
 
     suite('#installed()', function() {
-      test('NEG: throws by dummy toolchain', function() {
+      test('NEG: throws in dummy toolchain by installed', function() {
         const toolchain = new Toolchain(toolchainInfo);
         assert.throw(() => toolchain.installed());
       });
     });
 
     suite('#run()', function() {
-      test('NEG: throws by dummy toolchain', function() {
+      test('NEG: throws in dummy toolchain by run', function() {
         const toolchain = new Toolchain(toolchainInfo);
         assert.throw(() => toolchain.run(''));
       });
     });
 
     suite('#uninstall()', function() {
-      test('NEG: throws by dummy toolchain', function() {
+      test('NEG: throws in dummy toolchain by uninstall', function() {
         const toolchain = new Toolchain(toolchainInfo);
         assert.throw(() => toolchain.uninstall());
       });

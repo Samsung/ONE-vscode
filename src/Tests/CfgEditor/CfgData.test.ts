@@ -347,28 +347,28 @@ suite('CfgEditor', function() {
         const cfg = data.getAsConfig();
         assert.strictEqual(cfg['one-quantize']['input_model_dtype'], 'uint8');
       });
-      test('NEG: try to update not existing deprecated input_dtype', function() {
+      test('NEG: try to update not existing deprecated input_dtype with key value', function() {
         let data = new CfgData();
         data.setWithString(sampleCfgText);
         data.updateSectionWithKeyValue('one-quantize', 'input_dtype', 'uint8');
         const cfg = data.getAsConfig();
         assert.strictEqual(cfg['one-quantize']['input_dtype'], undefined);
       });
-      test('NEG: try to update not existing deprecated one-build', function() {
+      test('NEG: try to update not existing deprecated one-build with key value', function() {
         let data = new CfgData();
         data.setWithString(sampleCfgText);
         data.updateSectionWithKeyValue('one-build', 'one-import-tf', 'True');
         const cfg = data.getAsConfig();
         assert.strictEqual(cfg['one-build'], undefined);
       });
-      test('NEG: try to update existed deprecated input_dtype', function() {
+      test('NEG: try to update existed deprecated input_dtype with key value', function() {
         let data = new CfgData();
         data.setWithString(deprecatedQuantCfgText);
         data.updateSectionWithKeyValue('one-quantize', 'input_dtype', 'uint8');
         const cfg = data.getAsConfig();
         assert.strictEqual(cfg['one-quantize']['input_dtype'], undefined);
       });
-      test('NEG: try to update existed deprecated one-build', function() {
+      test('NEG: try to update existed deprecated one-build with key value', function() {
         let data = new CfgData();
         data.setWithString(deprecatedOnebuildCfgText);
         data.updateSectionWithKeyValue('one-build', 'one-import-tf', 'True');
@@ -389,7 +389,7 @@ output_path=./inception_v3_pb.circle
         const cfg = data.getAsConfig();
         assert.strictEqual(cfg['one-import-tf']['input_path'], './inception_v3.pb');
       });
-      test('NEG: try to update not existing deprecated input_dtype', function() {
+      test('NEG: try to update not existing deprecated input_dtype with value', function() {
         let data = new CfgData();
         data.setWithString(sampleCfgText);
         const stringified: string = 'input_dtype=uint8';
@@ -397,7 +397,7 @@ output_path=./inception_v3_pb.circle
         const cfg = data.getAsConfig();
         assert.strictEqual(cfg['one-quantize']['input_dtype'], undefined);
       });
-      test('NEG: try to update not existing deprecated one-build', function() {
+      test('NEG: try to update not existing deprecated one-build with value', function() {
         let data = new CfgData();
         data.setWithString(sampleCfgText);
         const stringified: string = 'one-import-tf=False';
@@ -405,7 +405,7 @@ output_path=./inception_v3_pb.circle
         const cfg = data.getAsConfig();
         assert.strictEqual(cfg['one-build'], undefined);
       });
-      test('NEG: try to update existed deprecated input_dtype', function() {
+      test('NEG: try to update existed deprecated input_dtype with value', function() {
         let data = new CfgData();
         data.setWithString(deprecatedQuantCfgText);
         const stringified: string = 'input_dtype=uint8';
@@ -413,7 +413,7 @@ output_path=./inception_v3_pb.circle
         const cfg = data.getAsConfig();
         assert.strictEqual(cfg['one-quantize']['input_dtype'], undefined);
       });
-      test('NEG: try to update existed deprecated one-build', function() {
+      test('NEG: try to update existed deprecated one-build with value', function() {
         let data = new CfgData();
         data.setWithString(deprecatedOnebuildCfgText);
         const stringified: string = 'one-import-tf=False';

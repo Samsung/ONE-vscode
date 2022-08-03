@@ -1,0 +1,28 @@
+version: 2
+test:
+  - name: ONE_VSCODE_TEST_CASE
+    testCaseLanguage: TYPESCRIPT
+    testFW: MOCHA
+    testCaseFolder:
+      - ./src/Tests
+
+    testFile:
+      - extension: ts
+        ends:
+          - test
+
+    testCase:
+      - condition:
+        - functionName:
+            starts:
+              - 'test'
+
+    negativeTestCase:
+      - condition:
+        - functionName:
+            contains:
+              - 'NEG:'
+
+    positiveTestCase:
+      - condition:
+        - inverse: negativeTestCase
