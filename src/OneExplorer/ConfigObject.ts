@@ -199,7 +199,11 @@ export class ConfigObj {
     let locatorRunner = new LocatorRunner();
 
     locatorRunner.register({
-      artifactAttr: {ext: '.circle', icon: new vscode.ThemeIcon('symbol-variable')},
+      artifactAttr: {
+        ext: '.circle',
+        icon: new vscode.ThemeIcon('symbol-variable'),
+        openViewType: 'onevscode.circleViewer'
+      },
       locator: new Locator((value: string) => LocatorRunner.searchWithExt('.circle', value))
     });
 
