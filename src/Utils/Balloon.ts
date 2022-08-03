@@ -18,6 +18,7 @@ import * as vscode from 'vscode';
 
 import {Logger} from './Logger';
 
+/* istanbul ignore next */
 export class Balloon {
   static seeLogBtn = 'See log';
 

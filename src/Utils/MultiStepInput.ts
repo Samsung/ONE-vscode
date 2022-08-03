@@ -23,6 +23,7 @@ https://github.com/microsoft/vscode-extension-samples/blob/2556c82cb333cf65d372b
 */
 import {Disposable, QuickInput, QuickInputButton, QuickInputButtons, QuickPickItem, window} from 'vscode';
 
+/* istanbul ignore next */
 class InputFlowAction {
   static back = new InputFlowAction();
   static cancel = new InputFlowAction();
@@ -31,6 +32,7 @@ class InputFlowAction {
 
 type InputStep = (input: MultiStepInput) => Thenable<InputStep|void>;
 
+/* istanbul ignore next */
 interface QuickPickParameters<T extends QuickPickItem> {
   title: string;
   step: number;
@@ -42,6 +44,7 @@ interface QuickPickParameters<T extends QuickPickItem> {
   shouldResume: () => Thenable<boolean>;
 }
 
+/* istanbul ignore next */
 interface InputBoxParameters {
   title: string;
   step: number;
@@ -54,6 +57,7 @@ interface InputBoxParameters {
   shouldResume: () => Thenable<boolean>;
 }
 
+/* istanbul ignore next */
 class MultiStepInput {
   static async run<T>(start: InputStep) {
     const input = new MultiStepInput();

@@ -20,6 +20,47 @@ type MsgList = (number|boolean|string|object)[];
 
 const isDebugMode = process.env.VSCODE_DEBUG_MODE === 'true';
 
+/**
+ * @Examples:
+ *
+ * _logStr('info', 'ut_test', 'first_message', 10, new Foo(10), new Error('watch out')
+ *  where Foo has one var 'bar' will return the following:
+ *
+ * [8/3/2022, 12:25:23 PM][ut_teset][info] first_message 10
+ * Foo: {"bar":10}       <--- object
+ * Error was thrown:     <--- Error
+ * - name: Error
+ * - message: watch out
+ */
+function _logStr(severity: string, tag: string, ...msgs: MsgList) {
+  let logStrList = [];
+
+  if (msgs.length === 0) {
+    // Do not print
+    return '';
+  }
+
+  for (let m of msgs) {
+    // ref: https://stackoverflow.com/q/5612787
+    if (m instanceof Error) {
+      const err = m as Error;
+      logStrList.push(`\nError was thrown:\n- name: ${err.name}\n- message: ${err.message}`);
+    } else if (typeof (m) === 'object') {
+      logStrList.push(`\n${m.constructor.name}: ${JSON.stringify(m)}`);
+    } else {
+      logStrList.push(`${m}`);
+    }
+  }
+  const msg = logStrList.join(' ');
+  const time = new Date().toLocaleString();
+
+  return `[${time}][${tag}][${severity}] ${msg}`;
+}
+
+// Import this only for UT
+export {_logStr as _UT_logStr};
+
+/* istanbul ignore next */
 export class Logger {
   static outputChannel = vscode.window.createOutputChannel('ONE-VSCode');
   static firstFocus: boolean;
@@ -32,21 +73,8 @@ export class Logger {
   }
 
   private static log(severity: string, tag: string, ...msgs: MsgList) {
-    let logStrList = [];
-
-    for (var i = 0; i < msgs.length; i++) {
-      // ref: https://stackoverflow.com/q/5612787
-      if (typeof (msgs[i]) === 'object') {
-        logStrList.push(JSON.stringify(msgs[i]));
-      } else {
-        logStrList.push(`${msgs[i]}`);
-      }
-    }
-    const msg = logStrList.join(' ');
-    const time = new Date().toLocaleString();
-
     Logger.checkShow();
-    Logger.outputChannel.appendLine(`[${time}][${tag}][${severity}] ${msg}`);
+    Logger.outputChannel.appendLine(_logStr(severity, tag, ...msgs));
   }
 
   /**
