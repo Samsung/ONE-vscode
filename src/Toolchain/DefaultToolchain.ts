@@ -50,6 +50,9 @@ class DefaultToolchain {
   }
 
   set(toolchainEnv: ToolchainEnv, toolchain: Toolchain) {
+    if (this.isEqual(toolchain)) {
+      return;
+    }
     this._toolchainEnv = toolchainEnv;
     this._toolchain = toolchain;
     const name = `${toolchain.info.name}-${toolchain.info.version ?.str()}`;
