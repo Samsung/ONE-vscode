@@ -150,7 +150,8 @@
         "command": "one.toolchain.install",
         "title": "Toolchain Install",
         "category": "ONE",
-        "icon": "$(add)"
+        "icon": "$(add)",
+        "enablement": "!one.job:running"
       },
       {
         "command": "one.toolchain.uninstall",
@@ -204,7 +205,7 @@
         },
         {
           "command": "one.toolchain.install",
-          "when": "view == ToolchainView",
+          "when": "view == ToolchainView && !one.job:running",
           "group": "navigation"
         },
         {
@@ -251,12 +252,12 @@
         },
         {
           "command": "one.toolchain.setDefaultToolchain",
-          "when": "view == ToolchainView && viewItem == toolchain",
+          "when": "view == ToolchainView && viewItem == toolchain && !one.job:running",
           "group": "inline"
         },
         {
           "command": "one.toolchain.uninstall",
-          "when": "view == ToolchainView && viewItem =~ /toolchain/",
+          "when": "view == ToolchainView && viewItem =~ /toolchain/ && !one.job:running",
           "group": "inline"
         }
       ],

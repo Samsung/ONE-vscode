@@ -38,6 +38,7 @@ export class JobRunner extends EventEmitter {
 
   constructor() {
     super();
+    vscode.commands.executeCommand('setContext', 'one.job:running', this.running);
     this.toolRunner = new ToolRunner();
 
     this.on(K_INVOKE, this.onInvoke);
@@ -93,6 +94,7 @@ export class JobRunner extends EventEmitter {
 
   private onCleanup() {
     this.running = false;
+    vscode.commands.executeCommand('setContext', 'one.job:running', this.running);
     process.env.userp = '';
   }
 
@@ -133,6 +135,7 @@ export class JobRunner extends EventEmitter {
         });
 
     this.running = true;
+    vscode.commands.executeCommand('setContext', 'one.job:running', this.running);
     this.jobs = jobs;
     this.emit(K_INVOKE);
   }
