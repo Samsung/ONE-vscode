@@ -35,6 +35,9 @@ class Device {
   spec: DeviceSpec;
   availableExecutors: Set<Executor>;
   constructor(name: string, spec: DeviceSpec) {
+    if (name === '') {
+      throw Error('empty name device cannot be created.');
+    }
     this.name = name;
     this.spec = spec;
     this.availableExecutors = new Set<Executor>();
