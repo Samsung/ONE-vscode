@@ -20,6 +20,7 @@ import * as vscode from 'vscode';
 import {getWebviewOptions} from './Jsontracer/GetWebviewOptions';
 import {getNonce} from './Utils/external/Nonce';
 
+/* istanbul ignore next */
 export class Jsontracer {
   /**
    * Track the current panel. Only allow a single panel to exist at a time.
