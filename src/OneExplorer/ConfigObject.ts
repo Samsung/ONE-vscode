@@ -173,13 +173,13 @@ export class ConfigObj {
     if (artifacts.length > 1) {
       // TODO Notify the error with a better UX
       // EX. put question mark next to the config icon
-      Logger.warn(
+      Logger.debug(
           'OneExplorer', `There are multiple input models in the configuration(${filePath}).`);
     }
     if (artifacts.length === 0) {
       // TODO Notify the error with a better UX
       // EX. showing orphan nodes somewhere
-      Logger.warn('OneExplorer', `There is no input model in the configuration(${filePath}).`);
+      Logger.debug('OneExplorer', `There is no input model in the configuration(${filePath}).`);
     }
 
     // Return as list of uri
