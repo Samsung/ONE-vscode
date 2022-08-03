@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {spawn, SpawnOptions, spawnSync, SpawnSyncOptions} from 'child_process';
+import {spawn, SpawnOptionsWithoutStdio} from 'child_process';
 
 import {Logger} from './Logger';
 
@@ -34,17 +34,17 @@ import {Logger} from './Logger';
  *   } else { console.log("exit code is not 0"); })
  */
 export function pipedSpawn(
-    cmd1: string, cmd1List: string[], cmd1Option: SpawnOptions, cmd2: string, cmd2List: string[],
-    cmd2Option: SpawnOptions) {
+    cmd1: string, cmd1List: string[], cmd1Option: SpawnOptionsWithoutStdio, cmd2: string,
+    cmd2List: string[], cmd2Option: SpawnOptionsWithoutStdio) {
   // Let's handle `$ cmd1 | cmd2`
   const first = spawn(cmd1, cmd1List, cmd1Option);
   const second = spawn(cmd2, cmd2List, cmd2Option);
 
-  first.stdout!.on('data', (data) => {
-    second.stdin!.write(data);
+  first.stdout.on('data', (data) => {
+    second.stdin.write(data);
   });
 
-  first.stderr!.on('data', (data) => {
+  first.stderr.on('data', (data) => {
     Logger.error('pipedSpawn', `${cmd1} stderr: ${data}`);
     // TODO Find better to notify caller that error occured
   });
@@ -54,7 +54,7 @@ export function pipedSpawn(
       Logger.error('pipedSpawn', `${cmd1} process exited with code ${code}`);
       // TODO Find better to notify caller that error occured
     }
-    second.stdin!.end();
+    second.stdin.end();
   });
 
   return second;

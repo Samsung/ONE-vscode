@@ -53,7 +53,7 @@ export class ToolRunner {
   tag = this.constructor.name;  // logging tag
 
   // This variable is undefined while a prcess is not running
-  private child: cp.ChildProcess|undefined = undefined;
+  private child: cp.ChildProcessWithoutNullStreams|undefined = undefined;
 
   // When the spawned process was killed by kill() method, set this true
   // This value must be set to false when starting a process
@@ -63,11 +63,11 @@ export class ToolRunner {
       resolve: (value: SuccessResult|PromiseLike<SuccessResult>) => void,
       reject: (value: ErrorResult|PromiseLike<ErrorResult>) => void, root: boolean) {
     // stdout
-    this.child!.stdout!.on(K_DATA, (data: any) => {
+    this.child!.stdout.on(K_DATA, (data: any) => {
       Logger.append(data.toString());
     });
     // stderr
-    this.child!.stderr!.on(K_DATA, (data: any) => {
+    this.child!.stderr.on(K_DATA, (data: any) => {
       Logger.append(data.toString());
     });
 
@@ -147,7 +147,7 @@ export class ToolRunner {
       throw Error('No process to kill');
     }
 
-    if (this.child!.kill()) {
+    if (this.child.kill()) {
       this.killedByMe = true;
       Logger.info(this.tag, `Process was terminated.`);
     } else {
