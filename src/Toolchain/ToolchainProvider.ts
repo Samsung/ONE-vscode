@@ -135,7 +135,7 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
   install() {
     const notifyInstalled = (toolchainEnv: ToolchainEnv, toolchain: Toolchain) => {
       const name = `${toolchain.info.name}-${toolchain.info.version ?.str()}`;
-      vscode.window.showInformationMessage(`Install ${name} successfully`);
+      vscode.window.showInformationMessage(`${name} installation was successful.`);
       if (Object.keys(gToolchainEnvMap).length > 1 || toolchainEnv.listInstalled().length > 1) {
         DefaultToolchain.getInstance().ask(toolchainEnv, toolchain).then(() => this.refresh());
       }
@@ -143,11 +143,11 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
     };
 
     const notifyError = () => {
-      this.error('Installation is failed');
+      this.error('Installation has failed');
     };
 
     const notifyCancelled = () => {
-      Logger.info(this.tag, 'Installation is canceled');
+      Logger.info(this.tag, 'Installation was cancelled');
     };
 
     showInstallQuickInput().then(([toolchainEnv, toolchain]) => {
@@ -158,7 +158,7 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
           value => value.constructor.name === 'DebianToolchain');
 
       if (installed.length > 1) {
-        this.error('Installed debian toolchain must be unique');
+        this.error('Installed debian toolchain must be unique.');
         return;
       }
 
@@ -188,21 +188,28 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
 
   uninstall(tnode: ToolchainNode) {
     if (tnode === undefined) {
-      throw Error('Invalid toolchain node');
+      throw Error('Invalid toolchain node.');
     }
 
     const backendName = tnode.backendName;
     if (backendName === undefined) {
-      throw Error('Invalid toolchain node');
+      throw Error('Invalid toolchain node.');
     }
 
-    gToolchainEnvMap[backendName].uninstall(tnode.toolchain).then(() => {
-      if (DefaultToolchain.getInstance().isEqual(tnode.toolchain)) {
-        Logger.info(this.tag, 'Default toolchain is cancelled.');
-        DefaultToolchain.getInstance().unset();
-      }
-      this.refresh();
-    });
+    gToolchainEnvMap[backendName]
+        .uninstall(tnode.toolchain)
+        .then(
+            () => {
+              vscode.window.showInformationMessage(`Uninstallation was successful.`);
+              if (DefaultToolchain.getInstance().isEqual(tnode.toolchain)) {
+                Logger.info(this.tag, 'Setting default toolchain was cancelled.');
+                DefaultToolchain.getInstance().unset();
+              }
+              this.refresh();
+            },
+            () => {
+              this.error('Uninstallation has failed.');
+            });
   }
 
   run(cfg: string) {
@@ -221,15 +228,15 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
       return;
     }
 
-    Logger.info(this.tag, `Compile toolchain: ${activeToolchain.info.name}-${activeToolchain.info.version?.str()}`);
+    Logger.info(this.tag, `Run config file with ${activeToolchain.info.name}-${activeToolchain.info.version?.str()} toolchain.`);
     activeToolchainEnv.run(cfg, activeToolchain).then(() => {
-      vscode.window.showInformationMessage('Compile successfully');
-    }, () => this.error('Failed to compile model'));
+      vscode.window.showInformationMessage('Run onecc was successful.');
+    }, () => this.error('Run onecc has failed.'));
   }
 
   setDefaultToolchain(node: ToolchainNode) {
     if (!node.backend || !node.toolchain) {
-      this.error('Invalid toolchain node');
+      this.error('Invalid toolchain node.');
       return;
     }
 

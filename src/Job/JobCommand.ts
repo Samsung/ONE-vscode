@@ -25,6 +25,7 @@ import {ToolArgs} from './ToolArgs';
 class JobCommand implements Job {
   jobType: Job.Type;
   name: string;
+  notiTitle?: string;
   valid: boolean;
   tool: string;
   toolArgs: ToolArgs;

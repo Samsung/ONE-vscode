@@ -52,7 +52,11 @@ export class JobRunner extends EventEmitter {
     let failure = job.failureCallback;
 
     if (this.progress) {
-      this.progress.report({message: `Running ${job.name}...`});
+      let message: string = `Running ${job.name}...`;
+      if (job.notiTitle) {
+        message = job.notiTitle;
+      }
+      this.progress.report({message: message});
     }
 
     Logger.info(this.tag, 'Run tool:', tool, 'args:', toolArgs, 'cwd:', workDir, 'root:', job.root);
