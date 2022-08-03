@@ -17,6 +17,7 @@
 import * as cp from 'child_process';
 import * as fs from 'fs';
 import {Logger} from '../Utils/Logger';
+import {pipedSpawn} from '../Utils/PipedSpawn';
 import {ToolArgs} from './ToolArgs';
 
 const path = require('path');
@@ -52,7 +53,7 @@ export class ToolRunner {
   tag = this.constructor.name;  // logging tag
 
   // This variable is undefined while a prcess is not running
-  private child: cp.ChildProcessWithoutNullStreams|undefined = undefined;
+  private child: cp.ChildProcess|undefined = undefined;
 
   // When the spawned process was killed by kill() method, set this true
   // This value must be set to false when starting a process
@@ -60,18 +61,40 @@ export class ToolRunner {
 
   private handlePromise(
       resolve: (value: SuccessResult|PromiseLike<SuccessResult>) => void,
-      reject: (value: ErrorResult|PromiseLike<ErrorResult>) => void) {
+      reject: (value: ErrorResult|PromiseLike<ErrorResult>) => void, root: boolean) {
     // stdout
-    this.child!.stdout.on(K_DATA, (data: any) => {
+    this.child!.stdout!.on(K_DATA, (data: any) => {
       Logger.append(data.toString());
     });
     // stderr
-    this.child!.stderr.on(K_DATA, (data: any) => {
+    this.child!.stderr!.on(K_DATA, (data: any) => {
       Logger.append(data.toString());
     });
 
     this.child!.on(K_EXIT, (code: number|null, signal: NodeJS.Signals|null) => {
       this.child = undefined;
+
+      if (root) {
+        /*
+        NOTE
+
+        Considering a case:
+
+          `echo correct_pw | sudo -S ...` --> `echo wrong_pw | sudo -S ...`
+
+        The second call does not fail because pw is cached by sudo.
+        Let's invalidate sudo cache by putting `sudo -k` somewhere.
+
+          `echo correct_pw | sudo -S ...` --> `sudo -k` --> `echo wrong_pw | sudo -S ...`
+
+        When should we call `sudo -k`?
+        1. We observed that `sudo -k` right after spawning `echo correct_pw | sudo -S ...` does not
+          seem to work, making `echo wrong_pw | sudo -S ...` succeed.
+        2. Calling `sudo -k` after first sudo process finishes seems to make
+          `echo wrong_pw | sudo -S ...` fail.
+        */
+        cp.spawnSync('sudo', ['-k']);
+      }
 
       // From https://nodejs.org/api/child_process.html#event-exit
       //
@@ -174,12 +197,16 @@ export class ToolRunner {
         // To run the root command job, it must requires a password in `process.env.userp`
         // environment.
         // TODO(jyoung): Need password encryption
-        tool = `echo ${process.env.userp} | sudo -S ` + tool;
-        this.child = cp.spawn(tool, toolargs, {cwd: cwd, shell: true});
+        if (process.env.userp === undefined) {
+          throw Error('Cannot find required environment variable');
+        }
+        // sudo -S gets pw from stdin
+        const args = ['-S', tool].concat(toolargs);
+        this.child = pipedSpawn('echo', [process.env.userp], {cwd: cwd}, 'sudo', args, {cwd: cwd});
       } else {
         this.child = cp.spawn(tool, toolargs, {cwd: cwd});
       }
-      this.handlePromise(resolve, reject);
+      this.handlePromise(resolve, reject, root);
     });
   }
 }
