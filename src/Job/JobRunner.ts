@@ -17,7 +17,6 @@
 import {EventEmitter} from 'events';
 import * as vscode from 'vscode';
 
-import {Balloon} from '../Utils/Balloon';
 import {Logger} from '../Utils/Logger';
 
 import {Job} from './Job';
@@ -62,7 +61,7 @@ export class JobRunner extends EventEmitter {
     runner
         .then((value) => {
           if (value.intentionallyKilled) {
-            Balloon.info('The job was cancelled.');
+            Logger.info(this.tag, 'The job was cancelled.');
             this.emit(K_CLEANUP);
             return;
           }
@@ -77,7 +76,7 @@ export class JobRunner extends EventEmitter {
           if (failure !== undefined) {
             failure();
           }
-          Balloon.error('Running ONE failed');
+          Logger.error(this.tag, 'The job was failed.');
           this.emit(K_CLEANUP);
         });
   }
@@ -85,7 +84,7 @@ export class JobRunner extends EventEmitter {
   private onInvoke() {
     let job = this.jobs.shift();
     if (job === undefined) {
-      Logger.info(this.tag, 'Finish Running ONE compilers.');
+      Logger.info(this.tag, 'All jobs have been completed.');
       this.emit(K_CLEANUP);
       return;
     }
@@ -101,7 +100,7 @@ export class JobRunner extends EventEmitter {
   public start(jobs: WorkJobs) {
     // TODO maybe there is better way to handle already running jobs
     if (this.running) {
-      Balloon.error('ONE compile in progress');
+      Logger.error(this.tag, 'The job is in progress.');
       return;
     }
 
