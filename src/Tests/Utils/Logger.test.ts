@@ -16,7 +16,7 @@
 
 import {assert} from 'chai';
 
-import {_UT_logStr} from '../../Utils/Logger';
+import {_unit_test_logStr} from '../../Utils/Logger';
 
 suite('Utils', function() {
   suite('Logger', function() {
@@ -25,9 +25,9 @@ suite('Utils', function() {
         // One message
         {
           const severity = 'info';
-          const tag = 'ut_teset';
+          const tag = 'unit_test';
           const msg = 'one_message';
-          const actual = _UT_logStr(severity, tag, msg);
+          const actual = _unit_test_logStr(severity, tag, msg);
           assert.isTrue(actual.includes(`[${severity}]`));
           assert.isTrue(actual.includes(`[${tag}]`));
           assert.isTrue(actual.endsWith(msg));
@@ -35,10 +35,10 @@ suite('Utils', function() {
         {
           // two msgs
           const severity = 'info';
-          const tag = 'ut_teset';
+          const tag = 'unit_test';
           const msg1 = 'one_message';
           const msg2 = 'two_message';
-          const actual = _UT_logStr(severity, tag, msg1, msg2);
+          const actual = _unit_test_logStr(severity, tag, msg1, msg2);
           assert.isTrue(actual.includes(`[${severity}]`));
           assert.isTrue(actual.includes(`[${tag}]`));
           assert.isTrue(actual.endsWith(`${msg1} ${msg2}`));
@@ -50,14 +50,14 @@ suite('Utils', function() {
             }
           }
           const severity = 'info';
-          const tag = 'ut_teset';
+          const tag = 'unit_test';
           const msg1 = 'one_message';
           const msg2 = 1234;
           const msg3 = new Foo(10);
           const msg4 = new RangeError('exceed!');
-          const actual = _UT_logStr(severity, tag, msg1, msg2, msg3, msg4);
+          const actual = _unit_test_logStr(severity, tag, msg1, msg2, msg3, msg4);
           /*
-          [8/3/2022, 12:29:23 PM][ut_teset][info] one_message 1234
+          [8/3/2022, 12:29:23 PM][unit_test][info] one_message 1234
           Foo: {"bar":10}
           Error was thrown:
           - name: Error
@@ -76,8 +76,8 @@ suite('Utils', function() {
 
       test('NEG: no msg', function() {
         const severity = 'info';
-        const tag = 'ut_teset';
-        const actual = _UT_logStr(severity, tag);
+        const tag = 'unit_test';
+        const actual = _unit_test_logStr(severity, tag);
         assert.equal(actual, '');
       });
     });

@@ -58,7 +58,7 @@ function _logStr(severity: string, tag: string, ...msgs: MsgList) {
 }
 
 // Import this only for UT
-export {_logStr as _UT_logStr};
+export {_logStr as _unit_test_logStr};
 
 /* istanbul ignore next */
 export class Logger {
