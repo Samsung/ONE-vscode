@@ -41,7 +41,6 @@ function _logStr(severity: string, tag: string, ...msgs: MsgList) {
   }
 
   for (let m of msgs) {
-    // ref: https://stackoverflow.com/q/5612787
     if (m instanceof Error) {
       const err = m as Error;
       logStrList.push(`\nError was thrown:\n- name: ${err.name}\n- message: ${err.message}`);
@@ -57,7 +56,7 @@ function _logStr(severity: string, tag: string, ...msgs: MsgList) {
   return `[${time}][${tag}][${severity}] ${msg}`;
 }
 
-// Import this only for UT
+// Import this only for unit test
 export {_logStr as _unit_test_logStr};
 
 /* istanbul ignore next */

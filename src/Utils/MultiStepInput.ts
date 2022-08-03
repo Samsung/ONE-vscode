@@ -32,7 +32,6 @@ class InputFlowAction {
 
 type InputStep = (input: MultiStepInput) => Thenable<InputStep|void>;
 
-/* istanbul ignore next */
 interface QuickPickParameters<T extends QuickPickItem> {
   title: string;
   step: number;
@@ -44,7 +43,6 @@ interface QuickPickParameters<T extends QuickPickItem> {
   shouldResume: () => Thenable<boolean>;
 }
 
-/* istanbul ignore next */
 interface InputBoxParameters {
   title: string;
   step: number;
