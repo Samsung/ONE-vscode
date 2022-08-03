@@ -115,12 +115,6 @@
         "icon": "$(add)"
       },
       {
-        "command": "one.backend.infer",
-        "title": "Infer",
-        "category": "ONE",
-        "_comment": "Run backend executor's inference command with a given model."
-      },
-      {
         "command": "one.explorer.runCfg",
         "title": "Run with the toolchain",
         "category": "ONE",
@@ -267,10 +261,6 @@
         }
       ],
       "commandPalette": [
-        {
-          "command": "one.backend.infer",
-          "when": "false"
-        },
         {
           "command": "one.device.refresh",
           "when": "false"

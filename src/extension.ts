@@ -20,7 +20,6 @@ import {backendRegistrationApi} from './Backend/API';
 import {CfgEditorPanel} from './CfgEditor/CfgEditorPanel';
 import {CircleViewerProvider} from './CircleGraph/CircleViewer';
 import {DeviceViewProvider} from './Execute/DeviceViewProvider';
-import {runInferenceQuickInput} from './Execute/executeQuickInput';
 import {Jsontracer} from './Jsontracer';
 import {MondrianEditorProvider} from './Mondrian/MondrianEditor';
 import {initOneExplorer} from './OneExplorer/OneExplorer';
@@ -60,12 +59,6 @@ export function activate(context: vscode.ExtensionContext) {
     deviceViewProvider.refresh();
   });
   context.subscriptions.push(registerDevice);
-
-  let inferenceCommand = vscode.commands.registerCommand('one.backend.infer', () => {
-    Logger.info(tag, 'one infer model...');
-    runInferenceQuickInput(context);
-  });
-  context.subscriptions.push(inferenceCommand);
 
   context.subscriptions.push(CfgEditorPanel.register(context));
 
