@@ -18,22 +18,20 @@ import {assert} from 'chai';
 
 import {Command} from '../../Backend/Command';
 import {Job} from '../../Job/Job';
-import {JobInstall} from '../../Toolchain/JobInstall';
+import {JobPrerequisites} from '../../Toolchain/JobPrerequisites';
 
 suite('Toolchain', function() {
-  suite('JobInstall', function() {
+  suite('JobPrerequisites', function() {
     suite('#contructor()', function() {
       test('is contructed with command', function() {
-        let cmd = new Command('apt-get');
-        cmd.push('install');
-        cmd.push('pkgname');
+        let cmd = new Command('/bin/bash');
+        cmd.push('scriptpath');
 
-        let job = new JobInstall(cmd);
+        let job = new JobPrerequisites(cmd);
         assert.deepStrictEqual(job.tool, cmd[0]);
         assert.deepStrictEqual(job.toolArgs[0], cmd[1]);
-        assert.deepStrictEqual(job.toolArgs[1], cmd[2]);
-        assert.deepStrictEqual(job.name, 'install');
-        assert.equal(job.jobType, Job.Type.tInstall);
+        assert.deepStrictEqual(job.name, 'prerequisites');
+        assert.equal(job.jobType, Job.Type.tPrerequisites);
         assert.isTrue(job.valid);
       });
     });

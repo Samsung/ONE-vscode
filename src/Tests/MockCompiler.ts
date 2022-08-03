@@ -15,6 +15,7 @@
  */
 
 import {assert} from 'chai';
+import { Command } from '../Backend/Command';
 
 import {CompilerBase} from '../Backend/Compiler';
 import {ToolchainInfo, Toolchains} from '../Backend/Toolchain';
@@ -39,11 +40,24 @@ class MockCompiler extends CompilerBase {
   }
   getToolchains(toolchainType: string, start: number, count: number): Toolchains {
     // TODO(jyoung): Support start and count parameters
-    if (toolchainType === mocCompilerType) {
-      assert(count === 1, 'Count must be 1');
-      return [this.availableToolchain];
+    if (toolchainType !== mocCompilerType) {
+      throw Error(`Unknown toolchain type: ${toolchainType}`);
     }
-    return [];
+
+    if (start < 0) {
+      throw new Error(`wrong start number: ${start}`);
+    }
+
+    if (count < 0) {
+      throw new Error(`wrong count number: ${count}`);
+    }
+
+    if (count === 0) {
+      return [];
+    }
+
+    assert(count === 1, 'Count must be 1');
+    return [this.availableToolchain];
   }
   getInstalledToolchains(toolchainType: string): Toolchains {
     if (toolchainType === mocCompilerType) {
@@ -51,6 +65,9 @@ class MockCompiler extends CompilerBase {
     }
     return [];
   }
-};
+  prerequisitesForGetToolchains(): Command {
+    return new Command('/bin/bash', ['echo', 'prerequisites']);
+  }
+}
 
 export {MockCompiler};

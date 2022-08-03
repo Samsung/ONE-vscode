@@ -42,3 +42,29 @@ export class MockJob implements Job {
     return args;
   }
 }
+
+export class MockFailedJob implements Job {
+  jobType: Job.Type = Job.Type.tUndefined;
+  name: string;
+  root: boolean = false;
+  workDir: string = require('os').homedir();
+  isCancelable: boolean = false;
+
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  public get valid(): boolean {
+    return true;
+  }
+
+  public get tool(): string {
+    return 'lss';
+  }
+
+  public get toolArgs(): ToolArgs {
+    let args = new ToolArgs();
+    args.push('-h');
+    return args;
+  }
+}

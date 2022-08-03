@@ -94,15 +94,15 @@ class ToolchainEnv extends Env {
     this.init();
   }
 
-  getToolchainTypes(): string[] {
+  public getToolchainTypes(): string[] {
     return this.compiler.getToolchainTypes();
   }
 
-  listAvailable(type: string, start: number, count: number): Toolchain[] {
+  public listAvailable(type: string, start: number, count: number): Toolchain[] {
     return this.compiler.getToolchains(type, start, count);
   }
 
-  listInstalled(): Toolchain[] {
+  public listInstalled(): Toolchain[] {
     return this.compiler.getToolchainTypes()
         .map((type) => this.compiler.getInstalledToolchains(type))
         .reduce((r, a) => {
@@ -110,7 +110,7 @@ class ToolchainEnv extends Env {
         });
   }
 
-  executeEnv(jobs: Array<Job>) {
+  private executeEnv(jobs: Array<Job>) {
     this.clearJobs();
     jobs.forEach((job) => {
       this.addJob(job);
@@ -119,7 +119,7 @@ class ToolchainEnv extends Env {
     this.build();
   }
 
-  request(jobs: Array<Job>): Promise<boolean> {
+  public request(jobs: Array<Job>): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
       jobs.forEach((job) => {
         job.failureCallback = () => reject();
@@ -129,7 +129,7 @@ class ToolchainEnv extends Env {
     });
   }
 
-  prerequisites(): Promise<boolean> {
+  public prerequisites(): Promise<boolean> {
     return new Promise<boolean>((resolve) => {
       const jobs: Array<Job> = [];
       const job = new JobPrerequisites(this.compiler.prerequisitesForGetToolchains());
@@ -145,7 +145,7 @@ class ToolchainEnv extends Env {
     });
   }
 
-  install(toolchain: Toolchain): Promise<boolean> {
+  public install(toolchain: Toolchain): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
       const jobs: Array<Job> = [];
       const job = new JobInstall(toolchain.install());
@@ -156,7 +156,7 @@ class ToolchainEnv extends Env {
     });
   }
 
-  uninstall(toolchain: Toolchain): Promise<boolean> {
+  public uninstall(toolchain: Toolchain): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
       const jobs: Array<Job> = [];
       const job = new JobUninstall(toolchain.uninstall());
@@ -167,7 +167,7 @@ class ToolchainEnv extends Env {
     });
   }
 
-  run(cfg: string, toolchain: Toolchain): Promise<boolean> {
+  public run(cfg: string, toolchain: Toolchain): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
       const jobs: Array<Job> = [];
       const job = new JobConfig(toolchain.run(cfg));
@@ -178,7 +178,7 @@ class ToolchainEnv extends Env {
       this.executeEnv(jobs);
     });
   }
-};
+}
 
 /**
  * Interface of backend map

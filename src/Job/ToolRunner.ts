@@ -25,6 +25,7 @@ const which = require('which');
 
 const K_DATA: string = 'data';
 const K_EXIT: string = 'exit';
+const K_ERROR: string = 'error';
 
 /**
  * Return type when a process exits without error
@@ -69,6 +70,19 @@ export class ToolRunner {
     // stderr
     this.child!.stderr.on(K_DATA, (data: any) => {
       Logger.append(data.toString());
+    });
+
+    // NOTE
+    // The 'error' event is emitted whenever:
+    //   1. The process could not be spawned, or
+    //   2. The process could not be killed, or
+    //   3. Sending a message to the child process failed.
+    // The 'exit' event may or may not fire after an error has occurred.
+    // When listening to both the 'exit' and 'error' events, guard against
+    // accidentally invoking handler functions multiple times.
+    // from https://nodejs.org/api/child_process.html#event-error
+    this.child!.on(K_ERROR, (err) => {
+      Logger.append(err.message);
     });
 
     this.child!.on(K_EXIT, (code: number|null, signal: NodeJS.Signals|null) => {
