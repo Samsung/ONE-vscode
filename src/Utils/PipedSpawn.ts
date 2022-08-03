@@ -32,6 +32,9 @@ import {Logger} from './Logger';
  *   if (exitcode === null) { // handle signal
  *   } else if (exitcode === 0) { console.log("success!");
  *   } else { console.log("exit code is not 0"); })
+ *
+ * @see https://nodejs.org/api/child_process.html#child_processspawncommand-args-options has similar
+ *      example for pipe
  */
 export function pipedSpawn(
     cmd1: string, cmd1List: string[], cmd1Option: SpawnOptionsWithoutStdio, cmd2: string,
