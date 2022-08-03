@@ -77,8 +77,8 @@ export default function renderBar(timeLimit, data) {
     } else {
       removeSelectedBar();
       renderSingleDetail(
-          event.target.className === 'bar' ? event.target.dataset :
-                                             event.target.parentNode.dataset);
+        event.target.className === 'bar' ? event.target.dataset :
+          event.target.parentNode.dataset);
     }
   });
 
