@@ -29,6 +29,7 @@ const segmentSelect = /** @type {HTMLElement} */ document.querySelector('.mondri
 const viewerHScale = /** @type {HTMLElement} */ document.querySelector('.mondrian-viewer-h-scale');
 const viewerVScale = /** @type {HTMLElement} */ document.querySelector('.mondrian-viewer-v-scale');
 const scrollbarBtn = /** @type {HTMLElement} */ document.querySelector('.mondrian-scrollbar-btn');
+const sidePanel = /** @type {HTMLElement} */ document.querySelector('.mondrian-sidepanel');
 
 /* Limit cycle range to avoid hang-ups for large models */
 const defaultCycleLimit = 1048576;
@@ -289,13 +290,24 @@ function updateViewport(data, viewer) {
     box.style.left = (alloc.alive_from / viewport.cycles * 100) + '%';
     box.style.right = ((viewport.cycles - alloc.alive_till) / viewport.cycles * 100) + '%';
     box.style.backgroundColor = boxColors[i % boxColors.length];
-    box.addEventListener('mouseover', (event) => {
+    box.addEventListener('mouseover', () => {
       statusLineContainer.innerHTML = `<b>Origin:</b> ${
           alloc.origin.length > 32 ? alloc.origin.substring(0, 32) + '…' : alloc.origin}
           | <b>Size:</b> ${alloc.size}
           | <b>Offset:</b> ${alloc.offset}
           | <b>Lifetime:</b> ${alloc.alive_from} → ${alloc.alive_till} (${
           alloc.alive_till - alloc.alive_from})`;
+    });
+    box.addEventListener('click', (e) => {
+      sidePanel.classList.add('mondrian-sidepanel-enabled');
+      document.querySelector('.mondrian-sidepanel-origin').value = alloc.origin;
+      document.querySelector('.mondrian-sidepanel-size').value = alloc.size;
+      document.querySelector('.mondrian-sidepanel-offset').value = alloc.offset;
+      document.querySelector('.mondrian-sidepanel-allocated').value = alloc.alive_from;
+      document.querySelector('.mondrian-sidepanel-freed').value = alloc.alive_till;
+      document.querySelector('.mondrian-sidepanel-lifetime').value =
+          alloc.alive_till - alloc.alive_from;
+      e.stopPropagation();
     });
     viewerContainer.appendChild(box);
   }
@@ -351,6 +363,10 @@ const state = vscode.getState();
 if (state) {
   updateContent(state.data, state.viewer);
 }
+
+viewerContainer.parentElement.addEventListener('click', () => {
+  sidePanel.classList.remove('mondrian-sidepanel-enabled');
+});
 
 viewerVScale.children[0].addEventListener('click', () => {
   changeScale(0, 0.5);

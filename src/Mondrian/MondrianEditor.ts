@@ -94,6 +94,16 @@ export class MondrianEditorProvider implements vscode.CustomTextEditorProvider {
           <div class="mondrian-viewer-area">
             <div class="mondrian-viewer-bounds"></div>
           </div>
+          <div class="mondrian-sidepanel">
+            <vscode-text-area resize="vertical" rows="5" class="mondrian-sidepanel-origin" readonly>
+              Origin
+            </vscode-text-area>
+            <vscode-text-field class="mondrian-sidepanel-size" readonly>Size</vscode-text-field>
+            <vscode-text-field class="mondrian-sidepanel-offset" readonly>Offset</vscode-text-field>
+            <vscode-text-field class="mondrian-sidepanel-allocated" readonly>Allocated</vscode-text-field>
+            <vscode-text-field class="mondrian-sidepanel-freed" readonly>Freed</vscode-text-field>
+            <vscode-text-field class="mondrian-sidepanel-lifetime" readonly>Lifetime</vscode-text-field>
+          </div>
           <div class="mondrian-statusbar">
             <div class="mondrian-statusline"></div>
             <div class="mondrian-info">
