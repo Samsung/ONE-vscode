@@ -15,13 +15,14 @@
  */
 
 import {assert} from 'chai';
-import { Command } from '../Backend/Command';
+import {Command} from '../Backend/Command';
 
 import {CompilerBase} from '../Backend/Compiler';
 import {ToolchainInfo, Toolchains} from '../Backend/Toolchain';
 import {DebianToolchain} from '../Backend/ToolchainImpl/DebianToolchain';
 
-const mocCompilerType: string = 'test';
+const mocCompilerType1: string = 'test';
+const mocCompilerType2: string = 'test2';
 
 class MockCompiler extends CompilerBase {
   // TODO: What toolchain is necessary as tests?
@@ -36,31 +37,33 @@ class MockCompiler extends CompilerBase {
         new ToolchainInfo('nodejs', 'Node.js event-based server-side javascript engine'));
   }
   getToolchainTypes(): string[] {
-    return [mocCompilerType];
+    return [mocCompilerType1, mocCompilerType2];
   }
   getToolchains(toolchainType: string, start: number, count: number): Toolchains {
     // TODO(jyoung): Support start and count parameters
-    if (toolchainType !== mocCompilerType) {
+    if (toolchainType !== mocCompilerType1 && toolchainType !== mocCompilerType2) {
       throw Error(`Unknown toolchain type: ${toolchainType}`);
     }
-
     if (start < 0) {
-      throw new Error(`wrong start number: ${start}`);
+      throw Error(`wrong start number: ${start}`);
     }
-
     if (count < 0) {
-      throw new Error(`wrong count number: ${count}`);
+      throw Error(`wrong count number: ${count}`);
     }
-
     if (count === 0) {
       return [];
     }
-
     assert(count === 1, 'Count must be 1');
-    return [this.availableToolchain];
+    if (toolchainType === mocCompilerType1) {
+      return [this.availableToolchain];
+    }
+    return [];
   }
   getInstalledToolchains(toolchainType: string): Toolchains {
-    if (toolchainType === mocCompilerType) {
+    if (toolchainType !== mocCompilerType1 && toolchainType !== mocCompilerType2) {
+      throw Error(`Unknown toolchain type: ${toolchainType}`);
+    }
+    if (toolchainType === mocCompilerType1) {
       return [this.installedToolchain];
     }
     return [];
