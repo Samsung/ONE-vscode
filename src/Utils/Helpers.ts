@@ -100,28 +100,6 @@ export interface FileSelector {
 }
 
 /**
- * @brief Get import cfg file path using file open dialog
- */
-export function getImportCfgFilepath(selector: FileSelector): void {
-  const options: vscode.OpenDialogOptions = {
-    canSelectMany: false,
-    openLabel: 'Import',
-    filters: {
-      /* eslint-disable-next-line @typescript-eslint/naming-convention */
-      'ONE .cfg Files': ['cfg']
-    }
-  };
-
-  vscode.window.showOpenDialog(options).then(fileUri => {
-    if (fileUri && fileUri[0]) {
-      selector.onFileSelected(fileUri[0]);
-    } else {
-      selector.onFileSelected(undefined);
-    }
-  });
-}
-
-/**
  * @brief Load cfg file and return Object
  */
 export function loadCfgFile(filePath: string): any {

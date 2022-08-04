@@ -64,17 +64,35 @@ suite('Utils', function() {
     });
 
     suite('#areEqual()', function() {
-      test('compare lexically the same paths', function() {
+      test('compare same paths', function() {
         assert.isTrue(RealPath.areEqual('/', '/'));
+        assert.isTrue(RealPath.areEqual('/', '/dummy/..'));
       });
 
-      test('compare practically the same paths', function() {
-        assert.isTrue(RealPath.areEqual('/', '/dummy/..'));
+      test('NEG: compare not creatable paths', function() {
+        assert.isFalse(RealPath.areEqual('/dummy', '/dummy'));
+      });
+
+      test('NEG: compare not creatable paths - 2', function() {
+        assert.isFalse(RealPath.areEqual('/dummy', '/dummy/../dummy'));
+      });
+
+      test('NEG: compare not creatable paths - 3', function() {
+        assert.isFalse(RealPath.areEqual('/dummy', '/../dummy'));
+      });
+
+      test('NEG: compare not creatable paths - 4', function() {
+        assert.isFalse(RealPath.areEqual('/dummy', '/./../dummy'));
+      });
+
+      test('NEG: compare not creatable paths - 5', function() {
+        assert.isFalse(RealPath.areEqual('/dummy', '/./../dummy/./'));
       });
     });
 
     suite('#exists()', function() {
       test('check if the path exists', function() {
+        assert.isFalse(RealPath.exists(undefined));
         assert.isFalse(RealPath.exists('/dummy/not/exist'));
         assert.isTrue(RealPath.exists('/'));
       });
