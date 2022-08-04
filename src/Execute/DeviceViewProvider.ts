@@ -17,8 +17,9 @@
 import * as cp from 'child_process';
 import * as vscode from 'vscode';
 
-import {globalExecutorArray} from '../Backend/API';
+import {globalBackendMap} from '../Backend/API';
 import {Command} from '../Backend/Command';
+import {Executor} from '../Backend/Executor';
 import {DeviceSpec, supportedSpecs} from '../Backend/Spec';
 import {Balloon} from '../Utils/Balloon';
 import {Logger} from '../Utils/Logger';
@@ -183,7 +184,20 @@ export class DeviceViewProvider implements vscode.TreeDataProvider<DeviceViewNod
       for (const result of results) {
         deviceList.push(...result);
       }
-      this.deviceManagerMap[deviceMan] = new DeviceManager(deviceList, globalExecutorArray);
+      let executorList: Executor[] = [];
+      const entries = Object.entries(globalBackendMap);
+      for (const entry of entries) {
+        const compiler = entry[1].compiler();
+        if (compiler) {
+          for (const toolchainType of compiler.getToolchainTypes()) {
+            if (compiler.getInstalledToolchains(toolchainType).length > 0) {
+              executorList.push(...entry[1].executors());
+              break;
+            }
+          }
+        }
+      }
+      this.deviceManagerMap[deviceMan] = new DeviceManager(deviceList, executorList);
       callback(this);
     });
   }
