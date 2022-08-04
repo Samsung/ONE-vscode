@@ -41,8 +41,11 @@ https://github.com/microsoft/vscode-extension-samples/blob/2556c82cb333cf65d372b
 */
 
 import * as vscode from 'vscode';
+
+import {getNonce} from '../Utils/external/Nonce';
+import {getUri} from '../Utils/external/Uri';
+
 import {CfgData} from './CfgData';
-import {CfgHtmlBuilder} from './CfgHtmlBuilder';
 
 /* istanbul ignore next */
 export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
@@ -77,10 +80,37 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
       enableScripts: true,
     };
 
-    {
-      let htmlBuilder = new CfgHtmlBuilder(webview, this.context.extensionUri);
-      webview.html = await htmlBuilder.build();
-    }
+    const nonce = getNonce();
+    const toolkitUri = getUri(webview, this.context.extensionUri, [
+      'node_modules',
+      '@vscode',
+      'webview-ui-toolkit',
+      'dist',
+      'toolkit.js',
+    ]);
+
+    const codiconUri = getUri(webview, this.context.extensionUri, [
+      'node_modules',
+      '@vscode',
+      'codicons',
+      'dist',
+      'codicon.css',
+    ]);
+
+    const jsUri = getUri(webview, this.context.extensionUri, ['media', 'CfgEditor', 'index.js']);
+    const cssUri =
+        getUri(webview, this.context.extensionUri, ['media', 'CfgEditor', 'cfgeditor.css']);
+    const htmlUri =
+        vscode.Uri.joinPath(this.context.extensionUri, 'media/CfgEditor/cfgeditor.html');
+
+    let html = Buffer.from(await vscode.workspace.fs.readFile(htmlUri)).toString();
+    html = html.replace(/\${nonce}/g, `${nonce}`);
+    html = html.replace(/\${webview.cspSource}/g, `${webview.cspSource}`);
+    html = html.replace(/\${toolkitUri}/g, `${toolkitUri}`);
+    html = html.replace(/\${codiconUri}/g, `${codiconUri}`);
+    html = html.replace(/\${jsUri}/g, `${jsUri}`);
+    html = html.replace(/\${cssUri}/g, `${cssUri}`);
+    webview.html = html;
 
     // Receive message from the webview.
     webview.onDidReceiveMessage(e => {
