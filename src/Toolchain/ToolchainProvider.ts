@@ -135,7 +135,7 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
   install() {
     const notifyInstalled = (toolchainEnv: ToolchainEnv, toolchain: Toolchain) => {
       const name = `${toolchain.info.name}-${toolchain.info.version ?.str()}`;
-      vscode.window.showInformationMessage(`${name} installation was successful.`);
+      vscode.window.showInformationMessage(`Installed ${name} successfully.`);
       if (Object.keys(gToolchainEnvMap).length > 1 || toolchainEnv.listInstalled().length > 1) {
         DefaultToolchain.getInstance().ask(toolchainEnv, toolchain).then(() => this.refresh());
       }
@@ -228,7 +228,7 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
       return;
     }
 
-    Logger.info(this.tag, `Run config file with ${activeToolchain.info.name}-${activeToolchain.info.version?.str()} toolchain.`);
+    Logger.info(this.tag, `Run onecc with ${cfg} cfg and ${activeToolchain.info.name}-${activeToolchain.info.version?.str()} toolchain.`);
     activeToolchainEnv.run(cfg, activeToolchain).then(() => {
       vscode.window.showInformationMessage('Onecc has run successfully.');
     }, () => this.error('Running onecc has failed.'));
