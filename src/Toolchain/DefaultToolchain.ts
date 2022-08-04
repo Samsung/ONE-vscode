@@ -33,6 +33,7 @@ class DefaultToolchain {
     return this._instance || (this._instance = new this());
   }
 
+  /* istanbul ignore next */
   async ask(toolchainEnv: ToolchainEnv, toolchain: Toolchain): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
       const name = `${toolchain.info.name}-${toolchain.info.version ?.str()}`;
@@ -70,6 +71,7 @@ class DefaultToolchain {
     this._toolchain = undefined;
   }
 
+  /* istanbul ignore next */
   openDocument() {
     const doc =
         'https://github.com/Samsung/ONE-vscode/blob/main/docs/HowToUse.md#set-default-toolchain';
