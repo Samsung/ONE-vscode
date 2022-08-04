@@ -27,6 +27,7 @@ class JobUninstall extends JobCommand {
     super(cmd);
     this.jobType = Job.Type.tUninstall;
     this.name = 'uninstall';
+    this.notiTitle = 'Uninstalling the toolchain...';
     this.valid = true;
   }
 }

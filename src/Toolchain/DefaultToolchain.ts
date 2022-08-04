@@ -56,9 +56,10 @@ class DefaultToolchain {
     this._toolchainEnv = toolchainEnv;
     this._toolchain = toolchain;
     const name = `${toolchain.info.name}-${toolchain.info.version ?.str()}`;
-    vscode.window.showInformationMessage(`Set ${name} as a default toolchain.`, 'OK', `Instruction`)
+    vscode.window
+        .showInformationMessage(`${name} was set as a default toolchain.`, 'OK', `See Instructions`)
         .then((value) => {
-          if (value === 'Instruction') {
+          if (value === 'See Instructions') {
             this.openDocument();
           }
         });

@@ -27,6 +27,7 @@ class JobInstall extends JobCommand {
     super(cmd);
     this.jobType = Job.Type.tInstall;
     this.name = 'install';
+    this.notiTitle = 'Installing the toolchain...';
     this.valid = true;
   }
 }

@@ -23,6 +23,7 @@ export type JobCallback = {
 export interface Job {
   jobType: Job.Type;
   name: string;
+  notiTitle?: string;
   valid: boolean;
   tool: string;
   toolArgs: ToolArgs;
