@@ -52,6 +52,19 @@ suite('Job', function() {
         assert.strictEqual(workFlow.jobs.length, 0);
       });
     });
-    // TODO: start()
+    suite('#start()', function() {
+      test('start jobs', function(done) {
+        let workFlow = new WorkFlow();
+        workFlow.addJob(job0);
+        workFlow.addJob(job1);
+        assert.strictEqual(workFlow.jobs.length, 2);
+        workFlow.jobRunner.on('cleanup', function() {
+          // As all job executed on, no job in workflow jobRunner.
+          assert.strictEqual(workFlow.jobRunner.jobs.length, 0);
+          done();
+        });
+        workFlow.start();
+      });
+    });
   });
 });
