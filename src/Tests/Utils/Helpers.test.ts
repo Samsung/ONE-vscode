@@ -67,9 +67,7 @@ suite('Utils', function() {
       test('compare lexically the same paths', function() {
         assert.isTrue(RealPath.areEqual('/', '/'));
       });
-    });
 
-    suite('#areEqual()', function() {
       test('compare practically the same paths', function() {
         assert.isTrue(RealPath.areEqual('/', '/dummy/..'));
       });

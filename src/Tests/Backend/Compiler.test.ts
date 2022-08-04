@@ -24,32 +24,33 @@ suite('Backend', function() {
         const compiler = new CompilerBase();
 
         pass();
+        assert.ok(true);
       });
     });
 
     suite('#getInstalledToolchains()', function() {
-      test('NEG: throws by dummy compiler base', function() {
+      test('NEG: throw in dummy compiler base by getInstalledToolchains', function() {
         const compiler = new CompilerBase();
         assert.throw(() => compiler.getInstalledToolchains(''));
       });
     });
 
     suite('#getToolchainTypes()', function() {
-      test('NEG: throws by dummy compiler base', function() {
+      test('NEG: throw in dummy compiler base by getToolchainTypes', function() {
         const compiler = new CompilerBase();
         assert.throw(() => compiler.getToolchainTypes());
       });
     });
 
     suite('#getToolchains()', function() {
-      test('NEG: throws by dummy compiler base', function() {
+      test('NEG: throw in dummy compiler base by getToolchains', function() {
         const compiler = new CompilerBase();
         assert.throw(() => compiler.getToolchains('', 0, 0));
       });
     });
 
     suite('#prerequisitesForGetToolchains()', function() {
-      test('NEG: throws by dummy compiler base', function() {
+      test('NEG: throw in dummy compiler base by prerequisitesForGetToolchains', function() {
         const compiler = new CompilerBase();
         assert.throw(() => compiler.prerequisitesForGetToolchains());
       });
