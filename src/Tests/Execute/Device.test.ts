@@ -21,7 +21,7 @@ import {Device} from '../../Execute/Device';
 
 suite('Device', function() {
   suite('#Device', function() {
-    test('contructor', function() {
+    test('Basic contructor', function() {
       const deviceName: string = 'testDevice';
       const hw: string = 'TestHW';
       const sw: string = 'TestOS';
@@ -31,7 +31,7 @@ suite('Device', function() {
       assert.strictEqual(testDevice.spec, testSpec);
       assert.strictEqual(testDevice.name, deviceName);
     });
-    test('NEG: Empty name device create', function() {
+    test('NEG: Empty name basic device create', function() {
       const deviceName: string = '';
       const hw: string = 'TestHW';
       const sw: string = 'TestOS';
@@ -45,7 +45,7 @@ suite('Device', function() {
   });
 
   suite('#TizenTVDevice', function() {
-    test('contructor', function() {
+    test('Tizen contructor', function() {
       const deviceName: string = '127.0.0.1:26101';
       const hw: string = 'armv7l';
       const sw: string = 'Tizen 7.0.0';
@@ -55,7 +55,7 @@ suite('Device', function() {
       assert.strictEqual(tizenTV.spec, testSpec);
       assert.strictEqual(tizenTV.name, deviceName);
     });
-    test('NEG: Empty name device create', function() {
+    test('NEG: Empty name tizen device create', function() {
       const deviceName: string = '';
       const hw: string = 'armv7l';
       const sw: string = 'Tizen 7.0.0';
@@ -69,7 +69,7 @@ suite('Device', function() {
   });
 
   suite('#HostPCDevice', function() {
-    test('constructor', function() {
+    test('x86 PC constructor', function() {
       const deviceName: string = 'hostPC-test-DeskTop';
       const hw: string = 'x86_64';
       const sw: string = 'Ubuntu 18';
@@ -79,7 +79,7 @@ suite('Device', function() {
       assert.strictEqual(hostPC.spec, testSpec);
       assert.strictEqual(hostPC.name, deviceName);
     });
-    test('NEG: Empty name device create', function() {
+    test('NEG: Empty name x86 PC device create', function() {
       const deviceName: string = '';
       const hw: string = 'TestHW';
       const sw: string = 'TestOS';
