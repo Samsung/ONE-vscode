@@ -69,6 +69,17 @@
         "priority": "default"
       },
       {
+        "viewType": "one.view.chromeTrace",
+        "displayName": "chromeTrace",
+        "selector": [
+          {
+            "filenamePattern": "*.trace.json"
+          }
+        ],
+        "priority": "default"
+
+      },
+      {
         "viewType": "onevscode.part-editor",
         "displayName": "ONE Partition Editor",
         "selector": [
@@ -321,10 +332,6 @@
         },
         {
           "command": "one.toolchain.runCfg",
-          "when": "false"
-        },
-        {
-          "command": "one.viewer.jsonTracer",
           "when": "false"
         }
       ]

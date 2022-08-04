@@ -46,7 +46,7 @@
 // https://github.com/catapult-project/catapult/tree/444aba89e1c30edf348c611a9df79e2376178ba8/tracing
 
 import dynamicGraduation from './dynamicGraduation.js';
-import openFileSelector from './processData.js';
+import {openFileSelector,processText} from './processData.js';
 
 const graph = document.querySelector('.graph');
 const sliderMaxLimit = 6400;
@@ -161,3 +161,30 @@ function initData() {
     detail.remove();
   }
 }
+
+// Handle messages sent from the extension to the webview
+window.addEventListener('message', event => {
+  const message = event.data;  // The json data that the extension sent
+  switch (message.type) {
+    case 'update': {
+      const data = parseText(message.text);
+      if (!data) {
+        return;
+      }
+
+      console.log("processingText");
+      processText(data);
+
+      // const viewer = new Viewer();
+
+      // // Update our webview's content
+      // updateContent(data, viewer);
+
+      // // Persist state information.
+      // // This state is returned in the call to `vscode.getState` below when a webview is reloaded.
+      // vscode.setState({data, viewer});
+
+      return;
+    }
+  }
+});

@@ -66,6 +66,15 @@ function setFileName(name) {
   fileName.innerText = name;
 }
 
+export function processText(text) {
+  console.log("processText");
+  const data = JSON.parse(text);
+  processData(data.traceEvents);
+
+  // set data to DOM
+  setData.dataset['displayTimeUnit'] = data.displayTimeUnit;
+}
+
 function processFile(file) {
   const reader = new FileReader();
   reader.onload = () => {

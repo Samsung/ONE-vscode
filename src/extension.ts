@@ -22,6 +22,7 @@ import {CircleViewerProvider} from './CircleGraph/CircleViewer';
 import {DeviceViewProvider} from './Execute/DeviceViewProvider';
 import {runInferenceQuickInput} from './Execute/executeQuickInput';
 import {Jsontracer} from './Jsontracer';
+import {ChromeTraceViewerProvider} from './JsonTracerViewer';
 import {MondrianEditorProvider} from './Mondrian/MondrianEditor';
 import {initOneExplorer} from './OneExplorer/OneExplorer';
 import {PartEditorProvider} from './PartEditor/PartEditor';
@@ -69,11 +70,11 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(CfgEditorPanel.register(context));
 
-  let disposableOneJsontracer = vscode.commands.registerCommand('one.viewer.jsonTracer', () => {
-    Logger.info(tag, 'one json tracer...');
-    Jsontracer.createOrShow(context.extensionUri);
-  });
-  context.subscriptions.push(disposableOneJsontracer);
+  // let disposableOneJsontracer = vscode.commands.registerCommand('one.viewer.jsonTracer', () => {
+  //   Logger.info(tag, 'one json tracer...');
+  //   Jsontracer.createOrShow(context.extensionUri);
+  // });
+  // context.subscriptions.push(disposableOneJsontracer);
 
   context.subscriptions.push(MondrianEditorProvider.register(context));
 
@@ -81,6 +82,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(PartGraphSelPanel.register(context));
 
   context.subscriptions.push(CircleViewerProvider.register(context));
+  context.subscriptions.push(ChromeTraceViewerProvider.register(context));
 
   // returning backend registration function that will be called by backend extensions
   return backendRegistrationApi();
