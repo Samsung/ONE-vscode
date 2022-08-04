@@ -123,6 +123,7 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
     }
   }
 
+  /* istanbul ignore next */
   error(msg: string, ...args: string[]): Thenable<string|undefined> {
     Logger.error(this.tag, msg);
     return vscode.window.showErrorMessage(msg, ...args);
@@ -212,6 +213,7 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
             });
   }
 
+  /* istanbul ignore next */
   run(cfg: string) {
     const activeToolchainEnv = DefaultToolchain.getInstance().getToolchainEnv();
     const activeToolchain = DefaultToolchain.getInstance().getToolchain();
