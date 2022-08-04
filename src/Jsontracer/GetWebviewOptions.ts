@@ -16,6 +16,7 @@
 
 import * as vscode from 'vscode';
 
+/* istanbul ignore next */
 export function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {
   return {
     // Enable javascript in the webview
