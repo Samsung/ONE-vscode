@@ -28,6 +28,7 @@ import {PartGraphSelPanel} from './PartEditor/PartGraphSelector';
 import {ToolchainProvider} from './Toolchain/ToolchainProvider';
 import {Logger} from './Utils/Logger';
 
+/* istanbul ignore next */
 export function activate(context: vscode.ExtensionContext) {
   const tag = 'activate';
 
@@ -79,6 +80,7 @@ export function activate(context: vscode.ExtensionContext) {
   return backendRegistrationApi();
 }
 
+/* istanbul ignore next */
 export function deactivate() {
   // TODO do cleanup
 }
