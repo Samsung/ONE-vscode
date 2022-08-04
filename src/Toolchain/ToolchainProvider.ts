@@ -230,7 +230,7 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
 
     Logger.info(this.tag, `Run config file with ${activeToolchain.info.name}-${activeToolchain.info.version?.str()} toolchain.`);
     activeToolchainEnv.run(cfg, activeToolchain).then(() => {
-      vscode.window.showInformationMessage('Run onecc was successful.');
+      vscode.window.showInformationMessage('Onecc has run successfully.');
     }, () => this.error('Run onecc has failed.'));
   }
 
