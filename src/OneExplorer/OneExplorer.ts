@@ -390,6 +390,64 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
   private tree: DirectoryNode|undefined;
   public didHideExtra: boolean = false;
 
+  public static register(context: vscode.ExtensionContext) {
+    let workspaceRoot: vscode.Uri|undefined = undefined;
+
+    // TODO: do error handling in one function (helper function or here)
+    try {
+      workspaceRoot = vscode.Uri.file(obtainWorkspaceRoot());
+      Logger.info('OneExplorer', `workspace: ${workspaceRoot.fsPath}`);
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        if (e.message === 'Need workspace') {
+          Logger.info('OneExplorer', e.message);
+        } else {
+          Logger.error('OneExplorer', e.message);
+          Balloon.error('Something goes wrong while setting workspace.', true);
+        }
+      } else {
+        Logger.error('OneExplorer', 'Unknown error has been thrown.');
+      }
+    }
+
+    const provider = new OneTreeDataProvider(workspaceRoot);
+
+    const registrations = [
+      vscode.window.createTreeView(
+          'OneExplorerView',
+          {treeDataProvider: provider, showCollapseAll: true, canSelectMany: true}),
+      vscode.commands.registerCommand(
+          'one.explorer.open',
+          (file) => {
+            vscode.commands.executeCommand('vscode.openWith', file.uri, CfgEditorPanel.viewType);
+          }),
+      vscode.commands.registerCommand(
+          'one.explorer.openAsText',
+          (oneNode: OneNode) => {
+            vscode.commands.executeCommand('vscode.openWith', oneNode.node.uri, 'default');
+          }),
+      vscode.commands.registerCommand('one.explorer.refresh', () => provider.refresh()),
+      vscode.commands.registerCommand('one.explorer.hideExtra', () => provider.hideExtra()),
+      vscode.commands.registerCommand('one.explorer.showExtra', () => provider.showExtra()),
+      vscode.commands.registerCommand(
+          'one.explorer.createCfg', (oneNode: OneNode) => provider.createCfg(oneNode)),
+      vscode.commands.registerCommand(
+          'one.explorer.runCfg',
+          (oneNode: OneNode) => {
+            vscode.commands.executeCommand('one.toolchain.runCfg', oneNode.node.uri.fsPath);
+          }),
+      vscode.commands.registerCommand(
+          'one.explorer.rename', (oneNode: OneNode) => provider.rename(oneNode)),
+      vscode.commands.registerCommand(
+          'one.explorer.openContainingFolder',
+          (oneNode: OneNode) => provider.openContainingFolder(oneNode)),
+      vscode.commands.registerCommand(
+          'one.explorer.delete', (oneNode: OneNode) => provider.delete(oneNode)),
+    ];
+
+    registrations.forEach(disposable => context.subscriptions.push(disposable));
+  }
+
   constructor(private workspaceRoot: vscode.Uri|undefined) {
     vscode.commands.executeCommand('setContext', 'one.explorer:didHideExtra', this.didHideExtra);
 
@@ -401,6 +459,9 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
     }
   }
 
+  /**
+   * @command one.explorer.hideExtra
+   */
   hideExtra(): void {
     this.didHideExtra = true;
 
@@ -408,6 +469,9 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
     this.refresh();
   }
 
+  /**
+   * @command one.explorer.showExtra
+   */
   showExtra(): void {
     this.didHideExtra = false;
 
@@ -417,6 +481,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
 
   /**
    * Refresh the tree under the given oneNode
+   * @command one.explorer.refresh
    * @param oneNode A start node to rebuild. The sub-tree under the node will be rebuilt.
    *                If not given, the whole tree will be rebuilt.
    */
@@ -431,6 +496,9 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
 
   // TODO: Add move()
 
+  /**
+   * @command one.explorer.openContainingFolder
+   */
   openContainingFolder(oneNode: OneNode): void {
     vscode.commands.executeCommand('revealFileInOS', oneNode.node.uri);
   }
@@ -438,6 +506,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
   /**
    * Rename a file of all types of nodes (baseModel, product, config) excepts for directory.
    * It only alters the file name, not the path.
+   * @command one.explorer.rename
    */
   rename(oneNode: OneNode): void {
     // TODO: prohibit special characters for security ('..', '*', etc)
@@ -495,6 +564,9 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
         });
   }
 
+  /**
+   * @command one.explorer.delete
+   */
   delete(oneNode: OneNode): void {
     const isDirectory = (oneNode.node.type === NodeType.directory);
     const title =
@@ -520,6 +592,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
    * Input box is prefilled as <base model's name>.cfg
    * The operation will be cancelled if the file already exists.
    *
+   * @command one.explorer.createCfg
    * @param oneNode A base model to create configuration
    */
   async createCfg(oneNode: OneNode): Promise<void> {
@@ -633,69 +706,3 @@ input_path=${modelName}.${extName}
     return this.tree;
   }
 };
-
-/* istanbul ignore next */
-export function initOneExplorer(context: vscode.ExtensionContext) {
-  // TODO Support multi-root workspace
-  let workspaceRoot: vscode.Uri|undefined = undefined;
-  try {
-    workspaceRoot = vscode.Uri.file(obtainWorkspaceRoot());
-    Logger.info('OneExplorer', `workspace: ${workspaceRoot.fsPath}`);
-  } catch (e: unknown) {
-    if (e instanceof Error) {
-      if (e.message === 'Need workspace') {
-        Logger.info('OneExplorer', e.message);
-      } else {
-        Logger.error('OneExplorer', e.message);
-        Balloon.error('Something goes wrong while setting workspace.', true);
-      }
-    } else {
-      Logger.error('OneExplorer', 'Unknown error has been thrown.');
-    }
-  }
-
-  const oneTreeDataProvider = new OneTreeDataProvider(workspaceRoot);
-
-  let treeView: vscode.TreeView<OneNode|undefined>|undefined = vscode.window.createTreeView(
-      'OneExplorerView',
-      {treeDataProvider: oneTreeDataProvider, showCollapseAll: true, canSelectMany: true});
-
-  const subscribeDisposals = (disposals: vscode.Disposable[]) => {
-    for (const disposal of disposals) {
-      context.subscriptions.push(disposal);
-    }
-  };
-
-  subscribeDisposals([
-    treeView,
-    vscode.commands.registerCommand(
-        'one.explorer.open',
-        (file) => {
-          vscode.commands.executeCommand('vscode.openWith', file.uri, CfgEditorPanel.viewType);
-        }),
-    vscode.commands.registerCommand(
-        'one.explorer.openAsText',
-        (oneNode: OneNode) => {
-          vscode.commands.executeCommand('vscode.openWith', oneNode.node.uri, 'default');
-        }),
-    vscode.commands.registerCommand('one.explorer.refresh', () => oneTreeDataProvider.refresh()),
-    vscode.commands.registerCommand(
-        'one.explorer.hideExtra', () => oneTreeDataProvider.hideExtra()),
-    vscode.commands.registerCommand(
-        'one.explorer.showExtra', () => oneTreeDataProvider.showExtra()),
-    vscode.commands.registerCommand(
-        'one.explorer.createCfg', (oneNode: OneNode) => oneTreeDataProvider.createCfg(oneNode)),
-    vscode.commands.registerCommand(
-        'one.explorer.runCfg',
-        (oneNode: OneNode) => {
-          vscode.commands.executeCommand('one.toolchain.runCfg', oneNode.node.uri.fsPath);
-        }),
-    vscode.commands.registerCommand(
-        'one.explorer.rename', (oneNode: OneNode) => oneTreeDataProvider.rename(oneNode)),
-    vscode.commands.registerCommand(
-        'one.explorer.openContainingFolder',
-        (oneNode: OneNode) => oneTreeDataProvider.openContainingFolder(oneNode)),
-    vscode.commands.registerCommand(
-        'one.explorer.delete', (oneNode: OneNode) => oneTreeDataProvider.delete(oneNode)),
-  ]);
-}
