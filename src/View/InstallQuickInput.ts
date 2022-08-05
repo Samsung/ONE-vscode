@@ -30,7 +30,6 @@ async function shouldResume() {
       });
 }
 
-/* istanbul ignore next */
 class InnerButton implements vscode.QuickInputButton {
   constructor(public iconPath: vscode.ThemeIcon, public tooltip: string) {}
 }
@@ -42,7 +41,7 @@ enum InstallQuickInputStep {
   pickVersion = 3
 }
 
-interface State {
+interface InstallQuickInputState {
   selectedItem: vscode.QuickPickItem|InnerButton;
   current: InstallQuickInputStep;
 }
@@ -59,62 +58,60 @@ class InstallQuickInput {
 
   isUpdateBackend: boolean = false;
 
-  constructor() {}
-
-  getToolchainEnv(): ToolchainEnv {
+  public getToolchainEnv(): ToolchainEnv {
     if (this.error !== undefined || this.toolchainEnv === undefined) {
       throw new Error('wrong calling');
     }
     return this.toolchainEnv;
   }
 
-  getToolchainType(): string {
+  public getToolchainType(): string {
     if (this.error !== undefined || this.toolchainType === undefined) {
       throw new Error('wrong calling');
     }
     return this.toolchainType;
   }
 
-  getToolchain(): Toolchain {
+  public getToolchain(): Toolchain {
     if (this.error !== undefined || this.toolchain === undefined) {
       throw new Error('wrong calling');
     }
     return this.toolchain;
   }
 
-  getVersion(): string {
+  public getVersion(): string {
     if (this.error !== undefined || this.version === undefined) {
       throw new Error('wrong calling');
     }
     return this.version;
   }
 
-  getError(): string|undefined {
+  public getError(): string|undefined {
     return this.error;
   }
 
-  getQuickPickItems(items: string[]): vscode.QuickPickItem[] {
+  public getQuickPickItems(items: string[]): vscode.QuickPickItem[] {
     return items.map(label => ({label}));
   }
 
-  getAllToolchainEnvNames(): string[] {
+  public getAllToolchainEnvNames(): string[] {
     return Object.keys(gToolchainEnvMap);
   }
 
-  getToolchainEnvFromGlobal(key: string): ToolchainEnv {
+  public getToolchainEnvFromGlobal(key: string): ToolchainEnv {
     return gToolchainEnvMap[key];
   }
 
-  getToolchainTypes(): string[] {
+  public getToolchainTypes(): string[] {
     return this.getToolchainEnv().getToolchainTypes();
   }
 
-  getVersions(toolchains: Toolchain[]): string[] {
+  public getVersions(toolchains: Toolchain[]): string[] {
     return toolchains.map(
         (value) => value.info.version !== undefined ? value.info.version.str() : '');
   }
 
-  changeCurrentStepBefore(stepName: string, state: State) {
+  public changeCurrentStepBefore(stepName: string, state: InstallQuickInputState) {
     switch (stepName) {
       case this.pickBackend.name: {
         state.current = InstallQuickInputStep.unset;
@@ -129,12 +126,12 @@ class InstallQuickInput {
         break;
       }
       default: {
-        throw Error(Function + ') wrong stepName: ' + stepName);
+        throw Error('wrong stepName: ' + stepName);
       }
     }
   }
 
-  changeCurrentStepAfter(stepName: string, state: State) {
+  public changeCurrentStepAfter(stepName: string, state: InstallQuickInputState) {
     switch (stepName) {
       case this.pickBackend.name: {
         state.current = InstallQuickInputStep.pickBackend;
@@ -149,13 +146,14 @@ class InstallQuickInput {
         break;
       }
       default: {
-        throw Error(Function + ') wrong stepName: ' + stepName);
+        throw Error('wrong stepName: ' + stepName);
       }
     }
   }
 
-  async pickBackend(input: MultiStepInput, state: Partial<State>) {
-    this.changeCurrentStepBefore(this.pickBackend.name, state as State);
+  /* istanbul ignore next */
+  public async pickBackend(input: MultiStepInput, state: Partial<InstallQuickInputState>) {
+    this.changeCurrentStepBefore(this.pickBackend.name, state as InstallQuickInputState);
 
     const backendGroups = this.getQuickPickItems(this.getAllToolchainEnvNames());
     state.selectedItem = await input.showQuickPick({
@@ -168,11 +166,12 @@ class InstallQuickInput {
     });
     this.toolchainEnv = this.getToolchainEnvFromGlobal(state.selectedItem.label);
 
-    this.changeCurrentStepAfter(this.pickBackend.name, state as State);
+    this.changeCurrentStepAfter(this.pickBackend.name, state as InstallQuickInputState);
   }
 
-  async pickType(input: MultiStepInput, state: Partial<State>) {
-    this.changeCurrentStepBefore(this.pickType.name, state as State);
+  /* istanbul ignore next */
+  public async pickType(input: MultiStepInput, state: Partial<InstallQuickInputState>) {
+    this.changeCurrentStepBefore(this.pickType.name, state as InstallQuickInputState);
 
     if (this.toolchainEnv === undefined) {
       this.error = 'Backend is undefined';
@@ -201,11 +200,12 @@ class InstallQuickInput {
       this.toolchainType = state.selectedItem.label;
     }
 
-    this.changeCurrentStepAfter(this.pickType.name, state as State);
+    this.changeCurrentStepAfter(this.pickType.name, state as InstallQuickInputState);
   }
 
-  async pickVersion(input: MultiStepInput, state: Partial<State>) {
-    this.changeCurrentStepBefore(this.pickVersion.name, state as State);
+  /* istanbul ignore next */
+  public async pickVersion(input: MultiStepInput, state: Partial<InstallQuickInputState>) {
+    this.changeCurrentStepBefore(this.pickVersion.name, state as InstallQuickInputState);
 
     if (this.toolchainEnv === undefined || this.toolchainType === undefined) {
       this.error = 'toolchainenv is undefined.';
@@ -231,7 +231,7 @@ class InstallQuickInput {
 
       if (finished) {
         // Let's end this step
-        this.changeCurrentStepAfter(this.pickVersion.name, state as State);
+        this.changeCurrentStepAfter(this.pickVersion.name, state as InstallQuickInputState);
       }
       return;
     }
@@ -264,10 +264,11 @@ class InstallQuickInput {
     this.version = state.selectedItem.label;
     this.toolchain = toolchains[versions.indexOf(this.version)];
 
-    this.changeCurrentStepAfter(this.pickVersion.name, state as State);
+    this.changeCurrentStepAfter(this.pickVersion.name, state as InstallQuickInputState);
   }
 
-  async updateBackend(input: MultiStepInput, state: Partial<State>) {
+  /* istanbul ignore next */
+  public async updateBackend(input: MultiStepInput, state: Partial<InstallQuickInputState>) {
     if (this.toolchainEnv === undefined || this.toolchainType === undefined) {
       this.error = 'toolchainenv is undefined.';
       throw Error('toolchainenv is undefined.');
@@ -285,7 +286,7 @@ class InstallQuickInput {
     this.isUpdateBackend = false;
   }
 
-  getMultiSteps(state: Partial<State>) {
+  public getMultiSteps(state: Partial<InstallQuickInputState>): InputStep[] {
     if (state.current === undefined || state.current === InstallQuickInputStep.pickVersion) {
       throw Error('state is wrong: ' + String(state.current));
     }
@@ -301,8 +302,10 @@ class InstallQuickInput {
     return steps.slice(0, state.current + 1);
   }
 
-  async collectInputs() {
-    const state = {selectedItem: undefined, current: InstallQuickInputStep.unset} as Partial<State>;
+  /* istanbul ignore next */
+  public async collectInputs() {
+    const state = {selectedItem: undefined, current: InstallQuickInputStep.unset} as
+        Partial<InstallQuickInputState>;
     while (state.current! < InstallQuickInputStep.pickVersion) {
       await MultiStepInput.runSteps(this.getMultiSteps(state));
       if (this.isUpdateBackend) {
@@ -312,6 +315,7 @@ class InstallQuickInput {
   }
 }
 
+/* istanbul ignore next */
 async function showInstallQuickInput(): Promise<[ToolchainEnv, Toolchain]> {
   const quickInput = new InstallQuickInput();
   await quickInput.collectInputs();
@@ -325,4 +329,10 @@ async function showInstallQuickInput(): Promise<[ToolchainEnv, Toolchain]> {
   return [quickInput.getToolchainEnv(), quickInput.getToolchain()];
 }
 
-export {InstallQuickInput, showInstallQuickInput};
+export {
+  InstallQuickInput,
+  InstallQuickInputStep,
+  InstallQuickInputState,
+  showInstallQuickInput,
+  InnerButton
+};

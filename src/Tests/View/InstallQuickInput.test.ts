@@ -14,15 +14,24 @@
  * limitations under the License.
  */
 
-import {assert} from 'chai';
+import {assert, expect} from 'chai';
+import * as vscode from 'vscode';
 
 import {Version} from '../../Backend/Version';
 import {gToolchainEnvMap, ToolchainEnv} from '../../Toolchain/ToolchainEnv';
-import {InstallQuickInput, showInstallQuickInput} from '../../View/InstallQuickInput';
+import {InnerButton, InstallQuickInput, InstallQuickInputState, InstallQuickInputStep} from '../../View/InstallQuickInput';
 import {MockCompiler} from '../MockCompiler';
 
-
 suite('View', function() {
+  suite('InnerButton', function() {
+    suite('#constructor()', function() {
+      test('is constructed with InnerButton', function() {
+        const innerButton = new InnerButton(new vscode.ThemeIcon('refresh'), 'Refresh');
+        assert.instanceOf(innerButton, InnerButton);
+      });
+    });
+  });
+
   // NOTE: InstallQuickInput has a role for QuickInput
   // However, we cannot test the ui until now
   // Therefore, we focus on testing things not ui
@@ -195,6 +204,144 @@ suite('View', function() {
         let quickInput = new InstallQuickInput();
         let version = quickInput.getVersions([toolchain]);
         assert.strictEqual(version.length, 1);
+      });
+    });
+
+    suite('#changeCurrentStepBefore()', function() {
+      test('changes from pickBackend step to previous step', function() {
+        const quickInput = new InstallQuickInput();
+        const names = ['item0'];
+        const items = quickInput.getQuickPickItems(names);
+        assert.strictEqual(items.length, 1);
+        const state = {selectedItem: items[0], current: InstallQuickInputStep.unset} as
+            InstallQuickInputState;
+        const enumName = InstallQuickInputStep[InstallQuickInputStep.pickBackend];
+        quickInput.changeCurrentStepBefore(enumName, state);
+        assert.strictEqual(state.current, InstallQuickInputStep.unset);
+      });
+      test('changes from pickType step to previous step', function() {
+        const quickInput = new InstallQuickInput();
+        const names = ['item0'];
+        const items = quickInput.getQuickPickItems(names);
+        assert.strictEqual(items.length, 1);
+        const state = {selectedItem: items[0], current: InstallQuickInputStep.unset} as
+            InstallQuickInputState;
+        const enumName = InstallQuickInputStep[InstallQuickInputStep.pickType];
+        quickInput.changeCurrentStepBefore(enumName, state);
+        assert.strictEqual(state.current, InstallQuickInputStep.pickBackend);
+      });
+      test('changes from pickVersion step to previous step', function() {
+        const quickInput = new InstallQuickInput();
+        const names = ['item0'];
+        const items = quickInput.getQuickPickItems(names);
+        assert.strictEqual(items.length, 1);
+        const state = {selectedItem: items[0], current: InstallQuickInputStep.unset} as
+            InstallQuickInputState;
+        const enumName = InstallQuickInputStep[InstallQuickInputStep.pickVersion];
+        quickInput.changeCurrentStepBefore(enumName, state);
+        assert.strictEqual(state.current, InstallQuickInputStep.pickType);
+      });
+      test('NEG: changes to previous step with invalid step name', function() {
+        const quickInput = new InstallQuickInput();
+        const names = ['item0'];
+        const items = quickInput.getQuickPickItems(names);
+        assert.strictEqual(items.length, 1);
+        const state = {selectedItem: items[0], current: InstallQuickInputStep.unset} as
+            InstallQuickInputState;
+        const invalidStepName = 'abcde';
+        expect(function() {
+          quickInput.changeCurrentStepBefore(invalidStepName, state);
+        }).to.throw(`wrong stepName: ${invalidStepName}`);
+      });
+    });
+
+    suite('#changeCurrentStepAfter()', function() {
+      test('changes from pickBackend step to next step', function() {
+        const quickInput = new InstallQuickInput();
+        const names = ['item0'];
+        const items = quickInput.getQuickPickItems(names);
+        assert.strictEqual(items.length, 1);
+        const state = {selectedItem: items[0], current: InstallQuickInputStep.unset} as
+            InstallQuickInputState;
+        const enumName = InstallQuickInputStep[InstallQuickInputStep.pickBackend];
+        quickInput.changeCurrentStepAfter(enumName, state);
+        assert.strictEqual(state.current, InstallQuickInputStep.pickBackend);
+      });
+      test('changes from pickType step to next step', function() {
+        const quickInput = new InstallQuickInput();
+        const names = ['item0'];
+        const items = quickInput.getQuickPickItems(names);
+        assert.strictEqual(items.length, 1);
+        const state = {selectedItem: items[0], current: InstallQuickInputStep.unset} as
+            InstallQuickInputState;
+        const enumName = InstallQuickInputStep[InstallQuickInputStep.pickType];
+        quickInput.changeCurrentStepAfter(enumName, state);
+        assert.strictEqual(state.current, InstallQuickInputStep.pickType);
+      });
+      test('changes from pickVersion step to next step', function() {
+        const quickInput = new InstallQuickInput();
+        const names = ['item0'];
+        const items = quickInput.getQuickPickItems(names);
+        assert.strictEqual(items.length, 1);
+        const state = {selectedItem: items[0], current: InstallQuickInputStep.unset} as
+            InstallQuickInputState;
+        const enumName = InstallQuickInputStep[InstallQuickInputStep.pickVersion];
+        quickInput.changeCurrentStepAfter(enumName, state);
+        assert.strictEqual(state.current, InstallQuickInputStep.pickVersion);
+      });
+      test('NEG: changes to previous step with invalid step name', function() {
+        const quickInput = new InstallQuickInput();
+        const names = ['item0'];
+        const items = quickInput.getQuickPickItems(names);
+        assert.strictEqual(items.length, 1);
+        const state = {selectedItem: items[0], current: InstallQuickInputStep.unset} as
+            InstallQuickInputState;
+        const invalidStepName = 'abcde';
+        expect(function() {
+          quickInput.changeCurrentStepAfter(invalidStepName, state);
+        }).to.throw(`wrong stepName: ${invalidStepName}`);
+      });
+    });
+
+    suite('#getMultiSteps()', function() {
+      test('gets MultiSteps in unset state', function() {
+        const quickInput = new InstallQuickInput();
+        const state = {selectedItem: undefined, current: InstallQuickInputStep.unset} as
+            Partial<InstallQuickInputState>;
+        const inputSteps = quickInput.getMultiSteps(state);
+        assert.strictEqual(inputSteps.length, 1);
+      });
+      test('gets MultiSteps in pickBackend state', function() {
+        const quickInput = new InstallQuickInput();
+        const state = {selectedItem: undefined, current: InstallQuickInputStep.pickBackend} as
+            Partial<InstallQuickInputState>;
+        const inputSteps = quickInput.getMultiSteps(state);
+        assert.strictEqual(inputSteps.length, 2);
+      });
+      test('gets MultiSteps in pickType state', function() {
+        const quickInput = new InstallQuickInput();
+        const state = {selectedItem: undefined, current: InstallQuickInputStep.pickType} as
+            Partial<InstallQuickInputState>;
+        const inputSteps = quickInput.getMultiSteps(state);
+        assert.strictEqual(inputSteps.length, 3);
+      });
+      test('NEG: gets MultiSteps using undefine current state', function() {
+        const quickInput = new InstallQuickInput();
+        const invalidState = {selectedItem: undefined, current: undefined} as
+            Partial<InstallQuickInputState>;
+        expect(function() {
+          quickInput.getMultiSteps(invalidState);
+        }).to.throw(`state is wrong: ` + String(invalidState.current));
+      });
+      test('NEG: gets MultiSteps using invalid pickVersion state', function() {
+        const quickInput = new InstallQuickInput();
+        const invalidState = {
+          selectedItem: undefined,
+          current: InstallQuickInputStep.pickVersion
+        } as Partial<InstallQuickInputState>;
+        expect(function() {
+          quickInput.getMultiSteps(invalidState);
+        }).to.throw(`state is wrong: ` + String(invalidState.current));
       });
     });
   });
