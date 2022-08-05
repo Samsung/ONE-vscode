@@ -25,7 +25,7 @@ suite('Job', function() {
     const name1 = 'job1';
     const job0 = new MockJob(name0);
     const job1 = new MockJob(name1);
-    suite('#contructor()', function() {
+    suite('#constructor()', function() {
       test('is constructed as WorkFlow', function() {
         let workFlow = new WorkFlow();
         assert.isNotNull(workFlow);

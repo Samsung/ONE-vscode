@@ -22,7 +22,7 @@ import {JobUninstall} from '../../Toolchain/JobUninstall';
 
 suite('Toolchain', function() {
   suite('JobUninstall', function() {
-    suite('#contructor()', function() {
+    suite('#constructor()', function() {
       test('is contructed with command', function() {
         let cmd = new Command('apt-get');
         cmd.push('purge');

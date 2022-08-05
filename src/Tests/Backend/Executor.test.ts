@@ -19,7 +19,7 @@ import {ExecutorBase} from '../../Backend/Executor';
 
 suite('Backend', function() {
   suite('ExecutorBase', function() {
-    suite('#contructor()', function() {
+    suite('#constructor()', function() {
       test('Create dummy executor', function(pass) {
         const executor = new ExecutorBase();
 

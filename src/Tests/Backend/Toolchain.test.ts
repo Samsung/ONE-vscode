@@ -21,7 +21,7 @@ suite('Backend', function() {
   suite('Toolchain', function() {
     const toolchainInfo = new ToolchainInfo('dummy', 'dummy toolchain');
 
-    suite('#contructor()', function() {
+    suite('#constructor()', function() {
       test('Create dummy toolchain', function(pass) {
         const toolchain = new Toolchain(toolchainInfo);
 

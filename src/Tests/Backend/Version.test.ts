@@ -19,7 +19,7 @@ import {Version} from '../../Backend/Version';
 
 suite('Backend', function() {
   suite('Version', function() {
-    suite('#contructor()', function() {
+    suite('#constructor()', function() {
       test('is contructed with values', function() {
         const major: number = 1;
         const minor: number = 0;

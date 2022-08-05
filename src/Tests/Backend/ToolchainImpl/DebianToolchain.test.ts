@@ -32,7 +32,7 @@ suite('Backend', function() {
       const version = new Version(6, 14, 4, '+ds-1ubuntu2');
       const info = new ToolchainInfo(name, desc, version);
 
-      suite('#contructor()', function() {
+      suite('#constructor()', function() {
         test('is contructed with values', function() {
           const uri = 'http://archive.ubuntu.com/ubuntu';
           const dist = 'foscal';

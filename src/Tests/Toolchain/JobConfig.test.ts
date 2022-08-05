@@ -22,7 +22,7 @@ import {JobConfig} from '../../Toolchain/JobConfig';
 
 suite('Toolchain', function() {
   suite('JobConfig', function() {
-    suite('#contructor()', function() {
+    suite('#constructor()', function() {
       test('is contructed with command', function() {
         let cmd = new Command('onecc');
         cmd.push('--config');

@@ -22,7 +22,7 @@ import {JobInstall} from '../../Toolchain/JobInstall';
 
 suite('Toolchain', function() {
   suite('JobInstall', function() {
-    suite('#contructor()', function() {
+    suite('#constructor()', function() {
       test('is contructed with command', function() {
         let cmd = new Command('apt-get');
         cmd.push('install');
