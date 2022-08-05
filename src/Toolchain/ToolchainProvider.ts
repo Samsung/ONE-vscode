@@ -109,6 +109,24 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
       new vscode.EventEmitter<ToolchainTreeData>();
   readonly onDidChangeTreeData?: vscode.Event<ToolchainTreeData> = this._onDidChangeTreeData.event;
 
+  public static register(context: vscode.ExtensionContext) {
+    const provider = new ToolchainProvider();
+
+    const registrations = [
+      vscode.window.registerTreeDataProvider('ToolchainView', provider),
+      vscode.commands.registerCommand('one.toolchain.refresh', () => provider.refresh()),
+      vscode.commands.registerCommand('one.toolchain.install', () => provider.install()),
+      vscode.commands.registerCommand(
+          'one.toolchain.uninstall', (node) => provider.uninstall(node)),
+      vscode.commands.registerCommand('one.toolchain.runCfg', (cfg) => provider.run(cfg)),
+      vscode.commands.registerCommand(
+          'one.toolchain.setDefaultToolchain',
+          (toolchain) => provider.setDefaultToolchain(toolchain))
+    ];
+
+    registrations.forEach(disposal => context.subscriptions.push(disposal));
+  }
+
   constructor() {}
 
   getTreeItem(element: BaseNode): vscode.TreeItem {
