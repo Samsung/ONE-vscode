@@ -92,6 +92,22 @@ export class DeviceViewProvider implements vscode.TreeDataProvider<DeviceViewNod
   private _onDidChangeTreeData: vscode.EventEmitter<DeviceTreeView> =
       new vscode.EventEmitter<DeviceViewNode>();
   readonly onDidChangeTreeData: vscode.Event<DeviceTreeView> = this._onDidChangeTreeData.event;
+
+  public static register(context: vscode.ExtensionContext): void {
+    const provider = new DeviceViewProvider();
+
+    const registrations = [
+      vscode.window.registerTreeDataProvider('TargetDeviceView', provider),
+      vscode.commands.registerCommand(
+          'one.device.refresh',
+          () => {
+            provider.refresh();
+          })
+    ];
+
+    registrations.forEach(disposable => context.subscriptions.push(disposable));
+  }
+
   getTreeItem(element: DeviceViewNode): vscode.TreeItem {
     return element;
   }
