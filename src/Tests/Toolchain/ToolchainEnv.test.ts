@@ -192,6 +192,8 @@ suite('Toolchain', function() {
         assert.isAbove(availableToolchains.length, 0);
         env.install(availableToolchains[0]).then(() => {
           assert.isTrue(true);
+        }, () => {
+          assert.fail();
         });
       });
 
@@ -216,6 +218,8 @@ suite('Toolchain', function() {
         assert.isAbove(installedToolchains.length, 0);
         env.uninstall(installedToolchains[0]).then(() => {
           assert.isTrue(true);
+        }, () => {
+          assert.fail();
         });
       });
 
@@ -241,6 +245,8 @@ suite('Toolchain', function() {
         const modelCfg = 'model.cfg';
         env.run(modelCfg, installedToolchains[0]).then(() => {
           assert.isTrue(true);
+        }, () => {
+          assert.fail();
         });
       });
 

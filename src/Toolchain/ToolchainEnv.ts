@@ -69,6 +69,7 @@ class Env implements BuilderJob {
     const rootJobs = this.workFlow.jobs.filter(j => j.root === true);
     if (rootJobs.length > 0) {
       Logger.info(this.logTag, 'Showing password prompt');
+      /* istanbul ignore next */
       showPasswordQuickInput().then(password => {
         if (password === undefined) {
           Logger.info(this.logTag, 'Password dialog canceled');
