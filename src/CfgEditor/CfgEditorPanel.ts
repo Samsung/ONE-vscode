@@ -54,15 +54,19 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
 
   public static readonly viewType = 'cfg.editor';
 
-  public static register(context: vscode.ExtensionContext): vscode.Disposable {
+  public static register(context: vscode.ExtensionContext): void {
     const provider = new CfgEditorPanel(context);
-    const providerRegistration =
-        vscode.window.registerCustomEditorProvider(CfgEditorPanel.viewType, provider, {
-          webviewOptions: {
-            retainContextWhenHidden: true,
-          },
-        });
-    return providerRegistration;
+
+    const registrations = [
+      vscode.window.registerCustomEditorProvider(CfgEditorPanel.viewType, provider, {
+        webviewOptions: {
+          retainContextWhenHidden: true,
+        },
+      })
+      // Add command registration here
+    ];
+
+    registrations.forEach(disposable => context.subscriptions.push(disposable));
   };
 
   constructor(private readonly context: vscode.ExtensionContext) {}
