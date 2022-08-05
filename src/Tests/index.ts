@@ -105,6 +105,10 @@ export async function run(): Promise<void> {
 
   const runner = new Mocha(mochaOpts);
 
+  if (env.isCoverage === 'true') {
+    runner.reporter('mocha-xunit-reporter', {output: 'mocha_result.xml'});
+  }
+
   if (env.isCiTest === 'true') {
     runner.fgrep('@Use-onecc').invert();
   }
