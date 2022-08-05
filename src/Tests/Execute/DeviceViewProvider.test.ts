@@ -153,11 +153,5 @@ suite('DeviceViewProvider', function() {
         done();
       });
     });
-    suite('#refresh', function() {
-      let provider = new DeviceViewProvider();
-      let preDeviceManagerMap = provider.deviceManagerMap;
-      provider.refresh();
-      assert.deepStrictEqual(preDeviceManagerMap, provider.deviceManagerMap);
-    });
   });
 });
