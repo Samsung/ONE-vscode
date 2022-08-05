@@ -14,14 +14,29 @@
  * limitations under the License.
  */
 
-import {assert} from 'chai';
+import {assert, expect} from 'chai';
+import {ToolchainInfo} from '../../Backend/Toolchain';
+import {DebianToolchain} from '../../Backend/ToolchainImpl/DebianToolchain';
+import {Job} from '../../Job/Job';
 
-import {ToolchainEnv} from '../../Toolchain/ToolchainEnv';
+import {Env, ToolchainEnv} from '../../Toolchain/ToolchainEnv';
 import {MockCompiler} from '../MockCompiler';
+import {MockFailedJob, MockJob} from '../MockJob';
 
 suite('Toolchain', function() {
+  suite('Env', function() {
+    suite('#build()', function() {
+      test('NEG: checks preparation of Env', function() {
+        const env = new Env();
+        env.clearJobs();
+        expect(function() {
+          env.build();
+        }).to.throw(`Env is not yet prepared`);
+      });
+    });
+  });
+
   suite('ToolchainEnv', function() {
-    const K_CLEANUP: string = 'cleanup';
     const compiler = new MockCompiler();
 
     suite('#constructor()', function() {
@@ -48,6 +63,50 @@ suite('Toolchain', function() {
       });
     });
 
+    suite('#listAvailable()', function() {
+      test('checks list count', function() {
+        let env = new ToolchainEnv(compiler);
+        const types = env.getToolchainTypes();
+        const count = 1;
+        let toolchains = env.listAvailable(types[0], 0, count);
+        assert.equal(toolchains.length, count);
+      });
+    });
+
+    suite('#listAvailable()', function() {
+      test('NEG: lists available toolchains with wrong type', function() {
+        const env = new ToolchainEnv(compiler);
+        const types = env.getToolchainTypes();
+        const wrongType: string = 'abcde';
+        assert.equal(types.includes(wrongType), false);
+        expect(function() {
+          env.listAvailable(wrongType, 0, 10);
+        }).to.throw(`Unknown toolchain type: ${wrongType}`);
+      });
+    });
+
+    suite('#listAvailable()', function() {
+      test('NEG: lists available toolchains with wrong start number', function() {
+        const env = new ToolchainEnv(compiler);
+        const types = env.getToolchainTypes();
+        const wrongStart = -1;
+        expect(function() {
+          env.listAvailable(types[0], wrongStart, 10);
+        }).to.throw(`wrong start number: ${wrongStart}`);
+      });
+    });
+
+    suite('#listAvailable()', function() {
+      test('NEG: lists available toolchains with wrong count number', function() {
+        const env = new ToolchainEnv(compiler);
+        const types = env.getToolchainTypes();
+        const wrongCount = -1;
+        expect(function() {
+          env.listAvailable(types[0], 0, wrongCount);
+        }).to.throw(`wrong count number: ${wrongCount}`);
+      });
+    });
+
     suite('#listInstalled()', function() {
       test('lists installed toolchain', function() {
         let env = new ToolchainEnv(compiler);
@@ -56,43 +115,177 @@ suite('Toolchain', function() {
       });
     });
 
-    // TODO(jyoung): Enable to install and uninstall package test case
-    // NOTE: It is necessary to consider about how to solve the operation
-    // that needs root permission like install and uninstall.
-    // suite('@Use-onecc', function() {
-    //   suite('#install()', function() {
-    //     test('installes the toolchain', function(done) {
-    //       let env = new ToolchainEnv(compiler);
-    //       env.install(compiler.availableToolchain);
-    //       env.workFlow.jobRunner.on(K_CLEANUP, function() {
-    //         assert.notEqual(env.installed, undefined);
-    //         let toolchain = env.listInstalled();
-    //         assert.strictEqual(toolchain, compiler.installedToolchain);
-    //         done();
-    //       });
-    //     });
-    //   });
+    suite('#listInstalled()', function() {
+      test('NEG: lists installed toolchains with wrong type', function() {
+        const env = new ToolchainEnv(compiler);
+        const types = env.getToolchainTypes();
+        const wrongType: string = 'abcde';
+        assert.equal(types.includes(wrongType), false);
+        expect(function() {
+          env.listAvailable(wrongType, 0, 10);
+        }).to.throw(`Unknown toolchain type: ${wrongType}`);
+      });
+    });
 
-    //   suite('#uninstall()', function() {
-    //     test('uninstalles the toolchain', function(done) {
-    //       let env = new ToolchainEnv(compiler);
-    //       env.uninstall(compiler.installedToolchain);
-    //       env.workFlow.jobRunner.on(K_CLEANUP, function() {
-    //         assert.equal(env.installed, undefined);
-    //         done();
-    //       });
-    //     });
-    //   });
+    suite('#request()', function() {
+      test('requests jobs', function() {
+        let env = new ToolchainEnv(compiler);
+        const job0 = new MockJob('job0');
+        const job1 = new MockJob('job1');
+        const jobs: Array<Job> = [job0, job1];
+        env.request(jobs).then(
+            (value) => {
+              assert.equal(value, true);
+            },
+            (_reason) => {
+              assert.fail();
+            });
+      });
+    });
 
-    //   // TODO(jyoung): Enable to compile test case
-    //   suite('#compile()', function() {
-    //     test('compiles model file with cfg file', function(done) {
-    //       // TODO
-    //       // 1. Install toolchain
-    //       // 2. After installing,
-    //       // 3. Does compile
-    //     });
-    //   });
-    // });
+    suite('#request()', function() {
+      test('NEG: requests failed job (length:1)', function() {
+        let env = new ToolchainEnv(compiler);
+        const job0 = new MockFailedJob('job0');
+        const jobs: Array<Job> = [job0];
+        env.request(jobs).then((_value) => {
+          assert.fail();
+        });
+      });
+    });
+
+    suite('#request()', function() {
+      test('NEG: requests failed job (length:2)', function() {
+        let env = new ToolchainEnv(compiler);
+        const job0 = new MockJob('job0');
+        const job1 = new MockFailedJob('job1');
+        const jobs: Array<Job> = [job0, job1];
+        env.request(jobs).then(
+            (_value) => {
+              assert.fail();
+            },
+            (_reason) => {
+              assert.isTrue(true);
+            });
+      });
+    });
+
+    suite('#prerequisites()', function() {
+      test('requests prerequisites', function() {
+        let env = new ToolchainEnv(compiler);
+        env.prerequisites().then(
+            (_value) => {
+              assert.isTrue(true);
+            },
+            (_reason) => {
+              assert.fail();
+            });
+      });
+    });
+
+    suite('#install()', function() {
+      test('requests install', function() {
+        let env = new ToolchainEnv(compiler);
+        const types = env.getToolchainTypes();
+        const availableToolchains = env.listAvailable(types[0], 0, 1);
+        assert.isAbove(availableToolchains.length, 0);
+        env.install(availableToolchains[0])
+            .then(
+                () => {
+                  assert.isTrue(true);
+                },
+                () => {
+                  assert.fail();
+                });
+      });
+
+      test('NEG: requests install with invalid toolchain', function() {
+        let env = new ToolchainEnv(compiler);
+        const invalidToolchain = new DebianToolchain(new ToolchainInfo('abcde', 'Invalid package'));
+        env.install(invalidToolchain)
+            .then(
+                () => {
+                  assert.fail();
+                },
+                () => {
+                  assert.isTrue(true);
+                });
+      });
+    });
+
+    suite('#uninstall()', function() {
+      test('requests uninstall', function() {
+        let env = new ToolchainEnv(compiler);
+        const installedToolchains = env.listInstalled();
+        assert.isAbove(installedToolchains.length, 0);
+        env.uninstall(installedToolchains[0])
+            .then(
+                () => {
+                  assert.isTrue(true);
+                },
+                () => {
+                  assert.fail();
+                });
+      });
+
+      test('NEG: requests uninstall with invalid toolchain', function() {
+        let env = new ToolchainEnv(compiler);
+        const invalidToolchain = new DebianToolchain(new ToolchainInfo('abcde', 'Invalid package'));
+        env.uninstall(invalidToolchain)
+            .then(
+                () => {
+                  assert.fail();
+                },
+                () => {
+                  assert.isTrue(true);
+                });
+      });
+    });
+
+    suite('#run()', function() {
+      test('requests run', function() {
+        let env = new ToolchainEnv(compiler);
+        const installedToolchains = env.listInstalled();
+        assert.isAbove(installedToolchains.length, 0);
+        const modelCfg = 'model.cfg';
+        env.run(modelCfg, installedToolchains[0])
+            .then(
+                () => {
+                  assert.isTrue(true);
+                },
+                () => {
+                  assert.fail();
+                });
+      });
+
+      test('NEG: requests run with invalid cfg', function() {
+        let env = new ToolchainEnv(compiler);
+        const installedToolchains = env.listInstalled();
+        assert.isAbove(installedToolchains.length, 0);
+        const invalidCfg = 'model.abc';
+        env.run(invalidCfg, installedToolchains[0])
+            .then(
+                () => {
+                  assert.fail();
+                },
+                () => {
+                  assert.isTrue(true);
+                });
+      });
+
+      test('NEG: requests run with invalid toolchain', function() {
+        let env = new ToolchainEnv(compiler);
+        const invalidToolchain = new DebianToolchain(new ToolchainInfo('abcde', 'Invalid package'));
+        const modelCfg = 'model.cfg';
+        env.run(modelCfg, invalidToolchain)
+            .then(
+                () => {
+                  assert.fail();
+                },
+                () => {
+                  assert.isTrue(true);
+                });
+      });
+    });
   });
 });

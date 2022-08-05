@@ -15,12 +15,15 @@
  */
 
 import {assert} from 'chai';
+import {Command} from '../Backend/Command';
 
 import {CompilerBase} from '../Backend/Compiler';
 import {ToolchainInfo, Toolchains} from '../Backend/Toolchain';
 import {DebianToolchain} from '../Backend/ToolchainImpl/DebianToolchain';
+import {Version} from '../Backend/Version';
 
-const mocCompilerType: string = 'test';
+const mockCompilerType1: string = 'test';
+const mockCompilerType2: string = 'test2';
 
 class MockCompiler extends CompilerBase {
   // TODO: What toolchain is necessary as tests?
@@ -29,28 +32,45 @@ class MockCompiler extends CompilerBase {
 
   constructor() {
     super();
-    this.installedToolchain =
-        new DebianToolchain(new ToolchainInfo('npm', 'package manager for Node.js'));
+    this.installedToolchain = new DebianToolchain(
+        new ToolchainInfo('npm', 'package manager for Node.js', new Version(1, 0, 0)));
     this.availableToolchain = new DebianToolchain(
         new ToolchainInfo('nodejs', 'Node.js event-based server-side javascript engine'));
   }
   getToolchainTypes(): string[] {
-    return [mocCompilerType];
+    return [mockCompilerType1, mockCompilerType2];
   }
   getToolchains(toolchainType: string, start: number, count: number): Toolchains {
-    // TODO(jyoung): Support start and count parameters
-    if (toolchainType === mocCompilerType) {
-      assert(count === 1, 'Count must be 1');
+    if (toolchainType !== mockCompilerType1 && toolchainType !== mockCompilerType2) {
+      throw Error(`Unknown toolchain type: ${toolchainType}`);
+    }
+    if (start < 0) {
+      throw Error(`wrong start number: ${start}`);
+    }
+    if (count < 0) {
+      throw Error(`wrong count number: ${count}`);
+    }
+    if (count === 0) {
+      return [];
+    }
+    assert(count === 1, 'Count must be 1');
+    if (toolchainType === mockCompilerType1) {
       return [this.availableToolchain];
     }
     return [];
   }
   getInstalledToolchains(toolchainType: string): Toolchains {
-    if (toolchainType === mocCompilerType) {
+    if (toolchainType !== mockCompilerType1 && toolchainType !== mockCompilerType2) {
+      throw Error(`Unknown toolchain type: ${toolchainType}`);
+    }
+    if (toolchainType === mockCompilerType1) {
       return [this.installedToolchain];
     }
     return [];
   }
-};
+  prerequisitesForGetToolchains(): Command {
+    return new Command('/bin/bash', ['echo', 'prerequisites']);
+  }
+}
 
 export {MockCompiler};
