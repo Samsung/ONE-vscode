@@ -14,3 +14,7 @@ In addition, we are trying to have a well-designed structure ourselves so that v
 
 Through these activities, ONE-vscode can provide a differentiation that cannot be experienced only with the existing CLI by linking the toolchain with the execution environment, ONE Runtime, or a target simulator corresponding to the backend compiler. This will eventually lead to fun and high productivity for developers.
 
+## Quick Links
+
+1. [Install ONE-vscode extension.](./docs/HowToInstall.md)
+1. [Tutorial](./docs/Tutorial.md)

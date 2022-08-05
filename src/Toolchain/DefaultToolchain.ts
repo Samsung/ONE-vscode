@@ -72,7 +72,7 @@ class DefaultToolchain {
 
   openDocument() {
     const doc =
-        'https://github.com/Samsung/ONE-vscode/blob/main/docs/HowToUse.md#set-default-toolchain';
+        'https://github.com/Samsung/ONE-vscode/blob/main/docs/Tutorial.md#set-default-toolchain';
     vscode.env.openExternal(vscode.Uri.parse(doc));
   }
 
