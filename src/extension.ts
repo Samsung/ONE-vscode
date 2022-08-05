@@ -50,8 +50,8 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(MondrianEditorProvider.register(context));
 
-  context.subscriptions.push(PartEditorProvider.register(context));
-  context.subscriptions.push(PartGraphSelPanel.register(context));
+  PartEditorProvider.register(context);
+  PartGraphSelPanel.register(context);
 
   CircleViewerProvider.register(context);
 

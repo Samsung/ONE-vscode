@@ -367,14 +367,18 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider, Part
 
   private _partEditors: PartEditor[] = [];
 
-  public static register(context: vscode.ExtensionContext): vscode.Disposable {
+  public static register(context: vscode.ExtensionContext): void {
     const provider = new PartEditorProvider(context);
-    const providerRegistration =
-        vscode.window.registerCustomEditorProvider(PartEditorProvider.viewType, provider, {
-          // NOTE: retainContextWhenHidden does not apply when provided to 'webview.options'
-          webviewOptions: {retainContextWhenHidden: true},
-        });
-    return providerRegistration;
+
+    const registrations = [
+      vscode.window.registerCustomEditorProvider(PartEditorProvider.viewType, provider, {
+        // NOTE: retainContextWhenHidden does not apply when provided to 'webview.options'
+        webviewOptions: {retainContextWhenHidden: true},
+      })
+      // Add command registration here
+    ];
+
+    registrations.forEach(disposable => context.subscriptions.push(disposable));
   };
 
   constructor(private readonly context: vscode.ExtensionContext) {
