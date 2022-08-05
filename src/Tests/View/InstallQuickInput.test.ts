@@ -64,6 +64,14 @@ suite('View', function() {
           quickInput.getToolchainEnv();
         });
       });
+
+      test('NEG: throw error when error is not undefined - getToolchainEnv', function() {
+        let quickInput = new InstallQuickInput();
+        quickInput.error = 'some error';
+        assert.throw(() => {
+          quickInput.getToolchainEnv();
+        });
+      });
     });
 
     suite('#getToolchainType()', function() {
@@ -75,6 +83,14 @@ suite('View', function() {
 
       test('NEG: throw error when ToolchainType is undefined', function() {
         let quickInput = new InstallQuickInput();
+        assert.throw(() => {
+          quickInput.getToolchainType();
+        });
+      });
+
+      test('NEG: throw error when error is not undefined - getToolchainType', function() {
+        let quickInput = new InstallQuickInput();
+        quickInput.error = 'some error';
         assert.throw(() => {
           quickInput.getToolchainType();
         });
@@ -94,6 +110,14 @@ suite('View', function() {
           quickInput.getToolchain();
         });
       });
+
+      test('NEG: throw error when error is not undefined - getToolchain', function() {
+        let quickInput = new InstallQuickInput();
+        quickInput.error = 'some error';
+        assert.throw(() => {
+          quickInput.getToolchain();
+        });
+      });
     });
 
     suite('#getVersion()', function() {
@@ -105,6 +129,14 @@ suite('View', function() {
 
       test('NEG: throw error when Version is undefined', function() {
         let quickInput = new InstallQuickInput();
+        assert.throw(() => {
+          quickInput.getVersion();
+        });
+      });
+
+      test('NEG: throw error when error is not undefined - getVersion', function() {
+        let quickInput = new InstallQuickInput();
+        quickInput.error = 'some error';
         assert.throw(() => {
           quickInput.getVersion();
         });
