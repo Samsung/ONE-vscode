@@ -22,7 +22,7 @@ import {CircleViewerProvider} from './CircleGraph/CircleViewer';
 import {DeviceViewProvider} from './Execute/DeviceViewProvider';
 import {Jsontracer} from './Jsontracer';
 import {MondrianEditorProvider} from './Mondrian/MondrianEditor';
-import {initOneExplorer} from './OneExplorer/OneExplorer';
+import {OneTreeDataProvider} from './OneExplorer/OneExplorer';
 import {PartEditorProvider} from './PartEditor/PartEditor';
 import {PartGraphSelPanel} from './PartEditor/PartGraphSelector';
 import {ToolchainProvider} from './Toolchain/ToolchainProvider';
@@ -34,7 +34,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   Logger.info(tag, 'one-vscode activate OK');
 
-  initOneExplorer(context);
+  OneTreeDataProvider.register(context);
 
   // ONE view
   const toolchainProvider = new ToolchainProvider();
