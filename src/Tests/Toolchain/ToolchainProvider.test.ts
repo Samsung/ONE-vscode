@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import {assert} from 'chai';
+import {assert, expect} from 'chai';
 import * as vscode from 'vscode';
 
 import {PackageInfo, ToolchainInfo} from '../../Backend/Toolchain';
 import {DebianToolchain} from '../../Backend/ToolchainImpl/DebianToolchain';
 import {Version} from '../../Backend/Version';
+import {DefaultToolchain} from '../../Toolchain/DefaultToolchain';
 import {gToolchainEnvMap, ToolchainEnv} from '../../Toolchain/ToolchainEnv';
 import {BackendNode, BaseNode, NodeBuilder, ToolchainNode, ToolchainProvider} from '../../Toolchain/ToolchainProvider';
 import {MockCompiler} from '../MockCompiler';
@@ -199,27 +200,74 @@ suite('Toolchain', function() {
     // });
 
     suite('#uninstall', function() {
-      const provider = new ToolchainProvider();
-      let bnodes: BackendNode[];
-      let tnodes: ToolchainNode[];
-
-      setup(function() {
-        bnodes = NodeBuilder.createBackendNodes();
+      test('requests uninstall', function() {
+        const provider = new ToolchainProvider();
+        const bnodes = NodeBuilder.createBackendNodes();
         assert.strictEqual(bnodes.length, 1);
         assert.strictEqual(bnodes[0].label, backendName);
-        tnodes = NodeBuilder.createToolchainNodes(bnodes[0]);
+        const tnodes = NodeBuilder.createToolchainNodes(bnodes[0]);
         assert.isAbove(tnodes.length, 0);
-      });
-      test('requests uninstall', function() {
         provider.uninstall(tnodes[0]);
+        assert.isTrue(true);
       });
-      test('NEG: requests uninstall with undefined node', function() {
-
+      test('NEG: requests uninstall with invalid toolchain node', function() {
+        const provider = new ToolchainProvider();
+        const invalidToolchainNode = 'invalid toolchain node';
+        const invalidBackendName = 'abcde';
+        const toolchains = toolchainEnv.listInstalled();
+        assert.isAbove(toolchains.length, 0);
+        const tnode = new ToolchainNode(invalidToolchainNode, invalidBackendName, toolchains[0]);
+        assert.strictEqual(tnode.label, invalidToolchainNode);
+        assert.strictEqual(tnode.backendName, invalidBackendName);
+        assert.strictEqual(tnode.toolchain, toolchains[0]);
+        const ret = provider.uninstall(tnode);
+        assert.isFalse(ret);
       });
     });
 
-    // suite('#run', function() {
-    //   test('')
-    // });
+    suite('#run', function() {
+      test('requests run', function() {
+        const provider = new ToolchainProvider();
+        const modelCfg = 'model.cfg';
+        const toolchains = toolchainEnv.listInstalled();
+        assert.isAbove(toolchains.length, 0);
+        DefaultToolchain.getInstance().set(toolchainEnv, toolchains[0]);
+        provider.run(modelCfg);
+        assert.isTrue(true);
+      });
+      test('NEG: requests run with uninitialized default toolchain', function() {
+        const provider = new ToolchainProvider();
+        const modelCfg = 'model.cfg';
+        DefaultToolchain.getInstance().unset();
+        const ret = provider.run(modelCfg);
+        assert.isFalse(ret);
+      });
+    });
+
+    suite('#setDefaultToolchain', function() {
+      test('request setDefaultToolchain', function() {
+        const provider = new ToolchainProvider();
+        const bnodes = NodeBuilder.createBackendNodes();
+        assert.strictEqual(bnodes.length, 1);
+        assert.strictEqual(bnodes[0].label, backendName);
+        const tnodes = NodeBuilder.createToolchainNodes(bnodes[0]);
+        assert.isAbove(tnodes.length, 0);
+        provider.setDefaultToolchain(tnodes[0]);
+        assert.isTrue(DefaultToolchain.getInstance().isEqual(tnodes[0].toolchain));
+      });
+      test('NEG: requests setDefaultToolchain with invalid node', function() {
+        const provider = new ToolchainProvider();
+        const invalidToolchainNode = 'invalid toolchain node';
+        const invalidBackendName = 'abcde';
+        const toolchains = toolchainEnv.listInstalled();
+        assert.isAbove(toolchains.length, 0);
+        const tnode = new ToolchainNode(invalidToolchainNode, invalidBackendName, toolchains[0]);
+        assert.strictEqual(tnode.label, invalidToolchainNode);
+        assert.strictEqual(tnode.backendName, invalidBackendName);
+        assert.strictEqual(tnode.toolchain, toolchains[0]);
+        const ret = provider.setDefaultToolchain(tnode);
+        assert.isFalse(ret);
+      });
+    });
   });
 });
