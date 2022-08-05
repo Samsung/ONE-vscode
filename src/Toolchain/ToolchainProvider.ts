@@ -87,7 +87,7 @@ export class NodeBuilder {
     }
 
     const backendName = bnode.label;
-    if ((backendName in gToolchainEnvMap) === undefined) {
+    if (!Object.keys(gToolchainEnvMap).includes(backendName)) {
       return [];
     }
     const toolchains = gToolchainEnvMap[bnode.label].listInstalled();
@@ -109,13 +109,11 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
       new vscode.EventEmitter<ToolchainTreeData>();
   readonly onDidChangeTreeData?: vscode.Event<ToolchainTreeData> = this._onDidChangeTreeData.event;
 
-  constructor() {}
-
-  getTreeItem(element: BaseNode): vscode.TreeItem {
+  public getTreeItem(element: BaseNode): vscode.TreeItem {
     return element;
   }
 
-  getChildren(element?: BaseNode): Thenable<BaseNode[]> {
+  public getChildren(element?: BaseNode): Thenable<BaseNode[]> {
     if (element === undefined) {
       return Promise.resolve(NodeBuilder.createBackendNodes());
     } else {
@@ -123,16 +121,16 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
     }
   }
 
-  error(msg: string, ...args: string[]): Thenable<string|undefined> {
+  private error(msg: string, ...args: string[]): Thenable<string|undefined> {
     Logger.error(this.tag, msg);
     return vscode.window.showErrorMessage(msg, ...args);
   }
 
-  refresh() {
+  public refresh() {
     this._onDidChangeTreeData.fire();
   }
 
-  install() {
+  public install() {
     const notifyInstalled = (toolchainEnv: ToolchainEnv, toolchain: Toolchain) => {
       const name = `${toolchain.info.name}-${toolchain.info.version ?.str()}`;
       vscode.window.showInformationMessage(`Installed ${name} successfully.`);
@@ -186,7 +184,7 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
     }, () => notifyCancelled());
   }
 
-  uninstall(tnode: ToolchainNode) {
+  public uninstall(tnode: ToolchainNode) {
     if (tnode === undefined) {
       throw Error('Invalid toolchain node.');
     }

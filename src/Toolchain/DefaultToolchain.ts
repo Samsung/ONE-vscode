@@ -29,12 +29,12 @@ class DefaultToolchain {
     // This is private constructor
   }
 
-  static getInstance() {
+  public static getInstance() {
     return this._instance || (this._instance = new this());
   }
 
   /* istanbul ignore next */
-  async ask(toolchainEnv: ToolchainEnv, toolchain: Toolchain): Promise<boolean> {
+  public async ask(toolchainEnv: ToolchainEnv, toolchain: Toolchain): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
       const name = `${toolchain.info.name}-${toolchain.info.version ?.str()}`;
       vscode.window
@@ -50,7 +50,7 @@ class DefaultToolchain {
     });
   }
 
-  set(toolchainEnv: ToolchainEnv, toolchain: Toolchain) {
+  public set(toolchainEnv: ToolchainEnv, toolchain: Toolchain) {
     if (this.isEqual(toolchain)) {
       return;
     }
@@ -61,32 +61,33 @@ class DefaultToolchain {
         .showInformationMessage(`${name} was set as a default toolchain.`, 'OK', `See Instructions`)
         .then((value) => {
           if (value === 'See Instructions') {
+            /* istanbul ignore next */
             this.openDocument();
           }
         });
   }
 
-  unset() {
+  public unset() {
     this._toolchainEnv = undefined;
     this._toolchain = undefined;
   }
 
   /* istanbul ignore next */
-  openDocument() {
+  public openDocument() {
     const doc =
         'https://github.com/Samsung/ONE-vscode/blob/main/docs/HowToUse.md#set-default-toolchain';
     vscode.env.openExternal(vscode.Uri.parse(doc));
   }
 
-  getToolchain(): Toolchain|undefined {
+  public getToolchain(): Toolchain|undefined {
     return this._toolchain;
   }
 
-  getToolchainEnv(): ToolchainEnv|undefined {
+  public getToolchainEnv(): ToolchainEnv|undefined {
     return this._toolchainEnv;
   }
 
-  isEqual(toolchain: Toolchain) {
+  public isEqual(toolchain: Toolchain) {
     if (this._toolchain &&
         JSON.stringify(this._toolchain.info) === JSON.stringify(toolchain.info)) {
       return true;

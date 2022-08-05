@@ -17,46 +17,12 @@
 import {assert} from 'chai';
 import * as vscode from 'vscode';
 
-import {CompilerBase} from '../../Backend/Compiler';
-import {ToolchainInfo, Toolchains} from '../../Backend/Toolchain';
+import {PackageInfo, ToolchainInfo} from '../../Backend/Toolchain';
 import {DebianToolchain} from '../../Backend/ToolchainImpl/DebianToolchain';
 import {Version} from '../../Backend/Version';
 import {gToolchainEnvMap, ToolchainEnv} from '../../Toolchain/ToolchainEnv';
 import {BackendNode, BaseNode, NodeBuilder, ToolchainNode, ToolchainProvider} from '../../Toolchain/ToolchainProvider';
-
-
-// TODO: Move this to MockCompiler.ts
-const mocCompilerType: string = 'test';
-class MockCompiler extends CompilerBase {
-  // TODO: What toolchain is necessary as tests?
-  installedToolchain: DebianToolchain;
-  availableToolchain: DebianToolchain;
-
-  constructor() {
-    super();
-    this.installedToolchain = new DebianToolchain(
-        new ToolchainInfo('npm', 'package manager for Node.js', new Version(1, 0, 0)));
-    this.availableToolchain = new DebianToolchain(
-        new ToolchainInfo('nodejs', 'Node.js event-based server-side javascript engine'));
-  }
-  getToolchainTypes(): string[] {
-    return [mocCompilerType];
-  }
-  getToolchains(toolchainType: string, start: number, count: number): Toolchains {
-    // TODO(jyoung): Support start and count parameters
-    if (toolchainType === mocCompilerType) {
-      assert(count === 1, 'Count must be 1');
-      return [this.availableToolchain];
-    }
-    return [];
-  }
-  getInstalledToolchains(toolchainType: string): Toolchains {
-    if (toolchainType === mocCompilerType) {
-      return [this.installedToolchain];
-    }
-    return [];
-  }
-};
+import {MockCompiler} from '../MockCompiler';
 
 suite('Toolchain', function() {
   const compiler = new MockCompiler();
@@ -99,16 +65,30 @@ suite('Toolchain', function() {
 
   suite('ToolchainNode', function() {
     suite('#constructor()', function() {
-      test('is constructed with params using dummy_backend', function() {
+      test('is constructed with params using toolchian_node', function() {
         const label = 'backend_node';
-        const backend = 'dummy_backend';
         const toolchain =
             new DebianToolchain(new ToolchainInfo('npm', 'package manager for Node.js'));
         const collapsibleState = vscode.TreeItemCollapsibleState.None;
-        let node = new ToolchainNode(label, backend, toolchain);
+        let node = new ToolchainNode(label, backendName, toolchain);
         assert.strictEqual(node.label, label);
         assert.strictEqual(node.collapsibleState, collapsibleState);
-        assert.strictEqual(node.backendName, backend);
+        assert.strictEqual(node.backendName, backendName);
+      });
+    });
+
+    suite('#constructor()', function() {
+      test('is constructed with params using toolchian_node with dependencies', function() {
+        const label = 'backend_node';
+        const dependencyInfo = new PackageInfo('nodejs', new Version(8, 10, 0, '~dfsg-2'));
+        const toolchain = new DebianToolchain(new ToolchainInfo(
+            'npm', 'package manager for Node.js', new Version(3, 5, 2, '-0ubuntu4'),
+            [dependencyInfo]));
+        const collapsibleState = vscode.TreeItemCollapsibleState.None;
+        let node = new ToolchainNode(label, backendName, toolchain);
+        assert.strictEqual(node.label, label);
+        assert.strictEqual(node.collapsibleState, collapsibleState);
+        assert.strictEqual(node.backendName, backendName);
       });
     });
   });
@@ -132,6 +112,28 @@ suite('Toolchain', function() {
         tnodes.forEach((tnode) => {
           assert.strictEqual(tnode.backendName, backendName);
         });
+      });
+    });
+    suite('#createToolchainNodes()', function() {
+      test('NEG: creates ToolchainNode list using invalid backend node', function() {
+        const bnodes: BackendNode[] = NodeBuilder.createBackendNodes();
+        assert.strictEqual(bnodes.length, 1);
+        assert.strictEqual(bnodes[0].label, backendName);
+        const tnodes1 = NodeBuilder.createToolchainNodes(bnodes[0]);
+        assert.strictEqual(tnodes1.length, 1);
+        tnodes1.forEach((tnode) => {
+          assert.strictEqual(tnode.backendName, backendName);
+        });
+        let tnodes2 = NodeBuilder.createToolchainNodes(tnodes1[0]);
+        assert.strictEqual(tnodes2.length, 0);
+      });
+    });
+    suite('#createToolchainNodes()', function() {
+      test('NEG: creates ToolchainNode list using invalid backend', function() {
+        const invalidBackendName = 'abcde';
+        const bnode = new BackendNode(invalidBackendName);
+        const tnodes = NodeBuilder.createToolchainNodes(bnode);
+        assert.strictEqual(tnodes.length, 0);
       });
     });
   });
@@ -192,5 +194,32 @@ suite('Toolchain', function() {
     });
 
     // TODO: install(), uninstall() and run()
+    // suite('#install', function() {
+    //   test('')
+    // });
+
+    suite('#uninstall', function() {
+      const provider = new ToolchainProvider();
+      let bnodes: BackendNode[];
+      let tnodes: ToolchainNode[];
+
+      setup(function() {
+        bnodes = NodeBuilder.createBackendNodes();
+        assert.strictEqual(bnodes.length, 1);
+        assert.strictEqual(bnodes[0].label, backendName);
+        tnodes = NodeBuilder.createToolchainNodes(bnodes[0]);
+        assert.isAbove(tnodes.length, 0);
+      });
+      test('requests uninstall', function() {
+        provider.uninstall(tnodes[0]);
+      });
+      test('NEG: requests uninstall with undefined node', function() {
+
+      });
+    });
+
+    // suite('#run', function() {
+    //   test('')
+    // });
   });
 });

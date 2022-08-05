@@ -20,6 +20,7 @@ import {Command} from '../Backend/Command';
 import {CompilerBase} from '../Backend/Compiler';
 import {ToolchainInfo, Toolchains} from '../Backend/Toolchain';
 import {DebianToolchain} from '../Backend/ToolchainImpl/DebianToolchain';
+import {Version} from '../Backend/Version';
 
 const mocCompilerType1: string = 'test';
 const mocCompilerType2: string = 'test2';
@@ -31,8 +32,8 @@ class MockCompiler extends CompilerBase {
 
   constructor() {
     super();
-    this.installedToolchain =
-        new DebianToolchain(new ToolchainInfo('npm', 'package manager for Node.js'));
+    this.installedToolchain = new DebianToolchain(
+        new ToolchainInfo('npm', 'package manager for Node.js', new Version(1, 0, 0)));
     this.availableToolchain = new DebianToolchain(
         new ToolchainInfo('nodejs', 'Node.js event-based server-side javascript engine'));
   }
@@ -40,7 +41,6 @@ class MockCompiler extends CompilerBase {
     return [mocCompilerType1, mocCompilerType2];
   }
   getToolchains(toolchainType: string, start: number, count: number): Toolchains {
-    // TODO(jyoung): Support start and count parameters
     if (toolchainType !== mocCompilerType1 && toolchainType !== mocCompilerType2) {
       throw Error(`Unknown toolchain type: ${toolchainType}`);
     }

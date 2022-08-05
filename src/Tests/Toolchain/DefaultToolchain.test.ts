@@ -25,14 +25,14 @@ suite('Toolchain', function() {
     const env = new ToolchainEnv(compiler);
 
     suite('#getInstance()', function() {
-      test('get instance', function() {
+      test('gets instance', function() {
         const defaultToolchain = DefaultToolchain.getInstance();
         assert.isDefined(defaultToolchain);
       });
     });
 
     suite('#set()', function() {
-      test('set toolchainEnv and toolchain', function() {
+      test('sets toolchainEnv and toolchain', function() {
         const defaultToolchain = DefaultToolchain.getInstance();
         const toolchains = env.listInstalled();
         assert.isAbove(toolchains.length, 0);
@@ -43,7 +43,7 @@ suite('Toolchain', function() {
     });
 
     suite('#unset()', function() {
-      test('unset toolchainEnv and toolchain', function() {
+      test('unsets toolchainEnv and toolchain', function() {
         const defaultToolchain = DefaultToolchain.getInstance();
         const toolchains = env.listInstalled();
         assert.isAbove(toolchains.length, 0);

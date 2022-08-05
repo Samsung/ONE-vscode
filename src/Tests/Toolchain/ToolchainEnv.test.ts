@@ -65,7 +65,7 @@ suite('Toolchain', function() {
     });
 
     suite('#listAvailable()', function() {
-      test('check list count', function() {
+      test('checks list count', function() {
         let env = new ToolchainEnv(compiler);
         const types = env.getToolchainTypes();
         const count = 1;
@@ -129,7 +129,7 @@ suite('Toolchain', function() {
     });
 
     suite('#request()', function() {
-      test('request jobs', function() {
+      test('requests jobs', function() {
         let env = new ToolchainEnv(compiler);
         const job0 = new MockJob('job0');
         const job1 = new MockJob('job1');
@@ -145,7 +145,7 @@ suite('Toolchain', function() {
     });
 
     suite('#request()', function() {
-      test('NEG: request failed job (length:1)', function() {
+      test('NEG: requests failed job (length:1)', function() {
         let env = new ToolchainEnv(compiler);
         const job0 = new MockFailedJob('job0');
         const jobs: Array<Job> = [job0];
@@ -156,7 +156,7 @@ suite('Toolchain', function() {
     });
 
     suite('#request()', function() {
-      test('NEG: request failed job (length:2)', function() {
+      test('NEG: requests failed job (length:2)', function() {
         let env = new ToolchainEnv(compiler);
         const job0 = new MockJob('job0');
         const job1 = new MockFailedJob('job1');
@@ -172,7 +172,7 @@ suite('Toolchain', function() {
     });
 
     suite('#prerequisites()', function() {
-      test('request prerequisites', function() {
+      test('requests prerequisites', function() {
         let env = new ToolchainEnv(compiler);
         env.prerequisites().then(
             (_value) => {
@@ -185,7 +185,7 @@ suite('Toolchain', function() {
     });
 
     suite('#install()', function() {
-      test('request install', function() {
+      test('requests install', function() {
         let env = new ToolchainEnv(compiler);
         const types = env.getToolchainTypes();
         const availableToolchains = env.listAvailable(types[0], 0, 1);
@@ -195,7 +195,7 @@ suite('Toolchain', function() {
         });
       });
 
-      test('NEG: request install with invalid toolchain', function() {
+      test('NEG: requests install with invalid toolchain', function() {
         let env = new ToolchainEnv(compiler);
         const invalidToolchain = new DebianToolchain(new ToolchainInfo('abcde', 'Invalid package'));
         env.install(invalidToolchain)
@@ -210,7 +210,7 @@ suite('Toolchain', function() {
     });
 
     suite('#uninstall()', function() {
-      test('request uninstall', function() {
+      test('requests uninstall', function() {
         let env = new ToolchainEnv(compiler);
         const installedToolchains = env.listInstalled();
         assert.isAbove(installedToolchains.length, 0);
@@ -219,7 +219,7 @@ suite('Toolchain', function() {
         });
       });
 
-      test('NEG: request uninstall with invalid toolchain', function() {
+      test('NEG: requests uninstall with invalid toolchain', function() {
         let env = new ToolchainEnv(compiler);
         const invalidToolchain = new DebianToolchain(new ToolchainInfo('abcde', 'Invalid package'));
         env.uninstall(invalidToolchain)
@@ -234,7 +234,7 @@ suite('Toolchain', function() {
     });
 
     suite('#run()', function() {
-      test('request run', function() {
+      test('requests run', function() {
         let env = new ToolchainEnv(compiler);
         const installedToolchains = env.listInstalled();
         assert.isAbove(installedToolchains.length, 0);
@@ -244,7 +244,7 @@ suite('Toolchain', function() {
         });
       });
 
-      test('NEG: request run with invalid cfg', function() {
+      test('NEG: requests run with invalid cfg', function() {
         let env = new ToolchainEnv(compiler);
         const installedToolchains = env.listInstalled();
         assert.isAbove(installedToolchains.length, 0);
@@ -259,7 +259,7 @@ suite('Toolchain', function() {
                 });
       });
 
-      test('NEG: request run with invalid toolchain', function() {
+      test('NEG: requests run with invalid toolchain', function() {
         let env = new ToolchainEnv(compiler);
         const invalidToolchain = new DebianToolchain(new ToolchainInfo('abcde', 'Invalid package'));
         const modelCfg = 'model.cfg';
