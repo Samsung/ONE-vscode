@@ -45,5 +45,32 @@ suite('Backend', function() {
         assert.deepStrictEqual(version.str(), expectedStr);
       });
     });
+
+    suite('#equals()', function() {
+      test('true', function() {
+        const version1 = new Version(1, 0, 2, 'option');
+        const version2 = new Version(1, 0, 2, 'option');
+        assert.isTrue(version1.equals(version2));
+        assert.isTrue(version2.equals(version1));
+      });
+      test('NEG: compare version without option', function() {
+        const version1 = new Version(1, 0, 2, 'option');
+        const version2 = new Version(1, 0, 2);
+        assert.isFalse(version1.equals(version2));
+        assert.isFalse(version2.equals(version1));
+      });
+      test('NEG: compare version without patch and option', function() {
+        const version1 = new Version(1, 0, 2, 'option');
+        const version2 = new Version(1, 0, undefined);
+        assert.isFalse(version1.equals(version2));
+        assert.isFalse(version2.equals(version1));
+      });
+      test('NEG: compare version only with major', function() {
+        const version1 = new Version(1, 0, 2, 'option');
+        const version2 = new Version(1, undefined, undefined);
+        assert.isFalse(version1.equals(version2));
+        assert.isFalse(version2.equals(version1));
+      });
+    });
   });
 });
