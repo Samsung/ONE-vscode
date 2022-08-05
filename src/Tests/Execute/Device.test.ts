@@ -21,7 +21,7 @@ import {Device} from '../../Execute/Device';
 
 suite('Device', function() {
   suite('#Device', function() {
-    test('Basic contructor', function() {
+    test('Basic constructor', function() {
       const deviceName: string = 'testDevice';
       const hw: string = 'TestHW';
       const sw: string = 'TestOS';
@@ -45,7 +45,7 @@ suite('Device', function() {
   });
 
   suite('#TizenTVDevice', function() {
-    test('Tizen contructor', function() {
+    test('Tizen constructor', function() {
       const deviceName: string = '127.0.0.1:26101';
       const hw: string = 'armv7l';
       const sw: string = 'Tizen 7.0.0';

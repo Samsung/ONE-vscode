@@ -19,7 +19,7 @@ import {CompilerBase} from '../../Backend/Compiler';
 
 suite('Backend', function() {
   suite('CompilerBase', function() {
-    suite('#contructor()', function() {
+    suite('#constructor()', function() {
       test('Create dummy compiler', function(pass) {
         const compiler = new CompilerBase();
 

@@ -22,7 +22,7 @@ import {JobPrerequisites} from '../../Toolchain/JobPrerequisites';
 
 suite('Toolchain', function() {
   suite('JobPrerequisites', function() {
-    suite('#contructor()', function() {
+    suite('#constructor()', function() {
       test('is contructed with command', function() {
         let cmd = new Command('/bin/bash');
         cmd.push('scriptpath');

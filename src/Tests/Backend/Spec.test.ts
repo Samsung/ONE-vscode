@@ -21,63 +21,78 @@ import {BridgeSpec, DeviceSpec, HostPCSpec, sdbSpec, TizenDeviceSpec} from '../.
 
 suite('Spec', function() {
   suite('DeviceSpec', function() {
-    suite('#contructor()', function() {
-      const hw: string = 'TestHW';
-      const sw: string = 'TestOS';
-      const testSpec = new DeviceSpec(hw, sw, undefined);
-      assert.isObject<DeviceSpec>(testSpec);
-      assert.strictEqual(testSpec.hw, hw);
-      assert.strictEqual(testSpec.sw, sw);
-      assert.strictEqual(testSpec.bridge, undefined);
+    suite('#constructor()', function() {
+      test('construct DeviseSpec', function() {
+        const hw: string = 'TestHW';
+        const sw: string = 'TestOS';
+        const testSpec = new DeviceSpec(hw, sw, undefined);
+        assert.isObject<DeviceSpec>(testSpec);
+        assert.strictEqual(testSpec.hw, hw);
+        assert.strictEqual(testSpec.sw, sw);
+        assert.strictEqual(testSpec.bridge, undefined);
+      });
     });
     suite('#satisfied()', function() {
-      const executorSpec = new DeviceSpec('arm', 'Tizen', undefined);
-      const dummySpec1 = new TizenDeviceSpec('armv7l', 'Tizen 7.0.0 (Tizen7/TV)');
-      const dummySpec2 = new HostPCSpec('x86_64', 'Ubuntu 20.04.4 LTS');
-      assert.isTrue(executorSpec.satisfied(dummySpec1));
-      assert.isFalse(executorSpec.satisfied(dummySpec2));
+      test('check DeviseSpec satisfied', function() {
+        const executorSpec = new DeviceSpec('arm', 'Tizen', undefined);
+        const dummySpec1 = new TizenDeviceSpec('armv7l', 'Tizen 7.0.0 (Tizen7/TV)');
+        const dummySpec2 = new HostPCSpec('x86_64', 'Ubuntu 20.04.4 LTS');
+        assert.isTrue(executorSpec.satisfied(dummySpec1));
+        assert.isFalse(executorSpec.satisfied(dummySpec2));
+      });
     });
   });
   suite('TizenDeviceSpec', function() {
-    suite('#contructor()', function() {
-      const hw: string = 'armv7l';
-      const sw: string = 'Tizen 7.0.0';
-      const testSpec = new TizenDeviceSpec(hw, sw);
-      assert.isObject<TizenDeviceSpec>(testSpec);
-      assert.strictEqual(testSpec.hw, hw);
-      assert.strictEqual(testSpec.sw, sw);
-      assert.strictEqual(testSpec.bridge, sdbSpec);
+    suite('#constructor()', function() {
+      test('construct TizenDeviceSpec', function() {
+        const hw: string = 'armv7l';
+        const sw: string = 'Tizen 7.0.0';
+        const testSpec = new TizenDeviceSpec(hw, sw);
+        assert.isObject<TizenDeviceSpec>(testSpec);
+        assert.strictEqual(testSpec.hw, hw);
+        assert.strictEqual(testSpec.sw, sw);
+        assert.strictEqual(testSpec.bridge, sdbSpec);
+      });
     });
   });
   suite('HostPCSpec', function() {
-    suite('#contructor()', function() {
-      const hw: string = 'x86_64';
-      const sw: string = 'Ubuntu 18';
-      const testSpec = new HostPCSpec(hw, sw);
-      assert.isObject<HostPCSpec>(testSpec);
-      assert.strictEqual(testSpec.hw, hw);
-      assert.strictEqual(testSpec.sw, sw);
-      assert.strictEqual(testSpec.bridge, undefined);
+    suite('#constructor()', function() {
+      test('construct HostPCSpec', function() {
+        const hw: string = 'x86_64';
+        const sw: string = 'Ubuntu 18';
+        const testSpec = new HostPCSpec(hw, sw);
+        assert.isObject<HostPCSpec>(testSpec);
+        assert.strictEqual(testSpec.hw, hw);
+        assert.strictEqual(testSpec.sw, sw);
+        assert.strictEqual(testSpec.bridge, undefined);
+      });
     });
   });
   suite('BridgeSpec', function() {
     suite('#constructor()', function() {
-      const dummyDeviceList = 'testDeiveList';
-      const dummyShell = 'testBridgeShell';
-      const testBridgeSpec = new BridgeSpec('test', dummyDeviceList, dummyShell);
-      assert.isObject<BridgeSpec>(testBridgeSpec);
-      assert.strictEqual(testBridgeSpec.name, 'test');
-      assert.strictEqual(testBridgeSpec.deviceListCmd.str(), dummyDeviceList);
-      assert.strictEqual(testBridgeSpec.shellCmd.str(), dummyShell);
+      test('construct BridgeSpec', function() {
+        const dummyDeviceList = 'testDeiveList';
+        const dummyShell = 'testBridgeShell';
+        const testBridgeSpec = new BridgeSpec('test', dummyDeviceList, dummyShell);
+        assert.isObject<BridgeSpec>(testBridgeSpec);
+        assert.strictEqual(testBridgeSpec.name, 'test');
+        assert.strictEqual(testBridgeSpec.deviceListCmd.str(), dummyDeviceList);
+        assert.strictEqual(testBridgeSpec.shellCmd.str(), dummyShell);
+      });
     });
-  });
-  suite('sdbSpec', function() {
-    const extensionId = 'Samsung.one-vscode';
-    const ext = vscode.extensions.getExtension(extensionId) as vscode.Extension<any>;
-    const deviceListCom = vscode.Uri.joinPath(ext!.extensionUri, 'script', 'sdbSpecList.sh').fsPath;
-    assert.isObject<BridgeSpec>(sdbSpec);
-    assert.strictEqual(sdbSpec.name, 'sdb');
-    assert.strictEqual(sdbSpec.deviceListCmd.str(), deviceListCom);
-    assert.strictEqual(sdbSpec.shellCmd.str(), 'sdb shell');
+    suite('sdbSpec', function() {
+      suite('#constructor()', function() {
+        test('construct sdbSpec', function() {
+          const extensionId = 'Samsung.one-vscode';
+          const ext = vscode.extensions.getExtension(extensionId) as vscode.Extension<any>;
+          const deviceListCom =
+              vscode.Uri.joinPath(ext!.extensionUri, 'script', 'sdbSpecList.sh').fsPath;
+          assert.isObject<BridgeSpec>(sdbSpec);
+          assert.strictEqual(sdbSpec.name, 'sdb');
+          assert.strictEqual(sdbSpec.deviceListCmd.str(), deviceListCom);
+          assert.strictEqual(sdbSpec.shellCmd.str(), 'sdb shell');
+        });
+      });
+    });
   });
 });

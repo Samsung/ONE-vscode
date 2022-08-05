@@ -19,7 +19,7 @@ import {Command} from '../../Backend/Command';
 
 suite('Backend', function() {
   suite('Command', function() {
-    suite('#contructor()', function() {
+    suite('#constructor()', function() {
       test('is contructed with values', function() {
         const cmdStr: string = 'ls';
         const optionStrs: string[] = ['-lh', '~'];
