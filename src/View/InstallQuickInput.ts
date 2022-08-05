@@ -21,7 +21,7 @@ import {gToolchainEnvMap, ToolchainEnv} from '../Toolchain/ToolchainEnv';
 import {Logger} from '../Utils/Logger';
 import {InputStep, MultiStepInput} from '../Utils/MultiStepInput';
 
-
+/* istanbul ignore next */
 async function shouldResume() {
   // Could show a notification with the option to resume.
   return new Promise<boolean>(
@@ -30,6 +30,7 @@ async function shouldResume() {
       });
 }
 
+/* istanbul ignore next */
 class InnerButton implements vscode.QuickInputButton {
   constructor(public iconPath: vscode.ThemeIcon, public tooltip: string) {}
 }

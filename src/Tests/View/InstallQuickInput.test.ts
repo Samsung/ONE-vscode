@@ -58,7 +58,7 @@ suite('View', function() {
         assert.strictEqual(quickInput.getToolchainEnv(), toolchainEnv);
       });
 
-      test('throw error when ToolchainEnv is undefined', function() {
+      test('NEG: throw error when ToolchainEnv is undefined', function() {
         let quickInput = new InstallQuickInput();
         assert.throw(() => {
           quickInput.getToolchainEnv();
@@ -73,7 +73,7 @@ suite('View', function() {
         assert.strictEqual(quickInput.getToolchainType(), toolchainType);
       });
 
-      test('throw error when ToolchainType is undefined', function() {
+      test('NEG: throw error when ToolchainType is undefined', function() {
         let quickInput = new InstallQuickInput();
         assert.throw(() => {
           quickInput.getToolchainType();
@@ -88,7 +88,7 @@ suite('View', function() {
         assert.strictEqual(quickInput.getToolchain(), toolchain);
       });
 
-      test('throw error when Toolchain is undefined', function() {
+      test('NEG: throw error when Toolchain is undefined', function() {
         let quickInput = new InstallQuickInput();
         assert.throw(() => {
           quickInput.getToolchain();
@@ -103,7 +103,7 @@ suite('View', function() {
         assert.strictEqual(quickInput.getVersion(), version);
       });
 
-      test('throw error when Version is undefined', function() {
+      test('NEG: throw error when Version is undefined', function() {
         let quickInput = new InstallQuickInput();
         assert.throw(() => {
           quickInput.getVersion();

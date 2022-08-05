@@ -22,21 +22,18 @@ import {containsNonAscii} from '../../View/PasswordQuickInput';
 suite('View', function() {
   suite('PasswordQuickInput', function() {
     suite('#containsNonAscii()', function() {
-      test('returns false with ascii(alphabet)', function() {
-        const str = 'abcdefghijkABCDEFGHIJK';
-        assert.isNotTrue(containsNonAscii(str));
-      });
-      test('returns false with ascii(number)', function() {
-        const str = '0123456789';
-        assert.isNotTrue(containsNonAscii(str));
-      });
-      test('returns false with ascii(etc)', function() {
-        const str = '\n\t\r!@#$%^&*(){}[]\\';
-        assert.isNotTrue(containsNonAscii(str));
-      });
-      test('returns true with non-ascii', function() {
-        const str = '헬로';
-        assert.isTrue(containsNonAscii(str));
+      test('basics', function() {
+        const strWithAlphabets = 'abcdefghijkABCDEFGHIJK';
+        assert.isNotTrue(containsNonAscii(strWithAlphabets));
+
+        const strWithNum = '0123456789';
+        assert.isNotTrue(containsNonAscii(strWithNum));
+
+        const strWithSpecialChar = '\n\t\r!@#$%^&*(){}[]\\';
+        assert.isNotTrue(containsNonAscii(strWithSpecialChar));
+
+        const strWithHan = '헬로';
+        assert.isTrue(containsNonAscii(strWithHan));
       });
     });
   });

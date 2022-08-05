@@ -21,6 +21,7 @@ function containsNonAscii(str: string): boolean {
   return !/^[\u0000-\u007f]*$/.test(str);
 }
 
+/* istanbul ignore next */
 async function showPasswordQuickInput(): Promise<string|undefined> {
   return await vscode.window.showInputBox({
     title: 'Enter password',
