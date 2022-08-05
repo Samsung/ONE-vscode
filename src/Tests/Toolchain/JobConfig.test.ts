@@ -20,7 +20,7 @@ import {Command} from '../../Backend/Command';
 import {Job} from '../../Job/Job';
 import {JobConfig} from '../../Toolchain/JobConfig';
 
-suite('Project', function() {
+suite('Toolchain', function() {
   suite('JobConfig', function() {
     suite('#contructor()', function() {
       test('is contructed with command', function() {
@@ -35,6 +35,7 @@ suite('Project', function() {
         assert.deepStrictEqual(job.name, 'config');
         assert.equal(job.jobType, Job.Type.tConfig);
         assert.isTrue(job.valid);
+        assert.isTrue(job.isCancelable);
       });
     });
   });

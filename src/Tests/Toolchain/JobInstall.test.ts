@@ -20,7 +20,7 @@ import {Command} from '../../Backend/Command';
 import {Job} from '../../Job/Job';
 import {JobInstall} from '../../Toolchain/JobInstall';
 
-suite('Project', function() {
+suite('Toolchain', function() {
   suite('JobInstall', function() {
     suite('#contructor()', function() {
       test('is contructed with command', function() {
