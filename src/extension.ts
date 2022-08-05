@@ -53,7 +53,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(PartEditorProvider.register(context));
   context.subscriptions.push(PartGraphSelPanel.register(context));
 
-  context.subscriptions.push(CircleViewerProvider.register(context));
+  CircleViewerProvider.register(context);
 
   // returning backend registration function that will be called by backend extensions
   return backendRegistrationApi();
