@@ -108,7 +108,6 @@ export class ToolRunner {
           `echo wrong_pw | sudo -S ...` fail.
         */
         cp.spawnSync('sudo', ['-k']);
-        process.env.userp = '';
       }
 
       // From https://nodejs.org/api/child_process.html#event-exit
