@@ -45,5 +45,22 @@ suite('Backend', function() {
         assert.deepStrictEqual(version.str(), expectedStr);
       });
     });
+
+    suite('#equals()', function() {
+      test('NEG: compares versions equality', function() {
+        const major1: number = 1;
+        const minor1: number = 0;
+        const patch1: number = 2;
+        const option1: string = '~220424nightly';
+        const version1 = new Version(major1, minor1, patch1, option1);
+
+        const major2: number = 1;
+        const minor2: number = 0;
+        const patch2: number = 2;
+        const option2: string = '~220805nightly';
+        const version2 = new Version(major2, minor2, patch2, option2);
+        assert.isFalse(version1.equals(version2));
+      });
+    });
   });
 });
