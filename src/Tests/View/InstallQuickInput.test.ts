@@ -64,6 +64,15 @@ suite('View', function() {
           quickInput.getToolchainEnv();
         });
       });
+
+      test('NEG: throw error when ToolchainEnv is not undefined, but error defined', function() {
+        let quickInput = new InstallQuickInput();
+        quickInput.toolchainEnv = toolchainEnv;
+        quickInput.error = 'some error';
+        assert.throw(() => {
+          quickInput.getToolchainEnv();
+        });
+      });
     });
 
     suite('#getToolchainType()', function() {
@@ -75,6 +84,15 @@ suite('View', function() {
 
       test('NEG: throw error when ToolchainType is undefined', function() {
         let quickInput = new InstallQuickInput();
+        assert.throw(() => {
+          quickInput.getToolchainType();
+        });
+      });
+
+      test('NEG: throw error when ToolchainType is not undefined, but error defined', function() {
+        let quickInput = new InstallQuickInput();
+        quickInput.toolchainType = toolchainType;
+        quickInput.error = 'some error';
         assert.throw(() => {
           quickInput.getToolchainType();
         });
@@ -94,6 +112,15 @@ suite('View', function() {
           quickInput.getToolchain();
         });
       });
+
+      test('NEG: throw error when Toolchain is not undefined, but error defined', function() {
+        let quickInput = new InstallQuickInput();
+        quickInput.toolchain = toolchain;
+        quickInput.error = 'some error';
+        assert.throw(() => {
+          quickInput.getToolchain();
+        });
+      });
     });
 
     suite('#getVersion()', function() {
@@ -105,6 +132,15 @@ suite('View', function() {
 
       test('NEG: throw error when Version is undefined', function() {
         let quickInput = new InstallQuickInput();
+        assert.throw(() => {
+          quickInput.getVersion();
+        });
+      });
+
+      test('NEG: throw error when when Version is not undefined, but error defined', function() {
+        let quickInput = new InstallQuickInput();
+        quickInput.version = version;
+        quickInput.error = 'some error';
         assert.throw(() => {
           quickInput.getVersion();
         });
