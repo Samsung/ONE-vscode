@@ -71,7 +71,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(MondrianEditorProvider.register(context));
 
-  context.subscriptions.push(PartEditorProvider.register(context));
+  PartEditorProvider.register(context);
   context.subscriptions.push(PartGraphSelPanel.register(context));
 
   context.subscriptions.push(CircleViewerProvider.register(context));
