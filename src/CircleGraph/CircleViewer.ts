@@ -103,17 +103,19 @@ export class CircleViewerProvider implements
 
   private _context: vscode.ExtensionContext;
 
-  public static register(context: vscode.ExtensionContext): vscode.Disposable {
-    let provider = new CircleViewerProvider(context);
-    let options = {
-      webviewOptions: {
-        retainContextWhenHidden: true,
-      },
-      supportsMultipleEditorsPerDocument: true,
-    };
+  public static register(context: vscode.ExtensionContext): void {
+    const provider = new CircleViewerProvider(context);
 
-    return vscode.window.registerCustomEditorProvider(
-        CircleViewerProvider.viewType, provider, options);
+    const registrations = [
+      vscode.window.registerCustomEditorProvider(CircleViewerProvider.viewType, provider, {
+        webviewOptions: {
+          retainContextWhenHidden: true,
+        },
+        supportsMultipleEditorsPerDocument: true,
+      })
+      // Add command registration here
+    ];
+    registrations.forEach(disposable => context.subscriptions.push(disposable));
   }
 
   constructor(private readonly context: vscode.ExtensionContext) {
