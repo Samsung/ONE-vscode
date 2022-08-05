@@ -307,7 +307,15 @@
           "when": "false"
         },
         {
+          "command": "one.toolchain.install",
+          "when": "false"
+        },
+        {
           "command": "one.toolchain.uninstall",
+          "when": "false"
+        },
+        {
+          "command": "one.toolchain.refresh",
           "when": "false"
         },
         {
