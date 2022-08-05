@@ -1,4 +1,4 @@
-# How to use?
+# Tutorial
 
 Let's compile an example by using ONE-vscode.
 
