@@ -22,24 +22,18 @@ import {containsNonAscii} from '../../View/PasswordQuickInput';
 suite('View', function() {
   suite('PasswordQuickInput', function() {
     suite('#containsNonAscii()', function() {
-      test('non-ASCII: Korean', function() {
-        const strWithKorean = '헬로';
-        assert.isTrue(containsNonAscii(strWithKorean));
-      });
-
-      test('NEG: string with alphabets', function() {
+      test('basics', function() {
         const strWithAlphabets = 'abcdefghijkABCDEFGHIJK';
         assert.isNotTrue(containsNonAscii(strWithAlphabets));
-      });
 
-      test('NEG: string with numbers', function() {
         const strWithNum = '0123456789';
         assert.isNotTrue(containsNonAscii(strWithNum));
-      });
 
-      test('NEG: string with special characters', function() {
         const strWithSpecialChar = '\n\t\r!@#$%^&*(){}[]\\';
         assert.isNotTrue(containsNonAscii(strWithSpecialChar));
+
+        const strWithHan = '헬로';
+        assert.isTrue(containsNonAscii(strWithHan));
       });
     });
   });
