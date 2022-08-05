@@ -69,7 +69,7 @@ export function activate(context: vscode.ExtensionContext) {
   });
   context.subscriptions.push(disposableOneJsontracer);
 
-  context.subscriptions.push(MondrianEditorProvider.register(context));
+  MondrianEditorProvider.register(context);
 
   context.subscriptions.push(PartEditorProvider.register(context));
   context.subscriptions.push(PartGraphSelPanel.register(context));

@@ -20,11 +20,15 @@ import {getUri} from '../Utils/external/Uri';
 
 /* istanbul ignore next */
 export class MondrianEditorProvider implements vscode.CustomTextEditorProvider {
-  public static register(context: vscode.ExtensionContext): vscode.Disposable {
+  public static register(context: vscode.ExtensionContext): void {
     const provider = new MondrianEditorProvider(context);
-    const providerRegistration =
-        vscode.window.registerCustomEditorProvider(MondrianEditorProvider.viewType, provider);
-    return providerRegistration;
+
+    const registrations = [
+      vscode.window.registerCustomEditorProvider(MondrianEditorProvider.viewType, provider)
+      // Add command registration here
+    ];
+
+    registrations.forEach(disposable => context.subscriptions.push(disposable));
   }
 
   private static readonly viewType = 'onevscode.mondrianViewer';
