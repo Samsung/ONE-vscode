@@ -37,7 +37,7 @@ suite('Utils', function() {
       });
     });
 
-    test('second cmd fails: NEG', function() {
+    test('NEG: second cmd fails', function() {
       let wc = pipedSpawn('echo', ['123'], {}, 'grep', ['not_exist'], {});
       wc.on('exit', (exitcode) => {
         if (exitcode === 0) {
@@ -47,7 +47,7 @@ suite('Utils', function() {
     });
 
     // Why is the test below skipped? This sometimes fail in CI. Check the reason.
-    test.skip('sudo failed: NEG', function() {
+    test.skip('NEG: sudo failed', function() {
       // make sure that sudo pw is not cached
       spawnSync('sudo', ['-k']);
 
