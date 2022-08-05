@@ -67,38 +67,37 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
   private _backendColors: BackendColor[];
   private _partEventHandler: PartGraphEvent|undefined;
 
-  public static register(context: vscode.ExtensionContext): vscode.Disposable {
-    // TODO add more commands
-    let disposableCmdReload = vscode.commands.registerCommand(
-        PartGraphSelPanel.cmdReload, (args: PartGraphCmdReloadArgs) => {
-          PartGraphSelPanel.reloadByOwner(context.extensionUri, args);
-        });
-    context.subscriptions.push(disposableCmdReload);
+  public static register(context: vscode.ExtensionContext): void {
+    const registrations = [
+      vscode.commands.registerCommand(
+          PartGraphSelPanel.cmdReload,
+          (args: PartGraphCmdReloadArgs) => {
+            PartGraphSelPanel.reloadByOwner(context.extensionUri, args);
+          }),
+      vscode.commands.registerCommand(
+          PartGraphSelPanel.cmdUpdate,
+          (args: PartGraphCmdUpdateArgs) => {
+            PartGraphSelPanel.updateByOwner(context.extensionUri, args);
+          }),
+      vscode.commands.registerCommand(
+          PartGraphSelPanel.cmdClose,
+          (args: PartGraphCmdCloseArgs) => {
+            PartGraphSelPanel.closeByOwner(context.extensionUri, args);
+          }),
+      vscode.commands.registerCommand(
+          PartGraphSelPanel.cmdFwdSelection,
+          (args: PartGraphCmdFwdSelArgs) => {
+            PartGraphSelPanel.forwardSelectionByOwner(context.extensionUri, args);
+          }),
+      vscode.commands.registerCommand(
+          PartGraphSelPanel.cmdOpen,
+          (args: PartGraphCmdOpenArgs, handler: PartGraphEvent) => {
+            PartGraphSelPanel.createOrShow(context.extensionUri, args, handler);
+          })
+      // TODO add more commands
+    ];
 
-    let disposableCmdUpdate = vscode.commands.registerCommand(
-        PartGraphSelPanel.cmdUpdate, (args: PartGraphCmdUpdateArgs) => {
-          PartGraphSelPanel.updateByOwner(context.extensionUri, args);
-        });
-    context.subscriptions.push(disposableCmdUpdate);
-
-    let disposableCmdClose = vscode.commands.registerCommand(
-        PartGraphSelPanel.cmdClose, (args: PartGraphCmdCloseArgs) => {
-          PartGraphSelPanel.closeByOwner(context.extensionUri, args);
-        });
-    context.subscriptions.push(disposableCmdClose);
-
-    let disposableCmdFwdSelection = vscode.commands.registerCommand(
-        PartGraphSelPanel.cmdFwdSelection, (args: PartGraphCmdFwdSelArgs) => {
-          PartGraphSelPanel.forwardSelectionByOwner(context.extensionUri, args);
-        });
-    context.subscriptions.push(disposableCmdFwdSelection);
-
-    let disposableGraphPenel = vscode.commands.registerCommand(
-        PartGraphSelPanel.cmdOpen, (args: PartGraphCmdOpenArgs, handler: PartGraphEvent) => {
-          PartGraphSelPanel.createOrShow(context.extensionUri, args, handler);
-        });
-
-    return disposableGraphPenel;
+    registrations.forEach(disposable => context.subscriptions.push(disposable));
   };
 
   public static createOrShow(
