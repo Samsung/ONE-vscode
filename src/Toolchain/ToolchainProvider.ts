@@ -124,7 +124,7 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
           (toolchain) => provider.setDefaultToolchain(toolchain))
     ];
 
-    registrations.forEach(disposal => context.subscriptions.push(disposal));
+    registrations.forEach(disposable => context.subscriptions.push(disposable));
   }
 
   constructor() {}
