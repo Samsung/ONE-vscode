@@ -61,7 +61,7 @@ export function activate(context: vscode.ExtensionContext) {
   });
   context.subscriptions.push(registerDevice);
 
-  context.subscriptions.push(CfgEditorPanel.register(context));
+  CfgEditorPanel.register(context);
 
   let disposableOneJsontracer = vscode.commands.registerCommand('one.viewer.jsonTracer', () => {
     Logger.info(tag, 'one json tracer...');
