@@ -18,7 +18,7 @@ import {assert} from 'chai';
 import {Command} from '../Backend/Command';
 
 import {CompilerBase} from '../Backend/Compiler';
-import {ToolchainInfo, Toolchains} from '../Backend/Toolchain';
+import {Toolchain, ToolchainInfo, Toolchains} from '../Backend/Toolchain';
 import {DebianToolchain} from '../Backend/ToolchainImpl/DebianToolchain';
 import {Version} from '../Backend/Version';
 
@@ -26,6 +26,7 @@ const mocCompilerType1: string = 'test';
 const mocCompilerType2: string = 'test2';
 
 class MockCompiler extends CompilerBase {
+  // class MockCompiler extends CompilerBase {
   // TODO: What toolchain is necessary as tests?
   installedToolchain: DebianToolchain;
   availableToolchain: DebianToolchain;
@@ -73,4 +74,38 @@ class MockCompiler extends CompilerBase {
   }
 }
 
-export {MockCompiler};
+// NOTE
+// In Debian systems, only one package can be installed. This compiler was
+// configured to test the abnormal situation where several of the same packages
+// are installed.
+class MockCompilerWithMultipleInstalledToolchains extends MockCompiler {
+  getInstalledToolchains(toolchainType: string): Toolchains {
+    if (toolchainType !== mocCompilerType1 && toolchainType !== mocCompilerType2) {
+      throw Error(`Unknown toolchain type: ${toolchainType}`);
+    }
+    if (toolchainType === mocCompilerType1) {
+      return [this.installedToolchain];
+    } else if (toolchainType === mocCompilerType2) {
+      return [this.installedToolchain];
+    } else {
+      return [];
+    }
+  }
+}
+
+// NOTE
+// This compiler configures an environment without any installed toolchains.
+class MockCompilerWithNoInstalledToolchain extends MockCompiler {
+  getInstalledToolchains(toolchainType: string): Toolchains {
+    if (toolchainType !== mocCompilerType1 && toolchainType !== mocCompilerType2) {
+      throw Error(`Unknown toolchain type: ${toolchainType}`);
+    }
+    return [];
+  }
+}
+
+export {
+  MockCompiler,
+  MockCompilerWithMultipleInstalledToolchains,
+  MockCompilerWithNoInstalledToolchain
+};

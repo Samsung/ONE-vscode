@@ -131,61 +131,69 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
     this._onDidChangeTreeData.fire();
   }
 
+  /* istanbul ignore next */
+  public _notifyInstalled(toolchainEnv: ToolchainEnv, toolchain: Toolchain) {
+    const name = `${toolchain.info.name}-${toolchain.info.version ?.str()}`;
+    vscode.window.showInformationMessage(`Installed ${name} successfully.`);
+    if (Object.keys(gToolchainEnvMap).length > 1 || toolchainEnv.listInstalled().length > 1) {
+      DefaultToolchain.getInstance().ask(toolchainEnv, toolchain).then(() => this.refresh());
+    }
+    this.refresh();
+  }
+
+  /* istanbul ignore next */
+  public _notifyInstallationError() {
+    this.error('Installation has failed');
+  }
+
+  /* istanbul ignore next */
+  public _notifyInstallationCancelled() {
+    Logger.info(this.tag, 'Installation was cancelled');
+  }
+
+  // Use this function only for test
+  public _install(toolchainEnv: ToolchainEnv, toolchain: Toolchain): boolean|undefined {
+    // NOTE(jyoung)
+    // The `DebianToolchain` of the backend and the `DebianToolchain` of this project
+    // are not recognized as the same object by `instanceof` function.
+    const installed =
+        toolchainEnv.listInstalled().filter(value => value.constructor.name === 'DebianToolchain');
+
+    if (installed.length > 1) {
+      this.error('Installed debian toolchain must be unique.');
+      return false;
+    }
+
+    if (installed.length !== 1) {
+      toolchainEnv.install(toolchain).then(
+          () => this._notifyInstalled(toolchainEnv, toolchain),
+          () => this._notifyInstallationError());
+    }
+
+    /* istanbul ignore next */
+    vscode.window
+        .showInformationMessage(
+            'Do you want to remove the existing and re-install? Backend toolchain can be installed only once.',
+            'Yes', 'No')
+        .then((answer) => {
+          if (answer === 'Yes') {
+            const jobs: Array<Job> = [];
+            jobs.push(new JobUninstall(installed[0].uninstall()));
+            jobs.push(new JobInstall(toolchain.install()));
+            toolchainEnv.request(jobs).then(
+                () => this._notifyInstalled(toolchainEnv, toolchain),
+                () => this._notifyInstallationError());
+          } else {
+            this._notifyInstallationCancelled();
+          }
+        });
+  }
+
   public install() {
     /* istanbul ignore next */
-    const notifyInstalled = (toolchainEnv: ToolchainEnv, toolchain: Toolchain) => {
-      const name = `${toolchain.info.name}-${toolchain.info.version ?.str()}`;
-      vscode.window.showInformationMessage(`Installed ${name} successfully.`);
-      if (Object.keys(gToolchainEnvMap).length > 1 || toolchainEnv.listInstalled().length > 1) {
-        DefaultToolchain.getInstance().ask(toolchainEnv, toolchain).then(() => this.refresh());
-      }
-      this.refresh();
-    };
-
-    /* istanbul ignore next */
-    const notifyError = () => {
-      this.error('Installation has failed');
-    };
-
-    /* istanbul ignore next */
-    const notifyCancelled = () => {
-      Logger.info(this.tag, 'Installation was cancelled');
-    };
-
     showInstallQuickInput().then(([toolchainEnv, toolchain]) => {
-      // NOTE(jyoung)
-      // The `DebianToolchain` of the backend and the `DebianToolchain` of this project
-      // are not recognized as the same object by `instanceof` function.
-      const installed = toolchainEnv.listInstalled().filter(
-          value => value.constructor.name === 'DebianToolchain');
-
-      if (installed.length > 1) {
-        this.error('Installed debian toolchain must be unique.');
-        return;
-      }
-
-      if (installed.length !== 1) {
-        toolchainEnv.install(toolchain).then(
-            () => notifyInstalled(toolchainEnv, toolchain), () => notifyError());
-        return;
-      }
-
-      vscode.window
-          .showInformationMessage(
-              'Do you want to remove the existing and re-install? Backend toolchain can be installed only once.',
-              'Yes', 'No')
-          .then((answer) => {
-            if (answer === 'Yes') {
-              const jobs: Array<Job> = [];
-              jobs.push(new JobUninstall(installed[0].uninstall()));
-              jobs.push(new JobInstall(toolchain.install()));
-              toolchainEnv.request(jobs).then(
-                  () => notifyInstalled(toolchainEnv, toolchain), () => notifyError());
-            } else {
-              notifyCancelled();
-            }
-          });
-    }, () => notifyCancelled());
+      this._install(toolchainEnv, toolchain);
+    }, () => this._notifyInstallationCancelled());
   }
 
   public uninstall(tnode: ToolchainNode): boolean|undefined {

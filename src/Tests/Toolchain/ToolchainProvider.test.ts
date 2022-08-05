@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {assert, expect} from 'chai';
+import {assert} from 'chai';
 import * as vscode from 'vscode';
 
 import {PackageInfo, ToolchainInfo} from '../../Backend/Toolchain';
@@ -23,7 +23,7 @@ import {Version} from '../../Backend/Version';
 import {DefaultToolchain} from '../../Toolchain/DefaultToolchain';
 import {gToolchainEnvMap, ToolchainEnv} from '../../Toolchain/ToolchainEnv';
 import {BackendNode, BaseNode, NodeBuilder, ToolchainNode, ToolchainProvider} from '../../Toolchain/ToolchainProvider';
-import {MockCompiler} from '../MockCompiler';
+import {MockCompiler, MockCompilerWithMultipleInstalledToolchains, MockCompilerWithNoInstalledToolchain} from '../MockCompiler';
 
 suite('Toolchain', function() {
   const compiler = new MockCompiler();
@@ -194,10 +194,36 @@ suite('Toolchain', function() {
       });
     });
 
-    // TODO: install(), uninstall() and run()
-    // suite('#install', function() {
-    //   test('')
-    // });
+    suite('#_install', function() {
+      test('requests _install', function() {
+        const provider = new ToolchainProvider();
+        const types = toolchainEnv.getToolchainTypes();
+        const toolchains = toolchainEnv.listAvailable(types[0], 0, 1);
+        assert.isAbove(toolchains.length, 0);
+        provider._install(toolchainEnv, toolchains[0]);
+        assert.isTrue(true);
+      });
+      test('requests _install with no installed toolchain', function() {
+        const provider = new ToolchainProvider();
+        const tcompiler = new MockCompilerWithNoInstalledToolchain();
+        const invalidToolchainEnv = new ToolchainEnv(tcompiler);
+        const types = invalidToolchainEnv.getToolchainTypes();
+        const toolchains = invalidToolchainEnv.listAvailable(types[0], 0, 1);
+        assert.isAbove(toolchains.length, 0);
+        provider._install(invalidToolchainEnv, toolchains[0]);
+        assert.isTrue(true);
+      });
+      test('NEG: requests _install with multiple installed toolchains', function() {
+        const provider = new ToolchainProvider();
+        const tcompiler = new MockCompilerWithMultipleInstalledToolchains();
+        const invalidToolchainEnv = new ToolchainEnv(tcompiler);
+        const types = invalidToolchainEnv.getToolchainTypes();
+        const toolchains = invalidToolchainEnv.listAvailable(types[0], 0, 1);
+        assert.isAbove(toolchains.length, 0);
+        const ret = provider._install(invalidToolchainEnv, toolchains[0]);
+        assert.isFalse(ret);
+      });
+    });
 
     suite('#uninstall', function() {
       test('requests uninstall', function() {
