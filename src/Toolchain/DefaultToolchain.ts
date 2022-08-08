@@ -29,11 +29,12 @@ class DefaultToolchain {
     // This is private constructor
   }
 
-  static getInstance() {
+  public static getInstance() {
     return this._instance || (this._instance = new this());
   }
 
-  async ask(toolchainEnv: ToolchainEnv, toolchain: Toolchain): Promise<boolean> {
+  /* istanbul ignore next */
+  public async ask(toolchainEnv: ToolchainEnv, toolchain: Toolchain): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
       const name = `${toolchain.info.name}-${toolchain.info.version ?.str()}`;
       vscode.window
@@ -49,13 +50,14 @@ class DefaultToolchain {
     });
   }
 
-  set(toolchainEnv: ToolchainEnv, toolchain: Toolchain) {
+  public set(toolchainEnv: ToolchainEnv, toolchain: Toolchain) {
     if (this.isEqual(toolchain)) {
       return;
     }
     this._toolchainEnv = toolchainEnv;
     this._toolchain = toolchain;
     const name = `${toolchain.info.name}-${toolchain.info.version ?.str()}`;
+    /* istanbul ignore next */
     vscode.window
         .showInformationMessage(`${name} was set as a default toolchain.`, 'OK', `See Instructions`)
         .then((value) => {
@@ -65,26 +67,27 @@ class DefaultToolchain {
         });
   }
 
-  unset() {
+  public unset() {
     this._toolchainEnv = undefined;
     this._toolchain = undefined;
   }
 
-  openDocument() {
+  /* istanbul ignore next */
+  public openDocument() {
     const doc =
         'https://github.com/Samsung/ONE-vscode/blob/main/docs/Tutorial.md#set-default-toolchain';
     vscode.env.openExternal(vscode.Uri.parse(doc));
   }
 
-  getToolchain(): Toolchain|undefined {
+  public getToolchain(): Toolchain|undefined {
     return this._toolchain;
   }
 
-  getToolchainEnv(): ToolchainEnv|undefined {
+  public getToolchainEnv(): ToolchainEnv|undefined {
     return this._toolchainEnv;
   }
 
-  isEqual(toolchain: Toolchain) {
+  public isEqual(toolchain: Toolchain) {
     if (this._toolchain &&
         JSON.stringify(this._toolchain.info) === JSON.stringify(toolchain.info)) {
       return true;
