@@ -61,9 +61,7 @@ suite('Toolchain', function() {
         let toolchains = env.listAvailable(types[0], 0, 1);
         assert.deepEqual(toolchains, [compiler.availableToolchain]);
       });
-    });
 
-    suite('#listAvailable()', function() {
       test('checks list count', function() {
         let env = new ToolchainEnv(compiler);
         const types = env.getToolchainTypes();
@@ -71,9 +69,7 @@ suite('Toolchain', function() {
         let toolchains = env.listAvailable(types[0], 0, count);
         assert.equal(toolchains.length, count);
       });
-    });
 
-    suite('#listAvailable()', function() {
       test('NEG: lists available toolchains with wrong type', function() {
         const env = new ToolchainEnv(compiler);
         const types = env.getToolchainTypes();
@@ -83,9 +79,7 @@ suite('Toolchain', function() {
           env.listAvailable(wrongType, 0, 10);
         }).to.throw(`Unknown toolchain type: ${wrongType}`);
       });
-    });
 
-    suite('#listAvailable()', function() {
       test('NEG: lists available toolchains with wrong start number', function() {
         const env = new ToolchainEnv(compiler);
         const types = env.getToolchainTypes();
@@ -94,9 +88,7 @@ suite('Toolchain', function() {
           env.listAvailable(types[0], wrongStart, 10);
         }).to.throw(`wrong start number: ${wrongStart}`);
       });
-    });
 
-    suite('#listAvailable()', function() {
       test('NEG: lists available toolchains with wrong count number', function() {
         const env = new ToolchainEnv(compiler);
         const types = env.getToolchainTypes();
@@ -113,9 +105,7 @@ suite('Toolchain', function() {
         let toolchains = env.listInstalled();
         assert.deepEqual(toolchains, [compiler.installedToolchain]);
       });
-    });
 
-    suite('#listInstalled()', function() {
       test('NEG: lists installed toolchains with wrong type', function() {
         const env = new ToolchainEnv(compiler);
         const types = env.getToolchainTypes();
@@ -141,9 +131,7 @@ suite('Toolchain', function() {
               assert.fail();
             });
       });
-    });
 
-    suite('#request()', function() {
       test('NEG: requests failed job (length:1)', function() {
         let env = new ToolchainEnv(compiler);
         const job0 = new MockFailedJob('job0');
@@ -154,20 +142,18 @@ suite('Toolchain', function() {
       });
     });
 
-    suite('#request()', function() {
-      test('NEG: requests failed job (length:2)', function() {
-        let env = new ToolchainEnv(compiler);
-        const job0 = new MockJob('job0');
-        const job1 = new MockFailedJob('job1');
-        const jobs: Array<Job> = [job0, job1];
-        env.request(jobs).then(
-            (_value) => {
-              assert.fail();
-            },
-            (_reason) => {
-              assert.isTrue(true);
-            });
-      });
+    test('NEG: requests failed job (length:2)', function() {
+      let env = new ToolchainEnv(compiler);
+      const job0 = new MockJob('job0');
+      const job1 = new MockFailedJob('job1');
+      const jobs: Array<Job> = [job0, job1];
+      env.request(jobs).then(
+          (_value) => {
+            assert.fail();
+          },
+          (_reason) => {
+            assert.isTrue(true);
+          });
     });
 
     suite('#prerequisites()', function() {
