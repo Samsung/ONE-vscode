@@ -76,9 +76,6 @@ suite('Toolchain', function() {
         assert.strictEqual(node.collapsibleState, collapsibleState);
         assert.strictEqual(node.backendName, backendName);
       });
-    });
-
-    suite('#constructor()', function() {
       test('is constructed with params using toolchian_node with dependencies', function() {
         const label = 'backend_node';
         const dependencyInfo = new PackageInfo('nodejs', new Version(8, 10, 0, '~dfsg-2'));
