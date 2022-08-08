@@ -20,7 +20,7 @@ import {backendRegistrationApi} from './Backend/API';
 import {CfgEditorPanel} from './CfgEditor/CfgEditorPanel';
 import {CircleViewerProvider} from './CircleGraph/CircleViewer';
 import {DeviceViewProvider} from './Execute/DeviceViewProvider';
-import {Jsontracer} from './Jsontracer';
+import {JsonTracerViewerPanel} from './Jsontracer/JsonTracerViewerPanel';
 import {MondrianEditorProvider} from './Mondrian/MondrianEditor';
 import {OneTreeDataProvider} from './OneExplorer/OneExplorer';
 import {PartEditorProvider} from './PartEditor/PartEditor';
@@ -42,11 +42,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   CfgEditorPanel.register(context);
 
-  let disposableOneJsontracer = vscode.commands.registerCommand('one.viewer.jsontrace.open', () => {
-    Logger.info(tag, 'one json tracer...');
-    Jsontracer.createOrShow(context.extensionUri);
-  });
-  context.subscriptions.push(disposableOneJsontracer);
+  JsonTracerViewerPanel.register(context);
 
   MondrianEditorProvider.register(context);
 

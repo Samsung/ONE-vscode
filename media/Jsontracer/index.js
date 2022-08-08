@@ -46,17 +46,24 @@
 // https://github.com/catapult-project/catapult/tree/444aba89e1c30edf348c611a9df79e2376178ba8/tracing
 
 import dynamicGraduation from './dynamicGraduation.js';
-import openFileSelector from './processData.js';
+import {processData} from './processData.js';
+
+// event from vscode extension
+window.addEventListener('message', event => {
+  const message = event.data;
+  switch (message.type) {
+    case 'load':
+      initData();
+      processData(message.content);
+      break;
+    default:
+      break;
+  }
+});
 
 const graph = document.querySelector('.graph');
 const sliderMaxLimit = 6400;
 const sliderMinLimit = 100;
-
-const loadBtn = document.querySelector('.load-btn');
-loadBtn.addEventListener('click', () => {
-  initData();
-  openFileSelector();
-});
 
 let ratio = 100;
 const slider = document.querySelector('input');
@@ -108,13 +115,6 @@ zoomOutBtn.addEventListener('click', () => {
   zoomOutBtn.disabled = true;
   setTimeout(() => (zoomOutBtn.disabled = false), 300);
 });
-
-const captureBtn = document.querySelector('.capture-btn');
-captureBtn.addEventListener(
-    'click',
-    () => {
-        // TODO capture inside vscode extension webview
-    });
 
 function changeSlider(inputValue, inputMax, inputMin) {
   if (inputMax === inputValue) {
