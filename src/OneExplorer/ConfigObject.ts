@@ -198,6 +198,12 @@ export class ConfigObj {
 
     let locatorRunner = new LocatorRunner();
 
+    /**
+     * ABOUT ORDERING
+     *
+     * The registration order determines the order in the tree view
+     */
+
     locatorRunner.register({
       artifactAttr: {
         ext: '.circle',
@@ -223,6 +229,20 @@ export class ConfigObj {
         return LocatorRunner.searchWithExt('.tvn', value)
             .map(filepath => filepath.replace('.tvn', '.tracealloc.json'));
       })
+    });
+
+    locatorRunner.register({
+      artifactAttr: {
+        ext: '.json',
+        icon: new vscode.ThemeIcon('graph'),
+        openViewType: 'one.editor.jsonTracer',
+        canHide: true
+      },
+      locator: new Locator(
+          (value: string) => {
+            return LocatorRunner.searchWithCommandOption(value, '--save-chrome-trace', '.json');
+          },
+          'one-profile', 'command')
     });
 
     locatorRunner.register({
@@ -257,15 +277,6 @@ export class ConfigObj {
         return LocatorRunner.searchWithExt('.circle', value)
             .map(filepath => filepath.replace('.circle', '.circle.log'));
       })
-    });
-
-    locatorRunner.register({
-      artifactAttr: {ext: '.json', icon: vscode.ThemeIcon.File, canHide: true},
-      locator: new Locator(
-          (value: string) => {
-            return LocatorRunner.searchWithCommandOption(value, '--save-chrome-trace', '.json');
-          },
-          'one-profile', 'command')
     });
 
     let artifacts: Artifact[] = locatorRunner.run(iniObj, dir);
