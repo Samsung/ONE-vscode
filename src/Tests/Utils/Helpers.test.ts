@@ -45,7 +45,7 @@ suite('Utils', function() {
         assert.isObject<RealPath>(realPath!);
       });
 
-      test('return null when path not exists', function() {
+      test('NEG: return null when path not exists', function() {
         let realPath = RealPath.createRealPath('/dummy/not/exists/here');
         assert.isNull(realPath);
       });
