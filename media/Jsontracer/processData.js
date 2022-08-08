@@ -50,35 +50,7 @@ import renderDashboard from './dashboard.js';
 
 const setData = document.querySelector('.set-data');
 
-export default function openFileSelector() {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'text/plain';
-  input.onchange = (event) => {
-    setFileName(event.target.files[0].name);
-    processFile(event.target.files[0]);
-  };
-  input.click();
-}
-
-function setFileName(name) {
-  const fileName = document.querySelector('.file-name');
-  fileName.innerText = name;
-}
-
-function processFile(file) {
-  const reader = new FileReader();
-  reader.onload = () => {
-    const data = JSON.parse(reader.result);
-    processData(data.traceEvents);
-
-    // set data to DOM
-    setData.dataset['displayTimeUnit'] = data.displayTimeUnit;
-  };
-  reader.readAsText(file, 'euc-kr');
-}
-
-function processData(data) {
+export function processData(data) {
   const processedData = {};
   const backgroundColor = {};
   const utility = {};

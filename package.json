@@ -87,6 +87,16 @@
           }
         ],
         "priority": "default"
+      },
+      {
+        "viewType": "one.editor.jsonTracer",
+        "displayName": "Json Tracer",
+        "selector": [
+          {
+            "filenamePattern": "*.timeline.json"
+          }
+        ],
+        "priority": "option"
       }
     ],
     "commands": [
