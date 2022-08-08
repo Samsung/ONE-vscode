@@ -87,7 +87,7 @@ export class NodeBuilder {
     }
 
     const backendName = bnode.label;
-    if ((backendName in gToolchainEnvMap) === undefined) {
+    if (!Object.keys(gToolchainEnvMap).includes(backendName)) {
       return [];
     }
     const toolchains = gToolchainEnvMap[bnode.label].listInstalled();
@@ -109,6 +109,7 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
       new vscode.EventEmitter<ToolchainTreeData>();
   readonly onDidChangeTreeData?: vscode.Event<ToolchainTreeData> = this._onDidChangeTreeData.event;
 
+  /* istanbul ignore next */
   public static register(context: vscode.ExtensionContext) {
     const provider = new ToolchainProvider();
 
@@ -127,13 +128,11 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
     registrations.forEach(disposable => context.subscriptions.push(disposable));
   }
 
-  constructor() {}
-
-  getTreeItem(element: BaseNode): vscode.TreeItem {
+  public getTreeItem(element: BaseNode): vscode.TreeItem {
     return element;
   }
 
-  getChildren(element?: BaseNode): Thenable<BaseNode[]> {
+  public getChildren(element?: BaseNode): Thenable<BaseNode[]> {
     if (element === undefined) {
       return Promise.resolve(NodeBuilder.createBackendNodes());
     } else {
@@ -141,124 +140,152 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
     }
   }
 
-  error(msg: string, ...args: string[]): Thenable<string|undefined> {
+  /* istanbul ignore next */
+  private error(msg: string, ...args: string[]): Thenable<string|undefined> {
     Logger.error(this.tag, msg);
     return vscode.window.showErrorMessage(msg, ...args);
   }
 
-  refresh() {
+  public refresh() {
     this._onDidChangeTreeData.fire();
   }
 
-  install() {
-    const notifyInstalled = (toolchainEnv: ToolchainEnv, toolchain: Toolchain) => {
-      const name = `${toolchain.info.name}-${toolchain.info.version ?.str()}`;
-      vscode.window.showInformationMessage(`Installed ${name} successfully.`);
-      if (Object.keys(gToolchainEnvMap).length > 1 || toolchainEnv.listInstalled().length > 1) {
-        DefaultToolchain.getInstance().ask(toolchainEnv, toolchain).then(() => this.refresh());
+  /* istanbul ignore next */
+  public _notifyInstalled(toolchainEnv: ToolchainEnv, toolchain: Toolchain) {
+    const name = `${toolchain.info.name}-${toolchain.info.version ?.str()}`;
+    vscode.window.showInformationMessage(`Installed ${name} successfully.`);
+    if (Object.keys(gToolchainEnvMap).length > 1 || toolchainEnv.listInstalled().length > 1) {
+      DefaultToolchain.getInstance().ask(toolchainEnv, toolchain).then(() => this.refresh());
+    }
+    this.refresh();
+  }
+
+  /* istanbul ignore next */
+  public _notifyInstallationError() {
+    this.error('Installation has failed');
+  }
+
+  /* istanbul ignore next */
+  public _notifyInstallationCancelled() {
+    Logger.info(this.tag, 'Installation was cancelled');
+  }
+
+  // Use this function only for test
+  public _install(toolchainEnv: ToolchainEnv, toolchain: Toolchain): boolean|undefined {
+    // NOTE(jyoung)
+    // The `DebianToolchain` of the backend and the `DebianToolchain` of this project
+    // are not recognized as the same object by `instanceof` function.
+    const installed =
+        toolchainEnv.listInstalled().filter(value => value.constructor.name === 'DebianToolchain');
+
+    if (installed.length > 1) {
+      this.error('Installed debian toolchain must be unique.');
+      return false;
+    }
+
+    if (installed.length !== 1) {
+      toolchainEnv.install(toolchain).then(
+          () => this._notifyInstalled(toolchainEnv, toolchain),
+          () => this._notifyInstallationError());
+    }
+
+    /* istanbul ignore next */
+    vscode.window
+        .showInformationMessage(
+            'Do you want to remove the existing and re-install? Backend toolchain can be installed only once.',
+            'Yes', 'No')
+        .then((answer) => {
+          if (answer === 'Yes') {
+            const jobs: Array<Job> = [];
+            jobs.push(new JobUninstall(installed[0].uninstall()));
+            jobs.push(new JobInstall(toolchain.install()));
+            toolchainEnv.request(jobs).then(
+                () => this._notifyInstalled(toolchainEnv, toolchain),
+                () => this._notifyInstallationError());
+          } else {
+            this._notifyInstallationCancelled();
+          }
+        });
+  }
+
+  /* istanbul ignore next */
+  public install() {
+    showInstallQuickInput().then(([toolchainEnv, toolchain]) => {
+      this._install(toolchainEnv, toolchain);
+    }, () => this._notifyInstallationCancelled());
+  }
+
+  /* istanbul ignore next */
+  public uninstall(tnode: ToolchainNode): boolean|undefined {
+    const notifyUninstalled = () => {
+      vscode.window.showInformationMessage(`Uninstallation was successful.`);
+      if (DefaultToolchain.getInstance().isEqual(tnode.toolchain)) {
+        Logger.info(this.tag, 'Setting default toolchain was cancelled.');
+        DefaultToolchain.getInstance().unset();
       }
       this.refresh();
     };
 
+    /* istanbul ignore next */
     const notifyError = () => {
-      this.error('Installation has failed');
+      this.error('Uninstallation has failed.');
     };
-
-    const notifyCancelled = () => {
-      Logger.info(this.tag, 'Installation was cancelled');
-    };
-
-    showInstallQuickInput().then(([toolchainEnv, toolchain]) => {
-      // NOTE(jyoung)
-      // The `DebianToolchain` of the backend and the `DebianToolchain` of this project
-      // are not recognized as the same object by `instanceof` function.
-      const installed = toolchainEnv.listInstalled().filter(
-          value => value.constructor.name === 'DebianToolchain');
-
-      if (installed.length > 1) {
-        this.error('Installed debian toolchain must be unique.');
-        return;
-      }
-
-      if (installed.length !== 1) {
-        toolchainEnv.install(toolchain).then(
-            () => notifyInstalled(toolchainEnv, toolchain), () => notifyError());
-        return;
-      }
-
-      vscode.window
-          .showInformationMessage(
-              'Do you want to remove the existing and re-install? Backend toolchain can be installed only once.',
-              'Yes', 'No')
-          .then((answer) => {
-            if (answer === 'Yes') {
-              const jobs: Array<Job> = [];
-              jobs.push(new JobUninstall(installed[0].uninstall()));
-              jobs.push(new JobInstall(toolchain.install()));
-              toolchainEnv.request(jobs).then(
-                  () => notifyInstalled(toolchainEnv, toolchain), () => notifyError());
-            } else {
-              notifyCancelled();
-            }
-          });
-    }, () => notifyCancelled());
-  }
-
-  uninstall(tnode: ToolchainNode) {
-    if (tnode === undefined) {
-      throw Error('Invalid toolchain node.');
-    }
 
     const backendName = tnode.backendName;
-    if (backendName === undefined) {
-      throw Error('Invalid toolchain node.');
+    if (!Object.keys(gToolchainEnvMap).includes(backendName)) {
+      this.error('Invalid toolchain node.');
+      return false;
     }
 
     gToolchainEnvMap[backendName]
         .uninstall(tnode.toolchain)
-        .then(
-            () => {
-              vscode.window.showInformationMessage(`Uninstallation was successful.`);
-              if (DefaultToolchain.getInstance().isEqual(tnode.toolchain)) {
-                Logger.info(this.tag, 'Setting default toolchain was cancelled.');
-                DefaultToolchain.getInstance().unset();
-              }
-              this.refresh();
-            },
-            () => {
-              this.error('Uninstallation has failed.');
-            });
+        .then(() => notifyUninstalled(), () => notifyError());
   }
 
-  run(cfg: string) {
-    const activeToolchainEnv = DefaultToolchain.getInstance().getToolchainEnv();
-    const activeToolchain = DefaultToolchain.getInstance().getToolchain();
+  public run(cfg: string): boolean|undefined {
+    /* istanbul ignore next */
+    const notifySuccess = () => {
+      vscode.window.showInformationMessage('Onecc has run successfully.');
+    };
 
-    if (!activeToolchainEnv || !activeToolchain) {
+    /* istanbul ignore next */
+    const notifyGuideline = () => {
       this.error(
               'Default toolchain is not set. Please install toolchain and set the default toolchain.',
               'OK', 'Instruction')
           .then((value) => {
             if (value === 'Instruction') {
+              /* istanbul ignore next */
               DefaultToolchain.getInstance().openDocument();
             }
           });
-      return;
+    };
+
+    /* istanbul ignore next */
+    const notifyError = () => {
+      this.error('Running onecc has failed.');
+    };
+
+    const activeToolchainEnv = DefaultToolchain.getInstance().getToolchainEnv();
+    const activeToolchain = DefaultToolchain.getInstance().getToolchain();
+
+    if (!activeToolchainEnv || !activeToolchain) {
+      notifyGuideline();
+      return false;
     }
 
     Logger.info(this.tag, `Run onecc with ${cfg} cfg and ${activeToolchain.info.name}-${activeToolchain.info.version?.str()} toolchain.`);
-    activeToolchainEnv.run(cfg, activeToolchain).then(() => {
-      vscode.window.showInformationMessage('Onecc has run successfully.');
-    }, () => this.error('Running onecc has failed.'));
+    activeToolchainEnv.run(cfg, activeToolchain).then(() => notifySuccess(), () => notifyError());
   }
 
-  setDefaultToolchain(node: ToolchainNode) {
-    if (!node.backend || !node.toolchain) {
+  public setDefaultToolchain(tnode: ToolchainNode): boolean|undefined {
+    const backendName = tnode.backendName;
+    if (!Object.keys(gToolchainEnvMap).includes(backendName)) {
       this.error('Invalid toolchain node.');
-      return;
+      return false;
     }
 
-    DefaultToolchain.getInstance().set(gToolchainEnvMap[node.backend], node.toolchain);
+    DefaultToolchain.getInstance().set(gToolchainEnvMap[tnode.backend], tnode.toolchain);
     this.refresh();
   }
 }

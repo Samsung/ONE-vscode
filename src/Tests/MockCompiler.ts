@@ -73,4 +73,38 @@ class MockCompiler extends CompilerBase {
   }
 }
 
-export {MockCompiler};
+// NOTE
+// In Debian systems, only one package can be installed. This compiler was
+// configured to test the abnormal situation where several of the same packages
+// are installed.
+class MockCompilerWithMultipleInstalledToolchains extends MockCompiler {
+  getInstalledToolchains(toolchainType: string): Toolchains {
+    if (toolchainType !== mockCompilerType1 && toolchainType !== mockCompilerType2) {
+      throw Error(`Unknown toolchain type: ${toolchainType}`);
+    }
+    if (toolchainType === mockCompilerType1) {
+      return [this.installedToolchain];
+    } else if (toolchainType === mockCompilerType2) {
+      return [this.installedToolchain];
+    } else {
+      return [];
+    }
+  }
+}
+
+// NOTE
+// This compiler configures an environment without any installed toolchains.
+class MockCompilerWithNoInstalledToolchain extends MockCompiler {
+  getInstalledToolchains(toolchainType: string): Toolchains {
+    if (toolchainType !== mockCompilerType1 && toolchainType !== mockCompilerType2) {
+      throw Error(`Unknown toolchain type: ${toolchainType}`);
+    }
+    return [];
+  }
+}
+
+export {
+  MockCompiler,
+  MockCompilerWithMultipleInstalledToolchains,
+  MockCompilerWithNoInstalledToolchain
+};
