@@ -308,7 +308,7 @@
         },
         {
           "command": "one.toolchain.install",
-          "when": "false"
+          "when": "true"
         },
         {
           "command": "one.toolchain.uninstall",
