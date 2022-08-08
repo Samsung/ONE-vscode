@@ -15,9 +15,8 @@
  */
 
 import {assert} from 'chai';
-import {join} from 'path';
 
-import {loadCfgFile, obtainWorkspaceRoot, RealPath} from '../../Utils/Helpers';
+import {obtainWorkspaceRoot, RealPath} from '../../Utils/Helpers';
 
 suite('Utils', function() {
   suite('Helpers', function() {
@@ -26,16 +25,6 @@ suite('Utils', function() {
         const workspaceRoot: string = obtainWorkspaceRoot();
         assert.isNotNull(workspaceRoot);
         assert.isString(workspaceRoot);
-      });
-    });
-    suite('#loadCfgFile()', function() {
-      test('returns cfgIni object', function() {
-        const workspaceRoot: string = obtainWorkspaceRoot();
-        const cfgFile = join(workspaceRoot, 'res', 'samples', 'cfg', 'inception_v3.cfg');
-        const cfgIni = loadCfgFile(cfgFile);
-        assert.isNotNull(cfgIni);
-        assert.strictEqual(cfgIni['onecc']['one-import-tf'], 'True');
-        assert.strictEqual(cfgIni['onecc']['one-import-tflite'], 'False');
       });
     });
 
@@ -47,6 +36,31 @@ suite('Utils', function() {
 
       test('NEG: return null when path not exists', function() {
         let realPath = RealPath.createRealPath('/dummy/not/exists/here');
+        assert.isNull(realPath);
+      });
+
+      test('NEG: cannot create when rawpath includes invalud path - 1', function() {
+        let realPath = RealPath.createRealPath('/../dummy/');
+        assert.isNull(realPath);
+      });
+
+      test('NEG: cannot create when rawpath includes invalud path - 2', function() {
+        let realPath = RealPath.createRealPath('/../dummy/../dummy');
+        assert.isNull(realPath);
+      });
+
+      test('NEG: cannot create when rawpath includes invalud path - 3', function() {
+        let realPath = RealPath.createRealPath('/../dummy/.');
+        assert.isNull(realPath);
+      });
+
+      test('NEG: cannot create when rawpath includes invalud path - 4', function() {
+        let realPath = RealPath.createRealPath('/../../dummy/.');
+        assert.isNull(realPath);
+      });
+
+      test('NEG: cannot create when rawpath includes invalud path - 5', function() {
+        let realPath = RealPath.createRealPath('/../dummy/./.');
         assert.isNull(realPath);
       });
     });
@@ -69,7 +83,7 @@ suite('Utils', function() {
         assert.isTrue(RealPath.areEqual('/', '/dummy/..'));
       });
 
-      test('NEG: compare not creatable paths', function() {
+      test('NEG: compare not creatable paths - 1', function() {
         assert.isFalse(RealPath.areEqual('/dummy', '/dummy'));
       });
 
