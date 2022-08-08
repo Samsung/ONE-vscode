@@ -77,7 +77,8 @@ class DebianToolchain implements Toolchain {
     this.prepare();
     let cmd = new Command('aptitude');
     cmd.push('install');
-    cmd.push(`-o Aptitude::ProblemResolver::SolutionCost='100*canceled-actions,200*removals'`);
+    cmd.push('-o');
+    cmd.push('Aptitude::ProblemResolver::SolutionCost=100*canceled-actions,200*removals');
     let pkg: string = this.info.name;
     if (this.info.version !== undefined) {
       pkg = `${pkg}=${this.info.version.str()}`;
