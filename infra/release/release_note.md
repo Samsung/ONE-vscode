@@ -1,28 +1,27 @@
-# Release Note 0.2.0
+# Release Note 0.3.0
 
 ## ONE-vscode
 
 ### ONE Explorer View
 
-- More commands are supported.
-  - [Open with Text Editor] command
-  - [Open Containing Folder] command
-  - [Collapse All] command
-- Improve [Create Config] command
+- TODO: Fill this part
 
 ### Toolchain View
 
-- Show Installable Toolchains on ToolchainView
-  - official release version
-  - nightly release version
-- Install Toolchain
-- Uninstall Toolchain
-- Show already-installed Toolchain
-- Support sudo command on Toolchain
+- TODO: Fill this part
+
+### Target Device View
+
+- TODO: Fill this part
 
 ### Cfg Editor
 
-- Editor is upgraded with whole new UI.
-- [Optimize] section is now supported.
-- [Quantize] section is now supported.
-- Bugfix
+- TODO: Fill this part
+
+### Circle Graph Viewer
+
+- TODO: Fill this part
+
+### Circle Part Editor
+
+- TODO: Fill this part
