@@ -14,7 +14,7 @@
 
 ## Screen layout
 
-ONE-vscode has 7 screen components.
+ONE-vscode has 6 screen components.
 
 <img src="./ScreenLayout.jpg" width=1000/>
 
