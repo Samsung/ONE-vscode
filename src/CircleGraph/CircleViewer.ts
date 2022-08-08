@@ -99,7 +99,7 @@ export class CircleViewerDocument implements vscode.CustomDocument {
 /* istanbul ignore next */
 export class CircleViewerProvider implements
     vscode.CustomReadonlyEditorProvider<CircleViewerDocument> {
-  public static readonly viewType = 'onevscode.circleViewer';
+  public static readonly viewType = 'one.viewer.circle';
 
   private _context: vscode.ExtensionContext;
 

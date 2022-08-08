@@ -272,8 +272,8 @@ class BaseModelNode extends Node {
 class ConfigNode extends Node {
   readonly type = NodeType.config;
 
-  // Open file with cfg.editor as default
-  static defaultOpenViewType = 'cfg.editor';
+  // Open file with one.editor.cfg as default
+  static defaultOpenViewType = 'one.editor.cfg';
   // Display gear icon as default
   static defaultIcon = new vscode.ThemeIcon('gear');
   // Show file always as default

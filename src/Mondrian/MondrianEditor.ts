@@ -31,7 +31,7 @@ export class MondrianEditorProvider implements vscode.CustomTextEditorProvider {
     registrations.forEach(disposable => context.subscriptions.push(disposable));
   }
 
-  private static readonly viewType = 'onevscode.mondrianViewer';
+  private static readonly viewType = 'one.viewer.mondrian';
 
   constructor(private readonly context: vscode.ExtensionContext) {}
 

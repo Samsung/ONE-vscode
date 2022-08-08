@@ -42,7 +42,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   CfgEditorPanel.register(context);
 
-  let disposableOneJsontracer = vscode.commands.registerCommand('one.viewer.jsonTracer', () => {
+  let disposableOneJsontracer = vscode.commands.registerCommand('one.viewer.jsontrace.open', () => {
     Logger.info(tag, 'one json tracer...');
     Jsontracer.createOrShow(context.extensionUri);
   });

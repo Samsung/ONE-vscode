@@ -202,7 +202,7 @@ export class ConfigObj {
       artifactAttr: {
         ext: '.circle',
         icon: new vscode.ThemeIcon('symbol-variable'),
-        openViewType: 'onevscode.circleViewer'
+        openViewType: 'one.viewer.circle'
       },
       locator: new Locator((value: string) => LocatorRunner.searchWithExt('.circle', value))
     });
@@ -216,7 +216,7 @@ export class ConfigObj {
       artifactAttr: {
         ext: '.tracealloc.json',
         icon: new vscode.ThemeIcon('graph'),
-        openViewType: 'onevscode.mondrianViewer',
+        openViewType: 'one.viewer.mondrian',
         canHide: true
       },
       locator: new Locator((value: string) => {

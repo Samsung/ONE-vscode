@@ -52,7 +52,7 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
   private _disposables: vscode.Disposable[] = [];
   private _oneConfig: CfgData = new CfgData();
 
-  public static readonly viewType = 'cfg.editor';
+  public static readonly viewType = 'one.editor.cfg';
 
   public static register(context: vscode.ExtensionContext): void {
     const provider = new CfgEditorPanel(context);

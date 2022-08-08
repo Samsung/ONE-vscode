@@ -27,7 +27,7 @@ export class Jsontracer {
    */
   public static currentPanel: Jsontracer|undefined;
 
-  public static readonly viewType = 'Jsontracer';
+  public static readonly viewType = 'one.viewer.jsontrace';
 
   private readonly _panel: vscode.WebviewPanel;
   private readonly _extensionUri: vscode.Uri;

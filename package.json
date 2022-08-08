@@ -49,7 +49,7 @@
     },
     "customEditors": [
       {
-        "viewType": "cfg.editor",
+        "viewType": "one.editor.cfg",
         "displayName": "Cfg Editor",
         "selector": [
           {
@@ -59,7 +59,7 @@
         "priority": "option"
       },
       {
-        "viewType": "onevscode.mondrianViewer",
+        "viewType": "one.viewer.mondrian",
         "displayName": "Mondrian",
         "selector": [
           {
@@ -69,7 +69,7 @@
         "priority": "default"
       },
       {
-        "viewType": "onevscode.part-editor",
+        "viewType": "one.editor.part",
         "displayName": "ONE Partition Editor",
         "selector": [
           {
@@ -79,7 +79,7 @@
         "priority": "default"
       },
       {
-        "viewType": "onevscode.circleViewer",
+        "viewType": "one.viewer.circle",
         "displayName": "Circle Viewer",
         "selector": [
           {

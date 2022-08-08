@@ -358,7 +358,7 @@ class PartEditor implements PartGraphEvent {
 
 /* istanbul ignore next */
 export class PartEditorProvider implements vscode.CustomTextEditorProvider, PartEditorEvent {
-  public static readonly viewType = 'onevscode.part-editor';
+  public static readonly viewType = 'one.editor.part';
   public static readonly folderMediaPartEditor = 'media/PartEditor';
 
   private static nextId: number = 1;
