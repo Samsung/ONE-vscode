@@ -48,6 +48,8 @@
 import dynamicGraduation from './dynamicGraduation.js';
 import {processData} from './processData.js';
 
+const vscode = acquireVsCodeApi();
+
 // event from vscode extension
 window.addEventListener('message', event => {
   const message = event.data;
@@ -161,3 +163,5 @@ function initData() {
     detail.remove();
   }
 }
+
+vscode.postMessage({type: 'requestDisplayJson'});

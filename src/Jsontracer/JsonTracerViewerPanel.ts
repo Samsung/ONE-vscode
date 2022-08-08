@@ -92,6 +92,17 @@ export class JsonTracerViewerPanel implements vscode.CustomTextEditorProvider {
     html = html.replace(/\${scriptUri}/g, `${scriptUri}`);
     html = html.replace(/\${styleUri}/g, `${styleUri}`);
     webview.html = html;
+
+    // Receive message from the webview.
+    webview.onDidReceiveMessage(e => {
+      switch (e.type) {
+        case 'requestDisplayJson':
+          this.updateWebview(document, webview);
+          break;
+        default:
+          break;
+      }
+    });
   }
 
   private initWebviewPanel(document: vscode.TextDocument, webviewPanel: vscode.WebviewPanel): void {
