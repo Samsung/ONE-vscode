@@ -12,6 +12,36 @@
 
 -->
 
+## How to install ONE-vscode
+
+### Install vscode
+
+ONE-vscode is an [extension](https://code.visualstudio.com/docs/editor/extension-marketplace) of [vscode](https://code.visualstudio.com/). To use ONE-vscode, you should install vscode first.
+
+### Development environment
+
+ONE-vscode supports the following development environments:
+1. A single Ubuntu machie (to run vscode and ONE toolchains) or
+2. A Windows machine (to run vscode) and a Ubuntu machine (to run ONE toolchains), connected with SSH extension
+
+A Ubuntu machine is mandatory because [ONE](https://github.com/Samsung/ONE) is officially released on Ubuntu. If your development environment is vscode on Windows, you need additional Ubuntu machine to run ONE toolchain. In additon, you need to [install SSH extension in vscode](https://code.visualstudio.com/docs/remote/ssh-tutorial).
+
+### Install ONE-vscode extension
+
+You can download the official extension package at [ONE-vscode release page](https://github.com/Samsung/ONE-vscode/releases), of which file extension is `*.vsix`.
+
+Then, install ONE-vscode extension by [following this instruction](https://code.visualstudio.com/docs/editor/extension-marketplace#_install-from-a-vsix).
+
+### Install backend extension(s)
+
+If you want to compile your model into a code for, e.g., a specific model of NPU, GPU or DSP, you need to use backend extension(s) built for such chipset. In that case, you need to contact the vendor or developer who provides specific backend extension and get the backend extension.
+
+Backend extension should be installed _after_ installing ONE-vscode extension.
+
+### Build from source
+
+For developers who want to build the latest extension file by themselves, read [How To Build From Source](./HowToBuildFromSource.md) document.
+
 ## Screen layout
 
 ONE-vscode has 6 screen components.
@@ -36,6 +66,17 @@ ONE-vscode has 6 screen components.
     - This shows logs. You can check detailed reason of error or warning.
 
 <!-- Rearrange content below -->
+
+## Workspace
+
+You need to open a folder (`File > Open Folder` menu) to start with ONE-vscode. After opening a folder, a [_workspace_ is constructed by vscode.](https://code.visualstudio.com/docs/editor/workspaces).
+
+The folder for ONE-vscode has the following files:
+- Your model files
+  - Tensorflow model file(*.pb, saved model or Keras model)
+  - Tensorflow Lite model (*.tflite)
+  - Onnx model (*.onnx)
+- ONE *.cfg files (You can create this file later)
 
 ## Install the toolchain
 
