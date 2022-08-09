@@ -18,7 +18,9 @@
 
 ### Toolchain View
 
-- TODO: Fill this part
+- Introduce `Default Toolchain` concept
+- Support for configuring prerequisites
+- Run configuration file with the selected default toolchain
 
 ### Target Device View
 
