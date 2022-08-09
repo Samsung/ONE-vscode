@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import {assert} from 'chai';
-import {spawnSync} from 'child_process';
+import {ChildProcessWithoutNullStreams, spawnSync} from 'child_process';
 
 import {pipedSpawn} from '../../Utils/PipedSpawn';
 
@@ -52,6 +52,43 @@ suite('Utils', function() {
           assert.fail(`exitcode === ${exitcode}`);
         }
       });
+    });
+
+    /**
+     * From https://nodejs.org/api/child_process.html#child_processspawncommand-args-options,
+     *
+     * "Use cwd to specify the working directory from which the process is spawned.
+     * If not given, the default is to inherit the current working directory. If given,
+     * but the path does not exist, the child process emits an ENOENT error and exits immediately.
+     * ENOENT is also emitted when the command does not exist.
+     */
+    function checkENOENT(a: ChildProcessWithoutNullStreams) {
+      let errMsg = '';
+      a.on('error', (err: Error) => {
+        errMsg = `${err.message}`;  // This contains string 'ENOENT'
+      });
+      a.on('close', (err: number) => {
+        // https://nodejs.org/api/child_process.html#event-close
+        // 'close' event will processed after 'error' event handler
+        if (errMsg === '') {
+          assert.fail(`error should have occured`);
+        } else if (!errMsg.includes('ENOENT')) {
+          assert.fail(`error should contain 'ENOENT' but it was ${errMsg}`);
+        } else {
+          assert.ok(true);
+          assert.notEqual(err, 0);
+        }
+      });
+    }
+
+    test('NEG: second cmd does not exist', function() {
+      let a = pipedSpawn('true', [], {}, 'there_is_no_such_cmd', [], {});
+      checkENOENT(a);
+    });
+
+    test('NEG: cwd path of second cmd does not exist', function() {
+      let a = pipedSpawn('true', [], {}, 'true', [], {cwd: '/__no_where__'});
+      checkENOENT(a);
     });
 
     // Why is the test below skipped? This sometimes fail in CI. Check the reason.

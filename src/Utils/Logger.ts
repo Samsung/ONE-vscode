@@ -16,7 +16,7 @@
 
 import * as vscode from 'vscode';
 
-type MsgList = (number|boolean|string|object)[];
+type MsgList = (number|boolean|string|object|any)[];
 
 const isDebugMode = process.env.VSCODE_DEBUG_MODE === 'true';
 

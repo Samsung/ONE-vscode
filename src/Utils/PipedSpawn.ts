@@ -40,6 +40,7 @@ export function pipedSpawn(
     cmd1: string, cmd1List: string[], cmd1Option: SpawnOptionsWithoutStdio, cmd2: string,
     cmd2List: string[], cmd2Option: SpawnOptionsWithoutStdio) {
   // Let's handle `$ cmd1 | cmd2`
+  // TODO Consider case with `set -o pipefail`
   const first = spawn(cmd1, cmd1List, cmd1Option);
   const second = spawn(cmd2, cmd2List, cmd2Option);
 
