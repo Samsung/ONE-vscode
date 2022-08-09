@@ -37,6 +37,14 @@ suite('Utils', function() {
       });
     });
 
+    test('NEG: first cmd fails', function() {
+      try {
+        let cat = pipedSpawn('cat', ['invalid_file'], {}, 'wc', ['-l'], {});
+      } catch (err) {
+        assert.ok(true, 'Should be thrown');
+      }
+    });
+
     test('NEG: second cmd fails', function() {
       let wc = pipedSpawn('echo', ['123'], {}, 'grep', ['not_exist'], {});
       wc.on('exit', (exitcode) => {
