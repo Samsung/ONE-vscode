@@ -39,28 +39,53 @@ suite('Utils', function() {
         assert.isNull(realPath);
       });
 
-      test('NEG: cannot create when rawpath includes invalid path - 1', function() {
+      test('NEG: cannot create when rawpath includes invalid path from root - 1', function() {
         let realPath = RealPath.createRealPath('/../dummy/');
         assert.isNull(realPath);
       });
 
-      test('NEG: cannot create when rawpath includes invalid path - 2', function() {
+      test('NEG: cannot create when rawpath includes invalid path from root - 2', function() {
         let realPath = RealPath.createRealPath('/../dummy/../dummy');
         assert.isNull(realPath);
       });
 
-      test('NEG: cannot create when rawpath includes invalid path - 3', function() {
+      test('NEG: cannot create when rawpath includes invalid path from root - 3', function() {
         let realPath = RealPath.createRealPath('/../dummy/.');
         assert.isNull(realPath);
       });
 
-      test('NEG: cannot create when rawpath includes invalid path - 4', function() {
+      test('NEG: cannot create when rawpath includes invalid path from root - 4', function() {
         let realPath = RealPath.createRealPath('/../../dummy/.');
         assert.isNull(realPath);
       });
 
-      test('NEG: cannot create when rawpath includes invalid path - 5', function() {
+      test('NEG: cannot create when rawpath includes invalid path from root - 5', function() {
         let realPath = RealPath.createRealPath('/../dummy/./.');
+        assert.isNull(realPath);
+      });
+
+      test('NEG: cannot create when rawpath includes invalid path from home - 1', function() {
+        let realPath = RealPath.createRealPath('~/../dummy/');
+        assert.isNull(realPath);
+      });
+
+      test('NEG: cannot create when rawpath includes invalid path from home - 2', function() {
+        let realPath = RealPath.createRealPath('~/../dummy/../dummy');
+        assert.isNull(realPath);
+      });
+
+      test('NEG: cannot create when rawpath includes invalid path from home - 3', function() {
+        let realPath = RealPath.createRealPath('~/../dummy/.');
+        assert.isNull(realPath);
+      });
+
+      test('NEG: cannot create when rawpath includes invalid path from home - 4', function() {
+        let realPath = RealPath.createRealPath('~/../../dummy/.');
+        assert.isNull(realPath);
+      });
+
+      test('NEG: cannot create when rawpath includes invalid path from home - 5', function() {
+        let realPath = RealPath.createRealPath('~/../dummy/./.');
         assert.isNull(realPath);
       });
     });
@@ -83,24 +108,44 @@ suite('Utils', function() {
         assert.isTrue(RealPath.areEqual('/', '/dummy/..'));
       });
 
-      test('NEG: compare not creatable paths - 1', function() {
+      test('NEG: compare not creatable paths from root - 1', function() {
         assert.isFalse(RealPath.areEqual('/dummy', '/dummy'));
       });
 
-      test('NEG: compare not creatable paths - 2', function() {
+      test('NEG: compare not creatable paths from root - 2', function() {
         assert.isFalse(RealPath.areEqual('/dummy', '/dummy/../dummy'));
       });
 
-      test('NEG: compare not creatable paths - 3', function() {
+      test('NEG: compare not creatable paths from root - 3', function() {
         assert.isFalse(RealPath.areEqual('/dummy', '/../dummy'));
       });
 
-      test('NEG: compare not creatable paths - 4', function() {
+      test('NEG: compare not creatable paths from root - 4', function() {
         assert.isFalse(RealPath.areEqual('/dummy', '/./../dummy'));
       });
 
-      test('NEG: compare not creatable paths - 5', function() {
+      test('NEG: compare not creatable paths from root - 5', function() {
         assert.isFalse(RealPath.areEqual('/dummy', '/./../dummy/./'));
+      });
+
+      test('NEG: compare not creatable paths from home - 1', function() {
+        assert.isFalse(RealPath.areEqual('~/dummy', '~/dummy'));
+      });
+
+      test('NEG: compare not creatable paths from home - 2', function() {
+        assert.isFalse(RealPath.areEqual('~/dummy', '~/dummy/../dummy'));
+      });
+
+      test('NEG: compare not creatable paths from home - 3', function() {
+        assert.isFalse(RealPath.areEqual('~/dummy', '~/../dummy'));
+      });
+
+      test('NEG: compare not creatable paths from home - 4', function() {
+        assert.isFalse(RealPath.areEqual('~/dummy', '~/./../dummy'));
+      });
+
+      test('NEG: compare not creatable paths from home - 5', function() {
+        assert.isFalse(RealPath.areEqual('~/dummy', '~/./../dummy/./'));
       });
     });
 
