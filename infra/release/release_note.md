@@ -28,7 +28,9 @@
 
 ### Cfg Editor
 
-- TODO: Fill this part
+- Help message is shown when mouse is on the question mark icon
+- Path of file can be set by clicking search icon
+- Trivial bugfix
 
 ### Circle Graph Viewer
 
