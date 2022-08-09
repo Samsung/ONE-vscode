@@ -32,7 +32,7 @@
 - Path of file can be set by clicking search icon
 - Trivial bugfix
 
-### Circle Graph Viewer
+### Circle Viewer
 
 - Provides graphical view of circle model
 - Powered by famous [netron](https://github.com/lutzroeder/netro) source code
