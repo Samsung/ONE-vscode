@@ -39,7 +39,7 @@ suite('Utils', function() {
 
     test('NEG: first cmd fails', function() {
       try {
-        let cat = pipedSpawn('cat', ['invalid_file'], {}, 'grep', ['not_exist'], {});
+        let cat = pipedSpawn('cat', ['invalid_file'], {}, 'wc', ['-l'], {});
       } catch (err) {
         assert.ok(true, 'Should be thrown');
       }
