@@ -32,11 +32,8 @@
 
 ### Circle Graph Viewer
 
-- TODO: Fill this part
-
-### Circle Part Editor
-
-- TODO: Fill this part
+- Provides graphical view of circle model
+- Powered by famous [netron](https://github.com/lutzroeder/netro) source code
 
 ### Mondrian Viewer
 
