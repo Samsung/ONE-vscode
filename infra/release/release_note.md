@@ -30,7 +30,7 @@
 
 ### Cfg Editor
 
-- Help message is shown when mouse is on the question mark icon
+- Help message is shown when mouse is over the question mark icon
 - Path of file can be set by clicking search icon
 - Trivial bugfix
 
