@@ -39,27 +39,27 @@ suite('Utils', function() {
         assert.isNull(realPath);
       });
 
-      test('NEG: cannot create when rawpath includes invalud path - 1', function() {
+      test('NEG: cannot create when rawpath includes invalid path - 1', function() {
         let realPath = RealPath.createRealPath('/../dummy/');
         assert.isNull(realPath);
       });
 
-      test('NEG: cannot create when rawpath includes invalud path - 2', function() {
+      test('NEG: cannot create when rawpath includes invalid path - 2', function() {
         let realPath = RealPath.createRealPath('/../dummy/../dummy');
         assert.isNull(realPath);
       });
 
-      test('NEG: cannot create when rawpath includes invalud path - 3', function() {
+      test('NEG: cannot create when rawpath includes invalid path - 3', function() {
         let realPath = RealPath.createRealPath('/../dummy/.');
         assert.isNull(realPath);
       });
 
-      test('NEG: cannot create when rawpath includes invalud path - 4', function() {
+      test('NEG: cannot create when rawpath includes invalid path - 4', function() {
         let realPath = RealPath.createRealPath('/../../dummy/.');
         assert.isNull(realPath);
       });
 
-      test('NEG: cannot create when rawpath includes invalud path - 5', function() {
+      test('NEG: cannot create when rawpath includes invalid path - 5', function() {
         let realPath = RealPath.createRealPath('/../dummy/./.');
         assert.isNull(realPath);
       });
