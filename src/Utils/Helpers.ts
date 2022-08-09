@@ -98,15 +98,3 @@ export function obtainWorkspaceRoot(): string {
 export interface FileSelector {
   onFileSelected(uri: vscode.Uri|undefined): void;
 }
-
-/**
- * @brief Load cfg file and return Object
- */
-export function loadCfgFile(filePath: string): any {
-  let cfgData = fs.readFileSync(filePath, 'utf-8');
-  // TODO check cfgData validity
-  let cfgIni = ini.parse(cfgData);
-  // TODO check cfgIni validity
-
-  return cfgIni;
-}
