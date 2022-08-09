@@ -75,48 +75,44 @@ suite('View', function() {
       });
 
       test(
-          'NEG: throw error when ToolchainEnv is not undefined, but toolchainType defined',
-          function() {
+          'NEG: throw error when ToolchainEnv is undefined, but toolchainType defined', function() {
             let quickInput = new InstallQuickInput();
             quickInput.toolchainType = toolchainType;
             assert.throw(() => {
               quickInput.getToolchainEnv();
             });
           });
-      test(
-          'NEG: throw error when ToolchainEnv is not undefined, but toolchain defined', function() {
-            let quickInput = new InstallQuickInput();
-            quickInput.toolchain = toolchain;
-            assert.throw(() => {
-              quickInput.getToolchainEnv();
-            });
-          });
-      test('NEG: throw error when ToolchainEnv is not undefined, but version defined', function() {
+      test('NEG: throw error when ToolchainEnv is undefined, but toolchain defined', function() {
+        let quickInput = new InstallQuickInput();
+        quickInput.toolchain = toolchain;
+        assert.throw(() => {
+          quickInput.getToolchainEnv();
+        });
+      });
+      test('NEG: throw error when ToolchainEnv is undefined, but version defined', function() {
         let quickInput = new InstallQuickInput();
         quickInput.version = version;
         assert.throw(() => {
           quickInput.getToolchainEnv();
         });
       });
-      test('NEG: throw error when ToolchainEnv is not undefined, but error defined', function() {
+      test('NEG: throw error when ToolchainEnv is undefined, but error defined', function() {
         let quickInput = new InstallQuickInput();
         quickInput.error = 'some error';
         assert.throw(() => {
           quickInput.getToolchainEnv();
         });
       });
-      test(
-          'NEG: throw error when ToolchainEnv is not undefined, but all others defined',
-          function() {
-            let quickInput = new InstallQuickInput();
-            quickInput.toolchainType = toolchainType;
-            quickInput.toolchain = toolchain;
-            quickInput.version = version;
-            quickInput.error = 'some error';
-            assert.throw(() => {
-              quickInput.getToolchain();
-            });
-          });
+      test('NEG: throw error when ToolchainEnv is undefined, but all others defined', function() {
+        let quickInput = new InstallQuickInput();
+        quickInput.toolchainType = toolchainType;
+        quickInput.toolchain = toolchain;
+        quickInput.version = version;
+        quickInput.error = 'some error';
+        assert.throw(() => {
+          quickInput.getToolchain();
+        });
+      });
     });
 
     suite('#getToolchainType()', function() {
@@ -134,49 +130,44 @@ suite('View', function() {
       });
 
       test(
-          'NEG: throw error when ToolchainType is not undefined, but toolchainEnv defined',
-          function() {
+          'NEG: throw error when ToolchainType is undefined, but toolchainEnv defined', function() {
             let quickInput = new InstallQuickInput();
             quickInput.toolchainEnv = toolchainEnv;
             assert.throw(() => {
               quickInput.getToolchainType();
             });
           });
-      test(
-          'NEG: throw error when ToolchainType is not undefined, but toolchain defined',
-          function() {
-            let quickInput = new InstallQuickInput();
-            quickInput.toolchain = toolchain;
-            assert.throw(() => {
-              quickInput.getToolchainType();
-            });
-          });
-      test('NEG: throw error when ToolchainType is not undefined, but version defined', function() {
+      test('NEG: throw error when ToolchainType is undefined, but toolchain defined', function() {
+        let quickInput = new InstallQuickInput();
+        quickInput.toolchain = toolchain;
+        assert.throw(() => {
+          quickInput.getToolchainType();
+        });
+      });
+      test('NEG: throw error when ToolchainType is undefined, but version defined', function() {
         let quickInput = new InstallQuickInput();
         quickInput.version = version;
         assert.throw(() => {
           quickInput.getToolchainType();
         });
       });
-      test('NEG: throw error when ToolchainType is not undefined, but error defined', function() {
+      test('NEG: throw error when ToolchainType is undefined, but error defined', function() {
         let quickInput = new InstallQuickInput();
         quickInput.error = 'some error';
         assert.throw(() => {
           quickInput.getToolchainType();
         });
       });
-      test(
-          'NEG: throw error when ToolchainType is not undefined, but all others defined',
-          function() {
-            let quickInput = new InstallQuickInput();
-            quickInput.toolchainEnv = toolchainEnv;
-            quickInput.toolchain = toolchain;
-            quickInput.version = version;
-            quickInput.error = 'some error';
-            assert.throw(() => {
-              quickInput.getToolchain();
-            });
-          });
+      test('NEG: throw error when ToolchainType is undefined, but all others defined', function() {
+        let quickInput = new InstallQuickInput();
+        quickInput.toolchainEnv = toolchainEnv;
+        quickInput.toolchain = toolchain;
+        quickInput.version = version;
+        quickInput.error = 'some error';
+        assert.throw(() => {
+          quickInput.getToolchain();
+        });
+      });
     });
 
     suite('#getToolchain()', function() {
@@ -193,38 +184,35 @@ suite('View', function() {
         });
       });
 
-      test(
-          'NEG: throw error when Toolchain is not undefined, but toolchainEnv defined', function() {
-            let quickInput = new InstallQuickInput();
-            quickInput.toolchainEnv = toolchainEnv;
-            assert.throw(() => {
-              quickInput.getToolchain();
-            });
-          });
-      test(
-          'NEG: throw error when Toolchain is not undefined, but toolchainType defined',
-          function() {
-            let quickInput = new InstallQuickInput();
-            quickInput.toolchainType = toolchainType;
-            assert.throw(() => {
-              quickInput.getToolchain();
-            });
-          });
-      test('NEG: throw error when Toolchain is not undefined, but version defined', function() {
+      test('NEG: throw error when Toolchain is undefined, but toolchainEnv defined', function() {
+        let quickInput = new InstallQuickInput();
+        quickInput.toolchainEnv = toolchainEnv;
+        assert.throw(() => {
+          quickInput.getToolchain();
+        });
+      });
+      test('NEG: throw error when Toolchain is undefined, but toolchainType defined', function() {
+        let quickInput = new InstallQuickInput();
+        quickInput.toolchainType = toolchainType;
+        assert.throw(() => {
+          quickInput.getToolchain();
+        });
+      });
+      test('NEG: throw error when Toolchain is undefined, but version defined', function() {
         let quickInput = new InstallQuickInput();
         quickInput.version = version;
         assert.throw(() => {
           quickInput.getToolchain();
         });
       });
-      test('NEG: throw error when Toolchain is not undefined, but error defined', function() {
+      test('NEG: throw error when Toolchain is undefined, but error defined', function() {
         let quickInput = new InstallQuickInput();
         quickInput.error = 'some error';
         assert.throw(() => {
           quickInput.getToolchain();
         });
       });
-      test('NEG: throw error when Toolchain is not undefined, but all others defined', function() {
+      test('NEG: throw error when Toolchain is undefined, but all others defined', function() {
         let quickInput = new InstallQuickInput();
         quickInput.toolchainEnv = toolchainEnv;
         quickInput.toolchainType = toolchainType;
@@ -250,35 +238,35 @@ suite('View', function() {
         });
       });
 
-      test('NEG: throw error when Version is not undefined, but toolchainEnv defined', function() {
+      test('NEG: throw error when Version is undefined, but toolchainEnv defined', function() {
         let quickInput = new InstallQuickInput();
         quickInput.toolchainEnv = toolchainEnv;
         assert.throw(() => {
           quickInput.getVersion();
         });
       });
-      test('NEG: throw error when Version is not undefined, but toolchainType defined', function() {
+      test('NEG: throw error when Version is undefined, but toolchainType defined', function() {
         let quickInput = new InstallQuickInput();
         quickInput.toolchainType = toolchainType;
         assert.throw(() => {
           quickInput.getVersion();
         });
       });
-      test('NEG: throw error when Version is not undefined, but toolchain defined', function() {
+      test('NEG: throw error when Version is undefined, but toolchain defined', function() {
         let quickInput = new InstallQuickInput();
         quickInput.toolchain = toolchain;
         assert.throw(() => {
           quickInput.getVersion();
         });
       });
-      test('NEG: throw error when Version is not undefined, but error defined', function() {
+      test('NEG: throw error when Version is undefined, but error defined', function() {
         let quickInput = new InstallQuickInput();
         quickInput.error = 'some error';
         assert.throw(() => {
           quickInput.getVersion();
         });
       });
-      test('NEG: throw error when Version is not undefined, but all others defined', function() {
+      test('NEG: throw error when Version is undefined, but all others defined', function() {
         let quickInput = new InstallQuickInput();
         quickInput.toolchainEnv = toolchainEnv;
         quickInput.toolchainType = toolchainType;
