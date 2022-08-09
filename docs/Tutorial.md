@@ -80,13 +80,15 @@ The folder for ONE-vscode needs to have the following files:
 
 ## Install the toolchain
 
-You need the ONE toolchain. Let's install the ONE toolchain. (You should install the in-house backend to follow this.)
+A toolchain contains [ONE tools](https://github.com/Samsung/ONE/tree/master/compiler/one-cmds) and other backend-specific tools. Developers or vendors of backend can distribute backend-specific toolchain and put installation feature inside their backend extension.
 
-<img src="https://user-images.githubusercontent.com/7223627/174947559-71ab213c-68c4-4700-bcec-e55f6a2203bf.gif" width=600 />
+To install a backend-specific toolchain, you first need to install the backend extension. Then, click `+` icon on Toolchain view. You can also easily remove intalled toolchain by clicking `X` icon in Toolchain view.
 
 ## Set default toolchain
 
-To compile model using ONE toolchain, you must specify the default toolchain. Default toolchain refers to which toolchain you will use to run ONE related tools. To specify a default toolchain, if you mouse up the toolchain item you want to use in Toolchain view, :heavy_check_mark: icon appears. Click this icon to specify it as default toolchain. If toolchain is specified as default toolchain, the icon changes.
+You can install multiple instances of toolchains. For example, some backend supports multiple versions of toolchain to be installed. Or you might installed more than one backend extensions installed and installed one or more toolchain per backend extrension.
+
+To decide which toolchain will be used by default, you need to specify the default toolchain. Default toolchain refers to which toolchain you will use to run ONE related tools. To specify a default toolchain, if you mouse up the toolchain item you want to use in Toolchain view, :heavy_check_mark: icon appears. Click this icon to specify it as default toolchain. If toolchain is specified as default toolchain, the icon changes.
 
 | Toolchain | Default Toolchain |
 |-----------|-------------------|
@@ -94,21 +96,24 @@ To compile model using ONE toolchain, you must specify the default toolchain. De
 
 ## Prepare a NN model and a config file
 
-You need a NN model and a config file to run compiling. Now you can get one from [res/modelDir/truediv](../res/modelDir/truediv/). Add it to your workspace. Now you can see a model and a config.
+Now, let's try to copile a model (tflite, Tensorflow, onnx).
 
-<img src="https://user-images.githubusercontent.com/10216715/174798969-eee44fea-bd71-4e6a-8e2c-9e1de37ad74a.gif" width=600 />
+Just like you might write _Makefile_ for C progream, you need ONE `*.cfg` file to compile a model. ONE cfg file is a file that describes steps and compilation options.
+One example you can get is in [res/modelDir/truediv](../res/modelDir/truediv/). You may want to copy and modify the cfg file to your workspace. After modifying the cfg file to have your model file as input model, you will see the cfg file below your model file in ONE explorer.
 
-## Compile models
+You can also edit the cfg file with GUI cfg editor.
 
-Last, you can compile the model by pushing Run button.
+<img src="one-explorer-cfg-editor.gif"/>
 
-Depends on backend, you may be able to infer or profile a model by 'running config'.
+## Compile a model
 
-<img src="https://user-images.githubusercontent.com/10216715/174796457-4dae4a77-04e1-4e5c-9453-77ebfb65182a.gif" width=600 />
+Now, you can compile the model by clicking `▶` icon on a cfg file. Below cfg file in ONE explorer, you can find files during compilation, e.g., various `*.circle` file and the final target file compiled for your backend.
 
-## Trouble-shooting
+## Profiling a model
 
-How to watch log?
-- View -> output -> ONE-vscode
+You can add `Profile` step into cfg file, which will generate json file in Chrome Tracing format, which has timeline data.
+You can find the json file below cfg file in ONE explorer. ONE-vscode provides embedded GUI viewer to see the json file.
 
-<img src="https://user-images.githubusercontent.com/10216715/174795531-9868f1e0-25ab-4ae3-bf65-fe8385a7ba76.gif" width=600 />
+## Contact
+
+When you encounter any bug or problem, feel free to write a post in [issue page of ONE-vscode](https://github.com/Samsung/ONE-vscode/issues). Any idea or suggestion that could enhance ONE-vscode will also be welcome!
