@@ -253,9 +253,9 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
     const notifyGuideline = () => {
       this.error(
               'Default toolchain is not set. Please install toolchain and set the default toolchain.',
-              'OK', 'Instruction')
+              'OK', 'See Instructions')
           .then((value) => {
-            if (value === 'Instruction') {
+            if (value === 'See Instructions') {
               /* istanbul ignore next */
               DefaultToolchain.getInstance().openDocument();
             }
