@@ -187,6 +187,7 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
       toolchainEnv.install(toolchain).then(
           () => this._notifyInstalled(toolchainEnv, toolchain),
           () => this._notifyInstallationError());
+      return;
     }
 
     /* istanbul ignore next */
