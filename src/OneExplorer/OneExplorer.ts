@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import * as assert from 'assert';
 import * as fs from 'fs';
 import * as path from 'path';
 import {TextEncoder} from 'util';
@@ -23,11 +24,28 @@ import {CfgEditorPanel} from '../CfgEditor/CfgEditorPanel';
 import {Balloon} from '../Utils/Balloon';
 import {obtainWorkspaceRoot, RealPath} from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
+
 import {ArtifactAttr} from './ArtifactLocator';
 import {ConfigObj} from './ConfigObject';
 
+// Exported for unit testing only
+export {
+  BaseModelNode as _unit_test_BaseModelNode,
+  ConfigNode as _unit_test_ConfigNode,
+
+  DirectoryNode as _unit_test_DirectoryNode,
+  getCfgList as _unit_test_getCfgList,
+
+  NodeFactory as _unit_test_NodeFactory,
+  NodeType as _unit_test_NodeType,
+  OneNode as _unit_test_OneNode,
+  ProductNode as _unit_test_ProductNode,
+};
+
 /**
  * Get the list of .cfg files wiithin the workspace
+ * @param root  the file or directory,
+ *              which MUST exist in the file system
  */
 function getCfgList(root: string = obtainWorkspaceRoot()): string[] {
   /**
@@ -50,11 +68,19 @@ function getCfgList(root: string = obtainWorkspaceRoot()): string[] {
     return children;
   };
 
+  try {
+    fs.statSync(root);
+  } catch {
+    Logger.error('OneExplorer', 'getCfgList', 'called on not existing directory or file.');
+    return [];
+  }
+
   // Get the list of all the cfg files inside workspace root
   const cfgList = readdirSyncRecursive(root).filter(val => val.endsWith('.cfg'));
 
   return cfgList;
 }
+
 
 /**
  * NOTE
@@ -154,10 +180,12 @@ class NodeFactory {
 
     let node: Node;
     if (type === NodeType.directory) {
+      assert.strictEqual(attr, undefined, 'Directory nodes cannot have attributes');
       node = new DirectoryNode(uri);
     } else if (type === NodeType.baseModel) {
       node = new BaseModelNode(uri, attr?.openViewType, attr?.icon, attr?.canHide);
     } else if (type === NodeType.config) {
+      assert.strictEqual(attr, undefined, 'Config nodes cannot have attributes');
       node = new ConfigNode(uri);
     } else if (type === NodeType.product) {
       node = new ProductNode(uri, attr?.openViewType, attr?.icon, attr?.canHide);
@@ -182,6 +210,9 @@ class DirectoryNode extends Node {
   readonly canHide = false;
 
   constructor(uri: vscode.Uri) {
+    assert.ok(fs.statSync(uri.fsPath));
+    assert.strictEqual(fs.statSync(uri.fsPath).isDirectory(), true);
+
     super(uri);
   }
 
@@ -235,8 +266,10 @@ class BaseModelNode extends Node {
       uri: vscode.Uri, openViewType: string|undefined = BaseModelNode.defaultOpenViewType,
       icon: vscode.ThemeIcon = BaseModelNode.defaultIcon,
       canHide: boolean = BaseModelNode.defaultCanHide) {
-    super(uri);
+    assert.ok(fs.statSync(uri.fsPath));
+    assert.strictEqual(fs.statSync(uri.fsPath).isFile(), true);
 
+    super(uri);
     this.openViewType = openViewType;
     this.icon = icon;
     this.canHide = canHide;
@@ -287,8 +320,10 @@ class ConfigNode extends Node {
       uri: vscode.Uri, openViewType: string = ConfigNode.defaultOpenViewType,
       icon: vscode.ThemeIcon = ConfigNode.defaultIcon,
       canHide: boolean = ConfigNode.defaultCanHide) {
-    super(uri);
+    assert.ok(fs.statSync(uri.fsPath));
+    assert.strictEqual(fs.statSync(uri.fsPath).isFile(), true);
 
+    super(uri);
     this.openViewType = openViewType;
     this.icon = icon;
     this.canHide = canHide;
@@ -332,8 +367,10 @@ class ProductNode extends Node {
       uri: vscode.Uri, openViewType: string|undefined = ProductNode.defaultOpenViewType,
       icon: vscode.ThemeIcon = ProductNode.defaultIcon,
       canHide: boolean = ProductNode.defaultCanHide) {
-    super(uri);
+    assert.ok(fs.statSync(uri.fsPath));
+    assert.strictEqual(fs.statSync(uri.fsPath).isFile(), true);
 
+    super(uri);
     this.openViewType = openViewType;
     this.icon = icon;
     this.canHide = canHide;
