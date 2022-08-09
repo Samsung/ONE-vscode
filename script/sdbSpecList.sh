@@ -25,7 +25,7 @@ SDB=$(which sdb)
 if [ -z "$SDB" ]
 then
     # if not installed, return exitcode 127 which means `Command not found.`
-    echo "sdb command not found."
+    >&2 echo "sdb command not found."
     return 127
 fi
 
