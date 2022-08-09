@@ -158,6 +158,7 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
       DefaultToolchain.getInstance().ask(toolchainEnv, toolchain).then(() => this.refresh());
     }
     this.refresh();
+    vscode.commands.executeCommand('one.device.refresh');
   }
 
   /* istanbul ignore next */
@@ -225,6 +226,7 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
         DefaultToolchain.getInstance().unset();
       }
       this.refresh();
+      vscode.commands.executeCommand('one.device.refresh');
     };
 
     /* istanbul ignore next */
