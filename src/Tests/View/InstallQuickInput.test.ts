@@ -113,6 +113,25 @@ suite('View', function() {
           quickInput.getToolchain();
         });
       });
+      test('NEG: throw error when all members are defined including ToolchainEnv', function() {
+        let quickInput = new InstallQuickInput();
+        quickInput.toolchainEnv = toolchainEnv;
+        quickInput.toolchainType = toolchainType;
+        quickInput.toolchain = toolchain;
+        quickInput.version = version;
+        quickInput.error = 'some error';
+        assert.throw(() => {
+          quickInput.getToolchain();
+        });
+      });
+      test('NEG: throw error when both ToolchainEnv and error are defined', function() {
+        let quickInput = new InstallQuickInput();
+        quickInput.toolchainEnv = toolchainEnv;
+        quickInput.error = 'some error';
+        assert.throw(() => {
+          quickInput.getToolchain();
+        });
+      });
     });
 
     suite('#getToolchainType()', function() {
@@ -163,6 +182,25 @@ suite('View', function() {
         quickInput.toolchainEnv = toolchainEnv;
         quickInput.toolchain = toolchain;
         quickInput.version = version;
+        quickInput.error = 'some error';
+        assert.throw(() => {
+          quickInput.getToolchain();
+        });
+      });
+      test('NEG: throw error when all members are defined including ToolchainType', function() {
+        let quickInput = new InstallQuickInput();
+        quickInput.toolchainEnv = toolchainEnv;
+        quickInput.toolchainType = toolchainType;
+        quickInput.toolchain = toolchain;
+        quickInput.version = version;
+        quickInput.error = 'some error';
+        assert.throw(() => {
+          quickInput.getToolchain();
+        });
+      });
+      test('NEG: throw error when both ToolchainType and error are defined', function() {
+        let quickInput = new InstallQuickInput();
+        quickInput.toolchainType = toolchainType;
         quickInput.error = 'some error';
         assert.throw(() => {
           quickInput.getToolchain();
@@ -222,6 +260,25 @@ suite('View', function() {
           quickInput.getToolchain();
         });
       });
+      test('NEG: throw error when all members are defined including Toolchain', function() {
+        let quickInput = new InstallQuickInput();
+        quickInput.toolchainEnv = toolchainEnv;
+        quickInput.toolchainType = toolchainType;
+        quickInput.toolchain = toolchain;
+        quickInput.version = version;
+        quickInput.error = 'some error';
+        assert.throw(() => {
+          quickInput.getToolchain();
+        });
+      });
+      test('NEG: throw error when both Toolchain and error are defined', function() {
+        let quickInput = new InstallQuickInput();
+        quickInput.toolchain = toolchain;
+        quickInput.error = 'some error';
+        assert.throw(() => {
+          quickInput.getToolchain();
+        });
+      });
     });
 
     suite('#getVersion()', function() {
@@ -276,6 +333,25 @@ suite('View', function() {
           quickInput.getToolchain();
         });
       });
+      test('NEG: throw error when all members are defined including Version', function() {
+        let quickInput = new InstallQuickInput();
+        quickInput.toolchainEnv = toolchainEnv;
+        quickInput.toolchainType = toolchainType;
+        quickInput.toolchain = toolchain;
+        quickInput.version = version;
+        quickInput.error = 'some error';
+        assert.throw(() => {
+          quickInput.getToolchain();
+        });
+      });
+      test('NEG: throw error when both Version and error are defined', function() {
+        let quickInput = new InstallQuickInput();
+        quickInput.version = version;
+        quickInput.error = 'some error';
+        assert.throw(() => {
+          quickInput.getToolchain();
+        });
+      });
     });
 
     suite('#getError()', function() {
@@ -310,6 +386,10 @@ suite('View', function() {
         let quickInput = new InstallQuickInput();
         assert.strictEqual(quickInput.getToolchainEnvFromGlobal(backendName), toolchainEnv);
       });
+      test('NEG: gets invalid toolchain env from Global', function() {
+        let quickInput = new InstallQuickInput();
+        assert.strictEqual(quickInput.getToolchainEnvFromGlobal('invalid'), undefined);
+      });
     });
 
     suite('#getToolchainTypes()', function() {
@@ -319,6 +399,62 @@ suite('View', function() {
         assert.strictEqual(
             quickInput.getToolchainTypes().length, toolchainEnv.getToolchainTypes().length);
       });
+
+      test('NEG: throw error when ToolchainEnv is undefined during getToolchainTypes', function() {
+        let quickInput = new InstallQuickInput();
+        assert.throw(() => {
+          quickInput.getToolchainTypes();
+        });
+      });
+
+      test(
+          'NEG: throw error by getToolchainEnv when ToolchainEnv is undefined, but toolchainType defined',
+          function() {
+            let quickInput = new InstallQuickInput();
+            quickInput.toolchainType = toolchainType;
+            assert.throw(() => {
+              quickInput.getToolchainTypes();
+            });
+          });
+      test(
+          'NEG: throw error by getToolchainEnv when ToolchainEnv is undefined, but toolchain defined',
+          function() {
+            let quickInput = new InstallQuickInput();
+            quickInput.toolchain = toolchain;
+            assert.throw(() => {
+              quickInput.getToolchainTypes();
+            });
+          });
+      test(
+          'NEG: throw error by getToolchainEnv when ToolchainEnv is undefined, but version defined',
+          function() {
+            let quickInput = new InstallQuickInput();
+            quickInput.version = version;
+            assert.throw(() => {
+              quickInput.getToolchainTypes();
+            });
+          });
+      test(
+          'NEG: throw error by getToolchainEnv when ToolchainEnv is undefined, but error defined',
+          function() {
+            let quickInput = new InstallQuickInput();
+            quickInput.error = 'some error';
+            assert.throw(() => {
+              quickInput.getToolchainTypes();
+            });
+          });
+      test(
+          'NEG: throw error by getToolchainEnv when ToolchainEnv is undefined, but all others defined',
+          function() {
+            let quickInput = new InstallQuickInput();
+            quickInput.toolchainType = toolchainType;
+            quickInput.toolchain = toolchain;
+            quickInput.version = version;
+            quickInput.error = 'some error';
+            assert.throw(() => {
+              quickInput.getToolchainTypes();
+            });
+          });
     });
 
     suite('#getVersions()', function() {
@@ -363,18 +499,34 @@ suite('View', function() {
         quickInput.changeCurrentStepBefore(enumName, state);
         assert.strictEqual(state.current, InstallQuickInputStep.pickType);
       });
-      test('NEG: changes to previous step with invalid step name', function() {
-        const quickInput = new InstallQuickInput();
-        const names = ['item0'];
-        const items = quickInput.getQuickPickItems(names);
-        assert.strictEqual(items.length, 1);
-        const state = {selectedItem: items[0], current: InstallQuickInputStep.unset} as
-            InstallQuickInputState;
-        const invalidStepName = 'abcde';
-        expect(function() {
-          quickInput.changeCurrentStepBefore(invalidStepName, state);
-        }).to.throw(`wrong stepName: ${invalidStepName}`);
-      });
+      test(
+          'NEG: changes to previous step with invalid step name using changeCurrentStepBefore',
+          function() {
+            const quickInput = new InstallQuickInput();
+            const names = ['item0'];
+            const items = quickInput.getQuickPickItems(names);
+            assert.strictEqual(items.length, 1);
+            const state = {selectedItem: items[0], current: InstallQuickInputStep.unset} as
+                InstallQuickInputState;
+            const invalidStepName = 'abcde';
+            expect(function() {
+              quickInput.changeCurrentStepBefore(invalidStepName, state);
+            }).to.throw(`wrong stepName: ${invalidStepName}`);
+          });
+      test(
+          'NEG: changes to previous step with almost legal step name using changeCurrentStepBefore',
+          function() {
+            const quickInput = new InstallQuickInput();
+            const names = ['item0'];
+            const items = quickInput.getQuickPickItems(names);
+            assert.strictEqual(items.length, 1);
+            const state = {selectedItem: items[0], current: InstallQuickInputStep.unset} as
+                InstallQuickInputState;
+            const invalidStepName = InstallQuickInputStep[InstallQuickInputStep.pickVersion] + 'A';
+            expect(function() {
+              quickInput.changeCurrentStepBefore(invalidStepName, state);
+            }).to.throw(`wrong stepName: ${invalidStepName}`);
+          });
     });
 
     suite('#changeCurrentStepAfter()', function() {
@@ -411,18 +563,34 @@ suite('View', function() {
         quickInput.changeCurrentStepAfter(enumName, state);
         assert.strictEqual(state.current, InstallQuickInputStep.pickVersion);
       });
-      test('NEG: changes to previous step with invalid step name', function() {
-        const quickInput = new InstallQuickInput();
-        const names = ['item0'];
-        const items = quickInput.getQuickPickItems(names);
-        assert.strictEqual(items.length, 1);
-        const state = {selectedItem: items[0], current: InstallQuickInputStep.unset} as
-            InstallQuickInputState;
-        const invalidStepName = 'abcde';
-        expect(function() {
-          quickInput.changeCurrentStepAfter(invalidStepName, state);
-        }).to.throw(`wrong stepName: ${invalidStepName}`);
-      });
+      test(
+          'NEG: changes to previous step with invalid step name using changeCurrentStepAfter',
+          function() {
+            const quickInput = new InstallQuickInput();
+            const names = ['item0'];
+            const items = quickInput.getQuickPickItems(names);
+            assert.strictEqual(items.length, 1);
+            const state = {selectedItem: items[0], current: InstallQuickInputStep.unset} as
+                InstallQuickInputState;
+            const invalidStepName = 'abcde';
+            expect(function() {
+              quickInput.changeCurrentStepAfter(invalidStepName, state);
+            }).to.throw(`wrong stepName: ${invalidStepName}`);
+          });
+      test(
+          'NEG: changes to previous step with almost legal step name using changeCurrentStepAfter',
+          function() {
+            const quickInput = new InstallQuickInput();
+            const names = ['item0'];
+            const items = quickInput.getQuickPickItems(names);
+            assert.strictEqual(items.length, 1);
+            const state = {selectedItem: items[0], current: InstallQuickInputStep.unset} as
+                InstallQuickInputState;
+            const invalidStepName = InstallQuickInputStep[InstallQuickInputStep.pickVersion] + 'A';
+            expect(function() {
+              quickInput.changeCurrentStepAfter(invalidStepName, state);
+            }).to.throw(`wrong stepName: ${invalidStepName}`);
+          });
     });
 
     suite('#getMultiSteps()', function() {
