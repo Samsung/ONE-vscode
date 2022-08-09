@@ -20,8 +20,8 @@ ONE-vscode is an [extension](https://code.visualstudio.com/docs/editor/extension
 
 ### Development environment
 
-ONE-vscode supports the following development environments:
-1. A single Ubuntu machie (to run vscode and ONE toolchains) or
+ONE-vscode supports one of the following development environments:
+1. A single Ubuntu machine (to run vscode and ONE toolchains)
 2. A Windows machine (to run vscode) and a Ubuntu machine (to run ONE toolchains), connected with SSH extension
 
 A Ubuntu machine is mandatory because [ONE](https://github.com/Samsung/ONE) is officially released on Ubuntu. If your development environment is vscode on Windows, you need additional Ubuntu machine to run ONE toolchain. In additon, you need to [install SSH extension in vscode](https://code.visualstudio.com/docs/remote/ssh-tutorial).
@@ -71,7 +71,7 @@ ONE-vscode has 6 screen components.
 
 You need to open a folder (`File > Open Folder` menu) to start with ONE-vscode. After opening a folder, a [_workspace_ is constructed by vscode.](https://code.visualstudio.com/docs/editor/workspaces).
 
-The folder for ONE-vscode has the following files:
+The folder for ONE-vscode needs to have the following files:
 - Your model files
   - Tensorflow model file(*.pb, saved model or Keras model)
   - Tensorflow Lite model (*.tflite)
