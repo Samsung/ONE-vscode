@@ -1,16 +1,15 @@
 # Tutorial
 
-<!-- Candidate order
-
 ## Table of Contents
-- Installing ONE-vscode and backend extensions
-- Screen layout
-- Opening a folder
-- Installing a toolchain
-- Compiling a model
-- Profiling a model
-
--->
+- [How to install ONE-vscode](#how-to-install-one-vscode)
+- [Screen layout](#screen-layout)
+- [Workspace](#workspace)
+- [Install a toolchain](#install-a-toolchain)
+- [Set default toolchain](#set-default-toolchain)
+- [Prepare a model and a config file](#prepare-a-model-and-a-config-file)
+- [Compile a model](#compile-a-model)
+- [Profile a model](#profile-a-model)
+- [Contact](#contact)
 
 ## How to install ONE-vscode
 
@@ -24,7 +23,7 @@ ONE-vscode supports one of the following development environments:
 1. A single Ubuntu machine (to run vscode and ONE toolchains)
 2. A Windows machine (to run vscode) and a Ubuntu machine (to run ONE toolchains), connected with SSH extension
 
-A Ubuntu machine is mandatory because [ONE](https://github.com/Samsung/ONE) is officially released on Ubuntu. If your development environment is vscode on Windows, you need additional Ubuntu machine to run ONE toolchain. In additon, you need to [install SSH extension in vscode](https://code.visualstudio.com/docs/remote/ssh-tutorial).
+A Ubuntu machine is mandatory because [ONE](https://github.com/Samsung/ONE) is officially released on Ubuntu. If your development environment is vscode on Windows, you need additional Ubuntu machine to run ONE toolchain. In addition, you need to [install SSH extension in vscode](https://code.visualstudio.com/docs/remote/ssh-tutorial).
 
 ### Install ONE-vscode extension
 
@@ -65,28 +64,26 @@ ONE-vscode has 6 screen components.
 6. `ONE-vscode Log`
     - This shows logs. You can check detailed reason of error or warning.
 
-<!-- Rearrange content below -->
-
 ## Workspace
 
 You need to open a folder (`File > Open Folder` menu) to start with ONE-vscode. After opening a folder, a [_workspace_ is constructed by vscode.](https://code.visualstudio.com/docs/editor/workspaces).
 
 The folder for ONE-vscode needs to have the following files:
 - Your model files
-  - Tensorflow model file(*.pb, saved model or Keras model)
-  - Tensorflow Lite model (*.tflite)
-  - Onnx model (*.onnx)
+  - TensorFlow model file(*.pb, saved model or Keras model)
+  - TensorFlow Lite model (*.tflite)
+  - ONNX model (*.onnx)
 - ONE *.cfg files (You can create this file later)
 
-## Install the toolchain
+## Install a toolchain
 
-A toolchain contains [ONE tools](https://github.com/Samsung/ONE/tree/master/compiler/one-cmds) and other backend-specific tools. Developers or vendors of backend can distribute backend-specific toolchain and put installation feature inside their backend extension.
+A toolchain contains [ONE command tools](https://github.com/Samsung/ONE/tree/master/compiler/one-cmds) and other backend-specific tools. Developers or vendors of backend can distribute backend-specific toolchain and put installation feature inside their backend extension.
 
-To install a backend-specific toolchain, you first need to install the backend extension. Then, click `+` icon on Toolchain view. You can also easily remove intalled toolchain by clicking `X` icon in Toolchain view.
+To install a backend-specific toolchain, you first need to install the backend extension. Then, click `+` icon on Toolchain view. You can also easily remove installed toolchain by clicking `X` icon in Toolchain view.
 
 ## Set default toolchain
 
-You can install multiple instances of toolchains. For example, some backend supports multiple versions of toolchain to be installed. Or you might installed more than one backend extensions installed and installed one or more toolchain per backend extrension.
+You can install multiple instances of toolchains. For example, some backend supports multiple versions of toolchain to be installed. Or you might installed more than one backend extensions installed and installed one or more toolchain per backend extension.
 
 To decide which toolchain will be used by default, you need to specify the default toolchain. Default toolchain refers to which toolchain you will use to run ONE related tools. To specify a default toolchain, if you mouse up the toolchain item you want to use in Toolchain view, :heavy_check_mark: icon appears. Click this icon to specify it as default toolchain. If toolchain is specified as default toolchain, the icon changes.
 
@@ -94,11 +91,11 @@ To decide which toolchain will be used by default, you need to specify the defau
 |-----------|-------------------|
 | <img src="https://user-images.githubusercontent.com/7223627/177962615-71e64f52-e684-432d-a053-07896a20a479.png" width=300 /> | <img src="https://user-images.githubusercontent.com/7223627/177963453-d22998a0-be21-4531-a70b-9057a204e7eb.png" width=300 /> |
 
-## Prepare a NN model and a config file
+## Prepare a model and a config file
 
-Now, let's try to copile a model (tflite, Tensorflow, onnx).
+Now, let's try to compile  a model (TensorFlow Lite, TensorFlow, or ONNX).
 
-Just like you might write _Makefile_ for C progream, you need ONE `*.cfg` file to compile a model. ONE cfg file is a file that describes steps and compilation options.
+Just like you might write _Makefile_ for C program, you need ONE `*.cfg` file to compile a model. ONE cfg file is a file that describes steps and options of compilation.
 One example you can get is in [res/modelDir/truediv](../res/modelDir/truediv/). You may want to copy and modify the cfg file to your workspace. After modifying the cfg file to have your model file as input model, you will see the cfg file below your model file in ONE explorer.
 
 You can also edit the cfg file with GUI cfg editor.
@@ -107,9 +104,9 @@ You can also edit the cfg file with GUI cfg editor.
 
 ## Compile a model
 
-Now, you can compile the model by clicking `▶` icon on a cfg file. Below cfg file in ONE explorer, you can find files during compilation, e.g., various `*.circle` file and the final target file compiled for your backend.
+Now, you can compile the model by clicking `▶` icon on a cfg file. Below cfg file in ONE explorer, you can find generated files by compilation, e.g., various `*.circle` file and the final target file compiled for your backend.
 
-## Profiling a model
+## Profile a model
 
 You can add `Profile` step into cfg file, which will generate json file in Chrome Tracing format, which has timeline data.
 You can find the json file below cfg file in ONE explorer. ONE-vscode provides embedded GUI viewer to see the json file.
