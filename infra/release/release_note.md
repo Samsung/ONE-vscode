@@ -47,4 +47,5 @@
 
 ### JSON Tracer
 
-- TODO: Fill this part
+- Provide graphical view of chrome trace files
+- Inspired by the trace viewer of [catapult](https://chromium.googlesource.com/catapult) source code
