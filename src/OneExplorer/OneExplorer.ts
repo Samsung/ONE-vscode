@@ -621,7 +621,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
     let approval: string;
     let useTrash: boolean;
 
-    if (vscode.env.remoteName === 'ssh-remote') {
+    if (vscode.env.remoteName) {
       // NOTE(dayo)
       // By experience, the file is not deleted with 'useTrash:true' option.
       approval = 'Delete';
