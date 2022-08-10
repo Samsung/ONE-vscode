@@ -606,19 +606,39 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
    */
   delete(oneNode: OneNode): void {
     const isDirectory = (oneNode.node.type === NodeType.directory);
-    const title =
-        `Are you sure you want to delete '${path.parse(oneNode.node.path).base}'` + isDirectory ?
-        'and its contents?' :
-        '?';
-    const detail = `You can restore this file from the Trash.`;
-    const approval = 'Move to Trash';
-    const recursive = isDirectory ? true : false;
+
+    let recursive: boolean;
+    let title = `Are you sure you want to delete '${oneNode.node.name}'`;
+    if (isDirectory) {
+      title += ` and its contents?`;
+      recursive = true;
+    } else {
+      title += `?`;
+      recursive = false;
+    }
+
+    let detail: string|undefined;
+    let approval: string;
+    let useTrash: boolean;
+
+    if (vscode.env.remoteName) {
+      // NOTE(dayo)
+      // By experience, the file is not deleted with 'useTrash:true' option.
+      approval = 'Delete';
+      detail = 'The file will be deleted permanently.';
+      useTrash = false;
+    } else {
+      approval = 'Move to Trash';
+      detail = `You can restore this file from the Trash.`;
+      useTrash = true;
+    }
+
 
     vscode.window.showInformationMessage(title, {detail: detail, modal: true}, approval)
         .then(ans => {
           if (ans === approval) {
             Logger.info('OneExplorer', `Delete '${oneNode.node.name}'.`);
-            vscode.workspace.fs.delete(oneNode.node.uri, {recursive: recursive, useTrash: true})
+            vscode.workspace.fs.delete(oneNode.node.uri, {recursive: recursive, useTrash: useTrash})
                 .then(() => this.refresh());
           }
         });
