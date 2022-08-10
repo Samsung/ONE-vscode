@@ -279,6 +279,13 @@ export class ConfigObj {
       })
     });
 
+    /**
+     * When you add a new product type, please append the ext type to
+     * OneTreeDataProvider.fileWatcher too, to prevent a bug.
+     *
+     * TODO Provide better structure to remove this extra work
+     */
+
     let artifacts: Artifact[] = locatorRunner.run(iniObj, dir);
 
     return artifacts;
