@@ -24,9 +24,11 @@
 
 ### Target Device View
 
-- Add Device list on local connection
-    - currently ubuntu 18.04 host PC and Tizen device added 
-- Show usable Executors under Device
+- Add devices on local connection
+  - Supported devices
+    - Local PC (Ubuntu 18.04)
+    - SDB-connected Tizen devices
+- Show usable executors under each device (ex. simulators)
 
 ### Cfg Editor
 
