@@ -85,11 +85,7 @@ To install a backend-specific toolchain, you first need to install the backend e
 
 You can install multiple instances of toolchains. For example, some backend supports multiple versions of toolchain to be installed. Or you might installed more than one backend extensions installed and installed one or more toolchain per backend extension.
 
-To decide which toolchain will be used by default, you need to specify the default toolchain. Default toolchain refers to which toolchain you will use to run ONE related tools. To specify a default toolchain, if you mouse up the toolchain item you want to use in the Toolchain view, :heavy_check_mark: icon appears. Click this icon to specify it as default toolchain. If toolchain is specified as default toolchain, the icon changes.
-
-| Toolchain | Default Toolchain |
-|-----------|-------------------|
-| <img src="https://user-images.githubusercontent.com/7223627/177962615-71e64f52-e684-432d-a053-07896a20a479.png" width=300 /> | <img src="https://user-images.githubusercontent.com/7223627/177963453-d22998a0-be21-4531-a70b-9057a204e7eb.png" width=300 /> |
+To execute a toolchain with a config file in the ONE explorer to, e.g., compile a model, you need to specify the default toolchain. Default toolchain refers to which toolchain you will use to run ONE related tools. To specify a default toolchain, if you mouse up the toolchain item you want to use in the Toolchain view, :heavy_check_mark: icon appears. Click this icon to specify it as default toolchain.
 
 ## Prepare a model and a config file
 
