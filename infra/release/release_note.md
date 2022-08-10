@@ -43,7 +43,7 @@
 
 ### Mondrian Viewer
 
-- TODO: Fill this part
+- Provide graphical view of allocation trace files
 
 ### JSON Tracer
 
