@@ -610,7 +610,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
     let recursive: boolean;
     let title = `Are you sure you want to delete '${oneNode.node.name}'`;
     if (isDirectory) {
-      title += `and its contents?`;
+      title += ` and its contents?`;
       recursive = true;
     } else {
       title += `?`;
