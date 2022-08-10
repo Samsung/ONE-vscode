@@ -6,15 +6,15 @@
 
 - Add hide-and-show button
 - Show more files
-  - memory trace files
-  - performance trace files
-  - circle log files
-  - extra backend model binary files
+  - Memory trace files
+  - Performance trace files
+  - Circle log files
+  - Extra backend model binary files
 - Open files with dedicated editor/viewers
-  - circle files - 'Circle Viewer'
-  - memory trace files - 'Mondrian Viewer'
-  - performance trace files - 'Json Tracer'
-  - circle log files - 'Text Editor'
+  - Circle files - 'Circle Viewer'
+  - Memory trace files - 'Mondrian Viewer'
+  - Performance trace files - 'Json Tracer'
+  - Circle log files - 'Text Editor'
 
 ### Toolchain View
 
