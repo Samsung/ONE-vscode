@@ -50,7 +50,7 @@ import {CfgData} from './CfgData';
 /* istanbul ignore next */
 export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
   private _disposables: vscode.Disposable[] = [];
-  private _oneConfig: CfgData = new CfgData();
+  private _oneConfigMap: any = {};
 
   public static readonly viewType = 'one.editor.cfg';
 
@@ -74,6 +74,7 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
   public async resolveCustomTextEditor(
       document: vscode.TextDocument, webviewPanel: vscode.WebviewPanel,
       _token: vscode.CancellationToken): Promise<void> {
+    this._oneConfigMap[document.uri.toString()] = new CfgData();
     await this.initWebview(document, webviewPanel.webview);
     this.initWebviewPanel(document, webviewPanel);
     this.updateWebview(document, webviewPanel.webview);
@@ -123,20 +124,21 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
           this.updateWebview(document, webview);
           break;
         case 'setParam':
-          this._oneConfig.updateSectionWithKeyValue(e.section, e.param, e.value);
+          this._oneConfigMap[document.uri.toString()].updateSectionWithKeyValue(
+              e.section, e.param, e.value);
           break;
         case 'setSection':
-          this._oneConfig.updateSectionWithValue(e.section, e.param);
+          this._oneConfigMap[document.uri.toString()].updateSectionWithValue(e.section, e.param);
           break;
         case 'updateDocument':
-          if (this._oneConfig.isSame(document.getText()) === false) {
-            this._oneConfig.sort();
+          if (this._oneConfigMap[document.uri.toString()].isSame(document.getText()) === false) {
+            this._oneConfigMap[document.uri.toString()].sort();
 
             // TODO Optimize this to modify only changed lines
             const edit = new vscode.WorkspaceEdit();
             edit.replace(
                 document.uri, new vscode.Range(0, 0, document.lineCount, 0),
-                this._oneConfig.getAsString());
+                this._oneConfigMap[document.uri.toString()].getAsString());
             vscode.workspace.applyEdit(edit);
           }
           break;
@@ -188,7 +190,10 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
   }
 
   private updateWebview(document: vscode.TextDocument, webview: vscode.Webview): void {
-    this._oneConfig.setWithString(document.getText());
-    webview.postMessage({type: 'displayCfgToEditor', text: this._oneConfig.getAsConfig()});
+    this._oneConfigMap[document.uri.toString()].setWithString(document.getText());
+    webview.postMessage({
+      type: 'displayCfgToEditor',
+      text: this._oneConfigMap[document.uri.toString()].getAsConfig()
+    });
   };
 }
