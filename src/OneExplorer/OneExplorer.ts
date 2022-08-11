@@ -594,9 +594,9 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
           if (newname) {
             const dirpath = path.dirname(oneNode.node.uri.fsPath);
             const newpath = `${dirpath}/${newname}`;
-            vscode.workspace.fs.rename(oneNode.node.uri, vscode.Uri.file(newpath));
-
-            this.refresh();
+            vscode.workspace.fs.rename(oneNode.node.uri, vscode.Uri.file(newpath)).then(() => {
+              this.refresh();
+            });
           }
         });
   }
