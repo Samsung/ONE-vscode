@@ -421,8 +421,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
       this._onDidChangeTreeData.event;
 
   // TODO(dayo) Get the ext list(cfg,tflite..) from ArtifactLocator
-  private fileWatcher = vscode.workspace.createFileSystemWatcher(
-      `**/*.{cfg,pb,tflite,onnx,circle,tvn,tv2w,tv2o,tv2m,log,json}`);
+  private fileWatcher = vscode.workspace.createFileSystemWatcher(`**/*`);
 
   private tree: DirectoryNode|undefined;
   public didHideExtra: boolean = false;
