@@ -143,7 +143,8 @@
       {
         "command": "one.explorer.openContainingFolder",
         "title": "Open Containing Folder",
-        "category": "ONE"
+        "category": "ONE",
+        "when": "one:extensionKind == UI"
       },
       {
         "command": "one.explorer.openAsText",
@@ -248,7 +249,8 @@
         {
           "command": "one.explorer.openContainingFolder",
           "when": "view == OneExplorerView",
-          "group": "3_open@2"
+          "group": "3_open@2",
+          "when": "one:extensionKind == UI"
         },
         {
           "command": "one.explorer.openAsText",
