@@ -22,7 +22,7 @@ import * as vscode from 'vscode';
 
 import {CfgEditorPanel} from '../CfgEditor/CfgEditorPanel';
 import {Balloon} from '../Utils/Balloon';
-import {obtainWorkspaceRoot, RealPath} from '../Utils/Helpers';
+import {obtainWorkspaceRoot} from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
 import {ArtifactAttr} from './ArtifactLocator';
@@ -447,7 +447,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
       }
     }
 
-    const provider = new OneTreeDataProvider(workspaceRoot);
+    const provider = new OneTreeDataProvider(workspaceRoot, context.extension.extensionKind);
 
     const registrations = [
       vscode.window.createTreeView(
@@ -485,7 +485,8 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
     registrations.forEach(disposable => context.subscriptions.push(disposable));
   }
 
-  constructor(private workspaceRoot: vscode.Uri|undefined) {
+  constructor(
+      private workspaceRoot: vscode.Uri|undefined, private _extensionKind: vscode.ExtensionKind) {
     vscode.commands.executeCommand('setContext', 'one.explorer:didHideExtra', this.didHideExtra);
 
     const fileWatchersEvents =
@@ -494,6 +495,32 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
     for (let event of fileWatchersEvents) {
       event(() => this.refresh());
     }
+  }
+
+  /**
+   * 'context.extension.extensionKind' indicates which side the extension is running.
+   *
+   * NOTE 'extensionKind' property in 'package.json' is different from
+   * 'context.extension.extensionKind'. extenionKind(package.json) is a field to manifest the
+   * extension's preference. extension.extensionKind is an eventual runtime property.
+   *
+   * @ref https://github.com/Samsung/ONE-vscode/issues/1209
+   */
+  get isRemote(): boolean {
+    return (this._extensionKind === vscode.ExtensionKind.Workspace);
+  }
+
+  /**
+   * 'context.extension.extensionKind' indicates which side the extension is running.
+   *
+   * NOTE 'extensionKind' property in 'package.json' is different from
+   * 'context.extension.extensionKind'. extenionKind(package.json) is a field to manifest the
+   * extension's preference. extension.extensionKind is an eventual runtime property.
+   *
+   * @ref https://github.com/Samsung/ONE-vscode/issues/1209
+   */
+  get isLocal(): boolean {
+    return (this._extensionKind === vscode.ExtensionKind.UI);
   }
 
   /**
@@ -621,7 +648,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
     let approval: string;
     let useTrash: boolean;
 
-    if (vscode.env.remoteName) {
+    if (this.isRemote) {
       // NOTE(dayo)
       // By experience, the file is not deleted with 'useTrash:true' option.
       approval = 'Delete';
@@ -632,7 +659,6 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
       detail = `You can restore this file from the Trash.`;
       useTrash = true;
     }
-
 
     vscode.window.showInformationMessage(title, {detail: detail, modal: true}, approval)
         .then(ans => {
