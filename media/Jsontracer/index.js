@@ -56,7 +56,7 @@ window.addEventListener('message', event => {
   switch (message.type) {
     case 'load':
       initData();
-      processData(message.content);
+      processData(message.content, message.displayTimeUnit);
       break;
     default:
       break;
