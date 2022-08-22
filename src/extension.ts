@@ -34,6 +34,19 @@ export function activate(context: vscode.ExtensionContext) {
 
   Logger.info(tag, 'one-vscode activate OK');
 
+  /**
+   * Set runtime extensionKind in setContext to use in package.json 'when' clause.
+   * NOTE that 'extensionKind' in package.json and 'one:extensionKind' can be different.
+   *      'extensionKind' is a preferred setting
+   *      'context.extension.extensionKind' is an actual runtime extenionKind.
+   *      'one:extensionKind' is a context value equivalent to context.extension.extensionKind.
+   */
+  if (context.extension.extensionKind === vscode.ExtensionKind.UI) {
+    vscode.commands.executeCommand('setContext', 'one:extensionKind', 'UI');
+  } else {
+    vscode.commands.executeCommand('setContext', 'one:extensionKind', 'Workspace');
+  }
+
   OneTreeDataProvider.register(context);
 
   ToolchainProvider.register(context);

@@ -448,7 +448,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
 
     const provider = new OneTreeDataProvider(workspaceRoot, context.extension.extensionKind);
 
-    const registrations = [
+    let registrations = [
       vscode.window.createTreeView(
           'OneExplorerView',
           {treeDataProvider: provider, showCollapseAll: true, canSelectMany: true}),
@@ -475,11 +475,19 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
       vscode.commands.registerCommand(
           'one.explorer.rename', (oneNode: OneNode) => provider.rename(oneNode)),
       vscode.commands.registerCommand(
-          'one.explorer.openContainingFolder',
-          (oneNode: OneNode) => provider.openContainingFolder(oneNode)),
-      vscode.commands.registerCommand(
           'one.explorer.delete', (oneNode: OneNode) => provider.delete(oneNode)),
     ];
+
+    if (provider.isLocal) {
+      registrations = [
+        ...[vscode.commands.registerCommand(
+                'one.explorer.openContainingFolder',
+                (oneNode: OneNode) => provider.openContainingFolder(oneNode)),
+      ]
+      ];
+    } else {
+      vscode.commands.executeCommand('setContext', 'one:extensionKind', 'Workspace');
+    }
 
     registrations.forEach(disposable => context.subscriptions.push(disposable));
   }
