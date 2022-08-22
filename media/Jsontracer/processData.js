@@ -50,7 +50,7 @@ import renderDashboard from './dashboard.js';
 
 const setData = document.querySelector('.set-data');
 
-export function processData(data) {
+export function processData(data, displayTimeUnit) {
   const processedData = {};
   const backgroundColor = {};
   const utility = {};
@@ -98,6 +98,7 @@ export function processData(data) {
   // set data to DOM
   setData.dataset['digit'] = digit;
   setData.dataset['timeLimit'] = timeLimit;
+  setData.dataset['displayTimeUnit'] = displayTimeUnit;
 
   // render dashboard
   renderDashboard(utility, timeLimit, digit, processedData);

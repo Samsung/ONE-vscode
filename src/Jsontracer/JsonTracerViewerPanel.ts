@@ -133,8 +133,9 @@ export class JsonTracerViewerPanel implements vscode.CustomTextEditorProvider {
 
   private updateWebview(document: vscode.TextDocument, webview: vscode.Webview): void {
     const content = JSON.parse(document.getText()).traceEvents;
+    const displayTimeUnit = JSON.parse(document.getText()).displayTimeUnit;
     if (content !== undefined) {
-      webview.postMessage({type: 'load', content: content});
+      webview.postMessage({type: 'load', content: content, displayTimeUnit: displayTimeUnit});
     }
   };
 }
