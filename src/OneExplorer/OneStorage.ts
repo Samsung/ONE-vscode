@@ -163,7 +163,7 @@ export class OneStorage {
     return OneStorage._obj;
   }
 
-  static reset(): void {
+  public static reset(): void {
     OneStorage._obj = undefined;
   }
 }
