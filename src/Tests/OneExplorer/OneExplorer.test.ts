@@ -19,7 +19,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-import {_unit_test_BaseModelNode as BaseModelNode, _unit_test_ConfigNode as ConfigNode, _unit_test_DirectoryNode as DirectoryNode, _unit_test_getCfgList as getCfgList, _unit_test_NodeFactory as NodeFactory, _unit_test_NodeType as NodeType, _unit_test_OneNode as OneNode, _unit_test_ProductNode as ProductNode} from '../../OneExplorer/OneExplorer';
+import {_unit_test_BaseModelNode as BaseModelNode, _unit_test_ConfigNode as ConfigNode, _unit_test_DirectoryNode as DirectoryNode, _unit_test_NodeFactory as NodeFactory, _unit_test_NodeType as NodeType, _unit_test_OneNode as OneNode, _unit_test_ProductNode as ProductNode, OneTreeDataProvider} from '../../OneExplorer/OneExplorer';
 import {obtainWorkspaceRoot} from '../../Utils/Helpers';
 
 
@@ -152,12 +152,14 @@ suite('OneExplorer', function() {
 
     suite('#getCfgList()', function() {
       test('NEG: get empty cfg list', function() {
-        const cfgList = getCfgList(testBuilder.getPath(''));
+        OneTreeDataProvider.resetCfgList();
+        const cfgList = OneTreeDataProvider.getCfgList(testBuilder.getPath(''));
         { assert.strictEqual(cfgList.length, 0); }
       });
 
       test('NEG: get cfg list on not existing path', function() {
-        const cfgList = getCfgList(testBuilder.getPath(''));
+        OneTreeDataProvider.resetCfgList();
+        const cfgList = OneTreeDataProvider.getCfgList(testBuilder.getPath(''));
         { assert.strictEqual(cfgList.length, 0); }
       });
 
@@ -173,7 +175,8 @@ suite('OneExplorer', function() {
         const configPath1 = testBuilder.getPath(configName1);
         const configPath2 = testBuilder.getPath(configName2);
 
-        const cfgList = getCfgList(testBuilder.getPath(''));
+        OneTreeDataProvider.resetCfgList();
+        const cfgList = OneTreeDataProvider.getCfgList(testBuilder.getPath(''));
         {
           assert.isTrue(cfgList.includes(configPath1));
           assert.isTrue(cfgList.includes(configPath2));
@@ -195,7 +198,8 @@ suite('OneExplorer', function() {
         const configPath21 = testBuilder.getPath(configName21);
         const configPath22 = testBuilder.getPath(configName22);
 
-        const cfgList = getCfgList(testBuilder.getPath(''));
+        OneTreeDataProvider.resetCfgList();
+        const cfgList = OneTreeDataProvider.getCfgList(testBuilder.getPath(''));
         {
           assert.isTrue(cfgList.includes(configPath1));
           assert.isTrue(cfgList.includes(configPath21));

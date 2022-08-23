@@ -34,53 +34,11 @@ export {
   ConfigNode as _unit_test_ConfigNode,
 
   DirectoryNode as _unit_test_DirectoryNode,
-  getCfgList as _unit_test_getCfgList,
-
   NodeFactory as _unit_test_NodeFactory,
   NodeType as _unit_test_NodeType,
   OneNode as _unit_test_OneNode,
   ProductNode as _unit_test_ProductNode,
 };
-
-/**
- * Get the list of .cfg files wiithin the workspace
- * @param root  the file or directory,
- *              which MUST exist in the file system
- */
-function getCfgList(root: string = obtainWorkspaceRoot()): string[] {
-  /**
-   * Returns every file inside directory
-   * @todo Check soft link
-   * @param root
-   * @returns
-   */
-  const readdirSyncRecursive = (root: string): string[] => {
-    if (fs.statSync(root).isFile()) {
-      return [root];
-    }
-
-    let children: string[] = [];
-    if (fs.statSync(root).isDirectory()) {
-      fs.readdirSync(root).forEach(val => {
-        children = children.concat(readdirSyncRecursive(path.join(root, val)));
-      });
-    }
-    return children;
-  };
-
-  try {
-    fs.statSync(root);
-  } catch {
-    Logger.error('OneExplorer', 'getCfgList', 'called on not existing directory or file.');
-    return [];
-  }
-
-  // Get the list of all the cfg files inside workspace root
-  const cfgList = readdirSyncRecursive(root).filter(val => val.endsWith('.cfg'));
-
-  return cfgList;
-}
-
 
 /**
  * NOTE
@@ -284,7 +242,8 @@ class BaseModelNode extends Node {
    *         ∟ product
    */
   buildChildren = (): void => {
-    const configPaths = getCfgList().filter(cfg => {
+    const cfgList = OneTreeDataProvider.getCfgList();
+    const configPaths = cfgList.filter(cfg => {
       const cfgObj = ConfigObj.createConfigObj(vscode.Uri.file(cfg));
       if (!cfgObj) {
         Logger.info('OneExplorer', `Failed to open file ${cfg}`);
@@ -530,6 +489,55 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
     return (this._extensionKind === vscode.ExtensionKind.UI);
   }
 
+  static cfgList: string[]|undefined;
+
+  /**
+   * Get the list of .cfg files wiithin the workspace
+   * @param root  the file or directory,
+   *              which MUST exist in the file system
+   */
+  static getCfgList(root: string = obtainWorkspaceRoot()): string[] {
+    if (OneTreeDataProvider.cfgList) {
+      return OneTreeDataProvider.cfgList;
+    }
+
+    /**
+     * Returns every file inside directory
+     * @todo Check soft link
+     * @param root
+     * @returns
+     */
+    const readdirSyncRecursive = (root: string): string[] => {
+      if (fs.statSync(root).isFile()) {
+        return [root];
+      }
+
+      let children: string[] = [];
+      if (fs.statSync(root).isDirectory()) {
+        fs.readdirSync(root).forEach(val => {
+          children = children.concat(readdirSyncRecursive(path.join(root, val)));
+        });
+      }
+      return children;
+    };
+
+    try {
+      fs.statSync(root);
+    } catch {
+      Logger.error('OneExplorer', 'getCfgList', 'called on not existing directory or file.');
+      return [];
+    }
+
+    // Get the list of all the cfg files inside workspace root
+    OneTreeDataProvider.cfgList = readdirSyncRecursive(root).filter(val => val.endsWith('.cfg'));
+
+    return OneTreeDataProvider.cfgList;
+  }
+
+  static resetCfgList(): void {
+    OneTreeDataProvider.cfgList = undefined;
+  }
+
   /**
    * @command one.explorer.hideExtra
    */
@@ -557,6 +565,8 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
    *                If not given, the whole tree will be rebuilt.
    */
   refresh(oneNode?: OneNode): void {
+    OneTreeDataProvider.resetCfgList();
+
     if (!oneNode) {
       // Reset the root in order to build from scratch (at OneTreeDataProvider.getTree)
       this.tree = undefined;
