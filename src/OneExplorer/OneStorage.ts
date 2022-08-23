@@ -63,7 +63,7 @@ export class OneStorage {
   private _baseModelToCfgsMap: StringMap;
 
   /**
-   * Get the list of .cfg files wiithin the workspace
+   * Get the list of .cfg files within the workspace
    * @param root  the file or directory,
    *              which MUST exist in the file system
    */
