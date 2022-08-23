@@ -69,10 +69,8 @@ export class OneStorage {
    */
   private _getCfgList(root: string = obtainWorkspaceRoot()): string[] {
     /**
-     * Returns every file inside directory
+     * Returns an array of all the file names inside the root directory
      * @todo Check soft link
-     * @param root
-     * @returns
      */
     const readdirSyncRecursive = (root: string): string[] => {
       if (fs.statSync(root).isFile()) {
@@ -89,13 +87,11 @@ export class OneStorage {
     };
 
     try {
-      fs.statSync(root);
+      return readdirSyncRecursive(root).filter(val => val.endsWith('.cfg'));
     } catch {
       Logger.error('OneExplorer', 'getCfgList', 'called on not existing directory or file.');
       return [];
     }
-
-    return readdirSyncRecursive(root).filter(val => val.endsWith('.cfg'));
   }
 
   private _getCfgToCfgObjMap(cfgList: string[]): ConfigObjMap {
