@@ -45,7 +45,7 @@ interface ConfigObjMap {
  *
  * The singleton is created when the first get() is called.
  * The object remains until OneStorage.reset() is called.
- * OneStorage.reset() is called OneTreeDataProvider.refresh(), which is called on every file system
+ * OneStorage.reset() is called within OneTreeDataProvider.refresh(), which is called on every file system
  * change within the repository.
  */
 export class OneStorage {
