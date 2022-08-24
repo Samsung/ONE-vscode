@@ -26,7 +26,7 @@ import {obtainWorkspaceRoot} from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
 import {ArtifactAttr} from './ArtifactLocator';
-import {ConfigObj} from './ConfigObject';
+import {OneStorage} from './OneStorage';
 
 // Exported for unit testing only
 export {
@@ -43,6 +43,8 @@ export {
 };
 
 /**
+ * TODO Remove
+ *
  * Get the list of .cfg files wiithin the workspace
  * @param root  the file or directory,
  *              which MUST exist in the file system
@@ -80,7 +82,6 @@ function getCfgList(root: string = obtainWorkspaceRoot()): string[] {
 
   return cfgList;
 }
-
 
 /**
  * NOTE
@@ -284,16 +285,11 @@ class BaseModelNode extends Node {
    *         ∟ product
    */
   buildChildren = (): void => {
-    const configPaths = getCfgList().filter(cfg => {
-      const cfgObj = ConfigObj.createConfigObj(vscode.Uri.file(cfg));
-      if (!cfgObj) {
-        Logger.info('OneExplorer', `Failed to open file ${cfg}`);
-        return false;
-      }
+    const configPaths = OneStorage.getCfgs(this.path);
 
-      return cfgObj.isChildOf(this.path);
-    });
-
+    if (!configPaths) {
+      return;
+    }
     configPaths.forEach(configPath => {
       const configNode = NodeFactory.create(NodeType.config, configPath);
 
@@ -338,10 +334,15 @@ class ConfigNode extends Node {
    *         ∟ product  <- children
    */
   buildChildren = (): void => {
-    const cfgObj = ConfigObj.createConfigObj(vscode.Uri.file(this.path));
-    const products = cfgObj!.getProductsExists;
+    const cfgObj = OneStorage.getCfgObj(this.path);
 
-    products!.forEach(product => {
+    if (!cfgObj) {
+      return;
+    }
+
+    const products = cfgObj.getProductsExists;
+
+    products.forEach(product => {
       const productNode = NodeFactory.create(NodeType.product, product.path, product.attr);
 
       this.childNodes.push(productNode);
@@ -380,7 +381,6 @@ class ProductNode extends Node {
     // Do nothing
   };
 }
-
 
 export class OneNode extends vscode.TreeItem {
   constructor(
@@ -557,6 +557,8 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
    *                If not given, the whole tree will be rebuilt.
    */
   refresh(oneNode?: OneNode): void {
+    OneStorage.reset();
+
     if (!oneNode) {
       // Reset the root in order to build from scratch (at OneTreeDataProvider.getTree)
       this.tree = undefined;
