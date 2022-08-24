@@ -136,7 +136,11 @@ export class OneStorage {
   /**
    * Get cfg lists which refers the base model path
    * @param baseModelPath
-   * @return a list of cfg path or 'undefined'
+   * @return a list of cfg path or undefined
+   *         'undefined' is returned when
+   *          (1) the path not exists
+   *          (2) the path is not a base model file
+   *          (3) the path is a lonely base model file
    */
   public static getCfgs(baseModelPath: string): string[]|undefined {
     return OneStorage.get()._baseModelToCfgsMap[baseModelPath];
