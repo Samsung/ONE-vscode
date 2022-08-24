@@ -15,25 +15,20 @@
  */
 
 import * as vscode from 'vscode';
-import {Logger} from './Logger';
 
 /**
  * A helper module for `vscode.workspace.fs`
  *
- * WHY TO USE THIS FS WRAPPER MODULE?
- *
- * VS Code extension team recommends developers to use vscode.workspace.fs instead of fs
- * and not to use any syncronous functions to access file system.
- *
- * Let's avoid using fs, especially syncronous functions.
- * Instead, use these helper functions.
+ * VS Code extension team recommends 
+ * (1) using vscode.workspace.fs instead of fs
+ * (2) not accessing file system synchronously.
  *
  * Add more helper functions as you may.
  */
 
 export module fswrapper{
 
-  interface Stat{isDirectory: boolean, isFile: boolean, isSymbolic: boolean}
+  export interface Stat{isDirectory: boolean, isFile: boolean, isSymbolic: boolean}
 
   /**
    * Replace fs.statSync
