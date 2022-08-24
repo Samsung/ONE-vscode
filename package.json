@@ -248,9 +248,8 @@
         },
         {
           "command": "one.explorer.openContainingFolder",
-          "when": "view == OneExplorerView",
           "group": "3_open@2",
-          "when": "one:extensionKind == UI"
+          "when": "view == OneExplorerView && one:extensionKind == UI"
         },
         {
           "command": "one.explorer.openAsText",
