@@ -503,6 +503,12 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
             }
           }),
       vscode.commands.registerCommand(
+          'one.explorer.previewCfg',
+          (oneNode: OneNode) => {
+            //vscode.window.showTextDocument(oneNode.node.uri, {preview:true});
+            vscode.commands.executeCommand('vscode.openWith', oneNode.node.uri, 'default', {preview:true});
+          }),
+      vscode.commands.registerCommand(
           'one.explorer.openAsText',
           (node: Node) => {
             vscode.commands.executeCommand('vscode.openWith', node.uri, 'default');

@@ -182,6 +182,11 @@
         "when": "one:extensionKind == UI"
       },
       {
+        "command": "one.explorer.previewCfg",
+        "title": "Preview",
+        "category": "ONE"
+      },
+      {
         "command": "one.explorer.openAsText",
         "title": "Open with Text Editor",
         "category": "ONE"
@@ -308,13 +313,18 @@
         },
         {
           "command": "one.explorer.openContainingFolder",
-          "group": "3_open@2",
+          "group": "3_open@3",
           "when": "view == OneExplorerView && one:extensionKind == UI"
         },
         {
           "command": "one.explorer.openAsText",
           "when": "view == OneExplorerView && viewItem == config",
-          "group": "3_open@1"
+          "group": "3_open@2"
+        },
+        {
+          "command": "one.explorer.previewCfg",
+          "group": "3_open@1",
+          "when": "view == OneExplorerView && viewItem == config"
         },
         {
           "command": "one.explorer.revealInDefaultExplorer",
