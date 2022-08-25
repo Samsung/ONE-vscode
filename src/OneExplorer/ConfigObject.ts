@@ -22,7 +22,7 @@ import * as vscode from 'vscode';
 import {RealPath} from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
-import {Artifact, Locator, LocatorRunner} from './ArtifactLocator';
+import {Artifact, ArtifactAttrDict, Locator, LocatorRunner} from './ArtifactLocator';
 
 /**
  * @brief A helper class to get parsed artifacts (baseModels, products)
@@ -154,17 +154,17 @@ export class ConfigObj {
     let locatorRunner = new LocatorRunner();
 
     locatorRunner.register({
-      artifactAttr: {ext: '.tflite', icon: new vscode.ThemeIcon('symbol-variable')},
+      artifactAttr: ArtifactAttrDict.BaseModel.tflite,
       locator: new Locator((value: string) => LocatorRunner.searchWithExt('.tflite', value))
     });
 
     locatorRunner.register({
-      artifactAttr: {ext: '.pb', icon: new vscode.ThemeIcon('symbol-variable')},
+      artifactAttr: ArtifactAttrDict.BaseModel.pb,
       locator: new Locator((value: string) => LocatorRunner.searchWithExt('.pb', value))
     });
 
     locatorRunner.register({
-      artifactAttr: {ext: '.onnx', icon: new vscode.ThemeIcon('symbol-variable')},
+      artifactAttr: ArtifactAttrDict.BaseModel.onnx,
       locator: new Locator((value: string) => LocatorRunner.searchWithExt('.onnx', value))
     });
 

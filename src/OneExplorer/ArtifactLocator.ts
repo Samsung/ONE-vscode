@@ -79,6 +79,28 @@ export interface ArtifactAttr {
 }
 
 /**
+ * A dictionary to match file type to attributes
+ */
+export namespace ArtifactAttrDict {
+export namespace BaseModel {
+export const tflite: ArtifactAttr = {
+  ext: '.tflite',
+  icon: new vscode.ThemeIcon('symbol-variable'),
+  openViewType: 'one.viewer.circle'
+};
+export const pb: ArtifactAttr = {
+  ext: '.pb',
+  icon: new vscode.ThemeIcon('symbol-variable')
+};
+export const onnx: ArtifactAttr = {
+  ext: '.onnx',
+  icon: new vscode.ThemeIcon('symbol-variable'),
+  openViewType: 'one.viewer.circle'
+};
+}
+}
+
+/**
  * 'Locator' is to grep matching paths inside Ini Object
  */
 export class Locator {

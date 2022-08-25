@@ -25,7 +25,7 @@ import {Balloon} from '../Utils/Balloon';
 import {obtainWorkspaceRoot} from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
-import {ArtifactAttr} from './ArtifactLocator';
+import {ArtifactAttr, ArtifactAttrDict} from './ArtifactLocator';
 import {OneStorage} from './OneStorage';
 
 // Exported for unit testing only
@@ -241,7 +241,18 @@ class DirectoryNode extends Node {
       } else if (
           fstat.isFile() &&
           (fname.endsWith('.pb') || fname.endsWith('.tflite') || fname.endsWith('.onnx'))) {
-        const baseModelNode = NodeFactory.create(NodeType.baseModel, fpath);
+        const getArtifact =
+            (path: string) => {
+              if (fname.endsWith('.pb')) {
+                return ArtifactAttrDict.BaseModel.pb;
+              } else if (fname.endsWith('.tflite')) {
+                return ArtifactAttrDict.BaseModel.tflite;
+              } else if (fname.endsWith('.onnx')) {
+                return ArtifactAttrDict.BaseModel.onnx;
+              }
+            }
+
+        const baseModelNode = NodeFactory.create(NodeType.baseModel, fpath, getArtifact(fpath));
 
         this.childNodes.push(baseModelNode);
       }
