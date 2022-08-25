@@ -152,6 +152,11 @@
         "category": "ONE"
       },
       {
+        "command": "one.explorer.reveal",
+        "title": "Reveal in Explorer View",
+        "category": "ONE"
+      },
+      {
         "command": "one.toolchain.refresh",
         "title": "Toolchain Refresh",
         "category": "ONE",
@@ -257,6 +262,11 @@
           "group": "3_open@1"
         },
         {
+          "command": "one.explorer.reveal",
+          "when": "view == OneExplorerView && viewItem != directory",
+          "group": "3_open@3"
+        },
+        {
           "command": "one.explorer.createCfg",
           "when": "view == OneExplorerView && viewItem == baseModel",
           "group": "inline"
@@ -307,6 +317,10 @@
         },
         {
           "command": "one.explorer.openAsText",
+          "when": "false"
+        },
+        {
+          "command": "one.explorer.reveal",
           "when": "false"
         },
         {

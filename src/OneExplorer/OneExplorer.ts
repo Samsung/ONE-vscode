@@ -462,6 +462,11 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
           (oneNode: OneNode) => {
             vscode.commands.executeCommand('vscode.openWith', oneNode.node.uri, 'default');
           }),
+      vscode.commands.registerCommand(
+          'one.explorer.reveal',
+          (oneNode: OneNode) => {
+            vscode.commands.executeCommand('revealInExplorer', oneNode.node.uri);
+          }),
       vscode.commands.registerCommand('one.explorer.refresh', () => provider.refresh()),
       vscode.commands.registerCommand('one.explorer.hideExtra', () => provider.hideExtra()),
       vscode.commands.registerCommand('one.explorer.showExtra', () => provider.showExtra()),
