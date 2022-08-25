@@ -478,8 +478,6 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
             vscode.commands.executeCommand('one.toolchain.runCfg', oneNode.node.uri.fsPath);
           }),
       vscode.commands.registerCommand(
-          'one.explorer.rename', (oneNode: OneNode) => provider.rename(oneNode)),
-      vscode.commands.registerCommand(
           'one.explorer.delete', (oneNode: OneNode) => provider.delete(oneNode)),
     ];
 
@@ -579,67 +577,6 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
    */
   openContainingFolder(oneNode: OneNode): void {
     vscode.commands.executeCommand('revealFileInOS', oneNode.node.uri);
-  }
-
-  /**
-   * Rename a file of all types of nodes (baseModel, product, config) excepts for directory.
-   * It only alters the file name, not the path.
-   * @command one.explorer.rename
-   */
-  rename(oneNode: OneNode): void {
-    // TODO: prohibit special characters for security ('..', '*', etc)
-    let warningMessage;
-    if (oneNode.node.type === NodeType.baseModel) {
-      // TODO automatically change the corresponding files
-      warningMessage = `WARNING! ${
-          oneNode.node.childNodes.map(node => `'${node.name}'`)
-              .toString()} will disappear from the view.`;
-    } else if (oneNode.node.type === NodeType.product) {
-      // TODO automatically change the corresponding files
-      warningMessage = `WARNING! '${oneNode.node.name}' may disappear from the view.`;
-    }
-
-    const validateInputPath = (newname: string): string|undefined => {
-      const oldpath = oneNode.node.path;
-      const dirpath = path.dirname(oneNode.node.uri.fsPath);
-      const newpath: string = path.join(dirpath, newname);
-
-      if (!newname.endsWith(path.extname(oldpath))) {
-        // NOTE
-        // `if (path.extname(newpath) !== path.extname(oldpath))`
-        // Do not use above code here.
-        // It will evaluate '.tflite' as false, because it's extname is ''.
-        return `A file extension must be (${path.extname(oldpath)})`;
-      }
-
-      if (newpath !== oldpath && fs.existsSync(newpath)) {
-        return `A file or folder ${
-            newname} already exists at this location. Please choose a different name.`;
-      }
-    };
-
-    vscode.window
-        .showInputBox({
-          title: 'Enter a file name:',
-          value: `${path.basename(oneNode.node.uri.fsPath)}`,
-          valueSelection: [
-            0,
-            path.basename(oneNode.node.uri.fsPath).length -
-                path.parse(oneNode.node.uri.fsPath).ext.length
-          ],
-          placeHolder: `Enter a new name for ${path.basename(oneNode.node.uri.fsPath)}`,
-          prompt: warningMessage,
-          validateInput: validateInputPath
-        })
-        .then(newname => {
-          if (newname) {
-            const dirpath = path.dirname(oneNode.node.uri.fsPath);
-            const newpath = `${dirpath}/${newname}`;
-            vscode.workspace.fs.rename(oneNode.node.uri, vscode.Uri.file(newpath)).then(() => {
-              this.refresh();
-            });
-          }
-        });
   }
 
   /**
