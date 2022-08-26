@@ -393,10 +393,19 @@ export class OneNode extends vscode.TreeItem {
     this.tooltip = `${this.node.path}`;
 
     if (node.openViewType) {
+      // (TRIAL 1) ADDING PREVIEW:TRUE - NOT WORKING
+      //
+      // this.command = {
+      //   command: 'vscode.openWith',
+      //   title: 'Open with Custom Viewer',
+      //   arguments: [node.uri, node.openViewType, {preview:true}]
+      // };
+
+      // (TRIAL 2) ADDING PREVIEW:TRUE USING COMMAND AND CALLING IT - NOT WORKING... 
       this.command = {
-        command: 'vscode.openWith',
+        command: 'one.explorer.openAsText',
         title: 'Open with Custom Viewer',
-        arguments: [node.uri, node.openViewType]
+        arguments: [node.uri]
       };
     }
 
@@ -455,12 +464,13 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
       vscode.commands.registerCommand(
           'one.explorer.open',
           (file) => {
-            vscode.commands.executeCommand('vscode.openWith', file.uri, CfgEditorPanel.viewType);
+            vscode.commands.executeCommand(
+                'vscode.openWith', file.uri, CfgEditorPanel.viewType, {preview: true});
           }),
       vscode.commands.registerCommand(
           'one.explorer.openAsText',
-          (oneNode: OneNode) => {
-            vscode.commands.executeCommand('vscode.openWith', oneNode.node.uri, 'default');
+          (uri: vscode.Uri) => {
+            vscode.commands.executeCommand('vscode.openWith', uri, 'default', {preview: true});
           }),
       vscode.commands.registerCommand(
           'one.explorer.reveal',
