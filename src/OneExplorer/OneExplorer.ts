@@ -420,7 +420,6 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
   readonly onDidChangeTreeData: vscode.Event<OneNode|undefined|void> =
       this._onDidChangeTreeData.event;
 
-  // TODO(dayo) Get the ext list(cfg,tflite..) from ArtifactLocator
   private fileWatcher = vscode.workspace.createFileSystemWatcher(`**/*`);
 
   private tree: DirectoryNode|undefined;
@@ -449,6 +448,9 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
     const provider = new OneTreeDataProvider(workspaceRoot, context.extension.extensionKind);
 
     let registrations = [
+      provider.fileWatcher.onDidCreate(() => provider.refresh()),
+      provider.fileWatcher.onDidChange(() => provider.refresh()),
+      provider.fileWatcher.onDidDelete(() => provider.refresh()),
       vscode.window.createTreeView(
           'OneExplorerView',
           {treeDataProvider: provider, showCollapseAll: true, canSelectMany: true}),
@@ -498,13 +500,6 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
   constructor(
       private workspaceRoot: vscode.Uri|undefined, private _extensionKind: vscode.ExtensionKind) {
     vscode.commands.executeCommand('setContext', 'one.explorer:didHideExtra', this.didHideExtra);
-
-    const fileWatchersEvents =
-        [this.fileWatcher.onDidCreate, this.fileWatcher.onDidChange, this.fileWatcher.onDidDelete];
-
-    for (let event of fileWatchersEvents) {
-      event(() => this.refresh());
-    }
   }
 
   /**
