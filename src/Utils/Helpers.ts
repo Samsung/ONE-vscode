@@ -98,3 +98,32 @@ export function obtainWorkspaceRoot(): string {
 export interface FileSelector {
   onFileSelected(uri: vscode.Uri|undefined): void;
 }
+
+/**
+ * Show an information message to ask users whether to save the unsaved file
+ * @param filepath a full path to the file
+ * @return rejected promises if users don't save the file.
+ */
+export async function askToSaveFile(filepath: string): Promise<void> {
+  const unsavedDocuments = vscode.workspace.textDocuments.filter(td => {
+    if ((td.fileName === filepath) && td.isDirty) {
+      return td;
+    }
+  });
+
+  await Promise.all(unsavedDocuments.map(td => {
+    const title = `Do you want to save the changes you made to ${path.parse(td.fileName).name}?`;
+    const detail = undefined;
+    const ansSave = 'Save';
+    return new Promise((resolve, reject) => {
+      vscode.window.showInformationMessage(title, {detail: detail, modal: true}, ansSave)
+          .then(ans => {
+            if (ans === ansSave) {
+              return resolve(td.save());
+            } else {
+              return reject();
+            }
+          });
+    });
+  }));
+}

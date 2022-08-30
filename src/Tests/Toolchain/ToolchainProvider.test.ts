@@ -255,14 +255,14 @@ suite('Toolchain', function() {
         const toolchains = toolchainEnv.listInstalled();
         assert.isAbove(toolchains.length, 0);
         DefaultToolchain.getInstance().set(toolchainEnv, toolchains[0]);
-        provider.run(modelCfg);
+        provider._run(modelCfg);
         assert.isTrue(true);
       });
       test('NEG: requests run with uninitialized default toolchain', function() {
         const provider = new ToolchainProvider();
         const modelCfg = 'model.cfg';
         DefaultToolchain.getInstance().unset();
-        const ret = provider.run(modelCfg);
+        const ret = provider._run(modelCfg);
         assert.isFalse(ret);
       });
     });
