@@ -445,11 +445,10 @@ export class OneNode extends vscode.TreeItem {
 }
 
 /* istanbul ignore next */
-export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
-  private _onDidChangeTreeData: vscode.EventEmitter<OneNode|undefined|void> =
-      new vscode.EventEmitter<OneNode|undefined|void>();
-  readonly onDidChangeTreeData: vscode.Event<OneNode|undefined|void> =
-      this._onDidChangeTreeData.event;
+export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
+  private _onDidChangeTreeData: vscode.EventEmitter<Node|undefined|void> =
+      new vscode.EventEmitter<Node|undefined|void>();
+  readonly onDidChangeTreeData: vscode.Event<Node|undefined|void> = this._onDidChangeTreeData.event;
 
   private fileWatcher = vscode.workspace.createFileSystemWatcher(`**/*`);
 
@@ -594,9 +593,10 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
     if (!oneNode) {
       // Reset the root in order to build from scratch (at OneTreeDataProvider.getTree)
       this.tree = undefined;
+      this._onDidChangeTreeData.fire(undefined);
+    } else {
+      this._onDidChangeTreeData.fire(oneNode.node);
     }
-
-    this._onDidChangeTreeData.fire(oneNode);
   }
 
   // TODO: Add move()
@@ -721,49 +721,41 @@ input_path=${modelName}.${extName}
         });
   }
 
-  getTreeItem(element: OneNode): vscode.TreeItem {
-    return element;
-  }
-
-  getChildren(element?: OneNode): OneNode[]|Thenable<OneNode[]> {
-    if (!this.workspaceRoot) {
-      return Promise.resolve([]);
-    }
-
-    if (element) {
-      return Promise.resolve(this.getNode(element.node));
+  getTreeItem(node: Node): OneNode {
+    if (node.type === NodeType.directory) {
+      return new OneNode(node.name, vscode.TreeItemCollapsibleState.Expanded, node);
+    } else if (node.type === NodeType.product) {
+      return new OneNode(node.name, vscode.TreeItemCollapsibleState.None, node);
+    } else if (node.type === NodeType.baseModel || node.type === NodeType.config) {
+      return new OneNode(
+          node.name,
+          (node.getChildren().length > 0) ? vscode.TreeItemCollapsibleState.Collapsed :
+                                            vscode.TreeItemCollapsibleState.None,
+          node);
     } else {
-      return Promise.resolve(this.getNode(this.getTree(this.workspaceRoot)));
+      throw Error('Undefined NodeType');
     }
   }
 
-  private getNode(node: Node): OneNode[] {
-    const toOneNode = (node: Node): OneNode|undefined => {
-      if (OneTreeDataProvider.didHideExtra && node.canHide) {
-        return undefined;
-      }
+  getChildren(element?: Node): vscode.ProviderResult<Node[]> {
+    if (!element) {
+      element = this.getTree();
+    }
 
-      if (node.type === NodeType.directory) {
-        return new OneNode(node.name, vscode.TreeItemCollapsibleState.Expanded, node);
-      } else if (node.type === NodeType.product) {
-        return new OneNode(node.name, vscode.TreeItemCollapsibleState.None, node);
-      } else if (node.type === NodeType.baseModel || node.type === NodeType.config) {
-        return new OneNode(
-            node.name,
-            (node.getChildren().length > 0) ? vscode.TreeItemCollapsibleState.Collapsed :
-                                              vscode.TreeItemCollapsibleState.None,
-            node);
-      } else {
-        throw Error('Undefined NodeType');
-      }
-    };
-
-    return node.getChildren().map(node => toOneNode(node)!);
+    return element ?.getChildren();
   }
 
-  private getTree(rootPath: vscode.Uri): Node {
+  /**
+   * Get the root of the tree
+   */
+  private getTree(): Node|undefined {
+    if (!this.workspaceRoot) {
+      return undefined;
+    }
+
     if (!this.tree) {
-      this.tree = NodeFactory.create(NodeType.directory, rootPath.fsPath) as DirectoryNode;
+      this.tree =
+          NodeFactory.create(NodeType.directory, this.workspaceRoot.fsPath) as DirectoryNode;
     }
 
     return this.tree;
