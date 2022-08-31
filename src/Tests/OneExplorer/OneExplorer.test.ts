@@ -238,8 +238,8 @@ suite('OneExplorer', function() {
         // Validation
         {
           const dirNode = NodeFactory.create(NodeType.directory, dirPath);
-          assert.strictEqual(dirNode!.childNodes.length, 1);
-          assert.strictEqual(dirNode!.childNodes[0].path, baseModelPath);
+          assert.strictEqual(dirNode!.getChildren().length, 1);
+          assert.strictEqual(dirNode!.getChildren()[0].path, baseModelPath);
         }
       });
 
@@ -275,9 +275,9 @@ input_file=${baseModelPath}
           assert.strictEqual(baseModelNode!.icon, BaseModelNode.defaultIcon);
           assert.strictEqual(baseModelNode!.canHide, BaseModelNode.defaultCanHide);
 
-          assert.strictEqual(baseModelNode!.childNodes.length, 1);
-          assert.strictEqual(baseModelNode!.childNodes[0].type, NodeType.config);
-          assert.strictEqual(baseModelNode!.childNodes[0].path, configPath);
+          assert.strictEqual(baseModelNode!.getChildren().length, 1);
+          assert.strictEqual(baseModelNode!.getChildren()[0].type, NodeType.config);
+          assert.strictEqual(baseModelNode!.getChildren()[0].path, configPath);
         }
       });
 
@@ -302,7 +302,7 @@ input_file=${baseModelPath}
           assert.strictEqual(configNode!.openViewType, ConfigNode.defaultOpenViewType);
           assert.strictEqual(configNode!.icon, ConfigNode.defaultIcon);
           assert.strictEqual(configNode!.canHide, ConfigNode.defaultCanHide);
-          assert.strictEqual(configNode!.childNodes.length, 0);
+          assert.strictEqual(configNode!.getChildren().length, 0);
         }
       });
 
@@ -327,7 +327,7 @@ input_file=${baseModelPath}
           assert.strictEqual(productNode!.openViewType, ProductNode.defaultOpenViewType);
           assert.strictEqual(productNode!.icon, ProductNode.defaultIcon);
           assert.strictEqual(productNode!.canHide, ProductNode.defaultCanHide);
-          assert.strictEqual(productNode!.childNodes.length, 0);
+          assert.strictEqual(productNode!.getChildren().length, 0);
         }
       });
     });
