@@ -177,6 +177,10 @@ abstract class Node {
 
 class NodeFactory {
   static create(type: NodeType, fpath: string, attr?: ArtifactAttr): Node|undefined {
+    // WHY HIDDEN NODES ARE NOT TO BE CREATED?
+    //
+    // A 'TreeDataProvider<element>' expects every elements (Node) to be correspond to visible
+    // TreeItem, so let's not build hidden nodes.
     if(attr?.canHide === true && OneTreeDataProvider.didHideExtra === true)
     {
       return undefined;
@@ -185,7 +189,6 @@ class NodeFactory {
     const uri = vscode.Uri.file(fpath);
 
     let node: Node;
-
     if (type === NodeType.directory) {
       assert.strictEqual(attr, undefined, 'Directory nodes cannot have attributes');
       node = new DirectoryNode(uri);
