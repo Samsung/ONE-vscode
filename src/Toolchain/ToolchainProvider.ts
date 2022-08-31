@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import * as path from 'path';
 import * as vscode from 'vscode';
 
 import {Toolchain} from '../Backend/Toolchain';
 import {Job} from '../Job/Job';
-import {askToSaveFile} from '../Utils/Helpers';
+import {saveDirtyDocuments} from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 import {showInstallQuickInput} from '../View/InstallQuickInput';
 
@@ -283,13 +282,11 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
   }
 
   public async run(cfg: string): Promise<boolean|undefined> {
-    return await askToSaveFile(cfg)
-        .then(() => {
-          return this._run(cfg);
-        })
-        .catch(() => {
-          return false;
-        });
+    const proceed: boolean = await saveDirtyDocuments(cfg);
+
+    if (proceed) {
+      return this._run(cfg);
+    }
   }
 
   public setDefaultToolchain(tnode: ToolchainNode): boolean|undefined {
