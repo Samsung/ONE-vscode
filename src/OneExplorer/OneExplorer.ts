@@ -176,10 +176,16 @@ abstract class Node {
 }
 
 class NodeFactory {
-  static create(type: NodeType, fpath: string, attr?: ArtifactAttr): Node {
+  static create(type: NodeType, fpath: string, attr?: ArtifactAttr): Node|undefined {
+    if(attr?.canHide === true && OneTreeDataProvider.didHideExtra === true)
+    {
+      return undefined;
+    }
+
     const uri = vscode.Uri.file(fpath);
 
     let node: Node;
+
     if (type === NodeType.directory) {
       assert.strictEqual(attr, undefined, 'Directory nodes cannot have attributes');
       node = new DirectoryNode(uri);
@@ -243,7 +249,9 @@ class DirectoryNode extends Node {
           (fname.endsWith('.pb') || fname.endsWith('.tflite') || fname.endsWith('.onnx'))) {
         const baseModelNode = NodeFactory.create(NodeType.baseModel, fpath);
 
-        this.childNodes.push(baseModelNode);
+        if (baseModelNode) {
+          this.childNodes.push(baseModelNode);
+        }
       }
     }
   };
@@ -293,7 +301,9 @@ class BaseModelNode extends Node {
     configPaths.forEach(configPath => {
       const configNode = NodeFactory.create(NodeType.config, configPath);
 
-      this.childNodes.push(configNode);
+      if (configNode) {
+        this.childNodes.push(configNode);
+      }
     });
   };
 }
@@ -345,7 +355,9 @@ class ConfigNode extends Node {
     products.forEach(product => {
       const productNode = NodeFactory.create(NodeType.product, product.path, product.attr);
 
-      this.childNodes.push(productNode);
+      if (productNode) {
+        this.childNodes.push(productNode);
+      }
     });
   };
 }
@@ -423,7 +435,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
   private fileWatcher = vscode.workspace.createFileSystemWatcher(`**/*`);
 
   private tree: DirectoryNode|undefined;
-  public didHideExtra: boolean = false;
+  public static didHideExtra: boolean = false;
 
   public static register(context: vscode.ExtensionContext) {
     let workspaceRoot: vscode.Uri|undefined = undefined;
@@ -499,7 +511,8 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
 
   constructor(
       private workspaceRoot: vscode.Uri|undefined, private _extensionKind: vscode.ExtensionKind) {
-    vscode.commands.executeCommand('setContext', 'one.explorer:didHideExtra', this.didHideExtra);
+    vscode.commands.executeCommand(
+        'setContext', 'one.explorer:didHideExtra', OneTreeDataProvider.didHideExtra);
   }
 
   /**
@@ -532,9 +545,10 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
    * @command one.explorer.hideExtra
    */
   hideExtra(): void {
-    this.didHideExtra = true;
+    OneTreeDataProvider.didHideExtra = true;
 
-    vscode.commands.executeCommand('setContext', 'one.explorer:didHideExtra', this.didHideExtra);
+    vscode.commands.executeCommand(
+        'setContext', 'one.explorer:didHideExtra', OneTreeDataProvider.didHideExtra);
     this.refresh();
   }
 
@@ -542,9 +556,10 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
    * @command one.explorer.showExtra
    */
   showExtra(): void {
-    this.didHideExtra = false;
+    OneTreeDataProvider.didHideExtra = false;
 
-    vscode.commands.executeCommand('setContext', 'one.explorer:didHideExtra', this.didHideExtra);
+    vscode.commands.executeCommand(
+        'setContext', 'one.explorer:didHideExtra', OneTreeDataProvider.didHideExtra);
     this.refresh();
   }
 
@@ -705,7 +720,7 @@ input_path=${modelName}.${extName}
 
   private getNode(node: Node): OneNode[] {
     const toOneNode = (node: Node): OneNode|undefined => {
-      if (this.didHideExtra && node.canHide) {
+      if (OneTreeDataProvider.didHideExtra && node.canHide) {
         return undefined;
       }
 

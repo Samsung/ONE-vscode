@@ -238,8 +238,8 @@ suite('OneExplorer', function() {
         // Validation
         {
           const dirNode = NodeFactory.create(NodeType.directory, dirPath);
-          assert.strictEqual(dirNode.childNodes.length, 1);
-          assert.strictEqual(dirNode.childNodes[0].path, baseModelPath);
+          assert.strictEqual(dirNode!.childNodes.length, 1);
+          assert.strictEqual(dirNode!.childNodes[0].path, baseModelPath);
         }
       });
 
@@ -271,13 +271,13 @@ input_file=${baseModelPath}
         {
           const baseModelNode = NodeFactory.create(NodeType.baseModel, baseModelPath);
 
-          assert.strictEqual(baseModelNode.openViewType, BaseModelNode.defaultOpenViewType);
-          assert.strictEqual(baseModelNode.icon, BaseModelNode.defaultIcon);
-          assert.strictEqual(baseModelNode.canHide, BaseModelNode.defaultCanHide);
+          assert.strictEqual(baseModelNode!.openViewType, BaseModelNode.defaultOpenViewType);
+          assert.strictEqual(baseModelNode!.icon, BaseModelNode.defaultIcon);
+          assert.strictEqual(baseModelNode!.canHide, BaseModelNode.defaultCanHide);
 
-          assert.strictEqual(baseModelNode.childNodes.length, 1);
-          assert.strictEqual(baseModelNode.childNodes[0].type, NodeType.config);
-          assert.strictEqual(baseModelNode.childNodes[0].path, configPath);
+          assert.strictEqual(baseModelNode!.childNodes.length, 1);
+          assert.strictEqual(baseModelNode!.childNodes[0].type, NodeType.config);
+          assert.strictEqual(baseModelNode!.childNodes[0].path, configPath);
         }
       });
 
@@ -299,10 +299,10 @@ input_file=${baseModelPath}
         // Validation
         {
           const configNode = NodeFactory.create(NodeType.config, configPath);
-          assert.strictEqual(configNode.openViewType, ConfigNode.defaultOpenViewType);
-          assert.strictEqual(configNode.icon, ConfigNode.defaultIcon);
-          assert.strictEqual(configNode.canHide, ConfigNode.defaultCanHide);
-          assert.strictEqual(configNode.childNodes.length, 0);
+          assert.strictEqual(configNode!.openViewType, ConfigNode.defaultOpenViewType);
+          assert.strictEqual(configNode!.icon, ConfigNode.defaultIcon);
+          assert.strictEqual(configNode!.canHide, ConfigNode.defaultCanHide);
+          assert.strictEqual(configNode!.childNodes.length, 0);
         }
       });
 
@@ -324,10 +324,10 @@ input_file=${baseModelPath}
         // Validation
         {
           const productNode = NodeFactory.create(NodeType.product, productPath);
-          assert.strictEqual(productNode.openViewType, ProductNode.defaultOpenViewType);
-          assert.strictEqual(productNode.icon, ProductNode.defaultIcon);
-          assert.strictEqual(productNode.canHide, ProductNode.defaultCanHide);
-          assert.strictEqual(productNode.childNodes.length, 0);
+          assert.strictEqual(productNode!.openViewType, ProductNode.defaultOpenViewType);
+          assert.strictEqual(productNode!.icon, ProductNode.defaultIcon);
+          assert.strictEqual(productNode!.canHide, ProductNode.defaultCanHide);
+          assert.strictEqual(productNode!.childNodes.length, 0);
         }
       });
     });
@@ -337,7 +337,7 @@ input_file=${baseModelPath}
         const directoryPath = testBuilder.getPath('');
         const directoryNode = NodeFactory.create(NodeType.directory, directoryPath);
         const oneNode =
-            new OneNode('label', vscode.TreeItemCollapsibleState.Collapsed, directoryNode);
+            new OneNode('label', vscode.TreeItemCollapsibleState.Collapsed, directoryNode!);
         { assert.strictEqual(oneNode.contextValue, 'directory'); }
       });
     });
