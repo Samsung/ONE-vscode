@@ -139,7 +139,7 @@ enum NodeType {
 
 abstract class Node {
   abstract readonly type: NodeType;
-  childNodes: Node[];
+  protected _childNodes: Node[]|undefined;
   uri: vscode.Uri;
 
   abstract icon: vscode.ThemeIcon;
@@ -147,11 +147,23 @@ abstract class Node {
   abstract canHide: boolean;
 
   constructor(uri: vscode.Uri) {
-    this.childNodes = [];
+    this._childNodes = undefined;
     this.uri = uri;
   }
 
-  abstract buildChildren: () => void;
+  /**
+   * Build `_childNodes` on demand, which is initially undefined
+   */
+  abstract _buildChildren: () => void;
+
+  getChildren(): Node[] {
+    if (this._childNodes) {
+      return this._childNodes;
+    }
+
+    this._buildChildren();
+    return this._childNodes!;
+  }
 
   get path(): string {
     return this.uri.fsPath;
@@ -203,8 +215,6 @@ class NodeFactory {
       throw Error('Undefined NodeType');
     }
 
-    node.buildChildren();
-
     return node;
   }
 }
@@ -234,7 +244,9 @@ class DirectoryNode extends Node {
    *      ∟ config
    *         ∟ product
    */
-  buildChildren = (): void => {
+  _buildChildren = (): void => {
+    this._childNodes = [];
+
     const files = fs.readdirSync(this.path);
 
     for (const fname of files) {
@@ -244,8 +256,8 @@ class DirectoryNode extends Node {
       if (fstat.isDirectory()) {
         const dirNode = NodeFactory.create(NodeType.directory, fpath);
 
-        if (dirNode && dirNode.childNodes.length > 0) {
-          this.childNodes.push(dirNode);
+        if (dirNode && dirNode.getChildren().length > 0) {
+          this._childNodes!.push(dirNode);
         }
       } else if (
           fstat.isFile() &&
@@ -253,7 +265,7 @@ class DirectoryNode extends Node {
         const baseModelNode = NodeFactory.create(NodeType.baseModel, fpath);
 
         if (baseModelNode) {
-          this.childNodes.push(baseModelNode);
+          this._childNodes!.push(baseModelNode);
         }
       }
     }
@@ -295,7 +307,9 @@ class BaseModelNode extends Node {
    *      ∟ config      <- children
    *         ∟ product
    */
-  buildChildren = (): void => {
+  _buildChildren = (): void => {
+    this._childNodes = [];
+
     const configPaths = OneStorage.getCfgs(this.path);
 
     if (!configPaths) {
@@ -305,7 +319,7 @@ class BaseModelNode extends Node {
       const configNode = NodeFactory.create(NodeType.config, configPath);
 
       if (configNode) {
-        this.childNodes.push(configNode);
+        this._childNodes!.push(configNode);
       }
     });
   };
@@ -346,7 +360,9 @@ class ConfigNode extends Node {
    *      ∟ config      <- this
    *         ∟ product  <- children
    */
-  buildChildren = (): void => {
+  _buildChildren = (): void => {
+    this._childNodes = [];
+
     const cfgObj = OneStorage.getCfgObj(this.path);
 
     if (!cfgObj) {
@@ -359,7 +375,7 @@ class ConfigNode extends Node {
       const productNode = NodeFactory.create(NodeType.product, product.path, product.attr);
 
       if (productNode) {
-        this.childNodes.push(productNode);
+        this._childNodes!.push(productNode);
       }
     });
   };
@@ -392,8 +408,8 @@ class ProductNode extends Node {
     this.canHide = canHide;
   }
 
-  buildChildren = (): void => {
-    // Do nothing
+  _buildChildren = (): void => {
+    this._childNodes = [];
   };
 }
 
@@ -734,15 +750,15 @@ input_path=${modelName}.${extName}
       } else if (node.type === NodeType.baseModel || node.type === NodeType.config) {
         return new OneNode(
             node.name,
-            (node.childNodes.length > 0) ? vscode.TreeItemCollapsibleState.Collapsed :
-                                           vscode.TreeItemCollapsibleState.None,
+            (node.getChildren().length > 0) ? vscode.TreeItemCollapsibleState.Collapsed :
+                                              vscode.TreeItemCollapsibleState.None,
             node);
       } else {
         throw Error('Undefined NodeType');
       }
     };
 
-    return node.childNodes.map(node => toOneNode(node)!);
+    return node.getChildren().map(node => toOneNode(node)!);
   }
 
   private getTree(rootPath: vscode.Uri): Node {
