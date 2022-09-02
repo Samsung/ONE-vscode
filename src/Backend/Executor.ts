@@ -57,6 +57,6 @@ class ExecutorBase implements Executor {
   require(): DeviceSpec {
     throw new Error('NYI: need to define DeviceSpec for Executor.');
   }
-};
+}
 
 export {Executor, ExecutorBase};

@@ -39,6 +39,6 @@ class Command extends Array<string> {
   str(): string {
     return (this.root ? 'sudo ' : '') + this.strs().join(' ');
   }
-};
+}
 
 export {Command};

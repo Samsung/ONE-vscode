@@ -752,4 +752,4 @@ input_path=${modelName}.${extName}
 
     return this.tree;
   }
-};
+}

@@ -98,7 +98,7 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
     ];
 
     registrations.forEach(disposable => context.subscriptions.push(disposable));
-  };
+  }
 
   public static createOrShow(
       extensionUri: vscode.Uri, args: PartGraphCmdOpenArgs, handler: PartGraphEvent|undefined) {
@@ -286,4 +286,4 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
     let content = ini.parse(this._documentText);
     this.setPartition(content);
   }
-};
+}

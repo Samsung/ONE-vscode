@@ -67,7 +67,7 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
     ];
 
     registrations.forEach(disposable => context.subscriptions.push(disposable));
-  };
+  }
 
   constructor(private readonly context: vscode.ExtensionContext) {}
 
@@ -78,7 +78,7 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
     await this.initWebview(document, webviewPanel.webview);
     this.initWebviewPanel(document, webviewPanel);
     this.updateWebview(document, webviewPanel.webview);
-  };
+  }
 
   private async initWebview(document: vscode.TextDocument, webview: vscode.Webview): Promise<void> {
     webview.options = {
@@ -195,5 +195,5 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
       type: 'displayCfgToEditor',
       text: this._oneConfigMap[document.uri.toString()].getAsConfig()
     });
-  };
+  }
 }
