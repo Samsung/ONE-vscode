@@ -516,7 +516,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
       registrations = [
         ...[vscode.commands.registerCommand(
                 'one.explorer.openContainingFolder',
-                (oneNode: OneNode) => provider.openContainingFolder(oneNode)),
+                (node: Node) => provider.openContainingFolder(node)),
       ]
       ];
     } else {
@@ -603,8 +603,8 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
   /**
    * @command one.explorer.openContainingFolder
    */
-  openContainingFolder(oneNode: OneNode): void {
-    vscode.commands.executeCommand('revealFileInOS', oneNode.node.uri);
+  openContainingFolder(node: Node): void {
+    vscode.commands.executeCommand('revealFileInOS', node.uri);
   }
 
   /**
