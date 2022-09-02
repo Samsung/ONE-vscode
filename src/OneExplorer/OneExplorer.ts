@@ -506,8 +506,8 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
           'one.explorer.createCfg', (node: Node) => provider.createCfg(node)),
       vscode.commands.registerCommand(
           'one.explorer.runCfg',
-          (oneNode: OneNode) => {
-            vscode.commands.executeCommand('one.toolchain.runCfg', oneNode.node.uri.fsPath);
+          (node: Node) => {
+            vscode.commands.executeCommand('one.toolchain.runCfg', node.uri.fsPath);
           }),
       vscode.commands.registerCommand('one.explorer.delete', (node: Node) => provider.delete(node)),
     ];
