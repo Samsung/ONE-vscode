@@ -88,6 +88,6 @@ class CompilerBase implements Compiler {
   prerequisitesForGetToolchains(): Command {
     throw Error('Invalid prerequisitesForGetToolchains call');
   }
-};
+}
 
 export {Compiler, CompilerBase};

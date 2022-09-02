@@ -379,7 +379,7 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider, Part
     ];
 
     registrations.forEach(disposable => context.subscriptions.push(disposable));
-  };
+  }
 
   constructor(private readonly context: vscode.ExtensionContext) {
     this._extensionUri = context.extensionUri;
@@ -451,4 +451,4 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider, Part
           [vscode.Uri.joinPath(extensionUri, PartEditorProvider.folderMediaPartEditor)]
     };
   }
-};
+}

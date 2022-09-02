@@ -49,7 +49,7 @@ export class MessageDefs {
   public static readonly tensors = 'tensors';
   // partiton of backends
   public static readonly partition = 'partition';
-};
+}
 
 export interface CircleGraphEvent {
   onPageLoaded(): void;

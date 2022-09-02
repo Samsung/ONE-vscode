@@ -91,7 +91,7 @@ export class CircleViewerDocument implements vscode.CustomDocument {
 
     return view;
   }
-};
+}
 
 /**
  * @brief Circle model viewer readonly Provider
@@ -142,4 +142,4 @@ export class CircleViewerProvider implements
       _token: vscode.CancellationToken): Promise<void> {
     document.openView(webviewPanel, this._context.extensionUri);
   }
-};
+}

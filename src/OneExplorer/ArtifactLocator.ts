@@ -190,7 +190,7 @@ export class Locator {
 
     return filePaths;
   }
-};
+}
 
 
 // TODO Move to backend side with some modification

@@ -47,6 +47,6 @@ class Version {
   }
 
   // TODO: Add operator <, <=, >, >=
-};
+}
 
 export {Version};

@@ -132,7 +132,7 @@ class TestBuilder {
       console.log(`Removed ${TestBuilder.rootInTemp} and ${TestBuilder.rootInTemp}.`);
     }
   }
-};
+}
 
 suite('OneExplorer', function() {
   suite('OneStorage', function() {

@@ -63,7 +63,7 @@ export class JsonTracerViewerPanel implements vscode.CustomTextEditorProvider {
     ];
 
     registrations.forEach(disposable => context.subscriptions.push(disposable));
-  };
+  }
 
   constructor(private readonly context: vscode.ExtensionContext) {}
 
@@ -73,7 +73,7 @@ export class JsonTracerViewerPanel implements vscode.CustomTextEditorProvider {
     await this.initWebview(document, webviewPanel.webview);
     this.initWebviewPanel(document, webviewPanel);
     this.updateWebview(document, webviewPanel.webview);
-  };
+  }
 
   private async initWebview(document: vscode.TextDocument, webview: vscode.Webview): Promise<void> {
     webview.options = {
@@ -137,5 +137,5 @@ export class JsonTracerViewerPanel implements vscode.CustomTextEditorProvider {
     if (content !== undefined) {
       webview.postMessage({type: 'load', content: content, displayTimeUnit: displayTimeUnit});
     }
-  };
+  }
 }
