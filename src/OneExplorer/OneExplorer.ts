@@ -503,7 +503,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
       vscode.commands.registerCommand('one.explorer.hideExtra', () => provider.hideExtra()),
       vscode.commands.registerCommand('one.explorer.showExtra', () => provider.showExtra()),
       vscode.commands.registerCommand(
-          'one.explorer.createCfg', (oneNode: OneNode) => provider.createCfg(oneNode)),
+          'one.explorer.createCfg', (node: Node) => provider.createCfg(node)),
       vscode.commands.registerCommand(
           'one.explorer.runCfg',
           (oneNode: OneNode) => {
@@ -582,20 +582,20 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
   }
 
   /**
-   * Refresh the tree under the given oneNode
+   * Refresh the tree under the given Node
    * @command one.explorer.refresh
-   * @param oneNode A start node to rebuild. The sub-tree under the node will be rebuilt.
+   * @param node A start node to rebuild. The sub-tree under the node will be rebuilt.
    *                If not given, the whole tree will be rebuilt.
    */
-  refresh(oneNode?: OneNode): void {
+  refresh(node?: Node): void {
     OneStorage.reset();
 
-    if (!oneNode) {
+    if (!node) {
       // Reset the root in order to build from scratch (at OneTreeDataProvider.getTree)
       this.tree = undefined;
       this._onDidChangeTreeData.fire(undefined);
     } else {
-      this._onDidChangeTreeData.fire(oneNode.node);
+      this._onDidChangeTreeData.fire(node);
     }
   }
 
@@ -656,12 +656,12 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
    * The operation will be cancelled if the file already exists.
    *
    * @command one.explorer.createCfg
-   * @param oneNode A base model to create configuration
+   * @param node A base model to create configuration
    */
-  async createCfg(oneNode: OneNode): Promise<void> {
-    const dirPath = path.parse(oneNode.node.path).dir;
-    const modelName = path.parse(oneNode.node.path).name;
-    const extName = path.parse(oneNode.node.path).ext.slice(1);
+  async createCfg(node: Node): Promise<void> {
+    const dirPath = path.parse(node.path).dir;
+    const modelName = path.parse(node.path).name;
+    const extName = path.parse(node.path).ext.slice(1);
 
     const encoder = new TextEncoder;
     // TODO(dayo) Auto-configure more fields
@@ -705,7 +705,7 @@ input_path=${modelName}.${extName}
           vscode.workspace.fs.writeFile(uri, content)
               .then(() => {
                 return new Promise<vscode.Uri>(resolve => {
-                  this.refresh(oneNode);
+                  this.refresh(node);
 
                   // Wait until the refresh event listeners are handled
                   // TODO: Add an event after revising refresh commmand
