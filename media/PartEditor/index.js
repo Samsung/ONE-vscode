@@ -202,7 +202,7 @@ editor.Editor = class {
         this.backends.push(new editor.Backend(backend, becolor));
         this.beToCode[backend] = idx;
       }
-    };
+    }
 
     this.updateBeComboColor();
     this.requestOpNames();
@@ -234,7 +234,7 @@ editor.Editor = class {
         // becode will be updated after document partition is received
         this.operators.push(new editor.Operator(name, opcode, 0));
       }
-    };
+    }
 
     this.requestPartition();
   }
@@ -270,7 +270,7 @@ editor.Editor = class {
       let opt = listbox.options[i];
       let idx = opt.value;
       opt.selected = (selection.includes(this.operators[idx].name));
-    };
+    }
   }
 
   getSelectionNames() {
@@ -368,7 +368,7 @@ editor.Editor = class {
           this.setOperatorBeCode(name, 0);
         }
       }
-    };
+    }
   }
 
   /**
