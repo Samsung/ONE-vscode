@@ -8,6 +8,15 @@
   "plugins": [
       "@typescript-eslint"
   ],
+  "env": {
+    "node": true,
+    "mocha": true
+  },
+  "globals":
+  {
+    "Thenable": true,
+    "NodeJS": true
+  },
   "rules": {
       "@typescript-eslint/naming-convention": "warn",
       "@typescript-eslint/semi": "warn",
