@@ -11,6 +11,7 @@
   "plugins": [
       "@typescript-eslint"
   ],
+  "env": {"node": true},
   "rules": {
       "@typescript-eslint/naming-convention": "warn",
       "@typescript-eslint/semi": "warn",
