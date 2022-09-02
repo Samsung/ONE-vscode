@@ -485,11 +485,6 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
           'OneExplorerView',
           {treeDataProvider: provider, showCollapseAll: true, canSelectMany: true}),
       vscode.commands.registerCommand(
-          'one.explorer.open',
-          (file) => {
-            vscode.commands.executeCommand('vscode.openWith', file.uri, CfgEditorPanel.viewType);
-          }),
-      vscode.commands.registerCommand(
           'one.explorer.openAsText',
           (node: Node) => {
             vscode.commands.executeCommand('vscode.openWith', node.uri, 'default');
