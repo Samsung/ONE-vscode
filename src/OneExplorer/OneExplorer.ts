@@ -491,8 +491,8 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
           }),
       vscode.commands.registerCommand(
           'one.explorer.openAsText',
-          (oneNode: OneNode) => {
-            vscode.commands.executeCommand('vscode.openWith', oneNode.node.uri, 'default');
+          (node: Node) => {
+            vscode.commands.executeCommand('vscode.openWith', node.uri, 'default');
           }),
       vscode.commands.registerCommand(
           'one.explorer.reveal',
@@ -509,8 +509,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
           (oneNode: OneNode) => {
             vscode.commands.executeCommand('one.toolchain.runCfg', oneNode.node.uri.fsPath);
           }),
-      vscode.commands.registerCommand(
-          'one.explorer.delete', (oneNode: OneNode) => provider.delete(oneNode)),
+      vscode.commands.registerCommand('one.explorer.delete', (node: Node) => provider.delete(node)),
     ];
 
     if (provider.isLocal) {
@@ -611,11 +610,11 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
   /**
    * @command one.explorer.delete
    */
-  delete(oneNode: OneNode): void {
-    const isDirectory = (oneNode.node.type === NodeType.directory);
+  delete(node: Node): void {
+    const isDirectory = (node.type === NodeType.directory);
 
     let recursive: boolean;
-    let title = `Are you sure you want to delete '${oneNode.node.name}'`;
+    let title = `Are you sure you want to delete '${node.name}'`;
     if (isDirectory) {
       title += ` and its contents?`;
       recursive = true;
@@ -643,8 +642,8 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
     vscode.window.showInformationMessage(title, {detail: detail, modal: true}, approval)
         .then(ans => {
           if (ans === approval) {
-            Logger.info('OneExplorer', `Delete '${oneNode.node.name}'.`);
-            vscode.workspace.fs.delete(oneNode.node.uri, {recursive: recursive, useTrash: useTrash})
+            Logger.info('OneExplorer', `Delete '${node.name}'.`);
+            vscode.workspace.fs.delete(node.uri, {recursive: recursive, useTrash: useTrash})
                 .then(() => this.refresh());
           }
         });
