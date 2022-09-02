@@ -445,11 +445,10 @@ export class OneNode extends vscode.TreeItem {
 }
 
 /* istanbul ignore next */
-export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
-  private _onDidChangeTreeData: vscode.EventEmitter<OneNode|undefined|void> =
-      new vscode.EventEmitter<OneNode|undefined|void>();
-  readonly onDidChangeTreeData: vscode.Event<OneNode|undefined|void> =
-      this._onDidChangeTreeData.event;
+export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
+  private _onDidChangeTreeData: vscode.EventEmitter<Node|undefined|void> =
+      new vscode.EventEmitter<Node|undefined|void>();
+  readonly onDidChangeTreeData: vscode.Event<Node|undefined|void> = this._onDidChangeTreeData.event;
 
   private fileWatcher = vscode.workspace.createFileSystemWatcher(`**/*`);
 
@@ -486,39 +485,33 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
           'OneExplorerView',
           {treeDataProvider: provider, showCollapseAll: true, canSelectMany: true}),
       vscode.commands.registerCommand(
-          'one.explorer.open',
-          (file) => {
-            vscode.commands.executeCommand('vscode.openWith', file.uri, CfgEditorPanel.viewType);
-          }),
-      vscode.commands.registerCommand(
           'one.explorer.openAsText',
-          (oneNode: OneNode) => {
-            vscode.commands.executeCommand('vscode.openWith', oneNode.node.uri, 'default');
+          (node: Node) => {
+            vscode.commands.executeCommand('vscode.openWith', node.uri, 'default');
           }),
       vscode.commands.registerCommand(
           'one.explorer.reveal',
-          (oneNode: OneNode) => {
-            vscode.commands.executeCommand('revealInExplorer', oneNode.node.uri);
+          (node: Node) => {
+            vscode.commands.executeCommand('revealInExplorer', node.uri);
           }),
       vscode.commands.registerCommand('one.explorer.refresh', () => provider.refresh()),
       vscode.commands.registerCommand('one.explorer.hideExtra', () => provider.hideExtra()),
       vscode.commands.registerCommand('one.explorer.showExtra', () => provider.showExtra()),
       vscode.commands.registerCommand(
-          'one.explorer.createCfg', (oneNode: OneNode) => provider.createCfg(oneNode)),
+          'one.explorer.createCfg', (node: Node) => provider.createCfg(node)),
       vscode.commands.registerCommand(
           'one.explorer.runCfg',
-          (oneNode: OneNode) => {
-            vscode.commands.executeCommand('one.toolchain.runCfg', oneNode.node.uri.fsPath);
+          (node: Node) => {
+            vscode.commands.executeCommand('one.toolchain.runCfg', node.uri.fsPath);
           }),
-      vscode.commands.registerCommand(
-          'one.explorer.delete', (oneNode: OneNode) => provider.delete(oneNode)),
+      vscode.commands.registerCommand('one.explorer.delete', (node: Node) => provider.delete(node)),
     ];
 
     if (provider.isLocal) {
       registrations = [
         ...[vscode.commands.registerCommand(
                 'one.explorer.openContainingFolder',
-                (oneNode: OneNode) => provider.openContainingFolder(oneNode)),
+                (node: Node) => provider.openContainingFolder(node)),
       ]
       ];
     } else {
@@ -583,20 +576,21 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
   }
 
   /**
-   * Refresh the tree under the given oneNode
+   * Refresh the tree under the given Node
    * @command one.explorer.refresh
-   * @param oneNode A start node to rebuild. The sub-tree under the node will be rebuilt.
+   * @param node A start node to rebuild. The sub-tree under the node will be rebuilt.
    *                If not given, the whole tree will be rebuilt.
    */
-  refresh(oneNode?: OneNode): void {
+  refresh(node?: Node): void {
     OneStorage.reset();
 
-    if (!oneNode) {
+    if (!node) {
       // Reset the root in order to build from scratch (at OneTreeDataProvider.getTree)
       this.tree = undefined;
+      this._onDidChangeTreeData.fire(undefined);
+    } else {
+      this._onDidChangeTreeData.fire(node);
     }
-
-    this._onDidChangeTreeData.fire(oneNode);
   }
 
   // TODO: Add move()
@@ -604,18 +598,18 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
   /**
    * @command one.explorer.openContainingFolder
    */
-  openContainingFolder(oneNode: OneNode): void {
-    vscode.commands.executeCommand('revealFileInOS', oneNode.node.uri);
+  openContainingFolder(node: Node): void {
+    vscode.commands.executeCommand('revealFileInOS', node.uri);
   }
 
   /**
    * @command one.explorer.delete
    */
-  delete(oneNode: OneNode): void {
-    const isDirectory = (oneNode.node.type === NodeType.directory);
+  delete(node: Node): void {
+    const isDirectory = (node.type === NodeType.directory);
 
     let recursive: boolean;
-    let title = `Are you sure you want to delete '${oneNode.node.name}'`;
+    let title = `Are you sure you want to delete '${node.name}'`;
     if (isDirectory) {
       title += ` and its contents?`;
       recursive = true;
@@ -643,8 +637,8 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
     vscode.window.showInformationMessage(title, {detail: detail, modal: true}, approval)
         .then(ans => {
           if (ans === approval) {
-            Logger.info('OneExplorer', `Delete '${oneNode.node.name}'.`);
-            vscode.workspace.fs.delete(oneNode.node.uri, {recursive: recursive, useTrash: useTrash})
+            Logger.info('OneExplorer', `Delete '${node.name}'.`);
+            vscode.workspace.fs.delete(node.uri, {recursive: recursive, useTrash: useTrash})
                 .then(() => this.refresh());
           }
         });
@@ -656,12 +650,12 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<OneNode> {
    * The operation will be cancelled if the file already exists.
    *
    * @command one.explorer.createCfg
-   * @param oneNode A base model to create configuration
+   * @param node A base model to create configuration
    */
-  async createCfg(oneNode: OneNode): Promise<void> {
-    const dirPath = path.parse(oneNode.node.path).dir;
-    const modelName = path.parse(oneNode.node.path).name;
-    const extName = path.parse(oneNode.node.path).ext.slice(1);
+  async createCfg(node: Node): Promise<void> {
+    const dirPath = path.parse(node.path).dir;
+    const modelName = path.parse(node.path).name;
+    const extName = path.parse(node.path).ext.slice(1);
 
     const encoder = new TextEncoder;
     // TODO(dayo) Auto-configure more fields
@@ -705,7 +699,7 @@ input_path=${modelName}.${extName}
           vscode.workspace.fs.writeFile(uri, content)
               .then(() => {
                 return new Promise<vscode.Uri>(resolve => {
-                  this.refresh(oneNode);
+                  this.refresh(node);
 
                   // Wait until the refresh event listeners are handled
                   // TODO: Add an event after revising refresh commmand
@@ -721,49 +715,41 @@ input_path=${modelName}.${extName}
         });
   }
 
-  getTreeItem(element: OneNode): vscode.TreeItem {
-    return element;
-  }
-
-  getChildren(element?: OneNode): OneNode[]|Thenable<OneNode[]> {
-    if (!this.workspaceRoot) {
-      return Promise.resolve([]);
-    }
-
-    if (element) {
-      return Promise.resolve(this.getNode(element.node));
+  getTreeItem(node: Node): OneNode {
+    if (node.type === NodeType.directory) {
+      return new OneNode(node.name, vscode.TreeItemCollapsibleState.Expanded, node);
+    } else if (node.type === NodeType.product) {
+      return new OneNode(node.name, vscode.TreeItemCollapsibleState.None, node);
+    } else if (node.type === NodeType.baseModel || node.type === NodeType.config) {
+      return new OneNode(
+          node.name,
+          (node.getChildren().length > 0) ? vscode.TreeItemCollapsibleState.Collapsed :
+                                            vscode.TreeItemCollapsibleState.None,
+          node);
     } else {
-      return Promise.resolve(this.getNode(this.getTree(this.workspaceRoot)));
+      throw Error('Undefined NodeType');
     }
   }
 
-  private getNode(node: Node): OneNode[] {
-    const toOneNode = (node: Node): OneNode|undefined => {
-      if (OneTreeDataProvider.didHideExtra && node.canHide) {
-        return undefined;
-      }
+  getChildren(element?: Node): vscode.ProviderResult<Node[]> {
+    if (!element) {
+      element = this.getTree();
+    }
 
-      if (node.type === NodeType.directory) {
-        return new OneNode(node.name, vscode.TreeItemCollapsibleState.Expanded, node);
-      } else if (node.type === NodeType.product) {
-        return new OneNode(node.name, vscode.TreeItemCollapsibleState.None, node);
-      } else if (node.type === NodeType.baseModel || node.type === NodeType.config) {
-        return new OneNode(
-            node.name,
-            (node.getChildren().length > 0) ? vscode.TreeItemCollapsibleState.Collapsed :
-                                              vscode.TreeItemCollapsibleState.None,
-            node);
-      } else {
-        throw Error('Undefined NodeType');
-      }
-    };
-
-    return node.getChildren().map(node => toOneNode(node)!);
+    return element ?.getChildren();
   }
 
-  private getTree(rootPath: vscode.Uri): Node {
+  /**
+   * Get the root of the tree
+   */
+  private getTree(): Node|undefined {
+    if (!this.workspaceRoot) {
+      return undefined;
+    }
+
     if (!this.tree) {
-      this.tree = NodeFactory.create(NodeType.directory, rootPath.fsPath) as DirectoryNode;
+      this.tree =
+          NodeFactory.create(NodeType.directory, this.workspaceRoot.fsPath) as DirectoryNode;
     }
 
     return this.tree;
