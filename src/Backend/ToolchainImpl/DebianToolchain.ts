@@ -129,6 +129,6 @@ class DebianToolchain implements Toolchain {
     cmd.push(cfg);
     return cmd;
   }
-};
+}
 
 export {DebianRepo, DebianArch, DebianToolchain};

@@ -70,6 +70,6 @@ class Toolchain {
 // TODO: How to handle `nightly`?
 // TODO: Support MinimumVersion(): >=
 // TODO: Support filter(), where(), filter(regex) or orderBy()
-class Toolchains extends Array<Toolchain> {};
+class Toolchains extends Array<Toolchain> {}
 
 export {PackageInfo, ToolchainInfo, Toolchain, Toolchains};

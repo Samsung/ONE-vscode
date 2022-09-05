@@ -73,7 +73,7 @@ class TestBuilder {
       console.log(`Test ${this.testLabel} - Done`);
     }
   }
-};
+}
 
 suite('OneExplorer', function() {
   suite('ConfigObject', function() {
@@ -446,7 +446,6 @@ output_path=/dummy/dummy/../..//${productName2}
               configObj?.getProducts.map(product => product.path).includes(productPath1));
           assert.isFalse(
               configObj?.getProducts.map(product => product.path).includes(productPath2));
-          ;
         }
       });
 

@@ -290,4 +290,4 @@ export class ConfigObj {
 
     return artifacts;
   };
-};
+}
