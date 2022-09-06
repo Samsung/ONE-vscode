@@ -363,7 +363,7 @@ export class CircleGraphCtrl {
     let html = fs.readFileSync(htmlPath.fsPath, {encoding: 'utf-8'});
 
     const nonce = getNonce();
-    html = html.replace(/\%nonce%/gi, nonce);
+    html = html.replace(/%nonce%/gi, nonce);
     html = html.replace('%webview.cspSource%', webview.cspSource);
     // necessary files from netron to work
     html = this.updateUri(html, webview, '%view-grapher.css%', 'view-grapher.css');
