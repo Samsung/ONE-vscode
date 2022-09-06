@@ -328,10 +328,11 @@ class PartEditor implements PartGraphEvent {
       partContent['partition'] = this.makeDefaultPartiton();
     }
 
-    if (message.hasOwnProperty('opname')) {
+    if (Object.prototype.hasOwnProperty.call(message, 'opname')) {
       partContent.OPNAME = message.opname;
     }
-    if (message.hasOwnProperty('partition')) {
+
+    if (Object.prototype.hasOwnProperty.call(message, 'partition')) {
       partContent.partition = message.partition;
     }
 
