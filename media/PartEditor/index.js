@@ -359,7 +359,7 @@ editor.Editor = class {
     this.clearOperatorsCode();
 
     for (let name in this.partition.OPNAME) {
-      if (this.partition.OPNAME.hasOwnProperty(name)) {
+      if (Object.prototype.hasOwnProperty.call(this.partition.OPNAME, name)) {
         let backend = this.partition.OPNAME[name];
         let beCode = this.backendCode(backend);
         if (beCode !== -1) {
@@ -430,7 +430,7 @@ editor.Editor = class {
   backendCode(value) {
     if (typeof value === 'string') {
       value = value.toUpperCase();
-      if (this.beToCode.hasOwnProperty(value)) {
+      if (Object.prototype.hasOwnProperty.call(this.beToCode, value)) {
         return this.beToCode[value];
       }
     }

@@ -581,7 +581,7 @@ view.View = class {
         this._clearSelection();
 
         // set new selection
-        if (selection.hasOwnProperty('names')) {
+        if (Object.prototype.hasOwnProperty.call(selection, 'names')) {
             // selection is by names
             const names = selection.names;
             let scrollToSelects = [];  // elements to make visible by scroll to
@@ -643,7 +643,7 @@ view.View = class {
         //      (3) interate all graph nodes and set if exist in opname, clear if not.
         //      here, (3) is implemented
 
-        if (!message.hasOwnProperty('partition')) {
+        if (!Object.prototype.hasOwnProperty.call(message, 'partition')) {
             return;
         }
         const partition = message.partition;
