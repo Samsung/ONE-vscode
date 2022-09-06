@@ -21,8 +21,6 @@ import * as vscode from 'vscode';
 import {Balloon} from './Balloon';
 import {Logger} from './Logger';
 
-var ini = require('ini');
-
 const logTag = 'Helpers';
 
 /**
@@ -97,4 +95,43 @@ export function obtainWorkspaceRoot(): string {
 
 export interface FileSelector {
   onFileSelected(uri: vscode.Uri|undefined): void;
+}
+
+/**
+ * Show an information message to ask users whether to save the unsaved file.
+ *
+ * @param filepath a full path to the file.
+ * @return a Promise returning true, if documents are saved.
+ *         a Promise returning false, if error occurs or user choose not
+ *          to save documents.
+ */
+export async function saveDirtyDocuments(filepath: string): Promise<boolean> {
+  const unsavedDocuments = vscode.workspace.textDocuments.filter(td => {
+    if ((td.fileName === filepath) && td.isDirty) {
+      return td;
+    }
+  });
+
+  if (unsavedDocuments.length === 0) {
+    return true;
+  }
+
+  const title = `Do you want to save the changes you made to ${path.parse(filepath).name}?`;
+  const detail = undefined;
+  const ansSave = 'Save';
+  const ans =
+      await vscode.window.showInformationMessage(title, {detail: detail, modal: true}, ansSave);
+
+  if (ans === ansSave) {
+    return Promise.all(unsavedDocuments.map(doc => doc.save())).then(res => {
+      if (res.includes(false)) {
+        Logger.error('Failed to save document');
+        return false;
+      } else {
+        return true;
+      }
+    });
+  } else {
+    return false;
+  }
 }

@@ -18,6 +18,7 @@ import * as vscode from 'vscode';
 
 import {Toolchain} from '../Backend/Toolchain';
 import {Job} from '../Job/Job';
+import {saveDirtyDocuments} from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 import {showInstallQuickInput} from '../View/InstallQuickInput';
 
@@ -25,7 +26,6 @@ import {DefaultToolchain} from './DefaultToolchain';
 import {JobInstall} from './JobInstall';
 import {JobUninstall} from './JobUninstall';
 import {gToolchainEnvMap, ToolchainEnv} from './ToolchainEnv';
-
 
 type ToolchainTreeData = BaseNode|undefined|void;
 
@@ -245,7 +245,7 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
         .then(() => notifyUninstalled(), () => notifyError());
   }
 
-  public run(cfg: string): boolean|undefined {
+  public _run(cfg: string): boolean|undefined {
     /* istanbul ignore next */
     const notifySuccess = () => {
       vscode.window.showInformationMessage('Onecc has run successfully.');
@@ -279,6 +279,14 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
 
     Logger.info(this.tag, `Run onecc with ${cfg} cfg and ${activeToolchain.info.name}-${activeToolchain.info.version?.str()} toolchain.`);
     activeToolchainEnv.run(cfg, activeToolchain).then(() => notifySuccess(), () => notifyError());
+  }
+
+  public async run(cfg: string): Promise<boolean|undefined> {
+    const proceed: boolean = await saveDirtyDocuments(cfg);
+
+    if (proceed) {
+      return this._run(cfg);
+    }
   }
 
   public setDefaultToolchain(tnode: ToolchainNode): boolean|undefined {
