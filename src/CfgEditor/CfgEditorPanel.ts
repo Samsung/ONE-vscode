@@ -142,7 +142,7 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
             vscode.workspace.applyEdit(edit);
           }
           break;
-        case 'getPathByDialog':
+        case 'getPathByDialog': {
           const dialogOptions = {
             canSelectMany: false,
             canSelectFolders: e.isFolder,
@@ -158,6 +158,7 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
             }
           });
           break;
+        }
         default:
           break;
       }
