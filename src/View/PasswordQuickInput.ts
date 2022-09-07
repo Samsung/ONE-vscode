@@ -23,7 +23,7 @@ import * as vscode from 'vscode';
 //   u+0080-u+00ff: extended ascii codes,   extended ascii (NOT ALLOWED)
 //
 // By experience, Linux os takes all extended ascii characters(u+0000-u+00ff) for passwords, even
-// controll asciis. whereas 'eslint' recommends not using regex including control ascii codes.
+// controll asciis, whereas 'eslint' recommends not to use the regex which includes any control ascii.
 // Therefore, we allow users to put control ascii codes.
 //
 // By experience, the passwords including extended ascii characters are not working when loging in
