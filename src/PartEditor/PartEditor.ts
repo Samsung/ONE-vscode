@@ -411,7 +411,7 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider, Part
     let html = fs.readFileSync(htmlPath.fsPath, {encoding: 'utf-8'});
 
     const nonce = getNonce();
-    html = html.replace(/\%nonce%/gi, nonce);
+    html = html.replace(/%nonce%/gi, nonce);
     html = html.replace('%webview.cspSource%', webview.cspSource);
 
     html = this.updateUri(html, webview, '%index.css%', 'index.css');
