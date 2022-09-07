@@ -18,6 +18,7 @@ import * as vscode from 'vscode';
 
 // NOTE ASCII characters have codes ranging from u+0000 to u+007f
 function containsNonAscii(str: string): boolean {
+  // eslint-disable-next-line no-control-regex
   return !/^[\u0000-\u007f]*$/.test(str);
 }
 
