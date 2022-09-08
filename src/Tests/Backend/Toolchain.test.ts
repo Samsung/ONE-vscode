@@ -23,7 +23,7 @@ suite('Backend', function() {
 
     suite('#constructor()', function() {
       test('Create dummy toolchain', function(pass) {
-        const toolchain = new Toolchain(toolchainInfo);
+        assert.doesNotThrow(() => new Toolchain(toolchainInfo));
 
         pass();
         assert.ok(true);

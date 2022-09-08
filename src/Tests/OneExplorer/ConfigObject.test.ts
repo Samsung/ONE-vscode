@@ -780,8 +780,6 @@ command=--save-chrome-trace ${traceName}
 
         // Get file paths inside the temp directory
         const configPath = testBuilder.getPath(configName);
-        const tracePath = testBuilder.getPath(traceName);
-
         const configObj = ConfigObj.createConfigObj(vscode.Uri.file(configPath));
 
         // Validation
@@ -810,8 +808,6 @@ commands=--save-chrome-trace ${traceName}
 
         // Get file paths inside the temp directory
         const configPath = testBuilder.getPath(configName);
-        const tracePath = testBuilder.getPath(traceName);
-
         const configObj = ConfigObj.createConfigObj(vscode.Uri.file(configPath));
 
         // Validation

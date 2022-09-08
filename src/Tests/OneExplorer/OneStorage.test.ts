@@ -180,7 +180,6 @@ input_path=${modelName}
 
         testBuilder.writeFileSync(modelName, '', 'workspace');
 
-        const modelPath = testBuilder.getPath(modelName, 'workspace');
         { assert.isUndefined(OneStorage.getCfgs('invalid/path')); }
       });
 

@@ -37,7 +37,7 @@ suite('Device', function() {
       const sw: string = 'TestOS';
       const testSpec = new DeviceSpec(hw, sw, undefined);
       try {
-        const testDevice = new Device(deviceName, testSpec);
+        new Device(deviceName, testSpec);
       } catch (err: any) {
         assert.strictEqual(err.message, 'empty name device cannot be created.');
       }
@@ -61,7 +61,7 @@ suite('Device', function() {
       const sw: string = 'Tizen 7.0.0';
       const testSpec = new TizenDeviceSpec(hw, sw);
       try {
-        const tizenTV = new Device(deviceName, testSpec);
+        new Device(deviceName, testSpec);
       } catch (err: any) {
         assert.strictEqual(err.message, 'empty name device cannot be created.');
       }
@@ -85,7 +85,7 @@ suite('Device', function() {
       const sw: string = 'TestOS';
       const testSpec = new HostPCSpec(hw, sw);
       try {
-        const hostPC = new Device(deviceName, testSpec);
+        new Device(deviceName, testSpec);
       } catch (err: any) {
         assert.strictEqual(err.message, 'empty name device cannot be created.');
       }
