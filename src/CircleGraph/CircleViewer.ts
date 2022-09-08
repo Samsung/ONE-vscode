@@ -124,7 +124,7 @@ export class CircleViewerProvider implements
 
   // CustomReadonlyEditorProvider implements
   async openCustomDocument(
-      uri: vscode.Uri, openContext: {backupId?: string},
+      uri: vscode.Uri, _openContext: {backupId?: string},
       _token: vscode.CancellationToken): Promise<CircleViewerDocument> {
     const document: CircleViewerDocument = await CircleViewerDocument.create(uri);
     // NOTE as a readonly viewer, there is not much to do
