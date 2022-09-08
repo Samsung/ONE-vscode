@@ -175,6 +175,9 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
     });
 
     webviewPanel.onDidChangeViewState(e => {
+      if (webviewPanel.visible) {
+        vscode.commands.executeCommand('one.explorer.revealInOneExplorer', document.fileName);
+      }
       vscode.commands.executeCommand('setContext', CfgEditorPanel.viewType, webviewPanel.visible);
     }, null, this._disposables);
 

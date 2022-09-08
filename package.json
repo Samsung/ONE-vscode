@@ -147,7 +147,12 @@
         "category": "ONE"
       },
       {
-        "command": "one.explorer.reveal",
+        "command": "one.explorer.revealInOneExplorer",
+        "title": "Reveal in ONE Explorer View",
+        "category": "ONE"
+      },
+      {
+        "command": "one.explorer.revealInDefaultExplorer",
         "title": "Reveal in Explorer View",
         "category": "ONE"
       },
@@ -252,7 +257,7 @@
           "group": "3_open@1"
         },
         {
-          "command": "one.explorer.reveal",
+          "command": "one.explorer.revealInDefaultExplorer",
           "when": "view == OneExplorerView && viewItem != directory",
           "group": "3_open@3"
         },
@@ -306,7 +311,7 @@
           "when": "false"
         },
         {
-          "command": "one.explorer.reveal",
+          "command": "one.explorer.revealInDefaultExplorer",
           "when": "false"
         },
         {
