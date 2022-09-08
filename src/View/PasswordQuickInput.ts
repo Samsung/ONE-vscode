@@ -16,8 +16,20 @@
 
 import * as vscode from 'vscode';
 
-// NOTE ASCII characters have codes ranging from u+0000 to u+007f
+// NOTE
+//
+//   u+0000-u+001f: control ascii codes,    ascii (ALLOWED) *
+//   u+0020-u+007f: printable ascii codes,  ascii (ALLOWED)
+//   u+0080-u+00ff: extended ascii codes,   extended ascii (NOT ALLOWED) **
+//
+// *By experience, Linux os takes all extended ascii characters(u+0000-u+00ff) for passwords, even
+// controll asciis, whereas 'eslint' recommends not to use the regex which includes any control
+// ascii. Therefore, we allow users to put control ascii codes.
+//
+// **By experience, the passwords including extended ascii characters are not working when loging in
+// to remote vscode. Therefore, here we allow only 'ascii characters'(0x00-0x7f).
 function containsNonAscii(str: string): boolean {
+  // eslint-disable-next-line no-control-regex
   return !/^[\u0000-\u007f]*$/.test(str);
 }
 
