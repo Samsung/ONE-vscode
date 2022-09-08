@@ -17,7 +17,6 @@
 import * as vscode from 'vscode';
 
 import {Toolchain} from '../Backend/Toolchain';
-import {Logger} from '../Utils/Logger';
 import {ToolchainEnv} from './ToolchainEnv';
 
 class DefaultToolchain {

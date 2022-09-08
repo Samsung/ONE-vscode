@@ -22,8 +22,6 @@ import {Toolchain} from '../Backend/Toolchain';
 import {BuilderJob} from '../Job/BuilderJob';
 import {Job} from '../Job/Job';
 import {WorkFlow} from '../Job/WorkFlow';
-import {Balloon} from '../Utils/Balloon';
-import * as helpers from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 import {showPasswordQuickInput} from '../View/PasswordQuickInput';
 
