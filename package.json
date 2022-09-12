@@ -147,6 +147,11 @@
         "category": "ONE"
       },
       {
+        "command": "one.explorer.revealInOneExplorer",
+        "title": "Reveal in ONE Explorer",
+        "category": "ONE"
+      },
+      {
         "command": "one.explorer.reveal",
         "title": "Reveal in Explorer View",
         "category": "ONE"
@@ -253,6 +258,11 @@
         },
         {
           "command": "one.explorer.reveal",
+          "when": "view == OneExplorerView && viewItem != directory",
+          "group": "3_open@3"
+        },
+        {
+          "command": "one.explorer.revealInOneExplorer",
           "when": "view == OneExplorerView && viewItem != directory",
           "group": "3_open@3"
         },

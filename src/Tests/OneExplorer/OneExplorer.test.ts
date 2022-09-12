@@ -204,23 +204,22 @@ suite('OneExplorer', function() {
       });
     });
 
-
     suite('#NodeFactory', function() {
       test('NEG: create a directory node with attributes', function() {
         assert.throw(() => {
-          NodeFactory.create(NodeType.directory, '', {ext: '.directory'});
+          NodeFactory.create(NodeType.directory, '', undefined, {ext: '.directory'});
         }, 'Directory nodes cannot have attributes');
       });
 
       test('NEG: create a config node with attributes', function() {
         assert.throw(() => {
-          NodeFactory.create(NodeType.config, '', {ext: '.cfg'});
+          NodeFactory.create(NodeType.config, '', undefined, {ext: '.cfg'});
         }, 'Config nodes cannot have attributes');
       });
 
       test('NEG: create a directory node with not existing path', function() {
         assert.throw(() => {
-          NodeFactory.create(NodeType.directory, 'path/not/exist');
+          NodeFactory.create(NodeType.directory, 'path/not/exist', undefined);
         });
       });
 
@@ -237,7 +236,7 @@ suite('OneExplorer', function() {
 
         // Validation
         {
-          const dirNode = NodeFactory.create(NodeType.directory, dirPath);
+          const dirNode = NodeFactory.create(NodeType.directory, dirPath, undefined);
           assert.strictEqual(dirNode!.getChildren().length, 1);
           assert.strictEqual(dirNode!.getChildren()[0].path, baseModelPath);
         }
@@ -245,7 +244,7 @@ suite('OneExplorer', function() {
 
       test('NEG: create a base model node with not existing path', function() {
         assert.throw(() => {
-          NodeFactory.create(NodeType.baseModel, 'path/not/exist');
+          NodeFactory.create(NodeType.baseModel, 'path/not/exist', undefined);
         });
       });
 
@@ -269,7 +268,7 @@ input_file=${baseModelPath}
 
         // Validation
         {
-          const baseModelNode = NodeFactory.create(NodeType.baseModel, baseModelPath);
+          const baseModelNode = NodeFactory.create(NodeType.baseModel, baseModelPath, undefined);
 
           assert.strictEqual(baseModelNode!.openViewType, BaseModelNode.defaultOpenViewType);
           assert.strictEqual(baseModelNode!.icon, BaseModelNode.defaultIcon);
@@ -283,7 +282,7 @@ input_file=${baseModelPath}
 
       test('NEG: create a config node with not existing path', function() {
         assert.throw(() => {
-          NodeFactory.create(NodeType.config, 'path/not/exist');
+          NodeFactory.create(NodeType.config, 'path/not/exist', undefined);
         });
       });
 
@@ -298,7 +297,7 @@ input_file=${baseModelPath}
 
         // Validation
         {
-          const configNode = NodeFactory.create(NodeType.config, configPath);
+          const configNode = NodeFactory.create(NodeType.config, configPath, undefined);
           assert.strictEqual(configNode!.openViewType, ConfigNode.defaultOpenViewType);
           assert.strictEqual(configNode!.icon, ConfigNode.defaultIcon);
           assert.strictEqual(configNode!.canHide, ConfigNode.defaultCanHide);
@@ -308,7 +307,7 @@ input_file=${baseModelPath}
 
       test('NEG: create a product node with not existing path', function() {
         assert.throw(() => {
-          NodeFactory.create(NodeType.product, 'path/not/exist');
+          NodeFactory.create(NodeType.product, 'path/not/exist', undefined);
         });
       });
 
@@ -323,19 +322,51 @@ input_file=${baseModelPath}
 
         // Validation
         {
-          const productNode = NodeFactory.create(NodeType.product, productPath);
+          const productNode = NodeFactory.create(NodeType.product, productPath, undefined);
           assert.strictEqual(productNode!.openViewType, ProductNode.defaultOpenViewType);
           assert.strictEqual(productNode!.icon, ProductNode.defaultIcon);
           assert.strictEqual(productNode!.canHide, ProductNode.defaultCanHide);
           assert.strictEqual(productNode!.getChildren().length, 0);
         }
       });
+
+      test('create a node with parent', function() {
+        const directoryName = 'test.directory';
+        const productName = 'test.directory/test.model';
+
+        // Write a file inside temp directory
+        testBuilder.writeFileSync(productName, '');
+
+        // Get file paths inside the temp directory
+        const directoryPath = testBuilder.getPath(directoryName);
+        const productPath = testBuilder.getPath(productName);
+
+
+        const directoryNode = NodeFactory.create(NodeType.directory, directoryPath, undefined);
+        const productNode = NodeFactory.create(NodeType.product, productPath, directoryNode);
+
+        assert.strictEqual(productNode?.parent, directoryNode);
+      });
+
+      test('NEG: get an empty parent', function() {
+        const productName = 'test.model';
+
+        // Write a file inside temp directory
+        testBuilder.writeFileSync(productName, '');
+
+        // Get file paths inside the temp directory
+        const productPath = testBuilder.getPath(productName);
+
+        const productNode = NodeFactory.create(NodeType.product, productPath, undefined);
+
+        assert.strictEqual(productNode?.parent, undefined);
+      });
     });
 
     suite('#OneNode', function() {
       test('constructor', function() {
         const directoryPath = testBuilder.getPath('');
-        const directoryNode = NodeFactory.create(NodeType.directory, directoryPath);
+        const directoryNode = NodeFactory.create(NodeType.directory, directoryPath, undefined);
         const oneNode =
             new OneNode('label', vscode.TreeItemCollapsibleState.Collapsed, directoryNode!);
         { assert.strictEqual(oneNode.contextValue, 'directory'); }
