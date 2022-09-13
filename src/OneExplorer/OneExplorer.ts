@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import {getLatestInsidersMetadata} from '@vscode/test-electron/out/util';
 import * as assert from 'assert';
 import * as fs from 'fs';
 import * as path from 'path';
