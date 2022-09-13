@@ -1,17 +1,15 @@
-
 var sidebar = sidebar || {};
-var base = base || require('./base');
+var base = base || require("./base");
 
 sidebar.Sidebar = class {
-
     constructor(host, id) {
         this._host = host;
-        this._id = id ? ('-' + id) : '';
+        this._id = id ? "-" + id : "";
         this._stack = [];
         this._closeSidebarHandler = () => {
             this._pop();
         };
-        this._closeSidebarKeyDownHandler = (e) => {
+        this._closeSidebarKeyDownHandler = e => {
             if (e.keyCode == 27) {
                 e.preventDefault();
                 this._pop();
@@ -47,83 +45,79 @@ sidebar.Sidebar = class {
         }
         if (this._stack.length > 0) {
             this._activate(this._stack[this._stack.length - 1]);
-        }
-        else {
+        } else {
             this._hide();
         }
     }
 
     _hide() {
-        const sidebar = this._getElementById('sidebar');
+        const sidebar = this._getElementById("sidebar");
         if (sidebar) {
-            sidebar.style.width = '0px';
+            sidebar.style.width = "0px";
         }
-        const container = this._getElementById('graph');
+        const container = this._getElementById("graph");
         if (container) {
-            container.style.width = '100%';
+            container.style.width = "100%";
             container.focus();
         }
     }
 
     _deactivate() {
-        const sidebar = this._getElementById('sidebar');
+        const sidebar = this._getElementById("sidebar");
         if (sidebar) {
-            const closeButton = this._getElementById('sidebar-closebutton');
+            const closeButton = this._getElementById("sidebar-closebutton");
             if (closeButton) {
-                closeButton.removeEventListener('click', this._closeSidebarHandler);
-                closeButton.style.color = '#f8f8f8';
+                closeButton.removeEventListener("click", this._closeSidebarHandler);
+                closeButton.style.color = "#f8f8f8";
             }
 
-            this._host.document.removeEventListener('keydown', this._closeSidebarKeyDownHandler);
+            this._host.document.removeEventListener("keydown", this._closeSidebarKeyDownHandler);
         }
     }
 
     _activate(item) {
-        const sidebar = this._getElementById('sidebar');
+        const sidebar = this._getElementById("sidebar");
         if (sidebar) {
-            sidebar.innerHTML = '';
+            sidebar.innerHTML = "";
 
-            const title = this._host.document.createElement('h1');
-            title.classList.add('sidebar-title');
-            title.innerHTML = item.title ? item.title.toUpperCase() : '';
+            const title = this._host.document.createElement("h1");
+            title.classList.add("sidebar-title");
+            title.innerHTML = item.title ? item.title.toUpperCase() : "";
             sidebar.appendChild(title);
 
-            const closeButton = this._host.document.createElement('a');
-            closeButton.classList.add('sidebar-closebutton');
-            closeButton.setAttribute('id', 'sidebar-closebutton');
-            closeButton.setAttribute('href', 'javascript:void(0)');
-            closeButton.innerHTML = '&times;';
-            closeButton.addEventListener('click', this._closeSidebarHandler);
+            const closeButton = this._host.document.createElement("a");
+            closeButton.classList.add("sidebar-closebutton");
+            closeButton.setAttribute("id", "sidebar-closebutton");
+            closeButton.setAttribute("href", "javascript:void(0)");
+            closeButton.innerHTML = "&times;";
+            closeButton.addEventListener("click", this._closeSidebarHandler);
             sidebar.appendChild(closeButton);
 
-            const content = this._host.document.createElement('div');
-            content.classList.add('sidebar-content');
-            content.setAttribute('id', 'sidebar-content');
+            const content = this._host.document.createElement("div");
+            content.classList.add("sidebar-content");
+            content.setAttribute("id", "sidebar-content");
             sidebar.appendChild(content);
 
-            if (typeof item.content == 'string') {
+            if (typeof item.content == "string") {
                 content.innerHTML = item.content;
-            }
-            else if (item.content instanceof Array) {
+            } else if (item.content instanceof Array) {
                 for (const element of item.content) {
                     content.appendChild(element);
                 }
-            }
-            else {
+            } else {
                 content.appendChild(item.content);
             }
-            sidebar.style.width = 'min(calc(100% * 0.6), 500px)';
-            this._host.document.addEventListener('keydown', this._closeSidebarKeyDownHandler);
+            sidebar.style.width = "min(calc(100% * 0.6), 500px)";
+            this._host.document.addEventListener("keydown", this._closeSidebarKeyDownHandler);
         }
-        const container = this._getElementById('graph');
+        const container = this._getElementById("graph");
         if (container) {
-            container.style.width = 'max(40vw, calc(100vw - 500px))';
+            container.style.width = "max(40vw, calc(100vw - 500px))";
         }
     }
 };
 
 sidebar.NodeSidebar = class {
-
     constructor(host, node) {
         this._host = host;
         this._node = node;
@@ -137,31 +131,31 @@ sidebar.NodeSidebar = class {
             const type = node.type;
             if (type && (type.description || type.inputs || type.outputs || type.attributes)) {
                 showDocumentation = {};
-                showDocumentation.text = type.nodes ? '\u0192': '?';
+                showDocumentation.text = type.nodes ? "\u0192" : "?";
                 showDocumentation.callback = () => {
-                    this._raise('show-documentation', null);
+                    this._raise("show-documentation", null);
                 };
             }
-            this._addProperty('type', new sidebar.ValueTextView(this._host, node.type.name, showDocumentation));
+            this._addProperty("type", new sidebar.ValueTextView(this._host, node.type.name, showDocumentation));
             if (node.type.module) {
-                this._addProperty('module', new sidebar.ValueTextView(this._host, node.type.module));
+                this._addProperty("module", new sidebar.ValueTextView(this._host, node.type.module));
             }
         }
 
         if (node.name) {
-            this._addProperty('name', new sidebar.ValueTextView(this._host, node.name));
+            this._addProperty("name", new sidebar.ValueTextView(this._host, node.name));
         }
 
         if (node.location) {
-            this._addProperty('location', new sidebar.ValueTextView(this._host, node.location));
+            this._addProperty("location", new sidebar.ValueTextView(this._host, node.location));
         }
 
         if (node.description) {
-            this._addProperty('description', new sidebar.ValueTextView(this._host, node.description));
+            this._addProperty("description", new sidebar.ValueTextView(this._host, node.description));
         }
 
         if (node.device) {
-            this._addProperty('device', new sidebar.ValueTextView(this._host, node.device));
+            this._addProperty("device", new sidebar.ValueTextView(this._host, node.device));
         }
 
         const attributes = node.attributes;
@@ -170,9 +164,9 @@ sidebar.NodeSidebar = class {
             sortedAttributes.sort((a, b) => {
                 const au = a.name.toUpperCase();
                 const bu = b.name.toUpperCase();
-                return (au < bu) ? -1 : (au > bu) ? 1 : 0;
+                return au < bu ? -1 : au > bu ? 1 : 0;
             });
-            this._addHeader('Attributes');
+            this._addHeader("Attributes");
             for (const attribute of sortedAttributes) {
                 this._addAttribute(attribute.name, attribute);
             }
@@ -180,7 +174,7 @@ sidebar.NodeSidebar = class {
 
         const inputs = node.inputs;
         if (inputs && inputs.length > 0) {
-            this._addHeader('Inputs');
+            this._addHeader("Inputs");
             for (const input of inputs) {
                 this._addInput(input.name, input);
             }
@@ -188,14 +182,14 @@ sidebar.NodeSidebar = class {
 
         const outputs = node.outputs;
         if (outputs && outputs.length > 0) {
-            this._addHeader('Outputs');
+            this._addHeader("Outputs");
             for (const output of outputs) {
                 this._addOutput(output.name, output);
             }
         }
 
-        const separator = this._host.document.createElement('div');
-        separator.className = 'sidebar-view-separator';
+        const separator = this._host.document.createElement("div");
+        separator.className = "sidebar-view-separator";
         this._elements.push(separator);
     }
 
@@ -204,9 +198,17 @@ sidebar.NodeSidebar = class {
     }
 
     _addHeader(title) {
-        const headerElement = this._host.document.createElement('div');
-        headerElement.className = 'sidebar-view-header';
-        headerElement.innerText = title;
+        const headerElement = this._host.document.createElement("div");
+        const headerTitle = this._host.document.createElement("div");
+        headerElement.className = "sidebar-view-header";
+        headerTitle.className = "sidebar-view-header-title";
+        // headerElement.innerText = title;
+        headerTitle.innerText = title;
+        headerElement.appendChild(headerTitle);
+        const modifyButton = this._host.document.createElement("button");
+        modifyButton.className = "modify-button";
+        modifyButton.innerText = "✎";
+        headerElement.appendChild(modifyButton);
         this._elements.push(headerElement);
     }
 
@@ -217,8 +219,8 @@ sidebar.NodeSidebar = class {
 
     _addAttribute(name, attribute) {
         const item = new NodeAttributeView(this._host, attribute);
-        item.on('show-graph', (sender, graph) => {
-            this._raise('show-graph', graph);
+        item.on("show-graph", (sender, graph) => {
+            this._raise("show-graph", graph);
         });
         const view = new sidebar.NameValueView(this._host, name, item);
         this._attributes.push(view);
@@ -228,11 +230,11 @@ sidebar.NodeSidebar = class {
     _addInput(name, input) {
         if (input.arguments.length > 0) {
             const view = new sidebar.ParameterView(this._host, input);
-            view.on('export-tensor', (sender, tensor) => {
-                this._raise('export-tensor', tensor);
+            view.on("export-tensor", (sender, tensor) => {
+                this._raise("export-tensor", tensor);
             });
-            view.on('error', (sender, tensor) => {
-                this._raise('error', tensor);
+            view.on("error", (sender, tensor) => {
+                this._raise("error", tensor);
             });
             const item = new sidebar.NameValueView(this._host, name, view);
             this._inputs.push(item);
@@ -272,31 +274,30 @@ sidebar.NodeSidebar = class {
 };
 
 sidebar.NameValueView = class {
-
     constructor(host, name, value) {
         this._host = host;
         this._name = name;
         this._value = value;
 
-        const nameElement = this._host.document.createElement('div');
-        nameElement.className = 'sidebar-view-item-name';
+        const nameElement = this._host.document.createElement("div");
+        nameElement.className = "sidebar-view-item-name";
 
-        const nameInputElement = this._host.document.createElement('input');
-        nameInputElement.setAttribute('type', 'text');
-        nameInputElement.setAttribute('value', name);
-        nameInputElement.setAttribute('title', name);
-        nameInputElement.setAttribute('readonly', 'true');
+        const nameInputElement = this._host.document.createElement("input");
+        nameInputElement.setAttribute("type", "text");
+        nameInputElement.setAttribute("value", name);
+        nameInputElement.setAttribute("title", name);
+        nameInputElement.setAttribute("readonly", "true");
         nameElement.appendChild(nameInputElement);
 
-        const valueElement = this._host.document.createElement('div');
-        valueElement.className = 'sidebar-view-item-value-list';
+        const valueElement = this._host.document.createElement("div");
+        valueElement.className = "sidebar-view-item-value-list";
 
         for (const element of value.render()) {
             valueElement.appendChild(element);
         }
 
-        this._element = this._host.document.createElement('div');
-        this._element.className = 'sidebar-view-item';
+        this._element = this._host.document.createElement("div");
+        this._element.className = "sidebar-view-item";
         this._element.appendChild(nameElement);
         this._element.appendChild(valueElement);
     }
@@ -315,24 +316,23 @@ sidebar.NameValueView = class {
 };
 
 sidebar.SelectView = class {
-
     constructor(host, values, selected) {
         this._host = host;
         this._elements = [];
         this._values = values;
 
-        const selectElement = this._host.document.createElement('select');
-        selectElement.setAttribute('class', 'sidebar-view-item-select');
-        selectElement.addEventListener('change', (e) => {
-            this._raise('change', this._values[e.target.selectedIndex]);
+        const selectElement = this._host.document.createElement("select");
+        selectElement.setAttribute("class", "sidebar-view-item-select");
+        selectElement.addEventListener("change", e => {
+            this._raise("change", this._values[e.target.selectedIndex]);
         });
         this._elements.push(selectElement);
 
         for (const value of values) {
-            const optionElement = this._host.document.createElement('option');
-            optionElement.innerText = value.name || '';
+            const optionElement = this._host.document.createElement("option");
+            optionElement.innerText = value.name || "";
             if (value == selected) {
-                optionElement.setAttribute('selected', 'selected');
+                optionElement.setAttribute("selected", "selected");
             }
             selectElement.appendChild(optionElement);
         }
@@ -358,32 +358,31 @@ sidebar.SelectView = class {
 };
 
 sidebar.ValueTextView = class {
-
     constructor(host, value, action) {
         this._host = host;
         this._elements = [];
-        const element = this._host.document.createElement('div');
-        element.className = 'sidebar-view-item-value';
+        const element = this._host.document.createElement("div");
+        element.className = "sidebar-view-item-value";
         this._elements.push(element);
 
         if (action) {
-            this._action = this._host.document.createElement('div');
-            this._action.className = 'sidebar-view-item-value-expander';
+            this._action = this._host.document.createElement("div");
+            this._action.className = "sidebar-view-item-value-expander";
             this._action.innerHTML = action.text;
-            this._action.addEventListener('click', () => {
+            this._action.addEventListener("click", () => {
                 action.callback();
             });
             element.appendChild(this._action);
         }
 
-        const list = Array.isArray(value) ? value : [ value ];
-        let className = 'sidebar-view-item-value-line';
+        const list = Array.isArray(value) ? value : [value];
+        let className = "sidebar-view-item-value-line";
         for (const item of list) {
-            const line = this._host.document.createElement('div');
+            const line = this._host.document.createElement("div");
             line.className = className;
             line.innerText = item;
             element.appendChild(line);
-            className = 'sidebar-view-item-value-line-border';
+            className = "sidebar-view-item-value-line-border";
         }
     }
 
@@ -391,46 +390,44 @@ sidebar.ValueTextView = class {
         return this._elements;
     }
 
-    toggle() {
-    }
+    toggle() {}
 };
 
 class NodeAttributeView {
-
     constructor(host, attribute) {
         this._host = host;
         this._attribute = attribute;
-        this._element = this._host.document.createElement('div');
-        this._element.className = 'sidebar-view-item-value';
+        this._element = this._host.document.createElement("div");
+        this._element.className = "sidebar-view-item-value";
 
         const type = this._attribute.type;
         if (type) {
-            this._expander = this._host.document.createElement('div');
-            this._expander.className = 'sidebar-view-item-value-expander';
-            this._expander.innerText = '+';
-            this._expander.addEventListener('click', () => {
+            this._expander = this._host.document.createElement("div");
+            this._expander.className = "sidebar-view-item-value-expander";
+            this._expander.innerText = "+";
+            this._expander.addEventListener("click", () => {
                 this.toggle();
             });
             this._element.appendChild(this._expander);
         }
         const value = this._attribute.value;
         switch (type) {
-            case 'graph': {
-                const line = this._host.document.createElement('div');
-                line.className = 'sidebar-view-item-value-line-link';
+            case "graph": {
+                const line = this._host.document.createElement("div");
+                line.className = "sidebar-view-item-value-line-link";
                 line.innerHTML = value.name;
-                line.addEventListener('click', () => {
-                    this._raise('show-graph', value);
+                line.addEventListener("click", () => {
+                    this._raise("show-graph", value);
                 });
                 this._element.appendChild(line);
                 break;
             }
-            case 'function': {
-                const line = this._host.document.createElement('div');
-                line.className = 'sidebar-view-item-value-line-link';
+            case "function": {
+                const line = this._host.document.createElement("div");
+                line.className = "sidebar-view-item-value-line-link";
                 line.innerHTML = type === value.type.name;
-                line.addEventListener('click', () => {
-                    this._raise('show-graph', value.type);
+                line.addEventListener("click", () => {
+                    this._raise("show-graph", value.type);
                 });
                 this._element.appendChild(line);
                 break;
@@ -438,60 +435,58 @@ class NodeAttributeView {
             default: {
                 let content = new sidebar.Formatter(value, type).toString();
                 if (content && content.length > 1000) {
-                    content = content.substring(0, 1000) + '\u2026';
+                    content = content.substring(0, 1000) + "\u2026";
                 }
-                if (content && typeof content === 'string') {
-                    content = content.split('<').join('&lt;').split('>').join('&gt;');
+                if (content && typeof content === "string") {
+                    content = content.split("<").join("&lt;").split(">").join("&gt;");
                 }
-                const line = this._host.document.createElement('div');
-                line.className = 'sidebar-view-item-value-line';
-                line.innerHTML = content ? content : '&nbsp;';
+                const line = this._host.document.createElement("div");
+                line.className = "sidebar-view-item-value-line";
+                line.innerHTML = content ? content : "&nbsp;";
                 this._element.appendChild(line);
             }
         }
     }
 
     render() {
-        return [ this._element ];
+        return [this._element];
     }
 
     toggle() {
-        if (this._expander.innerText == '+') {
-            this._expander.innerText = '-';
+        if (this._expander.innerText == "+") {
+            this._expander.innerText = "-";
 
-            const typeLine = this._host.document.createElement('div');
-            typeLine.className = 'sidebar-view-item-value-line-border';
+            const typeLine = this._host.document.createElement("div");
+            typeLine.className = "sidebar-view-item-value-line-border";
             const type = this._attribute.type;
             const value = this._attribute.value;
-            if (type == 'tensor' && value && value.type) {
-                typeLine.innerHTML = 'type: ' + '<code><b>' + value.type.toString() + '</b></code>';
+            if (type == "tensor" && value && value.type) {
+                typeLine.innerHTML = "type: " + "<code><b>" + value.type.toString() + "</b></code>";
                 this._element.appendChild(typeLine);
-            }
-            else {
-                typeLine.innerHTML = 'type: ' + '<code><b>' + this._attribute.type + '</b></code>';
+            } else {
+                typeLine.innerHTML = "type: " + "<code><b>" + this._attribute.type + "</b></code>";
                 this._element.appendChild(typeLine);
             }
 
             const description = this._attribute.description;
             if (description) {
-                const descriptionLine = this._host.document.createElement('div');
-                descriptionLine.className = 'sidebar-view-item-value-line-border';
+                const descriptionLine = this._host.document.createElement("div");
+                descriptionLine.className = "sidebar-view-item-value-line-border";
                 descriptionLine.innerHTML = description;
                 this._element.appendChild(descriptionLine);
             }
 
-            if (this._attribute.type == 'tensor' && value) {
+            if (this._attribute.type == "tensor" && value) {
                 const state = value.state;
-                const valueLine = this._host.document.createElement('div');
-                valueLine.className = 'sidebar-view-item-value-line-border';
-                const contentLine = this._host.document.createElement('pre');
+                const valueLine = this._host.document.createElement("div");
+                valueLine.className = "sidebar-view-item-value-line-border";
+                const contentLine = this._host.document.createElement("pre");
                 contentLine.innerHTML = state || value.toString();
                 valueLine.appendChild(contentLine);
                 this._element.appendChild(valueLine);
             }
-        }
-        else {
-            this._expander.innerText = '+';
+        } else {
+            this._expander.innerText = "+";
             while (this._element.childElementCount > 2) {
                 this._element.removeChild(this._element.lastChild);
             }
@@ -514,18 +509,17 @@ class NodeAttributeView {
 }
 
 sidebar.ParameterView = class {
-
     constructor(host, list) {
         this._list = list;
         this._elements = [];
         this._items = [];
         for (const argument of list.arguments) {
             const item = new sidebar.ArgumentView(host, argument);
-            item.on('export-tensor', (sender, tensor) => {
-                this._raise('export-tensor', tensor);
+            item.on("export-tensor", (sender, tensor) => {
+                this._raise("export-tensor", tensor);
             });
-            item.on('error', (sender, tensor) => {
-                this._raise('error', tensor);
+            item.on("error", (sender, tensor) => {
+                this._raise("error", tensor);
             });
             this._items.push(item);
             this._elements.push(item.render());
@@ -558,57 +552,55 @@ sidebar.ParameterView = class {
 };
 
 sidebar.ArgumentView = class {
-
     constructor(host, argument) {
         this._host = host;
         this._argument = argument;
 
-        this._element = this._host.document.createElement('div');
-        this._element.className = 'sidebar-view-item-value';
+        this._element = this._host.document.createElement("div");
+        this._element.className = "sidebar-view-item-value";
 
         const initializer = argument.initializer;
         if (initializer) {
-            this._element.classList.add('sidebar-view-item-value-dark');
+            this._element.classList.add("sidebar-view-item-value-dark");
         }
 
         const quantization = argument.quantization;
         const type = argument.type;
         const location = this._argument.location !== undefined;
         if (type || initializer || quantization || location) {
-            this._expander = this._host.document.createElement('div');
-            this._expander.className = 'sidebar-view-item-value-expander';
-            this._expander.innerText = '+';
-            this._expander.addEventListener('click', () => {
+            this._expander = this._host.document.createElement("div");
+            this._expander.className = "sidebar-view-item-value-expander";
+            this._expander.innerText = "+";
+            this._expander.addEventListener("click", () => {
                 this.toggle();
             });
             this._element.appendChild(this._expander);
         }
 
-        let name = this._argument.name || '';
+        let name = this._argument.name || "";
         this._hasId = name ? true : false;
         this._hasKind = initializer && initializer.kind ? true : false;
         if (this._hasId || (!this._hasKind && !type)) {
             this._hasId = true;
-            const nameLine = this._host.document.createElement('div');
-            nameLine.className = 'sidebar-view-item-value-line';
-            if (typeof name !== 'string') {
+            const nameLine = this._host.document.createElement("div");
+            nameLine.className = "sidebar-view-item-value-line";
+            if (typeof name !== "string") {
                 throw new Error("Invalid argument identifier '" + JSON.stringify(name) + "'.");
             }
-            name = name.split('\n').shift(); // custom argument id
-            name = name || ' ';
-            nameLine.innerHTML = '<span class=\'sidebar-view-item-value-line-content\'>name: <b>' + name + '</b></span>';
+            name = name.split("\n").shift(); // custom argument id
+            name = name || " ";
+            nameLine.innerHTML = "<span class='sidebar-view-item-value-line-content'>name: <b>" + name + "</b></span>";
             this._element.appendChild(nameLine);
-        }
-        else if (this._hasKind) {
-            const kindLine = this._host.document.createElement('div');
-            kindLine.className = 'sidebar-view-item-value-line';
-            kindLine.innerHTML = 'kind: <b>' + initializer.kind + '</b>';
+        } else if (this._hasKind) {
+            const kindLine = this._host.document.createElement("div");
+            kindLine.className = "sidebar-view-item-value-line";
+            kindLine.innerHTML = "kind: <b>" + initializer.kind + "</b>";
             this._element.appendChild(kindLine);
-        }
-        else if (type) {
-            const typeLine = this._host.document.createElement('div');
-            typeLine.className = 'sidebar-view-item-value-line-border';
-            typeLine.innerHTML = 'type: <code><b>' + type.toString().split('<').join('&lt;').split('>').join('&gt;') + '</b></code>';
+        } else if (type) {
+            const typeLine = this._host.document.createElement("div");
+            typeLine.className = "sidebar-view-item-value-line-border";
+            typeLine.innerHTML =
+                "type: <code><b>" + type.toString().split("<").join("&lt;").split(">").join("&gt;") + "</b></code>";
             this._element.appendChild(typeLine);
         }
     }
@@ -619,14 +611,14 @@ sidebar.ArgumentView = class {
 
     toggle() {
         if (this._expander) {
-            if (this._expander.innerText == '+') {
-                this._expander.innerText = '-';
+            if (this._expander.innerText == "+") {
+                this._expander.innerText = "-";
 
                 const initializer = this._argument.initializer;
                 if (this._hasId && this._hasKind) {
-                    const kindLine = this._host.document.createElement('div');
-                    kindLine.className = 'sidebar-view-item-value-line-border';
-                    kindLine.innerHTML = 'kind: ' + '<b>' + initializer.kind + '</b>';
+                    const kindLine = this._host.document.createElement("div");
+                    kindLine.className = "sidebar-view-item-value-line-border";
+                    kindLine.innerHTML = "kind: " + "<b>" + initializer.kind + "</b>";
                     this._element.appendChild(kindLine);
                 }
                 let type = null;
@@ -636,72 +628,82 @@ sidebar.ArgumentView = class {
                     denotation = this._argument.type.denotation || null;
                 }
                 if (type && (this._hasId || this._hasKind)) {
-                    const typeLine = this._host.document.createElement('div');
-                    typeLine.className = 'sidebar-view-item-value-line-border';
-                    typeLine.innerHTML = 'type: <code><b>' + type.split('<').join('&lt;').split('>').join('&gt;') + '</b></code>';
+                    const typeLine = this._host.document.createElement("div");
+                    typeLine.className = "sidebar-view-item-value-line-border";
+                    typeLine.innerHTML =
+                        "type: <code><b>" + type.split("<").join("&lt;").split(">").join("&gt;") + "</b></code>";
                     this._element.appendChild(typeLine);
                 }
                 if (denotation) {
-                    const denotationLine = this._host.document.createElement('div');
-                    denotationLine.className = 'sidebar-view-item-value-line-border';
-                    denotationLine.innerHTML = 'denotation: <code><b>' + denotation + '</b></code>';
+                    const denotationLine = this._host.document.createElement("div");
+                    denotationLine.className = "sidebar-view-item-value-line-border";
+                    denotationLine.innerHTML = "denotation: <code><b>" + denotation + "</b></code>";
                     this._element.appendChild(denotationLine);
                 }
 
                 const description = this._argument.description;
                 if (description) {
-                    const descriptionLine = this._host.document.createElement('div');
-                    descriptionLine.className = 'sidebar-view-item-value-line-border';
+                    const descriptionLine = this._host.document.createElement("div");
+                    descriptionLine.className = "sidebar-view-item-value-line-border";
                     descriptionLine.innerHTML = description;
                     this._element.appendChild(descriptionLine);
                 }
 
                 const quantization = this._argument.quantization;
                 if (quantization) {
-                    const quantizationLine = this._host.document.createElement('div');
-                    quantizationLine.className = 'sidebar-view-item-value-line-border';
-                    const content = !Array.isArray(quantization) ? quantization : '<br><br>' + quantization.map((value) => '  ' + value).join('<br>');
-                    quantizationLine.innerHTML = '<span class=\'sidebar-view-item-value-line-content\'>quantization: ' + '<b>' + content + '</b></span>';
+                    const quantizationLine = this._host.document.createElement("div");
+                    quantizationLine.className = "sidebar-view-item-value-line-border";
+                    const content = !Array.isArray(quantization)
+                        ? quantization
+                        : "<br><br>" + quantization.map(value => "  " + value).join("<br>");
+                    quantizationLine.innerHTML =
+                        "<span class='sidebar-view-item-value-line-content'>quantization: " +
+                        "<b>" +
+                        content +
+                        "</b></span>";
                     this._element.appendChild(quantizationLine);
                 }
 
                 if (this._argument.location !== undefined) {
-                    const location = this._host.document.createElement('div');
-                    location.className = 'sidebar-view-item-value-line-border';
-                    location.innerHTML = 'location: ' + '<b>' + this._argument.location + '</b>';
+                    const location = this._host.document.createElement("div");
+                    location.className = "sidebar-view-item-value-line-border";
+                    location.innerHTML = "location: " + "<b>" + this._argument.location + "</b>";
                     this._element.appendChild(location);
                 }
 
                 if (initializer) {
-                    const contentLine = this._host.document.createElement('pre');
-                    const valueLine = this._host.document.createElement('div');
+                    const contentLine = this._host.document.createElement("pre");
+                    const valueLine = this._host.document.createElement("div");
                     try {
                         const state = initializer.state;
-                        if (state === null && this._host.save &&
-                            initializer.type.dataType && initializer.type.dataType != '?' &&
-                            initializer.type.shape && initializer.type.shape.dimensions /*&& initializer.type.shape.dimensions.length > 0*/) {
-                            this._saveButton = this._host.document.createElement('div');
-                            this._saveButton.className = 'sidebar-view-item-value-expander';
-                            this._saveButton.innerHTML = '&#x1F4BE;';
-                            this._saveButton.addEventListener('click', () => {
-                                this._raise('export-tensor', initializer);
+                        if (
+                            state === null &&
+                            this._host.save &&
+                            initializer.type.dataType &&
+                            initializer.type.dataType != "?" &&
+                            initializer.type.shape &&
+                            initializer.type.shape.dimensions /*&& initializer.type.shape.dimensions.length > 0*/
+                        ) {
+                            this._saveButton = this._host.document.createElement("div");
+                            this._saveButton.className = "sidebar-view-item-value-expander";
+                            this._saveButton.innerHTML = "&#x1F4BE;";
+                            this._saveButton.addEventListener("click", () => {
+                                this._raise("export-tensor", initializer);
                             });
                             this._element.appendChild(this._saveButton);
                         }
 
-                        valueLine.className = 'sidebar-view-item-value-line-border';
+                        valueLine.className = "sidebar-view-item-value-line-border";
                         contentLine.innerHTML = state || initializer.toString();
-                    }
-                    catch (err) {
+                    } catch (err) {
                         contentLine.innerHTML = err.toString();
-                        this._raise('error', err);
+                        this._raise("error", err);
                     }
                     valueLine.appendChild(contentLine);
                     this._element.appendChild(valueLine);
                 }
-            }
-            else {
-                this._expander.innerText = '+';
+            } else {
+                this._expander.innerText = "+";
                 while (this._element.childElementCount > 2) {
                     this._element.removeChild(this._element.lastChild);
                 }
@@ -725,47 +727,46 @@ sidebar.ArgumentView = class {
 };
 
 sidebar.ModelSidebar = class {
-
     constructor(host, model, graph) {
         this._host = host;
         this._model = model;
         this._elements = [];
 
         if (model.format) {
-            this._addProperty('format', new sidebar.ValueTextView(this._host, model.format));
+            this._addProperty("format", new sidebar.ValueTextView(this._host, model.format));
         }
         if (model.producer) {
-            this._addProperty('producer', new sidebar.ValueTextView(this._host, model.producer));
+            this._addProperty("producer", new sidebar.ValueTextView(this._host, model.producer));
         }
         if (model.source) {
-            this._addProperty('source', new sidebar.ValueTextView(this._host, model.source));
+            this._addProperty("source", new sidebar.ValueTextView(this._host, model.source));
         }
         if (model.name) {
-            this._addProperty('name', new sidebar.ValueTextView(this._host, model.name));
+            this._addProperty("name", new sidebar.ValueTextView(this._host, model.name));
         }
         if (model.version) {
-            this._addProperty('version', new sidebar.ValueTextView(this._host, model.version));
+            this._addProperty("version", new sidebar.ValueTextView(this._host, model.version));
         }
         if (model.description) {
-            this._addProperty('description', new sidebar.ValueTextView(this._host, model.description));
+            this._addProperty("description", new sidebar.ValueTextView(this._host, model.description));
         }
         if (model.author) {
-            this._addProperty('author', new sidebar.ValueTextView(this._host, model.author));
+            this._addProperty("author", new sidebar.ValueTextView(this._host, model.author));
         }
         if (model.company) {
-            this._addProperty('company', new sidebar.ValueTextView(this._host, model.company));
+            this._addProperty("company", new sidebar.ValueTextView(this._host, model.company));
         }
         if (model.license) {
-            this._addProperty('license', new sidebar.ValueTextView(this._host, model.license));
+            this._addProperty("license", new sidebar.ValueTextView(this._host, model.license));
         }
         if (model.domain) {
-            this._addProperty('domain', new sidebar.ValueTextView(this._host, model.domain));
+            this._addProperty("domain", new sidebar.ValueTextView(this._host, model.domain));
         }
         if (model.imports) {
-            this._addProperty('imports', new sidebar.ValueTextView(this._host, model.imports));
+            this._addProperty("imports", new sidebar.ValueTextView(this._host, model.imports));
         }
         if (model.runtime) {
-            this._addProperty('runtime', new sidebar.ValueTextView(this._host, model.runtime));
+            this._addProperty("runtime", new sidebar.ValueTextView(this._host, model.runtime));
         }
 
         const metadata = model.metadata;
@@ -778,41 +779,41 @@ sidebar.ModelSidebar = class {
         const graphs = Array.isArray(model.graphs) ? model.graphs : [];
         if (graphs.length > 1) {
             const graphSelector = new sidebar.SelectView(this._host, model.graphs, graph);
-            graphSelector.on('change', (sender, data) => {
-                this._raise('update-active-graph', data);
+            graphSelector.on("change", (sender, data) => {
+                this._raise("update-active-graph", data);
             });
-            this._addProperty('subgraph', graphSelector);
+            this._addProperty("subgraph", graphSelector);
         }
 
         if (graph) {
             if (graph.version) {
-                this._addProperty('version', new sidebar.ValueTextView(this._host, graph.version));
+                this._addProperty("version", new sidebar.ValueTextView(this._host, graph.version));
             }
             if (graph.type) {
-                this._addProperty('type', new sidebar.ValueTextView(this._host, graph.type));
+                this._addProperty("type", new sidebar.ValueTextView(this._host, graph.type));
             }
             if (graph.tags) {
-                this._addProperty('tags', new sidebar.ValueTextView(this._host, graph.tags));
+                this._addProperty("tags", new sidebar.ValueTextView(this._host, graph.tags));
             }
             if (graph.description) {
-                this._addProperty('description', new sidebar.ValueTextView(this._host, graph.description));
+                this._addProperty("description", new sidebar.ValueTextView(this._host, graph.description));
             }
             if (Array.isArray(graph.inputs) && graph.inputs.length > 0) {
-                this._addHeader('Inputs');
+                this._addHeader("Inputs");
                 for (const input of graph.inputs) {
                     this.addArgument(input.name, input);
                 }
             }
             if (Array.isArray(graph.outputs) && graph.outputs.length > 0) {
-                this._addHeader('Outputs');
+                this._addHeader("Outputs");
                 for (const output of graph.outputs) {
                     this.addArgument(output.name, output);
                 }
             }
         }
 
-        const separator = this._host.document.createElement('div');
-        separator.className = 'sidebar-view-separator';
+        const separator = this._host.document.createElement("div");
+        separator.className = "sidebar-view-separator";
         this._elements.push(separator);
     }
 
@@ -821,8 +822,8 @@ sidebar.ModelSidebar = class {
     }
 
     _addHeader(title) {
-        const headerElement = this._host.document.createElement('div');
-        headerElement.className = 'sidebar-view-header';
+        const headerElement = this._host.document.createElement("div");
+        headerElement.className = "sidebar-view-header";
         headerElement.innerText = title;
         this._elements.push(headerElement);
     }
@@ -855,7 +856,6 @@ sidebar.ModelSidebar = class {
 };
 
 sidebar.DocumentationSidebar = class {
-
     constructor(host, metadata) {
         this._host = host;
         this._metadata = metadata;
@@ -867,93 +867,125 @@ sidebar.DocumentationSidebar = class {
 
             const type = sidebar.DocumentationSidebar.formatDocumentation(this._metadata);
 
-            const element = this._host.document.createElement('div');
-            element.setAttribute('class', 'sidebar-view-documentation');
+            const element = this._host.document.createElement("div");
+            element.setAttribute("class", "sidebar-view-documentation");
 
-            this._append(element, 'h1', type.name);
+            this._append(element, "h1", type.name);
 
             if (type.summary) {
-                this._append(element, 'p', type.summary);
+                this._append(element, "p", type.summary);
             }
 
             if (type.description) {
-                this._append(element, 'p', type.description);
+                this._append(element, "p", type.description);
             }
 
             if (Array.isArray(type.attributes) && type.attributes.length > 0) {
-                this._append(element, 'h2', 'Attributes');
-                const attributes = this._append(element, 'dl');
+                this._append(element, "h2", "Attributes");
+                const attributes = this._append(element, "dl");
                 for (const attribute of type.attributes) {
-                    this._append(attributes, 'dt', attribute.name + (attribute.type ? ': <tt>' + attribute.type + '</tt>' : ''));
-                    this._append(attributes, 'dd', attribute.description);
+                    this._append(
+                        attributes,
+                        "dt",
+                        attribute.name + (attribute.type ? ": <tt>" + attribute.type + "</tt>" : "")
+                    );
+                    this._append(attributes, "dd", attribute.description);
                 }
                 element.appendChild(attributes);
             }
 
             if (Array.isArray(type.inputs) && type.inputs.length > 0) {
-                this._append(element, 'h2', 'Inputs' + (type.inputs_range ? ' (' + type.inputs_range + ')' : ''));
-                const inputs = this._append(element, 'dl');
+                this._append(element, "h2", "Inputs" + (type.inputs_range ? " (" + type.inputs_range + ")" : ""));
+                const inputs = this._append(element, "dl");
                 for (const input of type.inputs) {
-                    this._append(inputs, 'dt', input.name + (input.type ? ': <tt>' + input.type + '</tt>' : '') + (input.option ? ' (' + input.option + ')' : ''));
-                    this._append(inputs, 'dd', input.description);
+                    this._append(
+                        inputs,
+                        "dt",
+                        input.name +
+                            (input.type ? ": <tt>" + input.type + "</tt>" : "") +
+                            (input.option ? " (" + input.option + ")" : "")
+                    );
+                    this._append(inputs, "dd", input.description);
                 }
             }
 
             if (Array.isArray(type.outputs) && type.outputs.length > 0) {
-                this._append(element, 'h2', 'Outputs' + (type.outputs_range ? ' (' + type.outputs_range + ')' : ''));
-                const outputs = this._append(element, 'dl');
+                this._append(element, "h2", "Outputs" + (type.outputs_range ? " (" + type.outputs_range + ")" : ""));
+                const outputs = this._append(element, "dl");
                 for (const output of type.outputs) {
-                    this._append(outputs, 'dt', output.name + (output.type ? ': <tt>' + output.type + '</tt>' : '') + (output.option ? ' (' + output.option + ')' : ''));
-                    this._append(outputs, 'dd', output.description);
+                    this._append(
+                        outputs,
+                        "dt",
+                        output.name +
+                            (output.type ? ": <tt>" + output.type + "</tt>" : "") +
+                            (output.option ? " (" + output.option + ")" : "")
+                    );
+                    this._append(outputs, "dd", output.description);
                 }
             }
 
             if (Array.isArray(type.type_constraints) && type.type_constraints.length > 0) {
-                this._append(element, 'h2', 'Type Constraints');
-                const type_constraints = this._append(element, 'dl');
+                this._append(element, "h2", "Type Constraints");
+                const type_constraints = this._append(element, "dl");
                 for (const type_constraint of type.type_constraints) {
-                    this._append(type_constraints, 'dt', type_constraint.type_param_str + ': ' + type_constraint.allowed_type_strs.map((item) => '<tt>' + item + '</tt>').join(', '));
-                    this._append(type_constraints, 'dd', type_constraint.description);
+                    this._append(
+                        type_constraints,
+                        "dt",
+                        type_constraint.type_param_str +
+                            ": " +
+                            type_constraint.allowed_type_strs.map(item => "<tt>" + item + "</tt>").join(", ")
+                    );
+                    this._append(type_constraints, "dd", type_constraint.description);
                 }
             }
 
             if (Array.isArray(type.examples) && type.examples.length > 0) {
-                this._append(element, 'h2', 'Examples');
+                this._append(element, "h2", "Examples");
                 for (const example of type.examples) {
-                    this._append(element, 'h3', example.summary);
-                    this._append(element, 'pre', example.code);
+                    this._append(element, "h3", example.summary);
+                    this._append(element, "pre", example.code);
                 }
             }
 
             if (Array.isArray(type.references) && type.references.length > 0) {
-                this._append(element, 'h2', 'References');
-                const references = this._append(element, 'ul');
+                this._append(element, "h2", "References");
+                const references = this._append(element, "ul");
                 for (const reference of type.references) {
-                    this._append(references, 'li', reference.description);
+                    this._append(references, "li", reference.description);
                 }
             }
 
             if (type.domain && type.version && type.support_level) {
-                this._append(element, 'h2', 'Support');
-                this._append(element, 'dl', 'In domain <tt>' + type.domain + '</tt> since version <tt>' + type.version + '</tt> at support level <tt>' + type.support_level + '</tt>.');
+                this._append(element, "h2", "Support");
+                this._append(
+                    element,
+                    "dl",
+                    "In domain <tt>" +
+                        type.domain +
+                        "</tt> since version <tt>" +
+                        type.version +
+                        "</tt> at support level <tt>" +
+                        type.support_level +
+                        "</tt>."
+                );
             }
 
-            if (!this._host.type !== 'Electron') {
-                element.addEventListener('click', (e) => {
+            if (!this._host.type !== "Electron") {
+                element.addEventListener("click", e => {
                     if (e.target && e.target.href) {
                         const link = e.target.href;
-                        if (link.startsWith('http://') || link.startsWith('https://')) {
+                        if (link.startsWith("http://") || link.startsWith("https://")) {
                             e.preventDefault();
-                            this._raise('navigate', { link: link });
+                            this._raise("navigate", { link: link });
                         }
                     }
                 });
             }
 
-            this._elements = [ element ];
+            this._elements = [element];
 
-            const separator = this._host.document.createElement('div');
-            separator.className = 'sidebar-view-separator';
+            const separator = this._host.document.createElement("div");
+            separator.className = "sidebar-view-separator";
             this._elements.push(separator);
         }
         return this._elements;
@@ -1002,7 +1034,7 @@ sidebar.DocumentationSidebar = class {
                 target.description = generator.html(source.description);
             }
             if (Array.isArray(source.attributes)) {
-                target.attributes = source.attributes.map((source) => {
+                target.attributes = source.attributes.map(source => {
                     const target = {};
                     target.name = source.name;
                     if (source.type !== undefined) {
@@ -1039,7 +1071,7 @@ sidebar.DocumentationSidebar = class {
                 });
             }
             if (Array.isArray(source.inputs)) {
-                target.inputs = source.inputs.map((source) => {
+                target.inputs = source.inputs.map(source => {
                     const target = {};
                     target.name = source.name;
                     if (source.type !== undefined) {
@@ -1082,7 +1114,7 @@ sidebar.DocumentationSidebar = class {
                 });
             }
             if (Array.isArray(source.outputs)) {
-                target.outputs = source.outputs.map((source) => {
+                target.outputs = source.outputs.map(source => {
                     const target = {};
                     target.name = source.name;
                     if (source.type) {
@@ -1113,7 +1145,7 @@ sidebar.DocumentationSidebar = class {
                 });
             }
             if (Array.isArray(source.references)) {
-                target.references = source.references.map((source) => {
+                target.references = source.references.map(source => {
                     if (source) {
                         target.description = generator.html(source.description);
                     }
@@ -1164,30 +1196,29 @@ sidebar.DocumentationSidebar = class {
             }
             return target;
         }
-        return '';
+        return "";
     }
 };
 
 sidebar.FindSidebar = class {
-
     constructor(host, element, graph) {
         this._host = host;
         this._graphElement = element;
         this._graph = graph;
-        this._contentElement = this._host.document.createElement('div');
-        this._contentElement.setAttribute('class', 'sidebar-view-find');
-        this._searchElement = this._host.document.createElement('input');
-        this._searchElement.setAttribute('id', 'search');
-        this._searchElement.setAttribute('type', 'text');
-        this._searchElement.setAttribute('spellcheck', 'false');
-        this._searchElement.setAttribute('placeholder', 'Search...');
-        this._searchElement.setAttribute('style', 'width: 100%');
-        this._searchElement.addEventListener('input', (e) => {
+        this._contentElement = this._host.document.createElement("div");
+        this._contentElement.setAttribute("class", "sidebar-view-find");
+        this._searchElement = this._host.document.createElement("input");
+        this._searchElement.setAttribute("id", "search");
+        this._searchElement.setAttribute("type", "text");
+        this._searchElement.setAttribute("spellcheck", "false");
+        this._searchElement.setAttribute("placeholder", "Search...");
+        this._searchElement.setAttribute("style", "width: 100%");
+        this._searchElement.addEventListener("input", e => {
             this.update(e.target.value);
-            this._raise('search-text-changed', e.target.value);
+            this._raise("search-text-changed", e.target.value);
         });
-        this._resultElement = this._host.document.createElement('ol');
-        this._resultElement.addEventListener('click', (e) => {
+        this._resultElement = this._host.document.createElement("ol");
+        this._resultElement.addEventListener("click", e => {
             this.select(e);
         });
         this._contentElement.appendChild(this._searchElement);
@@ -1212,7 +1243,7 @@ sidebar.FindSidebar = class {
         const selection = [];
         const id = e.target.id;
 
-        const nodesElement = this._graphElement.getElementById('nodes');
+        const nodesElement = this._graphElement.getElementById("nodes");
         let nodeElement = nodesElement.firstChild;
         while (nodeElement) {
             if (nodeElement.id == id) {
@@ -1221,7 +1252,7 @@ sidebar.FindSidebar = class {
             nodeElement = nodeElement.nextSibling;
         }
 
-        const edgePathsElement = this._graphElement.getElementById('edge-paths');
+        const edgePathsElement = this._graphElement.getElementById("edge-paths");
         let edgePathElement = edgePathsElement.firstChild;
         while (edgePathElement) {
             if (edgePathElement.id == id) {
@@ -1234,7 +1265,7 @@ sidebar.FindSidebar = class {
         if (initializerElement) {
             while (initializerElement.parentElement) {
                 initializerElement = initializerElement.parentElement;
-                if (initializerElement.id && initializerElement.id.startsWith('node-')) {
+                if (initializerElement.id && initializerElement.id.startsWith("node-")) {
                     selection.push(initializerElement);
                     break;
                 }
@@ -1242,13 +1273,13 @@ sidebar.FindSidebar = class {
         }
 
         if (selection.length > 0) {
-            this._raise('select', selection);
+            this._raise("select", selection);
         }
     }
 
     focus(searchText) {
         this._searchElement.focus();
-        this._searchElement.value = '';
+        this._searchElement.value = "";
         this._searchElement.value = searchText;
         this.update(searchText);
     }
@@ -1263,15 +1294,19 @@ sidebar.FindSidebar = class {
         const unquote = searchText.match(new RegExp(/^'(.*)'|"(.*)"$/));
         if (unquote) {
             const term = unquote[1] || unquote[2];
-            terms = [ term ];
-            callback = (name) => {
+            terms = [term];
+            callback = name => {
                 return term == name;
             };
-        }
-        else {
-            terms = searchText.trim().toLowerCase().split(' ').map((term) => term.trim()).filter((term) => term.length > 0);
-            callback = (name) => {
-                return terms.every((term) => name.toLowerCase().indexOf(term) !== -1);
+        } else {
+            terms = searchText
+                .trim()
+                .toLowerCase()
+                .split(" ")
+                .map(term => term.trim())
+                .filter(term => term.length > 0);
+            callback = name => {
+                return terms.every(term => name.toLowerCase().indexOf(term) !== -1);
             };
         }
 
@@ -1281,7 +1316,7 @@ sidebar.FindSidebar = class {
         for (const node of this._graph.nodes.values()) {
             const label = node.label;
             const initializers = [];
-            if (label.class === 'graph-node' || label.class === 'graph-input') {
+            if (label.class === "graph-node" || label.class === "graph-input") {
                 for (const input of label.inputs) {
                     for (const argument of input.arguments) {
                         if (argument.name && !edges.has(argument.name)) {
@@ -1298,11 +1333,13 @@ sidebar.FindSidebar = class {
                                             return true;
                                         }
                                         if (argument.type.shape && Array.isArray(argument.type.shape.dimensions)) {
-                                            const dimensions = argument.type.shape.dimensions.map((dimension) => dimension ? dimension.toString().toLowerCase() : '');
-                                            if (term === dimensions.join(',')) {
+                                            const dimensions = argument.type.shape.dimensions.map(dimension =>
+                                                dimension ? dimension.toString().toLowerCase() : ""
+                                            );
+                                            if (term === dimensions.join(",")) {
                                                 return true;
                                             }
-                                            if (dimensions.some((dimension) => term === dimension)) {
+                                            if (dimensions.some(dimension => term === dimension)) {
                                                 return true;
                                             }
                                         }
@@ -1310,15 +1347,14 @@ sidebar.FindSidebar = class {
                                 }
                                 return false;
                             };
-                            if (terms.every((term) => match(argument, term))) {
+                            if (terms.every(term => match(argument, term))) {
                                 if (!argument.initializer) {
-                                    const inputItem = this._host.document.createElement('li');
-                                    inputItem.innerText = '\u2192 ' + argument.name.split('\n').shift(); // custom argument id
-                                    inputItem.id = 'edge-' + argument.name;
+                                    const inputItem = this._host.document.createElement("li");
+                                    inputItem.innerText = "\u2192 " + argument.name.split("\n").shift(); // custom argument id
+                                    inputItem.id = "edge-" + argument.name;
                                     this._resultElement.appendChild(inputItem);
                                     edges.add(argument.name);
-                                }
-                                else {
+                                } else {
                                     initializers.push(argument);
                                 }
                             }
@@ -1326,13 +1362,12 @@ sidebar.FindSidebar = class {
                     }
                 }
             }
-            if (label.class === 'graph-node') {
+            if (label.class === "graph-node") {
                 const name = label.value.name;
                 const type = label.value.type.name;
-                if (!nodes.has(label.id) &&
-                    ((name && callback(name) || (type && callback(type))))) {
-                    const nameItem = this._host.document.createElement('li');
-                    nameItem.innerText = '\u25A2 ' + (name || '[' + type + ']');
+                if (!nodes.has(label.id) && ((name && callback(name)) || (type && callback(type)))) {
+                    const nameItem = this._host.document.createElement("li");
+                    nameItem.innerText = "\u25A2 " + (name || "[" + type + "]");
                     nameItem.id = label.id;
                     this._resultElement.appendChild(nameItem);
                     nodes.add(label.id);
@@ -1340,9 +1375,9 @@ sidebar.FindSidebar = class {
             }
             for (const argument of initializers) {
                 if (argument.name) {
-                    const initializeItem = this._host.document.createElement('li');
-                    initializeItem.innerText = '\u25A0 ' + argument.name.split('\n').shift(); // custom argument id
-                    initializeItem.id = 'initializer-' + argument.name;
+                    const initializeItem = this._host.document.createElement("li");
+                    initializeItem.innerText = "\u25A0 " + argument.name.split("\n").shift(); // custom argument id
+                    initializeItem.id = "initializer-" + argument.name;
                     this._resultElement.appendChild(initializeItem);
                 }
             }
@@ -1350,13 +1385,17 @@ sidebar.FindSidebar = class {
 
         for (const node of this._graph.nodes.values()) {
             const label = node.label;
-            if (label.class === 'graph-node' || label.class === 'graph-output') {
+            if (label.class === "graph-node" || label.class === "graph-output") {
                 for (const output of label.outputs) {
                     for (const argument of output.arguments) {
-                        if (argument.name && !edges.has(argument.name) && terms.every((term) => argument.name.toLowerCase().indexOf(term) != -1)) {
-                            const outputItem = this._host.document.createElement('li');
-                            outputItem.innerText = '\u2192 ' + argument.name.split('\n').shift(); // custom argument id
-                            outputItem.id = 'edge-' + argument.name;
+                        if (
+                            argument.name &&
+                            !edges.has(argument.name) &&
+                            terms.every(term => argument.name.toLowerCase().indexOf(term) != -1)
+                        ) {
+                            const outputItem = this._host.document.createElement("li");
+                            outputItem.innerText = "\u2192 " + argument.name.split("\n").shift(); // custom argument id
+                            outputItem.id = "edge-" + argument.name;
                             this._resultElement.appendChild(outputItem);
                             edges.add(argument.name);
                         }
@@ -1365,7 +1404,7 @@ sidebar.FindSidebar = class {
             }
         }
 
-        this._resultElement.style.display = this._resultElement.childNodes.length != 0 ? 'block' : 'none';
+        this._resultElement.style.display = this._resultElement.childNodes.length != 0 ? "block" : "none";
     }
 
     get content() {
@@ -1374,7 +1413,6 @@ sidebar.FindSidebar = class {
 };
 
 sidebar.Formatter = class {
-
     constructor(value, type, quote) {
         this._value = value;
         this._type = type;
@@ -1387,105 +1425,109 @@ sidebar.Formatter = class {
     }
 
     _format(value, type, quote) {
-
-        if (typeof value === 'function') {
+        if (typeof value === "function") {
             return value();
         }
         if (value && (value instanceof base.Int64 || value instanceof base.Uint64)) {
             return value.toString();
         }
         if (Number.isNaN(value)) {
-            return 'NaN';
+            return "NaN";
         }
         switch (type) {
-            case 'shape':
-                return value ? value.toString() : '(null)';
-            case 'shape[]':
+            case "shape":
+                return value ? value.toString() : "(null)";
+            case "shape[]":
                 if (value && !Array.isArray(value)) {
                     throw new Error("Invalid shape '" + JSON.stringify(value) + "'.");
                 }
-                return value ? value.map((item) => item.toString()).join(', ') : '(null)';
-            case 'graph':
-                return value ? value.name : '(null)';
-            case 'graph[]':
-                return value ? value.map((graph) => graph.name).join(', ') : '(null)';
-            case 'tensor':
-                if (value && value.type && value.type.shape && value.type.shape.dimensions && value.type.shape.dimensions.length == 0) {
+                return value ? value.map(item => item.toString()).join(", ") : "(null)";
+            case "graph":
+                return value ? value.name : "(null)";
+            case "graph[]":
+                return value ? value.map(graph => graph.name).join(", ") : "(null)";
+            case "tensor":
+                if (
+                    value &&
+                    value.type &&
+                    value.type.shape &&
+                    value.type.shape.dimensions &&
+                    value.type.shape.dimensions.length == 0
+                ) {
                     return value.toString();
                 }
-                return '[...]';
-            case 'function':
+                return "[...]";
+            case "function":
                 return value.type.name;
-            case 'function[]':
-                return value ? value.map((item) => item.type.name).join(', ') : '(null)';
+            case "function[]":
+                return value ? value.map(item => item.type.name).join(", ") : "(null)";
             default:
                 break;
         }
-        if (typeof value === 'string' && (!type || type != 'string')) {
+        if (typeof value === "string" && (!type || type != "string")) {
             return quote ? '"' + value + '"' : value;
         }
         if (Array.isArray(value)) {
             if (value.length == 0) {
-                return quote ? '[]' : '';
+                return quote ? "[]" : "";
             }
             let ellipsis = false;
             if (value.length > 1000) {
                 value = value.slice(0, 1000);
                 ellipsis = true;
             }
-            const itemType = (type && type.endsWith('[]')) ? type.substring(0, type.length - 2) : null;
-            const array = value.map((item) => {
+            const itemType = type && type.endsWith("[]") ? type.substring(0, type.length - 2) : null;
+            const array = value.map(item => {
                 if (item && (item instanceof base.Int64 || item instanceof base.Uint64)) {
                     return item.toString();
                 }
                 if (Number.isNaN(item)) {
-                    return 'NaN';
+                    return "NaN";
                 }
-                const quote = !itemType || itemType === 'string';
+                const quote = !itemType || itemType === "string";
                 return this._format(item, itemType, quote);
             });
             if (ellipsis) {
-                array.push('\u2026');
+                array.push("\u2026");
             }
-            return quote ? [ '[', array.join(', '), ']' ].join(' ') : array.join(', ');
+            return quote ? ["[", array.join(", "), "]"].join(" ") : array.join(", ");
         }
         if (value === null) {
-            return quote ? 'null' : '';
+            return quote ? "null" : "";
         }
         if (value === undefined) {
-            return 'undefined';
+            return "undefined";
         }
         if (value !== Object(value)) {
             return value.toString();
         }
         if (this._values.has(value)) {
-            return '\u2026';
+            return "\u2026";
         }
         this._values.add(value);
         const list = [];
-        const entries = Object.entries(value).filter((entry) => !entry[0].startsWith('__') && !entry[0].endsWith('__'));
+        const entries = Object.entries(value).filter(entry => !entry[0].startsWith("__") && !entry[0].endsWith("__"));
         if (entries.length == 1) {
             list.push(this._format(entries[0][1], null, true));
-        }
-        else {
+        } else {
             for (const entry of entries) {
-                list.push(entry[0] + ': ' + this._format(entry[1], null, true));
+                list.push(entry[0] + ": " + this._format(entry[1], null, true));
             }
         }
         let objectType = value.__type__;
-        if (!objectType && value.constructor.name && value.constructor.name !== 'Object') {
+        if (!objectType && value.constructor.name && value.constructor.name !== "Object") {
             objectType = value.constructor.name;
         }
         if (objectType) {
-            return objectType + (list.length == 0 ? '()' : [ '(', list.join(', '), ')' ].join(''));
+            return objectType + (list.length == 0 ? "()" : ["(", list.join(", "), ")"].join(""));
         }
         switch (list.length) {
             case 0:
-                return quote ? '()' : '';
+                return quote ? "()" : "";
             case 1:
                 return list[0];
             default:
-                return quote ? [ '(', list.join(', '), ')' ].join(' ') : list.join(', ');
+                return quote ? ["(", list.join(", "), ")"].join(" ") : list.join(", ");
         }
     }
 };
@@ -1493,61 +1535,79 @@ sidebar.Formatter = class {
 const markdown = {};
 
 markdown.Generator = class {
-
     constructor() {
         this._newlineRegExp = /^\n+/;
         this._codeRegExp = /^( {4}[^\n]+\n*)+/;
-        this._fencesRegExp = /^ {0,3}(`{3,}(?=[^`\n]*\n)|~{3,})([^\n]*)\n(?:|([\s\S]*?)\n)(?: {0,3}\1[~`]* *(?:\n+|$)|$)/;
+        this._fencesRegExp =
+            /^ {0,3}(`{3,}(?=[^`\n]*\n)|~{3,})([^\n]*)\n(?:|([\s\S]*?)\n)(?: {0,3}\1[~`]* *(?:\n+|$)|$)/;
         this._hrRegExp = /^ {0,3}((?:- *){3,}|(?:_ *){3,}|(?:\* *){3,})(?:\n+|$)/;
         this._headingRegExp = /^ {0,3}(#{1,6}) +([^\n]*?)(?: +#+)? *(?:\n+|$)/;
-        this._blockquoteRegExp = /^( {0,3}> ?(([^\n]+(?:\n(?! {0,3}((?:- *){3,}|(?:_ *){3,}|(?:\* *){3,})(?:\n+|$)| {0,3}#{1,6} | {0,3}>| {0,3}(?:`{3,}(?=[^`\n]*\n)|~{3,})[^\n]*\n| {0,3}(?:[*+-]|1[.)]) |<\/?(?:address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|section|source|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul)(?: +|\n|\/?>)|<(?:script|pre|style|!--))[^\n]+)*)|[^\n]*)(?:\n|$))+/;
-        this._listRegExp = /^( {0,3})((?:[*+-]|\d{1,9}[.)])) [\s\S]+?(?:\n+(?=\1?(?:(?:- *){3,}|(?:_ *){3,}|(?:\* *){3,})(?:\n+|$))|\n+(?= {0,3}\[((?!\s*\])(?:\\[[\]]|[^[\]])+)\]: *\n? *<?([^\s>]+)>?(?:(?: +\n? *| *\n *)((?:"(?:\\"?|[^"\\])*"|'[^'\n]*(?:\n[^'\n]+)*\n?'|\([^()]*\))))? *(?:\n+|$))|\n{2,}(?! )(?!\1(?:[*+-]|\d{1,9}[.)]) )\n*|\s*$)/;
-        this._htmlRegExp = /^ {0,3}(?:<(script|pre|style)[\s>][\s\S]*?(?:<\/\1>[^\n]*\n+|$)|<!--(?!-?>)[\s\S]*?(?:-->|$)[^\n]*(\n+|$)|<\?[\s\S]*?(?:\?>\n*|$)|<![A-Z][\s\S]*?(?:>\n*|$)|<!\[CDATA\[[\s\S]*?(?:\]\]>\n*|$)|<\/?(address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|section|source|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul)(?: +|\n|\/?>)[\s\S]*?(?:\n{2,}|$)|<(?!script|pre|style)([a-z][\w-]*)(?: +[a-zA-Z:_][\w.:-]*(?: *= *"[^"\n]*"| *= *'[^'\n]*'| *= *[^\s"'=<>`]+)?)*? *\/?>(?=[ \t]*(?:\n|$))[\s\S]*?(?:\n{2,}|$)|<\/(?!script|pre|style)[a-z][\w-]*\s*>(?=[ \t]*(?:\n|$))[\s\S]*?(?:\n{2,}|$))/i;
-        this._defRegExp = /^ {0,3}\[((?!\s*\])(?:\\[[\]]|[^[\]])+)\]: *\n? *<?([^\s>]+)>?(?:(?: +\n? *| *\n *)((?:"(?:\\"?|[^"\\])*"|'[^'\n]*(?:\n[^'\n]+)*\n?'|\([^()]*\))))? *(?:\n+|$)/;
-        this._nptableRegExp = /^ *([^|\n ].*\|.*)\n {0,3}([-:]+ *\|[-| :]*)(?:\n((?:(?!\n| {0,3}((?:- *){3,}|(?:_ *){3,}|(?:\* *){3,})(?:\n+|$)| {0,3}#{1,6} | {0,3}>| {4}[^\n]| {0,3}(?:`{3,}(?=[^`\n]*\n)|~{3,})[^\n]*\n| {0,3}(?:[*+-]|1[.)]) |<\/?(?:address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|section|source|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul)(?: +|\n|\/?>)|<(?:script|pre|style|!--)).*(?:\n|$))*)\n*|$)/;
-        this._tableRegExp = /^ *\|(.+)\n {0,3}\|?( *[-:]+[-| :]*)(?:\n *((?:(?!\n| {0,3}((?:- *){3,}|(?:_ *){3,}|(?:\* *){3,})(?:\n+|$)| {0,3}#{1,6} | {0,3}>| {4}[^\n]| {0,3}(?:`{3,}(?=[^`\n]*\n)|~{3,})[^\n]*\n| {0,3}(?:[*+-]|1[.)]) |<\/?(?:address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|section|source|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul)(?: +|\n|\/?>)|<(?:script|pre|style|!--)).*(?:\n|$))*)\n*|$)/;
+        this._blockquoteRegExp =
+            /^( {0,3}> ?(([^\n]+(?:\n(?! {0,3}((?:- *){3,}|(?:_ *){3,}|(?:\* *){3,})(?:\n+|$)| {0,3}#{1,6} | {0,3}>| {0,3}(?:`{3,}(?=[^`\n]*\n)|~{3,})[^\n]*\n| {0,3}(?:[*+-]|1[.)]) |<\/?(?:address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|section|source|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul)(?: +|\n|\/?>)|<(?:script|pre|style|!--))[^\n]+)*)|[^\n]*)(?:\n|$))+/;
+        this._listRegExp =
+            /^( {0,3})((?:[*+-]|\d{1,9}[.)])) [\s\S]+?(?:\n+(?=\1?(?:(?:- *){3,}|(?:_ *){3,}|(?:\* *){3,})(?:\n+|$))|\n+(?= {0,3}\[((?!\s*\])(?:\\[[\]]|[^[\]])+)\]: *\n? *<?([^\s>]+)>?(?:(?: +\n? *| *\n *)((?:"(?:\\"?|[^"\\])*"|'[^'\n]*(?:\n[^'\n]+)*\n?'|\([^()]*\))))? *(?:\n+|$))|\n{2,}(?! )(?!\1(?:[*+-]|\d{1,9}[.)]) )\n*|\s*$)/;
+        this._htmlRegExp =
+            /^ {0,3}(?:<(script|pre|style)[\s>][\s\S]*?(?:<\/\1>[^\n]*\n+|$)|<!--(?!-?>)[\s\S]*?(?:-->|$)[^\n]*(\n+|$)|<\?[\s\S]*?(?:\?>\n*|$)|<![A-Z][\s\S]*?(?:>\n*|$)|<!\[CDATA\[[\s\S]*?(?:\]\]>\n*|$)|<\/?(address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|section|source|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul)(?: +|\n|\/?>)[\s\S]*?(?:\n{2,}|$)|<(?!script|pre|style)([a-z][\w-]*)(?: +[a-zA-Z:_][\w.:-]*(?: *= *"[^"\n]*"| *= *'[^'\n]*'| *= *[^\s"'=<>`]+)?)*? *\/?>(?=[ \t]*(?:\n|$))[\s\S]*?(?:\n{2,}|$)|<\/(?!script|pre|style)[a-z][\w-]*\s*>(?=[ \t]*(?:\n|$))[\s\S]*?(?:\n{2,}|$))/i;
+        this._defRegExp =
+            /^ {0,3}\[((?!\s*\])(?:\\[[\]]|[^[\]])+)\]: *\n? *<?([^\s>]+)>?(?:(?: +\n? *| *\n *)((?:"(?:\\"?|[^"\\])*"|'[^'\n]*(?:\n[^'\n]+)*\n?'|\([^()]*\))))? *(?:\n+|$)/;
+        this._nptableRegExp =
+            /^ *([^|\n ].*\|.*)\n {0,3}([-:]+ *\|[-| :]*)(?:\n((?:(?!\n| {0,3}((?:- *){3,}|(?:_ *){3,}|(?:\* *){3,})(?:\n+|$)| {0,3}#{1,6} | {0,3}>| {4}[^\n]| {0,3}(?:`{3,}(?=[^`\n]*\n)|~{3,})[^\n]*\n| {0,3}(?:[*+-]|1[.)]) |<\/?(?:address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|section|source|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul)(?: +|\n|\/?>)|<(?:script|pre|style|!--)).*(?:\n|$))*)\n*|$)/;
+        this._tableRegExp =
+            /^ *\|(.+)\n {0,3}\|?( *[-:]+[-| :]*)(?:\n *((?:(?!\n| {0,3}((?:- *){3,}|(?:_ *){3,}|(?:\* *){3,})(?:\n+|$)| {0,3}#{1,6} | {0,3}>| {4}[^\n]| {0,3}(?:`{3,}(?=[^`\n]*\n)|~{3,})[^\n]*\n| {0,3}(?:[*+-]|1[.)]) |<\/?(?:address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|section|source|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul)(?: +|\n|\/?>)|<(?:script|pre|style|!--)).*(?:\n|$))*)\n*|$)/;
         this._lheadingRegExp = /^([^\n]+)\n {0,3}(=+|-+) *(?:\n+|$)/;
         this._textRegExp = /^[^\n]+/;
         this._bulletRegExp = /(?:[*+-]|\d{1,9}[.)])/;
         this._itemRegExp = /^( *)((?:[*+-]|\d{1,9}[.)])) ?[^\n]*(?:\n(?!\1(?:[*+-]|\d{1,9}[.)]) ?)[^\n]*)*/gm;
-        this._paragraphRegExp = /^([^\n]+(?:\n(?! {0,3}((?:- *){3,}|(?:_ *){3,}|(?:\* *){3,})(?:\n+|$)| {0,3}#{1,6} | {0,3}>| {0,3}(?:`{3,}(?=[^`\n]*\n)|~{3,})[^\n]*\n| {0,3}(?:[*+-]|1[.)]) |<\/?(?:address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|section|source|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul)(?: +|\n|\/?>)|<(?:script|pre|style|!--))[^\n]+)*)/;
+        this._paragraphRegExp =
+            /^([^\n]+(?:\n(?! {0,3}((?:- *){3,}|(?:_ *){3,}|(?:\* *){3,})(?:\n+|$)| {0,3}#{1,6} | {0,3}>| {0,3}(?:`{3,}(?=[^`\n]*\n)|~{3,})[^\n]*\n| {0,3}(?:[*+-]|1[.)]) |<\/?(?:address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|section|source|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul)(?: +|\n|\/?>)|<(?:script|pre|style|!--))[^\n]+)*)/;
         this._backpedalRegExp = /(?:[^?!.,:;*_~()&]+|\([^)]*\)|&(?![a-zA-Z0-9]+;$)|[?!.,:;*_~)]+(?!$))+/;
         this._escapeRegExp = /^\\([!"#$%&'()*+,\-./:;<=>?@[\]\\^_`{|}~~|])/;
         this._escapesRegExp = /\\([!"#$%&'()*+,\-./:;<=>?@[\]\\^_`{|}~])/g;
         /* eslint-disable no-control-regex */
-        this._autolinkRegExp = /^<([a-zA-Z][a-zA-Z0-9+.-]{1,31}:[^\s\x00-\x1f<>]*|[a-zA-Z0-9.!#$%&'*+/=?_`{|}~-]+(@)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(?![-_]))>/;
-        this._linkRegExp = /^!?\[((?:\[(?:\\.|[^[\]\\])*\]|\\.|`[^`]*`|[^[\]\\`])*?)\]\(\s*(<(?:\\[<>]?|[^\s<>\\])*>|[^\s\x00-\x1f]*)(?:\s+("(?:\\"?|[^"\\])*"|'(?:\\'?|[^'\\])*'|\((?:\\\)?|[^)\\])*\)))?\s*\)/;
+        this._autolinkRegExp =
+            /^<([a-zA-Z][a-zA-Z0-9+.-]{1,31}:[^\s\x00-\x1f<>]*|[a-zA-Z0-9.!#$%&'*+/=?_`{|}~-]+(@)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(?![-_]))>/;
+        this._linkRegExp =
+            /^!?\[((?:\[(?:\\.|[^[\]\\])*\]|\\.|`[^`]*`|[^[\]\\`])*?)\]\(\s*(<(?:\\[<>]?|[^\s<>\\])*>|[^\s\x00-\x1f]*)(?:\s+("(?:\\"?|[^"\\])*"|'(?:\\'?|[^'\\])*'|\((?:\\\)?|[^)\\])*\)))?\s*\)/;
         /* eslint-enable no-control-regex */
-        this._urlRegExp = /^((?:ftp|https?):\/\/|www\.)(?:[a-zA-Z0-9-]+\.?)+[^\s<]*|^[A-Za-z0-9._+-]+(@)[a-zA-Z0-9-_]+(?:\.[a-zA-Z0-9-_]*[a-zA-Z0-9])+(?![-_])/i;
-        this._tagRegExp = /^<!--(?!-?>)[\s\S]*?-->|^<\/[a-zA-Z][\w:-]*\s*>|^<[a-zA-Z][\w-]*(?:\s+[a-zA-Z:_][\w.:-]*(?:\s*=\s*"[^"]*"|\s*=\s*'[^']*'|\s*=\s*[^\s"'=<>`]+)?)*?\s*\/?>|^<\?[\s\S]*?\?>|^<![a-zA-Z]+\s[\s\S]*?>|^<!\[CDATA\[[\s\S]*?\]\]>/;
-        this._reflinkRegExp = /^!?\[((?:\[(?:\\.|[^[\]\\])*\]|\\.|`[^`]*`|[^[\]\\`])*?)\]\[(?!\s*\])((?:\\[[\]]?|[^[\]\\])+)\]/;
+        this._urlRegExp =
+            /^((?:ftp|https?):\/\/|www\.)(?:[a-zA-Z0-9-]+\.?)+[^\s<]*|^[A-Za-z0-9._+-]+(@)[a-zA-Z0-9-_]+(?:\.[a-zA-Z0-9-_]*[a-zA-Z0-9])+(?![-_])/i;
+        this._tagRegExp =
+            /^<!--(?!-?>)[\s\S]*?-->|^<\/[a-zA-Z][\w:-]*\s*>|^<[a-zA-Z][\w-]*(?:\s+[a-zA-Z:_][\w.:-]*(?:\s*=\s*"[^"]*"|\s*=\s*'[^']*'|\s*=\s*[^\s"'=<>`]+)?)*?\s*\/?>|^<\?[\s\S]*?\?>|^<![a-zA-Z]+\s[\s\S]*?>|^<!\[CDATA\[[\s\S]*?\]\]>/;
+        this._reflinkRegExp =
+            /^!?\[((?:\[(?:\\.|[^[\]\\])*\]|\\.|`[^`]*`|[^[\]\\`])*?)\]\[(?!\s*\])((?:\\[[\]]?|[^[\]\\])+)\]/;
         this._nolinkRegExp = /^!?\[(?!\s*\])((?:\[[^[\]]*\]|\\[[\]]|[^[\]])*)\](?:\[\])?/;
-        this._reflinkSearchRegExp = /!?\[((?:\[(?:\\.|[^[\]\\])*\]|\\.|`[^`]*`|[^[\]\\`])*?)\]\[(?!\s*\])((?:\\[[\]]?|[^[\]\\])+)\]|!?\[(?!\s*\])((?:\[[^[\]]*\]|\\[[\]]|[^[\]])*)\](?:\[\])?(?!\()/g;
+        this._reflinkSearchRegExp =
+            /!?\[((?:\[(?:\\.|[^[\]\\])*\]|\\.|`[^`]*`|[^[\]\\`])*?)\]\[(?!\s*\])((?:\\[[\]]?|[^[\]\\])+)\]|!?\[(?!\s*\])((?:\[[^[\]]*\]|\\[[\]]|[^[\]])*)\](?:\[\])?(?!\()/g;
         this._strongStartRegExp = /^(?:(\*\*(?=[*!"#$%&'()+\-.,/:;<=>?@[\]`{|}~]))|\*\*)(?![\s])|__/;
-        this._strongMiddleRegExp = /^\*\*(?:(?:(?!__[^_]*?__|\*\*\[^\*\]*?\*\*)(?:[^*]|\\\*)|__[^_]*?__|\*\*\[^\*\]*?\*\*)|\*(?:(?!__[^_]*?__|\*\*\[^\*\]*?\*\*)(?:[^*]|\\\*)|__[^_]*?__|\*\*\[^\*\]*?\*\*)*?\*)+?\*\*$|^__(?![\s])((?:(?:(?!__[^_]*?__|\*\*\[^\*\]*?\*\*)(?:[^_]|\\_)|__[^_]*?__|\*\*\[^\*\]*?\*\*)|_(?:(?!__[^_]*?__|\*\*\[^\*\]*?\*\*)(?:[^_]|\\_)|__[^_]*?__|\*\*\[^\*\]*?\*\*)*?_)+?)__$/;
-        this._strongEndAstRegExp = /[^!"#$%&'()+\-.,/:;<=>?@[\]`{|}~\s]\*\*(?!\*)|[!"#$%&'()+\-.,/:;<=>?@[\]`{|}~]\*\*(?!\*)(?:(?=[!"#$%&'()+\-.,/:;<=>?@[\]`{|}~_\s]|$))/g;
+        this._strongMiddleRegExp =
+            /^\*\*(?:(?:(?!__[^_]*?__|\*\*\[^\*\]*?\*\*)(?:[^*]|\\\*)|__[^_]*?__|\*\*\[^\*\]*?\*\*)|\*(?:(?!__[^_]*?__|\*\*\[^\*\]*?\*\*)(?:[^*]|\\\*)|__[^_]*?__|\*\*\[^\*\]*?\*\*)*?\*)+?\*\*$|^__(?![\s])((?:(?:(?!__[^_]*?__|\*\*\[^\*\]*?\*\*)(?:[^_]|\\_)|__[^_]*?__|\*\*\[^\*\]*?\*\*)|_(?:(?!__[^_]*?__|\*\*\[^\*\]*?\*\*)(?:[^_]|\\_)|__[^_]*?__|\*\*\[^\*\]*?\*\*)*?_)+?)__$/;
+        this._strongEndAstRegExp =
+            /[^!"#$%&'()+\-.,/:;<=>?@[\]`{|}~\s]\*\*(?!\*)|[!"#$%&'()+\-.,/:;<=>?@[\]`{|}~]\*\*(?!\*)(?:(?=[!"#$%&'()+\-.,/:;<=>?@[\]`{|}~_\s]|$))/g;
         this._strongEndUndRegExp = /[^\s]__(?!_)(?:(?=[!"#$%&'()+\-.,/:;<=>?@[\]`{|}~*\s])|$)/g;
         this._emStartRegExp = /^(?:(\*(?=[!"#$%&'()+\-.,/:;<=>?@[\]`{|}~]))|\*)(?![*\s])|_/;
-        this._emMiddleRegExp = /^\*(?:(?:(?!__[^_]*?__|\*\*\[^\*\]*?\*\*)(?:[^*]|\\\*)|__[^_]*?__|\*\*\[^\*\]*?\*\*)|\*(?:(?!__[^_]*?__|\*\*\[^\*\]*?\*\*)(?:[^*]|\\\*)|__[^_]*?__|\*\*\[^\*\]*?\*\*)*?\*)+?\*$|^_(?![_\s])(?:(?:(?!__[^_]*?__|\*\*\[^\*\]*?\*\*)(?:[^_]|\\_)|__[^_]*?__|\*\*\[^\*\]*?\*\*)|_(?:(?!__[^_]*?__|\*\*\[^\*\]*?\*\*)(?:[^_]|\\_)|__[^_]*?__|\*\*\[^\*\]*?\*\*)*?_)+?_$/;
-        this._emEndAstRegExp = /[^!"#$%&'()+\-.,/:;<=>?@[\]`{|}~\s]\*(?!\*)|[!"#$%&'()+\-.,/:;<=>?@[\]`{|}~]\*(?!\*)(?:(?=[!"#$%&'()+\-.,/:;<=>?@[\]`{|}~_\s]|$))/g;
-        this._emEndUndRegExp = /[^\s]_(?!_)(?:(?=[!"#$%&'()+\-.,/:;<=>?@[\]`{|}~*\s])|$)/g,
-        this._codespanRegExp = /^(`+)([^`]|[^`][\s\S]*?[^`])\1(?!`)/;
+        this._emMiddleRegExp =
+            /^\*(?:(?:(?!__[^_]*?__|\*\*\[^\*\]*?\*\*)(?:[^*]|\\\*)|__[^_]*?__|\*\*\[^\*\]*?\*\*)|\*(?:(?!__[^_]*?__|\*\*\[^\*\]*?\*\*)(?:[^*]|\\\*)|__[^_]*?__|\*\*\[^\*\]*?\*\*)*?\*)+?\*$|^_(?![_\s])(?:(?:(?!__[^_]*?__|\*\*\[^\*\]*?\*\*)(?:[^_]|\\_)|__[^_]*?__|\*\*\[^\*\]*?\*\*)|_(?:(?!__[^_]*?__|\*\*\[^\*\]*?\*\*)(?:[^_]|\\_)|__[^_]*?__|\*\*\[^\*\]*?\*\*)*?_)+?_$/;
+        this._emEndAstRegExp =
+            /[^!"#$%&'()+\-.,/:;<=>?@[\]`{|}~\s]\*(?!\*)|[!"#$%&'()+\-.,/:;<=>?@[\]`{|}~]\*(?!\*)(?:(?=[!"#$%&'()+\-.,/:;<=>?@[\]`{|}~_\s]|$))/g;
+        (this._emEndUndRegExp = /[^\s]_(?!_)(?:(?=[!"#$%&'()+\-.,/:;<=>?@[\]`{|}~*\s])|$)/g),
+            (this._codespanRegExp = /^(`+)([^`]|[^`][\s\S]*?[^`])\1(?!`)/);
         this._brRegExp = /^( {2,}|\\)\n(?!\s*$)/;
         this._delRegExp = /^~+(?=\S)([\s\S]*?\S)~+/;
-        this._textspanRegExp = /^(`+|[^`])(?:(?= {2,}\n)|[\s\S]*?(?:(?=[\\<![`*~]|\b_|https?:\/\/|ftp:\/\/|www\.|$)|[^ ](?= {2,}\n)|[^a-zA-Z0-9.!#$%&'*+/=?_`{|}~-](?=[a-zA-Z0-9.!#$%&'*+/=?_`{|}~-]+@))|(?=[a-zA-Z0-9.!#$%&'*+/=?_`{|}~-]+@))/;
+        this._textspanRegExp =
+            /^(`+|[^`])(?:(?= {2,}\n)|[\s\S]*?(?:(?=[\\<![`*~]|\b_|https?:\/\/|ftp:\/\/|www\.|$)|[^ ](?= {2,}\n)|[^a-zA-Z0-9.!#$%&'*+/=?_`{|}~-](?=[a-zA-Z0-9.!#$%&'*+/=?_`{|}~-]+@))|(?=[a-zA-Z0-9.!#$%&'*+/=?_`{|}~-]+@))/;
         this._punctuationRegExp = /^([\s*!"#$%&'()+\-.,/:;<=>?@[\]`{|}~])/;
         this._blockSkipRegExp = /\[[^\]]*?\]\([^)]*?\)|`[^`]*?`|<[^>]*?>/g;
         this._escapeTestRegExp = /[&<>"']/;
         this._escapeReplaceRegExp = /[&<>"']/g;
         this._escapeTestNoEncodeRegExp = /[<>"']|&(?!#?\w+;)/;
         this._escapeReplaceNoEncodeRegExp = /[<>"']|&(?!#?\w+;)/g;
-        this._escapeReplacementsMap = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+        this._escapeReplacementsMap = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
     }
 
     html(source) {
         const tokens = [];
         const links = new Map();
-        this._tokenize(source.replace(/\r\n|\r/g, '\n').replace(/\t/g, '    '), tokens, links, true);
+        this._tokenize(source.replace(/\r\n|\r/g, "\n").replace(/\t/g, "    "), tokens, links, true);
         this._tokenizeBlock(tokens, links);
         const slugs = new Map();
         const result = this._render(tokens, slugs, true);
@@ -1555,13 +1615,13 @@ markdown.Generator = class {
     }
 
     _tokenize(source, tokens, links, top) {
-        source = source.replace(/^ +$/gm, '');
+        source = source.replace(/^ +$/gm, "");
         while (source) {
             let match = this._newlineRegExp.exec(source);
             if (match) {
                 source = source.substring(match[0].length);
                 if (match[0].length > 1) {
-                    tokens.push({ type: 'space' });
+                    tokens.push({ type: "space" });
                 }
                 continue;
             }
@@ -1569,12 +1629,11 @@ markdown.Generator = class {
             if (match) {
                 source = source.substring(match[0].length);
                 const lastToken = tokens[tokens.length - 1];
-                if (lastToken && lastToken.type === 'paragraph') {
-                    lastToken.text += '\n' + match[0].trimRight();
-                }
-                else {
-                    const text = match[0].replace(/^ {4}/gm, '').replace(/\n*$/, '');
-                    tokens.push({ type: 'code', text: text });
+                if (lastToken && lastToken.type === "paragraph") {
+                    lastToken.text += "\n" + match[0].trimRight();
+                } else {
+                    const text = match[0].replace(/^ {4}/gm, "").replace(/\n*$/, "");
+                    tokens.push({ type: "code", text: text });
                 }
                 continue;
             }
@@ -1582,46 +1641,48 @@ markdown.Generator = class {
             if (match) {
                 source = source.substring(match[0].length);
                 const language = match[2] ? match[2].trim() : match[2];
-                let content = match[3] || '';
+                let content = match[3] || "";
                 const matchIndent = match[0].match(/^(\s+)(?:```)/);
                 if (matchIndent !== null) {
                     const indent = matchIndent[1];
-                    content = content.split('\n').map(node => {
-                        const match = node.match(/^\s+/);
-                        return (match !== null && match[0].length >= indent.length) ? node.slice(indent.length) : node;
-                    }).join('\n');
+                    content = content
+                        .split("\n")
+                        .map(node => {
+                            const match = node.match(/^\s+/);
+                            return match !== null && match[0].length >= indent.length
+                                ? node.slice(indent.length)
+                                : node;
+                        })
+                        .join("\n");
                 }
-                tokens.push({ type: 'code', language: language, text: content });
+                tokens.push({ type: "code", language: language, text: content });
                 continue;
             }
             match = this._headingRegExp.exec(source);
             if (match) {
                 source = source.substring(match[0].length);
-                tokens.push({ type: 'heading', depth: match[1].length, text: match[2] });
+                tokens.push({ type: "heading", depth: match[1].length, text: match[2] });
                 continue;
             }
             match = this._nptableRegExp.exec(source);
             if (match) {
-                const header = this._splitCells(match[1].replace(/^ *| *\| *$/g, ''));
-                const align = match[2].replace(/^ *|\| *$/g, '').split(/ *\| */);
+                const header = this._splitCells(match[1].replace(/^ *| *\| *$/g, ""));
+                const align = match[2].replace(/^ *|\| *$/g, "").split(/ *\| */);
                 if (header.length === align.length) {
-                    const cells = match[3] ? match[3].replace(/\n$/, '').split('\n') : [];
-                    const token = { type: 'table', header: header, align: align, cells: cells, raw: match[0] };
+                    const cells = match[3] ? match[3].replace(/\n$/, "").split("\n") : [];
+                    const token = { type: "table", header: header, align: align, cells: cells, raw: match[0] };
                     for (let i = 0; i < token.align.length; i++) {
                         if (/^ *-+: *$/.test(token.align[i])) {
-                            token.align[i] = 'right';
-                        }
-                        else if (/^ *:-+: *$/.test(token.align[i])) {
-                            token.align[i] = 'center';
-                        }
-                        else if (/^ *:-+ *$/.test(token.align[i])) {
-                            token.align[i] = 'left';
-                        }
-                        else {
+                            token.align[i] = "right";
+                        } else if (/^ *:-+: *$/.test(token.align[i])) {
+                            token.align[i] = "center";
+                        } else if (/^ *:-+ *$/.test(token.align[i])) {
+                            token.align[i] = "left";
+                        } else {
                             token.align[i] = null;
                         }
                     }
-                    token.cells = token.cells.map((cell) => this._splitCells(cell, token.header.length));
+                    token.cells = token.cells.map(cell => this._splitCells(cell, token.header.length));
                     source = source.substring(token.raw.length);
                     tokens.push(token);
                     continue;
@@ -1630,14 +1691,14 @@ markdown.Generator = class {
             match = this._hrRegExp.exec(source);
             if (match) {
                 source = source.substring(match[0].length);
-                tokens.push({ type: 'hr' });
+                tokens.push({ type: "hr" });
                 continue;
             }
             match = this._blockquoteRegExp.exec(source);
             if (match) {
                 source = source.substring(match[0].length);
-                const text = match[0].replace(/^ *> ?/gm, '');
-                tokens.push({ type: 'blockquote', text: text, tokens: this._tokenize(text, [], links, top) });
+                const text = match[0].replace(/^ *> ?/gm, "");
+                tokens.push({ type: "blockquote", text: text, tokens: this._tokenize(text, [], links, top) });
                 continue;
             }
             match = this._listRegExp.exec(source);
@@ -1645,8 +1706,15 @@ markdown.Generator = class {
                 let raw = match[0];
                 const bull = match[2];
                 const ordered = bull.length > 1;
-                const parent = bull[bull.length - 1] === ')';
-                const list = { type: 'list', raw: raw, ordered: ordered, start: ordered ? +bull.slice(0, -1) : '', loose: false, items: [] };
+                const parent = bull[bull.length - 1] === ")";
+                const list = {
+                    type: "list",
+                    raw: raw,
+                    ordered: ordered,
+                    start: ordered ? +bull.slice(0, -1) : "",
+                    loose: false,
+                    items: [],
+                };
                 const itemMatch = match[0].match(this._itemRegExp);
                 let next = false;
                 const length = itemMatch.length;
@@ -1654,22 +1722,26 @@ markdown.Generator = class {
                     let item = itemMatch[i];
                     raw = item;
                     let space = item.length;
-                    item = item.replace(/^ *([*+-]|\d+[.)]) ?/, '');
-                    if (~item.indexOf('\n ')) {
+                    item = item.replace(/^ *([*+-]|\d+[.)]) ?/, "");
+                    if (~item.indexOf("\n ")) {
                         space -= item.length;
-                        item = item.replace(new RegExp('^ {1,' + space + '}', 'gm'), '');
+                        item = item.replace(new RegExp("^ {1," + space + "}", "gm"), "");
                     }
                     if (i !== length - 1) {
                         const bullet = this._bulletRegExp.exec(itemMatch[i + 1])[0];
-                        if (ordered ? bullet.length === 1 || (!parent && bullet[bullet.length - 1] === ')') : (bullet.length > 1)) {
-                            const addBack = itemMatch.slice(i + 1).join('\n');
+                        if (
+                            ordered
+                                ? bullet.length === 1 || (!parent && bullet[bullet.length - 1] === ")")
+                                : bullet.length > 1
+                        ) {
+                            const addBack = itemMatch.slice(i + 1).join("\n");
                             list.raw = list.raw.substring(0, list.raw.length - addBack.length);
                             i = length - 1;
                         }
                     }
                     let loose = next || /\n\n(?!\s*$)/.test(item);
                     if (i !== length - 1) {
-                        next = item.charAt(item.length - 1) === '\n';
+                        next = item.charAt(item.length - 1) === "\n";
                         if (!loose) {
                             loose = next;
                         }
@@ -1680,10 +1752,10 @@ markdown.Generator = class {
                     const task = /^\[[ xX]\] /.test(item);
                     let checked = undefined;
                     if (task) {
-                        checked = item[1] !== ' ';
-                        item = item.replace(/^\[[ xX]\] +/, '');
+                        checked = item[1] !== " ";
+                        item = item.replace(/^\[[ xX]\] +/, "");
                     }
-                    list.items.push({ type: 'list_item', raw, task: task, checked: checked, loose: loose, text: item });
+                    list.items.push({ type: "list_item", raw, task: task, checked: checked, loose: loose, text: item });
                 }
                 source = source.substring(list.raw.length);
                 for (const item of list.items) {
@@ -1695,7 +1767,11 @@ markdown.Generator = class {
             match = this._htmlRegExp.exec(source);
             if (match) {
                 source = source.substring(match[0].length);
-                tokens.push({ type: 'html', pre: (match[1] === 'pre' || match[1] === 'script' || match[1] === 'style'), text: match[0] });
+                tokens.push({
+                    type: "html",
+                    pre: match[1] === "pre" || match[1] === "script" || match[1] === "style",
+                    text: match[0],
+                });
                 continue;
             }
             if (top) {
@@ -1703,7 +1779,7 @@ markdown.Generator = class {
                 if (match) {
                     source = source.substring(match[0].length);
                     match[3] = match[3] ? match[3].substring(1, match[3].length - 1) : match[3];
-                    const tag = match[1].toLowerCase().replace(/\s+/g, ' ');
+                    const tag = match[1].toLowerCase().replace(/\s+/g, " ");
                     if (!links.has(tag)) {
                         links.set(tag, { href: match[2], title: match[3] });
                     }
@@ -1712,26 +1788,25 @@ markdown.Generator = class {
             }
             match = this._tableRegExp.exec(source);
             if (match) {
-                const header = this._splitCells(match[1].replace(/^ *| *\| *$/g, ''));
-                const align = match[2].replace(/^ *|\| *$/g, '').split(/ *\| */);
+                const header = this._splitCells(match[1].replace(/^ *| *\| *$/g, ""));
+                const align = match[2].replace(/^ *|\| *$/g, "").split(/ *\| */);
                 if (header.length === align.length) {
-                    const cells = match[3] ? match[3].replace(/\n$/, '').split('\n') : [];
-                    const token = { type: 'table', header: header, align: align, cells: cells, raw: match[0] };
+                    const cells = match[3] ? match[3].replace(/\n$/, "").split("\n") : [];
+                    const token = { type: "table", header: header, align: align, cells: cells, raw: match[0] };
                     for (let i = 0; i < token.align.length; i++) {
                         if (/^ *-+: *$/.test(token.align[i])) {
-                            token.align[i] = 'right';
-                        }
-                        else if (/^ *:-+: *$/.test(token.align[i])) {
-                            token.align[i] = 'center';
-                        }
-                        else if (/^ *:-+ *$/.test(token.align[i])) {
-                            token.align[i] = 'left';
-                        }
-                        else {
+                            token.align[i] = "right";
+                        } else if (/^ *:-+: *$/.test(token.align[i])) {
+                            token.align[i] = "center";
+                        } else if (/^ *:-+ *$/.test(token.align[i])) {
+                            token.align[i] = "left";
+                        } else {
                             token.align[i] = null;
                         }
                     }
-                    token.cells = token.cells.map((cell) => this._splitCells(cell.replace(/^ *\| *| *\| *$/g, ''), token.header.length));
+                    token.cells = token.cells.map(cell =>
+                        this._splitCells(cell.replace(/^ *\| *| *\| *$/g, ""), token.header.length)
+                    );
                     source = source.substring(token.raw.length);
                     tokens.push(token);
                     continue;
@@ -1740,14 +1815,17 @@ markdown.Generator = class {
             match = this._lheadingRegExp.exec(source);
             if (match) {
                 source = source.substring(match[0].length);
-                tokens.push({ type: 'heading', depth: match[2].charAt(0) === '=' ? 1 : 2, text: match[1] });
+                tokens.push({ type: "heading", depth: match[2].charAt(0) === "=" ? 1 : 2, text: match[1] });
                 continue;
             }
             if (top) {
                 match = this._paragraphRegExp.exec(source);
                 if (match) {
                     source = source.substring(match[0].length);
-                    tokens.push({ type: 'paragraph', text: match[1].charAt(match[1].length - 1) === '\n' ? match[1].slice(0, -1) : match[1] });
+                    tokens.push({
+                        type: "paragraph",
+                        text: match[1].charAt(match[1].length - 1) === "\n" ? match[1].slice(0, -1) : match[1],
+                    });
                     continue;
                 }
             }
@@ -1755,11 +1833,10 @@ markdown.Generator = class {
             if (match) {
                 source = source.substring(match[0].length);
                 const lastToken = tokens[tokens.length - 1];
-                if (lastToken && lastToken.type === 'text') {
-                    lastToken.text += '\n' + match[0];
-                }
-                else {
-                    tokens.push({ type: 'text', text: match[0] });
+                if (lastToken && lastToken.type === "text") {
+                    lastToken.text += "\n" + match[0];
+                } else {
+                    tokens.push({ type: "text", text: match[0] });
                 }
                 continue;
             }
@@ -1775,8 +1852,13 @@ markdown.Generator = class {
             while (maskedSource) {
                 const match = this._reflinkSearchRegExp.exec(maskedSource);
                 if (match) {
-                    if (links.has(match[0].slice(match[0].lastIndexOf('[') + 1, -1))) {
-                        maskedSource = maskedSource.slice(0, match.index) + '[' + 'a'.repeat(match[0].length - 2) + ']' + maskedSource.slice(this._reflinkSearchRegExp.lastIndex);
+                    if (links.has(match[0].slice(match[0].lastIndexOf("[") + 1, -1))) {
+                        maskedSource =
+                            maskedSource.slice(0, match.index) +
+                            "[" +
+                            "a".repeat(match[0].length - 2) +
+                            "]" +
+                            maskedSource.slice(this._reflinkSearchRegExp.lastIndex);
                     }
                     continue;
                 }
@@ -1786,7 +1868,12 @@ markdown.Generator = class {
         while (maskedSource) {
             const match = this._blockSkipRegExp.exec(maskedSource);
             if (match) {
-                maskedSource = maskedSource.slice(0, match.index) + '[' + 'a'.repeat(match[0].length - 2) + ']' + maskedSource.slice(this._blockSkipRegExp.lastIndex);
+                maskedSource =
+                    maskedSource.slice(0, match.index) +
+                    "[" +
+                    "a".repeat(match[0].length - 2) +
+                    "]" +
+                    maskedSource.slice(this._blockSkipRegExp.lastIndex);
                 continue;
             }
             break;
@@ -1795,7 +1882,7 @@ markdown.Generator = class {
             let match = this._escapeRegExp.exec(source);
             if (match) {
                 source = source.substring(match[0].length);
-                tokens.push({ type: 'escape', text: this._escape(match[1]) });
+                tokens.push({ type: "escape", text: this._escape(match[1]) });
                 continue;
             }
             match = this._tagRegExp.exec(source);
@@ -1803,34 +1890,32 @@ markdown.Generator = class {
                 source = source.substring(match[0].length);
                 if (!inLink && /^<a /i.test(match[0])) {
                     inLink = true;
-                }
-                else if (inLink && /^<\/a>/i.test(match[0])) {
+                } else if (inLink && /^<\/a>/i.test(match[0])) {
                     inLink = false;
                 }
                 if (!inRawBlock && /^<(pre|code|kbd|script)(\s|>)/i.test(match[0])) {
                     inRawBlock = true;
-                }
-                else if (inRawBlock && /^<\/(pre|code|kbd|script)(\s|>)/i.test(match[0])) {
+                } else if (inRawBlock && /^<\/(pre|code|kbd|script)(\s|>)/i.test(match[0])) {
                     inRawBlock = false;
                 }
-                tokens.push({ type: 'html', raw: match[0], text: match[0] });
+                tokens.push({ type: "html", raw: match[0], text: match[0] });
                 continue;
             }
             match = this._linkRegExp.exec(source);
             if (match) {
                 let index = -1;
                 const ref = match[2];
-                if (ref.indexOf(')') !== -1) {
+                if (ref.indexOf(")") !== -1) {
                     let level = 0;
                     for (let i = 0; i < ref.length; i++) {
                         switch (ref[i]) {
-                            case '\\':
+                            case "\\":
                                 i++;
                                 break;
-                            case '(':
+                            case "(":
                                 level++;
                                 break;
-                            case ')':
+                            case ")":
                                 level--;
                                 if (level < 0) {
                                     index = i;
@@ -1843,44 +1928,46 @@ markdown.Generator = class {
                     }
                 }
                 if (index > -1) {
-                    const length = (match[0].indexOf('!') === 0 ? 5 : 4) + match[1].length + index;
+                    const length = (match[0].indexOf("!") === 0 ? 5 : 4) + match[1].length + index;
                     match[2] = match[2].substring(0, index);
                     match[0] = match[0].substring(0, length).trim();
-                    match[3] = '';
+                    match[3] = "";
                 }
-                const title = (match[3] ? match[3].slice(1, -1) : '').replace(this._escapesRegExp, '$1');
-                const href = match[2].trim().replace(/^<([\s\S]*)>$/, '$1').replace(this._escapesRegExp, '$1');
+                const title = (match[3] ? match[3].slice(1, -1) : "").replace(this._escapesRegExp, "$1");
+                const href = match[2]
+                    .trim()
+                    .replace(/^<([\s\S]*)>$/, "$1")
+                    .replace(this._escapesRegExp, "$1");
                 const token = this._outputLink(match, href, title);
                 source = source.substring(match[0].length);
-                if (token.type === 'link') {
-                    token.tokens = this._tokenizeInline(token.text, links, true, inRawBlock, '');
+                if (token.type === "link") {
+                    token.tokens = this._tokenizeInline(token.text, links, true, inRawBlock, "");
                 }
                 tokens.push(token);
                 continue;
             }
             match = this._reflinkRegExp.exec(source) || this._nolinkRegExp.exec(source);
             if (match) {
-                let link = (match[2] || match[1]).replace(/\s+/g, ' ');
+                let link = (match[2] || match[1]).replace(/\s+/g, " ");
                 link = links.get(link.toLowerCase());
                 if (!link || !link.href) {
                     const text = match[0].charAt(0);
                     source = source.substring(text.length);
-                    tokens.push({ type: 'text', text: text });
-                }
-                else {
+                    tokens.push({ type: "text", text: text });
+                } else {
                     source = source.substring(match[0].length);
                     const token = this._outputLink(match, link);
-                    if (token.type === 'link') {
-                        token.tokens = this._tokenizeInline(token.text, links, true, inRawBlock, '');
+                    if (token.type === "link") {
+                        token.tokens = this._tokenizeInline(token.text, links, true, inRawBlock, "");
                     }
                     tokens.push(token);
                 }
                 continue;
             }
             match = this._strongStartRegExp.exec(source);
-            if (match && (!match[1] || (match[1] && (prevChar === '' || this._punctuationRegExp.exec(prevChar))))) {
+            if (match && (!match[1] || (match[1] && (prevChar === "" || this._punctuationRegExp.exec(prevChar))))) {
                 const masked = maskedSource.slice(-1 * source.length);
-                const endReg = match[0] === '**' ? this._strongEndAstRegExp : this._strongEndUndRegExp;
+                const endReg = match[0] === "**" ? this._strongEndAstRegExp : this._strongEndUndRegExp;
                 endReg.lastIndex = 0;
                 let cap;
                 while ((match = endReg.exec(masked)) != null) {
@@ -1892,14 +1979,18 @@ markdown.Generator = class {
                 if (cap) {
                     const text = source.substring(2, cap[0].length - 2);
                     source = source.substring(cap[0].length);
-                    tokens.push({ type: 'strong', text: text, tokens: this._tokenizeInline(text, links, inLink, inRawBlock, '') });
+                    tokens.push({
+                        type: "strong",
+                        text: text,
+                        tokens: this._tokenizeInline(text, links, inLink, inRawBlock, ""),
+                    });
                     continue;
                 }
             }
             match = this._emStartRegExp.exec(source);
-            if (match && (!match[1] || (match[1] && (prevChar === '' || this._punctuationRegExp.exec(prevChar))))) {
+            if (match && (!match[1] || (match[1] && (prevChar === "" || this._punctuationRegExp.exec(prevChar))))) {
                 const masked = maskedSource.slice(-1 * source.length);
-                const endReg = match[0] === '*' ? this._emEndAstRegExp : this._emEndUndRegExp;
+                const endReg = match[0] === "*" ? this._emEndAstRegExp : this._emEndUndRegExp;
                 endReg.lastIndex = 0;
                 let cap;
                 while ((match = endReg.exec(masked)) != null) {
@@ -1911,45 +2002,53 @@ markdown.Generator = class {
                 if (cap) {
                     const text = source.slice(1, cap[0].length - 1);
                     source = source.substring(cap[0].length);
-                    tokens.push({ type: 'em', text: text, tokens: this._tokenizeInline(text, links, inLink, inRawBlock, '') });
+                    tokens.push({
+                        type: "em",
+                        text: text,
+                        tokens: this._tokenizeInline(text, links, inLink, inRawBlock, ""),
+                    });
                     continue;
                 }
             }
             match = this._codespanRegExp.exec(source);
             if (match) {
                 source = source.substring(match[0].length);
-                let content = match[2].replace(/\n/g, ' ');
-                if (/[^ ]/.test(content) && content.startsWith(' ') && content.endsWith(' ')) {
+                let content = match[2].replace(/\n/g, " ");
+                if (/[^ ]/.test(content) && content.startsWith(" ") && content.endsWith(" ")) {
                     content = content.substring(1, content.length - 1);
                 }
-                tokens.push({ type: 'codespan', text: this._encode(content) });
+                tokens.push({ type: "codespan", text: this._encode(content) });
                 continue;
             }
             match = this._brRegExp.exec(source);
             if (match) {
                 source = source.substring(match[0].length);
-                tokens.push({ type: 'br' });
+                tokens.push({ type: "br" });
                 continue;
             }
             match = this._delRegExp.exec(source);
             if (match) {
                 source = source.substring(match[0].length);
                 const text = match[1];
-                tokens.push({ type: 'del', text: text, tokens: this._tokenizeInline(text, links, inLink, inRawBlock, '') });
+                tokens.push({
+                    type: "del",
+                    text: text,
+                    tokens: this._tokenizeInline(text, links, inLink, inRawBlock, ""),
+                });
                 continue;
             }
             match = this._autolinkRegExp.exec(source);
             if (match) {
                 source = source.substring(match[0].length);
                 const text = this._escape(match[1]);
-                const href = match[2] === '@' ? 'mailto:' + text : text;
-                tokens.push({ type: 'link', text: text, href: href, tokens: [ { type: 'text', raw: text, text } ] });
+                const href = match[2] === "@" ? "mailto:" + text : text;
+                tokens.push({ type: "link", text: text, href: href, tokens: [{ type: "text", raw: text, text }] });
                 continue;
             }
             if (!inLink) {
                 match = this._urlRegExp.exec(source);
                 if (match) {
-                    const email = match[2] === '@';
+                    const email = match[2] === "@";
                     if (!email) {
                         let prevCapZero;
                         do {
@@ -1958,9 +2057,9 @@ markdown.Generator = class {
                         } while (prevCapZero !== match[0]);
                     }
                     const text = this._escape(match[0]);
-                    const href = email ? ('mailto:' + text) : (match[1] === 'www.' ? 'http://' + text : text);
+                    const href = email ? "mailto:" + text : match[1] === "www." ? "http://" + text : text;
                     source = source.substring(match[0].length);
-                    tokens.push({ type: 'link', text: text, href: href, tokens: [ { type: 'text', text: text } ] });
+                    tokens.push({ type: "link", text: text, href: href, tokens: [{ type: "text", text: text }] });
                     continue;
                 }
             }
@@ -1968,7 +2067,7 @@ markdown.Generator = class {
             if (match) {
                 source = source.substring(match[0].length);
                 prevChar = match[0].slice(-1);
-                tokens.push({ type: 'text' , text: inRawBlock ? match[0] : this._escape(match[0]) });
+                tokens.push({ type: "text", text: inRawBlock ? match[0] : this._escape(match[0]) });
                 continue;
             }
             throw new Error("Unexpected '" + source.charCodeAt(0) + "'.");
@@ -1979,23 +2078,27 @@ markdown.Generator = class {
     _tokenizeBlock(tokens, links) {
         for (const token of tokens) {
             switch (token.type) {
-                case 'paragraph':
-                case 'text':
-                case 'heading': {
-                    token.tokens  = this._tokenizeInline(token.text, links, false, false, '');
+                case "paragraph":
+                case "text":
+                case "heading": {
+                    token.tokens = this._tokenizeInline(token.text, links, false, false, "");
                     break;
                 }
-                case 'table': {
+                case "table": {
                     token.tokens = {};
-                    token.tokens.header = token.header.map((header) => this._tokenizeInline(header, links, false, false, ''));
-                    token.tokens.cells = token.cells.map((cell) => cell.map((row) => this._tokenizeInline(row, links, false, false, '')));
+                    token.tokens.header = token.header.map(header =>
+                        this._tokenizeInline(header, links, false, false, "")
+                    );
+                    token.tokens.cells = token.cells.map(cell =>
+                        cell.map(row => this._tokenizeInline(row, links, false, false, ""))
+                    );
                     break;
                 }
-                case 'blockquote': {
+                case "blockquote": {
                     this._tokenizeBlock(token.tokens, links);
                     break;
                 }
-                case 'list': {
+                case "list": {
                     for (const item of token.items) {
                         this._tokenizeBlock(item.tokens, links);
                     }
@@ -2009,103 +2112,125 @@ markdown.Generator = class {
     }
 
     _render(tokens, slugs, top) {
-        let html = '';
+        let html = "";
         while (tokens.length > 0) {
             const token = tokens.shift();
             switch (token.type) {
-                case 'space': {
+                case "space": {
                     continue;
                 }
-                case 'hr': {
-                    html += '<hr>\n';
+                case "hr": {
+                    html += "<hr>\n";
                     continue;
                 }
-                case 'heading': {
+                case "heading": {
                     const level = token.depth;
                     const id = this._slug(slugs, this._renderInline(token.tokens, true));
-                    html += '<h' + level + ' id="' + id + '">' + this._renderInline(token.tokens) + '</h' + level + '>\n';
+                    html +=
+                        "<h" + level + ' id="' + id + '">' + this._renderInline(token.tokens) + "</h" + level + ">\n";
                     continue;
                 }
-                case 'code': {
+                case "code": {
                     const code = token.text;
-                    const language = (token.language || '').match(/\S*/)[0];
-                    html += '<pre><code' + (language ? ' class="' + 'language-' + this._encode(language) + '"' : '') + '>' + (token.escaped ? code : this._encode(code)) + '</code></pre>\n';
+                    const language = (token.language || "").match(/\S*/)[0];
+                    html +=
+                        "<pre><code" +
+                        (language ? ' class="' + "language-" + this._encode(language) + '"' : "") +
+                        ">" +
+                        (token.escaped ? code : this._encode(code)) +
+                        "</code></pre>\n";
                     continue;
                 }
-                case 'table': {
-                    let header = '';
-                    let cell = '';
+                case "table": {
+                    let header = "";
+                    let cell = "";
                     for (let j = 0; j < token.header.length; j++) {
                         const content = this._renderInline(token.tokens.header[j]);
                         const align = token.align[j];
-                        cell += '<th' + (align ? ' align="' + align + '"' : '') + '>' + content + '</th>\n';
+                        cell += "<th" + (align ? ' align="' + align + '"' : "") + ">" + content + "</th>\n";
                     }
-                    header += '<tr>\n' + cell + '</tr>\n';
-                    let body = '';
+                    header += "<tr>\n" + cell + "</tr>\n";
+                    let body = "";
                     for (let j = 0; j < token.cells.length; j++) {
                         const row = token.tokens.cells[j];
-                        cell = '';
+                        cell = "";
                         for (let k = 0; k < row.length; k++) {
                             const content = this._renderInline(row[k]);
                             const align = token.align[k];
-                            cell += '<td' + (align ? ' align="' + align + '"' : '') + '>' + content + '</td>\n';
+                            cell += "<td" + (align ? ' align="' + align + '"' : "") + ">" + content + "</td>\n";
                         }
-                        body += '<tr>\n' + cell + '</tr>\n';
+                        body += "<tr>\n" + cell + "</tr>\n";
                     }
-                    html += '<table>\n<thead>\n' + header + '</thead>\n' + (body ? '<tbody>' + body + '</tbody>' : body) + '</table>\n';
+                    html +=
+                        "<table>\n<thead>\n" +
+                        header +
+                        "</thead>\n" +
+                        (body ? "<tbody>" + body + "</tbody>" : body) +
+                        "</table>\n";
                     continue;
                 }
-                case 'blockquote': {
-                    html += '<blockquote>\n' + this._render(token.tokens, slugs, true) + '</blockquote>\n';
+                case "blockquote": {
+                    html += "<blockquote>\n" + this._render(token.tokens, slugs, true) + "</blockquote>\n";
                     continue;
                 }
-                case 'list': {
+                case "list": {
                     const ordered = token.ordered;
                     const start = token.start;
                     const loose = token.loose;
-                    let body = '';
+                    let body = "";
                     for (const item of token.items) {
-                        let itemBody = '';
+                        let itemBody = "";
                         if (item.task) {
-                            const checkbox = '<input ' + (item.checked ? 'checked="" ' : '') + 'disabled="" type="checkbox"' + '> ';
+                            const checkbox =
+                                "<input " + (item.checked ? 'checked="" ' : "") + 'disabled="" type="checkbox"' + "> ";
                             if (loose) {
-                                if (item.tokens.length > 0 && item.tokens[0].type === 'text') {
-                                    item.tokens[0].text = checkbox + ' ' + item.tokens[0].text;
-                                    if (item.tokens[0].tokens && item.tokens[0].tokens.length > 0 && item.tokens[0].tokens[0].type === 'text') {
-                                        item.tokens[0].tokens[0].text = checkbox + ' ' + item.tokens[0].tokens[0].text;
+                                if (item.tokens.length > 0 && item.tokens[0].type === "text") {
+                                    item.tokens[0].text = checkbox + " " + item.tokens[0].text;
+                                    if (
+                                        item.tokens[0].tokens &&
+                                        item.tokens[0].tokens.length > 0 &&
+                                        item.tokens[0].tokens[0].type === "text"
+                                    ) {
+                                        item.tokens[0].tokens[0].text = checkbox + " " + item.tokens[0].tokens[0].text;
                                     }
+                                } else {
+                                    item.tokens.unshift({ type: "text", text: checkbox });
                                 }
-                                else {
-                                    item.tokens.unshift({ type: 'text', text: checkbox });
-                                }
-                            }
-                            else {
+                            } else {
                                 itemBody += checkbox;
                             }
                         }
                         itemBody += this._render(item.tokens, slugs, loose);
-                        body += '<li>' + itemBody + '</li>\n';
+                        body += "<li>" + itemBody + "</li>\n";
                     }
-                    const type = (ordered ? 'ol' : 'ul');
-                    html += '<' + type + (ordered && start !== 1 ? (' start="' + start + '"') : '') + '>\n' + body + '</' + type + '>\n';
+                    const type = ordered ? "ol" : "ul";
+                    html +=
+                        "<" +
+                        type +
+                        (ordered && start !== 1 ? ' start="' + start + '"' : "") +
+                        ">\n" +
+                        body +
+                        "</" +
+                        type +
+                        ">\n";
                     continue;
                 }
-                case 'html': {
+                case "html": {
                     html += token.text;
                     continue;
                 }
-                case 'paragraph': {
-                    html += '<p>' + this._renderInline(token.tokens) + '</p>\n';
+                case "paragraph": {
+                    html += "<p>" + this._renderInline(token.tokens) + "</p>\n";
                     continue;
                 }
-                case 'text': {
-                    html += top ? '<p>' : '';
+                case "text": {
+                    html += top ? "<p>" : "";
                     html += token.tokens ? this._renderInline(token.tokens) : token.text;
-                    while (tokens.length > 0 && tokens[0].type === 'text') {
+                    while (tokens.length > 0 && tokens[0].type === "text") {
                         const token = tokens.shift();
-                        html += '\n' + (token.tokens ? this._renderInline(token.tokens) : token.text);
+                        html += "\n" + (token.tokens ? this._renderInline(token.tokens) : token.text);
                     }
-                    html += top ? '</p>\n' : '';
+                    html += top ? "</p>\n" : "";
                     continue;
                 }
                 default: {
@@ -2117,45 +2242,61 @@ markdown.Generator = class {
     }
 
     _renderInline(tokens, slug) {
-        let html = '';
+        let html = "";
         for (const token of tokens) {
             switch (token.type) {
-                case 'escape':
-                case 'html':
-                case 'text': {
+                case "escape":
+                case "html":
+                case "text": {
                     html += token.text;
                     break;
                 }
-                case 'link': {
+                case "link": {
                     const text = this._renderInline(token.tokens, slug);
-                    html += slug ? text : '<a href="' + token.href + '"' + (token.title ? ' title="' + token.title + '"' : '') + ' target="_blank">' + text + '</a>';
+                    html += slug
+                        ? text
+                        : '<a href="' +
+                          token.href +
+                          '"' +
+                          (token.title ? ' title="' + token.title + '"' : "") +
+                          ' target="_blank">' +
+                          text +
+                          "</a>";
                     break;
                 }
-                case 'image': {
-                    html += slug ? token.text : '<img src="' + token.href + '" alt="' + token.text + '"' + (token.title ? ' title="' + token.title + '"' : '') + '>';
+                case "image": {
+                    html += slug
+                        ? token.text
+                        : '<img src="' +
+                          token.href +
+                          '" alt="' +
+                          token.text +
+                          '"' +
+                          (token.title ? ' title="' + token.title + '"' : "") +
+                          ">";
                     break;
                 }
-                case 'strong': {
+                case "strong": {
                     const text = this._renderInline(token.tokens, slug);
-                    html += slug ? text : '<strong>' + text + '</strong>';
+                    html += slug ? text : "<strong>" + text + "</strong>";
                     break;
                 }
-                case 'em': {
+                case "em": {
                     const text = this._renderInline(token.tokens, slug);
-                    html += slug ? text : '<em>' + text + '</em>';
+                    html += slug ? text : "<em>" + text + "</em>";
                     break;
                 }
-                case 'codespan': {
-                    html += slug ? token.text : '<code>' + token.text + '</code>';
+                case "codespan": {
+                    html += slug ? token.text : "<code>" + token.text + "</code>";
                     break;
                 }
-                case 'br': {
-                    html += slug ? '' : '<br>';
+                case "br": {
+                    html += slug ? "" : "<br>";
                     break;
                 }
-                case 'del': {
+                case "del": {
                     const text = this._renderInline(token.tokens, slug);
-                    html += slug ? text : '<del>' + text + '</del>';
+                    html += slug ? text : "<del>" + text + "</del>";
                     break;
                 }
                 default: {
@@ -2168,57 +2309,57 @@ markdown.Generator = class {
 
     _outputLink(match, href, title) {
         title = title ? this._escape(title) : null;
-        const text = match[1].replace(/\\([[\]])/g, '$1');
-        return match[0].charAt(0) !== '!' ?
-            { type: 'link', href: href, title: title, text: text } :
-            { type: 'image', href: href, title: title, text: this._escape(text) };
+        const text = match[1].replace(/\\([[\]])/g, "$1");
+        return match[0].charAt(0) !== "!"
+            ? { type: "link", href: href, title: title, text: text }
+            : { type: "image", href: href, title: title, text: this._escape(text) };
     }
 
     _splitCells(tableRow, count) {
         const row = tableRow.replace(/\|/g, (match, offset, str) => {
             let escaped = false;
             let position = offset;
-            while (--position >= 0 && str[position] === '\\') {
+            while (--position >= 0 && str[position] === "\\") {
                 escaped = !escaped;
             }
-            return escaped ? '|' : ' |';
+            return escaped ? "|" : " |";
         });
         const cells = row.split(/ \|/);
         if (cells.length > count) {
             cells.splice(count);
-        }
-        else {
+        } else {
             while (cells.length < count) {
-                cells.push('');
+                cells.push("");
             }
         }
-        return cells.map((cell) => cell.trim().replace(/\\\|/g, '|'));
+        return cells.map(cell => cell.trim().replace(/\\\|/g, "|"));
     }
 
     _slug(slugs, value) {
-        value = value.replace(/&(#(?:\d+)|(?:#x[0-9A-Fa-f]+)|(?:\w+));?/ig, (_, n) => {
+        value = value.replace(/&(#(?:\d+)|(?:#x[0-9A-Fa-f]+)|(?:\w+));?/gi, (_, n) => {
             n = n.toLowerCase();
-            if (n === 'colon') {
-                return ':';
+            if (n === "colon") {
+                return ":";
             }
-            if (n.charAt(0) === '#') {
-                return String.fromCharCode(n.charAt(1) === 'x' ? parseInt(n.substring(2), 16) : +n.substring(1));
+            if (n.charAt(0) === "#") {
+                return String.fromCharCode(n.charAt(1) === "x" ? parseInt(n.substring(2), 16) : +n.substring(1));
             }
-            return '';
+            return "";
         });
-        value = value.toLowerCase().trim()
-            .replace(/<[!/a-z].*?>/ig, '')
-            .replace(/[\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,./:;<=>?@[\]^`{|}~]/g, '')
-            .replace(/\s/g, '-');
+        value = value
+            .toLowerCase()
+            .trim()
+            .replace(/<[!/a-z].*?>/gi, "")
+            .replace(/[\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,./:;<=>?@[\]^`{|}~]/g, "")
+            .replace(/\s/g, "-");
         let slug = value;
         let count = 0;
         if (slugs.has(value)) {
             count = slugs.get(value);
             do {
                 count++;
-                slug = value + '-' + count;
-            }
-            while (slugs.has(slug));
+                slug = value + "-" + count;
+            } while (slugs.has(slug));
         }
         slugs.set(value, count);
         slugs.set(slug, 0);
@@ -2227,20 +2368,20 @@ markdown.Generator = class {
 
     _encode(content) {
         if (this._escapeTestRegExp.test(content)) {
-            return content.replace(this._escapeReplaceRegExp, (ch) => this._escapeReplacementsMap[ch]);
+            return content.replace(this._escapeReplaceRegExp, ch => this._escapeReplacementsMap[ch]);
         }
         return content;
     }
 
     _escape(content) {
         if (this._escapeTestNoEncodeRegExp.test(content)) {
-            return content.replace(this._escapeReplaceNoEncodeRegExp, (ch) => this._escapeReplacementsMap[ch]);
+            return content.replace(this._escapeReplaceNoEncodeRegExp, ch => this._escapeReplacementsMap[ch]);
         }
         return content;
     }
 };
 
-if (typeof module !== 'undefined' && typeof module.exports === 'object') {
+if (typeof module !== "undefined" && typeof module.exports === "object") {
     module.exports.Sidebar = sidebar.Sidebar;
     module.exports.ModelSidebar = sidebar.ModelSidebar;
     module.exports.NodeSidebar = sidebar.NodeSidebar;
