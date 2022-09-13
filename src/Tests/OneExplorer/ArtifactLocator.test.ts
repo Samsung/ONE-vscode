@@ -176,7 +176,7 @@ suite('OneExplorer', function() {
         // Register a locator which always throws
         locatorRunner.register({
           artifactAttr: {ext: '.test'},
-          locator: new Locator(value => {
+          locator: new Locator(() => {
             throw Error('Test');
           })
         });

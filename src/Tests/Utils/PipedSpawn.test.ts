@@ -39,7 +39,7 @@ suite('Utils', function() {
 
     test('NEG: first cmd fails', function() {
       try {
-        let cat = pipedSpawn('cat', ['invalid_file'], {}, 'wc', ['-l'], {});
+        pipedSpawn('cat', ['invalid_file'], {}, 'wc', ['-l'], {});
       } catch (err) {
         assert.ok(true, 'Should be thrown');
       }
@@ -64,7 +64,7 @@ suite('Utils', function() {
       sudo.stdout!.on('data', (data) => {
         assert.fail(`should not fail. ${data}`);
       });
-      sudo.on('exit', (exitcode: number|null, signal: NodeJS.Signals|null) => {
+      sudo.on('exit', (exitcode: number|null) => {
         if (exitcode === 0) {
           assert.fail(`exitcode === 0`);
         } else {

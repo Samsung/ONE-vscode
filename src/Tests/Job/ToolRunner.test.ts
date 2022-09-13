@@ -15,7 +15,6 @@
  */
 
 import {assert} from 'chai';
-import {join} from 'path';
 
 import {ToolArgs} from '../../Job/ToolArgs';
 import {SuccessResult, ToolRunner} from '../../Job/ToolRunner';
@@ -116,8 +115,6 @@ suite('Job', function() {
 
     suite(`#kill()`, function() {
       test('basic case', async function() {
-        let finished = false;
-
         let toolRunner = new ToolRunner();
 
         let args = new ToolArgs();
@@ -128,7 +125,7 @@ suite('Job', function() {
             .then((val: SuccessResult) => {
               assert.equal(val.intentionallyKilled, true);
             })
-            .catch(exitcode => {
+            .catch(() => {
               assert.fail();
             });
 
@@ -155,7 +152,7 @@ suite('Job', function() {
               assert.equal(val.exitCode, 0);
               finished = true;
             })
-            .catch(exitcode => {
+            .catch(() => {
               assert.fail();
             });
 

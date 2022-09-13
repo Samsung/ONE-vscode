@@ -15,7 +15,7 @@
  */
 
 import {assert} from 'chai';
-import {PackageInfo, ToolchainInfo} from '../../../Backend/Toolchain';
+import {ToolchainInfo} from '../../../Backend/Toolchain';
 import {DebianArch, DebianRepo, DebianToolchain} from '../../../Backend/ToolchainImpl/DebianToolchain';
 import {Version} from '../../../Backend/Version';
 

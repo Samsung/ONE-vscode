@@ -16,8 +16,6 @@
 
 import {assert} from 'chai';
 import * as vscode from 'vscode';
-import {globalExecutorArray} from '../../Backend/API';
-import {ExecutorBase} from '../../Backend/Executor';
 import {deviceManagerList, DeviceViewNode, DeviceViewProvider, NodeType} from '../../Execute/DeviceViewProvider';
 
 
@@ -101,7 +99,7 @@ suite('DeviceViewProvider', function() {
   suite('#getChildren', function() {
     test('get Children under undfined', function(done) {
       let provider = new DeviceViewProvider();
-      provider.loadDeviceManager('local', function(_provider: DeviceViewProvider) {
+      provider.loadDeviceManager('local', function() {
         let deviceManagers = provider.getChildren();
         assert.strictEqual(deviceManagers.length, deviceManagerList.length);
         for (let index = 0; index < deviceManagers.length; index++) {
@@ -112,7 +110,7 @@ suite('DeviceViewProvider', function() {
     });
     test('get Children under deviceManager Node', function(done) {
       let provider = new DeviceViewProvider();
-      provider.loadDeviceManager('local', function(_provider: DeviceViewProvider) {
+      provider.loadDeviceManager('local', function() {
         for (const key in provider.deviceManagerMap) {
           if (Object.prototype.hasOwnProperty.call(provider.deviceManagerMap, key)) {
             const element = provider.deviceManagerMap[key];
@@ -130,7 +128,7 @@ suite('DeviceViewProvider', function() {
     });
     test('get Children under Device Node', function(done) {
       let provider = new DeviceViewProvider();
-      provider.loadDeviceManager('local', function(_provider: DeviceViewProvider) {
+      provider.loadDeviceManager('local', function() {
         for (const key in provider.deviceManagerMap) {
           if (Object.prototype.hasOwnProperty.call(provider.deviceManagerMap, key)) {
             const element = provider.deviceManagerMap[key];

@@ -127,7 +127,7 @@ suite('Toolchain', function() {
             (value) => {
               assert.equal(value, true);
             },
-            (_reason) => {
+            () => {
               assert.fail();
             });
       });
@@ -136,7 +136,7 @@ suite('Toolchain', function() {
         let env = new ToolchainEnv(compiler);
         const job0 = new MockFailedJob('job0');
         const jobs: Array<Job> = [job0];
-        env.request(jobs).then((_value) => {
+        env.request(jobs).then(() => {
           assert.fail();
         });
       });
@@ -148,10 +148,10 @@ suite('Toolchain', function() {
       const job1 = new MockFailedJob('job1');
       const jobs: Array<Job> = [job0, job1];
       env.request(jobs).then(
-          (_value) => {
+          () => {
             assert.fail();
           },
-          (_reason) => {
+          () => {
             assert.isTrue(true);
           });
     });
@@ -160,10 +160,10 @@ suite('Toolchain', function() {
       test('requests prerequisites', function() {
         let env = new ToolchainEnv(compiler);
         env.prerequisites().then(
-            (_value) => {
+            () => {
               assert.isTrue(true);
             },
-            (_reason) => {
+            () => {
               assert.fail();
             });
       });
