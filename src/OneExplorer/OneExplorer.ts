@@ -139,16 +139,28 @@ enum NodeType {
 
 abstract class Node {
   abstract readonly type: NodeType;
+  /**
+   * @protected _childNodes
+   * `undefined` when it's not build yet.
+   * If it has no child, it is an empty array.
+   */
   protected _childNodes: Node[]|undefined;
+
+  /**
+   * @protected _parent
+   * `undefined` only if it has no parent (tree root)
+   */
+  protected _parent: Node|undefined;
   uri: vscode.Uri;
 
   abstract icon: vscode.ThemeIcon;
   abstract openViewType: string|undefined;
   abstract canHide: boolean;
 
-  constructor(uri: vscode.Uri) {
+  constructor(uri: vscode.Uri, parent: Node|undefined) {
     this._childNodes = undefined;
     this.uri = uri;
+    this._parent = parent;
   }
 
   /**
@@ -169,8 +181,8 @@ abstract class Node {
     return this.uri.fsPath;
   }
 
-  get parent(): string {
-    return path.dirname(this.uri.fsPath);
+  get parent(): Node|undefined {
+    return this._parent;
   }
 
   get name(): string {
@@ -188,7 +200,8 @@ abstract class Node {
 }
 
 class NodeFactory {
-  static create(type: NodeType, fpath: string, attr?: ArtifactAttr): Node|undefined {
+  static create(type: NodeType, fpath: string, parent: Node|undefined, attr?: ArtifactAttr): Node
+      |undefined {
     // WHY HIDDEN NODES ARE NOT TO BE CREATED?
     //
     // A 'TreeDataProvider<element>' expects every elements (Node) to be correspond to visible
@@ -203,14 +216,14 @@ class NodeFactory {
     let node: Node;
     if (type === NodeType.directory) {
       assert.strictEqual(attr, undefined, 'Directory nodes cannot have attributes');
-      node = new DirectoryNode(uri);
+      node = new DirectoryNode(uri, parent);
     } else if (type === NodeType.baseModel) {
-      node = new BaseModelNode(uri, attr?.openViewType, attr?.icon, attr?.canHide);
+      node = new BaseModelNode(uri, parent, attr?.openViewType, attr?.icon, attr?.canHide);
     } else if (type === NodeType.config) {
       assert.strictEqual(attr, undefined, 'Config nodes cannot have attributes');
-      node = new ConfigNode(uri);
+      node = new ConfigNode(uri, parent);
     } else if (type === NodeType.product) {
-      node = new ProductNode(uri, attr?.openViewType, attr?.icon, attr?.canHide);
+      node = new ProductNode(uri, parent, attr?.openViewType, attr?.icon, attr?.canHide);
     } else {
       throw Error('Undefined NodeType');
     }
@@ -229,11 +242,11 @@ class DirectoryNode extends Node {
   // DO NOT HIDE DIRECTORY NODE AS ALWAYS
   readonly canHide = false;
 
-  constructor(uri: vscode.Uri) {
+  constructor(uri: vscode.Uri, parent: Node|undefined) {
     assert.ok(fs.statSync(uri.fsPath));
     assert.strictEqual(fs.statSync(uri.fsPath).isDirectory(), true);
 
-    super(uri);
+    super(uri, parent);
   }
 
   /**
@@ -254,7 +267,7 @@ class DirectoryNode extends Node {
       const fstat = fs.statSync(fpath);
 
       if (fstat.isDirectory()) {
-        const dirNode = NodeFactory.create(NodeType.directory, fpath);
+        const dirNode = NodeFactory.create(NodeType.directory, fpath, this);
 
         if (dirNode && dirNode.getChildren().length > 0) {
           this._childNodes!.push(dirNode);
@@ -262,7 +275,7 @@ class DirectoryNode extends Node {
       } else if (
           fstat.isFile() &&
           (fname.endsWith('.pb') || fname.endsWith('.tflite') || fname.endsWith('.onnx'))) {
-        const baseModelNode = NodeFactory.create(NodeType.baseModel, fpath);
+        const baseModelNode = NodeFactory.create(NodeType.baseModel, fpath, this);
 
         if (baseModelNode) {
           this._childNodes!.push(baseModelNode);
@@ -287,13 +300,14 @@ class BaseModelNode extends Node {
   canHide = BaseModelNode.defaultCanHide;
 
   constructor(
-      uri: vscode.Uri, openViewType: string|undefined = BaseModelNode.defaultOpenViewType,
+      uri: vscode.Uri, parent: Node|undefined,
+      openViewType: string|undefined = BaseModelNode.defaultOpenViewType,
       icon: vscode.ThemeIcon = BaseModelNode.defaultIcon,
       canHide: boolean = BaseModelNode.defaultCanHide) {
     assert.ok(fs.statSync(uri.fsPath));
     assert.strictEqual(fs.statSync(uri.fsPath).isFile(), true);
 
-    super(uri);
+    super(uri, parent);
     this.openViewType = openViewType;
     this.icon = icon;
     this.canHide = canHide;
@@ -316,7 +330,7 @@ class BaseModelNode extends Node {
       return;
     }
     configPaths.forEach(configPath => {
-      const configNode = NodeFactory.create(NodeType.config, configPath);
+      const configNode = NodeFactory.create(NodeType.config, configPath, this);
 
       if (configNode) {
         this._childNodes!.push(configNode);
@@ -340,13 +354,14 @@ class ConfigNode extends Node {
   canHide = ConfigNode.defaultCanHide;
 
   constructor(
-      uri: vscode.Uri, openViewType: string = ConfigNode.defaultOpenViewType,
+      uri: vscode.Uri, parent: Node|undefined,
+      openViewType: string = ConfigNode.defaultOpenViewType,
       icon: vscode.ThemeIcon = ConfigNode.defaultIcon,
       canHide: boolean = ConfigNode.defaultCanHide) {
     assert.ok(fs.statSync(uri.fsPath));
     assert.strictEqual(fs.statSync(uri.fsPath).isFile(), true);
 
-    super(uri);
+    super(uri, parent);
     this.openViewType = openViewType;
     this.icon = icon;
     this.canHide = canHide;
@@ -372,7 +387,7 @@ class ConfigNode extends Node {
     const products = cfgObj.getProductsExists;
 
     products.forEach(product => {
-      const productNode = NodeFactory.create(NodeType.product, product.path, product.attr);
+      const productNode = NodeFactory.create(NodeType.product, product.path, this, product.attr);
 
       if (productNode) {
         this._childNodes!.push(productNode);
@@ -396,13 +411,14 @@ class ProductNode extends Node {
   canHide = ProductNode.defaultCanHide;
 
   constructor(
-      uri: vscode.Uri, openViewType: string|undefined = ProductNode.defaultOpenViewType,
+      uri: vscode.Uri, parent: Node|undefined,
+      openViewType: string|undefined = ProductNode.defaultOpenViewType,
       icon: vscode.ThemeIcon = ProductNode.defaultIcon,
       canHide: boolean = ProductNode.defaultCanHide) {
     assert.ok(fs.statSync(uri.fsPath));
     assert.strictEqual(fs.statSync(uri.fsPath).isFile(), true);
 
-    super(uri);
+    super(uri, parent);
     this.openViewType = openViewType;
     this.icon = icon;
     this.canHide = canHide;
@@ -715,6 +731,15 @@ input_path=${modelName}.${extName}
         });
   }
 
+  /**
+   * This function is required for `reveal` function of TreeView<Node>.
+   * @param element Node
+   * @returns element's parent
+   */
+  getParent(element: Node): Node|undefined {
+    return element.parent;
+  }
+
   getTreeItem(node: Node): OneNode {
     if (node.type === NodeType.directory) {
       return new OneNode(node.name, vscode.TreeItemCollapsibleState.Expanded, node);
@@ -748,8 +773,8 @@ input_path=${modelName}.${extName}
     }
 
     if (!this.tree) {
-      this.tree =
-          NodeFactory.create(NodeType.directory, this.workspaceRoot.fsPath) as DirectoryNode;
+      this.tree = NodeFactory.create(NodeType.directory, this.workspaceRoot.fsPath, undefined) as
+          DirectoryNode;
     }
 
     return this.tree;
