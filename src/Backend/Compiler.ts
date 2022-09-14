@@ -77,11 +77,11 @@ class CompilerBase implements Compiler {
     throw Error('Invalid getToolchainTypes call');
   }
 
-  getToolchains(toolchainType: string, start: number, count: number): Toolchains {
+  getToolchains(_toolchainType: string, _start: number, _count: number): Toolchains {
     throw Error('Invalid getToolchains call');
   }
 
-  getInstalledToolchains(toolchainType: string): Toolchains {
+  getInstalledToolchains(_toolchainType: string): Toolchains {
     throw Error('Invalid getInstalledToolchains call');
   }
 
