@@ -58,7 +58,7 @@ class Toolchain {
   installed(): Command {
     throw Error('Invalid installed call');
   }
-  run(cfg: string): Command {
+  run(_cfg: string): Command {
     throw Error('Invalid run call');
   }
 }
