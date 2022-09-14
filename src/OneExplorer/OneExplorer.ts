@@ -468,7 +468,9 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
 
   private fileWatcher = vscode.workspace.createFileSystemWatcher(`**/*`);
 
-  private tree: DirectoryNode|undefined;
+  private _tree: DirectoryNode|undefined;
+  private _nodeMap: Map<string, Node> = new Map<string, Node>();
+
   public static didHideExtra: boolean = false;
 
   public static register(context: vscode.ExtensionContext) {
@@ -493,20 +495,30 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
 
     const provider = new OneTreeDataProvider(workspaceRoot, context.extension.extensionKind);
 
+    const _treeView = vscode.window.createTreeView(
+        'OneExplorerView',
+        {treeDataProvider: provider, showCollapseAll: true, canSelectMany: true});
+
     let registrations = [
       provider.fileWatcher.onDidCreate(() => provider.refresh()),
       provider.fileWatcher.onDidChange(() => provider.refresh()),
       provider.fileWatcher.onDidDelete(() => provider.refresh()),
-      vscode.window.createTreeView(
-          'OneExplorerView',
-          {treeDataProvider: provider, showCollapseAll: true, canSelectMany: true}),
+      _treeView,
+      vscode.commands.registerCommand(
+          'one.explorer.revealInOneExplorer',
+          (path: string) => {
+            const node = provider._nodeMap.get(path);
+            if (node) {
+              _treeView ?.reveal(node, {select: true, focus: true, expand: true});
+            }
+          }),
       vscode.commands.registerCommand(
           'one.explorer.openAsText',
           (node: Node) => {
             vscode.commands.executeCommand('vscode.openWith', node.uri, 'default');
           }),
       vscode.commands.registerCommand(
-          'one.explorer.reveal',
+          'one.explorer.revealInDefaultExplorer',
           (node: Node) => {
             vscode.commands.executeCommand('revealInExplorer', node.uri);
           }),
@@ -602,7 +614,8 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
 
     if (!node) {
       // Reset the root in order to build from scratch (at OneTreeDataProvider.getTree)
-      this.tree = undefined;
+      this._tree = undefined;
+      this._nodeMap.clear();
       this._onDidChangeTreeData.fire(undefined);
     } else {
       this._onDidChangeTreeData.fire(node);
@@ -772,11 +785,27 @@ input_path=${modelName}.${extName}
       return undefined;
     }
 
-    if (!this.tree) {
-      this.tree = NodeFactory.create(NodeType.directory, this.workspaceRoot.fsPath, undefined) as
+    if (!this._tree) {
+      this._tree = NodeFactory.create(NodeType.directory, this.workspaceRoot.fsPath, undefined) as
           DirectoryNode;
+
+      // NOTE That this change reverts the 'build children on demand' optimization.
+      //
+      // 'buildNodeMap' is required for revealing the corresponding TreeItem when a cfg file is
+      // opened in cfg editor, because it pre-builts all the nodes to find the Node from a given
+      // string path.
+      //
+      // TODO Let's try to build nodes on demand (only with string path)
+      const buildNodeMap = (node: Node) => {
+        node.getChildren().forEach(childNode => {
+          this._nodeMap.set(childNode.path, childNode);
+          buildNodeMap(childNode);
+        });
+      };
+
+      buildNodeMap(this._tree);
     }
 
-    return this.tree;
+    return this._tree;
   }
 }
