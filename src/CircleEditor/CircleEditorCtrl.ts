@@ -39,6 +39,7 @@ export class MessageDefs {
   public static readonly editOperator = 'editOperator';
   public static readonly editTensor = 'editTensor';
   public static readonly editBuffer = 'editBuffer';
+  public static readonly testMessage = 'dd';
 };
 
 export interface CircleGraphEvent {
@@ -162,7 +163,8 @@ export class CircleGraphCtrl {
       case MessageDefs.selection:
         this.handleSelection(message.names, message.tensors);
         return;
-      //added here
+
+      //added by yuyeon
       case MessageDefs.editOperator:
         this.handleEditOperator();
         return;
@@ -172,14 +174,27 @@ export class CircleGraphCtrl {
       case MessageDefs.editBuffer:
         this.handleEditBuffer();
         return;
+      case MessageDefs.testMessage:
+        this.testHandler();
+        return;
     }
   }
+ 
+ protected testHandler() {
 
-  //added handler functions for editing here
+  try {
+    console.log("test message received here");
+    
+  } catch (err: unknown) {
+    this.handleLoadError(err);
+  }
+
+}
+  //added handler functions for editing 
   protected handleEditOperator() {
 
     try {
-      //필요한 매개변수 붙여서 post message
+    
       this._webview.postMessage({ command: MessageDefs.editOperator });
     } catch (err: unknown) {
       this.handleLoadError(err);
@@ -190,7 +205,7 @@ export class CircleGraphCtrl {
   protected handleEditTensor() {
 
     try {
-      //필요한 매개변수 붙여서 post message
+    
       this._webview.postMessage({ command: MessageDefs.editTensor });
     } catch (err: unknown) {
       this.handleLoadError(err);
@@ -200,7 +215,7 @@ export class CircleGraphCtrl {
   protected handleEditBuffer() {
 
     try {
-      //필요한 매개변수 붙여서 post message
+
       this._webview.postMessage({ command: MessageDefs.editBuffer });
     } catch (err: unknown) {
       this.handleLoadError(err);
@@ -226,6 +241,7 @@ export class CircleGraphCtrl {
    */
   protected handleRequest(url: string, encoding: string) {
     // TODO check scheme
+
     const reqUrl = new URL(url);
     let filePath = vscode.Uri.joinPath(
       this._extensionUri, CircleGraphCtrl.folderMediaCircleGraph, reqUrl.pathname);
@@ -419,7 +435,7 @@ export class CircleGraphCtrl {
                     testBtn.addEventListener("click", e => {
                         e.preventDefault();
                         vscode.postMessage({
-           type:"dd"
+           type:"dd", command:"dd"
             });
         });
     </script>
