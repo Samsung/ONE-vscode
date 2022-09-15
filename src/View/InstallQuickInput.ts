@@ -25,7 +25,7 @@ import {InputStep, MultiStepInput} from '../Utils/MultiStepInput';
 async function shouldResume() {
   // Could show a notification with the option to resume.
   return new Promise<boolean>(
-      (resolve, reject) => {
+      () => {
           // noop
       });
 }
@@ -268,7 +268,7 @@ class InstallQuickInput {
   }
 
   /* istanbul ignore next */
-  public async updateBackend(input: MultiStepInput, state: Partial<InstallQuickInputState>) {
+  public async updateBackend(input: MultiStepInput, _state: Partial<InstallQuickInputState>) {
     if (this.toolchainEnv === undefined || this.toolchainType === undefined) {
       this.error = 'toolchainenv is undefined.';
       throw Error('toolchainenv is undefined.');
