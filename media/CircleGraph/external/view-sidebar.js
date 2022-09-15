@@ -397,6 +397,18 @@ sidebar.NodeSidebar = class {
     }
 };
 
+sidebar.AttributeEditView = class{
+    /**
+     * class for modifying or showing node’s Attributes
+     */
+}
+
+sidebar.IOEditView = class{
+    /** 
+     * class for modifying or showing node’s Inputs and Outputs
+    */
+}
+
 sidebar.NameValueView = class {
 
     constructor(host, name, value) {
