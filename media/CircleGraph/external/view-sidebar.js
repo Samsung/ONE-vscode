@@ -138,44 +138,44 @@ sidebar.NodeSidebar = class {
             const type = node.type;
             if (type && (type.description || type.inputs || type.outputs || type.attributes)) {
                 showDocumentation = {};
-                showDocumentation.text = type.nodes ? "\u0192" : "?";
+                showDocumentation.text = type.nodes ? '\u0192' : '?';
                 showDocumentation.callback = () => {
-                    this._raise("show-documentation", null);
+                    this._raise('show-documentation', null);
                 };
             }
-            this._addProperty("type", new sidebar.ValueTextView(this._host, node.type.name, showDocumentation));
+            this._addProperty('type', new sidebar.ValueTextView(this._host, node.type.name, showDocumentation));
             if (node.type.module) {
-                this._addProperty("module", new sidebar.ValueTextView(this._host, node.type.module));
+                this._addProperty('module', new sidebar.ValueTextView(this._host, node.type.module));
             }
         }
 
         if (node.name) {
-            this._addProperty("name", new sidebar.ValueTextView(this._host, node.name));
+            this._addProperty('name', new sidebar.ValueTextView(this._host, node.name));
         }
 
         if (node.location) {
-            this._addProperty("location", new sidebar.ValueTextView(this._host, node.location));
+            this._addProperty('location', new sidebar.ValueTextView(this._host, node.location));
         }
 
         if (node.description) {
-            this._addProperty("description", new sidebar.ValueTextView(this._host, node.description));
+            this._addProperty('description', new sidebar.ValueTextView(this._host, node.description));
         }
 
         if (node.device) {
-            this._addProperty("device", new sidebar.ValueTextView(this._host, node.device));
+            this._addProperty('device', new sidebar.ValueTextView(this._host, node.device));
         }
 
         const attributes = node.attributes;
         if (attributes && attributes.length > 0) {
-            const attributesBox = this._host.document.createElement("div");
-            attributesBox.setAttribute("id", "sidebar-attributes-box");
+            const attributesBox = this._host.document.createElement('div');
+            attributesBox.setAttribute('id', 'sidebar-attributes-box');
             const sortedAttributes = node.attributes.slice();
             sortedAttributes.sort((a, b) => {
                 const au = a.name.toUpperCase();
                 const bu = b.name.toUpperCase();
                 return au < bu ? -1 : au > bu ? 1 : 0;
             });
-            this._addHeader("Attributes");
+            this._addHeader('Attributes');
             for (const attribute of sortedAttributes) {
                 const attributeElement = this._addAttribute(attribute.name, attribute);
                 attributesBox.appendChild(attributeElement);
@@ -185,7 +185,7 @@ sidebar.NodeSidebar = class {
 
         const inputs = node.inputs;
         if (inputs && inputs.length > 0) {
-            this._addHeader("Inputs");
+            this._addHeader('Inputs');
             for (const input of inputs) {
                 this._addInput(input.name, input);
             }
@@ -193,14 +193,14 @@ sidebar.NodeSidebar = class {
 
         const outputs = node.outputs;
         if (outputs && outputs.length > 0) {
-            this._addHeader("Outputs");
+            this._addHeader('Outputs');
             for (const output of outputs) {
                 this._addOutput(output.name, output);
             }
         }
 
-        const separator = this._host.document.createElement("div");
-        separator.className = "sidebar-view-separator";
+        const separator = this._host.document.createElement('div');
+        separator.className = 'sidebar-view-separator';
         this._elements.push(separator);
     }
 
@@ -209,10 +209,10 @@ sidebar.NodeSidebar = class {
     }
 
     _addHeader(title) {
-        const headerElement = this._host.document.createElement("div");
-        const headerTitle = this._host.document.createElement("div");
-        headerElement.className = "sidebar-view-header";
-        headerTitle.className = "sidebar-view-header-title";
+        const headerElement = this._host.document.createElement('div');
+        const headerTitle = this._host.document.createElement('div');
+        headerElement.className = 'sidebar-view-header';
+        headerTitle.className = 'sidebar-view-header-title';
         // headerElement.innerText = title;
         headerTitle.innerText = title;
         headerElement.appendChild(headerTitle);
@@ -227,8 +227,8 @@ sidebar.NodeSidebar = class {
 
     _addAttribute(name, attribute) {
         const item = new NodeAttributeView(this._host, attribute);
-        item.on("show-graph", (sender, graph) => {
-            this._raise("show-graph", graph);
+        item.on('show-graph', (sender, graph) => {
+            this._raise('show-graph', graph);
         });
         const view = new sidebar.NameValueView(this._host, name, item);
         this._attributes.push(view);
@@ -238,8 +238,8 @@ sidebar.NodeSidebar = class {
 
     _addAttributeEdit(name, attribute) {
         const item = new NodeAttributeEditView(this._host, attribute);
-        item.on("show-graph", (sender, graph) => {
-            this._raise("show-graph", graph);
+        item.on('show-graph', (sender, graph) => {
+            this._raise('show-graph', graph);
         });
         const view = new sidebar.NameValueView(this._host, name, item);
         this._attributes.push(view);
@@ -250,11 +250,11 @@ sidebar.NodeSidebar = class {
     _addInput(name, input) {
         if (input.arguments.length > 0) {
             const view = new sidebar.ParameterView(this._host, input);
-            view.on("export-tensor", (sender, tensor) => {
-                this._raise("export-tensor", tensor);
+            view.on('export-tensor', (sender, tensor) => {
+                this._raise('export-tensor', tensor);
             });
-            view.on("error", (sender, tensor) => {
-                this._raise("error", tensor);
+            view.on('error', (sender, tensor) => {
+                this._raise('error', tensor);
             });
             const item = new sidebar.NameValueView(this._host, name, view);
             this._inputs.push(item);
@@ -293,30 +293,30 @@ sidebar.NodeSidebar = class {
     }
 
     _addButton(title, headerElement) {
-        const buttonArea = this._host.document.createElement("div");
-        buttonArea.className = "button-area";
-        const modifyButton = this._host.document.createElement("button");
-        const saveButton = this._host.document.createElement("button");
-        const cancelButton = this._host.document.createElement("button");
+        const buttonArea = this._host.document.createElement('div');
+        buttonArea.className = 'button-area';
+        const modifyButton = this._host.document.createElement('button');
+        const saveButton = this._host.document.createElement('button');
+        const cancelButton = this._host.document.createElement('button');
         buttonArea.appendChild(saveButton);
         buttonArea.appendChild(cancelButton);
-        modifyButton.className = title + "-modify" + " modify-button";
-        saveButton.className = title + "-save" + " save-button";
-        cancelButton.className = title + "-cancel" + " cancel-button";
-        saveButton.setAttribute("style", "display:none;");
-        cancelButton.setAttribute("style", "display:none;");
-        modifyButton.addEventListener("click", e => {
+        modifyButton.className = title + '-modify' + ' modify-button';
+        saveButton.className = title + '-save' + ' save-button';
+        cancelButton.className = title + '-cancel' + ' cancel-button';
+        saveButton.setAttribute('style', 'display:none;');
+        cancelButton.setAttribute('style', 'display:none;');
+        modifyButton.addEventListener('click', e => {
             this._modify(modifyButton, saveButton, cancelButton);
         });
-        saveButton.addEventListener("click", () => {
+        saveButton.addEventListener('click', () => {
             this._save(modifyButton, saveButton, cancelButton);
         });
-        cancelButton.addEventListener("click", () => {
+        cancelButton.addEventListener('click', () => {
             this._cancel(modifyButton, saveButton, cancelButton);
         });
-        modifyButton.innerText = "✎";
-        saveButton.innerText = "Save";
-        cancelButton.innerText = "Cancel";
+        modifyButton.innerText = '✎';
+        saveButton.innerText = 'Save';
+        cancelButton.innerText = 'Cancel';
         headerElement.appendChild(modifyButton);
         headerElement.appendChild(buttonArea);
         console.log(this._node);
@@ -324,7 +324,7 @@ sidebar.NodeSidebar = class {
 
     _modify(modifyButton, saveButton, cancelButton) {
         this._toggle(modifyButton, saveButton, cancelButton);
-        const attributesBox = this._host.document.getElementById("sidebar-attributes-box");
+        const attributesBox = this._host.document.getElementById('sidebar-attributes-box');
         while (attributesBox.lastChild) {
             attributesBox.removeChild(attributesBox.lastChild);
         }
@@ -344,7 +344,7 @@ sidebar.NodeSidebar = class {
         this._toggle(modifyButton, saveButton, cancelButton);
         const attributes = this._node.attributes;
         if (attributes && attributes.length > 0) {
-            const attributesBox = this._host.document.getElementById("sidebar-attributes-box");
+            const attributesBox = this._host.document.getElementById('sidebar-attributes-box');
             while (attributesBox.lastChild) {
                 attributesBox.removeChild(attributesBox.lastChild);
             }
@@ -365,7 +365,7 @@ sidebar.NodeSidebar = class {
         this._toggle(modifyButton, saveButton, cancelButton);
         const attributes = this._node.attributes;
         if (attributes && attributes.length > 0) {
-            const attributesBox = this._host.document.getElementById("sidebar-attributes-box");
+            const attributesBox = this._host.document.getElementById('sidebar-attributes-box');
             while (attributesBox.lastChild) {
                 attributesBox.removeChild(attributesBox.lastChild);
             }
@@ -384,14 +384,14 @@ sidebar.NodeSidebar = class {
 
     _toggle(modifyButton, saveButton, cancelButton) {
         if (this._buttons === false) {
-            modifyButton.setAttribute("style", "display:none;");
-            saveButton.setAttribute("style", "display:;");
-            cancelButton.setAttribute("style", "display:;");
+            modifyButton.setAttribute('style', 'display:none;');
+            saveButton.setAttribute('style', 'display:;');
+            cancelButton.setAttribute('style', 'display:;');
             this._buttons = true;
         } else {
-            modifyButton.setAttribute("style", "display:;");
-            saveButton.setAttribute("style", "display:none;");
-            cancelButton.setAttribute("style", "display:none;");
+            modifyButton.setAttribute('style', 'display:;');
+            saveButton.setAttribute('style', 'display:none;');
+            cancelButton.setAttribute('style', 'display:none;');
             this._buttons = false;
         }
     }
@@ -656,29 +656,29 @@ class NodeAttributeEditView {
     constructor(host, attribute) {
         this._host = host;
         this._attribute = attribute;
-        this._element = this._host.document.createElement("div");
-        this._element.className = "sidebar-view-item-value";
+        this._element = this._host.document.createElement('div');
+        this._element.className = 'sidebar-view-item-value';
 
         const type = this._attribute.type;
         const value = this._attribute.value;
         switch (type) {
-            case "graph": {
-                const line = this._host.document.createElement("div");
-                line.className = "sidebar-view-item-value-line-link";
+            case 'graph': {
+                const line = this._host.document.createElement('div');
+                line.className = 'sidebar-view-item-value-line-link';
                 line.appendChild(input);
-                line.addEventListener("click", () => {
-                    this._raise("show-graph", value);
+                line.addEventListener('click', () => {
+                    this._raise('show-graph', value);
                 });
                 this._element.appendChild(line);
                 this._typeview();
                 break;
             }
-            case "function": {
-                const line = this._host.document.createElement("div");
-                line.className = "sidebar-view-item-value-line-link";
+            case 'function': {
+                const line = this._host.document.createElement('div');
+                line.className = 'sidebar-view-item-value-line-link';
                 line.innerHTML = type === value.type.name;
-                line.addEventListener("click", () => {
-                    this._raise("show-graph", value.type);
+                line.addEventListener('click', () => {
+                    this._raise('show-graph', value.type);
                 });
                 this._element.appendChild(line);
                 this._typeview();
@@ -687,15 +687,17 @@ class NodeAttributeEditView {
             default: {
                 let content = new sidebar.Formatter(value, type).toString();
                 if (content && content.length > 1000) {
-                    content = content.substring(0, 1000) + "\u2026";
+                    content = content.substring(0, 1000) + '\u2026';
                 }
-                if (content && typeof content === "string") {
-                    content = content.split("<").join("&lt;").split(">").join("&gt;");
+                if (content && typeof content === 'string') {
+                    content = content.split('<').join('&lt;').split('>').join('&gt;');
                 }
-                const line = this._host.document.createElement("div");
-                line.innerText = content ? content : "&nbsp;";
-                line.className = "sidebar-view-item-value-line";
-                // line.innerHTML = content ? content : "&nbsp;";
+                const line = this._host.document.createElement('div');
+                const lineInput = this._host.document.createElement('input');
+                lineInput.setAttribute('type', 'text')
+                lineInput.setAttribute('value', content ? content : '&nbsp;');
+                line.appendChild(lineInput);
+                line.className = 'sidebar-view-item-value-line';
                 this._element.appendChild(line);
                 this._typeview();
             }
@@ -707,31 +709,31 @@ class NodeAttributeEditView {
     }
 
     _typeview() {
-        const typeLine = this._host.document.createElement("div");
-        typeLine.className = "sidebar-view-item-value-line-border";
+        const typeLine = this._host.document.createElement('div');
+        typeLine.className = 'sidebar-view-item-value-line-border';
         const type = this._attribute.type;
         const value = this._attribute.value;
-        if (type == "tensor" && value && value.type) {
-            typeLine.innerHTML = "type: " + "<code><b>" + value.type.toString() + "</b></code>";
+        if (type == 'tensor' && value && value.type) {
+            typeLine.innerHTML = 'type: ' + '<code><b>' + value.type.toString() + '</b></code>';
             this._element.appendChild(typeLine);
         } else {
-            typeLine.innerHTML = "type: " + "<code><b>" + this._attribute.type + "</b></code>";
+            typeLine.innerHTML = 'type: ' + '<code><b>' + this._attribute.type + '</b></code>';
             this._element.appendChild(typeLine);
         }
 
         const description = this._attribute.description;
         if (description) {
-            const descriptionLine = this._host.document.createElement("div");
-            descriptionLine.className = "sidebar-view-item-value-line-border";
+            const descriptionLine = this._host.document.createElement('div');
+            descriptionLine.className = 'sidebar-view-item-value-line-border';
             descriptionLine.innerHTML = description;
             this._element.appendChild(descriptionLine);
         }
 
-        if (this._attribute.type == "tensor" && value) {
+        if (this._attribute.type == 'tensor' && value) {
             const state = value.state;
-            const valueLine = this._host.document.createElement("div");
-            valueLine.className = "sidebar-view-item-value-line-border";
-            const contentLine = this._host.document.createElement("pre");
+            const valueLine = this._host.document.createElement('div');
+            valueLine.className = 'sidebar-view-item-value-line-border';
+            const contentLine = this._host.document.createElement('pre');
             contentLine.innerHTML = state || value.toString();
             valueLine.appendChild(contentLine);
             this._element.appendChild(valueLine);
