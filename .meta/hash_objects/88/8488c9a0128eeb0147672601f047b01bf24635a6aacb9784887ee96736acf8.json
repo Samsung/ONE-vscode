@@ -1,0 +1,13 @@
+{
+    "./res/samples_metadatateam/model.tflite" : {
+        "file_extension" : "tflite",
+        "create_time" : "생성 시각(date)",
+        "modified_time" : "수정 시각(date)",
+        "deleted_time" : "삭제 시각(date)",
+
+        "toolchain_version" : "사용된 툴체인 버전(string)",
+        "onecc_version" : "사용된 onecc 버전(string)",
+        "operations" : "총 op 개수, op 종류, op 종류별 개수(map)",
+        "cfg settings" : "cfg의 여러 설정값들(map)"
+    }
+}
