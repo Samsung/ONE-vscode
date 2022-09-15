@@ -98,7 +98,7 @@ class PartEditor implements PartGraphEvent {
     });
 
     this._panel.onDidChangeViewState(
-        e => {
+        () => {
             // TODO implement
         },
         null, this._disposables);
@@ -286,7 +286,7 @@ class PartEditor implements PartGraphEvent {
         }
       });
 
-      cmd.on(K_ERROR, (err) => {
+      cmd.on(K_ERROR, () => {
         let msg = 'Failed to run circle-operator: ' + this._modelFileName;
         Balloon.error(msg);
         reject(msg);
@@ -352,7 +352,7 @@ class PartEditor implements PartGraphEvent {
   }
 
   // PartGraphEvent implements
-  public onSelection(names: string[], tensors: string[]) {
+  public onSelection(names: string[], _tensors: string[]) {
     this._webview.postMessage({command: 'selectWithNames', selection: names});
   }
 }
@@ -388,7 +388,7 @@ export class PartEditorProvider implements vscode.CustomTextEditorProvider, Part
 
   public async resolveCustomTextEditor(
       document: vscode.TextDocument, webviewPanel: vscode.WebviewPanel,
-      token: vscode.CancellationToken): Promise<void> {
+      _token: vscode.CancellationToken): Promise<void> {
     let partEditor = new PartEditor(document, webviewPanel, PartEditorProvider.nextId++);
     this._partEditors.push(partEditor);
 
