@@ -20,7 +20,6 @@ import {Logger} from '../Utils/Logger';
 import {pipedSpawn} from '../Utils/PipedSpawn';
 import {ToolArgs} from './ToolArgs';
 
-const path = require('path');
 const which = require('which');
 
 const K_DATA: string = 'data';
