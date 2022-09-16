@@ -13,10 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import * as fs from 'fs';
 import * as vscode from 'vscode';
 import { Disposable, disposeAll } from './dispose';
 import { CircleGraphCtrl } from './CircleEditorCtrl';
+
+import { getUri } from '../Utils/external/Uri';
+
+import * as flatbuffers from 'flatbuffers';
+import * as circle from './circle_schema_generated';
 
 
 class CircleEditor extends CircleGraphCtrl {
@@ -50,9 +55,12 @@ class OperatorEdits implements CircleEdits {
 	//edit 내용
 }
 
+// 이 객체를 받아와서 수정해야 함 
 export class CircleEditorDocument extends Disposable implements vscode.CustomDocument {
 	private readonly _uri: vscode.Uri;
-  private _circleEditor: CircleEditor[];
+  private _circleEditor: CircleEditor[]; 
+  // circle document는 열려있는 circle 파일
+  // Editor 배열 안에 editor?
 
   static async create(uri: vscode.Uri):
       Promise<CircleEditorDocument|PromiseLike<CircleEditorDocument>> {
@@ -83,7 +91,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
     editor.initGraphCtrl(this.uri.path, undefined);
     editor.loadContent();
     this._circleEditor.push(editor);
-
+	console.log("여기 작동?",editor);
     panel.onDidDispose(() => {
       // TODO make faster
       this._circleEditor.forEach((editor, index) => {
@@ -99,9 +107,10 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 
 };
 
-
+// 맨처음 생성
 export class CircleEditorProvider implements
 	vscode.CustomEditorProvider<CircleEditorDocument> {
+	
 	public static readonly viewType = 'one.editor.circle';
 
 	private _context: vscode.ExtensionContext;
@@ -127,6 +136,7 @@ export class CircleEditorProvider implements
 
 		console.log("CircleEditorProvider 생성자 내부")
 		this._context = context;
+		
 	}
 
 	//edit 발생 시 
@@ -134,20 +144,25 @@ export class CircleEditorProvider implements
 	public readonly onDidChangeCustomDocument = this._onDidChangeCustomDocument.event;
 
 	saveCustomDocument(document: CircleEditorDocument, cancellation: vscode.CancellationToken): Thenable<void> {
+		console.log("Ctrl+s")
 		throw new Error("Method not implemented.");
 		//return document.save(cancellation); -> 이런 함수 document에 짜야 함
 	}
 	saveCustomDocumentAs(document: CircleEditorDocument, destination: vscode.Uri, cancellation: vscode.CancellationToken): Thenable<void> {
+		console.log("save as")
 		throw new Error('Method not implemented.');
+
 	}
 	revertCustomDocument(document: CircleEditorDocument, cancellation: vscode.CancellationToken): Thenable<void> {
+		console.log("revert")
 		throw new Error('Method not implemented.');
 	}
 	backupCustomDocument(document: CircleEditorDocument, context: vscode.CustomDocumentBackupContext, cancellation: vscode.CancellationToken): Thenable<vscode.CustomDocumentBackup> {
+		console.log("backup")
 		throw new Error('Method not implemented.');
 	}
 
-
+	// 우리 서클파일 연다.
 	// CustomReadonlyEditorProvider implements
 	async openCustomDocument(
 		uri: vscode.Uri, openContext: {backupId?: string},
@@ -158,8 +173,7 @@ export class CircleEditorProvider implements
 	  // TODO handle dispose
 	  // TODO handle file change events
 	  // TODO handle backup
-	  console.log("open Custom Document 내부")
-  
+	  console.log("open Custom Document 내부");
 	  return document;
 	}
 

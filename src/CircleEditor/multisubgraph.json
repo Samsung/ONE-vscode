@@ -1,0 +1,277 @@
+{
+  "version": 0,
+  "operatorCodes": [
+    {
+      "deprecatedBuiltinCode": 0,
+      "customCode": null,
+      "version": 1,
+      "builtinCode": 0
+    },
+    {
+      "deprecatedBuiltinCode": 71,
+      "customCode": null,
+      "version": 1,
+      "builtinCode": 71
+    },
+    {
+      "deprecatedBuiltinCode": 119,
+      "customCode": null,
+      "version": 1,
+      "builtinCode": 119
+    },
+    {
+      "deprecatedBuiltinCode": 32,
+      "customCode": "BatchMatMulV2",
+      "version": 1,
+      "builtinCode": 32
+    }
+  ],
+  "subgraphs": [
+    {
+      "tensors": [
+        {
+          "shape": [],
+          "type": 2,
+          "buffer": 1,
+          "name": "ifm1",
+          "quantization": null,
+          "isVariable": false,
+          "sparsity": null,
+          "shapeSignature": []
+        },
+        {
+          "shape": [2, 3],
+          "type": 0,
+          "buffer": 2,
+          "name": "ifm4",
+          "quantization": null,
+          "isVariable": false,
+          "sparsity": null,
+          "shapeSignature": []
+        },
+        {
+          "shape": [],
+          "type": 2,
+          "buffer": 3,
+          "name": "ofm1",
+          "quantization": null,
+          "isVariable": false,
+          "sparsity": null,
+          "shapeSignature": []
+        },
+        {
+          "shape": [2, 3],
+          "type": 0,
+          "buffer": 4,
+          "name": "ofm2",
+          "quantization": null,
+          "isVariable": false,
+          "sparsity": null,
+          "shapeSignature": []
+        }
+      ],
+      "inputs": [0, 1],
+      "outputs": [2],
+      "operators": [
+        {
+          "opcodeIndex": 2,
+          "inputs": [0, 1],
+          "outputs": [2, 3],
+          "builtinOptionsType": 93,
+          "builtinOptions": { "condSubgraphIndex": 1, "bodySubgraphIndex": 2 },
+          "customOptions": [],
+          "customOptionsFormat": 0,
+          "mutatingVariableInputs": [],
+          "intermediates": []
+        }
+      ],
+      "name": "Main",
+      "dataFormat": 0
+    },
+    {
+      "tensors": [
+        {
+          "shape": [],
+          "type": 2,
+          "buffer": 5,
+          "name": "ifm1",
+          "quantization": null,
+          "isVariable": false,
+          "sparsity": null,
+          "shapeSignature": []
+        },
+        {
+          "shape": [],
+          "type": 2,
+          "buffer": 8,
+          "name": "ifm2",
+          "quantization": null,
+          "isVariable": false,
+          "sparsity": null,
+          "shapeSignature": []
+        },
+        {
+          "shape": [2, 3],
+          "type": 0,
+          "buffer": 6,
+          "name": "ifm4",
+          "quantization": null,
+          "isVariable": false,
+          "sparsity": null,
+          "shapeSignature": []
+        },
+        {
+          "shape": [],
+          "type": 6,
+          "buffer": 7,
+          "name": "ofm",
+          "quantization": null,
+          "isVariable": false,
+          "sparsity": null,
+          "shapeSignature": []
+        }
+      ],
+      "inputs": [0, 2],
+      "outputs": [3],
+      "operators": [
+        {
+          "opcodeIndex": 1,
+          "inputs": [0, 1],
+          "outputs": [3],
+          "builtinOptionsType": 53,
+          "builtinOptions": {},
+          "customOptions": [],
+          "customOptionsFormat": 0,
+          "mutatingVariableInputs": [],
+          "intermediates": []
+        }
+      ],
+      "name": "WHILE_COND",
+      "dataFormat": 0
+    },
+    {
+      "tensors": [
+        {
+          "shape": [],
+          "type": 2,
+          "buffer": 9,
+          "name": "ifm1",
+          "quantization": null,
+          "isVariable": false,
+          "sparsity": null,
+          "shapeSignature": []
+        },
+        {
+          "shape": [],
+          "type": 2,
+          "buffer": 13,
+          "name": "ifm3",
+          "quantization": null,
+          "isVariable": false,
+          "sparsity": null,
+          "shapeSignature": []
+        },
+        {
+          "shape": [2, 3],
+          "type": 0,
+          "buffer": 10,
+          "name": "ifm4",
+          "quantization": null,
+          "isVariable": false,
+          "sparsity": null,
+          "shapeSignature": []
+        },
+        {
+          "shape": [2, 3],
+          "type": 0,
+          "buffer": 14,
+          "name": "ifm5",
+          "quantization": null,
+          "isVariable": false,
+          "sparsity": null,
+          "shapeSignature": []
+        },
+        {
+          "shape": [],
+          "type": 2,
+          "buffer": 11,
+          "name": "ofm1",
+          "quantization": null,
+          "isVariable": false,
+          "sparsity": null,
+          "shapeSignature": []
+        },
+        {
+          "shape": [2, 3],
+          "type": 0,
+          "buffer": 12,
+          "name": "ofm2",
+          "quantization": null,
+          "isVariable": false,
+          "sparsity": null,
+          "shapeSignature": []
+        }
+      ],
+      "inputs": [0, 2],
+      "outputs": [4, 5],
+      "operators": [
+        {
+          "opcodeIndex": 0,
+          "inputs": [0, 1],
+          "outputs": [4],
+          "builtinOptionsType": 11,
+          "builtinOptions": {
+            "fusedActivationFunction": 0,
+            "potScaleInt16": true
+          },
+          "customOptions": [],
+          "customOptionsFormat": 0,
+          "mutatingVariableInputs": [],
+          "intermediates": []
+        },
+        {
+          "opcodeIndex": 3,
+          "inputs": [2, 3],
+          "outputs": [5],
+          "builtinOptionsType": 0,
+          "builtinOptions": null,
+          "customOptions": [
+            97, 100, 106, 95, 120, 0, 97, 100, 106, 95, 121, 0, 84, 0, 3, 3, 16,
+            11, 3, 1, 3, 0, 1, 0, 4, 104, 104, 6, 36, 1
+          ],
+          "customOptionsFormat": 0,
+          "mutatingVariableInputs": [],
+          "intermediates": []
+        }
+      ],
+      "name": "WHILE_BODY",
+      "dataFormat": 0
+    }
+  ],
+  "description": "ONE-tflite2circle",
+  "buffers": [
+    { "data": [] },
+    { "data": [] },
+    { "data": [] },
+    { "data": [] },
+    { "data": [] },
+    { "data": [] },
+    { "data": [] },
+    { "data": [] },
+    { "data": [10, 0, 0, 0] },
+    { "data": [] },
+    { "data": [] },
+    { "data": [] },
+    { "data": [] },
+    { "data": [1, 0, 0, 0] },
+    {
+      "data": [
+        0, 0, 0, 64, 0, 0, 0, 64, 0, 0, 0, 64, 0, 0, 0, 64, 0, 0, 0, 64, 0, 0,
+        0, 64
+      ]
+    }
+  ],
+  "metadataBuffer": [],
+  "metadata": [],
+  "signatureDefs": []
+}

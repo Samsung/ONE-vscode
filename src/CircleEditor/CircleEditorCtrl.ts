@@ -5,6 +5,9 @@ import { Balloon } from '../Utils/Balloon';
 import { getNonce } from '../Utils/external/Nonce';
 import { BackendColor } from './BackendColor';
 
+import * as flatbuffers from 'flatbuffers';
+import * as circle from './circle_schema_generated';
+import { KeyObject } from 'crypto';
 
 class CtrlStatus {
   public static readonly init = 0;
@@ -36,7 +39,7 @@ export class MessageDefs {
   public static readonly partition = 'partition';
 
   //added by yuyeon
-  public static readonly editOperator = 'editOperator';
+  public static readonly editAttribute = 'editAttribute';
   public static readonly editTensor = 'editTensor';
   public static readonly editBuffer = 'editBuffer';
   public static readonly testMessage = 'dd';
@@ -66,6 +69,9 @@ export class CircleGraphCtrl {
   protected _state: CtrlStatus;
   protected _viewMode: string;
 
+  // HW 선언 변수
+  protected _Circle : any;
+
   private _ctrlDisposables: vscode.Disposable[] = [];
 
   public constructor(extensionUri: vscode.Uri, webView: vscode.Webview) {
@@ -84,6 +90,11 @@ export class CircleGraphCtrl {
     this._modelLength = 0;
     this._eventHandler = notify;
     this._state = CtrlStatus.init;
+
+    // HW
+    let bytes = new Uint8Array(fs.readFileSync(this._modelToLoad));
+    let buf = new flatbuffers.ByteBuffer(bytes);
+    this._Circle = circle.Model.getRootAsModel(buf).unpack();
 
     this.registerEventHandlers();
 
@@ -135,6 +146,7 @@ export class CircleGraphCtrl {
     this._webview.postMessage({ command: MessageDefs.reload });
   }
 
+  // 버튼 누르면 호출
   private registerEventHandlers() {
     // Handle messages from the webview
     this._webview.onDidReceiveMessage(message => {
@@ -143,6 +155,7 @@ export class CircleGraphCtrl {
     }, null, this._ctrlDisposables);
   }
 
+  // 메시지의 커맨드에 따라서
   protected handleReceiveMessage(message: any) {
     switch (message.command) {
       case MessageDefs.alert:
@@ -163,13 +176,12 @@ export class CircleGraphCtrl {
       case MessageDefs.selection:
         this.handleSelection(message.names, message.tensors);
         return;
-
-      //added by yuyeon
-      case MessageDefs.editOperator:
-        this.handleEditOperator();
+      //added here
+      case MessageDefs.editAttribute:
+        this.handleEditAttribute();
         return;
       case MessageDefs.editTensor:
-        this.handleEditTensor();
+        this.handleEditTensor(message.value);
         return;
       case MessageDefs.editBuffer:
         this.handleEditBuffer();
@@ -179,11 +191,12 @@ export class CircleGraphCtrl {
         return;
     }
   }
- 
+
  protected testHandler() {
 
   try {
     console.log("test message received here");
+    
     
   } catch (err: unknown) {
     this.handleLoadError(err);
@@ -191,22 +204,49 @@ export class CircleGraphCtrl {
 
 }
   //added handler functions for editing 
-  protected handleEditOperator() {
+  protected handleEditAttribute() {
 
     try {
-    
-      this._webview.postMessage({ command: MessageDefs.editOperator });
+      //test용
+      const jsonBuffer  = require('/home/ssdc/AttributeExam.json')
+      let temp = JSON.stringify(jsonBuffer);
+      //
+
+      let res = this.AttributeEdit(temp);
+      console.log(res);
+      if(res === "error"){
+        this.handleLoadError(res);
+      }
+      //필요한 매개변수 붙여서 post message
+      this._webview.postMessage({ command: MessageDefs.editAttribute });
     } catch (err: unknown) {
       this.handleLoadError(err);
     }
 
   }
 
-  protected handleEditTensor() {
+  protected handleEditTensor(message : string) {
 
     try {
-    
+      //test용
+      const jsonBuffer  = require('/home/ssdc/TensorExam.json')
+      let temp = JSON.stringify(jsonBuffer);
+      //
+      
+      //let res = this.TensorChange(temp);
+      let res = this.TensorEdit(temp);
+      console.log(res);
+      if(res === "error"){
+        this.handleLoadError(res);
+      }
+
+      // 여기서 저장할지
+      // 따로 할지 생각좀 해봐야지
+
+      //필요한 매개변수 붙여서 post message
       this._webview.postMessage({ command: MessageDefs.editTensor });
+
+      
     } catch (err: unknown) {
       this.handleLoadError(err);
     }
@@ -215,7 +255,7 @@ export class CircleGraphCtrl {
   protected handleEditBuffer() {
 
     try {
-
+      //필요한 매개변수 붙여서 post message
       this._webview.postMessage({ command: MessageDefs.editBuffer });
     } catch (err: unknown) {
       this.handleLoadError(err);
@@ -241,7 +281,6 @@ export class CircleGraphCtrl {
    */
   protected handleRequest(url: string, encoding: string) {
     // TODO check scheme
-
     const reqUrl = new URL(url);
     let filePath = vscode.Uri.joinPath(
       this._extensionUri, CircleGraphCtrl.folderMediaCircleGraph, reqUrl.pathname);
@@ -412,36 +451,39 @@ export class CircleGraphCtrl {
     }
   }
 
+  // 해당 html 내의 버튼을 클릭하면
   public getHtmlForWebview(webview: vscode.Webview) {
 
     const htmlPath = this.getMediaPath('index.html');
 
     let html =
-      `<!DOCTYPE html>
-            <html lang="en">
-
-            <head>
-                <meta charset="utf-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">F
-                <title>Document</title>
-            </head>
-
-            <body>
-                <button id="testBtn">클릭!</button><br>
-                <input type="text"></input>
-                <script>
-                    const vscode = acquireVsCodeApi();
-                    const testBtn = document.querySelector("#testBtn");
-                    testBtn.addEventListener("click", e => {
-                        e.preventDefault();
-                        vscode.postMessage({
-           type:"dd", command:"dd"
+    `<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">F
+        <title>Document</title>
+    </head>
+    
+    <body>
+      <button id="testBtn">클릭!</button><br>
+      <input type="text" id="textBox"></input>
+      <script>
+        const vscode = acquireVsCodeApi();
+        const testBtn = document.querySelector("#testBtn");
+        const textBox = document.querySelector("#textBox");
+        testBtn.addEventListener("click", e => {
+            e.preventDefault();
+            vscode.postMessage({
+              type:"tensor",
+              command:"editAttribute",
+              value: textBox.value,
             });
         });
-    </script>
-</body>
-
-</html>`;
+      </script>
+    </body>
+    
+    </html>`;
 
 
     // const htmlPath = this.getMediaPath('index.html');
@@ -513,5 +555,166 @@ export class CircleGraphCtrl {
       // to prevent view to reload after loosing focus
       retainContextWhenHidden: true
     };
+  }
+
+  private TensorEdit(data : string){
+
+    // Input Json 파일 받아오기 (GUI에서 Edit 수행 후 JSON으로 준다고 가정)
+    // EditTensor에 수정할 Tensor값 받아오는 과정
+    console.log("TensorEdit Start");
+    const InputjsonFile = JSON.parse(data);
+    console.log(InputjsonFile._inputs);
+    // input부터
+    const InputTensor = InputjsonFile?._inputs;
+
+    for (const element of InputTensor) {
+        // 정보 받아오기
+        let name;
+        let subgraph_Idx : number = 0 ;
+        let argname : string;
+        let Tensor_Idx : number;
+        let isVariable : boolean= false;
+        let Tensor_Type;
+        let Tensor_Shape;
+        let Buffer_data = null;
+
+        name = element?._name;
+        if(element?._arguments[0]?._initializer === null){
+            argname = element?._arguments[0]?._name;
+            Tensor_Idx = Number(element?._arguments[0]?._location);
+            Tensor_Type = element?._arguments[0]?._type?._dataType;
+            Tensor_Shape = element?._arguments[0]?._type?._shape?._dimensions;
+        }
+        else{
+            let ini = element?._arguments[0]?._initializer;
+            argname = ini?._name;
+            Tensor_Idx = Number(ini?._location);
+            Tensor_Type = ini?._type?._dataType;
+            Tensor_Shape = ini?._type?._shape._dimensions;
+            if(ini?._is_changed === true){
+                Buffer_data = ini?._data;
+            }
+            isVariable = ini?._is_variable;
+        }
+        //enum화 시키기 위해서 대문자화 시켜야한다.
+        Tensor_Type = Tensor_Type.toUpperCase();
+
+        // 정보 갱신
+        const EditTensor = this._Circle?.subgraphs[subgraph_Idx]?.tensors[Tensor_Idx];
+        EditTensor.name = argname;
+        //type은 enum참조   
+        let Tensor_Type_number : any = circle.TensorType[Tensor_Type];
+        EditTensor.type = Tensor_Type_number;
+        EditTensor.shape = Tensor_Shape;
+        if(Buffer_data !== null){
+            // 버퍼 크기와 shape 크기가 다르면 에러 메시지를 보내주면 된다.
+            const EditBuffer_Idx : number = EditTensor.buffer;
+            this._Circle.buffers[EditBuffer_Idx].data = Buffer_data;
+            return "error";
+        }
+    };
+
+    // output
+    const OutputTensor = InputjsonFile?._outputs;
+    for (const element of OutputTensor) {
+        // 정보 받아오기
+        let name;
+        let subgraph_Idx : number = 0 ;
+        let argname : string;
+        let Tensor_Idx : number;
+        let Tensor_Type;
+        let Tensor_Shape;
+        name = element?._name;
+        
+        argname = element?._arguments[0]?._name;
+        Tensor_Idx = Number(element?._arguments[0]?._location);
+        Tensor_Type = element?._arguments[0]?._type?._dataType;
+        Tensor_Shape = element?._arguments[0]?._type?._shape?._dimensions;
+        
+        //enum화 시키기 위해서 대문자화 시켜야한다.
+        Tensor_Type = Tensor_Type.toUpperCase();
+
+        // 정보 갱신
+        const EditTensor = this._Circle?.subgraphs[subgraph_Idx]?.tensors[Tensor_Idx];
+        EditTensor.name = argname;
+        //EditTensor.name = input; // test용
+        //type은 enum참조   
+        let Tensor_Type_number : any = circle.TensorType[Tensor_Type];
+        EditTensor.type = Tensor_Type_number;
+        EditTensor.shape = Tensor_Shape;
+    };
+
+    this.save();
+
+    return "success";
+  }
+
+  private AttributeEdit(data:string){
+    const InputjsonFile = JSON.parse(data);
+    console.log("AttributeEdit Start")
+    let OperatorIdx = InputjsonFile._location;
+    let inputName = InputjsonFile._type.name;
+    inputName = inputName.toUpperCase();
+    // for문으로 BuiltinOperator enum key 파싱 및 enum val 찾기
+    let OptionsEnumVal = 0;
+    for(let i = -4; i <= 146; i++){
+      let BuiltinOperatorKey = circle.BuiltinOperator[i];
+      if(BuiltinOperatorKey === undefined) continue;
+      BuiltinOperatorKey = circle.BuiltinOperator[i].replace('_','');
+      BuiltinOperatorKey = BuiltinOperatorKey.toUpperCase();
+      if(BuiltinOperatorKey === inputName){
+        // enum_val을 찾았으면 입력
+        OptionsEnumVal = i;
+        break;
+      }
+    }
+    // enum_val이 127 미만인 경우 OperatorCode.deprecated_builtin_code로도 참조가 가능해야한다.
+    
+    // 커스텀이 아닌경우
+    if(OptionsEnumVal != 32){
+      InputjsonFile._attributes.forEach(element => {
+        // 정보 받기
+        const subgraph_Idx : number = 0;
+        const name = element._name;
+        const value = element._value;
+        const type = element._type;
+        let valueNum = 0;
+        if(typeof(value) === 'string'){
+          // 해당 enum 참조해서 number 가져와야 한다.
+          valueNum = circle[type][value];
+        }
+        else{
+          valueNum = value;
+        }
+        
+        // 정보 전환
+        circle.subgraphs[subgraph_Idx].operators[OperatorIdx].builtinOptions.name = valueNum;
+        
+      });
+    }
+    // 커스텀인 경우 문자열로 받아온다.
+    else{
+
+    }
+
+
+
+    // Custom인 경우
+
+    // Custom이 아닌 경우
+    
+    return "success"
+  }
+
+  private save(){
+    // 수정이 끝났으면 binary로 저장
+    // 수정 후 새 버퍼 생성
+    let fbb = new flatbuffers.Builder(1024);
+
+    // 새 버퍼에 수정한 object 저장
+    circle.Model.finishModelBuffer(fbb,this._Circle.pack(fbb));
+
+    // 바이너리 파일로 저장
+    fs.writeFileSync(this._modelToLoad, fbb.asUint8Array(), 'binary');
   }
 }
