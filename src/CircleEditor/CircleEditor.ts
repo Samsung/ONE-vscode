@@ -16,12 +16,16 @@
 
 import * as vscode from 'vscode';
 import { Disposable, disposeAll } from './dispose';
-import { CircleGraphCtrl } from './CircleEditorCtrl';
+import { CircleEditorCtrl } from './CircleEditorCtrl';
 
 
-class CircleEditor extends CircleGraphCtrl {
+class CircleEditor extends CircleEditorCtrl {
 	private readonly _panel: vscode.WebviewPanel;
-
+// 변경사항배열 : 메시지 저장해놓고, save 할 때 한 번에 변경 실행 후 저장
+// message : 기능별로 짤라놓은 규칙이 있음
+// 속성, input 같이 수정 -> 배열 없이 하나의 메시지만 사용하려면 2개를 합친 메시지를 또 만들어야함
+// [ operator 속성 메시지, 인풋 메시지 ] 
+// save 시점은 같이 고민을 해보자
 	constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
 		super(extensionUri, panel.webview);
 		this._panel = panel;
@@ -63,6 +67,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 	super();
     this._uri = uri;
     this._circleEditor = [];
+	console.log("CircleDocument 생성됨")
   }
 
   public get uri() {
@@ -141,6 +146,7 @@ export class CircleEditorProvider implements
 		throw new Error('Method not implemented.');
 	}
 	revertCustomDocument(document: CircleEditorDocument, cancellation: vscode.CancellationToken): Thenable<void> {
+		
 		throw new Error('Method not implemented.');
 	}
 	backupCustomDocument(document: CircleEditorDocument, context: vscode.CustomDocumentBackupContext, cancellation: vscode.CancellationToken): Thenable<vscode.CustomDocumentBackup> {

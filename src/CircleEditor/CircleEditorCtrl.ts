@@ -50,7 +50,7 @@ export interface CircleGraphEvent {
 }
 
 /* istanbul ignore next */
-export class CircleGraphCtrl {
+export class CircleEditorCtrl {
 
   //GUI 코드 경로로 수정해야 함
   protected static readonly folderMediaCircleGraph = 'media/CircleGraph';
@@ -244,10 +244,10 @@ export class CircleGraphCtrl {
 
     const reqUrl = new URL(url);
     let filePath = vscode.Uri.joinPath(
-      this._extensionUri, CircleGraphCtrl.folderMediaCircleGraph, reqUrl.pathname);
+      this._extensionUri, CircleEditorCtrl.folderMediaCircleGraph, reqUrl.pathname);
     if (!fs.existsSync(filePath.fsPath)) {
       filePath = vscode.Uri.joinPath(
-        this._extensionUri, CircleGraphCtrl.folderMediaCircleGraphExt, reqUrl.pathname);
+        this._extensionUri, CircleEditorCtrl.folderMediaCircleGraphExt, reqUrl.pathname);
     }
 
     try {
@@ -480,12 +480,12 @@ export class CircleGraphCtrl {
   }
 
   private getMediaPath(file: string) {
-    return vscode.Uri.joinPath(this._extensionUri, CircleGraphCtrl.folderMediaCircleGraph, file);
+    return vscode.Uri.joinPath(this._extensionUri, CircleEditorCtrl.folderMediaCircleGraph, file);
   }
 
   private updateExternalUri(
     html: string, webview: vscode.Webview, search: string, replace: string) {
-    const replaceUri = this.getUriFromPath(webview, CircleGraphCtrl.folderExternal + replace);
+    const replaceUri = this.getUriFromPath(webview, CircleEditorCtrl.folderExternal + replace);
     return html.replace(search, `${replaceUri}`);
   }
 
@@ -508,7 +508,7 @@ export class CircleGraphCtrl {
       // And restrict the webview to only loading content from our extension's
       // 'media/CircleGraph' directory.
       localResourceRoots:
-        [vscode.Uri.joinPath(extensionUri, CircleGraphCtrl.folderMediaCircleGraph)],
+        [vscode.Uri.joinPath(extensionUri, CircleEditorCtrl.folderMediaCircleGraph)],
 
       // to prevent view to reload after loosing focus
       retainContextWhenHidden: true

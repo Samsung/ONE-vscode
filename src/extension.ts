@@ -29,7 +29,7 @@ import {ToolchainProvider} from './Toolchain/ToolchainProvider';
 import {Logger} from './Utils/Logger';
 
 
-import {CircleEditorProvider} from './CircleEditor/CircleEditorYuyeon';
+import {CircleEditorProvider} from './CircleEditor/CircleEditor';
 
 
 /* istanbul ignore next */

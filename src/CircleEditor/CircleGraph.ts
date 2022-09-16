@@ -16,10 +16,10 @@
 
 import * as vscode from 'vscode';
 
-import {CircleGraphCtrl} from './CircleEditorCtrl';
+import {CircleEditorCtrl} from './CircleEditorCtrl';
 
 /* istanbul ignore next */
-export class CircleGraphPanel extends CircleGraphCtrl {
+export class CircleGraphPanel extends CircleEditorCtrl {
   public static currentPanel: CircleGraphPanel|undefined;
   public static readonly viewType = 'CircleGraphPanel';
 
