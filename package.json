@@ -195,6 +195,11 @@
         "command": "one.viewer.jsonTracer",
         "title": "json tracer",
         "category": "ONE"
+      },
+      {
+        "command": "one.metadata.showMetadataViewer",
+        "title": "Show Metadata",
+        "category": "ONE"
       }
     ],
     "menus": {
@@ -275,6 +280,18 @@
           "command": "one.toolchain.uninstall",
           "when": "view == ToolchainView && viewItem =~ /toolchain/ && !one.job:running",
           "group": "inline"
+        },
+        {
+          "command": "one.metadata.showMetadataViewer",
+          "when": "view == OneExplorerView && resourceExtname in metadata.supportedFiles && viewItem != directory",
+          "group": "7_metadata@1"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "one.metadata.showMetadataViewer",
+          "when": "resourceExtname in metadata.supportedFiles && !explorerResourceIsFolder",
+          "group": "7_metadata@1"
         }
       ],
       "commandPalette": [
