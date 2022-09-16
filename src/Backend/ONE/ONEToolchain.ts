@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
+import { execSync } from 'child_process';
 import { Backend } from '../Backend';
 import { Command } from '../Command';
 import { Compiler } from '../Compiler';
 import { Executor } from '../Executor';
-import { Toolchains } from '../Toolchain';
+import { ToolchainInfo, Toolchains } from '../Toolchain';
+import { DebianToolchain } from '../ToolchainImpl/DebianToolchain';
+import { Version } from '../Version';
+
+// nodejs will be changed to onecc-docker-compiler
+const latestVersion = new DebianToolchain(new ToolchainInfo('nodejs', 'Test package', new Version(8, 10, 0, '~dfsg-2ubuntu0.4')));
 
 class ToolchainCompiler implements Compiler {
   private readonly toolchainTypes: string[];
@@ -40,18 +46,31 @@ class ToolchainCompiler implements Compiler {
     if(!this.toolchainTypes.includes(toolchainType)) {
       throw Error(`Unknown toolchain type: ${toolchainType}`);
     }
+    // prerequisites must be installed before getting available toolchains.
+    // if('prerequisites are not met') {
+    //   throw Error(`the prerequisites are not met`);
+    // }
+    if(toolchainType === 'latest') {
+      this.availableToolchains = [latestVersion];
+    }
     return this.availableToolchains;
   }
 
   getInstalledToolchains(toolchainType: string): Toolchains {
     if(!this.toolchainTypes.includes(toolchainType)) {
-      throw Error(`Unknown toolchain type: ${toolchainType}`);
-    }
-    return this.installedToolchains;
+        throw Error(`Unknown toolchain type: ${toolchainType}`);
+      }
+      // Check if the toolchain is installed in the available toolchains, and returns installed toolchain.
+      this.installedToolchains = this.getToolchains(toolchainType).filter((toolchain) => {
+        return parseInt(execSync(`dpkg-query --show ${toolchain.info.name} > /dev/null 2>&1; echo $?`)
+          .toString()
+          .trim()) === 0;
+      });
+      return this.installedToolchains;
   }
 
   prerequisitesForGetToolchains(): Command {
-    return new Command('/bin/echo', ['prerequisites'])
+    return new Command('/bin/echo', ['prerequisites']);
   }
 }
 
@@ -66,11 +85,11 @@ class ONEToolchain implements Backend {
 
   name(): string {
     return this.backendName;
-  };
+  }
 
   compiler(): Compiler|undefined {
     return this.toolchainCompiler;
-  };
+  }
   
   executor(): Executor|undefined {
     return undefined;
@@ -78,7 +97,7 @@ class ONEToolchain implements Backend {
   
   executors(): Executor[] {
     return [];
-  };
+  }
 
 }
 
