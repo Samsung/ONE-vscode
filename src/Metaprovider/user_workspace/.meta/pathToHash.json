@@ -1,7 +1,7 @@
 {
-    "./res/samples_metadatateam/model.tflite" : "888488c9a0128eeb0147672601f047b01bf24635a6aacb9784887ee96736acf8",
-    "./res/samples_metadatateam/test_onnx.circle" : "9f8641056d4e2eb03830f3c1bbb6c71ca6e820f6da94bf7055b132b8d2e6a2b5",
-    "./res/samples_metadatateam/test_onnx.log" : "37268335dd6931045bdcdf92623ff819a64244b53d0e746d438797349d4da578",
-    "./res/samples_metadatateam/while_000.circle" : "bfbbc986a512b44da1c32c43879de2c004f27f91ccb4d853fe64a7f9e8daf9d3",
-    "./res/samples_metadatateam/while_000.log" : "a2c96d518f1099a3b6afe29e443340f9f5fdf1289853fc034908444f2bcb8982"
+    "./model.tflite" : "888488c9a0128eeb0147672601f047b01bf24635a6aacb9784887ee96736acf8",
+    "./test_onnx.circle" : "9f8641056d4e2eb03830f3c1bbb6c71ca6e820f6da94bf7055b132b8d2e6a2b5",
+    "./test_onnx.log" : "37268335dd6931045bdcdf92623ff819a64244b53d0e746d438797349d4da578",
+    "./while_000.circle" : "bfbbc986a512b44da1c32c43879de2c004f27f91ccb4d853fe64a7f9e8daf9d3",
+    "./while_000.log" : "a2c96d518f1099a3b6afe29e443340f9f5fdf1289853fc034908444f2bcb8982"
 }
