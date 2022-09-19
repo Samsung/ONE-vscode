@@ -1,86 +1,27 @@
-{
-  "_inputs": [
-    {
-      "_name": "input",
-      "_visible": true,
-      "_arguments": [
-        {
-          "_name": "transpose_1;PartitionedCall/transpose_1\n7",
-          "_location": "7",
-          "_type": {
-            "_dataType": "float32",
-            "_shape": { "_dimensions": [1, 224, 224, 3] }
-          },
-          "_initializer": null
-        }
-      ]
-    },
-    {
-      "_name": "filter",
-      "_visible": true,
-      "_arguments": [
-        {
-          "_name": "convolution;PartitionedCall/convolution\n3",
+
+  {
+    "_name": "filter",
+    "_visible": true,
+    "_arguments": [
+      {
+        "_name": "namename",
+        "_location": "3",
+        "_type": {
+          "_dataType": "float32",
+          "_shape": { "_dimensions": [16, 3, 3, 3] }
+        },
+        "_initializer": {
           "_location": "3",
           "_type": {
             "_dataType": "float32",
-            "_shape": { "_dimensions": [1, 3, 3, 3] }
+            "_shape": { "_dimensions": [16, 3, 3, 3] }
           },
-          "_initializer": {
-            "_location": "3",
-            "_type": {
-              "_dataType": "float32",
-              "_shape": { "_dimensions": [16, 3, 3, 3] }
-            },
-            "_is_variable": false,
-            "_name": "convolution;PartitionedCall/convolution\n3",
-            "_is_changed": false,
-            "_data": null
-          }
+          "_is_variable": false,
+          "_name": "convolution;PartitionedCall/convolution\n3",
+          "_is_changed": false,
+          "_data": null
         }
-      ]
-    },
-    {
-      "_name": "bias",
-      "_visible": true,
-      "_arguments": [
-        {
-          "_name": "Add;PartitionedCall/Add;convolution;PartitionedCall/convolution;unknown_0\n5",
-          "_location": "5",
-          "_type": {
-            "_dataType": "float32",
-            "_shape": { "_dimensions": [16] }
-          },
-          "_initializer": {
-            "_location": "5",
-            "_type": {
-              "_dataType": "float32",
-              "_shape": { "_dimensions": [16] }
-            },
-            "_is_variable": false,
-            "_name": "Add;PartitionedCall/Add;convolution;PartitionedCall/convolution;unknown_0",
-            "_is_changed": false,
-            "_data": null
-          }
-        }
-      ]
-    }
-  ],
-  "_outputs": [
-    {
-      "_name": "output",
-      "_visible": true,
-      "_arguments": [
-        {
-          "_name": "change",
-          "_location": "8",
-          "_type": {
-            "_dataType": "float32",
-            "_shape": { "_dimensions": [1, 222, 222, 16] }
-          },
-          "_initializer": null
-        }
-      ]
-    }
-  ]
-}
+      }
+    ],
+    "_subgraphIdx": "0"
+  }
