@@ -188,12 +188,26 @@ suite('Toolchain', function() {
           done();
         });
       });
-      test('gets Children with BackendNode', function(done) {
+      test('gets Children with BackendNode of ONEToolchain', function(done) {
         let provider = new ToolchainProvider();
         let bnodes: BackendNode[] = NodeBuilder.createBackendNodes();
-        assert.strictEqual(bnodes.length, 1);
-        assert.strictEqual(bnodes[0].label, backendName);
+        assert.strictEqual(bnodes.length, 2);
+        assert.strictEqual(bnodes[0].label, 'ONE');
         let bnode: BackendNode = bnodes[0];
+        provider.getChildren(bnode).then((tnodes) => {
+          assert.strictEqual(tnodes.length, 0);
+          tnodes.forEach((tnode) => {
+            assert.instanceOf(tnode, ToolchainNode);
+          });
+          done();
+        });
+      });
+      test('gets Children with BackendNode excluding ONEToolchain', function(done) {
+        let provider = new ToolchainProvider();
+        let bnodes: BackendNode[] = NodeBuilder.createBackendNodes();
+        assert.strictEqual(bnodes.length, 2);
+        assert.strictEqual(bnodes[1].label, backendName);
+        let bnode: BackendNode = bnodes[1];
         provider.getChildren(bnode).then((tnodes) => {
           assert.strictEqual(tnodes.length, 1);
           tnodes.forEach((tnode) => {
