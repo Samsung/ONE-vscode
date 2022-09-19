@@ -29,8 +29,8 @@ import {ToolchainProvider} from './Toolchain/ToolchainProvider';
 import {Logger} from './Utils/Logger';
 
 
-import {CircleEditorProvider} from './CircleEditor/CircleEditor';
-
+//import {CircleEditorProvider} from './CircleEditor/CircleEditor';
+import {CircleEditorProvider} from './CircleEditor/CircleEditor_ver2';
 
 /* istanbul ignore next */
 export function activate(context: vscode.ExtensionContext) {
