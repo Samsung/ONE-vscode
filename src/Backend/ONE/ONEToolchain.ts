@@ -19,7 +19,7 @@ import {Backend} from '../Backend';
 import {Command} from '../Command';
 import {Compiler} from '../Compiler';
 import {Executor} from '../Executor';
-import {ToolchainInfo, Toolchains} from '../Toolchain';
+import {Toolchain, ToolchainInfo, Toolchains} from '../Toolchain';
 import {DebianToolchain} from '../ToolchainImpl/DebianToolchain';
 import {Version} from '../Version';
 
@@ -29,14 +29,10 @@ const latestVersion = new DebianToolchain(
 
 class ToolchainCompiler implements Compiler {
   private readonly toolchainTypes: string[];
-  private availableToolchains: Toolchains;
-  private installedToolchains: Toolchains;
 
   constructor() {
     // For now, we support only latest version.
     this.toolchainTypes = ['latest'];
-    this.availableToolchains = new Toolchains();
-    this.installedToolchains = new Toolchains();
   }
 
   getToolchainTypes(): string[] {
@@ -44,6 +40,7 @@ class ToolchainCompiler implements Compiler {
   }
 
   getToolchains(toolchainType: string, start?: number, count?: number): Toolchains {
+    let availableToolchains: Toolchains = new Toolchains();
     if (!this.toolchainTypes.includes(toolchainType)) {
       throw Error(`Unknown toolchain type: ${toolchainType}`);
     }
@@ -52,23 +49,24 @@ class ToolchainCompiler implements Compiler {
     //   throw Error(`the prerequisites are not met`);
     // }
     if (toolchainType === 'latest') {
-      this.availableToolchains = [latestVersion];
+      availableToolchains = [latestVersion];
     }
-    return this.availableToolchains;
+    return availableToolchains;
   }
 
   getInstalledToolchains(toolchainType: string): Toolchains {
+    let installedToolchains: Toolchains = new Toolchains();
     if (!this.toolchainTypes.includes(toolchainType)) {
       throw Error(`Unknown toolchain type: ${toolchainType}`);
     }
     // Check if the toolchain is installed in the available toolchains, and returns installed
     // toolchain.
-    this.installedToolchains = this.getToolchains(toolchainType).filter((toolchain) => {
+    installedToolchains = this.getToolchains(toolchainType).filter((toolchain) => {
       return parseInt(execSync(`dpkg-query --show ${toolchain.info.name} > /dev/null 2>&1; echo $?`)
                           .toString()
                           .trim()) === 0;
     });
-    return this.installedToolchains;
+    return installedToolchains;
   }
 
   prerequisitesForGetToolchains(): Command {
