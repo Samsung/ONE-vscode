@@ -14,59 +14,61 @@
  * limitations under the License.
  */
 
-import { execSync } from 'child_process';
-import { Backend } from '../Backend';
-import { Command } from '../Command';
-import { Compiler } from '../Compiler';
-import { Executor } from '../Executor';
-import { ToolchainInfo, Toolchains } from '../Toolchain';
-import { DebianToolchain } from '../ToolchainImpl/DebianToolchain';
-import { Version } from '../Version';
+import {execSync} from 'child_process';
+import {Backend} from '../Backend';
+import {Command} from '../Command';
+import {Compiler} from '../Compiler';
+import {Executor} from '../Executor';
+import {ToolchainInfo, Toolchains} from '../Toolchain';
+import {DebianToolchain} from '../ToolchainImpl/DebianToolchain';
+import {Version} from '../Version';
 
 // nodejs will be changed to onecc-docker-compiler
-const latestVersion = new DebianToolchain(new ToolchainInfo('nodejs', 'Test package', new Version(8, 10, 0, '~dfsg-2ubuntu0.4')));
+const latestVersion = new DebianToolchain(
+    new ToolchainInfo('nodejs', 'Test package', new Version(8, 10, 0, '~dfsg-2ubuntu0.4')));
 
 class ToolchainCompiler implements Compiler {
   private readonly toolchainTypes: string[];
   private availableToolchains: Toolchains;
   private installedToolchains: Toolchains;
-    
+
   constructor() {
     // For now, we support only latest version.
     this.toolchainTypes = ['latest'];
     this.availableToolchains = new Toolchains();
     this.installedToolchains = new Toolchains();
   }
-    
+
   getToolchainTypes(): string[] {
     return this.toolchainTypes;
   }
-    
+
   getToolchains(toolchainType: string, start?: number, count?: number): Toolchains {
-    if(!this.toolchainTypes.includes(toolchainType)) {
+    if (!this.toolchainTypes.includes(toolchainType)) {
       throw Error(`Unknown toolchain type: ${toolchainType}`);
     }
     // prerequisites must be installed before getting available toolchains.
     // if('prerequisites are not met') {
     //   throw Error(`the prerequisites are not met`);
     // }
-    if(toolchainType === 'latest') {
+    if (toolchainType === 'latest') {
       this.availableToolchains = [latestVersion];
     }
     return this.availableToolchains;
   }
 
   getInstalledToolchains(toolchainType: string): Toolchains {
-    if(!this.toolchainTypes.includes(toolchainType)) {
-        throw Error(`Unknown toolchain type: ${toolchainType}`);
-      }
-      // Check if the toolchain is installed in the available toolchains, and returns installed toolchain.
-      this.installedToolchains = this.getToolchains(toolchainType).filter((toolchain) => {
-        return parseInt(execSync(`dpkg-query --show ${toolchain.info.name} > /dev/null 2>&1; echo $?`)
-          .toString()
-          .trim()) === 0;
-      });
-      return this.installedToolchains;
+    if (!this.toolchainTypes.includes(toolchainType)) {
+      throw Error(`Unknown toolchain type: ${toolchainType}`);
+    }
+    // Check if the toolchain is installed in the available toolchains, and returns installed
+    // toolchain.
+    this.installedToolchains = this.getToolchains(toolchainType).filter((toolchain) => {
+      return parseInt(execSync(`dpkg-query --show ${toolchain.info.name} > /dev/null 2>&1; echo $?`)
+                          .toString()
+                          .trim()) === 0;
+    });
+    return this.installedToolchains;
   }
 
   prerequisitesForGetToolchains(): Command {
@@ -76,7 +78,7 @@ class ToolchainCompiler implements Compiler {
 
 class ONEToolchain implements Backend {
   private readonly backendName: string;
-  private readonly toolchainCompiler: Compiler | undefined;
+  private readonly toolchainCompiler: Compiler|undefined;
 
   constructor() {
     this.backendName = 'ONE';
@@ -90,15 +92,14 @@ class ONEToolchain implements Backend {
   compiler(): Compiler|undefined {
     return this.toolchainCompiler;
   }
-  
+
   executor(): Executor|undefined {
     return undefined;
   }
-  
+
   executors(): Executor[] {
     return [];
   }
-
 }
 
-export { ONEToolchain };
+export {ONEToolchain};

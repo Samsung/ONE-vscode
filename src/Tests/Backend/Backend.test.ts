@@ -20,6 +20,7 @@ import {backendRegistrationApi, globalBackendMap, globalExecutorArray} from '../
 import {Backend} from '../../Backend/Backend';
 import {Compiler, CompilerBase} from '../../Backend/Compiler';
 import {Executor, ExecutorBase} from '../../Backend/Executor';
+import { ONEToolchain } from '../../Backend/ONE/ONEToolchain';
 import {gToolchainEnvMap} from '../../Toolchain/ToolchainEnv';
 
 // TODO: Move it to Mockup
@@ -53,19 +54,33 @@ class ExecutorMockup extends ExecutorBase {
 
 suite('Backend', function() {
   suite('backendRegistrationApi', function() {
+    test('register a ONEToolchain', function(){
+      assert.strictEqual(Object.entries(globalBackendMap).length, 1);
+      assert.strictEqual(globalExecutorArray.length, 0);
+
+      const entries = Object.entries(globalBackendMap);
+      assert.strictEqual(entries.length, 1);
+      // this runs once
+      for (const [key, value] of entries) {
+        assert.strictEqual(key, 'ONE');
+        assert.deepStrictEqual(value, new ONEToolchain());
+      }
+    });
     test('registers a backend', function() {
       let registrationAPI = backendRegistrationApi();
 
-      assert.strictEqual(Object.entries(globalBackendMap).length, 0);
+      assert.strictEqual(Object.entries(globalBackendMap).length, 1);
       assert.strictEqual(globalExecutorArray.length, 0);
 
       let backend = new BackendMockup();
       registrationAPI.registerBackend(backend);
 
       const entries = Object.entries(globalBackendMap);
-      assert.strictEqual(entries.length, 1);
+      assert.strictEqual(entries.length, 2);
       // this runs once
       for (const [key, value] of entries) {
+        if(key === 'ONE')
+          {continue;}
         assert.strictEqual(key, backendName);
         assert.deepStrictEqual(value, backend);
       }
