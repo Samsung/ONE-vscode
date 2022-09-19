@@ -19,13 +19,20 @@ import { Disposable, disposeAll } from './dispose';
 import { CircleEditorCtrl } from './CircleEditorCtrl';
 
 
+interface CircleEdit {
+	message: any; //edit할 사항 작성
+}
+
 class CircleEditor extends CircleEditorCtrl {
 	private readonly _panel: vscode.WebviewPanel;
-// 변경사항배열 : 메시지 저장해놓고, save 할 때 한 번에 변경 실행 후 저장
-// message : 기능별로 짤라놓은 규칙이 있음
-// 속성, input 같이 수정 -> 배열 없이 하나의 메시지만 사용하려면 2개를 합친 메시지를 또 만들어야함
-// [ operator 속성 메시지, 인풋 메시지 ] 
-// save 시점은 같이 고민을 해보자
+
+	// 변경사항배열 : 메시지 저장해놓고, save 할 때 한 번에 변경 실행 후 저장
+	// message : 기능별로 짤라놓은 규칙이 있음
+	// 속성, input 같이 수정 -> 배열 없이 하나의 메시지만 사용하려면 2개를 합친 메시지를 또 만들어야함
+	// [ operator 속성 메시지, 인풋 메시지 ] 
+	// save 시점은 같이 고민을 해보자
+	private _edits: Array<CircleEdit> = [];
+
 	constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
 		super(extensionUri, panel.webview);
 		this._panel = panel;
@@ -38,6 +45,9 @@ class CircleEditor extends CircleEditorCtrl {
 	public owner(panel: vscode.WebviewPanel) {
 		return this._panel === panel;
 	}
+
+//event 발생할 때 이 클래스를 거치게 할 방법이 없나..?
+
 }
 
 interface CircleEditorDocumentDelegate { //?
@@ -45,14 +55,6 @@ interface CircleEditorDocumentDelegate { //?
 }
 
 
-interface CircleEdits {
-	content: string; //edit할 사항 작성
-}
-
-class OperatorEdits implements CircleEdits {
-	content = "operator";
-	//edit 내용
-}
 
 export class CircleEditorDocument extends Disposable implements vscode.CustomDocument {
 	private readonly _uri: vscode.Uri;
@@ -102,6 +104,8 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
     return editor;
   }
 
+//makeEdit, save, saveAs, revert, backup(when implementing hot exit)
+
 };
 
 
@@ -111,6 +115,9 @@ export class CircleEditorProvider implements
 
 	private _context: vscode.ExtensionContext;
 
+	private _onDidChangeCustomDocument = new vscode.EventEmitter<vscode.CustomDocumentEditEvent<CircleEditorDocument>>;
+	onDidChangeCustomDocument: vscode.Event<vscode.CustomDocumentEditEvent<CircleEditorDocument>>;
+	
 	public static register(context: vscode.ExtensionContext): void {
 		const provider = new CircleEditorProvider(context);
 
@@ -132,13 +139,16 @@ export class CircleEditorProvider implements
 
 		console.log("CircleEditorProvider 생성자 내부")
 		this._context = context;
+		this.onDidChangeCustomDocument = this._onDidChangeCustomDocument.event;
+
 	}
 
-	//edit 발생 시 
-	private readonly _onDidChangeCustomDocument = new vscode.EventEmitter<vscode.CustomDocumentEditEvent<CircleEditorDocument>>();
-	public readonly onDidChangeCustomDocument = this._onDidChangeCustomDocument.event;
+	
 
+	//edit 발생 시 
+	
 	saveCustomDocument(document: CircleEditorDocument, cancellation: vscode.CancellationToken): Thenable<void> {
+		
 		throw new Error("Method not implemented.");
 		//return document.save(cancellation); -> 이런 함수 document에 짜야 함
 	}
