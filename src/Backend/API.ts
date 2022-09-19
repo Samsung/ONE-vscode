@@ -20,7 +20,7 @@ import {Backend} from './Backend';
 import {gToolchainEnvMap, ToolchainEnv} from '../Toolchain/ToolchainEnv';
 import {Logger} from '../Utils/Logger';
 import {Executor} from './Executor';
-import { ONEToolchain } from './ONE/ONEToolchain';
+import {ONEToolchain} from './ONE/ONEToolchain';
 
 /**
  * Interface of backend map
