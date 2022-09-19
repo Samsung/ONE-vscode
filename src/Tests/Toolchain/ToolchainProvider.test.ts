@@ -183,8 +183,9 @@ suite('Toolchain', function() {
       test('gets Children with undefined', function(done) {
         let provider = new ToolchainProvider();
         provider.getChildren(undefined).then((bnodes) => {
-          assert.strictEqual(bnodes.length, 1);
-          assert.strictEqual(bnodes[0].label, backendName);
+          assert.strictEqual(bnodes.length, 2);
+          assert.strictEqual(bnodes[0].label, 'ONE');
+          assert.strictEqual(bnodes[1].label, backendName);
           done();
         });
       });
