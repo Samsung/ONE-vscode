@@ -95,19 +95,25 @@ suite('Toolchain', function() {
     suite('#createBackendNodes()', function() {
       test('creates BackendNode list', function() {
         let bnodes: BackendNode[] = NodeBuilder.createBackendNodes();
-        assert.strictEqual(bnodes.length, 1);
-        assert.strictEqual(bnodes[0].label, backendName);
+        assert.strictEqual(bnodes.length, 2);
+        assert.strictEqual(bnodes[0].label, 'ONE');
+        assert.strictEqual(bnodes[1].label, backendName);
       });
     });
     suite('#createToolchainNodes()', function() {
       test('creates ToolchainNode list', function() {
         let bnodes: BackendNode[] = NodeBuilder.createBackendNodes();
-        assert.strictEqual(bnodes.length, 1);
-        assert.strictEqual(bnodes[0].label, backendName);
-        let bnode: BackendNode = bnodes[0];
-        let tnodes = NodeBuilder.createToolchainNodes(bnode);
-        assert.strictEqual(tnodes.length, 1);
-        tnodes.forEach((tnode) => {
+        assert.strictEqual(bnodes.length, 2);
+        assert.strictEqual(bnodes[0].label, 'ONE');
+        assert.strictEqual(bnodes[1].label, backendName);
+        let bnode1: BackendNode = bnodes[0];
+        let tnodes1 = NodeBuilder.createToolchainNodes(bnode1);
+        assert.strictEqual(tnodes1.length, 0);
+
+        let bnode2: BackendNode = bnodes[1];
+        let tnodes2 = NodeBuilder.createToolchainNodes(bnode2);
+        assert.strictEqual(tnodes2.length, 1);
+        tnodes2.forEach((tnode) => {
           assert.strictEqual(tnode.backendName, backendName);
         });
       });
@@ -115,15 +121,22 @@ suite('Toolchain', function() {
     suite('#createToolchainNodes()', function() {
       test('NEG: creates ToolchainNode list using invalid backend node', function() {
         const bnodes: BackendNode[] = NodeBuilder.createBackendNodes();
-        assert.strictEqual(bnodes.length, 1);
-        assert.strictEqual(bnodes[0].label, backendName);
+        assert.strictEqual(bnodes.length, 2);
+        assert.strictEqual(bnodes[0].label, 'ONE');
+        assert.strictEqual(bnodes[1].label, backendName);
+
         const tnodes1 = NodeBuilder.createToolchainNodes(bnodes[0]);
-        assert.strictEqual(tnodes1.length, 1);
+        assert.strictEqual(tnodes1.length, 0);
+        let tnodes2 = NodeBuilder.createToolchainNodes(tnodes1[0]);
+        assert.strictEqual(tnodes2.length, 0);
+
+        const tnodes3 = NodeBuilder.createToolchainNodes(bnodes[1]);
+        assert.strictEqual(tnodes3.length, 1);
         tnodes1.forEach((tnode) => {
           assert.strictEqual(tnode.backendName, backendName);
         });
-        let tnodes2 = NodeBuilder.createToolchainNodes(tnodes1[0]);
-        assert.strictEqual(tnodes2.length, 0);
+        let tnodes4 = NodeBuilder.createToolchainNodes(tnodes3[0]);
+        assert.strictEqual(tnodes4.length, 0);
       });
     });
     suite('#createToolchainNodes()', function() {
