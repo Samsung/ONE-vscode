@@ -365,8 +365,9 @@ suite('View', function() {
       test('gets all toolchain env names from global toolchain env', function() {
         let quickInput = new InstallQuickInput();
         let envs = quickInput.getAllToolchainEnvNames();
-        assert.strictEqual(envs.length, 1);
-        assert.strictEqual(envs[0], backendName);
+        assert.strictEqual(envs.length, 2);
+        assert.strictEqual(envs[0], 'ONE');
+        assert.strictEqual(envs[1], backendName);
       });
     });
 
