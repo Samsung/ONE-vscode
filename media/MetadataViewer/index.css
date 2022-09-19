@@ -1,0 +1,119 @@
+body {
+  background-color: #1E1E1E;
+  max-width: 500px;
+}
+
+/* white테마일 때 처리 */
+body.vscode-light {
+  background-color: #ececec;
+}
+
+body.vscode-light .view-item-header{
+  color: #252526;
+}
+
+body.vscode-light .view-item-name {
+  color: #242424;
+}
+
+body.vscode-light .view-item-sub-header{
+  color: steelblue;
+}
+
+body.vscode-light .view-item-value{
+  color: black;
+  background-color: white;
+}
+
+
+
+
+.view-item-header {
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 20px;
+  font-weight: bold;
+  font-family: sans-serif;
+  color: lightblue;
+}
+
+
+
+.view-item-content {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  margin-bottom: 10px;
+  
+}
+
+
+.view-item-value {
+  margin-left: 10px;
+  background-color: #252526;
+  padding: 10px;
+  width: 350px;
+  border-radius: 3px;
+  font-weight: bold;
+}
+
+.view-item-value-list {
+  width: 380px;
+}
+
+.view-item-name {
+  color: navajowhite;
+}
+
+.view-item-content{
+  color:white;
+}
+
+.view-item-sub-header{
+  margin-left: 10px;
+  font-size: 16px;
+  color: white;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.view-item-info-content{
+  font-size: 20px;
+  margin-left: 20px;
+  margin-top: 10px;
+}
+
+.view-item-header-box {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.view-item-show-button{
+  font-size: 30px;
+  cursor: pointer;
+}
+
+.view-item-show-button:hover{
+  color: gray;
+}
+
+#cfg_settings-view-item-box {
+  margin-bottom: 30px;
+}
+
+.view-item-content-box{
+  display: block;
+}
+
+.aline-items-baseline {
+  align-items: baseline;
+}
+
+.margin-bottom-border-thin-gray{
+  box-sizing: border-box;
+  border-bottom: solid rgba(0, 0, 0, 0.20);
+  border-width: 0.1px;
+}
+
