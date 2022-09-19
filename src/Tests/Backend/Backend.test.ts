@@ -55,6 +55,8 @@ class ExecutorMockup extends ExecutorBase {
 suite('Backend', function() {
   suite('backendRegistrationApi', function() {
     test('register a ONEToolchain', function() {
+      let registrationAPI = backendRegistrationApi();
+
       assert.strictEqual(Object.entries(globalBackendMap).length, 1);
       assert.strictEqual(globalExecutorArray.length, 0);
 
