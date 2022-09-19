@@ -251,16 +251,6 @@ suite('Toolchain', function() {
     });
 
     suite('#uninstall', function() {
-      test('requests uninstall ONEToolchain', function() {
-        const provider = new ToolchainProvider();
-        const bnodes = NodeBuilder.createBackendNodes();
-        assert.strictEqual(bnodes.length, 2);
-        assert.strictEqual(bnodes[0].label, 'ONE');
-        const tnodes = NodeBuilder.createToolchainNodes(bnodes[0]);
-        assert.isAbove(tnodes.length, 0);
-        provider.uninstall(tnodes[0]);
-        assert.isTrue(true);
-      });
       test('requests uninstall', function() {
         const provider = new ToolchainProvider();
         const bnodes = NodeBuilder.createBackendNodes();
@@ -306,16 +296,6 @@ suite('Toolchain', function() {
     });
 
     suite('#setDefaultToolchain', function() {
-      test('request setDefaultToolchain with ONEToolchain', function() {
-        const provider = new ToolchainProvider();
-        const bnodes = NodeBuilder.createBackendNodes();
-        assert.strictEqual(bnodes.length, 2);
-        assert.strictEqual(bnodes[0].label, 'ONE');
-        const tnodes = NodeBuilder.createToolchainNodes(bnodes[0]);
-        assert.isAbove(tnodes.length, 0);
-        provider.setDefaultToolchain(tnodes[0]);
-        assert.isTrue(DefaultToolchain.getInstance().isEqual(tnodes[0].toolchain));
-      });
       test('request setDefaultToolchain', function() {
         const provider = new ToolchainProvider();
         const bnodes = NodeBuilder.createBackendNodes();
