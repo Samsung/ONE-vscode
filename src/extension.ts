@@ -27,6 +27,7 @@ import {PartEditorProvider} from './PartEditor/PartEditor';
 import {PartGraphSelPanel} from './PartEditor/PartGraphSelector';
 import {ToolchainProvider} from './Toolchain/ToolchainProvider';
 import {MetadataViewerPanel} from './MetadataViewer/MetadataViewerPanel';
+import {RelationViewerPanel} from './RelationViewer/RelationViewerPanel';
 import {Logger} from './Utils/Logger';
 
 /* istanbul ignore next */
@@ -66,6 +67,8 @@ export function activate(context: vscode.ExtensionContext) {
   CircleViewerProvider.register(context);
 
   MetadataViewerPanel.register(context);
+
+  RelationViewerPanel.register(context);
 
   // returning backend registration function that will be called by backend extensions
   return backendRegistrationApi();

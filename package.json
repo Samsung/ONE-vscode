@@ -200,6 +200,11 @@
         "command": "one.metadata.showMetadataViewer",
         "title": "Show Metadata",
         "category": "ONE"
+      },
+      {
+        "command": "one.relation.showRelationViewer",
+        "title": "Show Relation",
+        "category": "ONE"
       }
     ],
     "menus": {
@@ -283,8 +288,13 @@
         },
         {
           "command": "one.metadata.showMetadataViewer",
-          "when": "view == OneExplorerView && resourceExtname in metadata.supportedFiles && viewItem != directory",
+          "when": "view == OneExplorerView && viewItem =~ /baseModel|product/",
           "group": "7_metadata@1"
+        },
+        {
+          "command": "one.relation.showRelationViewer",
+          "when": "view == OneExplorerView && viewItem =~ /baseModel|product/",
+          "group": "7_metadata@2"
         }
       ],
       "explorer/context": [
@@ -292,6 +302,11 @@
           "command": "one.metadata.showMetadataViewer",
           "when": "resourceExtname in metadata.supportedFiles && !explorerResourceIsFolder",
           "group": "7_metadata@1"
+        },
+        {
+          "command": "one.relation.showRelationViewer",
+          "when": "resourceExtname in relation.supportedFiles && !explorerResourceIsFolder",
+          "group": "7_metadata@2"
         }
       ],
       "commandPalette": [
