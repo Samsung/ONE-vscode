@@ -30,6 +30,7 @@ suite('Toolchain', function() {
   const compiler = new MockCompiler();
   const toolchainEnv = new ToolchainEnv(compiler);
   const backendName = 'dummy_backend';
+  const oneBackendName = 'ONE';
 
   setup(function() {
     gToolchainEnvMap[backendName] = toolchainEnv;
@@ -116,9 +117,9 @@ suite('Toolchain', function() {
     suite('#createToolchainNodes()', function() {
       test('NEG: creates ToolchainNode list using invalid backend node', function() {
         const bnodes: BackendNode[] = NodeBuilder.createBackendNodes();
-        assert.strictEqual(bnodes.length, 1);
-        assert.strictEqual(bnodes[0].label, backendName);
-        const tnodes1 = NodeBuilder.createToolchainNodes(bnodes[0]);
+        assert.strictEqual(bnodes.length, 2);
+        assert.strictEqual(bnodes[1].label, backendName);
+        const tnodes1 = NodeBuilder.createToolchainNodes(bnodes[1]);
         assert.strictEqual(tnodes1.length, 1);
         tnodes1.forEach((tnode) => {
           assert.strictEqual(tnode.backendName, backendName);
@@ -171,17 +172,19 @@ suite('Toolchain', function() {
       test('gets Children with undefined', function(done) {
         let provider = new ToolchainProvider();
         provider.getChildren(undefined).then((bnodes) => {
-          assert.strictEqual(bnodes.length, 1);
-          assert.strictEqual(bnodes[0].label, backendName);
+          assert.strictEqual(bnodes.length, 2);
+          assert.strictEqual(bnodes[0].label, oneBackendName);
+          assert.strictEqual(bnodes[1].label, backendName);
           done();
         });
       });
       test('gets Children with BackendNode', function(done) {
         let provider = new ToolchainProvider();
         let bnodes: BackendNode[] = NodeBuilder.createBackendNodes();
-        assert.strictEqual(bnodes.length, 1);
-        assert.strictEqual(bnodes[0].label, backendName);
-        let bnode: BackendNode = bnodes[0];
+        assert.strictEqual(bnodes.length, 2);
+        assert.strictEqual(bnodes[0].label, oneBackendName);
+        assert.strictEqual(bnodes[1].label, backendName);
+        let bnode: BackendNode = bnodes[1];
         provider.getChildren(bnode).then((tnodes) => {
           assert.strictEqual(tnodes.length, 1);
           tnodes.forEach((tnode) => {
