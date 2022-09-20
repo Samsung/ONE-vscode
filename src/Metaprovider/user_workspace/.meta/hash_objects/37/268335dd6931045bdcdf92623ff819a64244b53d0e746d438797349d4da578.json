@@ -1,5 +1,6 @@
 {
-    "./res/samples_metadatateam/test_onnx.log" : {
+    "test_onnx.log" : {
+        "name" : "test_onnx.log",
         "file_extension" : "log",
         "create_time" : "생성 시각(date)",
         "modified_time" : "수정 시각(date)",

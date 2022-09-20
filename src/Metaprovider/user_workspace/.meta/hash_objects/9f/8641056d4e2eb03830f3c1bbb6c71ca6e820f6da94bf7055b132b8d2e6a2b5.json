@@ -1,5 +1,6 @@
 {
-    "./res/samples_metadatateam/test_onnx.circle" : {
+    "test_onnx.circle" : {
+        "name" : "test_onnx.circle",
         "file_extension" : "circle",
         "create_time" : "생성 시각(date)",
         "modified_time" : "수정 시각(date)",

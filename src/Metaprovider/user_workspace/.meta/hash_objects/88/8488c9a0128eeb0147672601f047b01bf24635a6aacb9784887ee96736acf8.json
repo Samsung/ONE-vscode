@@ -1,5 +1,6 @@
 {
-    "./res/samples_metadatateam/model.tflite" : {
+    "model.tflite" : {
+        "name" : "tflite",
         "file_extension" : "tflite",
         "create_time" : "생성 시각(date)",
         "modified_time" : "수정 시각(date)",

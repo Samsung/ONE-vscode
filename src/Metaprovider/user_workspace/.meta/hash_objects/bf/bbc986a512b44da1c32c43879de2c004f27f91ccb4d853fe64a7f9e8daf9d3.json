@@ -1,5 +1,6 @@
 {
-    "./res/samples_metadatateam/while_000.circle" : {
+    "while_000.circle" : {
+        "name" : "while_000.circle",
         "file_extension" : "circle",
         "create_time" : "생성 시각(date)",
         "modified_time" : "수정 시각(date)",
