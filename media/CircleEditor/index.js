@@ -146,6 +146,12 @@ host.BrowserHost = class {
                 case 'reload':
                     this._msgReload(message);
                     break;
+                /**
+                 * change a model when the file changed
+                 */
+                case 'edit':
+                    this._msgLoadModel(message);
+                    break;
             }
         });
 
@@ -439,13 +445,17 @@ host.BrowserHost = class {
             });
     }
 
-    _open(file, files) {
+    /**
+     * if subgraphIdx and nodeIdx aren't null,
+     * reload to reflect the modifications
+     */
+    _open(file, files, subgraphIdx, nodeIdx) {
         this._view.show('welcome spinner');
         const context = new host.BrowserHost.BrowserFileContext(this, file, files);
         context.open()
             .then(() => {
-                return this._view.open(context).then((model) => {
-                    this._view.show(null);
+                return this._view.open(context, subgraphIdx, nodeIdx).then((model) => {
+                    this._view.show(null, nodeIdx);
                     this.document.title = files[0].name;
 
                     // notify owner that load has finished
@@ -472,7 +482,15 @@ host.BrowserHost = class {
             if (offset + length >= total) {
                 // this is the last packet
                 const file1 = new File(this._modelData, this._modelPath, {type: ''});
-                this._view._host._open(file1, [file1]);
+                /**
+                 * if subgraphIdx and nodeIdx aren't null,
+                 * reload to reflect the modifications
+                 */
+                if (message.subgraphIdx && message.nodeIdx) {
+                    this._view._host._open(file1, [file1], message.subgraphIdx, message.nodeIdx);
+                } else {
+                    this._view._host._open(file1, [file1]);
+                }
                 this._loadingModelArray = [];
                 this._view.show('default');
 

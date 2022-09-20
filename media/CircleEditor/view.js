@@ -140,7 +140,7 @@ view.View = class {
         }
     }
 
-    show(page) {
+    show(page, nodeIdx) {
         this.updateThemeColor();
 
         if (!page) {
@@ -168,6 +168,10 @@ view.View = class {
             }
         }
         this._page = page;
+        // if nodeIdx is not null, the nodesidebar is opened
+        if (nodeIdx) {
+            this.showNodeProperties(this._graphs[0]._nodes[parseInt(nodeIdx)], null);
+        }
     }
 
     cut() {
@@ -727,7 +731,11 @@ view.View = class {
         return this._modelFactoryService.accept(file);
     }
 
-    open(context) {
+    /**
+     * if subgraphIdx isn't null,
+     * the subgraph that is turned on is the subgraphIdx graph.
+     */
+    open(context, subgraphIdx, nodeIdx) {
         this._host.event('Model', 'Open', 'Size', context.stream ? context.stream.length : 0);
         this._sidebar.close();
         return this._timeout(2).then(() => {
@@ -743,10 +751,15 @@ view.View = class {
                     this._host.event('Model', 'Format', format.join(' '));
                 }
                 return this._timeout(20).then(() => {
-                    const graphs = Array.isArray(model.graphs) && model.graphs.length > 0 ?
-                        [model.graphs[0]] :
-                        [];
-                    return this._updateGraph(model, graphs);
+                    let graphs = [];
+                    if (subgraphIdx) {
+                        graphs = [model.graphs[parseInt(subgraphIdx)]];
+                    } else {
+                        graphs = Array.isArray(model.graphs) && model.graphs.length > 0 ?
+                            [model.graphs[0]] :
+                            [];
+                    }
+                    return this._updateGraph(model, graphs, nodeIdx);
                 });
             });
         });
@@ -786,7 +799,7 @@ view.View = class {
         return Array.isArray(this._graphs) && this._graphs.length > 0 ? this._graphs[0] : null;
     }
 
-    _updateGraph(model, graphs) {
+    _updateGraph(model, graphs, nodeIdx) {
         const lastModel = this._model;
         const lastGraphs = this._graphs;
         this._model = model;
@@ -821,7 +834,7 @@ view.View = class {
             return this.renderGraph(this._model, this.activeGraph)
                 .then(() => {
                     if (this._page !== 'default') {
-                        this.show('default');
+                        this.show('default', nodeIdx);
                     }
                     update();
                     return this._model;
