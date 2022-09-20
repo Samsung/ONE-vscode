@@ -14,49 +14,51 @@
  * limitations under the License.
  */
 
-// const relationData = [
-//   {"name": "Top Level", "parent": "", "path": "???", "onecc version": "1.0.0", "toolchain version": "1.0.0"},  // TODO: name => id
-//   {"name": "Level 2: A", "parent": "Top Level", "path": "???", "onecc version": "1.0.0", "toolchain version": "1.0.0"},
-//   {"name": "Level 2: B", "parent": "Top Level", "path": "???", "onecc version": "1.0.0", "toolchain version": "1.0.0"},
-//   {"name": "Son of A", "parent": "Level 2: A", "path": "???", "onecc version": "1.0.0", "toolchain version": "1.0.0"},
-//   {"name": "Daughter of A", "parent": "Level 2: A", "path": "???", "onecc version": "1.0.0", "toolchain version": "1.0.0"},
-// ];
+let currentFileUri = "";
 
-// const treeData =
-//   {
-//     "name": "Top Level",
-//     "children": [
-//       { 
-// 		"name": "Level 2: A",
-//         "children": [
-//           { "name": "Son of A" },
-//           { "name": "Daughter of A" }
-//         ]
-//       },
-//       { "name": "Level 2: B" }
-//     ]
-//   };
+//웹뷰 오른쪽 클릭 막기
+document.addEventListener('contextmenu', event => event.preventDefault());
 
 const vscode = acquireVsCodeApi();
 
-window.addEventListener('message', event => {
-  const message = event.data; // The JSON data our extension sent
-  const { relationData } = message;
-  detachTree();
-  attachTree(relationData);
+window.addEventListener('message',(event) => {
+  const message = event.data;
+  const { selected, relationData } = message.payload;
+  
+  switch (message.type) {
+    case 'create':
+      currentFileUri = message.fileUri;
+      detachTree();
+      attachTree(relationData);
+      console.log('메시지는: ', message);
+      vscode.setState({fileUri:message.fileUri});
+      break;
+    case 'update':
+      console.log('메시지는: ', message);
+      detachTree();
+      attachTree(relationData);
+      break;
+    default:
+      break;
+  }
 });
 
 function attachTree(relationData) {
+  
+  //현재 파일 절대 경로 보여주기
+  // const currentInnerText = document.getElementById('nav-bar').innerText;
+  // document.getElementById('nav-bar').innerText = `${currentInnerText} ${currentFileUri}` ;
+  
   //  assigns the data to a hierarchy using parent-child relationships
   const treeData = d3.stratify()
-    .id(d => d.name)
+    .id(d => d.id)
     .parentId(d => d.parent)
     (relationData);
   
   // set the dimensions and margins of the diagram
-  const margin = {top: 40, right: 90, bottom: 50, left: 90},
-      width = 660 - margin.left - margin.right,
-      height = 500 - margin.top - margin.bottom;
+  const margin = {top: 60, right: 90, bottom: 60, left: 90},
+      width = 1400 - margin.left - margin.right,
+      height = 600 - margin.top - margin.bottom;
   
   // declares a tree layout and assigns the size
   const treemap = d3.tree()
@@ -69,10 +71,10 @@ function attachTree(relationData) {
   // appends a 'group' element to 'svg'
   // moves the 'group' element to the top left margin
   // TODO: background-color 다른 색으로 바꾸기.
-  const svg = d3.select("body").append("svg")
+  const svg = d3.select(".relation-main-box").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
-        .style("background-color", "lightgoldenrodyellow"),
+        .style("background-color", "#545454"),
       g = svg.append("g")
         .attr("transform",
               "translate(" + margin.left + "," + margin.top + ")");
@@ -96,24 +98,66 @@ function attachTree(relationData) {
       .attr("class", d => "node" + (d.children ? " node--internal" : " node--leaf"))
       .attr("transform", d => "translate(" + d.x + "," + d.y + ")");
   
-  // adds the circle to the node
-  node.append("circle")
-    .attr("r", 10)
+  let waitForDouble = null;
+  const rectSizeWidth = 130;
+  const rectSizeHeight = 50;
+  // adds the rectangle to the node
+  node.append("rect")
+    .attr("x", -rectSizeWidth / 2)
+    .attr("y", -rectSizeHeight)
+    .attr("width", rectSizeWidth)
+    .attr("height", rectSizeHeight)
+    .attr("rx",8)
+    .attr("ry",8)
+    .on("dblclick", (p,d) => {
+      if (waitForDouble !== null) {
+        clearTimeout(waitForDouble);
+        waitForDouble = null;
+        console.log('더블 클릭입니다.', d);
+        postMessage(d.data.dataList[d.data.idx].path);
+      }
+    })
     .on("click", (p, d) => {
-      postMessage(d.data.path);
+      if(waitForDouble === null) {
+        waitForDouble = setTimeout(() => {
+          console.log('원 클릭입니다.', d);
+          waitForDouble = null;
+        }, 300);
+      }
+    })
+    .on("contextmenu",(p,d)=>{
+      console.log('오른쪽 클릭입니다.', d);
     });
-  
+    
+    
+  const hoverText = document.createElement('div');
+  document.body.appendChild(hoverText);
+  hoverText.classList.add('hover-text');
   // adds the text to the node
   node.append("text")
     .attr("dy", ".35em")
-    .attr("y", d => d.children ? -20 : 20)
+    .attr("y", -rectSizeHeight)
     .style("text-anchor", "middle")
-    .text(d => d.data.name);
+    .text(d => d.data.dataList[d.data.idx].name)
+    .on('mouseover', (mouse, node) => {
+      hoverText.style.visibility = 'visible';
+      hoverText.innerText = "/home/jihongyu/ONE-vscode/res/modelDir/truediv/model.q8.circle.log";
+      hoverText.style.left = `${node.x}px`;
+      hoverText.style.top = `${node.y + 75}px`;
+      
+    }).on('mouseout', (mouse, node) => {
+      hoverText.style.visibility = 'hidden';
+    });
+  
+  node.append("text")
+  .attr("dy", ".35em")
+  .attr("y", -rectSizeHeight + 30)
+  .style("text-anchor", "middle")
+  .text(d => d.data.dataList[d.data.idx].name);
 }
 
 function postMessage(path) {
-  console.log(path);
-  // vscode.postMessage({});
+  vscode.postMessage({path: path});
 }
 
 function detachTree() {

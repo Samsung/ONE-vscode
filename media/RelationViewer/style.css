@@ -14,20 +14,71 @@
  * limitations under the License.
  */
 
+ body {
+  background-color: #545454;
+  padding : 0;
+  width: 100%;
+  height: 100vh;
+}
+
 .node circle {
     fill: #fff;
     stroke: steelblue;
     stroke-width: 3px;
   }
+
+.node rect {
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 1px;
+  cursor: pointer;
+}
   
-  .node text { font: 12px sans-serif; }
+.node text { 
+  font: 15px sans-serif;
+  text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.node--internal text {
+  text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff;
+}
+
+.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 2px;
   
-  .node--internal text {
-    text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff;
-  }
-  
-  .link {
-    fill: none;
-    stroke: #ccc;
-    stroke-width: 2px;
-  }
+}
+
+.relation-box{
+  height: 100%;
+  width: 100%;
+  /* 약간 오른쪽으로 치운것 같아 왼쪽으로 이동 */
+  /* margin-left: -50px;  */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.relation-main-box{
+  width: 100%;
+}
+
+.hover-text{
+  position: absolute;
+  background-color: white;
+  color: black;
+  padding: 3px;
+  border-radius: 3px;
+  width: max-content;
+}
+
+.nav-bar {
+  background-color: #1e1e1e;
+  height: 22px;
+  position: fixed;
+  width: 100%;
+  padding-left: 10px;
+}

@@ -17,14 +17,31 @@ limitations under the License.
 -->
 <head>
   <meta charset="UTF-8">
+  <meta
+        http-equiv="Content-Security-Policy"
+        content="img-src vscode;
+                style-src 'unsafe-inline' ${webview.cspSource};
+                script-src 'nonce-${nonce}';">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script nonce="${nonce}" type="module" src="${toolkitUri}"></script>
+  <!-- load the d3.js library -->    	
+  <script nonce="${nonce}" src="https://d3js.org/d3.v7.min.js"></script>
+  <script nonce="${nonce}" type="module" src="${scriptUri}"></script>
+   
   <link rel="stylesheet" href="${styleUri}">
+  <link rel="stylesheet" href="${codiconUri}">
   <title>Document</title>
 </head>
-<body>  
-  <!-- load the d3.js library -->    	
-  <script src="https://d3js.org/d3.v7.min.js"></script>
-  <script nonce="${nonce}" type="module" src="${scriptUri}"></script>
+<body> 
+  <div class="nav-bar" id="nav-bar">
+    <vscode-icon name="account"></vscode-icon>
+  </div>
+  <div class="relation-box">
+    <div class="relation-main-box">
+    </div>
+  </div>
+  
+ 
 </body>
 </html>
 
