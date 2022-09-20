@@ -15,7 +15,6 @@
  */
 
 import {assert} from 'chai';
-import { on } from 'events';
 import * as vscode from 'vscode';
 
 import {PackageInfo, ToolchainInfo} from '../../Backend/Toolchain';
