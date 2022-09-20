@@ -30,7 +30,7 @@ import {Logger} from './Utils/Logger';
 
 
 //import {CircleEditorProvider} from './CircleEditor/CircleEditor';
-import {CircleEditorProvider} from './CircleEditor/CircleEditor_ver2';
+import {CircleEditorProvider} from './CircleEditor/CircleEditorProvider';
 
 /* istanbul ignore next */
 export function activate(context: vscode.ExtensionContext) {
