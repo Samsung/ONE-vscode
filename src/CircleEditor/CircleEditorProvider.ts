@@ -1,10 +1,35 @@
 import * as vscode from "vscode";
 import { CircleEditorDocument } from "./CircleEditorDocument";
-import * as flatbuffers from "flatbuffers";
-import * as Circle from "./circle_schema_generated";
 import { Disposable, disposeAll } from "./dispose";
 import { Balloon } from "../Utils/Balloon";
-import { markTimeline } from "console";
+import * as fs from "fs";
+
+export enum MessageDefs {
+  // message command
+  alert = "alert",
+  request = "request",
+  response = "response",
+  pageloaded = "pageloaded",
+  loadmodel = "loadmodel",
+  finishload = "finishload",
+  reload = "reload",
+  selection = "selection",
+  backendColor = "backendColor",
+  error = "error",
+  colorTheme = "colorTheme",
+  // loadmodel type
+  modelpath = "modelpath",
+  uint8array = "uint8array",
+  // selection
+  names = "names",
+  tensors = "tensors",
+  // partiton of backends
+  partition = "partition",
+
+  //added by yuyeon
+  edit = "edit",
+  testMessage = "dd",
+}
 
 export class CircleEditorProvider
   implements vscode.CustomEditorProvider<CircleEditorDocument>
@@ -74,8 +99,9 @@ export class CircleEditorProvider
       document.onDidChangeContent((e) => {
         // Update all webviews when the document changes
         for (const webviewPanel of this.webviews.get(document.uri)) {
-          // this.postMessage(webviewPanel, 'update', fbb.asUint8Array());
-        this.postMessage(webviewPanel, "message", { modelData: e.modelData });
+          // 나중에 고치기
+          // multiMode 패킷 분리해서 보내기
+          this.postMessage(webviewPanel, "message", { modelData: e.modelData });
         }
       })
     );
@@ -100,15 +126,6 @@ export class CircleEditorProvider
     webviewPanel.webview.onDidReceiveMessage((e) =>
       this.onMessage(document, e)
     );
-
-    // Wait for the webview to be properly ready before we init
-    webviewPanel.webview.onDidReceiveMessage((e) => {
-      if (e.command === "ready") {
-        this.postMessage(webviewPanel, "init", document.model);
-      } else if (e.command === "fdjkslajl") {
-        this.postMessage(webviewPanel, "test", document.model);
-      }
-    });
   }
 
   saveCustomDocument(
@@ -168,8 +185,8 @@ export class CircleEditorProvider
 
       //added new logics
       case MessageDefs.edit:
-        //document.editOperator() 등을 호출
-        //edit 로직 마지막에 change~~.fire() 로 postMessage 대체
+      //document.editOperator() 등을 호출
+      //edit 로직 마지막에 change~~.fire() 로 postMessage 대체
       case "test": {
         console.log("msg arrived here");
         document.makeEdit(document.modelData, document.modelData);
@@ -182,34 +199,16 @@ export class CircleEditorProvider
   private getHtmlForWebview(webview: vscode.Webview): string {
     //need to get html from GUI
     //this is temporary html for testing
-    let html = `<!DOCTYPE html>
-                    <html lang="en">
-
-                    <head>
-                        <meta charset="utf-8">
-                        <meta name="viewport" content="width=device-width, initial-scale=1.0">F
-                        <title>Document</title>
-                    </head>
-
-                    <body>
-                        <button id="testBtn">클릭!</button><br>
-                        <input type="text"></input>
-                        <script>
-                            const vscode = acquireVsCodeApi();
-                            const testBtn = document.querySelector("#testBtn");
-                            testBtn.addEventListener("click", e => {
-                                e.preventDefault();
-                                vscode.postMessage({
-                                    type:"dd", command:"test"
-                                });
-                            });
-
-                            window.addEventListener("message", (e)=>{
-                                console.log(e);
-                            })
-                        </script>
-                    </body>
-            </html>`;
+    // 나중에 수정
+    const htmlUrl = webview.asWebviewUri(
+      vscode.Uri.joinPath(
+        this._context.extensionUri,
+        "media",
+        "CircleEditorTest",
+        "index.html"
+      )
+    );
+    let html = fs.readFileSync(htmlUrl.fsPath, { encoding: "utf-8" });
 
     return html;
   }
@@ -247,31 +246,4 @@ class WebviewCollection {
       this._webviews.delete(entry);
     });
   }
-}
-
-export enum MessageDefs {
-  // message command
-  alert = "alert",
-  request = "request",
-  response = "response",
-  pageloaded = "pageloaded",
-  loadmodel = "loadmodel",
-  finishload = "finishload",
-  reload = "reload",
-  selection = "selection",
-  backendColor = "backendColor",
-  error = "error",
-  colorTheme = "colorTheme",
-  // loadmodel type
-  modelpath = "modelpath",
-  uint8array = "uint8array",
-  // selection
-  names = "names",
-  tensors = "tensors",
-  // partiton of backends
-  partition = "partition",
-
-  //added by yuyeon
-  edit = "edit",
-  testMessage = "dd",
 }

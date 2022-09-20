@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <button id="testBtn">클릭!</button><br>
+  <input type="text"></input>
+  <p>testest</p>
+  <script>
+      const vscode = acquireVsCodeApi();
+      const testBtn = document.querySelector("#testBtn");
+      testBtn.addEventListener("click", e => {
+          e.preventDefault();
+          vscode.postMessage({
+              type:"dd", command:"test"
+          });
+      });
+
+      window.addEventListener("message", (e)=>{
+          console.log(e);
+      })
+  </script>
+</body>
+</html>
