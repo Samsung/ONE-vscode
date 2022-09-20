@@ -30,7 +30,6 @@ suite('Toolchain', function() {
   const compiler = new MockCompiler();
   const toolchainEnv = new ToolchainEnv(compiler);
   const backendName = 'dummy_backend';
-  const oneBackendName = 'ONE';
 
   setup(function() {
     gToolchainEnvMap[backendName] = toolchainEnv;
