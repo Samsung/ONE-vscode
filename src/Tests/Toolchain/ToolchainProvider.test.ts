@@ -29,6 +29,7 @@ suite('Toolchain', function() {
   const compiler = new MockCompiler();
   const toolchainEnv = new ToolchainEnv(compiler);
   const backendName = 'dummy_backend';
+  const oneBackendName = 'ONE';
 
   setup(function() {
     gToolchainEnvMap[backendName] = toolchainEnv;
@@ -115,9 +116,9 @@ suite('Toolchain', function() {
     suite('#createToolchainNodes()', function() {
       test('NEG: creates ToolchainNode list using invalid backend node', function() {
         const bnodes: BackendNode[] = NodeBuilder.createBackendNodes();
-        assert.strictEqual(bnodes.length, 1);
-        assert.strictEqual(bnodes[0].label, backendName);
-        const tnodes1 = NodeBuilder.createToolchainNodes(bnodes[0]);
+        assert.strictEqual(bnodes.length, 2);
+        assert.strictEqual(bnodes[1].label, backendName);
+        const tnodes1 = NodeBuilder.createToolchainNodes(bnodes[1]);
         assert.strictEqual(tnodes1.length, 1);
         tnodes1.forEach((tnode) => {
           assert.strictEqual(tnode.backendName, backendName);
