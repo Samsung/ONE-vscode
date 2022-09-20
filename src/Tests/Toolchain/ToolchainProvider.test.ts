@@ -15,6 +15,7 @@
  */
 
 import {assert} from 'chai';
+import { on } from 'events';
 import * as vscode from 'vscode';
 
 import {PackageInfo, ToolchainInfo} from '../../Backend/Toolchain';
@@ -171,17 +172,19 @@ suite('Toolchain', function() {
       test('gets Children with undefined', function(done) {
         let provider = new ToolchainProvider();
         provider.getChildren(undefined).then((bnodes) => {
-          assert.strictEqual(bnodes.length, 1);
-          assert.strictEqual(bnodes[0].label, backendName);
+          assert.strictEqual(bnodes.length, 2);
+          assert.strictEqual(bnodes[0].label, oneBackendName);
+          assert.strictEqual(bnodes[1].label, backendName);
           done();
         });
       });
       test('gets Children with BackendNode', function(done) {
         let provider = new ToolchainProvider();
         let bnodes: BackendNode[] = NodeBuilder.createBackendNodes();
-        assert.strictEqual(bnodes.length, 1);
-        assert.strictEqual(bnodes[0].label, backendName);
-        let bnode: BackendNode = bnodes[0];
+        assert.strictEqual(bnodes.length, 2);
+        assert.strictEqual(bnodes[0].label, oneBackendName);
+        assert.strictEqual(bnodes[1].label, backendName);
+        let bnode: BackendNode = bnodes[1];
         provider.getChildren(bnode).then((tnodes) => {
           assert.strictEqual(tnodes.length, 1);
           tnodes.forEach((tnode) => {
