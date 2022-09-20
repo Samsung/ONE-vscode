@@ -752,7 +752,7 @@ view.View = class {
     showNodeProperties(node, input) {
         if (node) {
             try {
-                const nodeSidebar = new sidebar.NodeSidebar(this._host, node);
+                const nodeSidebar = new sidebar.NodeSidebar(this._host, node, this);
                 nodeSidebar.on('show-documentation', (/* sender, e */) => {
                     this.showDocumentation(node.type);
                 });

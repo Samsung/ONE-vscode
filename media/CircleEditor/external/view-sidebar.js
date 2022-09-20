@@ -640,8 +640,9 @@ class NodeAttributeView {
         this.show(value);
     }
 
-    show(value){
+    show(){
         const type = this._attribute.type;
+        const value = this._attribute._value;
         if (type) {
             this._expander = this._host.document.createElement('div');
             this._edit = this._host.document.createElement('div');
@@ -807,7 +808,7 @@ class NodeAttributeView {
                 let line;
                 if(typeName[type]){
                     line = this._host.document.createElement('select');
-                    for(let options of typeName[type]){
+                    for(const options of typeName[type]){
                         const option = this._host.document.createElement('option');
                         option.setAttribute('value', options);
                         option.innerText = options;
@@ -862,6 +863,7 @@ class NodeAttributeView {
 
     save(){
         const value = this._element.childNodes[2].value;
+        this._attribute._value = value;
         while (this._element.childElementCount) {
             this._element.removeChild(this._element.lastChild);
         }
@@ -869,7 +871,7 @@ class NodeAttributeView {
             const input = this._host.document.getElementById(this._attribute.name);
             input.disabled = true;
         }
-        this.show(value);
+        this.show();
     }
 
     cancel(){
@@ -882,8 +884,7 @@ class NodeAttributeView {
             this._element.removeChild(this._element.lastChild);
         }
 
-        const value = this._attribute.value;
-        this.show(value);
+        this.show();
     }
     
     render() {
@@ -963,46 +964,7 @@ sidebar.ArgumentView = class {
             this._element.classList.add('sidebar-view-item-value-dark');
         }
 
-        const quantization = argument.quantization;
-        const type = argument.type;
-        const location = this._argument.location !== undefined;
-        if (type || initializer || quantization || location) {
-            this._expander = this._host.document.createElement('div');
-            this._expander.className = 'sidebar-view-item-value-expander';
-            this._expander.innerText = '+';
-            this._expander.addEventListener('click', () => {
-                this.toggle();
-            });
-            this._element.appendChild(this._expander);
-        }
-
-        let name = this._argument.name || '';
-        this._hasId = name ? true : false;
-        this._hasKind = initializer && initializer.kind ? true : false;
-        if (this._hasId || (!this._hasKind && !type)) {
-            this._hasId = true;
-            const nameLine = this._host.document.createElement('div');
-            nameLine.className = 'sidebar-view-item-value-line';
-            if (typeof name !== 'string') {
-                throw new Error("Invalid argument identifier '" + JSON.stringify(name) + "'.");
-            }
-            name = name.split('\n').shift(); // custom argument id
-            name = name || ' ';
-            nameLine.innerHTML = '<span class=\'sidebar-view-item-value-line-content\'>name: <b>' + name + '</b></span>';
-            this._element.appendChild(nameLine);
-        }
-        else if (this._hasKind) {
-            const kindLine = this._host.document.createElement('div');
-            kindLine.className = 'sidebar-view-item-value-line';
-            kindLine.innerHTML = 'kind: <b>' + initializer.kind + '</b>';
-            this._element.appendChild(kindLine);
-        }
-        else if (type) {
-            const typeLine = this._host.document.createElement('div');
-            typeLine.className = 'sidebar-view-item-value-line-border';
-            typeLine.innerHTML = 'type: <code><b>' + type.toString().split('<').join('&lt;').split('>').join('&gt;') + '</b></code>';
-            this._element.appendChild(typeLine);
-        }
+        this.show(initializer);
     }
 
     render() {
@@ -1011,8 +973,8 @@ sidebar.ArgumentView = class {
 
     toggle() {
         if (this._expander) {
-            if (this._expander.innerText == '+') {
-                this._expander.innerText = '-';
+            if (this._expander.innerText == 'show') {
+                this._expander.innerText = 'less';
 
                 const initializer = this._argument.initializer;
                 if (this._hasId && this._hasKind) {
@@ -1093,8 +1055,8 @@ sidebar.ArgumentView = class {
                 }
             }
             else {
-                this._expander.innerText = '+';
-                while (this._element.childElementCount > 2) {
+                this._expander.innerText = 'show';
+                while (this._element.childElementCount > 3) {
                     this._element.removeChild(this._element.lastChild);
                 }
             }
@@ -1113,6 +1075,210 @@ sidebar.ArgumentView = class {
                 callback(this, data);
             }
         }
+    }
+
+    show(initializer){
+        const quantization = this._argument.quantization;
+        const type = this._argument.type;
+        const location = this._argument.location !== undefined;
+        if (type || initializer || quantization || location) {
+            this._expander = this._host.document.createElement('div');
+            this._edit = this._host.document.createElement('div');
+            this._expander.className = 'sidebar-view-item-value-expander';
+            this._edit.className = 'sidebar-view-item-value-edit';
+            this._expander.innerText = 'show';
+            this._edit.innerText='edit';
+            this._expander.addEventListener('click', () => {
+                this.toggle();
+            });
+            this._edit.addEventListener('click', () => {
+                this.edit();
+            });
+            this._element.appendChild(this._expander);
+            this._element.appendChild(this._edit);
+        }
+
+        let name = this._argument.name || '';
+        this._hasId = name ? true : false;
+        this._hasKind = initializer && initializer.kind ? true : false;
+        if (this._hasId || (!this._hasKind && !type)) {
+            this._hasId = true;
+            const nameLine = this._host.document.createElement('div');
+            nameLine.className = 'sidebar-view-item-value-line';
+            if (typeof name !== 'string') {
+                throw new Error("Invalid argument identifier '" + JSON.stringify(name) + "'.");
+            }
+            name = name.split('\n').shift(); // custom argument id
+            name = name || ' ';
+            nameLine.innerHTML = '<span class=\'sidebar-view-item-value-line-content\'>name: <b>' + name + '</b></span>';
+            this._element.appendChild(nameLine);
+        }
+        else if (this._hasKind) {
+            const kindLine = this._host.document.createElement('div');
+            kindLine.className = 'sidebar-view-item-value-line';
+            kindLine.innerHTML = 'kind: <b>' + initializer.kind + '</b>';
+            this._element.appendChild(kindLine);
+        }
+        else if (type) {
+            const typeLine = this._host.document.createElement('div');
+            typeLine.className = 'sidebar-view-item-value-line-border';
+            typeLine.innerHTML = 'type: <code><b>' + type.toString().split('<').join('&lt;').split('>').join('&gt;') + '</b></code>';
+            this._element.appendChild(typeLine);
+        }
+    }
+
+    edit(){
+        while (this._element.childElementCount) {
+            this._element.removeChild(this._element.lastChild);
+        }
+
+        const initializer = this._argument.initializer;
+        const quantization = this._argument.quantization;
+        let type = this._argument.type;
+        const location = this._argument.location !== undefined;
+        if (type || initializer || quantization || location) {
+            this._save = this._host.document.createElement('div');
+            this._cancel = this._host.document.createElement('div');
+            this._save.className = 'sidebar-view-item-value-save';
+            this._cancel.className = 'sidebar-view-item-value-cancel';
+            this._save.innerText = 'save';
+            this._cancel.innerText='cancel';
+            this._save.addEventListener('click', () => {
+                this.save();
+            });
+            this._cancel.addEventListener('click', () => {
+                this.cancel();
+            });
+            this._element.appendChild(this._cancel);
+            this._element.appendChild(this._save);
+        }
+
+        let name = this._argument.name || '';
+        this._hasId = name ? true : false;
+        this._hasKind = initializer && initializer.kind ? true : false;
+        if (this._hasId || (!this._hasKind && !type)) {
+            this._hasId = true;
+            const nameLine = this._host.document.createElement('div');
+            const nameValue = this._host.document.createElement('input');
+            nameValue.setAttribute('type', 'text');
+            nameLine.className = 'sidebar-view-item-value-line';
+            nameValue.className = 'sidebar-view-item-value-line-inputs';
+            if (typeof name !== 'string') {
+                throw new Error("Invalid argument identifier '" + JSON.stringify(name) + "'.");
+            }
+            name = name.split('\n').shift(); // custom argument id
+            name = name || ' ';
+            nameValue.setAttribute('value', name);
+            nameLine.innerHTML = '<span class=\'sidebar-view-item-value-line-content\'>name: </span>';
+            nameLine.appendChild(nameValue);
+            this._element.appendChild(nameLine);
+        }
+        else if (this._hasKind) {
+            const kindLine = this._host.document.createElement('div');
+            kindLine.className = 'sidebar-view-item-value-line';
+            kindLine.innerHTML = 'kind: <b>' + initializer.kind + '</b>';
+            this._element.appendChild(kindLine);
+        }
+        else if (type) {
+            const typeLine = this._host.document.createElement('div');
+            typeLine.className = 'sidebar-view-item-value-line-border';
+            typeLine.innerHTML = 'type: <code><b>' + type.toString().split('<').join('&lt;').split('>').join('&gt;') + '</b></code>';
+            this._element.appendChild(typeLine);
+        }
+        if (this._hasId && this._hasKind) {
+            const kindLine = this._host.document.createElement('div');
+            kindLine.className = 'sidebar-view-item-value-line-border';
+            kindLine.innerHTML = 'kind: ' + '<b>' + initializer.kind + '</b>';
+            this._element.appendChild(kindLine);
+        }
+        let denotation = null;
+        if (this._argument.type) {
+            type = this._argument.type.toString();
+            denotation = this._argument.type.denotation || null;
+        }
+        if (type && (this._hasId || this._hasKind)) {
+            const typeLine = this._host.document.createElement('div');
+            typeLine.className = 'sidebar-view-item-value-line-border';
+            typeLine.innerHTML = 'type: <code><b>' + type.split('<').join('&lt;').split('>').join('&gt;') + '</b></code>';
+            this._element.appendChild(typeLine);
+        }
+        if (denotation) {
+            const denotationLine = this._host.document.createElement('div');
+            denotationLine.className = 'sidebar-view-item-value-line-border';
+            denotationLine.innerHTML = 'denotation: <code><b>' + denotation + '</b></code>';
+            this._element.appendChild(denotationLine);
+        }
+
+        const description = this._argument.description;
+        if (description) {
+            const descriptionLine = this._host.document.createElement('div');
+            descriptionLine.className = 'sidebar-view-item-value-line-border';
+            descriptionLine.innerHTML = description;
+            this._element.appendChild(descriptionLine);
+        }
+
+        if (quantization) {
+            const quantizationLine = this._host.document.createElement('div');
+            quantizationLine.className = 'sidebar-view-item-value-line-border';
+            const content = !Array.isArray(quantization) ? quantization : '<br><br>' + quantization.map((value) => '  ' + value).join('<br>');
+            quantizationLine.innerHTML = '<span class=\'sidebar-view-item-value-line-content\'>quantization: ' + '<b>' + content + '</b></span>';
+            this._element.appendChild(quantizationLine);
+        }
+
+        if (this._argument.location !== undefined) {
+            const location = this._host.document.createElement('div');
+            location.className = 'sidebar-view-item-value-line-border';
+            location.innerHTML = 'location: ' + '<b>' + this._argument.location + '</b>';
+            this._element.appendChild(location);
+        }
+
+        if (initializer) {
+            const contentLine = this._host.document.createElement('pre');
+            const valueLine = this._host.document.createElement('div');
+            try {
+                const state = initializer.state;
+                if (state === null && this._host.save &&
+                    initializer.type.dataType && initializer.type.dataType != '?' &&
+                    initializer.type.shape && initializer.type.shape.dimensions /*&& initializer.type.shape.dimensions.length > 0*/) {
+                    this._saveButton = this._host.document.createElement('div');
+                    this._saveButton.className = 'sidebar-view-item-value-expander';
+                    this._saveButton.innerHTML = '&#x1F4BE;';
+                    this._saveButton.addEventListener('click', () => {
+                        this._raise('export-tensor', initializer);
+                    });
+                    this._element.appendChild(this._saveButton);
+                }
+
+                valueLine.className = 'sidebar-view-item-value-line-border';
+                contentLine.innerHTML = state || initializer.toString();
+            }
+            catch (err) {
+                contentLine.innerHTML = err.toString();
+                this._raise('error', err);
+            }
+            valueLine.appendChild(contentLine);
+            this._element.appendChild(valueLine);
+        }
+    }
+
+    save(){
+        const name = this._argument.name.split('\n')
+        const nameValue = this._element.childNodes[2].lastChild.value;
+        name[0] = nameValue;
+        this._argument._name = name[0] + '\n' + name[1];
+        while (this._element.childElementCount) {
+            this._element.removeChild(this._element.lastChild);
+        }
+        const initializer = this._argument.initializer;
+        this.show(initializer);
+    }
+
+    cancel(){
+        while (this._element.childElementCount) {
+            this._element.removeChild(this._element.lastChild);
+        }
+        const initializer = this._argument.initializer;
+        this.show(initializer);
     }
 };
 
