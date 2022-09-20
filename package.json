@@ -205,6 +205,11 @@
         "command": "one.relation.showRelationViewer",
         "title": "Show Relation",
         "category": "ONE"
+      },
+      {
+        "command": "one.metadata.updateViewerState",
+        "title": "Update Metadata Viewer State",
+        "category": "ONE"
       }
     ],
     "menus": {

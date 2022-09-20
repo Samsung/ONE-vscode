@@ -25,12 +25,68 @@ body.vscode-light .view-item-value{
   background-color: white;
 }
 
+body.vscode-light .breadcrumbs-relativepath {
+  background-color: #ececec;
+}
 
+body.vscode-light .breadcrumbs-coverbar {
+  background-color: #ececec;
+}
 
+body.vscode-light .scrolled {
+  box-shadow: 0px 3px 10px #888888F0;
+}
+
+.breadcrumbs-relativepath {
+  display: flex;
+  flex-wrap: nowrap;
+  position: fixed;
+  /* min-width: 100vw; */
+  width: 100%;
+  padding: 3px 0px 3px 0px;
+  top: 0px;
+  left: 0px;
+  overflow-x: scroll;
+  background-color: #1E1E1E;
+}
+
+.breadcrumbs-relativepath::-webkit-scrollbar {
+  height: 3px;
+  z-index: 1;
+}
+
+.breadcrumbs-coverbar {
+  width: 100%;
+  height: 3px;
+  position: fixed;
+  top: 23px;
+  left: 0px;
+  opacity: 1;
+  background-color: #1E1E1E;
+  pointer-events: none;
+}
+
+.breadcrumbs:hover .breadcrumbs-coverbar {
+  opacity: 0;
+ -webkit-transition: all .5s;
+ transition: all .5s;
+}
+
+.path-item:first-child {
+  margin-left: 20px;
+}
+
+.path-item {
+  margin-right: 5px;
+}
+
+.scrolled {
+  box-shadow: 0px 3px 10px #111111F0;
+}
 
 .view-item-header {
   padding: 10px;
-  margin-top: 10px;
+  margin-top: 20px;
   margin-bottom: 10px;
   font-size: 20px;
   font-weight: bold;

@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { Node } from '../OneExplorer/OneExplorer';
 import { Balloon } from '../Utils/Balloon';
+import { getNonce } from '../Utils/external/Nonce';
 
 //현재 실행되고있는 패널정보('uri':panel 객체)
 let currentPanelsInfo = {} as any;
@@ -19,6 +20,32 @@ export class MetadataViewerPanel {
       // add command
       vscode.commands.registerCommand('one.metadata.showMetadataViewer', async (uri) => {
         await MetadataViewerPanel.createPanel(context, uri);
+      }),
+      vscode.commands.registerCommand('one.metadata.updateViewerState', (type, oldUri, newUri) => {
+        console.log("updateViewerState");
+        const oldPath = oldUri.fsPath;
+        const panel = currentPanelsInfo[oldPath];
+        if (panel) {
+          if (type === 'rename') {
+            const newPath = newUri.fsPath;
+            delete currentPanelsInfo[oldPath];
+            const newPanel = currentPanelsInfo[newPath];
+            if (newPanel) {
+              newPanel.reveal();
+              panel.dispose();
+            } else {
+              currentPanelsInfo[newPath] = panel;
+              this._getHtmlForWebview(context, newPath, panel, vscode.workspace.asRelativePath(newPath));
+            }
+            panel.title = `Metadata: ${this._getNameFromPath(newPath)}`;
+          } else if (type === 'update') {
+            // panel.title = `Metadata: ${this._getNameFromPath(newPath)} (updated)`;
+            this._getHtmlForWebview(context, oldPath, panel, './'+vscode.workspace.asRelativePath(oldPath));
+          } else if (type === 'delete') {
+            // panel.dispose();
+            panel.title = `Metadata: ${this._getNameFromPath(oldPath)} (deleted)`;
+          }
+        }
       })
     ];
 
@@ -32,11 +59,9 @@ export class MetadataViewerPanel {
     ]);
 
     if (vscode.window.registerWebviewPanelSerializer) {
-      // Make sure we register a serializer in activation event
       vscode.window.registerWebviewPanelSerializer(MetadataViewerPanel.viewType, {
         
         async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel, state: any) {
-          // Reset the webview options so we use latest uri for `localResourceRoots`.
           webviewPanel.webview.options = MetadataViewerPanel.getWebviewOptions(context.extensionUri);
           
           MetadataViewerPanel.revive(context, state.fileUri, webviewPanel, state.relativePath);
@@ -70,7 +95,6 @@ export class MetadataViewerPanel {
   private static getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions&vscode.WebviewPanelOptions {
     return {
       enableScripts: true,
-      // to prevent view to reload after loosing focus
       retainContextWhenHidden: true
     };
   }
@@ -86,38 +110,19 @@ export class MetadataViewerPanel {
       relativePath = uri.path;
       originPath = uri.path;
     }
+    relativePath = './' + vscode.workspace.asRelativePath(relativePath);
     
     if(currentPanelsInfo[originPath]){
       currentPanelsInfo[originPath].reveal();
       return;
     }
-    
-    if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
-      const workspacePath = vscode.workspace.workspaceFolders[0].uri.fsPath.toString();
 
-      if (relativePath.length <= workspacePath.length) {
-        // TODO 로그쓰기
-        Balloon.error("Invalid Path", false);
-        return;
-      }
-
-      // TODO: 뭔가 예외상황 있을 듯
-      relativePath = '.' + relativePath.substring(workspacePath.length);
-    }
-
-    // Create and show a new webview
     const panel = vscode.window.createWebviewPanel(
-      MetadataViewerPanel.viewType, // Identifies the type of the webview. Used internally
-      'Metadata', // Title of the panel displayed to the user
-      vscode.ViewColumn.One, // Editor column to show the new webview panel in.
-      {
-        // Webview options. More on these later.
-        // Enable scripts in the webview
-        enableScripts: true,
-        retainContextWhenHidden: true
-      } 
+      MetadataViewerPanel.viewType,
+      'Metadata',
+      vscode.ViewColumn.One,
+      MetadataViewerPanel.getWebviewOptions(context.extensionUri)
     );
-    
     currentPanelsInfo[originPath] = panel;
     console.log(currentPanelsInfo);
     //Html을 웹에 그린다.
@@ -131,22 +136,20 @@ export class MetadataViewerPanel {
     this._panel = panel;
     //this._extensionUri = extensionUri;
 
-    // Listen for when the panel is disposed
-		// This happens when the user closes the panel or when the panel is closed programmatically
 		panel.onDidDispose(() => this.dispose(fileUri), null, this._disposables);
   }
 
-  private static async _getHtmlForWebview(context: vscode.ExtensionContext, extensionUri: string, panel:vscode.WebviewPanel, relativePath:string){
+  private static async _getHtmlForWebview(context: vscode.ExtensionContext, path: string, panel:vscode.WebviewPanel, relativePath:string){
     
-    if(!currentPanelsInfo[extensionUri]){
-      currentPanelsInfo[extensionUri] = panel;
+    if(!currentPanelsInfo[path]){
+      currentPanelsInfo[path] = panel;
     }
 
     //메타데이터 정보를 가져오는 로직(Uri 인자를 이용하면 됨)
     const seletedMetadata = getMetadata();
     
     //가져온 메타데이터를 웹뷰로 메세지를 보낸다.
-    panel.webview.postMessage({command:'showMetadata',metadata: seletedMetadata, fileUri: extensionUri, relativePath:relativePath});
+    panel.webview.postMessage({command:'showMetadata',metadata: seletedMetadata, fileUri: path, relativePath:relativePath});
 
     const nonce = getNonce();
     const jsIndex = panel.webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, "media", "MetadataViewer", "index.js"));
@@ -159,10 +162,17 @@ export class MetadataViewerPanel {
     html = html.replace(/\${index.css}/g, `${cssIndex}`);
     html = html.replace(/\${index.js}/g, `${jsIndex}`);
     panel.webview.html = html;
-    // TODO title에 어떻게 스타일주는지, 같은 이름의 파일이 열렸는지 어떻게 확인할 것인지
-    // TODO relativePath 말고 이름으로
-    panel.title = `Metadata: ${relativePath}`;
+
+    panel.title = `Metadata: ${this._getNameFromPath(path)}`;
     
+  }
+
+  private static _getNameFromPath(path: string) {
+    let idx = path.lastIndexOf("/");
+    if (idx === undefined) {
+      idx = -1;
+    }
+    return path.substring(idx + 1);
   }
 
   public dispose(fileUri:String) {
@@ -174,7 +184,6 @@ export class MetadataViewerPanel {
 
     console.log(currentPanelsInfo);
 
-		// Clean up our resources
 		this._panel.dispose();
 
 		while (this._disposables.length) {
@@ -184,15 +193,6 @@ export class MetadataViewerPanel {
 			}
 		}
 	}
-}
-
-function getNonce() {
-  let text = '';
-  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  for (let i = 0; i < 32; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
 }
 
 function getMetadata() {
