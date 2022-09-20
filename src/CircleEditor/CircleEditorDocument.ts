@@ -49,7 +49,27 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		super.dispose();
   }
   
-  makeEdit(oldModelData: Uint8Array, newModelData: Uint8Array) {
+
+	makeEdit(message: any) {
+		const oldModelData = this.modelData;
+		
+		switch (message.type) {
+			case "operator":
+				break;
+			case "input":
+				break;
+			case "output":
+				break;
+			default:
+				break;
+		}
+
+		const newModelData = this.modelData;
+
+		this.notifyEdit(oldModelData, newModelData);
+	}
+
+	notifyEdit(oldModelData: Uint8Array, newModelData: Uint8Array) {
     this._onDidChangeContent.fire({
       modelData: newModelData,
     });
@@ -101,7 +121,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		const newModelData = await vscode.workspace.fs.readFile(this.uri);
 		this._model = this.loadModel(newModelData);
 
-		this.makeEdit(oldModelData, newModelData);
+		this.notifyEdit(oldModelData, newModelData);
 	}
 
 	/**

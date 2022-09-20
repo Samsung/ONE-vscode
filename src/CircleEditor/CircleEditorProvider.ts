@@ -185,11 +185,11 @@ export class CircleEditorProvider
 
       //added new logics
       case MessageDefs.edit:
-      //document.editOperator() 등을 호출
-      //edit 로직 마지막에 change~~.fire() 로 postMessage 대체
+        document.makeEdit(message);
+        return;
       case "test": {
         console.log("msg arrived here");
-        document.makeEdit(document.modelData, document.modelData);
+        document.makeEdit(message);
         return;
       }
     }
