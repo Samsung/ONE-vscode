@@ -19,7 +19,7 @@ import {Backend} from '../Backend';
 import {Command} from '../Command';
 import {Compiler} from '../Compiler';
 import {Executor} from '../Executor';
-import {Toolchain, ToolchainInfo, Toolchains} from '../Toolchain';
+import {ToolchainInfo, Toolchains} from '../Toolchain';
 import {DebianToolchain} from '../ToolchainImpl/DebianToolchain';
 import {Version} from '../Version';
 
