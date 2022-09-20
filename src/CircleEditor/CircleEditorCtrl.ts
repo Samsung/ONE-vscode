@@ -8,6 +8,7 @@ import { BackendColor } from './BackendColor';
 import * as flatbuffers from 'flatbuffers';
 import * as circle from './circle_schema_generated';
 import { KeyObject } from 'crypto';
+import { endSlotTemplate, numberFieldTemplate } from '@microsoft/fast-foundation';
 
 class CtrlStatus {
   public static readonly init = 0;
@@ -52,6 +53,127 @@ export interface CircleGraphEvent {
   onFinishLoadModel(): void;
 }
 
+// HW
+enum BuiltinOptionsType {
+  CONV2DOPTIONS = 1,
+  DEPTHWISECONV2DOPTIONS,
+  CONCATEMBEDDINGSOPTIONS,
+  LSHPROJECTIONOPTIONS,
+  POOL2DOPTIONS,
+  SVDFOPTIONS,
+  RNNOPTIONS,
+  FULLYCONNECTEDOATIONOPTIONS,
+  SOFTMAXOPTIONS,
+  CONCATENATIONOPTIONS,
+  ADDOPTIONS,
+  L2NORMOPTIONS,
+  LOCALRESPONSENORMALIZATIONOPTIONS,
+  LSTMOPTIONS,
+  RESIZEBILINEAROPTIONS,
+  CALLOPTIONS,
+  RESHAPEOPTIONS,
+  SKIPGRAMOPTIONS,
+  SPACETODEPTHOPTIONS,
+  EMBEDDINGLOOKUPSPARSEOPTIONS,
+  MULOPTIONS,
+  PADOPTIONS,
+  GATHEROPTIONS,
+  BATCHTOSPACENDOPTIONS,
+  SPACETOBATCHNDOPTIONS,
+  TRANSPOSEOPTIONS,
+  REDUCEROPTIONS,
+  SUBOPTIONS,
+  DIVOPTIONS,
+  SQUEEZEOPTIONS,
+  SEQUENCERNNOPTIONS,
+  STRIDEDSLICEOPTIONS,
+  EXPOPTIONS,
+  TOPKV2OPTIONS,
+  SPLITOPTIONS,
+  LOGSOFTMAXOPTIONS,
+  CASTOPTIONS,
+  DEQUANTIZEOPTIONS,
+  MAXIMUMMINIMUMOPTIONS,
+  ARGMAXOPTIONS,
+  LESSOPTIONS,
+  NEGOPTIONS,
+  PADV2OPTIONS,
+  GREATEROPTIONS,
+  GREATEREQUALOPTIONS,
+  LESSEQUALOPTIONS,
+  SELECTOPTIONS,
+  SLICEOPTIONS,
+  TRANSPOSECONVOPTIONS,
+  SPARSETODENSEOPTIONS,
+  TILEOPTIONS,
+  EXPANDDIMSOPTIONS,
+  EQUALOPTIONS,
+  NOTEQUALOPTIONS,
+  SHAPEOPTIONS,
+  POWOPTIONS,
+  ARGMINOPTIONS,
+  FAKEQUANTOPTIONS,
+  PACKOPTIONS,
+  LOGICALOROPTIONS,
+  ONEHOTOPTIONS,
+  LOGICALANDOPTIONS,
+  LOGICALNOTOPTIONS,
+  UNPACKOPTIONS,
+  FLOORDIVOPTIONS,
+  SQUAREOPTIONS,
+  ZEROSLIKEOPTIONS,
+  FILLOPTIONS,
+  BIDIRECTIONALSEQUENCELSTMOPTIONS,
+  BIDIRECTIONALSEQUENCERNNOPTIONS,
+  UNIDIRECTIONALSEQUENCELSTMOPTIONS,
+  FLOORMODOPTIONS,
+  RANGEOPTIONS,
+  RESIZENEARESTNEIGHBOROPTIONS,
+  LEAKYRELUOPTIONS,
+  SQUAREDDIFFERENCEOPTIONS,
+  MIRRORPADOPTIONS,
+  ABSOPTIONS,
+  SPLITVOPTIONS,
+  UNIQUEOPTIONS,
+  REVERSEV2OPTIONS,
+  ADDNOPTIONS,
+  GATHERNDOPTIONS,
+  COSOPTIONS,
+  WHEREOPTIONS,
+  RANKOPTIONS,
+  REVERSESEQUENCEOPTIONS,
+  MATRIXDIAGOPTIONS,
+  QUANTIZEOPTIONS,
+  MATRIXSETDIAGOPTIONS,
+  HARDSWISHOPTIONS,
+  IFOPTIONS,
+  WHILEOPTIONS,
+  DEPTHTOSPACEOPTIONS,
+  NONMAXSUPPRESSIONV4OPTIONS,
+  NONMAXSUPPRESSIONV5OPTIONS,
+  SCATTERNDOPTIONS,
+  SELECTV2OPTIONS,
+  DENSIFYOPTIONS,
+  SEGMENTSUMOPTIONS,
+  BATCHMATMULOPTIONS,
+  CUMSUMOPTIONS,
+  CALLONCEOPTIONS,
+  BROADCASTTOOPTIONS,
+  RFFT2DOPTIONS,
+  CONV3DOPTIONS,
+  HASHTABLEOPTIONS,
+  HASHTABLEFINDOPTIONS,
+  HASHTABLEIMPORTOPTIONS,
+  HASHTABLESIZEOPTIONS,
+  VARHANDLEOPTIONS,
+  READVARIABLEOPTIONS,
+  ASSIGNVARIABLEOPTIONS,
+  RANDOMOPTIONS,
+  BCQGATHEROPTIONS = 252,
+  BCQFULLYCONNECTEDOPTIONS = 253,
+  INSTANCENORMOPTIONS = 254,
+}
+
 /* istanbul ignore next */
 export class CircleGraphCtrl {
 
@@ -71,6 +193,8 @@ export class CircleGraphCtrl {
 
   // HW 선언 변수
   protected _Circle : any;
+  protected _CircleType : any;
+  protected _NormalType : any;
 
   private _ctrlDisposables: vscode.Disposable[] = [];
 
@@ -95,6 +219,29 @@ export class CircleGraphCtrl {
     let bytes = new Uint8Array(fs.readFileSync(this._modelToLoad));
     let buf = new flatbuffers.ByteBuffer(bytes);
     this._Circle = circle.Model.getRootAsModel(buf).unpack();
+    this._CircleType  = {
+      "TensorType" : circle.TensorType,
+      "DimensionType" : circle.DimensionType,
+      "Padding" : circle.Padding,
+      "ActivationFunctionType" : circle.ActivationFunctionType,
+      "LSHProjectionType" : circle.LSHProjectionType,
+      "FullyConnectedOptionsWeightsFormat" : circle.FullyConnectedOptionsWeightsFormat,
+      "LSTMKernelType" : circle.LSTMKernelType,
+      "CombinerType" : circle.CombinerType,
+      "MirrorPadMode" : circle.MirrorPadMode,
+      "CustomOptionsFormat" : circle.CustomOptionsFormat,
+      "DataFormat" : circle.DataFormat,
+    }
+    this._NormalType = {
+      "int" : Int32Array,
+      "bool" : Boolean,
+      "float" : Float64Array,
+      "int32" : Int32Array,
+      "string" : String,
+      "byte" : Int8Array,
+      "ubyte" : Uint8Array,
+      "uint" : Uint32Array,
+    }
 
     this.registerEventHandlers();
 
@@ -208,7 +355,8 @@ export class CircleGraphCtrl {
 
     try {
       //test용
-      const jsonBuffer  = require('/home/ssdc/TensorExam.json')
+      // const jsonBuffer  = require('/home/ssdc/TensorExam.json')
+      const jsonBuffer  = require('/home/ssdc/AttributeExam.json')
       let temp = JSON.stringify(jsonBuffer);
       //
 
@@ -474,8 +622,8 @@ export class CircleGraphCtrl {
         testBtn.addEventListener("click", e => {
             e.preventDefault();
             vscode.postMessage({
-              type:"tensor",
-              command:"editTensor",
+              type:"Attribute",
+              command:"editAttribute",
               value: textBox.value,
             });
         });
@@ -618,60 +766,122 @@ export class CircleGraphCtrl {
   }
 
   private AttributeEdit(data:string){
-    // const InputjsonFile = JSON.parse(data);
-    // console.log("AttributeEdit Start")
-    // let OperatorIdx = InputjsonFile._location;
-    // let inputName = InputjsonFile._type.name;
-    // inputName = inputName.toUpperCase();
-    // // for문으로 BuiltinOperator enum key 파싱 및 enum val 찾기
-    // let OptionsEnumVal = 0;
-    // for(let i = -4; i <= 146; i++){
-    //   let BuiltinOperatorKey = circle.BuiltinOperator[i];
-    //   if(BuiltinOperatorKey === undefined) continue;
-    //   BuiltinOperatorKey = circle.BuiltinOperator[i].replace('_','');
-    //   BuiltinOperatorKey = BuiltinOperatorKey.toUpperCase();
-    //   if(BuiltinOperatorKey === inputName){
-    //     // enum_val을 찾았으면 입력
-    //     OptionsEnumVal = i;
-    //     break;
-    //   }
-    // }
-    // // enum_val이 127 미만인 경우 OperatorCode.deprecated_builtin_code로도 참조가 가능해야한다.
     
-    // // 커스텀이 아닌경우
-    // if(OptionsEnumVal != 32){
-    //   InputjsonFile._attributes.forEach(element => {
-    //     // 정보 받기
-    //     const subgraph_Idx : number = 0;
-    //     const name = element._name;
-    //     const value = element._value;
-    //     const type = element._type;
-    //     let valueNum = 0;
-    //     if(typeof(value) === 'string'){
-    //       // 해당 enum 참조해서 number 가져와야 한다.
-    //       valueNum = circle[type][value];
-    //     }
-    //     else{
-    //       valueNum = value;
-    //     }
-        
-    //     // 정보 전환
-    //     circle.subgraphs[subgraph_Idx].operators[OperatorIdx].builtinOptions.name = valueNum;
-        
-    //   });
-    // }
-    // // 커스텀인 경우 문자열로 받아온다.
-    // else{
-
-    // }
-
-
-
-    // // Custom인 경우
-
-    // // Custom이 아닌 경우
+    const InputjsonFile = JSON.parse(data);
+    console.log("AttributeEdit Start")
+    let subgraph_Idx : number = Number(InputjsonFile._subgraphIdx);
+    let Operator_Idx : number = Number(InputjsonFile._location);
+    let inputTypeName : string = InputjsonFile.name;
+    inputTypeName = inputTypeName.toUpperCase();
+    const inputTypeOptionName : any = inputTypeName + "OPTIONS";
+    // for문으로 BuiltinOperator enum key 파싱 및 enum val 찾기
+    let operatorCode = 0;
+    for(let i = -4; i <= 146; i++){
+      let BuiltinOperatorKey = circle.BuiltinOperator[i];
+      if(BuiltinOperatorKey === undefined) continue;
+      BuiltinOperatorKey = circle.BuiltinOperator[i].replace('_','');
+      BuiltinOperatorKey = BuiltinOperatorKey.toUpperCase();
+      if(BuiltinOperatorKey === inputTypeName){
+        // enum_val을 찾았으면 입력
+        operatorCode = i;
+        break;
+      }
+    }
     
-    // return "success"
+    const operator = this._Circle.subgraphs[subgraph_Idx].operators[Operator_Idx];
+    // 커스텀이 아닌경우
+    // builtinOptionsType 수정
+    operator.builtinOptionsType = BuiltinOptionsType[inputTypeOptionName];
+    if(operatorCode != 32){ // builtinOptions
+      if(operator.builtinOptions === null) return "error";
+      const key = InputjsonFile._attribute.name;
+      const value : string = InputjsonFile._attribute._value;
+      const type : string = InputjsonFile._attribute._type;
+      // 해당 타입에 접근해서 enum 값을 뽑아와야한다.
+      
+      // 현재는 type변경 없다고 생각하고 구현
+      if(this._NormalType[type]=== undefined){
+        // Circle Type 참조
+        console.log(operator.builtinOptions[key])
+        operator.builtinOptions[key] = this._CircleType[type][value];
+        console.log(operator.builtinOptions[key])
+        console.log(typeof(operator.builtinOptions[key]))
+      }
+      else{
+        // 보여주는 타입을 그대로 띄워줌
+        console.log(operator.builtinOptions[key])
+        operator.builtinOptions[key] = this._NormalType[type](value);
+        console.log(operator.builtinOptions[key])
+        console.log(typeof(operator.builtinOptions[key]))
+      }
+      
+      // opCodeIndex 변경 (type변경이 없다고 가정하면 생략)
+      // operatorCode가 127 미만인 경우 OperatorCode.deprecated_builtin_code와 builtin Code같이 변경
+      // 127이상이면 deprecated : 127, builtinCode는 해당 번호
+      
+
+
+
+
+
+      // operatorCode가 현재 operator가 가리키는 operatorCodes와 동일하지 않다면
+      // for문으로 동일한 code를 찾고
+      // code가 존재하면 해당 번호로 이동
+      // 없으면 새로 생성 후 해당 번호로 이동
+      // 타입변경 있는 경우
+      // if(operatorCode !== this._Circle.operatorCodes[operator.opcodeIndex]){
+      //   let EditNum : number = -1;
+      //   for(const data of this._Circle.operatorCodes){
+      //     if(data.deprecatedBuiltinCode === operatorCode){
+      //       EditNum = data.deprecatedBuiltinCode;
+      //       break;
+      //     }
+      //     else if(data.builtinCode === operatorCode){
+      //       EditNum = data.builtinCode;
+      //       break;
+      //     }
+      //   }
+      //   // 있는 경우
+      //   if(EditNum !== -1){
+      //     operator.opcodeIndex = EditNum;
+      //   }
+      //   // 없으면 operatorCodes에 추가
+      //   else{
+      //     const pushData = {
+      //       "deprecatedBuiltinCode" : 0,
+      //       "customCode": null,
+      //       "version": 1,
+      //       "builtinCode": 0
+      //     };
+      //     pushData.builtinCode = operatorCode;
+      //     if(pushData.builtinCode >= 127){
+      //       pushData.deprecatedBuiltinCode = 127;
+      //     }
+      //     else{
+      //       pushData.deprecatedBuiltinCode = pushData.builtinCode;
+      //     }
+      //     this._Circle.operatorCodes.pushData(pushData);
+      //     EditNum = this._Circle.operatorCodes.length-1;
+      //   }
+      // }
+      
+      
+
+      
+      // opcodeIdx에 있는 deprecated나 built_in코드랑 같은게 있다면
+      // 먼저 해당 정보를 수정
+      
+    }
+    // 커스텀인 경우 문자열로 받아온다.
+ 
+
+
+
+    // Custom인 경우
+
+    // Custom이 아닌 경우
+    
+    return "success"
   }
 
   private save(){

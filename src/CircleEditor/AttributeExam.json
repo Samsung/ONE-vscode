@@ -1,53 +1,10 @@
 {
-  "_location": "1",
-  "_type": {
-    "name": "Conv2D",
-    "category": "Layer",
-    "attributes": [
-      { "name": "padding", "type": "Padding", "default": "SAME" },
-      { "name": "stride_w", "type": "int32", "default": 0 },
-      { "name": "stride_h", "type": "int32", "default": 0 },
-      {
-        "name": "fused_activation_function",
-        "type": "ActivationFunctionType",
-        "default": "NONE"
-      },
-      { "name": "dilation_w_factor", "type": "int32", "default": 1 },
-      { "name": "dilation_h_factor", "type": "int32", "default": 1 }
-    ],
-    "inputs": [
-      { "name": "input", "description": "4D tensor" },
-      { "name": "filter" },
-      { "name": "bias", "description": "(optional)" }
-    ],
-    "outputs": [
-      {
-        "name": "output",
-        "description": "result of 2D convolution of the input tensor"
-      }
-    ]
+  "name": "Conv2D",
+  "_attribute": {
+    "name": "padding",
+    "_value": "VALID",
+    "_type": "Padding"
   },
-  "_attributes": [
-    { "_name": "padding", "_value": "VALID", "_type": "Padding" },
-    { "_name": "stride_w", "_value": 1, "_type": "int32" },
-    { "_name": "stride_h", "_value": 1, "_type": "int32" },
-    {
-      "_name": "fused_activation_function",
-      "_value": "RELU",
-      "_type": "ActivationFunctionType",
-      "_visible": false
-    },
-    {
-      "_name": "dilation_w_factor",
-      "_value": 1,
-      "_type": "int32",
-      "_visible": false
-    },
-    {
-      "_name": "dilation_h_factor",
-      "_value": 1,
-      "_type": "int32",
-      "_visible": false
-    }
-  ]
+  "_location": "1",
+  "_subgraphIdx": "0"
 }
