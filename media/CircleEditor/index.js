@@ -458,6 +458,13 @@ host.BrowserHost = class {
                     this._view.show(null, nodeIdx);
                     this.document.title = files[0].name;
 
+                    // To edit a circle file, add a subgraph index to the node
+                    for (let idx = 0; idx < model.graphs.length; idx++) {
+                        for (let jdx = 0; jdx < model.graphs[idx].nodes.length; jdx++) {
+                            model._graphs[idx]._nodes[jdx]['_subgraphIdx'] = idx;
+                        }
+                    }
+
                     // notify owner that load has finished
                     vscode.postMessage({command: 'finishload'});
                     return model;
