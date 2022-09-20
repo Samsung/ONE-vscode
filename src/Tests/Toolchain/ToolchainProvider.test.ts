@@ -97,19 +97,22 @@ suite('Toolchain', function() {
     suite('#createBackendNodes()', function() {
       test('creates BackendNode list', function() {
         let bnodes: BackendNode[] = NodeBuilder.createBackendNodes();
-        assert.strictEqual(bnodes.length, 1);
-        assert.strictEqual(bnodes[0].label, backendName);
+        assert.strictEqual(bnodes.length, 2);
+        assert.strictEqual(bnodes[0].label, oneBackendName);
+        assert.strictEqual(bnodes[1].label, backendName);
       });
     });
     suite('#createToolchainNodes()', function() {
       test('creates ToolchainNode list', function() {
         let bnodes: BackendNode[] = NodeBuilder.createBackendNodes();
-        assert.strictEqual(bnodes.length, 1);
-        assert.strictEqual(bnodes[0].label, backendName);
-        let bnode: BackendNode = bnodes[0];
-        let tnodes = NodeBuilder.createToolchainNodes(bnode);
-        assert.strictEqual(tnodes.length, 1);
-        tnodes.forEach((tnode) => {
+        assert.strictEqual(bnodes.length, 2);
+        assert.strictEqual(bnodes[0].label, oneBackendName);
+        assert.strictEqual(bnodes[1].label, backendName);
+
+        let bnode2: BackendNode = bnodes[1];
+        let tnodes2 = NodeBuilder.createToolchainNodes(bnode2);
+        assert.strictEqual(tnodes2.length, 1);
+        tnodes2.forEach((tnode) => {
           assert.strictEqual(tnode.backendName, backendName);
         });
       });
