@@ -2,10 +2,13 @@ import * as vscode from "vscode";
 import { Disposable, disposeAll } from "./dispose";
 import * as Circle from './circle_schema_generated';
 import * as flatbuffers from 'flatbuffers';
+import { responseModel } from './ResponseType';
 
 export class CircleEditorDocument extends Disposable implements vscode.CustomDocument{
   private readonly _uri: vscode.Uri;
   private _model: Circle.ModelT;
+  //private readonly packetSize = 1024 * 1024 * 10;
+  private readonly packetSize =1024;
 
   public get uri(): vscode.Uri { return this._uri; }
   public get model(): Circle.ModelT { return this._model }
@@ -33,7 +36,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
   // tell to webview
   private readonly _onDidChangeContent = this._register(new vscode.EventEmitter<{
 		readonly modelData: Uint8Array;
-  }>());
+  } | responseModel>());
   public readonly onDidChangeContent = this._onDidChangeContent.event;
 
   // tell to vscode
@@ -70,25 +73,35 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 	}
 
 	notifyEdit(oldModelData: Uint8Array, newModelData: Uint8Array) {
-    this._onDidChangeContent.fire({
-      modelData: newModelData,
-    });
+		
+		this.sendModel(0);
 
 		this._onDidChangeDocument.fire({
 			label: 'Model',
-      undo: async () => {
-				this._model = this.loadModel(oldModelData);
-				this._onDidChangeContent.fire({
-					modelData: oldModelData
-				});
-			},
-      redo: async () => {
-        this._model = this.loadModel(newModelData);
-				this._onDidChangeContent.fire({
-          modelData: newModelData
-				});
-			}
-		});
+			undo: async () => {
+						this._model = this.loadModel(oldModelData);
+						this.sendModel(0);
+					},
+			redo: async () => {
+				this._model = this.loadModel(newModelData);
+				this.sendModel(0);
+	 		}
+		})
+  }
+
+  sendModel(offset: number){
+	
+	if(offset>this.modelData.length) return;
+    let responseArray = this.modelData.slice(offset, offset+this.packetSize);
+    let responseModel =  {
+		command: 'loadmodel',
+		type : 'uint8array',
+		offset : offset,
+		length: this.packetSize,
+		total : this.modelData.length,
+		responseArray : responseArray
+	}
+	this._onDidChangeContent.fire(responseModel);
   }
   
   private loadModel(bytes: Uint8Array): Circle.ModelT {

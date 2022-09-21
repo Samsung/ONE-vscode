@@ -99,9 +99,7 @@ export class CircleEditorProvider
       document.onDidChangeContent((e) => {
         // Update all webviews when the document changes
         for (const webviewPanel of this.webviews.get(document.uri)) {
-          // 나중에 고치기
-          // multiMode 패킷 분리해서 보내기
-          this.postMessage(webviewPanel, "message", { modelData: e.modelData });
+          this.postMessage(webviewPanel, e);
         }
       })
     );
@@ -157,10 +155,9 @@ export class CircleEditorProvider
 
   private postMessage(
     panel: vscode.WebviewPanel,
-    type: string,
     body: any
   ): void {
-    panel.webview.postMessage({ type, body });
+    panel.webview.postMessage( body );
   }
 
   private onMessage(document: CircleEditorDocument, message: any) {
@@ -177,13 +174,13 @@ export class CircleEditorProvider
       case MessageDefs.pageloaded:
         return;
       case MessageDefs.loadmodel:
-        //multi model mode 필요한지 보류
+        document.sendModel(message.offset);
         return;
       case MessageDefs.finishload:
         return;
       case MessageDefs.selection:
         return;
-
+      
       //added new logics
       case MessageDefs.edit:
         document.makeEdit(message);
