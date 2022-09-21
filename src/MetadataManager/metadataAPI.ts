@@ -1,4 +1,6 @@
 import * as vscode from 'vscode';
+import * as crypto from 'crypto';
+import { obtainWorkspaceRoot } from '../Utils/Helpers';
 
 interface Relation{
     "selected": string,
@@ -19,17 +21,17 @@ interface Data{
     "toolchain_version"?: string
 }
 
-export class Metadata{
 
+export class Metadata{
     private _disposables: vscode.Disposable[] = [];
     constructor() { }
     public static register(context: vscode.ExtensionContext): void {
         const registrations = [
             vscode.commands.registerCommand('one.metadata.showMetadata', async () => {
 
-                const testPath :string = "./mode.tflite" // workspace 기준 실제 파일 위치
-                // await Metadata.getMetadata(context, testPath);
-                await Metadata.getRelation(context, testPath);
+                const testPath :string = "while_000.log" // workspace 기준 실제 파일 위치
+                // await Metadata.getFileInfo(context, testPath);
+                await Metadata.getRelationInfo(testPath);
             })
         ]
 
@@ -38,31 +40,26 @@ export class Metadata{
         });
     }
 
-    
-    public static async getMetadata(context: vscode.ExtensionContext, uri: string) {
-        // uri를 통해 hash 값 가져오는 로직 필요 
-
-
-        // - pathToHash 의 접근 방식 미정으로 예시 hash 파일 설정
-        const hash = "9f8641056d4e2eb03830f3c1bbb6c71ca6e820f6da94bf7055b132b8d2e6a2b5"
-
-        // let metadata = this.hashToMetadata(hash);
-        // return metadata
-
-        let metadata = await this.hashToMetadata(hash)
+    //get metadata of file by path
+    public static async getFileInfo(path: string) {
+        const hash = await this.getContentHash(path);
+        let metadata = await this.getMetadata(hash)
         console.log(metadata)
-        return metadata
+        return metadata[path];
     }
 
-    
+    //generate Hash from file
+    public static async getContentHash(path: string) {
+        let workspaceroot=obtainWorkspaceRoot();
+        let Uri = vscode.Uri.joinPath(vscode.Uri.file(workspaceroot),path);
+        const hash = crypto.createHash('sha256').update(Buffer.from(await vscode.workspace.fs.readFile(Uri)).toString()).digest('hex');
+        console.log(hash);
+        return hash;
+    }
 
-    public static async getRelation(context: vscode.ExtensionContext, uri: string)  {
-        //uri를 통해 hash값 가져오는 로직 필요
-
-        const nowHash = "888488c9a0128eeb0147672601f047b01bf24635a6aacb9784887ee96736acf8"
-
-        // relation.json 불러오기
-    
+    //get metadata of file by path
+    public static async getRelationInfo(path: string)  {
+        const nowHash = await this.getContentHash(path);
         if (vscode.workspace.workspaceFolders === undefined) return
 
         let relationUri = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri,".meta/relation.json")
@@ -76,7 +73,7 @@ export class Metadata{
 
         // 현재 노드 메타데이터 불러오기
 
-        let nowMetadata: JSON = await this.hashToMetadata(nowHash)
+        let nowMetadata: JSON = await this.getMetadata(nowHash)
 
         relations.selected = nowHash
 
@@ -92,7 +89,7 @@ export class Metadata{
             }
             else {
 
-                let tempMetadata: JSON = await this.hashToMetadata(tempHash)
+                let tempMetadata: JSON = await this.getMetadata(tempHash)
                 
                 relations.relationData.push({ "id": tempHash, "parent": relationJSON[tempHash].parent, "represent": 0, "dataList": this.getDataList(tempMetadata) })
                 tempHash = relationJSON[tempHash].parent
@@ -109,7 +106,7 @@ export class Metadata{
             else {
                 
                 for (let i = 0; i < tempHashs.length; i++){
-                    let tempMetadata: JSON = await this.hashToMetadata(tempHashs[i])
+                    let tempMetadata: JSON = await this.getMetadata(tempHashs[i])
                     
                     relations.relationData.push({ "id": tempHashs[i], "parent": relationJSON[tempHashs[i]].parent, "represent": 0, "dataList": this.getDataList(tempMetadata) })
                     hashs.push(...relationJSON[tempHashs[i]].children)
@@ -125,11 +122,20 @@ export class Metadata{
 
     }
 
-
-    public static async hashToMetadata(hash: string) {
+    //get all Metadata of same hash object by hash
+    public static async getMetadata(hash: string) {
         if (vscode.workspace.workspaceFolders !== undefined) {
             const metaUri = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, `.meta/hash_objects/${hash.substring(0, 2)}/${hash.substring(2)}.json`);    
             return JSON.parse(Buffer.from(await vscode.workspace.fs.readFile(metaUri)).toString())
+        }
+    }
+
+    //set all Metadata of same hash object by hash
+    public static async setMetadata(hash: string | undefined, value: object) { //.meta 기준 relative path [=== workspace assert 로직이 필요할 것 같다.]
+        let workspaceroot=obtainWorkspaceRoot();
+        if(hash){
+            const Uri = vscode.Uri.joinPath(vscode.Uri.file(workspaceroot), `.meta/hash_objects/${hash.substring(0, 2)}/${hash.substring(2)}.json`);
+            await vscode.workspace.fs.writeFile(Uri,Buffer.from(JSON.stringify(value),'utf8'));
         }
     }
 
@@ -152,5 +158,3 @@ export class Metadata{
         return dataList
     }
 }
-
-
