@@ -108,6 +108,7 @@ suite('Toolchain', function() {
         assert.strictEqual(bnodes[0].label, oneBackendName);
         assert.strictEqual(bnodes[1].label, backendName);
 
+        // Ignore bnodes[0] because it is ONE Toolchain backend.
         let bnode2: BackendNode = bnodes[1];
         let tnodes2 = NodeBuilder.createToolchainNodes(bnode2);
         assert.strictEqual(tnodes2.length, 1);
@@ -120,6 +121,7 @@ suite('Toolchain', function() {
       test('NEG: creates ToolchainNode list using invalid backend node', function() {
         const bnodes: BackendNode[] = NodeBuilder.createBackendNodes();
         assert.strictEqual(bnodes.length, 2);
+        assert.strictEqual(bnodes[0].label, oneBackendName);
         assert.strictEqual(bnodes[1].label, backendName);
         const tnodes1 = NodeBuilder.createToolchainNodes(bnodes[1]);
         assert.strictEqual(tnodes1.length, 1);
@@ -186,6 +188,7 @@ suite('Toolchain', function() {
         assert.strictEqual(bnodes.length, 2);
         assert.strictEqual(bnodes[0].label, oneBackendName);
         assert.strictEqual(bnodes[1].label, backendName);
+        // Ignore bnodes[0] because it is ONE Toolchain backend.
         let bnode: BackendNode = bnodes[1];
         provider.getChildren(bnode).then((tnodes) => {
           assert.strictEqual(tnodes.length, 1);
@@ -235,6 +238,7 @@ suite('Toolchain', function() {
         assert.strictEqual(bnodes.length, 2);
         assert.strictEqual(bnodes[0].label, oneBackendName);
         assert.strictEqual(bnodes[1].label, backendName);
+        // Ignore bnodes[0] because it is ONE Toolchain backend.
         const tnodes = NodeBuilder.createToolchainNodes(bnodes[1]);
         assert.isAbove(tnodes.length, 0);
         provider.uninstall(tnodes[0]);
@@ -281,6 +285,7 @@ suite('Toolchain', function() {
         assert.strictEqual(bnodes.length, 2);
         assert.strictEqual(bnodes[0].label, oneBackendName);
         assert.strictEqual(bnodes[1].label, backendName);
+        // Ignore bnodes[0] because it is ONE Toolchain backend.
         const tnodes = NodeBuilder.createToolchainNodes(bnodes[1]);
         assert.isAbove(tnodes.length, 0);
         provider.setDefaultToolchain(tnodes[0]);

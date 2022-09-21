@@ -204,6 +204,7 @@ export class DeviceViewProvider implements vscode.TreeDataProvider<DeviceViewNod
       let executorList: Executor[] = [];
       const entries = Object.entries(globalBackendMap);
       for (const entry of entries) {
+        console.log('loadDeviceManager====', entry);
         const compiler = entry[1].compiler();
         if (compiler) {
           for (const toolchainType of compiler.getToolchainTypes()) {
