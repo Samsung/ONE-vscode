@@ -28,7 +28,7 @@ class ToolchainCompiler implements Compiler {
   }
 
   getToolchainTypes(): string[] {
-    throw Error('Invalid getToolchainTypes call');
+    return this.toolchainTypes;
   }
 
   getToolchains(_toolchainType: string, _start: number, _count: number): Toolchains {
