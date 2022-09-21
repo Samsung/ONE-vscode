@@ -97,6 +97,26 @@
           }
         ],
         "priority": "option"
+      },
+      {
+        "viewType": "one.viewer.metadata",
+        "displayName": "Metadata",
+        "selector": [
+          {
+            "filenamePattern": "*"
+          }
+        ],
+        "priority": "option"
+      },
+      {
+        "viewType": "one.viewer.relation",
+        "displayName": "Relation",
+        "selector": [
+          {
+            "filenamePattern": "*"
+          }
+        ],
+        "priority": "option"
       }
     ],
     "commands": [

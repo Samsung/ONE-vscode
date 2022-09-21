@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2022 Samsung Electronics Co., Ltd. All Rights Reserved
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 let currentConfigType = null;
 const vscode = acquireVsCodeApi();
@@ -6,10 +21,7 @@ this.window.addEventListener('message', (event) => {
   const message = event.data;
   switch (message.command) {
     case 'showMetadata':
-      this.setRelativePathBreadscrumbs(message.relativePath);
       this.updateMetadataInfo(message.metadata);
-      vscode.setState({ fileUri: message.fileUri, relativePath: message.relativePath });
-      
       break;
     default:
       break;
@@ -255,25 +267,4 @@ function showButtonClickEvent() {
       }
     });
   }
-}
-
-function setRelativePathBreadscrumbs(relativePath) {
-  const breadcrumbs = document.getElementById('breadcrumbs-relativepath');
-  while(breadcrumbs.hasChildNodes()) {
-    breadcrumbs.removeChild(breadcrumbs.firstChild);
-  }
-  
-  const path = relativePath.substring(2).split("/");
-  path.forEach(p => {
-    if (breadcrumbs.hasChildNodes()) {
-      const path = document.createElement('div');
-      path.classList.add('path-item');
-      path.innerText = '>';
-      breadcrumbs.appendChild(path);
-    }
-    const path = document.createElement('div');
-    path.classList.add('path-item');
-    path.innerText = p;
-    breadcrumbs.appendChild(path);
-  });
 }

@@ -14,12 +14,24 @@
  * limitations under the License.
  */
 
-let currentFileUri = "";
+// const relationData = [
+//   {"name": "Top Level", "parent": "", "path": "임의 경로", "onecc version": "1.0.0", "toolchain version": "1.0.0"},  // TODO: name => id
+//   {"name": "Level 2: A", "parent": "Top Level", "path": "임의 경로", "onecc version": "1.0.0", "toolchain version": "1.0.0"},
+//   {"name": "Level 2: B", "parent": "Top Level", "path": "임의 경로", "onecc version": "1.0.0", "toolchain version": "1.0.0"},
+//   {"name": "Son of A", "parent": "Level 2: A", "path": "임의 경로", "onecc version": "1.0.0", "toolchain version": "1.0.0"},
+//   {"name": "Daughter of A", "parent": "Level 2: A", "path": "임의 경로", "onecc version": "1.0.0", "toolchain version": "1.0.0"},
+// ];
 
 //웹뷰 오른쪽 클릭 막기
 document.addEventListener('contextmenu', event => event.preventDefault());
 
 const vscode = acquireVsCodeApi();
+
+//현재 파일의 Uri 
+let currentFileUri = "";
+
+//현재 파일의 워크스페이스 주소
+let workspaceFolderName = "";
 
 window.addEventListener('message',(event) => {
   const message = event.data;
@@ -27,14 +39,15 @@ window.addEventListener('message',(event) => {
   
   switch (message.type) {
     case 'create':
-      currentFileUri = message.fileUri;
+      currentFileUri = message.fileUri.path;
+      console.log(message.fileUri.path);
+      workspaceFolderName = message.workspaceFolderName;
       detachTree();
       attachTree(relationData);
-      console.log('메시지는: ', message);
-      vscode.setState({fileUri:message.fileUri});
+      console.log('create 메시지는: ', message);
       break;
     case 'update':
-      console.log('메시지는: ', message);
+      console.log('update 메시지는: ', message);
       detachTree();
       attachTree(relationData);
       break;
@@ -46,8 +59,8 @@ window.addEventListener('message',(event) => {
 function attachTree(relationData) {
   
   //현재 파일 절대 경로 보여주기
-  // const currentInnerText = document.getElementById('nav-bar').innerText;
-  // document.getElementById('nav-bar').innerText = `${currentInnerText} ${currentFileUri}` ;
+  //currentFileUri = String(currentFileUri).replace(/\//gi," > ");
+  //document.getElementById('nav-bar-content-box').innerText =`${currentFileUri}` ;
   
   //  assigns the data to a hierarchy using parent-child relationships
   const treeData = d3.stratify()
@@ -143,17 +156,35 @@ function attachTree(relationData) {
       hoverText.style.visibility = 'visible';
       hoverText.innerText = "/home/jihongyu/ONE-vscode/res/modelDir/truediv/model.q8.circle.log";
       hoverText.style.left = `${node.x}px`;
-      hoverText.style.top = `${node.y + 75}px`;
+      hoverText.style.top = `${mouse.path[0].getBoundingClientRect().top - 25}px`;
       
     }).on('mouseout', (mouse, node) => {
       hoverText.style.visibility = 'hidden';
     });
   
+  //toolchain/onecc 정보 기록
   node.append("text")
   .attr("dy", ".35em")
   .attr("y", -rectSizeHeight + 30)
   .style("text-anchor", "middle")
-  .text(d => d.data.dataList[d.data.idx].name);
+  .text(d => d.data.dataList[d.data.idx].name)
+  .on("dblclick", (p,d) => {
+    if (waitForDouble !== null) {
+      clearTimeout(waitForDouble);
+      
+      console.log('더블 클릭입니다.');
+      waitForDouble = null;
+      
+    }
+  })
+  .on("click", (p, d) => {
+    if(waitForDouble === null) {
+      waitForDouble = setTimeout(() => {
+        console.log('원 클릭입니다.');
+        waitForDouble = null;
+      }, 400);
+    }
+  });
 }
 
 function postMessage(path) {
