@@ -70,4 +70,4 @@ class ONEToolchain implements Backend {
   }
 }
 
-export {ONEToolchain};
+export {ToolchainCompiler, ONEToolchain};
