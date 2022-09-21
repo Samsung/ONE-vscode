@@ -411,8 +411,6 @@
     "@vscode/webview-ui-toolkit": "^0.9.3",
     "configparser": "^0.3.9",
     "ini": "^2.0.0",
-    "npm-watch": "^0.11.0",
-    "vscode": "^1.1.37",
     "which": "^2.0.2"
   }
 }
