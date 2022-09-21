@@ -26,7 +26,7 @@ import {OneTreeDataProvider} from './OneExplorer/OneExplorer';
 import {PartEditorProvider} from './PartEditor/PartEditor';
 import {PartGraphSelPanel} from './PartEditor/PartGraphSelector';
 import { ToolchainProvider } from './Toolchain/ToolchainProvider';
-import { Metadata } from './Metaprovider/metadata_manager';
+import { Metadata } from './MetadataManager/metadataAPI';
 import {Logger} from './Utils/Logger';
 
 /* istanbul ignore next */
