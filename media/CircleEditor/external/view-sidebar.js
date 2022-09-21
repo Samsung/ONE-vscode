@@ -15,6 +15,8 @@ const typeName = {
     'bool':['true', 'false']
 };
 
+const tensorType = ['FLOAT32', 'FLOAT16', 'INT32', 'UINT8', 'INT64', 'STRING', 'BOOL', 'INT16', 'COMPLEX64', 'INT8', 'FLOAT64', 'COMPLEX128', 'UINT64', 'RESOURCE', 'VARIANT', 'UINT32'];
+
 const builtinOperatorType = {
     'ADD': 0,
     'AVERAGEPOOL2D': 1,
@@ -322,7 +324,7 @@ sidebar.NodeSidebar = class {
 
         const inputs = node.inputs;
         if (inputs && inputs.length > 0) {
-            const inputsElements = new sidebar.EditInputsView(host, inputs).render();
+            const inputsElements = new sidebar.EditInputsView(host, inputs, this._isCustom).render();
             for(const inputsElement of inputsElements){
                 this._elements.push(inputsElement);
             }
@@ -330,7 +332,7 @@ sidebar.NodeSidebar = class {
 
         const outputs = node.outputs;
         if (outputs && outputs.length > 0) {
-            const outputsElements = new sidebar.EditOutputsView(host, outputs).render();
+            const outputsElements = new sidebar.EditOutputsView(host, outputs, this._isCustom).render();
             for(const outputsElement of outputsElements){
                 this._elements.push(outputsElement);
             }
@@ -391,6 +393,7 @@ sidebar.EditAttributesView = class{
         this._elements = [];
         this._attributes = [];
         this._isCustom = isCustom;
+        this._attributesBox = host.document.createElement('div');
 
         const sortedAttributes = node.attributes.slice();
         sortedAttributes.sort((a, b) => {
@@ -399,8 +402,27 @@ sidebar.EditAttributesView = class{
             return (au < bu) ? -1 : (au > bu) ? 1 : 0;
         });
         this._addHeader('Attributes');
+        let index = 0;
         for (const attribute of sortedAttributes) {
-            this._addAttribute(attribute.name, attribute);
+            this._addAttribute(attribute.name, attribute, index);
+            index++;
+        }
+        if(isCustom === true){
+            const addAttribute = this._host.document.createElement('div');
+            addAttribute.className = 'sidebar-view-item-value-add';
+            addAttribute.innerText = '+';
+            addAttribute.addEventListener('click', () => {
+                const name = 'name';
+                const value = 'value';
+                const attribute = {
+                    _name : name,
+                    _value : value,
+                    _type : null
+                }
+                this._addAttribute(attribute._name, attribute)
+            })
+            this._attributesBox.appendChild(addAttribute);
+            this._elements.push(this._attributesBox);
         }
     }
 
@@ -411,14 +433,19 @@ sidebar.EditAttributesView = class{
         this._elements.push(headerElement);
     }
 
-    _addAttribute(name, attribute) {
-        const item = new NodeAttributeView(this._host, attribute, this._isCustom);
+    _addAttribute(name, attribute, index) {
+        const item = new NodeAttributeView(this._host, attribute, this._isCustom, index, this._node);
         item.on('show-graph', (sender, graph) => {
             this._raise('show-graph', graph);
         });
-        const view = new sidebar.NameValueView(this._host, name, item);
+        const view = new sidebar.NameValueView(this._host, name, item, index, 'attribute');
         this._attributes.push(view);
-        this._elements.push(view.render());
+        if(this._isCustom === true){
+            this._attributesBox.appendChild(view.render());
+        }
+        else{
+            this._elements.push(view.render());
+        }
     }
     
     render() {
@@ -428,14 +455,17 @@ sidebar.EditAttributesView = class{
 
 sidebar.EditInputsView = class{
 
-    constructor(host, inputs) {
+    constructor(host, inputs, isCustom) {
         this._host = host;
         this._elements = [];
         this._inputs = [];
+        this._index = 0;
+        this._isCustom = isCustom
 
         this._addHeader('Inputs');
         for (const input of inputs) {
             this._addInput(input.name, input);
+            this._index++;
         }
     }
 
@@ -448,14 +478,15 @@ sidebar.EditInputsView = class{
 
     _addInput(name, input) {
         if (input.arguments.length > 0) {
-            const view = new sidebar.ParameterView(this._host, input);
+            const title = 'input';
+            const view = new sidebar.ParameterView(this._host, input, this._index, this._isCustom, title);
             view.on('export-tensor', (sender, tensor) => {
                 this._raise('export-tensor', tensor);
             });
             view.on('error', (sender, tensor) => {
                 this._raise('error', tensor);
             });
-            const item = new sidebar.NameValueView(this._host, name, view);
+            const item = new sidebar.NameValueView(this._host, name, view, this._index, 'input');
             this._inputs.push(item);
             this._elements.push(item.render());
         }
@@ -468,14 +499,17 @@ sidebar.EditInputsView = class{
 
 sidebar.EditOutputsView = class{
 
-    constructor(host, outputs) {
+    constructor(host, outputs, isCustom) {
         this._host = host;
         this._elements = [];
         this._outputs = [];
+        this._isCustom = isCustom;
+        this._index = 0;
 
         this._addHeader('Outputs');
         for (const output of outputs) {
             this._addOutput(output.name, output);
+            this._index++;
         }
     }
 
@@ -488,7 +522,9 @@ sidebar.EditOutputsView = class{
 
     _addOutput(name, output) {
         if (output.arguments.length > 0) {
-            const item = new sidebar.NameValueView(this._host, name, new sidebar.ParameterView(this._host, output));
+            const title = 'output'
+            const view = new sidebar.ParameterView(this._host, output, this._index, this._isCustom, title);
+            const item = new sidebar.NameValueView(this._host, name, view, this._index, title);
             this._outputs.push(item);
             this._elements.push(item.render());
         }
@@ -501,7 +537,7 @@ sidebar.EditOutputsView = class{
 
 sidebar.NameValueView = class {
 
-    constructor(host, name, value) {
+    constructor(host, name, value, index, title) {
         this._host = host;
         this._name = name;
         this._value = value;
@@ -511,7 +547,7 @@ sidebar.NameValueView = class {
 
         const nameInputElement = this._host.document.createElement('input');
         if(name){
-            nameInputElement.setAttribute('id', name);
+            nameInputElement.setAttribute('id', title + index);
         }
         nameInputElement.setAttribute('type', 'text');
         nameInputElement.setAttribute('value', name);
@@ -628,19 +664,22 @@ sidebar.ValueTextView = class {
 
 class NodeAttributeView {
 
-    constructor(host, attribute, isCustom) {
+    constructor(host, attribute, isCustom, index, node) {
         this._host = host;
         this._attribute = attribute;
         this._element = this._host.document.createElement('div');
         this._element.className = 'sidebar-view-item-value';
         this._isCustom = isCustom;
         this._attributeName = '';
+        this._index = index;
+        this._node = node;
 
         const value = this._attribute.value;
         this.show(value);
     }
 
     show(){
+        console.log(this._attribute);
         const type = this._attribute.type;
         const value = this._attribute._value;
         if (type) {
@@ -755,25 +794,35 @@ class NodeAttributeView {
         const type = this._attribute.type;
 
         if(this._isCustom === true){
-            const input = this._host.document.getElementById(this._attribute.name);
+            const input = this._host.document.getElementById('attribute'+this._index);
             input.disabled = false;
             this._attributeName = input.value;
         }
 
         this._save = this._host.document.createElement('div');
         this._cancel = this._host.document.createElement('div');
+        this._remove = this._host.document.createElement('div');
         this._save.className = 'sidebar-view-item-value-save';
         this._cancel.className = 'sidebar-view-item-value-cancel';
+        this._remove.className = 'sidebar-view-item-value-remove';
         this._save.innerText = 'save';
         this._cancel.innerText='cancel';
+        this._remove.innerText='-';
         this._save.addEventListener('click', () => {
             this.save();
         });
         this._cancel.addEventListener('click', () => {
             this.cancel();
         });
+        this._remove.addEventListener('click', () => {
+            this.remove();
+        });
+        if(this._isCustom === true){
+            this._element.appendChild(this._remove);
+        }
         this._element.appendChild(this._cancel);
         this._element.appendChild(this._save);
+        
         const value = this._attribute.value;
 
         switch (type) {
@@ -862,21 +911,31 @@ class NodeAttributeView {
     }
 
     save(){
-        const value = this._element.childNodes[2].value;
+        let value;
+        if(this._isCustom === true){
+            value = this._element.childNodes[3].value;
+        }
+        else{
+            value = this._element.childNodes[2].value;
+        }
         this._attribute._value = value;
+        
+        if(this._isCustom === true){
+            const input = this._host.document.getElementById('attribute' + this._index);
+            input.disabled = true;
+            this._attribute._name = input.value;
+        }
+
         while (this._element.childElementCount) {
             this._element.removeChild(this._element.lastChild);
         }
-        if(this._isCustom === true){
-            const input = this._host.document.getElementById(this._attribute.name);
-            input.disabled = true;
-        }
+        
         this.show();
     }
 
     cancel(){
         if(this._isCustom === true){
-            const input = this._host.document.getElementById(this._attribute.name);
+            const input = this._host.document.getElementById('attribute' + this._index);
             input.disabled = true;
             input.value = this._attributeName;
         }
@@ -885,6 +944,20 @@ class NodeAttributeView {
         }
 
         this.show();
+    }
+
+    remove(){
+        const input = this._host.document.getElementById('attribute' + this._index);
+        const box = input.parentElement.parentElement.parentElement;
+        const element = input.parentElement.parentElement;
+        box.removeChild(element);
+        console.log(this._node);
+        for(const i in this._node._attributes){
+            if(this._node._attributes[i].name === this._attribute.name){
+                this._node._attributes.splice(i,1);
+                break;
+            }
+        }
     }
     
     render() {
@@ -908,12 +981,13 @@ class NodeAttributeView {
 
 sidebar.ParameterView = class {
 
-    constructor(host, list) {
+    constructor(host, list, index, isCustom, title) {
         this._list = list;
         this._elements = [];
         this._items = [];
+
         for (const argument of list.arguments) {
-            const item = new sidebar.ArgumentView(host, argument);
+            const item = new sidebar.ArgumentView(host, argument, index, isCustom, list, title);
             item.on('export-tensor', (sender, tensor) => {
                 this._raise('export-tensor', tensor);
             });
@@ -952,9 +1026,15 @@ sidebar.ParameterView = class {
 
 sidebar.ArgumentView = class {
 
-    constructor(host, argument) {
+    constructor(host, argument, index, isCustom, list, title) {
         this._host = host;
         this._argument = argument;
+        this._index = index;
+        this._isCustom = isCustom;
+        this._list = list;
+        this._title = title;
+        this._select;
+        this._shape;
 
         this._element = this._host.document.createElement('div');
         this._element.className = 'sidebar-view-item-value';
@@ -1132,6 +1212,12 @@ sidebar.ArgumentView = class {
             this._element.removeChild(this._element.lastChild);
         }
 
+        if(this._isCustom === true){
+            const input = this._host.document.getElementById(this._title + this._index);
+            input.disabled = false;
+            this._attributeName = input.value;
+        }
+
         const initializer = this._argument.initializer;
         const quantization = this._argument.quantization;
         let type = this._argument.type;
@@ -1198,8 +1284,27 @@ sidebar.ArgumentView = class {
         }
         if (type && (this._hasId || this._hasKind)) {
             const typeLine = this._host.document.createElement('div');
+            const typeSelect = this._host.document.createElement('select');
+            const shape = this._host.document.createElement('input');
             typeLine.className = 'sidebar-view-item-value-line-border';
-            typeLine.innerHTML = 'type: <code><b>' + type.split('<').join('&lt;').split('>').join('&gt;') + '</b></code>';
+            typeSelect.className = 'sidebar-view-item-value-line-type-select';
+            shape.className = 'sidebar-view-item-value-line-shape-input';
+            console.log(this._argument.type.shape.dimensions);
+            this._select = typeSelect;
+            this._shape = shape;
+            typeLine.innerText = 'type: ';
+            shape.setAttribute('value', this._argument.type.shape.dimensions.toString())
+            for(const type of tensorType){
+                const option = this._host.document.createElement('option');
+                option.setAttribute('value', type);
+                option.innerText = type.toLowerCase();
+                if(type.toLowerCase() === this._argument.type.dataType){
+                    option.setAttribute('selected', 'selected');
+                }
+                typeSelect.appendChild(option);
+            }
+            typeLine.appendChild(typeSelect);
+            typeLine.appendChild(shape);
             this._element.appendChild(typeLine);
         }
         if (denotation) {
@@ -1262,10 +1367,19 @@ sidebar.ArgumentView = class {
     }
 
     save(){
+        const type = this._select.value.toLowerCase();
+        this._argument._type._dataType = type;
         const name = this._argument.name.split('\n')
         const nameValue = this._element.childNodes[2].lastChild.value;
         name[0] = nameValue;
         this._argument._name = name[0] + '\n' + name[1];
+
+        if(this._isCustom === true){
+            const input = this._host.document.getElementById(this._title + this._index);
+            input.disabled = true;
+            this._list._name = input.value;
+        }
+        
         while (this._element.childElementCount) {
             this._element.removeChild(this._element.lastChild);
         }
@@ -1274,6 +1388,11 @@ sidebar.ArgumentView = class {
     }
 
     cancel(){
+        if(this._isCustom === true){
+            const input = this._host.document.getElementById('input' + this._index);
+            input.disabled = true;
+        }
+
         while (this._element.childElementCount) {
             this._element.removeChild(this._element.lastChild);
         }
