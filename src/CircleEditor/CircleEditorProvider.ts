@@ -164,8 +164,9 @@ export class CircleEditorProvider
   }
 
   private onMessage(document: CircleEditorDocument, message: any) {
-    //로직 수행 후 post message가 없는 요청들
+   
 
+    //원래 있던 메시지들 그냥 return 해도 되는지
     switch (message.command) {
       case MessageDefs.alert:
         Balloon.error(message.text);

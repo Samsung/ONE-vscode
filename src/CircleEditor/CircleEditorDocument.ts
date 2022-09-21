@@ -53,6 +53,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 	makeEdit(message: any) {
 		const oldModelData = this.modelData;
 		
+		//message type이 모두 있는지 확인
 		switch (message.type) {
 			case "operator":
 				break;
