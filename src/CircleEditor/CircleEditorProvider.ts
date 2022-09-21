@@ -76,12 +76,10 @@ export class CircleEditorProvider
     openContext: { backupId?: string },
     _token: vscode.CancellationToken
   ): Promise<CircleEditorDocument> {
-    let bytes = new Uint8Array(await vscode.workspace.fs.readFile(uri));
+    
+    
 
-    const document: CircleEditorDocument = await CircleEditorDocument.create(
-      uri,
-      bytes
-    );
+    const document: CircleEditorDocument = await CircleEditorDocument.create(uri);
 
     const listeners: vscode.Disposable[] = [];
 
@@ -166,19 +164,19 @@ export class CircleEditorProvider
     //원래 있던 메시지들 그냥 return 해도 되는지
     switch (message.command) {
       case MessageDefs.alert:
-        Balloon.error(message.text);
+        Balloon.error(message.text); //error msg
         return;
       case MessageDefs.request:
-        //return Document.StateModel
+        //return Document.StateModel //metadata open
         return;
       case MessageDefs.pageloaded:
-        return;
+        return; //html load
       case MessageDefs.loadmodel:
         document.sendModel(message.offset);
         return;
-      case MessageDefs.finishload:
+      case MessageDefs.finishload: //load model finish
         return;
-      case MessageDefs.selection:
+      case MessageDefs.selection: //return
         return;
       
       //added new logics

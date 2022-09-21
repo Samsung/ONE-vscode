@@ -18,9 +18,10 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
     return fbb.asUint8Array();
   }
 
-  static async create(uri: vscode.Uri, bytes: Uint8Array):
+  static async create(uri: vscode.Uri):
     Promise<CircleEditorDocument|PromiseLike<CircleEditorDocument>> {
-    return new CircleEditorDocument(uri, bytes);
+		let bytes = new Uint8Array(await vscode.workspace.fs.readFile(uri));
+    	return new CircleEditorDocument(uri, bytes);
   }
 
   private constructor (uri: vscode.Uri, bytes: Uint8Array) {
