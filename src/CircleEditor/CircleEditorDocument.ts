@@ -57,10 +57,9 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		switch (message.type) {
 			case "operator":
 				break;
-			case "input":
+			case "tensor":
 				break;
-			case "output":
-				break;
+			
 			default:
 				break;
 		}
