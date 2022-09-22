@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { Disposable, disposeAll } from "./dispose";
 import * as Circle from './circle_schema_generated';
 import * as flatbuffers from 'flatbuffers';
-import { responseModel, requestMessage } from './MessageType';
+import { responseModel, requestMessage, customInfoMessage } from './MessageType';
 import * as flexbuffers from 'flatbuffers/js/flexbuffers';
 import * as Types from './CircleType';
 
@@ -41,7 +41,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
   // tell to webview
   private readonly _onDidChangeContent = this._register(new vscode.EventEmitter<{
 		readonly modelData: Uint8Array;
-  } | responseModel>());
+  } | responseModel | customInfoMessage>());
   public readonly onDidChangeContent = this._onDidChangeContent.event;
 
   // tell to vscode
@@ -56,7 +56,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		this._onDidDispose.fire();
 		super.dispose();
   }
-  
+
 
 	makeEdit(message: requestMessage) {
 		
@@ -119,6 +119,19 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 	this._onDidChangeContent.fire(responseModel);
   }
   
+  sendCustomInfo(message: any){
+
+	//현우 로직 수행
+	
+	let responseData:customInfoMessage = {
+		command: 'CustomType',
+		data: 'string으로 되어있는데 객체 형태면 MessageType.ts 바꿔주면 됨'
+	} //보낼 object 형식 맞춰서 바꿔줘!!!
+	this._onDidChangeContent.fire(responseData);
+	return;
+  }
+
+
   private loadModel(bytes: Uint8Array): Circle.ModelT {
     let buf = new flatbuffers.ByteBuffer(bytes);
     return Circle.Model.getRootAsModel(buf).unpack();

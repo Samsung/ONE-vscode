@@ -29,6 +29,7 @@ export enum MessageDefs {
   //added by yuyeon
   edit = "edit",
   testMessage = "dd",
+  customType = "CustomType",
 }
 
 export class CircleEditorProvider
@@ -180,6 +181,10 @@ export class CircleEditorProvider
       //added new logics
       case MessageDefs.edit:
         document.makeEdit(message);
+        return;
+      case MessageDefs.customType:
+        //document.customType(message);
+        
         return;
       case "test": {
         console.log("msg arrived here");

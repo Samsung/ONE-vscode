@@ -14,3 +14,8 @@ export interface requestMessage{
     type: string;
     data: string;
 }
+
+export interface customInfoMessage{
+    command: string,
+    data: string //string인가????
+}
