@@ -23,3 +23,8 @@ export interface responseModelPath{
     type: string,
     value: string
 }
+
+export interface responseFileRequest{
+    command: string,
+    response: string,
+}

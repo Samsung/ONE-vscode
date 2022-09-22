@@ -1,18 +1,15 @@
 import * as vscode from "vscode";
-import { Disposable, disposeAll } from "./dispose";
+import { Disposable } from "./dispose";
 import * as Circle from './circle_schema_generated';
 import * as flatbuffers from 'flatbuffers';
-import { responseModel, requestMessage, customInfoMessage, responseModelPath } from './MessageType';
+import { responseModel, requestMessage, customInfoMessage, responseModelPath, responseFileRequest } from './MessageType';
 import * as flexbuffers from 'flatbuffers/js/flexbuffers';
 import * as Types from './CircleType';
-
-
 
 export class CircleEditorDocument extends Disposable implements vscode.CustomDocument{
   private readonly _uri: vscode.Uri;
   private _model: Circle.ModelT;
-  //private readonly packetSize = 1024 * 1024 * 10;
-  private readonly packetSize =1024;
+  private readonly packetSize = 1024 * 1024 * 10;
 
   public get uri(): vscode.Uri { return this._uri; }
   public get model(): Circle.ModelT { return this._model }
@@ -39,9 +36,9 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
   public readonly onDidDispose = this._onDidDispose.event;
 
   // tell to webview
-  private readonly _onDidChangeContent = this._register(new vscode.EventEmitter<{
+  public readonly _onDidChangeContent = this._register(new vscode.EventEmitter<{
 		readonly modelData: Uint8Array;
-  } | responseModel | customInfoMessage | responseModelPath>());
+  } | responseModel | customInfoMessage | responseModelPath | responseFileRequest>());
   public readonly onDidChangeContent = this._onDidChangeContent.event;
 
   // tell to vscode
@@ -57,35 +54,28 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		super.dispose();
   }
 
-
 	makeEdit(message: requestMessage) {
-		
 		const oldModelData = this.modelData;
 
 		switch (message.type) {
 			case "attribute":
-				
 				const str_Attribute = message.data;
 				const res_Attribute = this.AttributeEdit(str_Attribute);
 				break;
 			case "tensor":
-			
 				const str_Tensor = message.data;
 				const res_Tensor = this.TensorEdit(str_Tensor);
 				break;
-			
 			default:
 				return;
 			
 		}
 
 		const newModelData = this.modelData;
-
 		this.notifyEdit(oldModelData, newModelData);
 	}
 
 	notifyEdit(oldModelData: Uint8Array, newModelData: Uint8Array) {
-		
 		this.sendModel('0');
 
 		this._onDidChangeDocument.fire({
@@ -97,7 +87,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 			redo: async () => {
 				this._model = this.loadModel(newModelData);
 				this.sendModel('0');
-	 		}
+			}
 		})
   }
 
@@ -107,14 +97,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		let responseModelPath = { command: 'loadmodel', type: 'modelpath', value: this._uri.fsPath};
 		this._onDidChangeContent.fire(responseModelPath);
 
-		let tmpArray = this.modelData.slice(parseInt(offset), parseInt(offset) + this.packetSize);
-		const buffer = Buffer.allocUnsafe(tmpArray.length);
-		
-		for(let i=0; i<parseInt(offset); i++){
-			buffer[i]=tmpArray[i];
-		}
-
-		let responseArray = new Uint8Array(buffer);
+		let responseArray = this.modelData.slice(parseInt(offset), parseInt(offset) + this.packetSize);
 
 		let responseModel =  {
 			command: 'loadmodel',
@@ -138,7 +121,6 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 	this._onDidChangeContent.fire(responseData);
 	return;
   }
-
 
   private loadModel(bytes: Uint8Array): Circle.ModelT {
     let buf = new flatbuffers.ByteBuffer(bytes);

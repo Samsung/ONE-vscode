@@ -1,8 +1,9 @@
 import * as vscode from "vscode";
 import { CircleEditorDocument } from "./CircleEditorDocument";
-import { Disposable, disposeAll } from "./dispose";
+import { disposeAll } from "./dispose";
 import { Balloon } from "../Utils/Balloon";
 import * as fs from "fs";
+import { getNonce } from "../Utils/external/Nonce";
 
 export enum MessageDefs {
   // message command
@@ -25,17 +26,17 @@ export enum MessageDefs {
   tensors = "tensors",
   // partiton of backends
   partition = "partition",
-
-  //added by yuyeon
+  // edit circle
   edit = "edit",
-  testMessage = "dd",
   customType = "CustomType",
+  testMessage = "dd",
 }
 
 export class CircleEditorProvider
   implements vscode.CustomEditorProvider<CircleEditorDocument>
 {
   public static readonly viewType = "one.editor.circle";
+  private readonly folderMediaCircleEditor = "media/CircleGraph";
 
   //constructor
   constructor(private readonly _context: vscode.ExtensionContext) {}
@@ -77,9 +78,6 @@ export class CircleEditorProvider
     openContext: { backupId?: string },
     _token: vscode.CancellationToken
   ): Promise<CircleEditorDocument> {
-    
-    
-
     const document: CircleEditorDocument = await CircleEditorDocument.create(uri);
 
     const listeners: vscode.Disposable[] = [];
@@ -160,13 +158,12 @@ export class CircleEditorProvider
   }
 
   private onMessage(document: CircleEditorDocument, message: any) {
-   
     switch (message.command) {
       case MessageDefs.alert:
         Balloon.error(message.text); //error msg
         return;
       case MessageDefs.request:
-        //return Document.StateModel //metadata open
+        this.handleRequest(document, message.url, message.encoding);
         return;
       case MessageDefs.pageloaded:
         return; //html load
@@ -177,23 +174,33 @@ export class CircleEditorProvider
         return;
       case MessageDefs.selection: //return
         return;
-      
-      //added new logics
       case MessageDefs.edit:
         document.makeEdit(message);
         return;
       case MessageDefs.customType:
         //document.customType(message);
-        
         return;
-      case "test": {
-        console.log("msg arrived here");
-        document.makeEdit(message);
-        return;
-      }
     }
   }
 
+	protected handleRequest(document: CircleEditorDocument, url: string, encoding: string) {
+    // TODO check scheme
+    const reqUrl = new URL(url);
+    let filePath = vscode.Uri.joinPath(
+        this._context.extensionUri, this.folderMediaCircleEditor, reqUrl.pathname);
+    if (!fs.existsSync(filePath.fsPath)) {
+      filePath = vscode.Uri.joinPath(
+        this._context.extensionUri, `${this.folderMediaCircleEditor}/external`, reqUrl.pathname);
+    }
+
+    try {
+      const fileData = fs.readFileSync(filePath.fsPath, { encoding: encoding, flag: 'r' });
+      document._onDidChangeContent.fire({ command: "response", response: fileData });
+    } catch (err) {
+      document._onDidChangeContent.fire({command: "error", response: ''});
+    }
+  }
+  
   //getHtml
   private getHtmlForWebview(webview: vscode.Webview): string {
     //need to get html from GUI
@@ -202,14 +209,63 @@ export class CircleEditorProvider
     const htmlUrl = webview.asWebviewUri(
       vscode.Uri.joinPath(
         this._context.extensionUri,
-        "media",
-        "CircleEditorTest",
+        this.folderMediaCircleEditor,
         "index.html"
       )
     );
     let html = fs.readFileSync(htmlUrl.fsPath, { encoding: "utf-8" });
 
+    const nonce = getNonce();
+    html = html.replace(/%nonce%/gi, nonce);
+    html = html.replace('%webview.cspSource%', webview.cspSource);
+    // necessary files from netron to work
+    html = this.updateUri(html, webview, '%view-grapher.css%', 'view-grapher.css');
+    html = this.updateUri(html, webview, '%view-sidebar.css%', 'view-sidebar.css');
+    html = this.updateExternalUri(html, webview, '%view-sidebar.js%', 'view-sidebar.js');
+    html = this.updateUri(html, webview, '%view-grapher.js%', 'view-grapher.js');
+    html = this.updateExternalUri(html, webview, '%dagre.js%', 'dagre.js');
+    html = this.updateExternalUri(html, webview, '%base.js%', 'base.js');
+    html = this.updateExternalUri(html, webview, '%text.js%', 'text.js');
+    html = this.updateExternalUri(html, webview, '%json.js%', 'json.js');
+    html = this.updateExternalUri(html, webview, '%xml.js%', 'xml.js');
+    html = this.updateExternalUri(html, webview, '%python.js%', 'python.js');
+    html = this.updateExternalUri(html, webview, '%protobuf.js%', 'protobuf.js');
+    html = this.updateExternalUri(html, webview, '%flatbuffers.js%', 'flatbuffers.js');
+    html = this.updateExternalUri(html, webview, '%flexbuffers.js%', 'flexbuffers.js');
+    html = this.updateExternalUri(html, webview, '%zip.js%', 'zip.js');
+    html = this.updateExternalUri(html, webview, '%gzip.js%', 'gzip.js');
+    html = this.updateExternalUri(html, webview, '%tar.js%', 'tar.js');
+    // for circle format
+    html = this.updateExternalUri(html, webview, '%circle.js%', 'circle.js');
+    html = this.updateExternalUri(html, webview, '%circle-schema.js%', 'circle-schema.js');
+    // modified for one-vscode
+    html = this.updateUri(html, webview, '%index.js%', 'index.js');
+    html = this.updateUri(html, webview, '%view.js%', 'view.js');
+    // viewMode
+    // html = html.replace('%viewMode%', this._viewMode);
+
     return html;
+  }
+
+  private getMediaPath(file: string) {
+    return vscode.Uri.joinPath(this._context.extensionUri, this.folderMediaCircleEditor, file);
+  }
+
+  private updateExternalUri(
+      html: string, webview: vscode.Webview, search: string, replace: string) {
+    const replaceUri = this.getUriFromPath(webview, 'external/' + replace);
+    return html.replace(search, `${replaceUri}`);
+  }
+
+  private updateUri(html: string, webview: vscode.Webview, search: string, replace: string) {
+    const replaceUri = this.getUriFromPath(webview, replace);
+    return html.replace(search, `${replaceUri}`);
+  }
+
+  private getUriFromPath(webview: vscode.Webview, file: string) {
+    const mediaPath = this.getMediaPath(file);
+    const uriView = webview.asWebviewUri(mediaPath);
+    return uriView;
   }
 }
 
@@ -224,8 +280,6 @@ class WebviewCollection {
    */
   public *get(uri: vscode.Uri): Iterable<vscode.WebviewPanel> {
     const key = uri.toString();
-
-    console.log("webview Collection get 함수 내부 ");
 
     for (const entry of this._webviews) {
       if (entry.resource === key) {
