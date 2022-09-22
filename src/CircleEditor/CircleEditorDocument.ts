@@ -2,137 +2,15 @@ import * as vscode from "vscode";
 import { Disposable, disposeAll } from "./dispose";
 import * as Circle from './circle_schema_generated';
 import * as flatbuffers from 'flatbuffers';
-import { responseModel } from './ResponseType';
+import { responseModel } from './MessageType';
 import * as flexbuffers from 'flatbuffers/js/flexbuffers';
+import * as Types from './CircleType';
 
-// HW
-enum BuiltinOptionsType {
-	CONV2DOPTIONS = 1,
-	DEPTHWISECONV2DOPTIONS,
-	CONCATEMBEDDINGSOPTIONS,
-	LSHPROJECTIONOPTIONS,
-	POOL2DOPTIONS,
-	SVDFOPTIONS,
-	RNNOPTIONS,
-	FULLYCONNECTEDOATIONOPTIONS,
-	SOFTMAXOPTIONS,
-	CONCATENATIONOPTIONS,
-	ADDOPTIONS,
-	L2NORMOPTIONS,
-	LOCALRESPONSENORMALIZATIONOPTIONS,
-	LSTMOPTIONS,
-	RESIZEBILINEAROPTIONS,
-	CALLOPTIONS,
-	RESHAPEOPTIONS,
-	SKIPGRAMOPTIONS,
-	SPACETODEPTHOPTIONS,
-	EMBEDDINGLOOKUPSPARSEOPTIONS,
-	MULOPTIONS,
-	PADOPTIONS,
-	GATHEROPTIONS,
-	BATCHTOSPACENDOPTIONS,
-	SPACETOBATCHNDOPTIONS,
-	TRANSPOSEOPTIONS,
-	REDUCEROPTIONS,
-	SUBOPTIONS,
-	DIVOPTIONS,
-	SQUEEZEOPTIONS,
-	SEQUENCERNNOPTIONS,
-	STRIDEDSLICEOPTIONS,
-	EXPOPTIONS,
-	TOPKV2OPTIONS,
-	SPLITOPTIONS,
-	LOGSOFTMAXOPTIONS,
-	CASTOPTIONS,
-	DEQUANTIZEOPTIONS,
-	MAXIMUMMINIMUMOPTIONS,
-	ARGMAXOPTIONS,
-	LESSOPTIONS,
-	NEGOPTIONS,
-	PADV2OPTIONS,
-	GREATEROPTIONS,
-	GREATEREQUALOPTIONS,
-	LESSEQUALOPTIONS,
-	SELECTOPTIONS,
-	SLICEOPTIONS,
-	TRANSPOSECONVOPTIONS,
-	SPARSETODENSEOPTIONS,
-	TILEOPTIONS,
-	EXPANDDIMSOPTIONS,
-	EQUALOPTIONS,
-	NOTEQUALOPTIONS,
-	SHAPEOPTIONS,
-	POWOPTIONS,
-	ARGMINOPTIONS,
-	FAKEQUANTOPTIONS,
-	PACKOPTIONS,
-	LOGICALOROPTIONS,
-	ONEHOTOPTIONS,
-	LOGICALANDOPTIONS,
-	LOGICALNOTOPTIONS,
-	UNPACKOPTIONS,
-	FLOORDIVOPTIONS,
-	SQUAREOPTIONS,
-	ZEROSLIKEOPTIONS,
-	FILLOPTIONS,
-	BIDIRECTIONALSEQUENCELSTMOPTIONS,
-	BIDIRECTIONALSEQUENCERNNOPTIONS,
-	UNIDIRECTIONALSEQUENCELSTMOPTIONS,
-	FLOORMODOPTIONS,
-	RANGEOPTIONS,
-	RESIZENEARESTNEIGHBOROPTIONS,
-	LEAKYRELUOPTIONS,
-	SQUAREDDIFFERENCEOPTIONS,
-	MIRRORPADOPTIONS,
-	ABSOPTIONS,
-	SPLITVOPTIONS,
-	UNIQUEOPTIONS,
-	REVERSEV2OPTIONS,
-	ADDNOPTIONS,
-	GATHERNDOPTIONS,
-	COSOPTIONS,
-	WHEREOPTIONS,
-	RANKOPTIONS,
-	REVERSESEQUENCEOPTIONS,
-	MATRIXDIAGOPTIONS,
-	QUANTIZEOPTIONS,
-	MATRIXSETDIAGOPTIONS,
-	HARDSWISHOPTIONS,
-	IFOPTIONS,
-	WHILEOPTIONS,
-	DEPTHTOSPACEOPTIONS,
-	NONMAXSUPPRESSIONV4OPTIONS,
-	NONMAXSUPPRESSIONV5OPTIONS,
-	SCATTERNDOPTIONS,
-	SELECTV2OPTIONS,
-	DENSIFYOPTIONS,
-	SEGMENTSUMOPTIONS,
-	BATCHMATMULOPTIONS,
-	CUMSUMOPTIONS,
-	CALLONCEOPTIONS,
-	BROADCASTTOOPTIONS,
-	RFFT2DOPTIONS,
-	CONV3DOPTIONS,
-	HASHTABLEOPTIONS,
-	HASHTABLEFINDOPTIONS,
-	HASHTABLEIMPORTOPTIONS,
-	HASHTABLESIZEOPTIONS,
-	VARHANDLEOPTIONS,
-	READVARIABLEOPTIONS,
-	ASSIGNVARIABLEOPTIONS,
-	RANDOMOPTIONS,
-	BCQGATHEROPTIONS = 252,
-	BCQFULLYCONNECTEDOPTIONS = 253,
-	INSTANCENORMOPTIONS = 254,
-  }
 
 
 export class CircleEditorDocument extends Disposable implements vscode.CustomDocument{
   private readonly _uri: vscode.Uri;
   private _model: Circle.ModelT;
-	private _CircleType : any;
-  private _NormalType : any;
-	private _FindAttribute : any;
   //private readonly packetSize = 1024 * 1024 * 10;
   private readonly packetSize =1024;
 
@@ -154,149 +32,6 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
     super();
     this._uri = uri;
     this._model = this.loadModel(bytes);
-		this._CircleType  = {
-			"TensorType" : Circle.TensorType,
-			"DimensionType" : Circle.DimensionType,
-			"Padding" : Circle.Padding,
-			"ActivationFunctionType" : Circle.ActivationFunctionType,
-			"LSHProjectionType" : Circle.LSHProjectionType,
-			"FullyConnectedOptionsWeightsFormat" : Circle.FullyConnectedOptionsWeightsFormat,
-			"LSTMKernelType" : Circle.LSTMKernelType,
-			"CombinerType" : Circle.CombinerType,
-			"MirrorPadMode" : Circle.MirrorPadMode,
-			"CustomOptionsFormat" : Circle.CustomOptionsFormat,
-			"DataFormat" : Circle.DataFormat,
-			};
-			this._NormalType = {
-			"int" : Int32Array,
-			"bool" : Boolean,
-			"float" : Float64Array,
-			"int32" : Int32Array,
-			"string" : String,
-			"byte" : Int8Array,
-			"ubyte" : Uint8Array,
-			"uint" : Uint32Array,
-			"int64" : Number
-			};
-		this._FindAttribute = {
-			"CONV2DOPTIONS" : Circle.Conv2DOptionsT,
-			"DEPTHWISECONV2DOPTIONS" : Circle.DensifyOptionsT, 
-			"CONCATEMBEDDINGSOPTIONS" : Circle.ConcatEmbeddingsOptionsT,
-			"LSHPROJECTIONOPTIONS" : Circle.LSHProjectionOptionsT,
-			"POOL2DOPTIONS" : Circle.Pool2DOptionsT,
-			"SVDFOPTIONS" : Circle.SVDFOptionsT,
-			"RNNOPTIONS" : Circle.RNNOptionsT,
-			"FULLYCONNECTEDOATIONOPTIONS" : Circle.FullyConnectedOptionsT,
-			"SOFTMAXOPTIONS" : Circle.SoftmaxOptionsT,
-			"CONCATENATIONOPTIONS" : Circle.ConcatenationOptionsT,
-			"ADDOPTIONS" : Circle.AddOptionsT,
-			"L2NORMOPTIONS" : Circle.L2NormOptionsT,
-			"LOCALRESPONSENORMALIZATIONOPTIONS" : Circle.LocalResponseNormalizationOptionsT,
-			"LSTMOPTIONS" : Circle.LSTMOptionsT,
-			"RESIZEBILINEAROPTIONS" : Circle.ResizeBilinearOptionsT,
-			"CALLOPTIONS" : Circle.CallOptionsT,
-			"RESHAPEOPTIONS" : Circle.ReshapeOptionsT,
-			"SKIPGRAMOPTIONS" : Circle.SkipGramOptionsT,
-			"SPACETODEPTHOPTIONS" : Circle.SpaceToDepthOptionsT,
-			"EMBEDDINGLOOKUPSPARSEOPTIONS" : Circle.EmbeddingLookupSparseOptionsT,
-			"MULOPTIONS" : Circle.MulOptionsT,
-			"PADOPTIONS" : Circle.PadOptionsT,
-			"GATHEROPTIONS" : Circle.GatherOptionsT,
-			"BATCHTOSPACENDOPTIONS" : Circle.BatchToSpaceNDOptionsT,
-			"SPACETOBATCHNDOPTIONS" : Circle.SpaceToBatchNDOptionsT,
-			"TRANSPOSEOPTIONS" : Circle.TransposeOptionsT,
-			"REDUCEROPTIONS" : Circle.ReducerOptionsT,
-			"SUBOPTIONS" : Circle.SubOptionsT,
-			"DIVOPTIONS" : Circle.DivOptionsT,
-			"SQUEEZEOPTIONS" : Circle.SqueezeOptionsT,
-			"SEQUENCERNNOPTIONS" : Circle.SequenceRNNOptionsT,
-			"STRIDEDSLICEOPTIONS" : Circle.StridedSliceOptionsT,
-			"EXPOPTIONS" : Circle.ExpOptionsT,
-			"TOPKV2OPTIONS" : Circle.TopKV2OptionsT,
-			"SPLITOPTIONS" : Circle.SplitOptionsT,
-			"LOGSOFTMAXOPTIONS" : Circle.LogSoftmaxOptionsT,
-			"CASTOPTIONS" : Circle.CastOptionsT,
-			"DEQUANTIZEOPTIONS" : Circle.DequantizeOptionsT,
-			"MAXIMUMMINIMUMOPTIONS" : Circle.MaximumMinimumOptionsT,
-			"ARGMAXOPTIONS" : Circle.ArgMaxOptionsT,
-			"LESSOPTIONS" : Circle.LessOptionsT,
-			"NEGOPTIONS" : Circle.NegOptionsT,
-			"PADV2OPTIONS" : Circle.PadV2OptionsT,
-			"GREATEROPTIONS" : Circle.GreaterOptionsT,
-			"GREATEREQUALOPTIONS" : Circle.GreaterEqualOptionsT,
-			"LESSEQUALOPTIONS" : Circle.LessEqualOptionsT,
-			"SELECTOPTIONS" : Circle.SelectOptionsT,
-			"SLICEOPTIONS" : Circle.SliceOptionsT,
-			"TRANSPOSECONVOPTIONS" : Circle.TransposeConvOptionsT,
-			"SPARSETODENSEOPTIONS" : Circle.SparseToDenseOptionsT,
-			"TILEOPTIONS" : Circle.TileOptionsT,
-			"EXPANDDIMSOPTIONS" : Circle.ExpandDimsOptionsT,
-			"EQUALOPTIONS" : Circle.EqualOptionsT,
-			"NOTEQUALOPTIONS" : Circle.NotEqualOptionsT,
-			"SHAPEOPTIONS" : Circle.ShapeOptionsT,
-			"POWOPTIONS" : Circle.PowOptionsT,
-			"ARGMINOPTIONS" : Circle.ArgMinOptionsT,
-			"FAKEQUANTOPTIONS" : Circle.FakeQuantOptionsT,
-			"PACKOPTIONS" : Circle.PackOptionsT,
-			"LOGICALOROPTIONS" : Circle.LogicalOrOptionsT,
-			"ONEHOTOPTIONS" : Circle.OneHotOptionsT,
-			"LOGICALANDOPTIONS" : Circle.LogicalAndOptionsT,
-			"LOGICALNOTOPTIONS" : Circle.LogicalNotOptionsT,
-			"UNPACKOPTIONS" : Circle.UnpackOptionsT,
-			"FLOORDIVOPTIONS" : Circle.FloorDivOptionsT,
-			"SQUAREOPTIONS" : Circle.SquareOptionsT,
-			"ZEROSLIKEOPTIONS" : Circle.ZerosLikeOptionsT,
-			"FILLOPTIONS" : Circle.FillOptionsT,
-			"BIDIRECTIONALSEQUENCELSTMOPTIONS" : Circle.BidirectionalSequenceLSTMOptionsT,
-			"BIDIRECTIONALSEQUENCERNNOPTIONS" : Circle.BidirectionalSequenceRNNOptionsT,
-			"UNIDIRECTIONALSEQUENCELSTMOPTIONS" : Circle.UnidirectionalSequenceLSTMOptionsT,
-			"FLOORMODOPTIONS" : Circle.FloorModOptionsT,
-			"RANGEOPTIONS" : Circle.RangeOptionsT,
-			"RESIZENEARESTNEIGHBOROPTIONS" : Circle.ResizeNearestNeighborOptionsT,
-			"LEAKYRELUOPTIONS" : Circle.LeakyReluOptionsT,
-			"SQUAREDDIFFERENCEOPTIONS" : Circle.SquaredDifferenceOptionsT,
-			"MIRRORPADOPTIONS" : Circle.MirrorPadOptionsT,
-			"ABSOPTIONS" : Circle.AbsOptionsT,
-			"SPLITVOPTIONS" : Circle.SplitVOptionsT,
-			"UNIQUEOPTIONS" : Circle.UniqueOptionsT,
-			"REVERSEV2OPTIONS" : Circle.ReverseV2OptionsT,
-			"ADDNOPTIONS" : Circle.AddNOptionsT,
-			"GATHERNDOPTIONS" : Circle.GatherNdOptionsT,
-			"COSOPTIONS" : Circle.CosOptionsT,
-			"WHEREOPTIONS" : Circle.WhereOptionsT,
-			"RANKOPTIONS" : Circle.RankOptionsT,
-			"REVERSESEQUENCEOPTIONS" : Circle.ReverseSequenceOptionsT,
-			"MATRIXDIAGOPTIONS" : Circle.MatrixDiagOptionsT,
-			"QUANTIZEOPTIONS" : Circle.QuantizeOptionsT,
-			"MATRIXSETDIAGOPTIONS" : Circle.MatrixSetDiagOptionsT,
-			"HARDSWISHOPTIONS" : Circle.HardSwishOptionsT,
-			"IFOPTIONS" : Circle.IfOptionsT,
-			"WHILEOPTIONS" : Circle.WhileOptionsT,
-			"DEPTHTOSPACEOPTIONS" : Circle.DepthToSpaceOptionsT,
-			"NONMAXSUPPRESSIONV4OPTIONS" : Circle.NonMaxSuppressionV4OptionsT,
-			"NONMAXSUPPRESSIONV5OPTIONS" : Circle.NonMaxSuppressionV5OptionsT,
-			"SCATTERNDOPTIONS" : Circle.ScatterNdOptionsT,
-			"SELECTV2OPTIONS" : Circle.SelectV2OptionsT,
-			"DENSIFYOPTIONS" : Circle.DensifyOptionsT,
-			"SEGMENTSUMOPTIONS" : Circle.SegmentSumOptionsT,
-			"BATCHMATMULOPTIONS" : Circle.BatchMatMulOptionsT,
-			"CUMSUMOPTIONS" : Circle.CumsumOptionsT,
-			"CALLONCEOPTIONS" : Circle.CallOnceOptionsT,
-			"BROADCASTTOOPTIONS" : Circle.BroadcastToOptionsT,
-			"RFFT2DOPTIONS" : Circle.Rfft2dOptionsT,
-			"CONV3DOPTIONS" : Circle.Conv3DOptionsT,
-			"HASHTABLEOPTIONS" : Circle.HashtableOptionsT,
-			"HASHTABLEFINDOPTIONS" : Circle.HashtableFindOptionsT,
-			"HASHTABLEIMPORTOPTIONS" : Circle.HashtableImportOptionsT,
-			"HASHTABLESIZEOPTIONS" : Circle.HashtableSizeOptionsT,
-			"VARHANDLEOPTIONS" : Circle.VarHandleOptionsT,
-			"READVARIABLEOPTIONS" : Circle.ReadVariableOptionsT,
-			"ASSIGNVARIABLEOPTIONS" : Circle.AssignVariableOptionsT,
-			"RANDOMOPTIONS" : Circle.RandomOptionsT,
-			"BCQGATHEROPTIONS" : Circle.BCQGatherOptionsT,
-			"BCQFULLYCONNECTEDOPTIONS" : Circle.BCQFullyConnectedOptionsT,
-			"INSTANCENORMOPTIONS" : Circle.InstanceNormOptionsT,
-		}
   }
 
   // dispose
@@ -384,6 +119,40 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 	this._onDidChangeContent.fire(responseModel);
   }
   
+	sendCustomInfo(data : string){
+		console.log("SendCustomInfo Start");
+		const Req = JSON.parse(data);
+		const subgraph_Idx : number = Req.data._subgraphIdx;
+		const operator_Idx : number = Req.data._location;
+		const target = this._model.subgraphs[subgraph_Idx].operators[operator_Idx].customOptions;
+		// Array to Buffer
+		const buffer = Buffer.from(target);
+		// Buffer to ArrayBuffer
+		const ab = new ArrayBuffer(buffer.length);
+				const view = new Uint8Array(ab);
+				for (let i = 0; i < buffer.length; ++i) {
+						view[i] = buffer[i];
+				}
+
+		// decodding flexbuffer
+		const CustomObj : any = flexbuffers.toObject(ab);
+		// result
+		console.log(CustomObj);
+
+		// 보내줄 형태로 다시 재저장
+		let res_data : any = new Object;
+		res_data._subgraphIdx = subgraph_Idx;
+		res_data._location = operator_Idx;
+		res_data._object = CustomObj;
+		
+		let responseData:customInfoMessage = {
+			command: 'CustomType',
+			data: 'string으로 되어있는데 객체 형태면 MessageType.ts 바꿔주면 됨'
+		} //보낼 object 형식 맞춰서 바꿔줘!!!
+		this._onDidChangeContent.fire(responseData);
+		return;
+	}
+
   private loadModel(bytes: Uint8Array): Circle.ModelT {
     let buf = new flatbuffers.ByteBuffer(bytes);
     return Circle.Model.getRootAsModel(buf).unpack();
@@ -527,20 +296,20 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		if(operatorCode !== 32){ // builtinOptions
 			console.log("Built-In Start");
 		  if(operator.builtinOptions === null) return "error";
-			operator.builtinOptionsType = BuiltinOptionsType[inputTypeOptionName];
+			operator.builtinOptionsType = Types.BuiltinOptionsType[inputTypeOptionName];
 		  const key = InputjsonFile._attribute.name;
 		  const value : string = InputjsonFile._attribute._value;
 		  const type : string = InputjsonFile._attribute._type;
 		  // 해당 타입에 접근해서 enum 값을 뽑아와야한다.
 		  
 		  // 현재는 type변경 없다고 생각하고 구현
-		  if(this._NormalType[type]=== undefined){
+		  if(Types._NormalType[type]=== undefined){
 			// Circle Type 참조
-			operator.builtinOptions[key] = this._CircleType[type][value];
+			operator.builtinOptions[key] = Types._CircleType[type][value];
 		  }
 		  else{
 			// 보여주는 타입을 그대로 띄워줌
-			operator.builtinOptions[key] = this._NormalType[type](value);
+			operator.builtinOptions[key] = Types._NormalType[type](value);
 		  }
 
 		}
