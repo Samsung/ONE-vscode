@@ -160,8 +160,6 @@ export class CircleEditorProvider
 
   private onMessage(document: CircleEditorDocument, message: any) {
    
-
-    //원래 있던 메시지들 그냥 return 해도 되는지
     switch (message.command) {
       case MessageDefs.alert:
         Balloon.error(message.text); //error msg

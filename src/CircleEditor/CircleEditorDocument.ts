@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { Disposable, disposeAll } from "./dispose";
 import * as Circle from './circle_schema_generated';
 import * as flatbuffers from 'flatbuffers';
-import { responseModel } from './MessageType';
+import { responseModel, requestMessage } from './MessageType';
 import * as flexbuffers from 'flatbuffers/js/flexbuffers';
 import * as Types from './CircleType';
 
@@ -58,28 +58,28 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
   }
   
 
-	makeEdit(message: any) {
-		const oldModelData = this.modelData;
+	makeEdit(message: requestMessage) {
 		
-		//message type이 모두 있는지 확인
+		const oldModelData = this.modelData;
+
 		switch (message.type) {
 			case "attribute":
-				// const jsonBuffer_Attribute  = require('/home/ssdc/AttributeExam.json')
-      	// const str_Attriibute = JSON.stringify(jsonBuffer_Attribute);
-				const str_Attriibute = message.data;
-				const res_Attribute = this.AttributeEdit(str_Attriibute);
-				console.log(res_Attribute)
+				
+				const str_Attribute = message.data;
+				const res_Attribute = this.AttributeEdit(str_Attribute);
+				console.log(res_Attribute);
 				break;
 			case "tensor":
-				// const jsonBuffer_Tensor = require('/home/ssdc/TensorExam.json')
-      	// const str_Tensor = JSON.stringify(jsonBuffer_Tensor);
+			
 				const str_Tensor = message.data;
 				const res_Tensor = this.TensorEdit(str_Tensor);
 				console.log(res_Tensor);
 				break;
 			
 			default:
-				break;
+				console.log("message type 아무것도 속하지 않을 때 예외처리")
+				return;
+			
 		}
 
 		const newModelData = this.modelData;
@@ -224,7 +224,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 			  // 버퍼 크기와 shape 크기가 다르면 에러 메시지를 보내주면 된다.
 			  const EditBuffer_Idx : number = EditTensor.buffer;
 			  this._model.buffers[EditBuffer_Idx].data = Buffer_data;
-			  return "error";
+			  return "buffer success";
 		  }
 		};
 		return "success";

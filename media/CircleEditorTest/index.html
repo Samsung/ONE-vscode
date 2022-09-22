@@ -1,31 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
 </head>
+
 <body>
-  <button id="testBtn">클릭!</button><br>
-  <input type="text"></input>
+  <button id="LoadModelBtn">Load Model 클릭!</button><br>
+
+  <button id="AttributeBtn">Attribute 수정 버튼</button><br>
+  <button id="TensorBtn">Tensor 수정 버튼</button><br>
+  <button id="ExceptionBtn">예외 처리버튼</button><br>
+
   <p>testest</p>
   <script>
-      const vscode = acquireVsCodeApi();
-      const testBtn = document.querySelector("#testBtn");
-      testBtn.addEventListener("click", e => {
-          e.preventDefault();
-          vscode.postMessage({
-              type:"dd", command:"loadmodel", offset: 0
-          });
+    const vscode = acquireVsCodeApi();
+    const loadModelBtn = document.querySelector("#LoadModelBtn");
+    loadModelBtn.addEventListener("click", e => {
+      e.preventDefault();
+      vscode.postMessage({
+        type: "dd", command: "loadmodel", offset: 0
       });
+    });
 
-      window.addEventListener("message", (e)=>{
-          console.log(e);
-          if(e.data.command ==="loadmodel"){
-            console.log("postMessage호출  " + e);
-            vscode.postMessage({command: 'loadmodel', offset: e.data.offset+e.data.length});
-          }
-      })
+    const ExceptionBtn = document.querySelector("#ExceptionBtn");
+    ExceptionBtn.addEventListener("click", e => {
+      e.preventDefault();
+      vscode.postMessage({
+        command: "edit", type: "아무거나"
+      });
+    });
+
+    const AttributeBtn = document.querySelector("#AttributeBtn");
+    AttributeBtn.addEventListener("click", e => {
+      e.preventDefault();
+      vscode.postMessage({
+        command: "edit", type: "attribute",
+        data: `{
+          "name": "custom",
+  "_attribute": {
+    "name": "BatchMatMulV2",
+        "keys" : ["a_x","a_y","T"],
+    "a_x" : "false",
+        "a_x_type" : "bool",
+        "a_y" : "true",
+        "a_y_type" : "bool",
+    "T": "10",
+        "T_Type" : "int"
+  },
+  "_location": "1",
+  "_subgraphIdx": "2"
+}`
+      });
+    });
+
+    const TensorBtn = document.querySelector("#TensorBtn");
+    TensorBtn.addEventListener("click", e => {
+      e.preventDefault();
+      vscode.postMessage({
+        command: "edit", type: "tensor", data: `{
+  "_name": "bias",
+  "_visible": true,
+  "_arguments": [
+    {
+      "_name": "biasbias",
+      "_location": "5",
+      "_type": {
+        "_dataType": "float32",
+        "_shape": { "_dimensions": [16] }
+      },
+      "_initializer": {
+        "_location": "5",
+        "_type": {
+          "_dataType": "float32",
+          "_shape": { "_dimensions": [16] }
+        },
+        "_is_variable": false,
+        "_name": "biasbias",
+        "_is_changed": true,
+        "_data": [27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27,
+27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27,
+27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27,
+27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27,
+27, 27]
+      }
+    }
+  ],
+  "_subgraphIdx": "0"
+}`
+      });
+    });
+
+   
+
+    window.addEventListener("message", (e) => {
+      console.log(e);
+      if (e.data.command === "loadmodel") {
+        console.log("postMessage호출  " + e);
+        vscode.postMessage({ command: 'loadmodel', offset: e.data.offset + e.data.length });
+      }
+    })
   </script>
 </body>
+
 </html>
