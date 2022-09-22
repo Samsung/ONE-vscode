@@ -1,3 +1,5 @@
+import { type } from "os";
+
 export interface responseModel{
     command: string;
     type: string;
@@ -5,4 +7,10 @@ export interface responseModel{
     length: number;
     total: number;
     responseArray: Uint8Array;
+}
+
+export interface requestMessage{
+    command: string;
+    type: string;
+    data: string;
 }
