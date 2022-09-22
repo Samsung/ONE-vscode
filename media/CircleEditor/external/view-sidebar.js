@@ -315,10 +315,18 @@ sidebar.NodeSidebar = class {
         }
 
         const attributes = node.attributes;
-        if (attributes && attributes.length > 0) {
+        if(this._isCustom){
             const attributesElements = new sidebar.EditAttributesView(host, node, this._isCustom).render();
             for(const attributesElement of attributesElements){
                 this._elements.push(attributesElement);
+            }
+        }
+        else{
+            if (attributes && attributes.length > 0) {
+                const attributesElements = new sidebar.EditAttributesView(host, node, this._isCustom).render();
+                for(const attributesElement of attributesElements){
+                    this._elements.push(attributesElement);
+                }
             }
         }
 
