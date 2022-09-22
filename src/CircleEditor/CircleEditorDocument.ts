@@ -329,15 +329,16 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		//message type이 모두 있는지 확인
 		switch (message.type) {
 			case "attribute":
-				const jsonBuffer_Attribute  = require('/home/ssdc/AttributeExam.json')
-      	const str_Attriibute = JSON.stringify(jsonBuffer_Attribute);
+				// const jsonBuffer_Attribute  = require('/home/ssdc/AttributeExam.json')
+      	// const str_Attriibute = JSON.stringify(jsonBuffer_Attribute);
+				const str_Attriibute = message.data;
 				const res_Attribute = this.AttributeEdit(str_Attriibute);
 				console.log(res_Attribute)
 				break;
 			case "tensor":
-				//const str = message.input
-				const jsonBuffer_Tensor = require('/home/ssdc/TensorExam.json')
-      	const str_Tensor = JSON.stringify(jsonBuffer_Tensor);
+				// const jsonBuffer_Tensor = require('/home/ssdc/TensorExam.json')
+      	// const str_Tensor = JSON.stringify(jsonBuffer_Tensor);
+				const str_Tensor = message.data;
 				const res_Tensor = this.TensorEdit(str_Tensor);
 				console.log(res_Tensor);
 				break;
