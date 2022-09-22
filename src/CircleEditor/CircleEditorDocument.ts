@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { Disposable, disposeAll } from "./dispose";
 import * as Circle from './circle_schema_generated';
 import * as flatbuffers from 'flatbuffers';
-import { responseModel, requestMessage, customInfoMessage } from './MessageType';
+import { responseModel, requestMessage, customInfoMessage, responseModelPath } from './MessageType';
 import * as flexbuffers from 'flatbuffers/js/flexbuffers';
 import * as Types from './CircleType';
 
@@ -18,14 +18,14 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
   public get model(): Circle.ModelT { return this._model }
   public get modelData(): Uint8Array {
     let fbb = new flatbuffers.Builder(1024);
-    Circle.Model.finishModelBuffer(fbb, this._model.pack(fbb));
+		Circle.Model.finishModelBuffer(fbb, this._model.pack(fbb));
     return fbb.asUint8Array();
   }
 
   static async create(uri: vscode.Uri):
     Promise<CircleEditorDocument|PromiseLike<CircleEditorDocument>> {
 		let bytes = new Uint8Array(await vscode.workspace.fs.readFile(uri));
-    	return new CircleEditorDocument(uri, bytes);
+		return new CircleEditorDocument(uri, bytes);
   }
 
   private constructor (uri: vscode.Uri, bytes: Uint8Array) {
@@ -41,7 +41,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
   // tell to webview
   private readonly _onDidChangeContent = this._register(new vscode.EventEmitter<{
 		readonly modelData: Uint8Array;
-  } | responseModel | customInfoMessage>());
+  } | responseModel | customInfoMessage | responseModelPath>());
   public readonly onDidChangeContent = this._onDidChangeContent.event;
 
   // tell to vscode
@@ -67,17 +67,14 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 				
 				const str_Attribute = message.data;
 				const res_Attribute = this.AttributeEdit(str_Attribute);
-				console.log(res_Attribute);
 				break;
 			case "tensor":
 			
 				const str_Tensor = message.data;
 				const res_Tensor = this.TensorEdit(str_Tensor);
-				console.log(res_Tensor);
 				break;
 			
 			default:
-				console.log("message type 아무것도 속하지 않을 때 예외처리")
 				return;
 			
 		}
@@ -89,34 +86,45 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 
 	notifyEdit(oldModelData: Uint8Array, newModelData: Uint8Array) {
 		
-		this.sendModel(0);
+		this.sendModel('0');
 
 		this._onDidChangeDocument.fire({
 			label: 'Model',
 			undo: async () => {
 						this._model = this.loadModel(oldModelData);
-						this.sendModel(0);
+						this.sendModel('0');
 					},
 			redo: async () => {
 				this._model = this.loadModel(newModelData);
-				this.sendModel(0);
+				this.sendModel('0');
 	 		}
 		})
   }
 
-  sendModel(offset: number){
-	
-	if(offset>this.modelData.length) return;
-    let responseArray = this.modelData.slice(offset, offset+this.packetSize);
-    let responseModel =  {
-		command: 'loadmodel',
-		type : 'uint8array',
-		offset : offset,
-		length: this.packetSize,
-		total : this.modelData.length,
-		responseArray : responseArray
-	}
-	this._onDidChangeContent.fire(responseModel);
+	sendModel(offset: string) {
+		if (parseInt(offset) > this.modelData.length - 1) return;
+
+		let responseModelPath = { command: 'loadmodel', type: 'modelpath', value: this._uri.fsPath};
+		this._onDidChangeContent.fire(responseModelPath);
+
+		let tmpArray = this.modelData.slice(parseInt(offset), parseInt(offset) + this.packetSize);
+		const buffer = Buffer.allocUnsafe(tmpArray.length);
+		
+		for(let i=0; i<parseInt(offset); i++){
+			buffer[i]=tmpArray[i];
+		}
+
+		let responseArray = new Uint8Array(buffer);
+
+		let responseModel =  {
+			command: 'loadmodel',
+			type : 'uint8array',
+			offset : parseInt(offset),
+			length: responseArray.length,
+			total : this.modelData.length,
+			responseArray : responseArray
+		}
+		this._onDidChangeContent.fire(responseModel);
   }
   
   sendCustomInfo(message: any){
@@ -189,9 +197,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 
 		// Input Json 파일 받아오기 (GUI에서 Edit 수행 후 JSON으로 준다고 가정)
 		// EditTensor에 수정할 Tensor값 받아오는 과정
-		console.log("TensorEdit Start");
 		const InputjsonFile = JSON.parse(data);
-		console.log(InputjsonFile);
 	
 		// 정보 받아오기
 		let name;
@@ -246,7 +252,6 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 	  private AttributeEdit(data:string){
     
 		const InputjsonFile = JSON.parse(data);
-		console.log("AttributeEdit Start")
 
 		let subgraph_Idx : number = Number(InputjsonFile._subgraphIdx);
 		let Operator_Idx : number = Number(InputjsonFile._location);
@@ -271,9 +276,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		// builtin Case
 		// builtinOptionsType 수정
 		
-		console.log("operatorCode :", operatorCode);
 		if(operatorCode !== 32){ // builtinOptions
-			console.log("Built-In Start");
 		  if(operator.builtinOptions === null) return "error";
 			operator.builtinOptionsType = Types.BuiltinOptionsType[inputTypeOptionName];
 		  const key = InputjsonFile._attribute.name;
@@ -296,7 +299,6 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		// 커스텀인 경우 문자열로 받아온다.
 		
 		else if(operatorCode === 32){
-			console.log("Custom Start");
 			operator.builtinOptionsType = 0;
 			operator.builtinOPtions = null;
 
@@ -323,7 +325,6 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 					}
 				}
 				else if(val_type === "int"){
-					console.log(Number(val));
 					fbb.add(Number(val));
 				}
 				else{
@@ -332,7 +333,6 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 			}
 			fbb.end();
 			let res = fbb.finish();
-			console.log(operator.customOptions)
 			// ArrayBuffer -> Buffer -> Array 후 넣어줘야함.
 			const buf = Buffer.alloc(res.byteLength);
 			const view = new Uint8Array(res);
@@ -343,7 +343,6 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 			// buf는 res를 buf로 바꾼상태
 			let res2 = Array.from(buf);
 			operator.customOptions = res2;
-			console.log(operator.customOptions)
 		}
 		
 		return "success"

@@ -1,5 +1,3 @@
-import { type } from "os";
-
 export interface responseModel{
     command: string;
     type: string;
@@ -18,4 +16,10 @@ export interface requestMessage{
 export interface customInfoMessage{
     command: string,
     data: string //string인가????
+}
+
+export interface responseModelPath{
+    command: string,
+    type: string,
+    value: string
 }
