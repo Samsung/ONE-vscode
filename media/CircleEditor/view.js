@@ -834,7 +834,11 @@ view.View = class {
             return this.renderGraph(this._model, this.activeGraph)
                 .then(() => {
                     if (this._page !== 'default') {
-                        this.show('default', nodeIdx);
+                        if (nodeIdx) {
+                            this.show('default', nodeIdx);
+                        } else {
+                            this.show('default');
+                        }
                     }
                     update();
                     return this._model;
@@ -1100,6 +1104,7 @@ view.View = class {
                     new sidebar.ModelSidebar(this._host, this._model, this.activeGraph);
                 modelSidebar.on('update-active-graph', (sender, graph) => {
                     this._updateActiveGraph(graph);
+                    this._host._viewingSubgraph = graph._subgraphIdx;
                 });
                 const content = modelSidebar.render();
                 this._sidebar.open(content, 'Model Properties');
@@ -1160,6 +1165,9 @@ view.View = class {
                     nodeSidebar.toggleInput(input.name);
                 }
                 this._sidebar.open(nodeSidebar.render(), 'Node Properties');
+
+                // 
+                this._host._viewingNode = node.location;
             } catch (error) {
                 const content = ' in \'' + this._model.identifier + '\'.';
                 if (error && !error.message.endsWith(content) &&

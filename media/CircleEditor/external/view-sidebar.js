@@ -41,6 +41,8 @@ sidebar.Sidebar = class {
     }
 
     _pop() {
+        // Change the node index shown to null when sidebar is closed
+        this._host._viewingNode = null;
         this._deactivate();
         if (this._stack.length > 0) {
             this._stack.pop();
