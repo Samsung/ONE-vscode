@@ -554,9 +554,7 @@ sidebar.NameValueView = class {
         nameElement.className = 'sidebar-view-item-name';
 
         const nameInputElement = this._host.document.createElement('input');
-        if(name){
-            nameInputElement.setAttribute('id', title + index);
-        }
+        nameInputElement.setAttribute('id', title + index);
         nameInputElement.setAttribute('type', 'text');
         nameInputElement.setAttribute('value', name);
         nameInputElement.setAttribute('title', name);
@@ -687,7 +685,6 @@ class NodeAttributeView {
     }
 
     show(){
-        console.log(this._attribute);
         const type = this._attribute.type;
         const value = this._attribute._value;
         if (type) {
@@ -959,7 +956,6 @@ class NodeAttributeView {
         const box = input.parentElement.parentElement.parentElement;
         const element = input.parentElement.parentElement;
         box.removeChild(element);
-        console.log(this._node);
         for(const i in this._node._attributes){
             if(this._node._attributes[i].name === this._attribute.name){
                 this._node._attributes.splice(i,1);
@@ -1043,6 +1039,7 @@ sidebar.ArgumentView = class {
         this._title = title;
         this._select;
         this._shape;
+        this._data;
 
         this._element = this._host.document.createElement('div');
         this._element.className = 'sidebar-view-item-value';
@@ -1297,7 +1294,6 @@ sidebar.ArgumentView = class {
             typeLine.className = 'sidebar-view-item-value-line-border';
             typeSelect.className = 'sidebar-view-item-value-line-type-select';
             shape.className = 'sidebar-view-item-value-line-shape-input';
-            console.log(this._argument.type.shape.dimensions);
             this._select = typeSelect;
             this._shape = shape;
             typeLine.innerText = 'type: ';
@@ -1345,8 +1341,13 @@ sidebar.ArgumentView = class {
             this._element.appendChild(location);
         }
 
+        function resize(obj) {
+            obj.style.height = '1px';
+            obj.style.height = (12 + obj.scrollHeight) + 'px';
+        }
+
         if (initializer) {
-            const contentLine = this._host.document.createElement('pre');
+            const contentLine = this._host.document.createElement('textarea');
             const valueLine = this._host.document.createElement('div');
             try {
                 const state = initializer.state;
@@ -1361,9 +1362,11 @@ sidebar.ArgumentView = class {
                     });
                     this._element.appendChild(this._saveButton);
                 }
-
+                this._data = contentLine;
                 valueLine.className = 'sidebar-view-item-value-line-border';
+                contentLine.className = 'sidebar-view-item-value-line-textarea'
                 contentLine.innerHTML = state || initializer.toString();
+                contentLine.style.height = 150 + contentLine.scrollHeight + 'px';
             }
             catch (err) {
                 contentLine.innerHTML = err.toString();
@@ -1377,6 +1380,16 @@ sidebar.ArgumentView = class {
     save(){
         const type = this._select.value.toLowerCase();
         this._argument._type._dataType = type;
+        const shape = this._shape.value;
+        if(!this.check()){
+            // vscode.window.showErrorMessage('\' , \'와 숫자만 입력할 수 있습니다.');
+            return;
+        }
+        const shapeElements = shape.split(',');
+        for(const i in shapeElements){
+            shapeElements[i] = shapeElements[i] - 0;
+        }
+        this._argument._type._shape._dimensions = shapeElements;
         const name = this._argument.name.split('\n')
         const nameValue = this._element.childNodes[2].lastChild.value;
         name[0] = nameValue;
@@ -1406,6 +1419,15 @@ sidebar.ArgumentView = class {
         }
         const initializer = this._argument.initializer;
         this.show(initializer);
+    }
+
+    check(){
+        for(const ch of this._shape.value){
+            if(ch != ',' && (ch>'9' || ch < '0')){
+                return false;
+            }
+        }
+        return true;
     }
 };
 
