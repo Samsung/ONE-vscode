@@ -4,3 +4,6 @@ node_modules/
 # External open source project files which are not modified.
 media/CircleGraph/external/
 media/CircleEditor/external/
+/src/CircleEditor/circle_schema_generated.ts
+/src/CircleEditor/CircleType.ts
+
