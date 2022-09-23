@@ -146,7 +146,7 @@ export const _NormalType: any = {
 	"int64" : Number
 };
 
-export const FindAttribute: any = {
+export const _FindAttribute: any = {
 	"CONV2DOPTIONS" : Circle.Conv2DOptionsT,
 	"DEPTHWISECONV2DOPTIONS" : Circle.DensifyOptionsT, 
 	"CONCATEMBEDDINGSOPTIONS" : Circle.ConcatEmbeddingsOptionsT,

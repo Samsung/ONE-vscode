@@ -11364,4 +11364,3 @@ pack(builder:flatbuffers.Builder): flatbuffers.Offset {
   );
 }
 }
-

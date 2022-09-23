@@ -46,7 +46,8 @@
 
 var host = {};
 
-const vscode = acquireVsCodeApi();
+var vscode = acquireVsCodeApi();
+var builtinOperatorType = builtinOperatorType || {};
 
 const viewMode = {
     viewer: 0,
@@ -156,6 +157,9 @@ host.BrowserHost = class {
                  */
                 case 'edit':
                     this._msgLoadModel(message);
+                    break;
+                case 'CustomType':
+                    this._msgGetType(message);
                     break;
             }
         });
@@ -468,8 +472,32 @@ host.BrowserHost = class {
                         model._graphs[idx]['_subgraphIdx'] = idx;
                         for (let jdx = 0; jdx < model.graphs[idx].nodes.length; jdx++) {
                             model._graphs[idx]._nodes[jdx]['_subgraphIdx'] = idx;
+                            if(builtinOperatorType[model._graphs[idx]._nodes[jdx]._type.name.toUpperCase()] === undefined){
+                                model._graphs[idx]._nodes[jdx]._isCustom = true;
+                                vscode.postMessage({
+                                    command: "CustomType",
+                                    data:{
+                                        _subgraphIdx: idx,
+                                        _nodeIdx: jdx,
+                                    }
+                                });
+                            }
                         }
+                        
                     }
+
+                    console.log(model);
+
+                    // if(builtinOperatorType[type.name.toUpperCase()] === undefined) {
+                    //     this._isCustom = true;
+                    //     vscode.postMessage({
+                    //         command: "CustomType",
+                    //         data:{
+                    //             _subgraphIdx: this._node._subgraphIdx,
+                    //             _nodeIdx: parseInt(this._node.location),
+                    //         }
+                    //     });
+                    // }    
 
                     // notify owner that load has finished
                     vscode.postMessage({command: 'finishload'});
@@ -570,6 +598,21 @@ host.BrowserHost = class {
         this._view.reset();
         this._view.show('welcome spinner');
         vscode.postMessage({command: 'loadmodel', offset: '0'});
+    }
+
+    _msgGetType(message) {
+        console.log(message);
+        const data = message.data;
+        const graphs = this._view._model._graphs;
+        const values = data._type;
+        const node = graphs[data._subgraphIdx]._nodes[data._nodeIdx];
+        for (const key of Object.keys(values)) {
+            for(let i in node.attributes){
+                if(node.attributes[i].name === key){
+                    node.attributes[i]._type = values[key];
+                }
+            }
+        }
     }
 };
 

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import * as vscode from "vscode";
 import { Disposable } from "./dispose";
 import * as Circle from './circle_schema_generated';
@@ -131,7 +130,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
   // eslint-disable-next-line @typescript-eslint/naming-convention
   SendcustomType(message : any){
 		// eslint-disable-next-line @typescript-eslint/naming-convention
-		const Req : any = JSON.parse(message.data);
+		const Req : any = message.data;
 		// eslint-disable-next-line @typescript-eslint/naming-convention
 		const subgraph_Idx : number = Req._subgraphIdx;
 		// eslint-disable-next-line @typescript-eslint/naming-convention
