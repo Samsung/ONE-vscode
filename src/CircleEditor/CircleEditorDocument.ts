@@ -140,7 +140,9 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		
 		let responseData:customInfoMessage = {
 			command: 'CustomType',
-			data: res_data
+			data: res_data,
+			subgraphIdx: parseInt(message.data._subgraphIdx),
+			nodeIdx: parseInt(message.data._location),
 		}
 		this._onDidChangeContent.fire(responseData);
 		return;

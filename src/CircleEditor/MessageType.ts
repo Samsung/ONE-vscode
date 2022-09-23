@@ -18,6 +18,8 @@ export interface requestMessage{
 export interface customInfoMessage{
     command: string;
     data: any; //string인가????
+    subgraphIdx: number|null;
+    nodeIdx: number|null;
 }
 
 export interface responseModelPath{
