@@ -3,7 +3,7 @@ var base = base || require('./external/base');
 var vscode = vscode || {};
 var typeName = typeName || {};
 var tensorType = tensorType || {};
-var builtinOperatorType = builtinOperatorType || {};
+var customType = customType || {};
 
 sidebar.Sidebar = class {
 
@@ -136,21 +136,12 @@ sidebar.NodeSidebar = class {
         this._attributes = [];
         this._inputs = [];
         this._outputs = [];
-        this._isCustom = false;
+        this._isCustom = node._isCustom;
 
         if (node.type) {
             let showDocumentation = null;
             const type = node.type;
-            if(builtinOperatorType[type.name.toUpperCase()] === undefined) {
-                this._isCustom = true;
-                vscode.postMessage({
-                    command: "CustomType",
-                    data:{
-                        _subgraphIdx: this._node._subgraphIdx,
-                        _nodeIdx: this._node.location,
-                    }
-                });
-            }
+
             if (type && (type.description || type.inputs || type.outputs || type.attributes)) {
                 showDocumentation = {};
                 showDocumentation.text = type.nodes ? '\u0192': '?';
@@ -269,6 +260,13 @@ sidebar.EditAttributesView = class{
         this._isCustom = isCustom;
         this._attributesBox = host.document.createElement('div');
 
+        this._editObject = {
+            name: 'custom',
+            _attribute: {},
+            _nodeIdx: parseInt(this._node.location),
+            _subgraphIdx: this._node._subgraphIdx
+        };
+
         const sortedAttributes = node.attributes.slice();
         sortedAttributes.sort((a, b) => {
             const au = a.name.toUpperCase();
@@ -286,14 +284,7 @@ sidebar.EditAttributesView = class{
             addAttribute.className = 'sidebar-view-item-value-add';
             addAttribute.innerText = '+';
             addAttribute.addEventListener('click', () => {
-                const name = 'name';
-                const value = 'value';
-                const attribute = {
-                    _name : name,
-                    _value : value,
-                    _type : null
-                };
-                this._addAttribute(attribute._name, attribute);
+                this.add();
             });
             this._attributesBox.appendChild(addAttribute);
             this._elements.push(this._attributesBox);
@@ -320,6 +311,27 @@ sidebar.EditAttributesView = class{
         else{
             this._elements.push(view.render());
         }
+    }
+
+    add()
+    {
+        this._editObject._attribute.name = this._node.type.name;
+        const keys = [];
+        for(const key of this._node.attributes){
+            keys.push(key.name);
+            this._editObject._attribute[key.name] = key.value;
+            this._editObject._attribute[key.name + '_type'] = key.type;
+        }
+        keys.push('attribute');
+        this._editObject._attribute['attribute'] = 'value';
+        this._editObject._attribute['attribute_type'] = 'string';
+        this._editObject._attribute.keys = keys;
+
+        vscode.postMessage({
+            command: 'edit',
+            type: 'attribute',
+            data: JSON.stringify(this._editObject),
+        });
     }
     
     render() {
@@ -546,6 +558,7 @@ class NodeAttributeView {
         this._index = index;
         this._node = node;
         this._line;
+        this._select;
 
         console.log(node);
 
@@ -681,7 +694,7 @@ class NodeAttributeView {
         const type = this._attribute.type;
 
         if(this._isCustom === true){
-            const input = this._host.document.getElementById('attribute'+this._index);
+            const input = this._host.document.getElementById('attribute' + this._index);
             input.disabled = false;
             this._attributeName = input.value;
         }
@@ -766,14 +779,32 @@ class NodeAttributeView {
                 this._element.appendChild(line);
             }
             if(type){
-                const typeLine = this._host.document.createElement('div');
+                let typeLine = this._host.document.createElement('div');
                 typeLine.className = 'sidebar-view-item-value-line-border';
-                if (type === 'tensor' && value && value.type) {
-                    typeLine.innerHTML = 'type: ' + '<code><b>' + value.type.toString() + '</b></code>';
-                    this._element.appendChild(typeLine);
+                if(!this._isCustom){
+                    if (type === 'tensor' && value && value.type) {
+                        typeLine.innerHTML = 'type: ' + '<code><b>' + value.type.toString() + '</b></code>';
+                        this._element.appendChild(typeLine);
+                    }
+                    else {
+                        typeLine.innerHTML = 'type: ' + '<code><b>' + this._attribute.type + '</b></code>';
+                        this._element.appendChild(typeLine);
+                    }
                 }
-                else {
-                    typeLine.innerHTML = 'type: ' + '<code><b>' + this._attribute.type + '</b></code>';
+                else{
+                    typeLine.innerHTML = 'type: ';
+                    this._select = this._host.document.createElement('select');
+                    this._select.className = 'sidebar-view-item-value-line-type-select';
+                    for(const type of customType){
+                        const option = this._host.document.createElement('option');
+                        option.setAttribute('value', type);
+                        option.innerText = type.toLowerCase();
+                        if(type.toLowerCase() === this._attribute.type){
+                            option.setAttribute('selected', 'selected');
+                        }
+                        this._select.appendChild(option);
+                    }
+                    typeLine.appendChild(this._select);
                     this._element.appendChild(typeLine);
                 }
 
@@ -812,6 +843,7 @@ class NodeAttributeView {
             const input = this._host.document.getElementById('attribute' + this._index);
             input.disabled = true;
             this._attribute._name = input.value;
+            this._attribute._type = this._select.value;
         }
 
         while (this._element.childElementCount) {
@@ -823,10 +855,8 @@ class NodeAttributeView {
             this._editObject._attribute._value = value;
             this._editObject._attribute._type = this._attribute.type;
         } else {
-            // this.makeEditCustomObject();
+            this.makeEditCustomObject();
         }
-        console.log(this._attribute);
-        console.log(this._editObject);
 
         vscode.postMessage({
             command: 'edit',
@@ -837,8 +867,13 @@ class NodeAttributeView {
 
     makeEditCustomObject() {
         this._editObject._attribute.name = this._node.type.name;
-        this._editObject._attribute._value = value;
-        this._editObject._attribute._type = this._attribute.type;
+        const keys = [];
+        for(const key of this._node.attributes){
+            keys.push(key.name);
+            this._editObject._attribute[key.name] = key.value;
+            this._editObject._attribute[key.name + '_type'] = key.type;
+        }
+        this._editObject._attribute.keys = keys;
     }
 
     cancel(){
@@ -865,6 +900,21 @@ class NodeAttributeView {
                 break;
             }
         }
+
+        this._editObject._attribute.name = this._node.type.name;
+        const keys = [];
+        for(const key of this._node.attributes){
+            keys.push(key.name);
+            this._editObject._attribute[key.name] = key.value;
+            this._editObject._attribute[key.name + '_type'] = key.type;
+        }
+        this._editObject._attribute.keys = keys;
+
+        vscode.postMessage({
+            command: 'edit',
+            type: 'attribute',
+            data: JSON.stringify(this._editObject),
+        });
     }
     
     render() {
