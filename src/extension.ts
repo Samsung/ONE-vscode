@@ -19,7 +19,7 @@ import * as vscode from 'vscode';
 import {backendRegistrationApi} from './Backend/API';
 import {CfgEditorPanel} from './CfgEditor/CfgEditorPanel';
 import {CircleViewerProvider} from './CircleGraph/CircleViewer';
-import {CircleEditorProvider} from './CircleEditor/CircleViewer';
+import {CircleEditorProvider} from './CircleEditor/CircleEditorProvider';
 import {DeviceViewProvider} from './Execute/DeviceViewProvider';
 import {JsonTracerViewerPanel} from './Jsontracer/JsonTracerViewerPanel';
 import {MondrianEditorProvider} from './Mondrian/MondrianEditor';
