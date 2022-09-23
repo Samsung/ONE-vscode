@@ -66,8 +66,6 @@ export function activate(context: vscode.ExtensionContext) {
   CircleViewerProvider.register(context);
   CircleEditorProvider.register(context);
 
-  CircleEditorProvider.register(context);
-
   // returning backend registration function that will be called by backend extensions
   return backendRegistrationApi();
 }

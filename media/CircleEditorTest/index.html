@@ -40,16 +40,21 @@
       e.preventDefault();
       vscode.postMessage({
         command: "edit", type: "attribute",
-        data: {
-  "name": "Conv2D",
+        data: `{
+  "name": "custom",
   "_attribute": {
-    "name": "fused_activation_function",
-    "_value": "RELU_N1_TO_1",
-    "_type": "ActivationFunctionType"
+    "name": "MulV2",
+		"keys" : ["a_x","a_y","T12"],
+    "a_x" : "1",
+		"a_x_type" : "int",
+		"a_y" : "0.12345",
+		"a_y_type" : "float",
+    "T12": "3",
+		"T12_type" : "int"
   },
-  "_location": "1",
-  "_subgraphIdx": "0"
-}
+  "_nodeIdx": "1",
+  "_subgraphIdx": "2"
+}`
       });
     });
 
@@ -96,7 +101,7 @@
       vscode.postMessage({
         command: "CustomType", type: "", data:`{
     "_subgraphIdx": "2",
-    "_location": "1"
+    "_nodeIdx": "1"
 }`
       });
     });

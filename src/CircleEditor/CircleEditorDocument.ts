@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import * as vscode from "vscode";
 import { Disposable } from "./dispose";
 import * as Circle from './circle_schema_generated';
@@ -59,12 +60,10 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 
 		switch (message.type) {
 			case "attribute":
-				const str_Attribute = message.data;
-				const res_Attribute = this.AttributeEdit(str_Attribute);
+				this.AttributeEdit(message.data);
 				break;
 			case "tensor":
-				const str_Tensor = message.data;
-				const res_Tensor = this.TensorEdit(str_Tensor);
+				this.TensorEdit(message.data);
 				break;
 			default:
 				return;
@@ -119,10 +118,24 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		this._onDidChangeContent.fire(responseModel);
   }
   
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	GuessExactType(n : any){
+		if(Number(n) === n && n % 1 === 0){
+			return "int";
+		}
+		else if(Number(n) === n && n % 1 !== 0){
+			return "float";
+		}
+	}
+
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   SendcustomType(message : any){
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		const Req : any = JSON.parse(message.data);
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		const subgraph_Idx : number = Req._subgraphIdx;
-		const operator_Idx : number = Req._location;
+		// eslint-disable-next-line @typescript-eslint/naming-convention
+		const operator_Idx : number = Req._nodeIdx;
 		const target = this._model.subgraphs[subgraph_Idx].operators[operator_Idx].customOptions;
 		// Array to Buffer
 		const buffer = Buffer.from(target);
@@ -133,14 +146,28 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 						view[i] = buffer[i];
 				}
 		// decodding flexbuffer
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		const CustomObj : any = flexbuffers.toObject(ab);
-
+		
+		console.log("CustomObj : ",CustomObj);
 		// 보내줄 형태로 다시 재저장
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		let res_data : any = new Object;
 		res_data._subgraphIdx = subgraph_Idx;
-		res_data._location = operator_Idx;
-		res_data._object = CustomObj;
-		
+		res_data._nodeIdx = operator_Idx;
+		res_data._type = new Object;
+		// 타입 파악
+		for (const key in CustomObj){
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			let CustomObj_data_type : any = typeof(CustomObj[key]);
+			if(CustomObj_data_type === 'number'){
+				CustomObj_data_type = this.GuessExactType(CustomObj[key]);
+			}
+			res_data._type[key] = CustomObj_data_type;
+		}
+
+		console.log(res_data);
+
 		let responseData:customInfoMessage = {
 			command: 'CustomType',
 			data: res_data,
@@ -205,11 +232,15 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		};
 	}
 
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	private TensorEdit(data : any){
 		// 정보 받아오기
+		data = JSON.parse(data);
 		let name;
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		let subgraph_Idx : number = 0 ;
 		let argname : string;
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		let Tensor_Idx : number;
 		let isVariable : boolean= false;
 		let Tensor_Type;
@@ -255,16 +286,20 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 	}
 
 	private AttributeEdit(data:any){
+		data = JSON.parse(data);
 		let subgraph_Idx : number = Number(data._subgraphIdx);
-		let Operator_Idx : number = Number(data._location);
+		let Operator_Idx : number = Number(data._nodeIdx);
 		let inputTypeName : string = data.name;
+		if(inputTypeName === undefined || subgraph_Idx === undefined || Operator_Idx === undefined){
+			return "error";
+		}
 		inputTypeName = inputTypeName.toUpperCase();
 		const inputTypeOptionName : any = inputTypeName + "OPTIONS";
 		// for문으로 BuiltinOperator enum key 파싱 및 enum val 찾기
 		let operatorCode : number = 0;
 		for(let i = -4; i <= 146; i++){
 			let BuiltinOperatorKey = Circle.BuiltinOperator[i];
-			if(BuiltinOperatorKey === undefined) continue;
+			if(BuiltinOperatorKey === undefined) {continue;}
 			BuiltinOperatorKey = Circle.BuiltinOperator[i].replace('_','');
 			BuiltinOperatorKey = BuiltinOperatorKey.toUpperCase();
 			if(BuiltinOperatorKey === inputTypeName){
@@ -273,12 +308,11 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 			break;
 			}
 		}
-		
 		const operator : any = this._model.subgraphs[subgraph_Idx].operators[Operator_Idx];
 		// builtin Case
 		// builtinOptionsType 수정
 		if(operatorCode !== 32){ // builtinOptions
-			if(operator.builtinOptions === null) return "error";
+			if(operator.builtinOptions === null) {return "error";}
 			operator.builtinOptionsType = Types.BuiltinOptionsType[inputTypeOptionName];
 			const key = data._attribute.name;
 			const value : any = data._attribute._value;
@@ -292,7 +326,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 				let compKey : any = key;
 				while(1){
 					const compKey2 =  compKey.replace('_','');
-					if(compKey.length === compKey2.length) break;
+					if(compKey.length === compKey2.length) {break;}
 					compKey = compKey2;
 				}
 				if(obj.toUpperCase() === compKey.toUpperCase()){
@@ -318,24 +352,22 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		// 커스텀인 경우 문자열로 받아온다.
 		
 		else if(operatorCode === 32){
+			console.log("start")
 			operator.builtinOptionsType = 0;
 			operator.builtinOPtions = null;
-
 			const custom_name = data._attribute.name;
 			const custom_key = data._attribute.keys;
-			
 			const opCodeIdx = operator.opcodeIndex;
 			this._model.operatorCodes[opCodeIdx].customCode = custom_name;
-			
 			// flexbuffer로 인코딩 진행
 
 			let fbb = flexbuffers.builder();
 			fbb.startMap();
 			for(const key of custom_key){
 				fbb.addKey(key);
-				const val = data._attribute[key];
-				const val_type = data._attribute[key+"_type"]
-				if(val_type === "bool"){
+				let val = data._attribute[key];
+				const val_type = data._attribute[key+"_type"];
+				if(val_type === "boolean"){
 					if(val === "true"){
 						fbb.add(true);
 					}
@@ -344,10 +376,16 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 					}
 				}
 				else if(val_type === "int"){
-					fbb.add(Number(val));
+					console.log("int");
+					fbb.addInt(Number(val));
+				}
+				else if(val_type === "float"){
+					console.log("float");
+					fbb.addFloat(Number(val));
 				}
 				else{
-					fbb.add(val);
+					console.log("string");
+					fbb.add(String(val));
 				}
 			}
 			fbb.end();
@@ -363,10 +401,11 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 			let res2 = Array.from(buf);
 			operator.customOptions = res2;
 		}
-		
+		console.log("end")
 		return;
 	}
 	private TensorADD(data : any){
+		data = JSON.parse(data);
 		const subgraphIdx = data._subgraphIdx;
 		const Tensor_Shape = data.data.shape;
 		const Tensor_Type = data.data.type.toUpperCase();
