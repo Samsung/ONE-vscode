@@ -29,6 +29,7 @@ export enum MessageDefs {
   //added by yuyeon
   edit = "edit",
   testMessage = "dd",
+  customType = "CustomType",
 }
 
 export class CircleEditorProvider
@@ -160,8 +161,6 @@ export class CircleEditorProvider
 
   private onMessage(document: CircleEditorDocument, message: any) {
    
-
-    //원래 있던 메시지들 그냥 return 해도 되는지
     switch (message.command) {
       case MessageDefs.alert:
         Balloon.error(message.text); //error msg
@@ -182,6 +181,10 @@ export class CircleEditorProvider
       //added new logics
       case MessageDefs.edit:
         document.makeEdit(message);
+        return;
+      case MessageDefs.customType:
+        document.SendcustomType(message);
+        
         return;
       case "test": {
         console.log("msg arrived here");
