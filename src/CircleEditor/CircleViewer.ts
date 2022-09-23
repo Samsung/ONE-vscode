@@ -97,17 +97,17 @@ export class CircleViewerDocument implements vscode.CustomDocument {
  * @brief Circle model viewer readonly Provider
  */
 /* istanbul ignore next */
-export class CircleViewerProvider implements
+export class CircleEditorProvider implements
     vscode.CustomReadonlyEditorProvider<CircleViewerDocument> {
-  public static readonly viewType = 'one.viewer.circle';
+  public static readonly viewType = 'one.editor.circle';
 
   private _context: vscode.ExtensionContext;
 
   public static register(context: vscode.ExtensionContext): void {
-    const provider = new CircleViewerProvider(context);
+    const provider = new CircleEditorProvider(context);
 
     const registrations = [
-      vscode.window.registerCustomEditorProvider(CircleViewerProvider.viewType, provider, {
+      vscode.window.registerCustomEditorProvider(CircleEditorProvider.viewType, provider, {
         webviewOptions: {
           retainContextWhenHidden: true,
         },

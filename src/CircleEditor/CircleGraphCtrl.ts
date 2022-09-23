@@ -60,8 +60,8 @@ export interface CircleGraphEvent {
 
 /* istanbul ignore next */
 export class CircleGraphCtrl {
-  protected static readonly folderMediaCircleGraph = 'media/CircleGraph';
-  protected static readonly folderMediaCircleGraphExt = 'media/CircleGraph/external';
+  protected static readonly folderMediaCircleGraph = 'media/CircleEditor';
+  protected static readonly folderMediaCircleGraphExt = 'media/CircleEditor/external';
   protected static readonly folderExternal = 'external/';
 
   protected readonly _extensionUri: vscode.Uri;

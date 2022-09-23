@@ -21,7 +21,6 @@ import {globalBackendMap} from '../Backend/API';
 import {Command} from '../Backend/Command';
 import {Executor} from '../Backend/Executor';
 import {DeviceSpec, supportedSpecs} from '../Backend/Spec';
-import {Balloon} from '../Utils/Balloon';
 import {Logger} from '../Utils/Logger';
 
 import {Device} from './Device';
@@ -150,7 +149,7 @@ export class DeviceViewProvider implements vscode.TreeDataProvider<DeviceViewNod
   }
 
   private getDevicesPromise(cmd: Command, deviceSpec: DeviceSpec): Promise<Device[]> {
-    return new Promise<Device[]>((resolve, reject) => {
+    return new Promise<Device[]>((resolve) => {
       let result: string = '';
       let error: string = '';
       let cmdSpawn = cp.spawn(cmd.str(), {shell: false});
