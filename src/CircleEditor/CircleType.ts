@@ -1,7 +1,6 @@
 import { float32 } from 'flatbuffers';
 import * as Circle from './circle_schema_generated';
 
-/* eslint-disable */
 export enum BuiltinOptionsType {
 	CONV2DOPTIONS = 1,
 	DEPTHWISECONV2DOPTIONS,
@@ -266,3 +265,4 @@ export const _FindAttribute: any = {
 	"BCQFULLYCONNECTEDOPTIONS" : Circle.BCQFullyConnectedOptionsT,
 	"INSTANCENORMOPTIONS" : Circle.InstanceNormOptionsT,
 }
+

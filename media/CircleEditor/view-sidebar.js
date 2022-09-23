@@ -708,7 +708,8 @@ class NodeAttributeView {
         this._save.innerText = 'save';
         this._cancel.innerText='cancel';
         this._remove.innerText='-';
-        this._save.addEventListener('click', () => {
+        this._save.addEventListener('click', (e) => {
+            e.preventDefault();
             this.save();
         });
         this._cancel.addEventListener('click', () => {
@@ -1187,7 +1188,8 @@ sidebar.ArgumentView = class {
             this._cancel.className = 'sidebar-view-item-value-cancel';
             this._save.innerText = 'save';
             this._cancel.innerText='cancel';
-            this._save.addEventListener('click', () => {
+            this._save.addEventListener('click', (e) => {
+                e.preventDefault();
                 this.save();
             });
             this._cancel.addEventListener('click', () => {

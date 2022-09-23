@@ -59,12 +59,10 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 
 		switch (message.type) {
 			case "attribute":
-				const str_Attribute = message.data;
-				const res_Attribute = this.AttributeEdit(str_Attribute);
+				this.AttributeEdit(message.data);
 				break;
 			case "tensor":
-				const str_Tensor = message.data;
-				const res_Tensor = this.TensorEdit(str_Tensor);
+				this.TensorEdit(message.data);
 				break;
 			default:
 				return;
@@ -72,34 +70,37 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		}
 
 		const newModelData = this.modelData;
-		this.notifyEdit(oldModelData, newModelData);
+		this.notifyEdit(oldModelData, newModelData, message);
 	}
 
-	notifyEdit(oldModelData: Uint8Array, newModelData: Uint8Array) {
-		this.sendModel('0');
-
+	notifyEdit(oldModelData: Uint8Array, newModelData: Uint8Array, message?: any) {
+		
+		this.sendModel('0', message);
+		
 		this._onDidChangeDocument.fire({
 			label: 'Model',
 			undo: async () => {
 						this._model = this.loadModel(oldModelData);
-						this.sendModel('0');
+						this.sendModel('0', message);  //여기 체크 필요
 					},
 			redo: async () => {
 				this._model = this.loadModel(newModelData);
-				this.sendModel('0');
+				this.sendModel('0', message);
 			}
-		})
-  }
+		});
+ 	}
 
-	sendModel(offset: string) {
+	sendModel(offset: string, message?: any) {
+
 		if (parseInt(offset) > this.modelData.length - 1) return;
-
+		
 		let responseModelPath = { command: 'loadmodel', type: 'modelpath', value: this._uri.fsPath};
 		this._onDidChangeContent.fire(responseModelPath);
-
+		
+		
 		let responseArray = this.modelData.slice(parseInt(offset), parseInt(offset) + this.packetSize);
-
-		let responseModel =  {
+				
+		let responseModel:responseModel =  {
 			command: 'loadmodel',
 			type : 'uint8array',
 			offset : parseInt(offset),
@@ -107,10 +108,17 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 			total : this.modelData.length,
 			responseArray : responseArray
 		}
-		this._onDidChangeContent.fire(responseModel);
-    }
 
-    GuessExactType(n : any){
+		if(message){
+			responseModel = {...responseModel,nodeIdx: parseInt(message.data._nodeIdx)
+							,subgraphIdx: parseInt(message.data._subgraphIdx)};
+		}
+
+		this._onDidChangeContent.fire(responseModel);
+  }
+  
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	GuessExactType(n : any){
 		if(Number(n) === n && n % 1 === 0){
 			return "int";
 		}
@@ -118,10 +126,14 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 			return "float";
 		}
 	}
-  
-    SendcustomType(message : any){
+
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  SendcustomType(message : any){
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		const Req : any = message.data;
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		const subgraph_Idx : number = Req._subgraphIdx;
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		const operator_Idx : number = Req._nodeIdx;
 		const target = this._model.subgraphs[subgraph_Idx].operators[operator_Idx].customOptions;
 		// Array to Buffer
@@ -133,15 +145,19 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 						view[i] = buffer[i];
 				}
 		// decodding flexbuffer
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		const CustomObj : any = flexbuffers.toObject(ab);
 		
+		console.log("CustomObj : ",CustomObj);
 		// 보내줄 형태로 다시 재저장
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		let res_data : any = new Object;
 		res_data._subgraphIdx = subgraph_Idx;
 		res_data._nodeIdx = operator_Idx;
 		res_data._type = new Object;
 		// 타입 파악
 		for (const key in CustomObj){
+			// eslint-disable-next-line @typescript-eslint/naming-convention
 			let CustomObj_data_type : any = typeof(CustomObj[key]);
 			if(CustomObj_data_type === 'number'){
 				CustomObj_data_type = this.GuessExactType(CustomObj[key]);
@@ -149,10 +165,15 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 			res_data._type[key] = CustomObj_data_type;
 		}
 
+		console.log(res_data);
+
 		let responseData:customInfoMessage = {
 			command: 'CustomType',
-			data: res_data
+			data: res_data,
+			subgraphIdx: Req._subgraphIdx, 
+			nodeIdx: Req._nodeIdx,
 		};
+
 		this._onDidChangeContent.fire(responseData);
 		return;
 	}
@@ -210,13 +231,15 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		};
 	}
 
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	private TensorEdit(data : any){
-
-		data = JSON.parse(data);
 		// 정보 받아오기
+		data = JSON.parse(data);
 		let name;
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		let subgraph_Idx : number = 0 ;
 		let argname : string;
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		let Tensor_Idx : number;
 		let isVariable : boolean= false;
 		let Tensor_Type;
@@ -328,6 +351,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		// 커스텀인 경우 문자열로 받아온다.
 		
 		else if(operatorCode === 32){
+			console.log("start")
 			operator.builtinOptionsType = 0;
 			operator.builtinOPtions = null;
 			const custom_name = data._attribute.name;
@@ -351,12 +375,15 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 					}
 				}
 				else if(val_type === "int"){
+					console.log("int");
 					fbb.addInt(Number(val));
 				}
 				else if(val_type === "float"){
+					console.log("float");
 					fbb.addFloat(Number(val));
 				}
 				else{
+					console.log("string");
 					fbb.add(String(val));
 				}
 			}
@@ -373,12 +400,11 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 			let res2 = Array.from(buf);
 			operator.customOptions = res2;
 		}
+		console.log("end")
 		return;
 	}
-
 	private TensorADD(data : any){
 		data = JSON.parse(data);
-		
 		const subgraphIdx = data._subgraphIdx;
 		const Tensor_Shape = data.data.shape;
 		const Tensor_Type = data.data.type.toUpperCase();
