@@ -330,7 +330,7 @@ sidebar.EditAttributesView = class{
         vscode.postMessage({
             command: 'edit',
             type: 'attribute',
-            data: JSON.stringify(this._editObject),
+            data: this._editObject,
         });
     }
     
@@ -560,8 +560,6 @@ class NodeAttributeView {
         this._line;
         this._select;
 
-        console.log(node);
-
         this._editObject = {
             name: '',
             _attribute: {},
@@ -780,7 +778,7 @@ class NodeAttributeView {
                 this._element.appendChild(line);
             }
             if(type){
-                let typeLine = this._host.document.createElement('div');
+                const typeLine = this._host.document.createElement('div');
                 typeLine.className = 'sidebar-view-item-value-line-border';
                 if(!this._isCustom){
                     if (type === 'tensor' && value && value.type) {
@@ -862,7 +860,7 @@ class NodeAttributeView {
         vscode.postMessage({
             command: 'edit',
             type: 'attribute',
-            data: JSON.stringify(this._editObject),
+            data: this._editObject,
         });
     }
 
@@ -914,7 +912,7 @@ class NodeAttributeView {
         vscode.postMessage({
             command: 'edit',
             type: 'attribute',
-            data: JSON.stringify(this._editObject),
+            data: this._editObject,
         });
     }
     

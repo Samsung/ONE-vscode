@@ -148,7 +148,6 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		// eslint-disable-next-line @typescript-eslint/naming-convention
 		const CustomObj : any = flexbuffers.toObject(ab);
 		
-		console.log("CustomObj : ",CustomObj);
 		// 보내줄 형태로 다시 재저장
 		// eslint-disable-next-line @typescript-eslint/naming-convention
 		let res_data : any = new Object;
@@ -164,8 +163,6 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 			}
 			res_data._type[key] = CustomObj_data_type;
 		}
-
-		console.log(res_data);
 
 		let responseData:customInfoMessage = {
 			command: 'CustomType',
@@ -234,7 +231,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	private TensorEdit(data : any){
 		// 정보 받아오기
-		data = JSON.parse(data);
+		data = data;
 		let name;
 		// eslint-disable-next-line @typescript-eslint/naming-convention
 		let subgraph_Idx : number = 0 ;
@@ -285,7 +282,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 	}
 
 	private AttributeEdit(data:any){
-		data = JSON.parse(data);
+		data = data;
 		let subgraph_Idx : number = Number(data._subgraphIdx);
 		let Operator_Idx : number = Number(data._nodeIdx);
 		let inputTypeName : string = data.name;
@@ -351,7 +348,6 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		// 커스텀인 경우 문자열로 받아온다.
 		
 		else if(operatorCode === 32){
-			console.log("start")
 			operator.builtinOptionsType = 0;
 			operator.builtinOPtions = null;
 			const custom_name = data._attribute.name;
@@ -375,15 +371,12 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 					}
 				}
 				else if(val_type === "int"){
-					console.log("int");
 					fbb.addInt(Number(val));
 				}
 				else if(val_type === "float"){
-					console.log("float");
 					fbb.addFloat(Number(val));
 				}
 				else{
-					console.log("string");
 					fbb.add(String(val));
 				}
 			}
@@ -400,11 +393,10 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 			let res2 = Array.from(buf);
 			operator.customOptions = res2;
 		}
-		console.log("end")
 		return;
 	}
 	private TensorADD(data : any){
-		data = JSON.parse(data);
+		data = data;
 		const subgraphIdx = data._subgraphIdx;
 		const Tensor_Shape = data.data.shape;
 		const Tensor_Type = data.data.type.toUpperCase();

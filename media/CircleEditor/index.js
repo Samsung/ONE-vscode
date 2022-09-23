@@ -486,20 +486,6 @@ host.BrowserHost = class {
                         
                     }
 
-                    console.log(model);
-
-                    // if(builtinOperatorType[type.name.toUpperCase()] === undefined) {
-                    //     this._isCustom = true;
-                    //     vscode.postMessage({
-                    //         command: "CustomType",
-                    //         data:{
-                    //             _subgraphIdx: this._node._subgraphIdx,
-                    //             _nodeIdx: parseInt(this._node.location),
-                    //         }
-                    //     });
-                    // }    
-
-                    // notify owner that load has finished
                     vscode.postMessage({command: 'finishload'});
                     return model;
                 });
@@ -601,7 +587,6 @@ host.BrowserHost = class {
     }
 
     _msgGetType(message) {
-        console.log(message);
         const data = message.data;
         const graphs = this._view._model._graphs;
         const values = data._type;
