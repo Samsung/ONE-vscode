@@ -5,8 +5,8 @@ export interface responseModel{
     length: number;
     total: number;
     responseArray: Uint8Array;
-    subgraphIdx: number|null;
-    nodeIdx: number|null;
+    subgraphIdx?: number;
+    nodeIdx?: number;
 }
 
 export interface requestMessage{
@@ -17,9 +17,9 @@ export interface requestMessage{
 
 export interface customInfoMessage{
     command: string;
-    data: any; //string인가????
-    subgraphIdx: number|null;
-    nodeIdx: number|null;
+    data: any;
+    subgraphIdx?: number;
+    nodeIdx?: number;
 }
 
 export interface responseModelPath{

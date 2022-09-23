@@ -75,10 +75,10 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		this.notifyEdit(oldModelData, newModelData, message);
 	}
 
-	notifyEdit(oldModelData: Uint8Array, newModelData: Uint8Array, message: any) {
+	notifyEdit(oldModelData: Uint8Array, newModelData: Uint8Array, message?: any) {
 		
 		this.sendModel('0', message);
-
+		
 		this._onDidChangeDocument.fire({
 			label: 'Model',
 			undo: async () => {
@@ -89,10 +89,10 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 				this._model = this.loadModel(newModelData);
 				this.sendModel('0', message);
 			}
-		})
+		});
  	}
 
-	sendModel(offset: string, message: any) {
+	sendModel(offset: string, message?: any) {
 
 		if (parseInt(offset) > this.modelData.length - 1) return;
 		
@@ -102,15 +102,18 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		
 		let responseArray = this.modelData.slice(parseInt(offset), parseInt(offset) + this.packetSize);
 				
-		let responseModel =  {
+		let responseModel:responseModel =  {
 			command: 'loadmodel',
 			type : 'uint8array',
 			offset : parseInt(offset),
 			length: responseArray.length,
 			total : this.modelData.length,
-			responseArray : responseArray,
-			nodeIdx: (message===null)? null : parseInt(message.data._location),
-  			subgraphIdx: (message===null)? null : parseInt(message.data._subgraphIdx),
+			responseArray : responseArray
+		}
+
+		if(message){
+			responseModel = {...responseModel,nodeIdx: parseInt(message.data._nodeIdx)
+							,subgraphIdx: parseInt(message.data._subgraphIdx)};
 		}
 
 		this._onDidChangeContent.fire(responseModel);
@@ -141,9 +144,10 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		let responseData:customInfoMessage = {
 			command: 'CustomType',
 			data: res_data,
-			subgraphIdx: parseInt(message.data._subgraphIdx),
-			nodeIdx: parseInt(message.data._location),
-		}
+			subgraphIdx: Req._subgraphIdx, 
+			nodeIdx: Req._nodeIdx,
+		};
+
 		this._onDidChangeContent.fire(responseData);
 		return;
 	}
@@ -178,7 +182,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		const newModelData = await vscode.workspace.fs.readFile(this.uri);
 		this._model = this.loadModel(newModelData);
 
-		this.notifyEdit(oldModelData, newModelData, null);
+		this.notifyEdit(oldModelData, newModelData);
 	}
 
 	/**
