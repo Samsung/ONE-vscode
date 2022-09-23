@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <button id="LoadModelBtn">Load Model 클릭!</button><br>
+
+  <button id="AttributeBtn">Attribute 수정 버튼</button><br>
+  <button id="TensorBtn">Tensor 수정 버튼</button><br>
+  <button id="ExceptionBtn">예외 처리버튼</button><br>
+  <button id="CustomTypeBtn">커스텀 정보 보내기 버튼</button><br>
+  <button id="TensorAddBtn">텐서 추가하기 버튼</button><br>
+
+  <p>testest</p>
+  <script>
+    const vscode = acquireVsCodeApi();
+    const loadModelBtn = document.querySelector("#LoadModelBtn");
+    loadModelBtn.addEventListener("click", e => {
+      e.preventDefault();
+      vscode.postMessage({
+        type: "dd", command: "loadmodel", offset: '0'
+      });
+    });
+
+    const ExceptionBtn = document.querySelector("#ExceptionBtn");
+    ExceptionBtn.addEventListener("click", e => {
+      e.preventDefault();
+      vscode.postMessage({
+        command: "edit", type: "아무거나"
+      });
+    });
+
+    const AttributeBtn = document.querySelector("#AttributeBtn");
+    AttributeBtn.addEventListener("click", e => {
+      e.preventDefault();
+      vscode.postMessage({
+        command: "edit", type: "attribute",
+        data: {
+  "name": "Conv2D",
+  "_attribute": {
+    "name": "fused_activation_function",
+    "_value": "RELU_N1_TO_1",
+    "_type": "ActivationFunctionType"
+  },
+  "_location": "1",
+  "_subgraphIdx": "0"
+}
+      });
+    });
+
+    const TensorBtn = document.querySelector("#TensorBtn");
+    TensorBtn.addEventListener("click", e => {
+      e.preventDefault();
+      vscode.postMessage({
+        command: "edit", type: "tensor", data: {
+  "_name": "bias",
+  "_visible": true,
+  "_arguments": [
+    {
+      "_name": "biasbias",
+      "_location": "5",
+      "_type": {
+        "_dataType": "float32",
+        "_shape": { "_dimensions": [16] }
+      },
+      "_initializer": {
+        "_location": "5",
+        "_type": {
+          "_dataType": "float32",
+          "_shape": { "_dimensions": [16] }
+        },
+        "_is_variable": false,
+        "_name": "biasbias",
+        "_is_changed": true,
+        "_data": [27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27,
+27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27,
+27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27,
+27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27,
+27, 27]
+      }
+    }
+  ],
+  "_subgraphIdx": "0"
+}
+      });
+    });
+
+    const CustomTypeBtn = document.querySelector("#CustomTypeBtn");
+    CustomTypeBtn.addEventListener("click", e => {
+      e.preventDefault();
+      vscode.postMessage({
+        command: "CustomType", type: "", data:`{
+    "_subgraphIdx": "2",
+    "_location": "1"
+}`
+      });
+    });
+
+    const TensorAddBtn = document.querySelector("#TensorAddBtn");
+    TensorAddBtn.addEventListener("click", e => {
+      e.preventDefault();
+      vscode.postMessage({
+        command: "edit", type: "tensoradd", data: {
+        "_subgraphIdx" : "0",
+        "data":{
+          "shape" : [4],
+          "type" : "int64",
+          "buffer" : {"data" : [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]},
+          "name" : "TestName",
+          "quantization": null,
+          "isVariable": false,
+          "sparsity": null,
+          "shapeSignature": []
+        }
+      }
+      });
+    });
+
+    window.addEventListener("message", (e) => {
+      console.log("editor");
+      console.log(e.data);
+      if (e.data.command === "loadmodel") {
+        console.log("postMessage호출  " + e);
+        
+        if(e.data.type === "modelpath") return;
+
+        vscode.postMessage({ command: 'loadmodel', offset: e.data.offset + e.data.length + "" });
+      }
+    })
+  </script>
+</body>
+
+</html>
