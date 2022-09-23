@@ -72,41 +72,47 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		}
 
 		const newModelData = this.modelData;
-		this.notifyEdit(oldModelData, newModelData);
+		this.notifyEdit(oldModelData, newModelData, message);
 	}
 
-	notifyEdit(oldModelData: Uint8Array, newModelData: Uint8Array) {
-		this.sendModel('0');
+	notifyEdit(oldModelData: Uint8Array, newModelData: Uint8Array, message: any) {
+		
+		this.sendModel('0', message);
 
 		this._onDidChangeDocument.fire({
 			label: 'Model',
 			undo: async () => {
 						this._model = this.loadModel(oldModelData);
-						this.sendModel('0');
+						this.sendModel('0', message);  //여기 체크 필요
 					},
 			redo: async () => {
 				this._model = this.loadModel(newModelData);
-				this.sendModel('0');
+				this.sendModel('0', message);
 			}
 		})
-  }
+ 	}
 
-	sendModel(offset: string) {
+	sendModel(offset: string, message: any) {
+
 		if (parseInt(offset) > this.modelData.length - 1) return;
-
+		
 		let responseModelPath = { command: 'loadmodel', type: 'modelpath', value: this._uri.fsPath};
 		this._onDidChangeContent.fire(responseModelPath);
-
+		
+		
 		let responseArray = this.modelData.slice(parseInt(offset), parseInt(offset) + this.packetSize);
-
+				
 		let responseModel =  {
 			command: 'loadmodel',
 			type : 'uint8array',
 			offset : parseInt(offset),
 			length: responseArray.length,
 			total : this.modelData.length,
-			responseArray : responseArray
+			responseArray : responseArray,
+			nodeIdx: (message===null)? null : parseInt(message.data._location),
+  			subgraphIdx: (message===null)? null : parseInt(message.data._subgraphIdx),
 		}
+
 		this._onDidChangeContent.fire(responseModel);
   }
   
@@ -170,7 +176,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		const newModelData = await vscode.workspace.fs.readFile(this.uri);
 		this._model = this.loadModel(newModelData);
 
-		this.notifyEdit(oldModelData, newModelData);
+		this.notifyEdit(oldModelData, newModelData, null);
 	}
 
 	/**
