@@ -1,31 +1,28 @@
 import * as vscode from "vscode";
-import { Disposable, disposeAll } from "./dispose";
+import { Disposable } from "./dispose";
 import * as Circle from './circle_schema_generated';
 import * as flatbuffers from 'flatbuffers';
-import { responseModel, requestMessage, customInfoMessage } from './MessageType';
+import { responseModel, requestMessage, customInfoMessage, responseModelPath, responseFileRequest } from './MessageType';
 import * as flexbuffers from 'flatbuffers/js/flexbuffers';
 import * as Types from './CircleType';
-
-
 
 export class CircleEditorDocument extends Disposable implements vscode.CustomDocument{
   private readonly _uri: vscode.Uri;
   private _model: Circle.ModelT;
-  //private readonly packetSize = 1024 * 1024 * 10;
-  private readonly packetSize =1024;
+  private readonly packetSize = 1024 * 1024 * 10;
 
   public get uri(): vscode.Uri { return this._uri; }
   public get model(): Circle.ModelT { return this._model }
   public get modelData(): Uint8Array {
     let fbb = new flatbuffers.Builder(1024);
-    Circle.Model.finishModelBuffer(fbb, this._model.pack(fbb));
+		Circle.Model.finishModelBuffer(fbb, this._model.pack(fbb));
     return fbb.asUint8Array();
   }
 
   static async create(uri: vscode.Uri):
     Promise<CircleEditorDocument|PromiseLike<CircleEditorDocument>> {
 		let bytes = new Uint8Array(await vscode.workspace.fs.readFile(uri));
-    	return new CircleEditorDocument(uri, bytes);
+		return new CircleEditorDocument(uri, bytes);
   }
 
   private constructor (uri: vscode.Uri, bytes: Uint8Array) {
@@ -39,9 +36,9 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
   public readonly onDidDispose = this._onDidDispose.event;
 
   // tell to webview
-  private readonly _onDidChangeContent = this._register(new vscode.EventEmitter<{
+  public readonly _onDidChangeContent = this._register(new vscode.EventEmitter<{
 		readonly modelData: Uint8Array;
-  } | responseModel | customInfoMessage>());
+  } | responseModel | customInfoMessage | responseModelPath | responseFileRequest>());
   public readonly onDidChangeContent = this._onDidChangeContent.event;
 
   // tell to vscode
@@ -58,7 +55,6 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
   }
 
 	makeEdit(message: requestMessage) {
-		
 		const oldModelData = this.modelData;
 
 		switch (message.type) {
@@ -66,60 +62,55 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 				const str_Attribute = message.data;
 				const res_Attribute = this.AttributeEdit(str_Attribute);
 				break;
-
 			case "tensor":
 				const str_Tensor = message.data;
 				const res_Tensor = this.TensorEdit(str_Tensor);
 				break;
-			
-			case "tensoradd":
-				const str_add_Tensor = message.data;
-				const res_add_Tensor = this.TensorADD(str_add_Tensor);
-				break;
-
 			default:
 				return;
 			
 		}
 
 		const newModelData = this.modelData;
-
 		this.notifyEdit(oldModelData, newModelData);
 	}
 
 	notifyEdit(oldModelData: Uint8Array, newModelData: Uint8Array) {
-		
-		this.sendModel(0);
+		this.sendModel('0');
 
 		this._onDidChangeDocument.fire({
 			label: 'Model',
 			undo: async () => {
 						this._model = this.loadModel(oldModelData);
-						this.sendModel(0);
+						this.sendModel('0');
 					},
 			redo: async () => {
 				this._model = this.loadModel(newModelData);
-				this.sendModel(0);
-	 		}
+				this.sendModel('0');
+			}
 		})
   }
 
-  sendModel(offset: number){
-	
-	if(offset>this.modelData.length) return;
-    let responseArray = this.modelData.slice(offset, offset+this.packetSize);
-    let responseModel =  {
-		command: 'loadmodel',
-		type : 'uint8array',
-		offset : offset,
-		length: this.packetSize,
-		total : this.modelData.length,
-		responseArray : responseArray
-	}
-	this._onDidChangeContent.fire(responseModel);
+	sendModel(offset: string) {
+		if (parseInt(offset) > this.modelData.length - 1) return;
+
+		let responseModelPath = { command: 'loadmodel', type: 'modelpath', value: this._uri.fsPath};
+		this._onDidChangeContent.fire(responseModelPath);
+
+		let responseArray = this.modelData.slice(parseInt(offset), parseInt(offset) + this.packetSize);
+
+		let responseModel =  {
+			command: 'loadmodel',
+			type : 'uint8array',
+			offset : parseInt(offset),
+			length: responseArray.length,
+			total : this.modelData.length,
+			responseArray : responseArray
+		}
+		this._onDidChangeContent.fire(responseModel);
   }
   
-	SendcustomType(message : any){
+  SendcustomType(message : any){
 		const Req : any = JSON.parse(message.data);
 		const subgraph_Idx : number = Req._subgraphIdx;
 		const operator_Idx : number = Req._location;
@@ -132,7 +123,6 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 				for (let i = 0; i < buffer.length; ++i) {
 						view[i] = buffer[i];
 				}
-
 		// decodding flexbuffer
 		const CustomObj : any = flexbuffers.toObject(ab);
 
@@ -145,7 +135,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		let responseData:customInfoMessage = {
 			command: 'CustomType',
 			data: res_data
-		} //보낼 object 형식 맞춰서 바꿔줘!!!
+		}
 		this._onDidChangeContent.fire(responseData);
 		return;
 	}
@@ -250,9 +240,9 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		  }
 		};
 		return "success";
-	  }
+	}
 
-	  private AttributeEdit(data:any){
+	private AttributeEdit(data:any){
 		let subgraph_Idx : number = Number(data._subgraphIdx);
 		let Operator_Idx : number = Number(data._location);
 		let inputTypeName : string = data.name;
@@ -261,29 +251,29 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		// for문으로 BuiltinOperator enum key 파싱 및 enum val 찾기
 		let operatorCode : number = 0;
 		for(let i = -4; i <= 146; i++){
-		  let BuiltinOperatorKey = Circle.BuiltinOperator[i];
-		  if(BuiltinOperatorKey === undefined) continue;
-		  BuiltinOperatorKey = Circle.BuiltinOperator[i].replace('_','');
-		  BuiltinOperatorKey = BuiltinOperatorKey.toUpperCase();
-		  if(BuiltinOperatorKey === inputTypeName){
+			let BuiltinOperatorKey = Circle.BuiltinOperator[i];
+			if(BuiltinOperatorKey === undefined) continue;
+			BuiltinOperatorKey = Circle.BuiltinOperator[i].replace('_','');
+			BuiltinOperatorKey = BuiltinOperatorKey.toUpperCase();
+			if(BuiltinOperatorKey === inputTypeName){
 			// enum_val을 찾았으면 입력
 			operatorCode = i;
 			break;
-		  }
+			}
 		}
 		
 		const operator : any = this._model.subgraphs[subgraph_Idx].operators[Operator_Idx];
 		// builtin Case
 		// builtinOptionsType 수정
 		if(operatorCode !== 32){ // builtinOptions
-		  if(operator.builtinOptions === null) return "error";
+			if(operator.builtinOptions === null) return "error";
 			operator.builtinOptionsType = Types.BuiltinOptionsType[inputTypeOptionName];
-		  const key = data._attribute.name;
-		  const value : any = data._attribute._value;
-		  const type : any = data._attribute._type;
-		  // 해당 타입에 접근해서 enum 값을 뽑아와야한다.
-		  
-		  // 현재는 type변경 없다고 생각하고 구현
+			const key = data._attribute.name;
+			const value : any = data._attribute._value;
+			const type : any = data._attribute._type;
+			// 해당 타입에 접근해서 enum 값을 뽑아와야한다.
+			
+			// 현재는 type변경 없다고 생각하고 구현
 			const up_value = value.toUpperCase();
 			let target_key : any = null;
 			for(const obj in operator.builtinOptions){
@@ -298,11 +288,11 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 				}
 			}
 			const CircleTypeArr = Object.keys(Types._CircleType);
-		  if(CircleTypeArr.find(element => element === type ) !== undefined){
+			if(CircleTypeArr.find(element => element === type ) !== undefined){
 				// Circle Type 참조
 				operator.builtinOptions[target_key] = Types._CircleType[type][up_value];
-		  }
-		  else{
+			}
+			else{
 				// 보여주는 타입을 그대로 띄워줌
 				if(type !== "float"){
 					operator.builtinOptions[target_key] = Types._NormalType[type](value);
@@ -310,7 +300,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 				else{
 					operator.builtinOptions[target_key] = parseFloat(value);
 				}
-		  }
+			}
 		}
 		// Custom인 경우
 		// 커스텀인 경우 문자열로 받아온다.
@@ -363,38 +353,37 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		}
 		
 		return;
-	  }
+	}
+	private TensorADD(data : any){
+		const subgraphIdx = data._subgraphIdx;
+		const Tensor_Shape = data.data.shape;
+		const Tensor_Type = data.data.type.toUpperCase();
+		const Tensor_Type_enum : any = Circle.TensorType[Tensor_Type];
+		const buffer_data : any = data.data.buffer.data;
+		const Tensor_Name : string = data.data.name;
+		const quantization : Circle.QuantizationParametersT | null = data.data.quantization;
+		const isVariable : boolean = data.data.isVariable;
+		const sparsity : Circle.SparsityParametersT | null = data.data.sparsity;
+		const shapeSignature : (number)[] = data.data.shapeSignature;
 
-		private TensorADD(data : any){
-			const subgraphIdx = data._subgraphIdx;
-			const Tensor_Shape = data.data.shape;
-			const Tensor_Type = data.data.type.toUpperCase();
-			const Tensor_Type_enum : any = Circle.TensorType[Tensor_Type];
-			const buffer_data : any = data.data.buffer.data;
-			const Tensor_Name : string = data.data.name;
-			const quantization : Circle.QuantizationParametersT | null = data.data.quantization;
-			const isVariable : boolean = data.data.isVariable;
-			const sparsity : Circle.SparsityParametersT | null = data.data.sparsity;
-			const shapeSignature : (number)[] = data.data.shapeSignature;
-
-			// 버퍼부터 추가
-			const buf = new Circle.BufferT;
-			buf.data = buffer_data;
-			this._model.buffers.push(buf);
-			
-			const buf_idx = this._model.buffers.length-1;
-			
-			// Tensor 추가
-			const new_tensor = new Circle.TensorT;
-			new_tensor.shape = Tensor_Shape;
-			new_tensor.type = Tensor_Type_enum;
-			new_tensor.name = Tensor_Name;
-			new_tensor.quantization = quantization;
-			new_tensor.isVariable = isVariable;
-			new_tensor.sparsity = sparsity;
-			new_tensor.shapeSignature = shapeSignature;
-			new_tensor.buffer = buf_idx;
-			this._model.subgraphs[subgraphIdx].tensors.push(new_tensor);
-			return;
-		}
+		// 버퍼부터 추가
+		const buf = new Circle.BufferT;
+		buf.data = buffer_data;
+		this._model.buffers.push(buf);
+		
+		const buf_idx = this._model.buffers.length-1;
+		
+		// Tensor 추가
+		const new_tensor = new Circle.TensorT;
+		new_tensor.shape = Tensor_Shape;
+		new_tensor.type = Tensor_Type_enum;
+		new_tensor.name = Tensor_Name;
+		new_tensor.quantization = quantization;
+		new_tensor.isVariable = isVariable;
+		new_tensor.sparsity = sparsity;
+		new_tensor.shapeSignature = shapeSignature;
+		new_tensor.buffer = buf_idx;
+		this._model.subgraphs[subgraphIdx].tensors.push(new_tensor);
+		return;
+	}
 }

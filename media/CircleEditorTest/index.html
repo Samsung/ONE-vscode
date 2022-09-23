@@ -23,7 +23,7 @@
     loadModelBtn.addEventListener("click", e => {
       e.preventDefault();
       vscode.postMessage({
-        type: "dd", command: "loadmodel", offset: 0
+        type: "dd", command: "loadmodel", offset: '0'
       });
     });
 
@@ -122,10 +122,14 @@
     });
 
     window.addEventListener("message", (e) => {
-      console.log(e);
+      console.log("editor");
+      console.log(e.data);
       if (e.data.command === "loadmodel") {
         console.log("postMessage호출  " + e);
-        vscode.postMessage({ command: 'loadmodel', offset: e.data.offset + e.data.length });
+        
+        if(e.data.type === "modelpath") return;
+
+        vscode.postMessage({ command: 'loadmodel', offset: e.data.offset + e.data.length + "" });
       }
     })
   </script>
