@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as crypto from 'crypto';
 import { obtainWorkspaceRoot } from '../Utils/Helpers';
-
+import { PathToHash } from './pathToHash';
 interface Relation{
     "selected": string,
     "relationData": Node[]
@@ -10,7 +10,7 @@ interface Relation{
 interface Node{
     "id": string,
     "parent": string,
-    "represent": number,
+    "representIdx": number,
     "dataList": Data[]
 }
 
@@ -29,9 +29,9 @@ export class Metadata{
         const registrations = [
             vscode.commands.registerCommand('one.metadata.showMetadata', async () => {
 
-                const testPath :string = "while_000.log" // workspace 기준 실제 파일 위치
-                // await Metadata.getFileInfo(context, testPath);
-                await Metadata.getRelationInfo(testPath);
+                const testPath: string = "2/3/testest.circle"; // workspace 기준 실제 파일 위치
+                await Metadata.getFileInfo(testPath);
+                // await Metadata.getRelationInfo(testPath);
             })
         ]
 
@@ -42,28 +42,20 @@ export class Metadata{
 
     //get metadata of file by path
     public static async getFileInfo(path: string) {
-        const hash = await this.getContentHash(path);
-        let metadata = await this.getMetadata(hash)
-        console.log(metadata)
+        const instance = await PathToHash.getInstance();
+        const hash = instance.getPathToHash(path);
+        let metadata = await this.getMetadata(hash);
         return metadata[path];
     }
 
-    //generate Hash from file
-    public static async getContentHash(path: string) {
-        let workspaceroot=obtainWorkspaceRoot();
-        let Uri = vscode.Uri.joinPath(vscode.Uri.file(workspaceroot),path);
-        const hash = crypto.createHash('sha256').update(Buffer.from(await vscode.workspace.fs.readFile(Uri)).toString()).digest('hex');
-        console.log(hash);
-        return hash;
-    }
-
     //get metadata of file by path
-    public static async getRelationInfo(path: string)  {
-        const nowHash = await this.getContentHash(path);
-        if (vscode.workspace.workspaceFolders === undefined) return
+    public static async getRelationInfo(path: string) {
+        const instance = await PathToHash.getInstance();
+        const nowHash = instance.getPathToHash(path);
+        if (vscode.workspace.workspaceFolders === undefined) return;
 
-        let relationUri = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri,".meta/relation.json")
-        let relationJSON: JSON = JSON.parse(Buffer.from(await vscode.workspace.fs.readFile(relationUri)).toString())
+        let relationUri = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, ".meta/relation.json");
+        let relationJSON: JSON = JSON.parse(Buffer.from(await vscode.workspace.fs.readFile(relationUri)).toString());
         
         // 반환 객체 생성
         let relations: Relation = {
@@ -77,7 +69,7 @@ export class Metadata{
 
         relations.selected = nowHash
 
-        relations.relationData.push({ "id": nowHash, "parent": relationJSON[nowHash].parent, "represent": 0, "dataList": this.getDataList(nowMetadata) })
+        relations.relationData.push({ "id": nowHash, "parent": relationJSON[nowHash].parent, "representIdx": 0, "dataList": this.getDataList(nowMetadata) })
         
     
         // 부모 노드 찾기
@@ -91,7 +83,7 @@ export class Metadata{
 
                 let tempMetadata: JSON = await this.getMetadata(tempHash)
                 
-                relations.relationData.push({ "id": tempHash, "parent": relationJSON[tempHash].parent, "represent": 0, "dataList": this.getDataList(tempMetadata) })
+                relations.relationData.push({ "id": tempHash, "parent": relationJSON[tempHash].parent, "representIdx": 0, "dataList": this.getDataList(tempMetadata) })
                 tempHash = relationJSON[tempHash].parent
             }
         }
@@ -140,11 +132,11 @@ export class Metadata{
     }
 
     public static getDataList(metadata: JSON) {
-        let dataList: Data[] = []
+        let dataList: Data[] = [];
         
-        let keys = Object.keys(metadata)
+        let keys = Object.keys(metadata);
         for (let i = 0; i < keys.length; i++){
-            let element = metadata[keys[i]]
+            let element = metadata[keys[i]];
             let data: Data = {
                 "path": keys[i],
                 "name": element.name,

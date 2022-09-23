@@ -28,6 +28,9 @@ import {PartGraphSelPanel} from './PartEditor/PartGraphSelector';
 import { ToolchainProvider } from './Toolchain/ToolchainProvider';
 import { Metadata } from './MetadataManager/metadataAPI';
 import {Logger} from './Utils/Logger';
+import { PathToHash } from './MetadataManager/pathToHash';
+import { StringLiteral } from 'typescript';
+import { time } from 'console';
 
 /* istanbul ignore next */
 export function activate(context: vscode.ExtensionContext) {
@@ -47,7 +50,7 @@ export function activate(context: vscode.ExtensionContext) {
   } else {
     vscode.commands.executeCommand('setContext', 'one:extensionKind', 'Workspace');
   }
-
+  
   OneTreeDataProvider.register(context);
 
   ToolchainProvider.register(context);
@@ -66,6 +69,9 @@ export function activate(context: vscode.ExtensionContext) {
   CircleViewerProvider.register(context);
 
   Metadata.register(context);
+
+  PathToHash.getInstance();
+  
 
   // returning backend registration function that will be called by backend extensions
   return backendRegistrationApi();
