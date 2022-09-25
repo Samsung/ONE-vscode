@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import * as vscode from "vscode";
 import { Disposable } from "./dispose";
 import * as Circle from './circle_schema_generated';
