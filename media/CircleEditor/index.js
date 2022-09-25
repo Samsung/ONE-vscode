@@ -90,7 +90,6 @@ host.BrowserHost = class {
         }
 
         // In multi-view state, record the state that was shown when modifying
-        this._multiviewId = null;
         this._viewingSubgraph = 0;
         this._viewingNode = null;
     }
@@ -466,40 +465,6 @@ host.BrowserHost = class {
                 return this._view.open(context, subgraphIdx, nodeIdx).then((model) => {
                     this._view.show(null, nodeIdx);
                     this.document.title = files[0].name;
-
-                    // To edit a circle file, add a subgraph index to the node & graph
-                    for (let idx = 0; idx < model.graphs.length; idx++) {
-                        model._graphs[idx]['_subgraphIdx'] = idx;
-                        for (let jdx = 0; jdx < model.graphs[idx].nodes.length; jdx++) {
-                            model._graphs[idx]._nodes[jdx]['_subgraphIdx'] = idx;
-                            if(builtinOperatorType[model._graphs[idx]._nodes[jdx]._type.name.toUpperCase()] === undefined){
-                                model._graphs[idx]._nodes[jdx]._isCustom = true;
-                                vscode.postMessage({
-                                    command: "CustomType",
-                                    data:{
-                                        _subgraphIdx: idx,
-                                        _nodeIdx: jdx,
-                                    }
-                                });
-                            }
-                        }
-                        
-                    }
-
-                    console.log(model);
-
-                    // if(builtinOperatorType[type.name.toUpperCase()] === undefined) {
-                    //     this._isCustom = true;
-                    //     vscode.postMessage({
-                    //         command: "CustomType",
-                    //         data:{
-                    //             _subgraphIdx: this._node._subgraphIdx,
-                    //             _nodeIdx: parseInt(this._node.location),
-                    //         }
-                    //     });
-                    // }    
-
-                    // notify owner that load has finished
                     vscode.postMessage({command: 'finishload'});
                     return model;
                 });
@@ -513,7 +478,6 @@ host.BrowserHost = class {
         if (message.type === 'modelpath') {
             // 'modelpath' should be received before last model packet
             this._modelPath = message.value;
-            this._multiviewId = message.multiviewId;
         } else if (message.type === 'uint8array') {
             // model content is in Uint8Array data, store it in this._modelData
             const offset = parseInt(message.offset);
@@ -524,15 +488,8 @@ host.BrowserHost = class {
             if (offset + length >= total) {
                 // this is the last packet
                 const file1 = new File(this._modelData, this._modelPath, {type: ''});
-                /**
-                 * if subgraphIdx and nodeIdx aren't null,
-                 * reload to reflect the modifications.
-                 * If the view is not modified in the multi-view state, go to the viewing
-                 */
-                if (message.multiviewId && message.multiviewId === this.multiviewId && message.subgraphIdx && message.nodeIdx) {
-                    this._view._host._open(file1, [file1], message.subgraphIdx, message.nodeIdx);
-                } else if (message.multiviewId && message.multiviewId !== message.multiviewId) {
-                    this._view._host._oepn(file1, [file1], this._viewingSubgraph, this._viewingNode);
+                if (this._viewingSubgraph !== null && this._viewingNode !== null) {
+                    this._view._host._open(file1, [file1], this._viewingSubgraph, this._viewingNode);
                 } else {
                     this._view._host._open(file1, [file1]);
                 }
@@ -601,7 +558,6 @@ host.BrowserHost = class {
     }
 
     _msgGetType(message) {
-        console.log(message);
         const data = message.data;
         const graphs = this._view._model._graphs;
         const values = data._type;
