@@ -180,6 +180,11 @@ host.BrowserHost = class {
             this._menu.add({});
         }
         this._menu.add({
+            label: () => 'JSON Editor',
+            accelerator: 'CmdOrCtrl+E',
+            click: () => this._view.showJsonEditor()
+        });
+        this._menu.add({
             label: () => this._view.options.attributes ? 'Hide Attributes' : 'Show Attributes',
             accelerator: 'CmdOrCtrl+D',
             click: () => this._view.toggle('attributes')
