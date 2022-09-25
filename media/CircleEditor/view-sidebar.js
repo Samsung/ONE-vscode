@@ -330,7 +330,7 @@ sidebar.EditAttributesView = class{
         vscode.postMessage({
             command: 'edit',
             type: 'attribute',
-            data: JSON.stringify(this._editObject),
+            data: this._editObject,
         });
     }
     
@@ -862,7 +862,7 @@ class NodeAttributeView {
         vscode.postMessage({
             command: 'edit',
             type: 'attribute',
-            data: JSON.stringify(this._editObject),
+            data: this._editObject,
         });
     }
 
@@ -914,7 +914,7 @@ class NodeAttributeView {
         vscode.postMessage({
             command: 'edit',
             type: 'attribute',
-            data: JSON.stringify(this._editObject),
+            data: this._editObject,
         });
     }
     
