@@ -168,7 +168,7 @@ export class CircleEditorProvider
       case MessageDefs.pageloaded:
         return; //html load
       case MessageDefs.loadmodel:
-        document.sendModel(message.offset); //여기 msg에 노드 선택할 일 있는지 확인 필요
+        document.sendModel(message.offset);
         return;
       case MessageDefs.finishload: //load model finish
         return;

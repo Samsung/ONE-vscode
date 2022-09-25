@@ -70,36 +70,35 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		}
 
 		const newModelData = this.modelData;
-		this.notifyEdit(oldModelData, newModelData, message);
+		this.notifyEdit(oldModelData, newModelData);
 	}
 
-	notifyEdit(oldModelData: Uint8Array, newModelData: Uint8Array, message?: any) {
+	notifyEdit(oldModelData: Uint8Array, newModelData: Uint8Array) {
 		
-		this.sendModel('0', message);
+		this.sendModel('0');
 		
 		this._onDidChangeDocument.fire({
 			label: 'Model',
 			undo: async () => {
 						this._model = this.loadModel(oldModelData);
-						this.sendModel('0', message);  //여기 체크 필요
+						this.sendModel('0');  //여기 체크 필요
 					},
 			redo: async () => {
 				this._model = this.loadModel(newModelData);
-				this.sendModel('0', message);
+				this.sendModel('0');
 			}
 		});
  	}
 
-	sendModel(offset: string, message?: any) {
+	sendModel(offset: string) {
 
 		if (parseInt(offset) > this.modelData.length - 1) {return;}
 		
 		let responseModelPath = { command: 'loadmodel', type: 'modelpath', value: this._uri.fsPath};
 		this._onDidChangeContent.fire(responseModelPath);
 		
-		
 		let responseArray = this.modelData.slice(parseInt(offset), parseInt(offset) + this.packetSize);
-				
+		
 		let responseModel:ResponseModel =  {
 			command: 'loadmodel',
 			type : 'uint8array',
@@ -108,11 +107,6 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 			total : this.modelData.length,
 			responseArray : responseArray
 		};
-
-		if(message){
-			responseModel = {...responseModel,nodeIdx: parseInt(message.data._nodeIdx)
-							,subgraphIdx: parseInt(message.data._subgraphIdx)};
-		}
 
 		this._onDidChangeContent.fire(responseModel);
   }
@@ -157,9 +151,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		}
 		let responseData:CustomInfoMessage = {
 			command: 'CustomType',
-			data: resData,
-			subgraphIdx: msgData._subgraphIdx, 
-			nodeIdx: msgData._nodeIdx,
+			data: resData
 		};
 
 		this._onDidChangeContent.fire(responseData);

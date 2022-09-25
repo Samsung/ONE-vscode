@@ -5,8 +5,6 @@ export interface ResponseModel{
     length: number;
     total: number;
     responseArray: Uint8Array;
-    subgraphIdx?: number;
-    nodeIdx?: number;
 }
 
 export interface RequestMessage{
@@ -18,17 +16,15 @@ export interface RequestMessage{
 export interface CustomInfoMessage{
     command: string;
     data: any;
-    subgraphIdx?: number;
-    nodeIdx?: number;
 }
 
 export interface ResponseModelPath{
-    command: string,
-    type: string,
-    value: string
+    command: string;
+    type: string;
+    value: string;
 }
 
 export interface ResponseFileRequest{
-    command: string,
-    response: string,
+    command: string;
+    response: string;
 }
