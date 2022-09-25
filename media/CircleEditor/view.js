@@ -1121,6 +1121,7 @@ view.View = class {
                 modelSidebar.on('update-active-graph', (sender, graph) => {
                     this._updateActiveGraph(graph);
                     this._host._viewingSubgraph = graph._subgraphIdx;
+                    this._host._viewingNode = null;
                 });
                 const content = modelSidebar.render();
                 this._sidebar.open(content, 'Model Properties');

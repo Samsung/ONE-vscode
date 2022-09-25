@@ -90,7 +90,6 @@ host.BrowserHost = class {
         }
 
         // In multi-view state, record the state that was shown when modifying
-        this._multiviewId = null;
         this._viewingSubgraph = 0;
         this._viewingNode = null;
     }
@@ -480,7 +479,6 @@ host.BrowserHost = class {
         if (message.type === 'modelpath') {
             // 'modelpath' should be received before last model packet
             this._modelPath = message.value;
-            this._multiviewId = message.multiviewId;
         } else if (message.type === 'uint8array') {
             // model content is in Uint8Array data, store it in this._modelData
             const offset = parseInt(message.offset);
@@ -496,8 +494,9 @@ host.BrowserHost = class {
                  * reload to reflect the modifications.
                  * If the view is not modified in the multi-view state, go to the viewing
                  */
-                if (String(message.subgraphIdx) !== 'undefined' && String(message.nodeIdx) !== 'undefined') {
-                    this._view._host._open(file1, [file1], message.subgraphIdx, message.nodeIdx);
+                console.log(this._viewingSubgraph, this._viewingNode);
+                if (this._viewingSubgraph !== null && this._viewingNode !== null) {
+                    this._view._host._open(file1, [file1], this._viewingSubgraph, this._viewingNode);
                 } else {
                     this._view._host._open(file1, [file1]);
                 }
