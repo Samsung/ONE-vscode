@@ -41,6 +41,8 @@ sidebar.Sidebar = class {
     }
 
     _pop() {
+        // Change the node index shown to null when sidebar is closed
+        this._host._viewingNode = null;
         this._deactivate();
         if (this._stack.length > 0) {
             this._stack.pop();
@@ -131,14 +133,13 @@ sidebar.NodeSidebar = class {
         this._attributes = [];
         this._inputs = [];
         this._outputs = [];
-        this._buttons = false;
 
         if (node.type) {
             let showDocumentation = null;
             const type = node.type;
             if (type && (type.description || type.inputs || type.outputs || type.attributes)) {
                 showDocumentation = {};
-                showDocumentation.text = type.nodes ? '\u0192' : '?';
+                showDocumentation.text = type.nodes ? '\u0192': '?';
                 showDocumentation.callback = () => {
                     this._raise('show-documentation', null);
                 };
@@ -167,20 +168,16 @@ sidebar.NodeSidebar = class {
 
         const attributes = node.attributes;
         if (attributes && attributes.length > 0) {
-            const attributesBox = this._host.document.createElement('div');
-            attributesBox.setAttribute('id', 'sidebar-attributes-box');
             const sortedAttributes = node.attributes.slice();
             sortedAttributes.sort((a, b) => {
                 const au = a.name.toUpperCase();
                 const bu = b.name.toUpperCase();
-                return au < bu ? -1 : au > bu ? 1 : 0;
+                return (au < bu) ? -1 : (au > bu) ? 1 : 0;
             });
             this._addHeader('Attributes');
             for (const attribute of sortedAttributes) {
-                const attributeElement = this._addAttribute(attribute.name, attribute);
-                attributesBox.appendChild(attributeElement);
+                this._addAttribute(attribute.name, attribute);
             }
-            this._elements.push(attributesBox);
         }
 
         const inputs = node.inputs;
@@ -210,13 +207,8 @@ sidebar.NodeSidebar = class {
 
     _addHeader(title) {
         const headerElement = this._host.document.createElement('div');
-        const headerTitle = this._host.document.createElement('div');
         headerElement.className = 'sidebar-view-header';
-        headerTitle.className = 'sidebar-view-header-title';
-        // headerElement.innerText = title;
-        headerTitle.innerText = title;
-        headerElement.appendChild(headerTitle);
-        this._addButton(title, headerElement);
+        headerElement.innerText = title;
         this._elements.push(headerElement);
     }
 
@@ -232,19 +224,7 @@ sidebar.NodeSidebar = class {
         });
         const view = new sidebar.NameValueView(this._host, name, item);
         this._attributes.push(view);
-        // this._elements.push(view.render());
-        return view.render();
-    }
-
-    _addAttributeEdit(name, attribute) {
-        const item = new NodeAttributeEditView(this._host, attribute);
-        item.on('show-graph', (sender, graph) => {
-            this._raise('show-graph', graph);
-        });
-        const view = new sidebar.NameValueView(this._host, name, item);
-        this._attributes.push(view);
-        // this._elements.push(view.render());
-        return view.render();
+        this._elements.push(view.render());
     }
 
     _addInput(name, input) {
@@ -291,123 +271,7 @@ sidebar.NodeSidebar = class {
             }
         }
     }
-
-    _addButton(title, headerElement) {
-        const buttonArea = this._host.document.createElement('div');
-        buttonArea.className = 'button-area';
-        const modifyButton = this._host.document.createElement('button');
-        const saveButton = this._host.document.createElement('button');
-        const cancelButton = this._host.document.createElement('button');
-        buttonArea.appendChild(saveButton);
-        buttonArea.appendChild(cancelButton);
-        modifyButton.className = title + '-modify' + ' modify-button';
-        saveButton.className = title + '-save' + ' save-button';
-        cancelButton.className = title + '-cancel' + ' cancel-button';
-        saveButton.setAttribute('style', 'display:none;');
-        cancelButton.setAttribute('style', 'display:none;');
-        modifyButton.addEventListener('click', e => {
-            this._modify(modifyButton, saveButton, cancelButton);
-        });
-        saveButton.addEventListener('click', () => {
-            this._save(modifyButton, saveButton, cancelButton);
-        });
-        cancelButton.addEventListener('click', () => {
-            this._cancel(modifyButton, saveButton, cancelButton);
-        });
-        modifyButton.innerText = '✎';
-        saveButton.innerText = 'Save';
-        cancelButton.innerText = 'Cancel';
-        headerElement.appendChild(modifyButton);
-        headerElement.appendChild(buttonArea);
-        console.log(this._node);
-    }
-
-    _modify(modifyButton, saveButton, cancelButton) {
-        this._toggle(modifyButton, saveButton, cancelButton);
-        const attributesBox = this._host.document.getElementById('sidebar-attributes-box');
-        while (attributesBox.lastChild) {
-            attributesBox.removeChild(attributesBox.lastChild);
-        }
-        const sortedAttributes = this._node.attributes.slice();
-        sortedAttributes.sort((a, b) => {
-            const au = a.name.toUpperCase();
-            const bu = b.name.toUpperCase();
-            return au < bu ? -1 : au > bu ? 1 : 0;
-        });
-        for (const attribute of sortedAttributes) {
-            const attributeElement = this._addAttributeEdit(attribute.name, attribute);
-            attributesBox.appendChild(attributeElement);
-        }
-    }
-
-    _save(modifyButton, saveButton, cancelButton) {
-        this._toggle(modifyButton, saveButton, cancelButton);
-        const attributes = this._node.attributes;
-        if (attributes && attributes.length > 0) {
-            const attributesBox = this._host.document.getElementById('sidebar-attributes-box');
-            while (attributesBox.lastChild) {
-                attributesBox.removeChild(attributesBox.lastChild);
-            }
-            const sortedAttributes = this._node.attributes.slice();
-            sortedAttributes.sort((a, b) => {
-                const au = a.name.toUpperCase();
-                const bu = b.name.toUpperCase();
-                return au < bu ? -1 : au > bu ? 1 : 0;
-            });
-            for (const attribute of sortedAttributes) {
-                const attributeElement = this._addAttribute(attribute.name, attribute);
-                attributesBox.appendChild(attributeElement);
-            }
-        }
-    }
-
-    _cancel(modifyButton, saveButton, cancelButton) {
-        this._toggle(modifyButton, saveButton, cancelButton);
-        const attributes = this._node.attributes;
-        if (attributes && attributes.length > 0) {
-            const attributesBox = this._host.document.getElementById('sidebar-attributes-box');
-            while (attributesBox.lastChild) {
-                attributesBox.removeChild(attributesBox.lastChild);
-            }
-            const sortedAttributes = this._node.attributes.slice();
-            sortedAttributes.sort((a, b) => {
-                const au = a.name.toUpperCase();
-                const bu = b.name.toUpperCase();
-                return au < bu ? -1 : au > bu ? 1 : 0;
-            });
-            for (const attribute of sortedAttributes) {
-                const attributeElement = this._addAttribute(attribute.name, attribute);
-                attributesBox.appendChild(attributeElement);
-            }
-        }
-    }
-
-    _toggle(modifyButton, saveButton, cancelButton) {
-        if (this._buttons === false) {
-            modifyButton.setAttribute('style', 'display:none;');
-            saveButton.setAttribute('style', 'display:;');
-            cancelButton.setAttribute('style', 'display:;');
-            this._buttons = true;
-        } else {
-            modifyButton.setAttribute('style', 'display:;');
-            saveButton.setAttribute('style', 'display:none;');
-            cancelButton.setAttribute('style', 'display:none;');
-            this._buttons = false;
-        }
-    }
 };
-
-sidebar.AttributeEditView = class{
-    /**
-     * class for modifying or showing node’s Attributes
-     */
-}
-
-sidebar.IOEditView = class{
-    /** 
-     * class for modifying or showing node’s Inputs and Outputs
-    */
-}
 
 sidebar.NameValueView = class {
 
@@ -633,110 +497,6 @@ class NodeAttributeView {
             while (this._element.childElementCount > 2) {
                 this._element.removeChild(this._element.lastChild);
             }
-        }
-    }
-
-    on(event, callback) {
-        this._events = this._events || {};
-        this._events[event] = this._events[event] || [];
-        this._events[event].push(callback);
-    }
-
-    _raise(event, data) {
-        if (this._events && this._events[event]) {
-            for (const callback of this._events[event]) {
-                callback(this, data);
-            }
-        }
-    }
-}
-
-class NodeAttributeEditView {
-
-    constructor(host, attribute) {
-        this._host = host;
-        this._attribute = attribute;
-        this._element = this._host.document.createElement('div');
-        this._element.className = 'sidebar-view-item-value';
-
-        const type = this._attribute.type;
-        const value = this._attribute.value;
-        switch (type) {
-            case 'graph': {
-                const line = this._host.document.createElement('div');
-                line.className = 'sidebar-view-item-value-line-link';
-                line.appendChild(input);
-                line.addEventListener('click', () => {
-                    this._raise('show-graph', value);
-                });
-                this._element.appendChild(line);
-                this._typeview();
-                break;
-            }
-            case 'function': {
-                const line = this._host.document.createElement('div');
-                line.className = 'sidebar-view-item-value-line-link';
-                line.innerHTML = type === value.type.name;
-                line.addEventListener('click', () => {
-                    this._raise('show-graph', value.type);
-                });
-                this._element.appendChild(line);
-                this._typeview();
-                break;
-            }
-            default: {
-                let content = new sidebar.Formatter(value, type).toString();
-                if (content && content.length > 1000) {
-                    content = content.substring(0, 1000) + '\u2026';
-                }
-                if (content && typeof content === 'string') {
-                    content = content.split('<').join('&lt;').split('>').join('&gt;');
-                }
-                const line = this._host.document.createElement('div');
-                const lineInput = this._host.document.createElement('input');
-                lineInput.setAttribute('type', 'text')
-                lineInput.setAttribute('value', content ? content : '&nbsp;');
-                line.appendChild(lineInput);
-                line.className = 'sidebar-view-item-value-line';
-                this._element.appendChild(line);
-                this._typeview();
-            }
-        }
-    }
-
-    render() {
-        return [this._element];
-    }
-
-    _typeview() {
-        const typeLine = this._host.document.createElement('div');
-        typeLine.className = 'sidebar-view-item-value-line-border';
-        const type = this._attribute.type;
-        const value = this._attribute.value;
-        if (type == 'tensor' && value && value.type) {
-            typeLine.innerHTML = 'type: ' + '<code><b>' + value.type.toString() + '</b></code>';
-            this._element.appendChild(typeLine);
-        } else {
-            typeLine.innerHTML = 'type: ' + '<code><b>' + this._attribute.type + '</b></code>';
-            this._element.appendChild(typeLine);
-        }
-
-        const description = this._attribute.description;
-        if (description) {
-            const descriptionLine = this._host.document.createElement('div');
-            descriptionLine.className = 'sidebar-view-item-value-line-border';
-            descriptionLine.innerHTML = description;
-            this._element.appendChild(descriptionLine);
-        }
-
-        if (this._attribute.type == 'tensor' && value) {
-            const state = value.state;
-            const valueLine = this._host.document.createElement('div');
-            valueLine.className = 'sidebar-view-item-value-line-border';
-            const contentLine = this._host.document.createElement('pre');
-            contentLine.innerHTML = state || value.toString();
-            valueLine.appendChild(contentLine);
-            this._element.appendChild(valueLine);
         }
     }
 

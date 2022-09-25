@@ -465,7 +465,6 @@ host.BrowserHost = class {
                 return this._view.open(context, subgraphIdx, nodeIdx).then((model) => {
                     this._view.show(null, nodeIdx);
                     this.document.title = files[0].name;
-                    
                     vscode.postMessage({command: 'finishload'});
                     return model;
                 });
@@ -489,12 +488,6 @@ host.BrowserHost = class {
             if (offset + length >= total) {
                 // this is the last packet
                 const file1 = new File(this._modelData, this._modelPath, {type: ''});
-                /**
-                 * if subgraphIdx and nodeIdx aren't null,
-                 * reload to reflect the modifications.
-                 * If the view is not modified in the multi-view state, go to the viewing
-                 */
-                console.log(this._viewingSubgraph, this._viewingNode);
                 if (this._viewingSubgraph !== null && this._viewingNode !== null) {
                     this._view._host._open(file1, [file1], this._viewingSubgraph, this._viewingNode);
                 } else {

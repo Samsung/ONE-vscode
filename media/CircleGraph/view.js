@@ -824,6 +824,17 @@ view.View = class {
                         this.show('default');
                     }
                     update();
+					/**
+           			* We need to tell vscode-api which subgraph the node we want to modify is located on.
+           			 But, the information of each node does not have the location of the subgraph
+           			* when it is handed over to the sidebar,
+           			* it is necessary to add information on which subgraph the node is located.
+           			*/
+                    for (const i in this._model._graphs) {
+						for (const j in this._model.graphs[i]._nodes) {
+							this._model._graphs[i]._nodes[j]["_subgraph_idx"] = i;
+						}
+					}
                     return this._model;
                 })
                 .catch((error) => {
