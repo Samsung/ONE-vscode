@@ -250,7 +250,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 
 		// 정보 갱신
 		const targetTensor = this._model?.subgraphs[subgraphIdx]?.tensors[tensorIdx];
-		if(typeof(targetTensor) === 'undefined') {return "error";}
+		if(typeof(targetTensor) === 'undefined') {return "Type error";}
 		targetTensor.name = argname;
 		//type은 enum참조   
 		let tensorTypeNum : any = Circle.TensorType[tensorType];
@@ -262,7 +262,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 			this._model.buffers[editBufferIdx].data = bufferData;
 		}
 		
-		return;
+		return "success";
 	}
 
 	private editAttribute(data:any){
