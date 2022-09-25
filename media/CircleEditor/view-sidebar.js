@@ -197,7 +197,7 @@ sidebar.NodeSidebar = class {
 
         const outputs = node.outputs;
         if (outputs && outputs.length > 0) {
-            const outputsElements = new sidebar.EditOutputsView(host, outputs, this._isCustom).render();
+            const outputsElements = new sidebar.EditOutputsView(host, outputs, this._isCustom, this._node).render();
             for(const outputsElement of outputsElements){
                 this._elements.push(outputsElement);
             }
@@ -259,8 +259,6 @@ sidebar.EditAttributesView = class{
         this._attributes = [];
         this._isCustom = isCustom;
         this._attributesBox = host.document.createElement('div');
-
-        console.log(node);
 
         this._editObject = {
             name: 'custom',
@@ -373,8 +371,8 @@ sidebar.EditInputsView = class{
                 this: this._isCustom,
                 name: name,
                 nodeIdx: this._node._location,
-                subgraphIdx: this._node.subgraphIdx,
-                visible: this._node.visible,
+                subgraphIdx: this._node._subgraphIdx,
+                visible: true,
             };
 
             const view = new sidebar.ParameterView(this._host, input, inputAttributes);
@@ -397,12 +395,13 @@ sidebar.EditInputsView = class{
 
 sidebar.EditOutputsView = class{
 
-    constructor(host, outputs, isCustom) {
+    constructor(host, outputs, isCustom, node) {
         this._host = host;
         this._elements = [];
         this._outputs = [];
         this._isCustom = isCustom;
         this._index = 0;
+        this._node = node;
 
         this._addHeader('Outputs');
         for (const output of outputs) {
@@ -420,9 +419,17 @@ sidebar.EditOutputsView = class{
 
     _addOutput(name, output) {
         if (output.arguments.length > 0) {
-            const title = 'output';
-            const view = new sidebar.ParameterView(this._host, output, this._index, this._isCustom, title);
-            const item = new sidebar.NameValueView(this._host, name, view, this._index, title);
+            const inputAttributes = {
+                title: 'output',
+                index: this._index,
+                this: this._isCustom,
+                name: name,
+                nodeIdx: this._node._location,
+                subgraphIdx: this._node._subgraphIdx,
+                visible: true,
+            };
+            const view = new sidebar.ParameterView(this._host, output, inputAttributes);
+            const item = new sidebar.NameValueView(this._host, name, view, this._index, 'output');
             this._outputs.push(item);
             this._elements.push(item.render());
         }
@@ -1350,52 +1357,73 @@ sidebar.ArgumentView = class {
     }
 
     save(){
-        let data;
-        if (this._data) {
-            data = this._data.value;
-        }
         const type = this._select.value.toLowerCase();
+
+        if (!this.check()) {
+            vscode.postMessage({
+                command: 'alert',
+                text: 'FORMAT ERROR : Please enter commas and numbers only.'
+            });
+            return;
+        }
 
         let shape = this._shape.value;
         shape = '{ "data": [' + shape + '] }';
         shape = JSON.parse(shape).data;
-        const currentType = this._argument._type.dataType;
-        
-        let result;
-        if (data && type === currentType && shape === this._argument._type._shape._dimensions ) {
-            result = this.editBuffer(data, type, shape);
-        } else if (data) {
-            result = this.changeBufferType(type, data, shape);
+
+        this._editObject._arguments._isChanged = true;
+
+        if (this._argument._initializer) {
+            let data;
+            if (this._data) {
+                data = this._data.value;
+            }
+            
+            const currentType = this._argument._type.dataType;
+            
+            let result;
+            if (data && type === currentType && shape === this._argument._type._shape._dimensions ) {
+                result = this.editBuffer(data, type, shape);
+            } else if (data) {
+                result = this.changeBufferType(type, data, shape);
+            }
+
+            if (!result) {
+                vscode.postMessage({
+                    command: 'alert',
+                    text: 'VALIDATION ERROR : Please check your buffer data again.'
+                });
+                return;
+            }
+        } else {
+            this._editObject._arguments._isChanged = false;
         }
 
-        console.log(this._editObject._arguments._initializer._data); 
-
-        if (!result) {
-            console.log('validation error');
-            return;
-        }
-
-        this._argument._type._dataType = type;
-        if(!this.check()){
-            // vscode.window.showErrorMessage('\' , \'와 숫자만 입력할 수 있습니다.');
-            return;
-        }
+        this._editObject._arguments._type._dataType = type;
         
         this._editObject._arguments._type._shape._dimensions = shape;
         const name = this._argument.name.split('\n');
         const nameValue = this._element.childNodes[2].lastChild.value;
         name[0] = nameValue;
-        this._argument._name = name[0] + '\n' + name[1];
+        this._editObject._arguments._name = name[0] + '\n' + name[1];
 
-        if(this._isCustom === true){
+        if (this._isCustom === true) {
             const input = this._host.document.getElementById(this._title + this._index);
             input.disabled = true;
             this._tensors._name = input.value;
-        }        
+        }
+
+        vscode.postMessage({
+            command : 'edit',
+            type : 'tensor',
+            data : this._editObject
+        });
+        console.log(this._argument);
+        console.log(this._editObject);
     }
 
     cancel(){
-        if(this._isCustom === true){
+        if (this._isCustom === true) {
             const input = this._host.document.getElementById('input' + this._index);
             input.disabled = true;
         }
