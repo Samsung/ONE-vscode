@@ -189,7 +189,7 @@ sidebar.NodeSidebar = class {
 
         const inputs = node.inputs;
         if (inputs && inputs.length > 0) {
-            const inputsElements = new sidebar.EditInputsView(host, inputs, this._isCustom).render();
+            const inputsElements = new sidebar.EditInputsView(host, inputs, this._isCustom, this._node).render();
             for(const inputsElement of inputsElements){
                 this._elements.push(inputsElement);
             }
@@ -197,7 +197,7 @@ sidebar.NodeSidebar = class {
 
         const outputs = node.outputs;
         if (outputs && outputs.length > 0) {
-            const outputsElements = new sidebar.EditOutputsView(host, outputs, this._isCustom).render();
+            const outputsElements = new sidebar.EditOutputsView(host, outputs, this._isCustom, this._node).render();
             for(const outputsElement of outputsElements){
                 this._elements.push(outputsElement);
             }
@@ -341,12 +341,13 @@ sidebar.EditAttributesView = class{
 
 sidebar.EditInputsView = class{
 
-    constructor(host, inputs, isCustom) {
+    constructor(host, inputs, isCustom, node) {
         this._host = host;
         this._elements = [];
         this._inputs = [];
         this._index = 0;
         this._isCustom = isCustom;
+        this._node = node;
 
         this._addHeader('Inputs');
         for (const input of inputs) {
@@ -364,8 +365,17 @@ sidebar.EditInputsView = class{
 
     _addInput(name, input) {
         if (input.arguments.length > 0) {
-            const title = 'input';
-            const view = new sidebar.ParameterView(this._host, input, this._index, this._isCustom, title);
+            const inputAttributes = {
+                title: 'input',
+                index: this._index,
+                this: this._isCustom,
+                name: name,
+                nodeIdx: this._node._location,
+                subgraphIdx: this._node._subgraphIdx,
+                visible: true,
+            };
+
+            const view = new sidebar.ParameterView(this._host, input, inputAttributes);
             view.on('export-tensor', (sender, tensor) => {
                 this._raise('export-tensor', tensor);
             });
@@ -385,12 +395,13 @@ sidebar.EditInputsView = class{
 
 sidebar.EditOutputsView = class{
 
-    constructor(host, outputs, isCustom) {
+    constructor(host, outputs, isCustom, node) {
         this._host = host;
         this._elements = [];
         this._outputs = [];
         this._isCustom = isCustom;
         this._index = 0;
+        this._node = node;
 
         this._addHeader('Outputs');
         for (const output of outputs) {
@@ -408,9 +419,17 @@ sidebar.EditOutputsView = class{
 
     _addOutput(name, output) {
         if (output.arguments.length > 0) {
-            const title = 'output';
-            const view = new sidebar.ParameterView(this._host, output, this._index, this._isCustom, title);
-            const item = new sidebar.NameValueView(this._host, name, view, this._index, title);
+            const inputAttributes = {
+                title: 'output',
+                index: this._index,
+                this: this._isCustom,
+                name: name,
+                nodeIdx: this._node._location,
+                subgraphIdx: this._node._subgraphIdx,
+                visible: true,
+            };
+            const view = new sidebar.ParameterView(this._host, output, inputAttributes);
+            const item = new sidebar.NameValueView(this._host, name, view, this._index, 'output');
             this._outputs.push(item);
             this._elements.push(item.render());
         }
@@ -937,13 +956,12 @@ class NodeAttributeView {
 
 sidebar.ParameterView = class {
 
-    constructor(host, list, index, isCustom, title) {
-        this._list = list;
+    constructor(host, tensors, ioAttributes) {
         this._elements = [];
         this._items = [];
 
-        for (const argument of list.arguments) {
-            const item = new sidebar.ArgumentView(host, argument, index, isCustom, list, title);
+        for (const argument of tensors.arguments) {
+            const item = new sidebar.ArgumentView(host, argument, tensors, ioAttributes);
             item.on('export-tensor', (sender, tensor) => {
                 this._raise('export-tensor', tensor);
             });
@@ -982,16 +1000,24 @@ sidebar.ParameterView = class {
 
 sidebar.ArgumentView = class {
 
-    constructor(host, argument, index, isCustom, list, title) {
+    constructor(host, argument, tensors, ioAttributes) {
         this._host = host;
         this._argument = argument;
-        this._index = index;
-        this._isCustom = isCustom;
-        this._list = list;
-        this._title = title;
         this._select;
         this._shape;
         this._data;
+        this._index = ioAttributes.index;
+        this._isCustom = ioAttributes.isCustom;
+        this._tensors = tensors;
+        this._title = ioAttributes.title;
+
+        this._editObject = {
+            _name: ioAttributes.name,
+            _visible : ioAttributes.visible,
+            _arguments: JSON.parse(JSON.stringify(argument)),
+            _subgraphIdx: ioAttributes.subgraphIdx,
+            _nodeIdx: ioAttributes.nodeIdx,
+        };
 
         this._element = this._host.document.createElement('div');
         this._element.className = 'sidebar-view-item-value';
@@ -1332,37 +1358,72 @@ sidebar.ArgumentView = class {
 
     save(){
         const type = this._select.value.toLowerCase();
-        this._argument._type._dataType = type;
-        const shape = this._shape.value;
-        if(!this.check()){
-            // vscode.window.showErrorMessage('\' , \'와 숫자만 입력할 수 있습니다.');
+
+        if (!this.check()) {
+            vscode.postMessage({
+                command: 'alert',
+                text: 'FORMAT ERROR : Please enter commas and numbers only.'
+            });
             return;
         }
-        const shapeElements = shape.split(',');
-        for(const i in shapeElements){
-            shapeElements[i] = shapeElements[i] - 0;
+
+        let shape = this._shape.value;
+        shape = '{ "data": [' + shape + '] }';
+        shape = JSON.parse(shape).data;
+
+        this._editObject._arguments._isChanged = true;
+
+        if (this._argument._initializer) {
+            let data;
+            if (this._data) {
+                data = this._data.value;
+            }
+            
+            const currentType = this._argument._type.dataType;
+            
+            let result;
+            if (data && type === currentType && shape === this._argument._type._shape._dimensions ) {
+                result = this.editBuffer(data, type, shape);
+            } else if (data) {
+                result = this.changeBufferType(type, data, shape);
+            }
+
+            if (!result) {
+                vscode.postMessage({
+                    command: 'alert',
+                    text: 'VALIDATION ERROR : Please check your buffer data again.'
+                });
+                return;
+            }
+        } else {
+            this._editObject._arguments._isChanged = false;
         }
-        this._argument._type._shape._dimensions = shapeElements;
+
+        this._editObject._arguments._type._dataType = type;
+        
+        this._editObject._arguments._type._shape._dimensions = shape;
         const name = this._argument.name.split('\n');
         const nameValue = this._element.childNodes[2].lastChild.value;
         name[0] = nameValue;
-        this._argument._name = name[0] + '\n' + name[1];
+        this._editObject._arguments._name = name[0] + '\n' + name[1];
 
-        if(this._isCustom === true){
+        if (this._isCustom === true) {
             const input = this._host.document.getElementById(this._title + this._index);
             input.disabled = true;
-            this._list._name = input.value;
+            this._tensors._name = input.value;
         }
-        
-        while (this._element.childElementCount) {
-            this._element.removeChild(this._element.lastChild);
-        }
-        const initializer = this._argument.initializer;
-        this.show(initializer);
+
+        vscode.postMessage({
+            command : 'edit',
+            type : 'tensor',
+            data : this._editObject
+        });
+        console.log(this._argument);
+        console.log(this._editObject);
     }
 
     cancel(){
-        if(this._isCustom === true){
+        if (this._isCustom === true) {
             const input = this._host.document.getElementById('input' + this._index);
             input.disabled = true;
         }
@@ -1381,6 +1442,289 @@ sidebar.ArgumentView = class {
             }
         }
         return true;
+    }
+    
+    compareData(bufferArr, originalArr, original, type) {
+    
+        for (let i = 0; i < originalArr.length; i++) {
+    
+            /* compare string formatted buffer data */
+            if (originalArr[i] !== bufferArr[i]) {
+    
+                /* when data change detected, update buffer according to type */
+                var buffer = new ArrayBuffer(8);
+                const view = new DataView(buffer);
+                switch (type) {
+                    case 0: // float32
+                        view.setFloat32(0, parseFloat(bufferArr[i]), true);
+                        for (let j = 0; j < 4; j++) {
+                            original[i * 4 + j] = view.getUint8(j);
+                        }
+                        break;
+                    case 1: // float16
+                        view.setFloat16(0, parseFloat(bufferArr[i]), true);
+                        for (let j = 0; j < 2; j++) {
+                            original[i * 2 + j] = view.getUint8(j);
+                        }
+                        break;
+                    case 2: // int32
+                        view.setInt32(0, parseInt(bufferArr[i]), true);
+                        for (let j = 0; j < 4; j++) {
+                            original[i * 4 + j] = view.getUint8(j);
+                        }
+                        break;
+                    case 3: // uint8
+                        view.setUint8(0, parseUint(bufferArr[i]), true);
+                        original[i] = view.getUint8(0);
+                        break;
+                    case 4: // int64
+                        view.setBigInt64(0, parseBigInt(bufferArr[i]), true);
+                        for (let j = 0; j < 8; j++) {
+                            original[i * 8 + j] = view.getUint8(j);
+                        }
+                        break;
+                    case 5: // string
+                        break;
+                    case 6: // bool
+                        if (bufferArr[i] === 'false' || bufferArr[i] - 0 === 0) {
+                            original[i] = 0;
+                        } else {
+                            original[i] = 1;
+                        }
+                        break;
+                    case 7: // int16
+                        view.setInt16(0, parseInt(bufferArr[i]), true);
+                        for (let j = 0; j < 2; j++) {
+                            original[i * 2 + j] = view.getUint8(j);
+                        }
+                        break;
+                    case 8:
+                        break;
+                    case 9: // int8
+                        view.setInt8(0, parseInt(bufferArr[i]), true);
+                        original[i] = view.getUint8(0);
+                        break;
+                    case 10: // float64
+                        view.setFloat64(0, parseFloat(bufferArr[i]), true);
+                        for (let j = 0; j < 8; j++) {
+                            original[i * 8 + j] = view.getUint8(j);
+                        }
+                        break;
+                    case 11:
+                        break;
+                    case 12: // uint64
+                        view.setBigUint64(0, parseBigInt(bufferArr[i]), true);
+                        for (let j = 0; j < 8; j++) {
+                            original[i * 8 + j] = view.getUint8(j);
+                        }
+                        break;
+                    case 13:
+                        break;
+                    case 14:
+                        break;
+                    case 15: // uint32
+                        view.setUint32(0, parseInt(bufferArr[i]), true);
+                        for (let j = 0; j < 4; j++) {
+                            original[i * 4 + j] = view.getUint8(j);
+                        }
+                        break;
+                }
+            }
+        }
+
+        const newBuffer = [];
+
+        for(let i = 0; i < Object.keys(original).length ; i++){
+            newBuffer.push(original[i]);
+        }
+
+        this._editObject._arguments._initializer._data = newBuffer;
+    }
+    
+    removeBracket(buffer) {
+        var str = buffer;
+        str = str.replace(/\[/g, "");
+        str = str.replace(/\]/g, "");
+        str = str.replace(/\n/g, "");
+        str = str.replace(/ /g, "");
+        const arr = str.split(",");
+        return arr;
+    }
+    
+    validationCheck(modified, shape) {
+        /* data validation - bracket check */
+        const stack = [];
+        for (let i = 0; i < modified.length; i++) {
+            if (modified.charAt(i) === '[') {
+                stack.push('[');
+            } else if (modified.charAt(i) === ']') {
+                if (stack[stack.length - 1] === '[') {
+                    stack.pop();
+                } else {
+                    // alert(error! Brackets do not match);
+                    return;
+                }
+        }
+        }
+        if (stack.length) {
+            // alert(error! Brackets do not match);
+            return;
+        }
+
+
+        /* parse data to string array */
+        var modifiedArr = this.removeBracket(modified);
+
+
+        /* data validation - shape count */ 
+        var shapeCnt = 1;
+        for (let i = 0; i < shape.length; i++) {
+            shapeCnt *= shape[i];
+        }
+        if (modifiedArr.length !== shapeCnt) {
+            // alert(error! Shape and data count does not match);
+            return;
+        }
+
+        return modifiedArr;
+    }
+    
+    /* buffer data modified - type change NOT allowed simultaneously */
+    editBuffer(modified, currentType, shape) {
+        const modifiedArr = this.validationCheck(modified, shape);
+
+        if (!modifiedArr) {
+            return;
+        }
+    
+        const originalArr = this.removeBracket(this._argument._initializer.toString()); //---> 파일 이동 후 원본데이터 가져오면 주석 해제해서 쓰기
+    
+        /* compare changed elements and update data */
+        const types = ['float32', 'float16', 'int32', 'uint8', 'int64', 'string', 'bool', 'int16',
+            'complex64', 'int8', 'float64', 'complex128', 'uint64', 'resource', 'variant', 'uint32'];
+        if (currentType === 'string') {
+            this.changeBufferType("string", modified, shape);
+        } else {
+            this.compareData(modifiedArr, originalArr, this._editObject._arguments._initializer._data, types.indexOf(currentType.toLowerCase()));
+        }
+        return 1;
+    }
+    
+    /* buffer type modified - data change NOT detected */
+    changeBufferType(newType, modified, shape) {
+        // original =  textarea.value
+        const modifiedArr = this.validationCheck(modified, shape); //---> 파일 이동 후 원본데이터 가져오면 주석 해제해서 쓰기
+        
+        if (!modifiedArr) {
+            return;
+        }
+
+        const types = ['float32', 'float16', 'int32', 'uint8', 'int64', 'string', 'bool', 'int16',
+            'complex64', 'int8', 'float64', 'complex128', 'uint64', 'resource', 'variant', 'uint32'];
+        
+        // 0:float, 1:int, 2:uint, 3:string, 4:boolean, 5:complex, 6:resource, 7:variant
+        const typeclass = [0, 0, 1, 2, 1, 3, 4, 1, 5, 1, 0, 5, 2, 6, 7, 2];
+        const bits = [32, 16, 32, 8, 64, 0, 8, 16, 64, 8, 64, 128, 64, 0, 0, 32];
+    
+        const buffer = new ArrayBuffer(8);
+        const view = new DataView(buffer);
+    
+        const newTypeIndex = types.indexOf(newType.toLowerCase());
+    
+        let newArray = [];
+    
+        /* string -> ? or ? -> Float or ? -> Int or ? -> Uint */
+        if (typeclass[newTypeIndex] === 0) { // new type : float
+            for (let i = 0; i < modifiedArr.length; i++) {
+                let data;
+                try {
+                    if (modifiedArr[i] === 'true') {
+                        data = 1;
+                    } else if (modifiedArr[i] === 'false') {
+                        data = 0;
+                    } else {
+                        data = parseFloat(modifiedArr[i]);
+                    }
+                } catch (err) {
+                    return;
+                }
+                if (bits[newTypeIndex] === 16) { // float16
+                    view.setFloat16(0, data, true);
+                } else if (bits[newTypeIndex] === 32) { // float32
+                    view.setFloat32(0, data, true);
+                } else if (bits[newTypeIndex] === 64) { // float64
+                    view.setFloat64(0, data, true);
+                }
+                for (let j = 0; j < bits[newTypeIndex] / 8; j++) {
+                    newArray.push(view.getUint8(j));
+                }
+            }
+        } else if (typeclass[newTypeIndex] === 2 || typeclass[newTypeIndex] === 1) { // new type : int or uint
+            for (let i = 0; i < modifiedArr.length; i++) {
+                let data = parseInt(modifiedArr[i]);
+                try {
+                    if (modifiedArr[i] === 'true') {
+                        data = 1;
+                    } else if (modifiedArr[i] === 'false') {
+                        data = 0;
+                    } else {
+                        data = parseInt(modifiedArr[i]);
+                    }
+                } catch (err) {
+                    return;
+                }
+
+                if (typeclass[newTypeIndex] === 1) { // int
+                    if (bits[newTypeIndex] === 8) { // int8
+                        view.setInt8(0, data, true);
+                    } else if (bits[newTypeIndex] === 16) { // int16
+                        view.setInt16(0, data, true);
+                    } else if (bits[newTypeIndex] === 32) { // int32
+                        view.setInt32(0, data, true);
+                    } else if (bits[newTypeIndex] === 64) { // int64
+                        view.setBigInt64(0, data, true);
+                    }
+                } else { // uint
+                    if (data < 0) {
+                        return;
+                    }
+
+                    if (bits[newTypeIndex] === 8) { // uint8
+                        view.setUint8(0, data, true);
+                    } else if (bits[newTypeIndex] === 32) { // uint32
+                        view.setUint32(0, data, true);
+                    } else if (bits[newTypeIndex] === 64) { // uint64
+                        view.setBigUint64(0, data, true);
+                    }
+                }
+                for (let j = 0; j < bits[newTypeIndex] / 8; j++) {
+                    newArray.push(view.getUint8(j));
+                }
+            }
+        
+        /* boolean -> ?  or ? -> boolean */
+        } else if (typeclass[newTypeIndex] === 4) { // current type : boolean or new type : boolean
+            for (let i = 0; i < modifiedArr.length; i++) {
+                if (modifiedArr[i]) {
+                    newArray.push(1);
+                } else {
+                    newArray.push(0);
+                }
+            }
+        }
+        /* ? -> String */
+        else if (typeclass[newTypeIndex] === 3) {
+            for (let i = 0; i < modifiedArr.length; i++) {
+                var str = String(modifiedArr[i]);
+                for (let j = 0; j < str.length; j++) {
+                    newArray.push(str.charCodeAt(j));
+                }
+            }
+        }
+
+        this._editObject._arguments._initializer._data = newArray;
+
+        return 1;
     }
 };
 
@@ -1493,7 +1837,16 @@ sidebar.ModelSidebar = class {
     }
 
     addArgument(name, argument) {
-        const view = new sidebar.ParameterView(this._host, argument);
+        const attributes = {
+            title: 'model',
+            index: 0,
+            this: false,
+            name: name,
+            nodeIdx: 0,
+            subgraphIdx: 0,
+            visible: false,
+        };
+        const view = new sidebar.ParameterView(this._host, argument, attributes);
         view.toggle();
         const item = new sidebar.NameValueView(this._host, name, view);
         this._elements.push(item.render());
