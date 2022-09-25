@@ -466,26 +466,7 @@ host.BrowserHost = class {
                 return this._view.open(context, subgraphIdx, nodeIdx).then((model) => {
                     this._view.show(null, nodeIdx);
                     this.document.title = files[0].name;
-
-                    // To edit a circle file, add a subgraph index to the node & graph
-                    for (let idx = 0; idx < model.graphs.length; idx++) {
-                        model._graphs[idx]['_subgraphIdx'] = idx;
-                        for (let jdx = 0; jdx < model.graphs[idx].nodes.length; jdx++) {
-                            model._graphs[idx]._nodes[jdx]['_subgraphIdx'] = idx;
-                            if(builtinOperatorType[model._graphs[idx]._nodes[jdx]._type.name.toUpperCase()] === undefined){
-                                model._graphs[idx]._nodes[jdx]._isCustom = true;
-                                vscode.postMessage({
-                                    command: "CustomType",
-                                    data:{
-                                        _subgraphIdx: idx,
-                                        _nodeIdx: jdx,
-                                    }
-                                });
-                            }
-                        }
-                        
-                    }
-
+                    
                     vscode.postMessage({command: 'finishload'});
                     return model;
                 });
@@ -515,10 +496,8 @@ host.BrowserHost = class {
                  * reload to reflect the modifications.
                  * If the view is not modified in the multi-view state, go to the viewing
                  */
-                if (message.multiviewId && message.multiviewId === this.multiviewId && message.subgraphIdx && message.nodeIdx) {
+                if (String(message.subgraphIdx) !== 'undefined' && String(message.nodeIdx) !== 'undefined') {
                     this._view._host._open(file1, [file1], message.subgraphIdx, message.nodeIdx);
-                } else if (message.multiviewId && message.multiviewId !== message.multiviewId) {
-                    this._view._host._oepn(file1, [file1], this._viewingSubgraph, this._viewingNode);
                 } else {
                     this._view._host._open(file1, [file1]);
                 }

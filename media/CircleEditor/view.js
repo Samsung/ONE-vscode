@@ -840,6 +840,22 @@ view.View = class {
                             this.show('default');
                         }
                     }
+                    for (let idx = 0; idx < model.graphs.length; idx++) {
+                        model._graphs[idx]['_subgraphIdx'] = idx;
+                        for (let jdx = 0; jdx < model.graphs[idx].nodes.length; jdx++) {
+                            model._graphs[idx]._nodes[jdx]['_subgraphIdx'] = idx;
+                            if(builtinOperatorType[model._graphs[idx]._nodes[jdx]._type.name.toUpperCase()] === undefined){
+                                model._graphs[idx]._nodes[jdx]._isCustom = true;
+                                vscode.postMessage({
+                                    command: "CustomType",
+                                    data:{
+                                        _subgraphIdx: idx,
+                                        _nodeIdx: jdx,
+                                    }
+                                });
+                            }
+                        }
+                    }
                     update();
                     return this._model;
                 })
