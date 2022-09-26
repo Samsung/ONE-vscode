@@ -132,7 +132,7 @@ jsonEditor.Calculator = class {
 
             this._convert.addEventListener('click', () => {
                 this.convert();
-            })
+            });
 
             for(const type of tensorType){
                 const option = this._host.document.createElement('option');
@@ -196,7 +196,7 @@ jsonEditor.Converter = class {
             }
         }
         for (let i = 0; i < this._arr.length; i++) {
-            if(!/^\d+$/.test(this._arr[i])) {return this._result = "ERROR: Please enter digits and decimal points only.";}
+            if(!/^[0-9\\.\-\\/]+$/.test(this._arr[i])) {return this._result = "ERROR: Please enter digits and decimal points only.";}
             let v = this.calculate(parseFloat(this._arr[i]), this._typeIndex, this._bits[this._typeIndex]/8);
             if(!v) {
                 return this._result = "ERROR: Data does not match type.";
