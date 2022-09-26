@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { obtainWorkspaceRoot } from '../Utils/Helpers';
 import { PathToHash } from './pathToHash';
+
 interface Relation{
     "selected": string,
     "relationData": Node[]
@@ -20,7 +21,7 @@ interface Data{
     "toolchain_version"?: string
 }
 
-export class Metadata{
+export class Metadata {
     private _disposables: vscode.Disposable[] = [];
     constructor() { }
     public static register(context: vscode.ExtensionContext): void {
@@ -31,11 +32,17 @@ export class Metadata{
                 await Metadata.getFileInfo(testUri);
                 // await Metadata.getRelationInfo(testUri);
             })
-        ]
+        ];
 
         registrations.forEach(disposable => {
             context.subscriptions.push(disposable);
         });
+    }
+
+    public static async getFileHash(uri: vscode.Uri) {
+        const instance = await PathToHash.getInstance();
+        const hash = instance.getPathToHash(uri);
+        return hash;
     }
 
     //get metadata of file by path
@@ -55,7 +62,7 @@ export class Metadata{
         
         const pathToHash = await PathToHash.getInstance();
         // step 1. Get hash value from pathToHash
-        const hash = pathToHash.getPathToHash(relativePath);
+        const hash = pathToHash.getPathToHash(uri);
         if (hash === undefined) {
             return;
         }
@@ -107,7 +114,7 @@ export class Metadata{
 
         // 1. Get hash from pathToHash
         const pathToHash = await PathToHash.getInstance();
-        const hash = pathToHash.getPathToHash(oldRelativePath);
+        const hash = pathToHash.getPathToHash(oldUri);
         if (hash === undefined) {
             return;
         }
@@ -164,28 +171,30 @@ export class Metadata{
     public static async getRelationInfo(uri: vscode.Uri) {
         const instance = await PathToHash.getInstance();
         const nowHash = instance.getPathToHash(uri);
-        if (vscode.workspace.workspaceFolders === undefined) return;
+        if (vscode.workspace.workspaceFolders === undefined) {
+            return;
+        }
 
-        let relationUri = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, ".meta/relation.json");
-        let relationJSON: JSON = JSON.parse(Buffer.from(await vscode.workspace.fs.readFile(relationUri)).toString());
+        const relationUri = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, ".meta/relation.json");
+        const relationJSON: any = JSON.parse(Buffer.from(await vscode.workspace.fs.readFile(relationUri)).toString());
         
         // 반환 객체 생성
-        let relations: Relation = {
+        const relations: Relation = {
             "selected" :  "",
             "relationData" : []
-        }
+        };
 
         // 현재 노드 메타데이터 불러오기
 
-        let nowMetadata: JSON = await this.getMetadata(nowHash)
+        const nowMetadata: any = await this.getMetadata(nowHash);
 
-        relations.selected = nowHash
+        relations.selected = nowHash;
 
-        relations.relationData.push({ "id": nowHash, "parent": relationJSON[nowHash].parent, "representIdx": 0, "dataList": this.getDataList(nowMetadata) })
+        relations.relationData.push({ "id": nowHash, "parent": relationJSON[nowHash].parent, "representIdx": 0, "dataList": this.getDataList(nowMetadata) });
        
     
         // 부모 노드 찾기
-        let tempHash: string = relationJSON[nowHash].parent
+        let tempHash: string = relationJSON[nowHash].parent;
         while (true) {
             
             if (!tempHash) {
@@ -193,36 +202,36 @@ export class Metadata{
             }
             else {
 
-                let tempMetadata: JSON = await this.getMetadata(tempHash)
+                const tempMetadata: any = await this.getMetadata(tempHash);
                 
-                relations.relationData.push({ "id": tempHash, "parent": relationJSON[tempHash].parent, "representIdx": 0, "dataList": this.getDataList(tempMetadata) })
-                tempHash = relationJSON[tempHash].parent
+                relations.relationData.push({ "id": tempHash, "parent": relationJSON[tempHash].parent, "representIdx": 0, "dataList": this.getDataList(tempMetadata) });
+                tempHash = relationJSON[tempHash].parent;
             }
         }
 
         // 자식 노드 찾기
-        let tempHashs: [] = relationJSON[nowHash].children
+        let tempHashs: string[] = relationJSON[nowHash].children;
         while (true) {
-            let hashs:[] = []
+            let hashs: string[] = [];
             if (tempHashs.length===0) {
                 break;
             }
             else {
                 
                 for (let i = 0; i < tempHashs.length; i++){
-                    let tempMetadata: JSON = await this.getMetadata(tempHashs[i])
+                    const tempMetadata: any = await this.getMetadata(tempHashs[i]);
                     
-                    relations.relationData.push({ "id": tempHashs[i], "parent": relationJSON[tempHashs[i]].parent, "represent": 0, "dataList": this.getDataList(tempMetadata) })
-                    hashs.push(...relationJSON[tempHashs[i]].children)
+                    relations.relationData.push({ "id": tempHashs[i], "parent": relationJSON[tempHashs[i]].parent, "representIdx": 0, "dataList": this.getDataList(tempMetadata) });
+                    hashs = [...relationJSON[tempHashs[i]].children];
                 }
                 
-                tempHashs = hashs
+                tempHashs = hashs;
             }
         }
 
-        console.log(relations)
+        console.log(relations);
         
-        return relations
+        return relations;
 
     }
 
@@ -230,36 +239,36 @@ export class Metadata{
     public static async getMetadata(hash: string) {
         if (vscode.workspace.workspaceFolders !== undefined) {
             const metaUri = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, `.meta/hash_objects/${hash.substring(0, 2)}/${hash.substring(2)}.json`);    
-            return JSON.parse(Buffer.from(await vscode.workspace.fs.readFile(metaUri)).toString())
+            return JSON.parse(Buffer.from(await vscode.workspace.fs.readFile(metaUri)).toString());
         }
     }
 
     //set all Metadata of same hash object by hash
     public static async setMetadata(hash: string | undefined, value: object) { //.meta 기준 relative path [=== workspace assert 로직이 필요할 것 같다.]
-        let workspaceroot=obtainWorkspaceRoot();
+        const workspaceroot=obtainWorkspaceRoot();
         if(hash){
             const Uri = vscode.Uri.joinPath(vscode.Uri.file(workspaceroot), `.meta/hash_objects/${hash.substring(0, 2)}/${hash.substring(2)}.json`);
-            await vscode.workspace.fs.writeFile(Uri,Buffer.from(JSON.stringify(value),'utf8'));
+            await vscode.workspace.fs.writeFile(Uri,Buffer.from(JSON.stringify(value, null, 4),'utf8'));  // TODO: JSON.stringify(value, null, 4) => 4space? or 2space?
         }
     }
 
-    public static getDataList(metadata: JSON) {
-        let dataList: Data[] = [];
+    public static getDataList(metadata: any) {
+        const dataList: Data[] = [];
         
-        let keys = Object.keys(metadata);
+        const keys = Object.keys(metadata);
         for (let i = 0; i < keys.length; i++){
-            let element = metadata[keys[i]];
-            let data: Data = {
+            const element = metadata[keys[i]];
+            const data: Data = {
                 "path": keys[i],
                 "name": element.name,
                 "onecc_version": element.onecc_version,
                 "toolchain_version": element.toolchain_version
-            }
+            };
 
             dataList.push(data);
         }
 
-        return dataList
+        return dataList;
     }
 }
 

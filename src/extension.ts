@@ -54,6 +54,9 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.executeCommand('setContext', 'one:extensionKind', 'Workspace');
   }
 
+  
+  PathToHash.getInstance();
+
   MetadataEventManager.register(context);
 
   OneTreeDataProvider.register(context);
@@ -74,8 +77,6 @@ export function activate(context: vscode.ExtensionContext) {
   CircleViewerProvider.register(context);
 
   Metadata.register(context);
-
-  PathToHash.getInstance();
   
 
   // returning backend registration function that will be called by backend extensions

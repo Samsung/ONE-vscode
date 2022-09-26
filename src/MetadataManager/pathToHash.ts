@@ -60,7 +60,7 @@ export class PathToHash{
     }
 
     public getPathToHash(uri: vscode.Uri ) {
-        let path = vscode.workspace.asRelativePath(uri)
+        let path = vscode.workspace.asRelativePath(uri);
         let pathArray = path.split('/');
         let temp = this.pathToHash;
 

@@ -26,7 +26,7 @@ import { obtainWorkspaceRoot } from '../Utils/Helpers';
 import { Logger } from '../Utils/Logger';
 import { PathToHash } from './pathToHash';
 
-
+import * as crypto from 'crypto';
 // import {ArtifactAttr} from './ArtifactLocator';
 // import {OneStorage} from './OneStorage';
 
@@ -42,8 +42,6 @@ export class MetadataEventManager {
 
   public static register(context: vscode.ExtensionContext) {
     let workspaceRoot: vscode.Uri | undefined = undefined;
-    //let pathToHash=async ()=>{return await PathToHash.getInstance()};
-
 
     try {
       workspaceRoot = vscode.Uri.file(obtainWorkspaceRoot());
@@ -183,27 +181,73 @@ export class MetadataEventManager {
     return ends.some((x)=>path.endsWith(x));
   }
 
-  async changeEvent(root: string, path: string){
-  // case 1. [File] Contents change event
-  path=path.split(root+'/')[1];
-  console.log(path);
+  async changeEvent(root: string, path: string): Promise<void> {
+    // case 1. [File] Contents change event
+    const relativePath = path.split(root+'/')[1];
+    const uri = vscode.Uri.file(path);
+    console.log(uri);
+    console.log(1, relativePath);
 
-  //(1) call contentHas
-  //let beforehash=pathToHash.
-  //let afterhash=await Metadata.contentHash(path);
+    //(1) call contentHas
+    const beforehash = await Metadata.getFileHash(uri);
+    console.log(2, beforehash);
 
-  //(2) deactivate hash frompathToHash
-  //const metadata = await Metadata.getMetadata(beforehash);
-  //const data = metadata[path];
-  //Metadata.disableMetadata(path);
+    // const afterhash=await Metadata.contentHash(path);
+    const buffer = Buffer.from(await vscode.workspace.fs.readFile(uri)).toString();
+    console.log(3, buffer);
+    const afterhash = crypto.createHash('sha256').update(buffer).digest('hex');
+    console.log(4, afterhash);
 
-  //(3) change pathToHash
-  //delete pathToHash[path]
-  //pathToHash[path]=afterhash;
+    //(2) deactivate hash frompathToHash
+    let metadata = await Metadata.getMetadata(beforehash);
+    console.log(5, metadata);
+    if(metadata[relativePath]) {  // TODO: change path to filename
+        // step 4. If exists, deactivate (set deleted_time) that path.
+        // FIXME: Do we need to deactivate it from pathToHash too? > If we deactivate pathToHash, if rename event came, we cannot specify what hash value the path is for.
+        metadata[relativePath]["deleted_time"] = new Date();
+        console.log(6, metadata);
+        // await Metadata.setMetadata(beforehash, metadata);
+    }
+    metadata = await Metadata.getMetadata(beforehash);
+    console.log(7, metadata);
 
-  //(4) insert hash from contentHash
-  //const afterMetadata=Metadata.getMetadata(afterhash);
-  //afterMetadata[path]=data;
-  //Metadata.setMetadata(afterhash, afterMetadata);
+    //(3) change pathToHash
+    const instance = await PathToHash.getInstance();
+    console.log(instance);
+    //instance[relativePath]=afterhash;
+    await instance.addPath(uri);
+    console.log(8, instance);
+
+    //(4) insert hash from contentHash
+    await Metadata.setMetadata(afterhash, {});
+    
+    console.log(9, await Metadata.getMetadata(afterhash));
+    
+    const afterMetadata: any = {};
+    const filename: any = path.split('/').pop();
+    const stats: any = await MetadataEventManager.getStats(afterhash);
+    console.log(stats);
+
+    afterMetadata[filename] = {};
+    afterMetadata[filename]["name"] = filename.split(".")[0];
+    afterMetadata[filename]["file_extension"] = filename.split(".")[1];
+    afterMetadata[filename]["create_time"] = stats.birthtime;
+    afterMetadata[filename]["modified_time"] = stats.mtime;
+    afterMetadata[filename]["deleted_time"] = "삭제 시각(date)";  // TODO: 빈문자열?
+    await Metadata.setMetadata(afterhash, afterMetadata);
+    
+    console.log(11, await Metadata.getMetadata(afterhash));
+    //afterMetadata[path]=data;
+  }
+
+  public static getStats(hash:any) {
+    return new Promise(function (resolve, reject) {
+      fs.stat(vscode.Uri.file(obtainWorkspaceRoot()).fsPath + `/.meta/hash_objects/${hash.substring(0, 2)}/${hash.substring(2)}.json`, function (err, stats) {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(stats);
+      });
+    });
   }
 }
