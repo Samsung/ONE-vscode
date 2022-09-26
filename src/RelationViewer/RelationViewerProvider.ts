@@ -82,17 +82,17 @@ export class RelationViewerDocument implements vscode.CustomDocument {
     view.initRelationViewer();
     view.loadContent();
     this._metadataViwer.push(view);
-    
-    //relationData를 가져오는 함수
-    let payload:any;
 
+    //상대 경로 받기
+    const relativePath:string = vscode.workspace.asRelativePath(fileUri);
+  
+    //relationData를 가져오는 함수
+    const payload = getRelationData(relativePath);
     // relation 데이터를 웹뷰로 메세지를 보낸다.
-    payload = getRelationData(fileUri);
     panel.webview.postMessage(
-      {type:'create',payload: payload,fileUri: fileUri}
+      {type:'create',payload: payload}
     );
     
-
     panel.onDidDispose(() => {
       // TODO make faster
       this._metadataViwer.forEach((view, index) => {
@@ -128,18 +128,19 @@ export class RelationViewerProvider implements
         if(uri instanceof Node){
           fileUri = uri.uri;
         }
+        
         vscode.commands.executeCommand('vscode.openWith', fileUri, RelationViewerProvider.viewType);
       })
       // Add command registration here
     ];
-
+    
     // show relation 보여줄 파일 확장자
     vscode.commands.executeCommand('setContext', 'relation.supportedFiles', [
       '.tflite',
       '.pb',
       '.onnx',
       '.circle',
-      '.log'  // log 파일 제외할지 결정
+      '.log'  
     ]);
 
     registrations.forEach(disposable => context.subscriptions.push(disposable));
@@ -172,21 +173,47 @@ export class RelationViewerProvider implements
 }
 
 export function getRelationData(path:any) {
-  return {
+  const dummyData = {
     "selected": "1",
     "relationData": [
-      {"id": "1", "parent": "", "idx": 0, "dataList": [{"name": "a.tflite", "path": "./a.tflite"}]},  // TODO: id, parentid: hashId
-      {"id": "2", "parent": "1", "idx": 0, "dataList": [{"name": "b.circle", "path": "./b.circle", "oneccVersion": "1.0.0", "toolchainVersion": "1.0.0"}]},
-      {"id": "3", "parent": "1", "idx": 0, "dataList": [{"name": "c.circle", "path": "./c.circle", "oneccVersion": "1.0.0", "toolchainVersion": "1.0.0"}]},
-      {"id": "4", "parent": "2", "idx": 0, "dataList": [{"name": "b1.circle", "path": "./b1.circle", "oneccVersion": "1.0.0", "toolchainVersion": "1.0.0"}]},
-      {"id": "5", "parent": "2", "idx": 0, "dataList": [{"name": "b2.circle", "path": "./b2.circle", "oneccVersion": "1.0.0", "toolchainVersion": "1.0.0"}]},
-      {"id": "6", "parent": "2", "idx": 0, "dataList": [{"name": "b3.circle", "path": "./b3.circle", "oneccVersion": "1.0.0", "toolchainVersion": "1.0.0"}]},
-      {"id": "7", "parent": "2", "idx": 0, "dataList": [{"name": "b4.circle", "path": "./b4.circle", "oneccVersion": "1.0.0", "toolchainVersion": "1.0.0"}]},
-      {"id": "8", "parent": "2", "idx": 0, "dataList": [{"name": "b5.circle", "path": "./b5.circle", "oneccVersion": "1.0.0", "toolchainVersion": "1.0.0"}]},
-      {"id": "9", "parent": "3", "idx": 0, "dataList": [{"name": "d.circle", "path": "./d.circle", "oneccVersion": "1.0.0", "toolchainVersion": "1.0.0"}]},
-      {"id": "10", "parent": "9", "idx": 0, "dataList": [{"name": "e.circle", "path": "./e.circle", "oneccVersion": "1.0.0", "toolchainVersion": "1.0.0"}]},
-      {"id": "11", "parent": "10", "idx": 0, "dataList": [{"name": "e1.circle", "path": "./e1.circle", "oneccVersion": "1.0.0", "toolchainVersion": "1.0.0"}]},
-      {"id": "12", "parent": "10", "idx": 0, "dataList": [{"name": "e2.circle", "path": "./e2.circle", "oneccVersion": "1.0.0", "toolchainVersion": "1.0.0"}]}
+      {"id": "1", "parent": "", "representIdx": 0, "dataList": [{"name": "baseModelTestTflite123123.tflite", "path": "baseModelTestTflite123123.tflite"},{"name": "model.tflite", "path": "model.tflite"},{"name": "c.tflite", "path": "c.tflite"},{"name": "d.tflite", "path": "d.tflite"}]},  // TODO: id, parentid: hashId
+      {"id": "2", "parent": "1", "representIdx": 0, "dataList": [{"name": "test1.circle", "path": "src/hello/test1.circle", "oneccVersion": "1.0.0", "toolchainVersion": "1.0.0"}]},
+      {"id": "3", "parent": "2", "representIdx": 0, "dataList": [{"name": "test2.circle", "path": "src/trudiv/model/test2.circle", "oneccVersion": "1.0.0", "toolchainVersion": "1.0.0"}]},
+      {"id": "4", "parent": "1", "representIdx": 0, "dataList": [{"name": "test1.log", "path": "test1.log", "oneccVersion": "1.0.0", "toolchainVersion": "1.0.0"}]},
+      {"id": "5", "parent": "2", "representIdx": 0, "dataList": [{"name": "test2.log", "path": "test2.log", "toolchainVersion": "1.0.0"}]},
+      {"id": "6", "parent": "4", "representIdx": 0, "dataList": [{"name": "baseModelTestCircle.circle", "path": "baseModelTestCircle.circle"}]},
+      {"id": "7", "parent": "6", "representIdx": 0, "dataList": [{"name": "model.q8.circle", "path": "model.q8.circle", "oneccVersion": "1.0.0", "toolchainVersion": "1.0.0"}]},
+      {"id": "8", "parent": "6", "representIdx": 0, "dataList": [{"name": "pbTestCircle1.log", "path": "pbTestCircle1.log", "oneccVersion": "1.0.0", "toolchainVersion": "1.0.0"}]},
+      {"id": "9", "parent": "7", "representIdx": 0, "dataList": [{"name": "test_onnx.circle", "path": "hello/test_onnx.circle", "toolchainVersion": "1.0.0"}]},
+      {"id": "10", "parent": "7", "representIdx": 0, "dataList": [{"name": "while_000.circle", "path": "while/while_000.circle", "oneccVersion": "1.0.0", "toolchainVersion": "1.0.0"}]},
+      {"id": "11", "parent": "8", "representIdx": 0, "dataList": [{"name": "e1.log", "path": "e1.circle", "oneccVersion": "1.0.0", "toolchainVersion": "1.0.0"}]},
+      {"id": "12", "parent": "8", "representIdx": 0, "dataList": [{"name": "e2.log", "path": "e2.circle", "oneccVersion": "1.0.0", "toolchainVersion": "1.0.0"},{"name": "e3.circle", "path": "e3.circle", "oneccVersion": "1.2.0", "toolchainVersion": "1.0.0"}]}
     ]
-  };
+  } as any;
+
+  for (const key in dummyData) {
+    if(key === 'relationData'){
+      for (const idx in dummyData['relationData']) {
+        for (const key2 in dummyData['relationData'][idx]) {
+            if(key2 === 'dataList'){
+              for (let index = 0; index < dummyData['relationData'][idx]['dataList'].length; index++) {
+                const element = dummyData['relationData'][idx]['dataList'][index];
+                for (const key3 in element) {
+                  if(key3 === 'path'){
+                    if(element['path'] === path){
+                      dummyData['relationData'][idx]['representIdx'] = index;
+                      dummyData['selected'] = dummyData['relationData'][idx]['id'];
+                    }
+                  }
+                }
+              }
+            }
+        }
+      }
+    }
+  }
+
+  //console.log(dummyData);
+
+  return dummyData;
 }

@@ -87,7 +87,7 @@ export class RelationViewerDocument implements vscode.CustomDocument {
     const seletedMetadata = getMetadata();
 
     //패널 타이틀 변경(적용되지 않음)
-    panel.title = `Metadata: ${this._getNameFromPath(fileUri.toString())}`;
+    //panel.title = `Metadata: ${this._getNameFromPath(fileUri.toString())}`;
     
     //가져온 메타데이터를 웹뷰로 메세지를 보낸다.
     panel.webview.postMessage({command:'showMetadata',metadata: seletedMetadata});
@@ -182,7 +182,7 @@ export class MetadataViewerProvider implements
 
 function getMetadata() {
   return {
-    "./test.log": {
+    "test.log": {
       "file_extension": "log",
       "created_time": new Date().toLocaleString(),
       "modified_time": new Date().toLocaleString(),
