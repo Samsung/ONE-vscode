@@ -2,9 +2,10 @@ import * as vscode from "vscode";
 import { Disposable } from "./dispose";
 import * as Circle from './circle_schema_generated';
 import * as flatbuffers from 'flatbuffers';
-import { ResponseModel, RequestMessage, CustomInfoMessage, ResponseModelPath, ResponseFileRequest } from './MessageType';
+import { ResponseModel, RequestMessage, CustomInfoMessage, ResponseModelPath, ResponseFileRequest, ResponseJson } from './MessageType';
 import * as flexbuffers from 'flatbuffers/js/flexbuffers';
 import * as Types from './CircleType';
+import { Balloon } from "../Utils/Balloon";
 
 export class CircleEditorDocument extends Disposable implements vscode.CustomDocument{
   private readonly _uri: vscode.Uri;
@@ -38,7 +39,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
   // tell to webview
   public readonly _onDidChangeContent = this._register(new vscode.EventEmitter<{
 		readonly modelData: Uint8Array;
-  } | ResponseModel | CustomInfoMessage | ResponseModelPath | ResponseFileRequest>());
+  } | ResponseModel | CustomInfoMessage | ResponseModelPath | ResponseFileRequest | ResponseJson>());
   public readonly onDidChangeContent = this._onDidChangeContent.event;
 
   // tell to vscode
@@ -110,6 +111,29 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 
 		this._onDidChangeContent.fire(responseModel);
   }
+  
+  editJsonModel(message: any){
+	const oldModelData = this.modelData;
+	try{
+		let newModel: Circle.ModelT = JSON.parse(message.data); //예외 처리
+		this._model = newModel;
+		const newModelData = this.modelData;
+		this.notifyEdit(oldModelData, newModelData);
+		this.loadJson();
+	}catch{
+		Balloon.error("invalid model");
+	}
+  }
+
+  loadJson(){
+	let jsonModel = JSON.stringify(this._model);
+	let responseJson: ResponseJson = {
+		command: 'loadJson',
+		data: jsonModel
+	};
+	this._onDidChangeContent.fire(responseJson);
+  }	
+
   
 	guessExactType(n : any){
 		if(Number(n) === n && n % 1 === 0){

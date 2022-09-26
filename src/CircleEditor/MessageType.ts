@@ -28,3 +28,8 @@ export interface ResponseFileRequest{
     command: string;
     response: string;
 }
+
+export interface ResponseJson{
+    command: string;
+    data: string;
+}
