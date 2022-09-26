@@ -4,7 +4,7 @@ function calculate(num, c, b) {
     var view = new DataView(buffer);
 
     switch (c) {
-        case 0: // float32
+        case 0:
             view.setFloat32(0, num, true);
             break;
         case 1:
@@ -57,7 +57,7 @@ function calculate(num, c, b) {
 }
 
 function calc(str, type) {
-    const types = ['float32', 'float16', 'int32', 'uint8', 'int64', 'string', 'boolean', 'int16',
+    const types = ['float32', 'float16', 'int32', 'uint8', 'int64', 'string', 'bool', 'int16',
     'complex64', 'int8', 'float64', 'complex128', 'uint64', 'resource', 'variant', 'uint32'];
     
     // 0:float, 1:int, 2:uint, 3:string, 4:boolean, 5:complex, 6:resource, 7:variant
@@ -68,7 +68,7 @@ function calc(str, type) {
     
     let arr = str.split(',');
     let result = "";
-    if(type === 'boolean') {
+    if(type === 'bool') {
         for (let i = 0; i< arr.length; i++) {
             if(arr[i].trim().toLowerCase() === 'true') {
                 arr[i] = 1;
@@ -80,6 +80,7 @@ function calc(str, type) {
         }
     }
     for (let i = 0; i < arr.length; i++) {
+        if(!/^\d+$/.test(arr[i])) {return "ERROR: Please enter digits and decimal points only.";}
         let v = calculate(parseFloat(arr[i]), typeIndex, bits[typeIndex]/8);
         if(!v) {
             return "ERROR: Data does not match type.";
@@ -94,5 +95,6 @@ function calc(str, type) {
 }
 
 // console.log(calc("1230.123154631, 1.24515514515, 555.25454545, -36655.451454", "int32"));
-// console.log(calc("true, false, true, true, Faalse", "boolean"));
-// calc("-132131234561235314235135115.1", "uint64");
+// console.log(calc("true, false, true, true, Faalse", "bool"));
+console.log(calc("-132131234561235314235135115.1,true,123123", "bool"));
+// console.log(calc("1123", "int32"));
