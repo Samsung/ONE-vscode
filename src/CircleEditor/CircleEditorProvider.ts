@@ -168,7 +168,7 @@ export class CircleEditorProvider
       case MessageDefs.pageloaded:
         return; //html load
       case MessageDefs.loadmodel:
-        document.sendModel(message.offset); //여기 msg에 노드 선택할 일 있는지 확인 필요
+        document.sendModel(message.offset);
         return;
       case MessageDefs.finishload: //load model finish
         return;
@@ -178,7 +178,7 @@ export class CircleEditorProvider
         document.makeEdit(message);
         return;
       case MessageDefs.customType:
-        document.SendcustomType(message);
+        document.sendCustomType(message);
         return;
     }
   }
@@ -201,11 +201,7 @@ export class CircleEditorProvider
     }
   }
   
-  //getHtml
   private getHtmlForWebview(webview: vscode.Webview): string {
-    //need to get html from GUI
-    //this is temporary html for testing
-    // 나중에 수정
     const htmlUrl = webview.asWebviewUri(
       vscode.Uri.joinPath(
         this._context.extensionUri,
