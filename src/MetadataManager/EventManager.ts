@@ -24,6 +24,7 @@ import { Metadata } from './metadataAPI';
 import { Balloon } from '../Utils/Balloon';
 import { obtainWorkspaceRoot } from '../Utils/Helpers';
 import { Logger } from '../Utils/Logger';
+import { PathToHash } from './pathToHash';
 
 
 // import {ArtifactAttr} from './ArtifactLocator';
@@ -107,29 +108,29 @@ export class MetadataEventManager {
         if(workspaceRoot){ await provider.changeEvent(workspaceRoot.fsPath, uri.fsPath);}
       }),
       provider.fileWatcher.onDidDelete(async uri => { // To Semi Jeong
+        // FIXME: declare PathToHash instance outside of the function (i.e. make instance member variable)
+        const instance = await PathToHash.getInstance();
+        if (!instance.exists(uri)) return;
         console.log('onDidDelete::', uri); provider.refresh('Delete'); // test code
-        // TODO: pathToHash update
-        // 만약 필요하다면 pathToHash에도 folder용 update, file용 update 만들어서 따로 처리 (2번 돌아서 비효율적)
-        // 아니면 그냥 현재 disableMetadata, moveMetadata(file용 함수)에서만 처리하기
-        // file: 일반 삭제 > 그냥 지우기, 이동/rename > path 이름 변경
         const path = uri.path;
         if (MetadataEventManager.createUri) {
-          const newUri = MetadataEventManager.createUri.path;
+          const newUri = MetadataEventManager.createUri;
           // The file/folder is moved/renamed
-          if (fs.statSync(newUri).isDirectory()) {
+          if (fs.statSync(newUri.path).isDirectory()) {
             // case 4. [Dir]+Path       | move > search (delete & new)
-            Metadata.moveMetadataUnderFolder(path, newUri);
-          } else if (provider.isValidFile(path)) { // FIXME: Do we have to check isValidFile for newUri too?
+            await Metadata.moveMetadataUnderFolder(uri, newUri);
+          } else {
             // case 3. [File]+Path      | move (delete & new)
-            Metadata.moveMetadata(path, newUri);
+            await Metadata.moveMetadata(uri, newUri);
           }
         } else {
-          if (Metadata.d_isDir(path)) {
+          const pathToHash = await PathToHash.getInstance();
+          if (!pathToHash.isFile(uri)) {
             // case 2. [Dir]+undefined  | deactive > search
-            Metadata.disableMetadataUnderFolder(path);
-          } else if (provider.isValidFile(path)) {
+            await Metadata.disableMetadataUnderFolder(uri);
+          } else {
             // case 1. [File]+undefined | deactive
-            Metadata.disableMetadata(uri);
+            await Metadata.disableMetadata(uri);
           }
         }
       }),
