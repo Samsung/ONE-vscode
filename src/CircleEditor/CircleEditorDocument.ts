@@ -115,25 +115,26 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
   
   editJsonModel(message: any){
 	const oldModelData = this.modelData;
-	// try{
-		let try1 = new Circle.ModelT();
-		
+    try{
+        let try1 = new Circle.ModelT();
+        
+        let newModel : any = new Circle.ModelT();
+        newModel = JSON.parse(message.data); //예외 처리
+        
+        this._model = newModel;
 
-		let newModel:any = JSON.parse(message.data); //예외 처리
-		let buf = 
-		console.log("newModel parse complete here "+newModel);
-		
-		this._model.pack = {...this._model, ...newModel};
-		console.log(this._model.buffers[4])
-		console.log("00000000")
-		const newModelData = this.modelData;
-		console.log("1111111")
-		this.notifyEdit(oldModelData, newModelData);
-		console.log("222222")
-		this.loadJson();
-	// }catch{
-		// Balloon.error("invalid model");
-	// }
+        let fbb = new flatbuffers.Builder(1024);
+        try1.pack(fbb);
+        Circle.Model.finishModelBuffer(fbb, try1.pack(fbb));
+        let tmp = fbb.asUint8Array();
+
+        const newModelData = tmp;
+        console.log(1);
+        this.notifyEdit(oldModelData, newModelData);
+        this.loadJson();
+    }catch{
+        Balloon.error("invalid model");
+    }
   }
 
   loadJson(){
