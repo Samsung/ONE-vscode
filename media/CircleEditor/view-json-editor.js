@@ -58,9 +58,9 @@ jsonEditor.jsonEditor = class {
     }
 
     _activate(item) {
-        const jsonEditor = this._host.document.getElementById('jsonEditor');
-        if (jsonEditor) {
-            jsonEditor.innerHTML = '';
+        const jsonEditorBox = this._host.document.getElementById('jsonEditor');
+        if (jsonEditorBox) {
+            jsonEditorBox.innerHTML = '';
 
             const closeButton = this._host.document.createElement('a');
             closeButton.classList.add('jsonEditor-closebutton');
@@ -68,14 +68,14 @@ jsonEditor.jsonEditor = class {
             closeButton.setAttribute('href', 'javascript:void(0)');
             closeButton.innerHTML = '&times;';
             closeButton.addEventListener('click', this._closeJsonEditorHandler);
-            jsonEditor.appendChild(closeButton);
+            jsonEditorBox.appendChild(closeButton);
 
             const content = this._host.document.createElement('div');
             content.setAttribute('id', 'jsonEditor-content');
             content.setAttribute('contenteditable', 'true');
-            jsonEditor.appendChild(content);
+            jsonEditorBox.appendChild(content);
 
-            jsonEditor.style.width = 'min(calc(100% * 0.6), 800px)';
+            jsonEditorBox.style.width = 'min(calc(100% * 0.6), 800px)';
             this._host.document.addEventListener('keydown', this._closeJsonEditorKeyDownHandler);
         }
         const container = this._host.document.getElementById('graph');
@@ -84,3 +84,17 @@ jsonEditor.jsonEditor = class {
         }
     }
 };
+
+// jsonEditor.Calculator = class {
+//     constructor(host) {
+//         this._host = host;
+        
+//         this._calculatorBox = host.document.createElement('div');
+//         const calculatorNameBox = host.document.createElement('div');
+//         const calculatorName = host.document.createElement('div');
+//         this._toggle = host.document.createElement('div');
+//         calculatorName.className = 'calculator-name';
+//         calculatorNameBox.className = 'calculator-name-box';
+        
+//     }
+// };
