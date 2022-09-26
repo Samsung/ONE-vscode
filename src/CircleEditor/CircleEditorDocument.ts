@@ -126,7 +126,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
   }
 
   loadJson(){
-	let jsonModel = JSON.stringify(this._model);
+	let jsonModel = JSON.stringify(this._model, null,2);
 	let responseJson: ResponseJson = {
 		command: 'loadJson',
 		data: jsonModel
