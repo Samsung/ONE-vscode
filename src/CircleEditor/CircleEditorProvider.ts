@@ -29,7 +29,8 @@ export enum MessageDefs {
   // edit circle
   edit = "edit",
   customType = "CustomType",
-  testMessage = "dd",
+  loadJson = "loadJson",
+  updateJson = "updateJson",
 }
 
 export class CircleEditorProvider
@@ -179,6 +180,12 @@ export class CircleEditorProvider
         return;
       case MessageDefs.customType:
         document.sendCustomType(message);
+        return;
+      case MessageDefs.loadJson:
+        document.loadJson();
+        return;
+      case MessageDefs.updateJson:
+        document.editJsonModel(message);
         return;
     }
   }
