@@ -27,10 +27,13 @@ import {PartEditorProvider} from './PartEditor/PartEditor';
 import {PartGraphSelPanel} from './PartEditor/PartGraphSelector';
 import { ToolchainProvider } from './Toolchain/ToolchainProvider';
 import { Metadata } from './MetadataManager/metadataAPI';
+import { obtainWorkspaceRoot } from './Utils/Helpers';
 import {Logger} from './Utils/Logger';
 import { PathToHash } from './MetadataManager/pathToHash';
 import { StringLiteral } from 'typescript';
 import { time } from 'console';
+
+import { MetadataEventManager } from './MetadataManager/EventManager';
 
 /* istanbul ignore next */
 export function activate(context: vscode.ExtensionContext) {
@@ -50,7 +53,9 @@ export function activate(context: vscode.ExtensionContext) {
   } else {
     vscode.commands.executeCommand('setContext', 'one:extensionKind', 'Workspace');
   }
-  
+
+  MetadataEventManager.register(context);
+
   OneTreeDataProvider.register(context);
 
   ToolchainProvider.register(context);
