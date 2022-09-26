@@ -59,12 +59,13 @@ export class PathToHash{
         return this.instance;
     }
 
-    public getPathToHash(path: string ) {
-        
+    public getPathToHash(uri: vscode.Uri ) {
+        let path = vscode.workspace.asRelativePath(uri)
         let pathArray = path.split('/');
-        
         let temp = this.pathToHash;
+
         pathArray.forEach((data) => {
+
             if (temp === undefined) {
                 return undefined;
             }

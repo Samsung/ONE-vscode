@@ -1,6 +1,4 @@
 import * as vscode from 'vscode';
-import * as crypto from 'crypto';
-import * as fs from 'fs';
 import { obtainWorkspaceRoot } from '../Utils/Helpers';
 import { PathToHash } from './pathToHash';
 interface Relation{
@@ -28,10 +26,10 @@ export class Metadata{
     public static register(context: vscode.ExtensionContext): void {
         const registrations = [
             vscode.commands.registerCommand('one.metadata.showMetadata', async () => {
-
-                const testPath: string = "2/3/testest.circle"; // workspace 기준 실제 파일 위치
-                await Metadata.getFileInfo(testPath);
-                // await Metadata.getRelationInfo(testPath);
+                if(vscode.workspace.workspaceFolders === undefined) return;
+                const testUri: vscode.Uri = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri,"while_000.log"); // 절대경로
+                await Metadata.getFileInfo(testUri);
+                // await Metadata.getRelationInfo(testUri);
             })
         ]
 
@@ -41,11 +39,11 @@ export class Metadata{
     }
 
     //get metadata of file by path
-    public static async getFileInfo(path: string) {
+    public static async getFileInfo(uri: vscode.Uri) {
         const instance = await PathToHash.getInstance();
-        const hash = instance.getPathToHash(path);
+        const hash = instance.getPathToHash(uri);
         let metadata = await this.getMetadata(hash);
-        return metadata[path];
+        return metadata[uri.toString()];
     }
 
     // deactivate metadata
@@ -163,9 +161,9 @@ export class Metadata{
     }
 
     //get metadata of file by path
-    public static async getRelationInfo(path: string) {
+    public static async getRelationInfo(uri: vscode.Uri) {
         const instance = await PathToHash.getInstance();
-        const nowHash = instance.getPathToHash(path);
+        const nowHash = instance.getPathToHash(uri);
         if (vscode.workspace.workspaceFolders === undefined) return;
 
         let relationUri = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, ".meta/relation.json");
