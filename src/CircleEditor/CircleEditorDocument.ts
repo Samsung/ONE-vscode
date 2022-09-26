@@ -16,6 +16,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
   public get model(): Circle.ModelT { return this._model; }
   public get modelData(): Uint8Array {
     let fbb = new flatbuffers.Builder(1024);
+	this._model.pack(fbb);
 		Circle.Model.finishModelBuffer(fbb, this._model.pack(fbb));
     return fbb.asUint8Array();
   }
@@ -114,18 +115,55 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
   
   editJsonModel(message: any){
 	const oldModelData = this.modelData;
-	try{
-		let newModel: Circle.ModelT = JSON.parse(message.data); //예외 처리
-		this._model = newModel;
+	// try{
+		let try1 = new Circle.ModelT();
+		
+
+		let newModel:any = JSON.parse(message.data); //예외 처리
+		let buf = 
+		console.log("newModel parse complete here "+newModel);
+		
+		this._model.pack = {...this._model, ...newModel};
+		console.log(this._model.buffers[4])
+		console.log("00000000")
 		const newModelData = this.modelData;
+		console.log("1111111")
 		this.notifyEdit(oldModelData, newModelData);
+		console.log("222222")
 		this.loadJson();
-	}catch{
-		Balloon.error("invalid model");
-	}
+	// }catch{
+		// Balloon.error("invalid model");
+	// }
   }
 
   loadJson(){
+	// let jsonModel = "{\n";
+	// jsonModel += `\t"version": `;
+	// jsonModel += JSON.stringify(this._model.version, null, 2);
+	// jsonModel +=`,\n\t"operatorCodes": [`;
+	// jsonModel += JSON.stringify(this._model.operatorCodes, null, 2).slice(1,-1);
+	// jsonModel +="],";
+	// jsonModel += JSON.stringify(this._model.subgraphs,null,2).slice(1,-1);
+	// jsonModel +=",";
+	// jsonModel += JSON.stringify(this._model.description, null, 2).slice(1,-1);
+	// jsonModel +=",";
+
+	// let bufferArray = this._model.buffers;
+	// for(let i=0; i< bufferArray.length; i++){
+	// 	jsonModel += JSON.stringify(bufferArray[i]);
+	// 	jsonModel +=",\n";
+	// }
+	
+	// jsonModel += JSON.stringify(this._model.buffers).slice(1,-1);
+	// jsonModel += "\n";
+	// jsonModel += JSON.stringify(this._model.metadataBuffer, null, 2).slice(1,-1);
+	// jsonModel +="\n";
+	// jsonModel += JSON.stringify(this._model.metadata, null, 2).slice(1,-1);
+	// jsonModel +="\n";
+	// jsonModel += JSON.stringify(this._model.signatureDefs,null,2).slice(1,-1);
+	// jsonModel += "\n}";
+
+
 	let jsonModel = JSON.stringify(this._model, null,2);
 	let responseJson: ResponseJson = {
 		command: 'loadJson',
