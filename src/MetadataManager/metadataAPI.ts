@@ -18,7 +18,8 @@ interface Data{
     "path": string,
     "name": string,
     "onecc_version"?: string,
-    "toolchain_version"?: string
+    "toolchain_version"?: string,
+    "is_deleted" : boolean
 }
 
 export class Metadata {
@@ -29,7 +30,7 @@ export class Metadata {
             vscode.commands.registerCommand('one.metadata.showMetadata', async () => {
                 if(vscode.workspace.workspaceFolders === undefined) return;
                 const testUri: vscode.Uri = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri,"while_000.log"); // 절대경로
-                await Metadata.getFileInfo(testUri);
+                console.log(await Metadata.getFileInfo(testUri));
                 // await Metadata.getRelationInfo(testUri);
             })
         ];
@@ -50,7 +51,7 @@ export class Metadata {
         const instance = await PathToHash.getInstance();
         const hash = instance.getPathToHash(uri);
         let metadata = await this.getMetadata(hash);
-        return metadata[uri.toString()];
+        return metadata[vscode.workspace.asRelativePath(uri).toString()];
     }
 
     // deactivate metadata
@@ -262,7 +263,8 @@ export class Metadata {
                 "path": keys[i],
                 "name": element.name,
                 "onecc_version": element.onecc_version,
-                "toolchain_version": element.toolchain_version
+                "toolchain_version": element.toolchain_version,
+                "is_deleted":element.is_deleted
             };
 
             dataList.push(data);
