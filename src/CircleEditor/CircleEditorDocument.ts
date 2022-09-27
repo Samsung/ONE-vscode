@@ -112,20 +112,119 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		this._onDidChangeContent.fire(responseModel);
   }
   
-  editJsonModel(message: any){
-	const oldModelData = this.modelData;
-	try{
-		let newModel: Circle.ModelT = JSON.parse(message.data); //예외 처리
-		this._model = newModel;
-		const newModelData = this.modelData;
-		this.notifyEdit(oldModelData, newModelData);
-		this.loadJson();
-	}catch{
-		Balloon.error("invalid model");
-	}
+	editJsonModel(message: any) {
+    try{
+			const oldModelData = this.modelData;
+	
+			let newModel = JSON.parse(message.data);
+			//여기부터 복사
+			// version
+			this._model.version = newModel.version;
+
+			// operatoreCodes
+			this._model.operatorCodes = newModel.operatorCodes.map((data: Circle.OperatorCodeT) => {
+				return Object.setPrototypeOf(data, Circle.OperatorCodeT.prototype);
+			});
+			
+			// subgraphs
+			this._model.subgraphs = newModel.subgraphs.map((data: Circle.SubGraphT) => {
+
+				//tensors
+				data.tensors = data.tensors.map((tensor: Circle.TensorT) => {
+					if (tensor.quantization) {
+						if (tensor.quantization.details) {
+							tensor.quantization.details = Object.setPrototypeOf(tensor.quantization?.details, Circle.CustomQuantizationT.prototype);
+						}
+						tensor.quantization = Object.setPrototypeOf(tensor.quantization, Circle.QuantizationParametersT.prototype);
+					}
+					// ToDo : sparsity
+					// tensor.sparsity = Object.setPrototypeOf
+					return Object.setPrototypeOf(tensor, Circle.TensorT.prototype);
+				});
+
+				//operators
+				data.operators = data.operators.map((operator: Circle.OperatorT) => {
+					// 빌트인옵션 어떻게 함??
+					const optionsClass = Object.entries(Types.CodeTobuiltinOptions).find(element => {
+						return operator.builtinOptionsType === parseInt(element[0]);
+					});
+
+					if (optionsClass && optionsClass[1]) {
+						operator.builtinOptions = Object.setPrototypeOf(operator.builtinOptions === null ? {} : operator.builtinOptions, optionsClass[1].prototype);
+					} else {
+						operator.builtinOptions = null;
+					}
+
+					return Object.setPrototypeOf(operator, Circle.OperatorT.prototype);
+				});
+				
+				return Object.setPrototypeOf(data, Circle.SubGraphT.prototype);
+			});
+
+			// description
+			this._model.description = newModel.description;
+
+			// buffers
+			this._model.buffers = newModel.buffers.map((data: Circle.BufferT) => {
+				return Object.setPrototypeOf(data, Circle.BufferT.prototype);
+			});
+
+			// metadataBuffer
+			this._model.metadataBuffer = newModel.metadataBuffer;
+	
+			// metadata
+			this._model.metadata = newModel.metadata.map((data: Circle.MetadataT) => {
+				return Object.setPrototypeOf(data, Circle.MetadataT.prototype);
+			});
+	
+			// signatureDefs
+			this._model.signatureDefs = newModel.signatureDefs.map((data: Circle.SignatureDefT) => {
+				data.inputs = data.inputs.map((tensor: Circle.TensorMapT) => {
+					return Object.setPrototypeOf(tensor, Circle.TensorMapT.prototype);
+				})
+				data.outputs = data.outputs.map((tensor: Circle.TensorMapT) => {
+					return Object.setPrototypeOf(tensor, Circle.TensorMapT.prototype);
+				});
+				return Object.setPrototypeOf(data, Circle.SignatureDefT.prototype);
+			});
+			// 여기까지 복사 끝
+
+			const newModelData = this.modelData;
+			this.notifyEdit(oldModelData, newModelData);
+			this.loadJson();
+		} catch (e) {
+        Balloon.error("invalid model");
+    }
   }
 
   loadJson(){
+	// let jsonModel = "{\n";
+	// jsonModel += `\t"version": `;
+	// jsonModel += JSON.stringify(this._model.version, null, 2);
+	// jsonModel +=`,\n\t"operatorCodes": [`;
+	// jsonModel += JSON.stringify(this._model.operatorCodes, null, 2).slice(1,-1);
+	// jsonModel +="],";
+	// jsonModel += JSON.stringify(this._model.subgraphs,null,2).slice(1,-1);
+	// jsonModel +=",";
+	// jsonModel += JSON.stringify(this._model.description, null, 2).slice(1,-1);
+	// jsonModel +=",";
+
+	// let bufferArray = this._model.buffers;
+	// for(let i=0; i< bufferArray.length; i++){
+	// 	jsonModel += JSON.stringify(bufferArray[i]);
+	// 	jsonModel +=",\n";
+	// }
+	
+	// jsonModel += JSON.stringify(this._model.buffers).slice(1,-1);
+	// jsonModel += "\n";
+	// jsonModel += JSON.stringify(this._model.metadataBuffer, null, 2).slice(1,-1);
+	// jsonModel +="\n";
+	// jsonModel += JSON.stringify(this._model.metadata, null, 2).slice(1,-1);
+	// jsonModel +="\n";
+	// jsonModel += JSON.stringify(this._model.signatureDefs,null,2).slice(1,-1);
+	// jsonModel += "\n}";
+
+
 	let jsonModel = JSON.stringify(this._model, null,2);
 	let responseJson: ResponseJson = {
 		command: 'loadJson',
