@@ -138,13 +138,44 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 						tensor.quantization = Object.setPrototypeOf(tensor.quantization, Circle.QuantizationParametersT.prototype);
 					}
 					// ToDo : sparsity
-					// tensor.sparsity = Object.setPrototypeOf
+					if(tensor.sparsity) {
+						if(tensor.sparsity.dimMetadata){
+							tensor.sparsity.dimMetadata = tensor.sparsity.dimMetadata.map((dimMeta: Circle.DimensionMetadataT)=>{
+								if(dimMeta.arraySegmentsType){
+									const sparseVectorClass = Object.entries(Types.SparseVector).find(element => {
+										return dimMeta.arraySegmentsType === parseInt(element[0]);
+									});
+									if (sparseVectorClass && sparseVectorClass[1]) {
+										dimMeta.arraySegments = Object.setPrototypeOf(dimMeta.arraySegments === null ? {} : dimMeta.arraySegments, sparseVectorClass[1].prototype);
+									} else {
+										dimMeta.arraySegments = null; //여기 삼항연산자에서 {}로 한 번 처리하는데 추가로 해줘야 해?
+									}
+								}
+								if(dimMeta.arrayIndicesType){
+									const sparseVectorClass = Object.entries(Types.SparseVector).find(element => {
+										return dimMeta.arrayIndicesType === parseInt(element[0]);
+									});
+									if (sparseVectorClass && sparseVectorClass[1]) {
+										dimMeta.arrayIndices = Object.setPrototypeOf(dimMeta.arrayIndices === null ? {} : dimMeta.arrayIndices, sparseVectorClass[1].prototype);
+									} else {
+										dimMeta.arrayIndices = null; 
+									}
+								}
+								return Object.setPrototypeOf(dimMeta, Circle.DimensionMetadataT.prototype);
+							});//end map dimMeta
+
+							Object.setPrototypeOf(tensor.sparsity.dimMetadata,Circle.DimensionMetadataT.prototype);
+						}//end if tensor.sparsity.dimMetadata
+
+						tensor.sparsity = Object.setPrototypeOf(tensor.sparsity, Circle.SparsityParametersT.prototype);
+					}//end if tensor.sparsity
+					
 					return Object.setPrototypeOf(tensor, Circle.TensorT.prototype);
 				});
 
 				//operators
 				data.operators = data.operators.map((operator: Circle.OperatorT) => {
-					// 빌트인옵션 어떻게 함??
+				
 					const optionsClass = Object.entries(Types.CodeTobuiltinOptions).find(element => {
 						return operator.builtinOptionsType === parseInt(element[0]);
 					});
@@ -191,41 +222,18 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 
 			const newModelData = this.modelData;
 			this.notifyEdit(oldModelData, newModelData);
-			this.loadJson();
+			
 		} catch (e) {
         Balloon.error("invalid model");
     }
   }
 
   loadJson(){
-	// let jsonModel = "{\n";
-	// jsonModel += `\t"version": `;
-	// jsonModel += JSON.stringify(this._model.version, null, 2);
-	// jsonModel +=`,\n\t"operatorCodes": [`;
-	// jsonModel += JSON.stringify(this._model.operatorCodes, null, 2).slice(1,-1);
-	// jsonModel +="],";
-	// jsonModel += JSON.stringify(this._model.subgraphs,null,2).slice(1,-1);
-	// jsonModel +=",";
-	// jsonModel += JSON.stringify(this._model.description, null, 2).slice(1,-1);
-	// jsonModel +=",";
-
-	// let bufferArray = this._model.buffers;
-	// for(let i=0; i< bufferArray.length; i++){
-	// 	jsonModel += JSON.stringify(bufferArray[i]);
-	// 	jsonModel +=",\n";
-	// }
-	
-	// jsonModel += JSON.stringify(this._model.buffers).slice(1,-1);
-	// jsonModel += "\n";
-	// jsonModel += JSON.stringify(this._model.metadataBuffer, null, 2).slice(1,-1);
-	// jsonModel +="\n";
-	// jsonModel += JSON.stringify(this._model.metadata, null, 2).slice(1,-1);
-	// jsonModel +="\n";
-	// jsonModel += JSON.stringify(this._model.signatureDefs,null,2).slice(1,-1);
-	// jsonModel += "\n}";
-
-
 	let jsonModel = JSON.stringify(this._model, null,2);
+		jsonModel.match(/\[[0-9,\s]*\]/gi)?.forEach(text => {
+			let replaced = text.replace(/,\s*/gi, ", ").replace(/\[\s*/gi, "[").replace(/\s*\]/gi, "]");
+			jsonModel = jsonModel.replace(text, replaced);
+	});
 	let responseJson: ResponseJson = {
 		command: 'loadJson',
 		data: jsonModel

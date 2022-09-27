@@ -386,3 +386,10 @@ export const CodeTobuiltinOptions = {
   253: Circle.BCQFullyConnectedOptionsT,
   254: Circle.InstanceNormOptionsT
 }
+
+export const SparseVector ={
+	0: null,
+	1: Circle.Int32VectorT,
+	2: Circle.Uint16VectorT,
+	3: Circle.Uint8VectorT
+}
