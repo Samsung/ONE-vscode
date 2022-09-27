@@ -181,7 +181,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 			this._model.signatureDefs = newModel.signatureDefs.map((data: Circle.SignatureDefT) => {
 				data.inputs = data.inputs.map((tensor: Circle.TensorMapT) => {
 					return Object.setPrototypeOf(tensor, Circle.TensorMapT.prototype);
-				})
+				});
 				data.outputs = data.outputs.map((tensor: Circle.TensorMapT) => {
 					return Object.setPrototypeOf(tensor, Circle.TensorMapT.prototype);
 				});
@@ -234,14 +234,77 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
   }	
 
 	private guessExactType(n : any){
-		if(Number(n) === n && n % 1 === 0){
+		if(Number(n) % 1 === 0){
 			return "int";
 		}
-		else if(Number(n) === n && n % 1 !== 0){
+		else if(Number(n) % 1 !== 0){
 			return "float";
 		}
 	}
 
+	public sendEncodingData(message : any){
+		console.log(message);
+		let fbb = flexbuffers.builder();
+		fbb.startMap();
+		for(const key in message.data){
+			fbb.addKey(key);
+			const val = message.data[key][0];
+			const valType = message.data[key][1];
+			if(valType === "boolean"){
+				if(val === "true" || val === true){
+					fbb.add(true);
+				}
+				else if(val === "false" || val === false){
+					fbb.add(false);
+				}
+				else{ 
+					Balloon.error("'boolean' type must be 'true' or 'false'.");
+					return;
+				} // true, false 오타 에러처리
+			}
+			else if(valType === "int"){
+				if(this.guessExactType(val) === 'float') {
+					Balloon.error("'int' type doesn't include decimal point.");
+					return;
+				} // 소수점 들어간거 에러처리
+				fbb.addInt(Number(val));
+			}
+			else{
+				fbb.add(String(val));
+			}
+		}
+		fbb.end();
+		const res = fbb.finish();
+		// ArrayBuffer -> Buffer -> Array 후 넣어줘야함.
+		const buf = Buffer.alloc(res.byteLength);
+		const view = new Uint8Array(res);
+		for (let i = 0; i < buf.length; ++i) {
+				buf[i] = view[i];
+		}
+		const data = Array.from(buf);
+
+		// //debug Code
+		// const debugbuffer = Buffer.from(data);
+		// // Buffer to ArrayBuffer
+		// const debugab = new ArrayBuffer(debugbuffer.length);
+		// const tmpview = new Uint8Array(debugab);
+		// for (let i = 0; i < debugbuffer.length; ++i) {
+		// 		tmpview[i] = debugbuffer[i];
+		// }
+		// // decodding flexbuffer
+		// const debugcustomObj : any = flexbuffers.toObject(debugab);	
+		// console.log(debugcustomObj);
+		// for(const debugkey in debugcustomObj){
+		// 	console.log(typeof(debugcustomObj[debugkey]));
+		// }
+		// // debug end
+			
+		let responseData:CustomInfoMessage = {
+			command: 'CustomType',
+			data: data
+		};
+		this._onDidChangeContent.fire(responseData);
+	}
 
   public sendCustomType(message : any){
 		const msgData : any = message.data;
@@ -484,19 +547,17 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 						fbb.add(false);
 					}
 					else{ 
-						Balloon.error("'boolean' type must be 'true' or 'false'");
+						Balloon.error("'boolean' type must be 'true' or 'false'.");
 						return;
 					} // true, false 오타 에러처리
 				}
 				else if(valType === "int"){
 					if(this.guessExactType(val) === 'float') {
+						Balloon.error("'int' type doesn't include decimal point.");
 						return;
 					} // 소수점 들어간거 에러처리
 					fbb.addInt(Number(val));
 				}
-				// else if(valType === "float"){
-				// 	fbb.add(Number(val));
-				// }
 				else{
 					fbb.add(String(val));
 				}

@@ -31,6 +31,7 @@ export enum MessageDefs {
   customType = "CustomType",
   loadJson = "loadJson",
   updateJson = "updateJson",
+  requestEncodingData = "requestEncodingData"
 }
 
 export class CircleEditorProvider
@@ -187,6 +188,8 @@ export class CircleEditorProvider
       case MessageDefs.updateJson:
         document.editJsonModel(message);
         return;
+      case MessageDefs.requestEncodingData:
+        document.sendEncodingData(message);
     }
   }
 
