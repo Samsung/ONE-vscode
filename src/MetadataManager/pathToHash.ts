@@ -85,7 +85,7 @@ export class PathToHash{
         const relativeFolderPath = vscode.workspace.asRelativePath(uri);
         console.log(`PathToHash::isFile():: relativeFolderPath=${relativeFolderPath}`);
         const hash = this.getPathToHash(uri);
-        console.log(typeof(hash) === 'string')
+        console.log(typeof(hash) === 'string');
         return typeof(hash) === 'string';
     }
 
@@ -120,7 +120,7 @@ export class PathToHash{
         let obj = this.pathToHash;
         let idx = 0;
         for (let path = paths[idx]; idx < paths.length - 1; path = paths[++idx]) {
-            if (!obj[path]) break;
+            if (!obj[path]) {break;}
             obj = obj[path];
         }
         if (paths.length - 1 === idx) { // paths.length - 1: index of a file name
@@ -169,7 +169,7 @@ export class PathToHash{
 
     private deleteEmptyFolder(parent: any, paths: string[], idx: number) {
         const path = paths[idx];
-        if (paths.length - 2 == idx) {
+        if (paths.length - 2 === idx) {
             if (Object.keys(parent[path]).length === 0) {
                 delete parent[path];
             }

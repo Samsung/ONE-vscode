@@ -31,7 +31,7 @@ export class Metadata{
     public static register(context: vscode.ExtensionContext): void {
         const registrations = [
             vscode.commands.registerCommand('one.metadata.showMetadata', async () => {
-                if(vscode.workspace.workspaceFolders === undefined) return;
+                if(vscode.workspace.workspaceFolders === undefined) {return;}
                 const testUri: vscode.Uri = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri,"while_000.log"); // 절대경로
                 console.log(await Metadata.getFileInfo(testUri));
                 // await Metadata.getRelationInfo(testUri);
@@ -258,8 +258,8 @@ export class Metadata{
     public static async setMetadata(hash: string | undefined, value: object) {
         const workspaceroot=obtainWorkspaceRoot();
         if(hash){
-            const Uri = vscode.Uri.joinPath(vscode.Uri.file(workspaceroot), `.meta/hash_objects/${hash.substring(0, 2)}/${hash.substring(2)}.json`);
-            await vscode.workspace.fs.writeFile(Uri,Buffer.from(JSON.stringify(value, null, 4),'utf8'));  // TODO: JSON.stringify(value, null, 4) => 4space? or 2space?
+            const uri = vscode.Uri.joinPath(vscode.Uri.file(workspaceroot), `.meta/hash_objects/${hash.substring(0, 2)}/${hash.substring(2)}.json`);
+            await vscode.workspace.fs.writeFile(uri, Buffer.from(JSON.stringify(value, null, 4),'utf8'));
         }
     }
 
