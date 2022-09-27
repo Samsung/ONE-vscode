@@ -112,21 +112,128 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		this._onDidChangeContent.fire(responseModel);
   }
   
-  editJsonModel(message: any){
-	const oldModelData = this.modelData;
-	try{
-		let newModel: Circle.ModelT = JSON.parse(message.data); //예외 처리
-		this._model = newModel;
-		const newModelData = this.modelData;
-		this.notifyEdit(oldModelData, newModelData);
-		this.loadJson();
-	}catch{
-		Balloon.error("invalid model");
-	}
+	editJsonModel(message: any) {
+    try{
+			const oldModelData = this.modelData;
+	
+			let newModel = JSON.parse(message.data);
+			//여기부터 복사
+			// version
+			this._model.version = newModel.version;
+
+			// operatoreCodes
+			this._model.operatorCodes = newModel.operatorCodes.map((data: Circle.OperatorCodeT) => {
+				return Object.setPrototypeOf(data, Circle.OperatorCodeT.prototype);
+			});
+			
+			// subgraphs
+			this._model.subgraphs = newModel.subgraphs.map((data: Circle.SubGraphT) => {
+
+				//tensors
+				data.tensors = data.tensors.map((tensor: Circle.TensorT) => {
+					if (tensor.quantization) {
+						if (tensor.quantization.details) {
+							tensor.quantization.details = Object.setPrototypeOf(tensor.quantization?.details, Circle.CustomQuantizationT.prototype);
+						}
+						tensor.quantization = Object.setPrototypeOf(tensor.quantization, Circle.QuantizationParametersT.prototype);
+					}
+					// ToDo : sparsity
+					if(tensor.sparsity) {
+						if(tensor.sparsity.dimMetadata){
+							tensor.sparsity.dimMetadata = tensor.sparsity.dimMetadata.map((dimMeta: Circle.DimensionMetadataT)=>{
+								if(dimMeta.arraySegmentsType){
+									const sparseVectorClass = Object.entries(Types.SparseVector).find(element => {
+										return dimMeta.arraySegmentsType === parseInt(element[0]);
+									});
+									if (sparseVectorClass && sparseVectorClass[1]) {
+										dimMeta.arraySegments = Object.setPrototypeOf(dimMeta.arraySegments === null ? {} : dimMeta.arraySegments, sparseVectorClass[1].prototype);
+									} else {
+										dimMeta.arraySegments = null; //여기 삼항연산자에서 {}로 한 번 처리하는데 추가로 해줘야 해?
+									}
+								}
+								if(dimMeta.arrayIndicesType){
+									const sparseVectorClass = Object.entries(Types.SparseVector).find(element => {
+										return dimMeta.arrayIndicesType === parseInt(element[0]);
+									});
+									if (sparseVectorClass && sparseVectorClass[1]) {
+										dimMeta.arrayIndices = Object.setPrototypeOf(dimMeta.arrayIndices === null ? {} : dimMeta.arrayIndices, sparseVectorClass[1].prototype);
+									} else {
+										dimMeta.arrayIndices = null; 
+									}
+								}
+								return Object.setPrototypeOf(dimMeta, Circle.DimensionMetadataT.prototype);
+							});//end map dimMeta
+
+							Object.setPrototypeOf(tensor.sparsity.dimMetadata,Circle.DimensionMetadataT.prototype);
+						}//end if tensor.sparsity.dimMetadata
+
+						tensor.sparsity = Object.setPrototypeOf(tensor.sparsity, Circle.SparsityParametersT.prototype);
+					}//end if tensor.sparsity
+					
+					return Object.setPrototypeOf(tensor, Circle.TensorT.prototype);
+				});
+
+				//operators
+				data.operators = data.operators.map((operator: Circle.OperatorT) => {
+				
+					const optionsClass = Object.entries(Types.CodeTobuiltinOptions).find(element => {
+						return operator.builtinOptionsType === parseInt(element[0]);
+					});
+
+					if (optionsClass && optionsClass[1]) {
+						operator.builtinOptions = Object.setPrototypeOf(operator.builtinOptions === null ? {} : operator.builtinOptions, optionsClass[1].prototype);
+					} else {
+						operator.builtinOptions = null;
+					}
+
+					return Object.setPrototypeOf(operator, Circle.OperatorT.prototype);
+				});
+				
+				return Object.setPrototypeOf(data, Circle.SubGraphT.prototype);
+			});
+
+			// description
+			this._model.description = newModel.description;
+
+			// buffers
+			this._model.buffers = newModel.buffers.map((data: Circle.BufferT) => {
+				return Object.setPrototypeOf(data, Circle.BufferT.prototype);
+			});
+
+			// metadataBuffer
+			this._model.metadataBuffer = newModel.metadataBuffer;
+	
+			// metadata
+			this._model.metadata = newModel.metadata.map((data: Circle.MetadataT) => {
+				return Object.setPrototypeOf(data, Circle.MetadataT.prototype);
+			});
+	
+			// signatureDefs
+			this._model.signatureDefs = newModel.signatureDefs.map((data: Circle.SignatureDefT) => {
+				data.inputs = data.inputs.map((tensor: Circle.TensorMapT) => {
+					return Object.setPrototypeOf(tensor, Circle.TensorMapT.prototype);
+				});
+				data.outputs = data.outputs.map((tensor: Circle.TensorMapT) => {
+					return Object.setPrototypeOf(tensor, Circle.TensorMapT.prototype);
+				});
+				return Object.setPrototypeOf(data, Circle.SignatureDefT.prototype);
+			});
+			// 여기까지 복사 끝
+
+			const newModelData = this.modelData;
+			this.notifyEdit(oldModelData, newModelData);
+			
+		} catch (e) {
+        Balloon.error("invalid model");
+    }
   }
 
   loadJson(){
 	let jsonModel = JSON.stringify(this._model, null,2);
+		jsonModel.match(/\[[0-9,\s]*\]/gi)?.forEach(text => {
+			let replaced = text.replace(/,\s*/gi, ", ").replace(/\[\s*/gi, "[").replace(/\s*\]/gi, "]");
+			jsonModel = jsonModel.replace(text, replaced);
+	});
 	let responseJson: ResponseJson = {
 		command: 'loadJson',
 		data: jsonModel
@@ -135,14 +242,76 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
   }	
 
 	private guessExactType(n : any){
-		if(Number(n) === n && n % 1 === 0){
+		if(Number(n) % 1 === 0){
 			return "int";
 		}
-		else if(Number(n) === n && n % 1 !== 0){
+		else if(Number(n) % 1 !== 0){
 			return "float";
 		}
 	}
 
+	public sendEncodingData(message : any){
+		let fbb = flexbuffers.builder();
+		fbb.startMap();
+		for(const key in message.data){
+			fbb.addKey(key);
+			const val = message.data[key][0];
+			const valType = message.data[key][1];
+			if(valType === "boolean"){
+				if(val === "true" || val === true){
+					fbb.add(true);
+				}
+				else if(val === "false" || val === false){
+					fbb.add(false);
+				}
+				else{ 
+					Balloon.error("'boolean' type must be 'true' or 'false'.");
+					return;
+				} // true, false 오타 에러처리
+			}
+			else if(valType === "int"){
+				if(this.guessExactType(val) === 'float') {
+					Balloon.error("'int' type doesn't include decimal point.");
+					return;
+				} // 소수점 들어간거 에러처리
+				fbb.addInt(Number(val));
+			}
+			else{
+				fbb.add(String(val));
+			}
+		}
+		fbb.end();
+		const res = fbb.finish();
+		// ArrayBuffer -> Buffer -> Array 후 넣어줘야함.
+		const buf = Buffer.alloc(res.byteLength);
+		const view = new Uint8Array(res);
+		for (let i = 0; i < buf.length; ++i) {
+				buf[i] = view[i];
+		}
+		const data = Array.from(buf);
+
+		// //debug Code
+		// const debugbuffer = Buffer.from(data);
+		// // Buffer to ArrayBuffer
+		// const debugab = new ArrayBuffer(debugbuffer.length);
+		// const tmpview = new Uint8Array(debugab);
+		// for (let i = 0; i < debugbuffer.length; ++i) {
+		// 		tmpview[i] = debugbuffer[i];
+		// }
+		// // decodding flexbuffer
+		// const debugcustomObj : any = flexbuffers.toObject(debugab);	
+		// console.log(debugcustomObj);
+		// for(const debugkey in debugcustomObj){
+		// 	console.log(typeof(debugcustomObj[debugkey]));
+		// }
+		// // debug end
+			
+		let responseData:CustomInfoMessage = {
+			command: 'responseEncodingData',
+			data: data
+		};
+		this._onDidChangeContent.fire(responseData);
+	}
 
   public sendCustomType(message : any){
 		const msgData : any = message.data;
@@ -385,19 +554,17 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 						fbb.add(false);
 					}
 					else{ 
-						Balloon.error("'boolean' type must be 'true' or 'false'");
+						Balloon.error("'boolean' type must be 'true' or 'false'.");
 						return;
 					} // true, false 오타 에러처리
 				}
 				else if(valType === "int"){
 					if(this.guessExactType(val) === 'float') {
+						Balloon.error("'int' type doesn't include decimal point.");
 						return;
 					} // 소수점 들어간거 에러처리
 					fbb.addInt(Number(val));
 				}
-				// else if(valType === "float"){
-				// 	fbb.add(Number(val));
-				// }
 				else{
 					fbb.add(String(val));
 				}
