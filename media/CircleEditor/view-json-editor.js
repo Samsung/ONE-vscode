@@ -192,7 +192,7 @@ jsonEditor.Calculator = class {
             this._customOptionsButton = this.makeTag('div', 'button');
 
             this._bufferButton.innerText = 'buffer';
-            this._customOptionsButton.innerText = 'custom optioins';
+            this._customOptionsButton.innerText = 'custom options';
 
             buttonArea.appendChild(this._bufferButton);
             buttonArea.appendChild(this._customOptionsButton);
@@ -282,17 +282,17 @@ jsonEditor.Calculator = class {
         this._inputArea = this.makeTag('div', 'input-area');
         const convert = this.makeTag('div', 'convert-button');
         const clear = this.makeTag('div', 'clear-button');
-        const plus = this.makeTag('div', 'convert-button');
-        const minus = this.makeTag('div', 'convert-button');
+        const plus = this.makeTag('div', 'plus-button');
         const outputArea = this.makeTag('div', 'output-area');
         const outputTitle = this.makeTag('div', 'title');
         this._customOutput = this.makeTag('input', 'output');
+        this._customOutput.setAttribute('id', 'output');
+
         this._customOutput.setAttribute('readonly', 'true');
         outputTitle.innerText = 'output : ';
         convert.innerText = 'convert';
         clear.innerText = 'clear';
         plus.innerText = '+';
-        minus.innerText = '-';
 
         convert.addEventListener('click', () => {
             this.customOptionsConvert();
@@ -303,20 +303,14 @@ jsonEditor.Calculator = class {
         plus.addEventListener('click', () => {
             this._inputArea.appendChild(this.makeLine());
         });
-        minus.addEventListener('click', () => {
-            if(this._inputArea.childElementCount > 1){
-                this._inputArea.removeChild(this._inputArea.lastChild);
-            }
-        });
 
         this._inputArea.appendChild(this.makeLine());
         outputArea.appendChild(outputTitle);
         outputArea.appendChild(this._customOutput);
         expanderArea.appendChild(this._inputArea);
+        expanderArea.appendChild(plus);
         expanderArea.appendChild(convert);
         expanderArea.appendChild(clear);
-        expanderArea.appendChild(plus);
-        expanderArea.appendChild(minus);
         this._calculatorBox.appendChild(expanderArea);
         this._calculatorBox.appendChild(outputArea);
     }
@@ -328,6 +322,8 @@ jsonEditor.Calculator = class {
         const keyVal = this.makeTag('input', 'custom-input');
         const valueVal = this.makeTag('input', 'custom-input');
         const select = this.makeTag('select', 'select');
+        const minus = this.makeTag('div', 'minus-button');
+        minus.innerText = '-';
 
         for(const type of customType){
             const option = this._host.document.createElement('option');
@@ -337,6 +333,12 @@ jsonEditor.Calculator = class {
             select.appendChild(option);
         }
 
+        minus.addEventListener('click', () => {
+            if(this._inputArea.childElementCount > 1){
+                this._inputArea.removeChild(box);
+            }
+        });
+
         keyName.innerText = "key : ";
         valueName.innerText = "value : ";
 
@@ -345,6 +347,7 @@ jsonEditor.Calculator = class {
         box.appendChild(valueName);
         box.appendChild(valueVal);
         box.appendChild(select);
+        box.appendChild(minus);
 
         return box;
     }
