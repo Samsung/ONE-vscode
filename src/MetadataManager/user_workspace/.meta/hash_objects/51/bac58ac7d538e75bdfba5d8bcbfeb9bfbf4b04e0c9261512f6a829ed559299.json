@@ -1,14 +1,9 @@
 {
-    "while_000.circle" : {
-        "name" : "while_000.circle",
-        "file_extension" : "circle",
-        "create_time" : "생성 시각(date)",
-        "modified_time" : "수정 시각(date)",
-        "is_deleted" : "삭제 여부(boolean)",
-
-        "toolchain_version" : "사용된 툴체인 버전(string)",
-        "onecc_version" : "사용된 onecc 버전(string)",
-        "operations" : "총 op 개수, op 종류, op 종류별 개수(map)",
-        "cfg settings" : "cfg의 여러 설정값들(map)"
+    "while_000.circle": {
+        "name": "while_000.circle",
+        "file_extension": "circle",
+        "create_time": "2022-09-26T05:04:41.283Z",
+        "modified_time": "2022-09-26T05:04:41.283Z",
+        "is_deleted": false
     }
 }

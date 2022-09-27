@@ -131,6 +131,7 @@ export class MetadataEventManager {
 
 
   async changeEvent(uri:vscode.Uri): Promise<void> {
+    if(!Metadata.isValidFile(uri)) {return;}
     // case 1. [File] Contents change event
     const relativePath = vscode.workspace.asRelativePath(uri);
 
