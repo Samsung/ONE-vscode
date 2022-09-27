@@ -1,5 +1,7 @@
 var jsonEditor = jsonEditor || {};
 var vscode = vscode || {};
+var tensorType = tensorType || {};
+var customType = customType || {};
 
 jsonEditor.jsonEditor = class {
 
@@ -114,15 +116,15 @@ jsonEditor.Calculator = class {
     constructor(host) {
         this._host = host;
         this._elements = [];
+
+        this._editObject = {
+            
+        };
         
-        this._calculatorBox = host.document.createElement('div');
-        const calculatorNameBox = host.document.createElement('div');
-        const calculatorName = host.document.createElement('div');
-        this._toggle = host.document.createElement('div');
-        this._calculatorBox.className = 'calculator-box';
-        calculatorName.className = 'calculator-name';
-        this._toggle.className = 'toggle-button';
-        calculatorNameBox.className = 'calculator-name-box';
+        this._calculatorBox = this.makeTag('div', 'calculator-box');
+        const calculatorNameBox = this.makeTag('div', 'calculator-name-box');
+        const calculatorName = this.makeTag('div', 'calculator-name');
+        this._toggle = this.makeTag('div', 'toggle-button');
 
         this._calculatorBox.style.height = "27px";
         
@@ -143,41 +145,29 @@ jsonEditor.Calculator = class {
         if(this._toggle.innerText === '+') {
             this._toggle.innerText = '-';
 
-            this._calculatorBox.style.height = "110px";
-
             const editBox = this._host.document.getElementById('jsonEditor-content');
             editBox.style.height = 'calc(100% - 150px)';
 
-            this._input = this._host.document.createElement('input');
-            this._select = this._host.document.createElement('select');
-            this._convert = this._host.document.createElement('div');
-            this._output = this._host.document.createElement('div');
-            const inputBox = this._host.document.createElement('div');
-            inputBox.className = 'input-box';
-            this._input.className = 'input';
-            this._select.className = 'select';
-            this._convert.className = 'convert-button';
-            this._output.className = 'output';
-            this._convert.innerText = 'convert';
-            this._output.innerText = 'output : ';
+            const buttonArea = this.makeTag('div', 'button-area');
+            this._bufferButton = this.makeTag('div', 'button');
+            this._customOptionsButton = this.makeTag('div', 'button');
 
-            this._convert.addEventListener('click', () => {
-                this.convert();
+            this._bufferButton.innerText = 'buffer';
+            this._customOptionsButton.innerText = 'custom optioins';
+
+            buttonArea.appendChild(this._bufferButton);
+            buttonArea.appendChild(this._customOptionsButton);
+            this._calculatorBox.appendChild(buttonArea);
+            
+            this.buffer();
+
+            this._bufferButton.addEventListener('click', () => {
+                this.buffer();
             });
 
-            for(const type of tensorType){
-                const option = this._host.document.createElement('option');
-                option.setAttribute('value', type);
-                option.innerText = type.toLowerCase();
-
-                this._select.appendChild(option);
-            }
-
-            inputBox.appendChild(this._input);
-            inputBox.appendChild(this._select);
-            inputBox.appendChild(this._convert);
-            this._calculatorBox.appendChild(inputBox);
-            this._calculatorBox.appendChild(this._output);
+            this._customOptionsButton.addEventListener('click', () => {
+                this.customOptions();
+            });
         } else {
             this._toggle.innerText = '+';
 
@@ -191,8 +181,175 @@ jsonEditor.Calculator = class {
         }
     }
 
-    convert() {
-        this._output.innerText = 'output : ' + new jsonEditor.Converter(this._input.value, this._select.value).render();
+    buffer() {
+        while (this._elements[0].childElementCount > 2) {
+            this._elements[0].removeChild(this._elements[0].lastChild);
+        }
+        this._bufferButton.className = 'button-selected';
+        this._customOptionsButton.className = 'button';
+        this._calculatorBox.style.height = "120px";
+        this._input = this.makeTag('input', 'input');
+        this._select = this.makeTag('select', 'select');
+        const convert = this.makeTag('div', 'convert-button');
+        const clear = this.makeTag('div', 'clear-button');
+        this._output = this.makeTag('input', 'input');
+        const titleBox = this.makeTag('div', 'title-box');
+        const inputBox = this.makeTag('div', 'input-box');
+        const inputTitle = this.makeTag('div', 'title');
+        const outputTitle = this.makeTag('div', 'title');
+        const expanderArea = this.makeTag('div', 'expander-area');
+        convert.innerText = 'convert';
+        clear.innerText = 'clear';
+        inputTitle.innerText = 'input :';
+        outputTitle.innerText = 'output :';
+        titleBox.appendChild(inputTitle);
+        titleBox.appendChild(outputTitle);
+        inputBox.appendChild(this._input);
+        inputBox.appendChild(this._output);
+
+        this._output.setAttribute('readonly', 'true');
+
+        convert.addEventListener('click', () => {
+            this.bufferConvert();
+        });
+
+        clear.addEventListener('click', () => {
+            this.bufferClear();
+        });
+
+        for(const type of tensorType){
+            const option = this._host.document.createElement('option');
+            option.setAttribute('value', type);
+            option.innerText = type.toLowerCase();
+
+            this._select.appendChild(option);
+        }
+
+        expanderArea.appendChild(titleBox);
+        expanderArea.appendChild(inputBox);
+        expanderArea.appendChild(this._select);
+        expanderArea.appendChild(convert);
+        expanderArea.appendChild(clear);
+        this._calculatorBox.appendChild(expanderArea);
+    }
+
+    customOptions() {
+        while (this._elements[0].childElementCount > 2) {
+            this._elements[0].removeChild(this._elements[0].lastChild);
+        }
+        this._bufferButton.className = 'button';
+        this._customOptionsButton.className = 'button-selected';
+        const expanderArea = this.makeTag('div', 'expander-area');
+        this._inputArea = this.makeTag('div', 'input-area');
+        const convert = this.makeTag('div', 'convert-button');
+        const clear = this.makeTag('div', 'clear-button');
+        const plus = this.makeTag('div', 'convert-button');
+        const minus = this.makeTag('div', 'convert-button');
+        const outputArea = this.makeTag('div', 'output-area');
+        const outputTitle = this.makeTag('div', 'title');
+        this._customOutput = this.makeTag('input', 'output');
+        this._customOutput.setAttribute('readonly', 'true');
+        outputTitle.innerText = 'output : ';
+        convert.innerText = 'convert';
+        clear.innerText = 'clear';
+        plus.innerText = '+';
+        minus.innerText = '-';
+
+        convert.addEventListener('click', () => {
+            this.customOptionsConvert();
+        });
+        clear.addEventListener('click', () => {
+            this.customOptions();
+        });
+        plus.addEventListener('click', () => {
+            this._inputArea.appendChild(this.makeLine());
+        });
+        minus.addEventListener('click', () => {
+            if(this._inputArea.childElementCount > 1){
+                this._inputArea.removeChild(this._inputArea.lastChild);
+            }
+        });
+
+        this._inputArea.appendChild(this.makeLine());
+        outputArea.appendChild(outputTitle);
+        outputArea.appendChild(this._customOutput);
+        expanderArea.appendChild(this._inputArea);
+        expanderArea.appendChild(convert);
+        expanderArea.appendChild(clear);
+        expanderArea.appendChild(plus);
+        expanderArea.appendChild(minus);
+        this._calculatorBox.appendChild(expanderArea);
+        this._calculatorBox.appendChild(outputArea);
+    }
+
+    makeLine() {
+        const box = this.makeTag('div', 'box');
+        const keyName = this.makeTag('div', 'title');
+        const valueName = this.makeTag('div', 'title');
+        const keyVal = this.makeTag('input', 'custom-input');
+        const valueVal = this.makeTag('input', 'custom-input');
+        const select = this.makeTag('select', 'select');
+
+        for(const type of customType){
+            const option = this._host.document.createElement('option');
+            option.setAttribute('value', type);
+            option.innerText = type.toLowerCase();
+
+            select.appendChild(option);
+        }
+
+        keyName.innerText = "key : ";
+        valueName.innerText = "value : ";
+
+        box.appendChild(keyName);
+        box.appendChild(keyVal);
+        box.appendChild(valueName);
+        box.appendChild(valueVal);
+        box.appendChild(select);
+
+        return box;
+    }
+
+    bufferConvert() {
+        this._output.value = new jsonEditor.Converter(this._input.value, this._select.value).render();
+    }
+
+    customOptionsConvert() {
+        this._editObject = new Object;
+        for(const child of this._inputArea.childNodes){
+            const key = child.childNodes[1].value;
+            const value = child.childNodes[3].value;
+            const type = child.childNodes[4].value;
+            if(key && value){
+                this._editObject[key] = [value, type];
+            }
+            else{
+                vscode.postMessage({
+                    command: 'alert',
+                    text: 'FORMAT ERROR : Please enter commas and numbers only.'
+                });
+                return;
+            }
+        }
+
+        vscode.postMessage({
+            command: 'requestEncodingData',
+            data : this._editObject
+        });
+    }
+
+    bufferClear() {
+        this._input.value = '';
+        this._output.value = '';
+    }
+
+    makeTag(tag, className) {
+        const temp = this._host.document.createElement(tag);
+        if(className){
+            temp.className = className;
+        }
+
+        return temp;
     }
 
     render() {
