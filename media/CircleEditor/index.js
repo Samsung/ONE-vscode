@@ -160,6 +160,10 @@ host.BrowserHost = class {
                 case 'loadJson':
                     this._msgLoadJson(message);
                     break;
+                case 'responseEncodingData':
+                    this._msgGetBuffer(message);
+                    break;
+
             }
         });
 
@@ -579,6 +583,10 @@ host.BrowserHost = class {
     _msgLoadJson(message) {
         const data = message.data;
         this._view._jsonEditor._activate(data);
+    }
+
+    _msgGetBuffer(message) {
+        console.log(message);
     }
 };
 
