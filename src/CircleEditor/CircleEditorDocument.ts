@@ -251,7 +251,6 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 	}
 
 	public sendEncodingData(message : any){
-		console.log(message);
 		let fbb = flexbuffers.builder();
 		fbb.startMap();
 		for(const key in message.data){
@@ -308,7 +307,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		// // debug end
 			
 		let responseData:CustomInfoMessage = {
-			command: 'CustomType',
+			command: 'responseEncodingData',
 			data: data
 		};
 		this._onDidChangeContent.fire(responseData);
