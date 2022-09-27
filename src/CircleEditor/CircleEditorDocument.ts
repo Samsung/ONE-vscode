@@ -16,7 +16,6 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
   public get model(): Circle.ModelT { return this._model; }
   public get modelData(): Uint8Array {
     let fbb = new flatbuffers.Builder(1024);
-	this._model.pack(fbb);
 		Circle.Model.finishModelBuffer(fbb, this._model.pack(fbb));
     return fbb.asUint8Array();
   }
@@ -113,26 +112,87 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		this._onDidChangeContent.fire(responseModel);
   }
   
-  editJsonModel(message: any){
-	const oldModelData = this.modelData;
+	editJsonModel(message: any) {
     try{
-        let try1 = new Circle.ModelT();
-        
-        let newModel : any = new Circle.ModelT();
-        newModel = JSON.parse(message.data); //예외 처리
-        
-        this._model = newModel;
+			const oldModelData = this.modelData;
+	
+			let newModel = JSON.parse(message.data);
+			//여기부터 복사
+			// version
+			this._model.version = newModel.version;
 
-        let fbb = new flatbuffers.Builder(1024);
-        try1.pack(fbb);
-        Circle.Model.finishModelBuffer(fbb, try1.pack(fbb));
-        let tmp = fbb.asUint8Array();
+			// operatoreCodes
+			this._model.operatorCodes = newModel.operatorCodes.map((data: Circle.OperatorCodeT) => {
+				return Object.setPrototypeOf(data, Circle.OperatorCodeT.prototype);
+			});
+			
+			// subgraphs
+			this._model.subgraphs = newModel.subgraphs.map((data: Circle.SubGraphT) => {
 
-        const newModelData = tmp;
-        console.log(1);
-        this.notifyEdit(oldModelData, newModelData);
-        this.loadJson();
-    }catch{
+				//tensors
+				data.tensors = data.tensors.map((tensor: Circle.TensorT) => {
+					if (tensor.quantization) {
+						if (tensor.quantization.details) {
+							tensor.quantization.details = Object.setPrototypeOf(tensor.quantization?.details, Circle.CustomQuantizationT.prototype);
+						}
+						tensor.quantization = Object.setPrototypeOf(tensor.quantization, Circle.QuantizationParametersT.prototype);
+					}
+					// ToDo : sparsity
+					// tensor.sparsity = Object.setPrototypeOf
+					return Object.setPrototypeOf(tensor, Circle.TensorT.prototype);
+				});
+
+				//operators
+				data.operators = data.operators.map((operator: Circle.OperatorT) => {
+					// 빌트인옵션 어떻게 함??
+					const optionsClass = Object.entries(Types.CodeTobuiltinOptions).find(element => {
+						return operator.builtinOptionsType === parseInt(element[0]);
+					});
+
+					if (optionsClass && optionsClass[1]) {
+						operator.builtinOptions = Object.setPrototypeOf(operator.builtinOptions === null ? {} : operator.builtinOptions, optionsClass[1].prototype);
+					} else {
+						operator.builtinOptions = null;
+					}
+
+					return Object.setPrototypeOf(operator, Circle.OperatorT.prototype);
+				});
+				
+				return Object.setPrototypeOf(data, Circle.SubGraphT.prototype);
+			});
+
+			// description
+			this._model.description = newModel.description;
+
+			// buffers
+			this._model.buffers = newModel.buffers.map((data: Circle.BufferT) => {
+				return Object.setPrototypeOf(data, Circle.BufferT.prototype);
+			});
+
+			// metadataBuffer
+			this._model.metadataBuffer = newModel.metadataBuffer;
+	
+			// metadata
+			this._model.metadata = newModel.metadata.map((data: Circle.MetadataT) => {
+				return Object.setPrototypeOf(data, Circle.MetadataT.prototype);
+			});
+	
+			// signatureDefs
+			this._model.signatureDefs = newModel.signatureDefs.map((data: Circle.SignatureDefT) => {
+				data.inputs = data.inputs.map((tensor: Circle.TensorMapT) => {
+					return Object.setPrototypeOf(tensor, Circle.TensorMapT.prototype);
+				})
+				data.outputs = data.outputs.map((tensor: Circle.TensorMapT) => {
+					return Object.setPrototypeOf(tensor, Circle.TensorMapT.prototype);
+				});
+				return Object.setPrototypeOf(data, Circle.SignatureDefT.prototype);
+			});
+			// 여기까지 복사 끝
+
+			const newModelData = this.modelData;
+			this.notifyEdit(oldModelData, newModelData);
+			this.loadJson();
+		} catch (e) {
         Balloon.error("invalid model");
     }
   }
