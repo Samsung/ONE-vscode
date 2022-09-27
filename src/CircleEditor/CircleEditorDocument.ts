@@ -2,9 +2,10 @@ import * as vscode from "vscode";
 import { Disposable } from "./dispose";
 import * as Circle from './circle_schema_generated';
 import * as flatbuffers from 'flatbuffers';
-import { ResponseModel, RequestMessage, CustomInfoMessage, ResponseModelPath, ResponseFileRequest } from './MessageType';
+import { ResponseModel, RequestMessage, CustomInfoMessage, ResponseModelPath, ResponseFileRequest, ResponseJson } from './MessageType';
 import * as flexbuffers from 'flatbuffers/js/flexbuffers';
 import * as Types from './CircleType';
+import { Balloon } from "../Utils/Balloon";
 
 export class CircleEditorDocument extends Disposable implements vscode.CustomDocument{
   private readonly _uri: vscode.Uri;
@@ -38,7 +39,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
   // tell to webview
   public readonly _onDidChangeContent = this._register(new vscode.EventEmitter<{
 		readonly modelData: Uint8Array;
-  } | ResponseModel | CustomInfoMessage | ResponseModelPath | ResponseFileRequest>());
+  } | ResponseModel | CustomInfoMessage | ResponseModelPath | ResponseFileRequest | ResponseJson>());
   public readonly onDidChangeContent = this._onDidChangeContent.event;
 
   // tell to vscode
@@ -111,7 +112,29 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		this._onDidChangeContent.fire(responseModel);
   }
   
-	guessExactType(n : any){
+  editJsonModel(message: any){
+	const oldModelData = this.modelData;
+	try{
+		let newModel: Circle.ModelT = JSON.parse(message.data); //예외 처리
+		this._model = newModel;
+		const newModelData = this.modelData;
+		this.notifyEdit(oldModelData, newModelData);
+		this.loadJson();
+	}catch{
+		Balloon.error("invalid model");
+	}
+  }
+
+  loadJson(){
+	let jsonModel = JSON.stringify(this._model, null,2);
+	let responseJson: ResponseJson = {
+		command: 'loadJson',
+		data: jsonModel
+	};
+	this._onDidChangeContent.fire(responseJson);
+  }	
+
+	private guessExactType(n : any){
 		if(Number(n) === n && n % 1 === 0){
 			return "int";
 		}
@@ -121,7 +144,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 	}
 
 
-  sendCustomType(message : any){
+  public sendCustomType(message : any){
 		const msgData : any = message.data;
 		const subgraphIdx : number = msgData._subgraphIdx;
 		const operatorIdx : number = msgData._nodeIdx;
@@ -135,7 +158,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 						view[i] = buffer[i];
 				}
 		// decodding flexbuffer
-		const customObj : any = flexbuffers.toObject(ab);
+		const customObj : any = flexbuffers.toObject(ab);	
 		// 보내줄 형태로 다시 재저장
 		let resData : any = new Object;
 		resData._subgraphIdx = subgraphIdx;
@@ -155,7 +178,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		};
 
 		this._onDidChangeContent.fire(responseData);
-		return "success";
+		return;
 	}
 
   private loadModel(bytes: Uint8Array): Circle.ModelT {
@@ -222,14 +245,20 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		let bufferData : any = null;
 		name = data?._name;
 		subgraphIdx = Number(data._subgraphIdx);
-		if(typeof(name) === 'undefined' || typeof(subgraphIdx) === 'undefined') {return "error";}
+		if(!name||!subgraphIdx) {
+			Balloon.error("input data is undefined");
+			return;
+		}
 		const argument = data._arguments;
 		argname = argument._name;
 		tensorIdx = Number(argument._location);
 		const isChanged : boolean = argument._isChanged;
 		tensorType = argument._type._dataType;
 		tensorShape = argument._type._shape._dimensions;
-		if(typeof(argname) === 'undefined' || typeof(tensorIdx) === 'undefined' || typeof(tensorType) === 'undefined' || typeof(tensorShape) === 'undefined') {return "error";}
+		if(!argname || !tensorIdx || !tensorType || !tensorShape) {
+			Balloon.error("input data is undefined");
+			return;
+		}
 		if(argument._initializer !== null){
 			const ini = argument._initializer;
 			if(isChanged === true){
@@ -242,7 +271,10 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 
 		// 정보 갱신
 		const targetTensor = this._model?.subgraphs[subgraphIdx]?.tensors[tensorIdx];
-		if(typeof(targetTensor) === 'undefined') {return "Type error";}
+		if(!targetTensor) {
+			Balloon.error("model is undefined");
+			return;
+		}
 		targetTensor.name = argname;
 		//type은 enum참조   
 		let tensorTypeNum : any = Circle.TensorType[tensorType];
@@ -254,7 +286,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 			this._model.buffers[editBufferIdx].data = bufferData;
 		}
 		
-		return "success";
+		return;
 	}
 
 	private editAttribute(data:any){
@@ -262,7 +294,8 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		let operatorIdx : number = Number(data._nodeIdx);
 		let inputTypeName : string = data.name;
 		if(inputTypeName === undefined || subgraphIdx === undefined || operatorIdx === undefined){
-			return "input data error";
+			Balloon.error("input data is undefined");
+			return;
 		}
 		inputTypeName = inputTypeName.toUpperCase();
 		const inputTypeOptionName : any = inputTypeName + "OPTIONS";
@@ -280,10 +313,17 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 			}
 		}
 		const operator : any = this._model.subgraphs[subgraphIdx].operators[operatorIdx];
+		if(!operator){
+			Balloon.error("model is undefined");
+			return;
+		}
 		// builtin Case
 		// builtinOptionsType 수정
 		if(operatorCode !== 32){ // builtinOptions
-			if(operator.builtinOptions === null) {return "built_in_Options error";}
+			if(operator.builtinOptions === null) {
+				Balloon.error("built-in Options is null");
+				return;
+			}
 			operator.builtinOptionsType = Types.BuiltinOptionsType[inputTypeOptionName];
 			const key = data._attribute.name;
 			const value : any = data._attribute._value;
@@ -344,14 +384,19 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 					else if(val === "false" || val === false){
 						fbb.add(false);
 					}
-					else{ return "bool type Error";} // true, false 오타 에러처리
+					else{ 
+						Balloon.error("'boolean' type must be 'true' or 'false'");
+						return;
+					} // true, false 오타 에러처리
 				}
 				else if(valType === "int"){
-					if(this.guessExactType(val) === 'float') {return "int type Error";} // 소수점 들어간거 에러처리
+					if(this.guessExactType(val) === 'float') {
+						return;
+					} // 소수점 들어간거 에러처리
 					fbb.addInt(Number(val));
 				}
 				// else if(valType === "float"){
-				// 	fbb.addFloat(Number(val));
+				// 	fbb.add(Number(val));
 				// }
 				else{
 					fbb.add(String(val));
@@ -370,38 +415,6 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 			let res2 = Array.from(buf);
 			operator.customOptions = res2;
 		}
-		return "success";
-	}
-	private addTensor(data : any){
-		const subgraphIdx = data._subgraphIdx;
-		const tensorShape = data.data.shape;
-		const tensorType = data.data.type.toUpperCase();
-		const tensorTypeEnum : any = Circle.TensorType[tensorType];
-		const bufferData : any = data.data.buffer.data;
-		const tensorName : string = data.data.name;
-		const quantization : Circle.QuantizationParametersT | null = data.data.quantization;
-		const isVariable : boolean = data.data.isVariable;
-		const sparsity : Circle.SparsityParametersT | null = data.data.sparsity;
-		const shapeSignature : (number)[] = data.data.shapeSignature;
-
-		// 버퍼부터 추가
-		const buf = new Circle.BufferT;
-		buf.data = bufferData;
-		this._model.buffers.push(buf);
-		
-		const bufIdx = this._model.buffers.length-1;
-		
-		// Tensor 추가
-		const newTensor = new Circle.TensorT;
-		newTensor.shape = tensorShape;
-		newTensor.type = tensorTypeEnum;
-		newTensor.name = tensorName;
-		newTensor.quantization = quantization;
-		newTensor.isVariable = isVariable;
-		newTensor.sparsity = sparsity;
-		newTensor.shapeSignature = shapeSignature;
-		newTensor.buffer = bufIdx;
-		this._model.subgraphs[subgraphIdx].tensors.push(newTensor);
-		return "success";
+		return;
 	}
 }
