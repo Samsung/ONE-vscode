@@ -220,19 +220,26 @@ jsonEditor.Converter = class {
         
         this._arr = this._str.split(',');
         this._result = "";
-        if(this._type === 'bool') {
+        if(this._type.toLowerCase() === 'bool') {
             for (let i = 0; i< this._arr.length; i++) {
-                if(this._arr[i].trim().toLowerCase() === 'true') {
-                    this._arr[i] = 1;
+                if (this._arr[i].trim().toLowerCase() === 'true') {
+                    this._result += "1,";
+                    for (let j = 0; j < 3; j++) {
+                        this._result += "0,";
+                    }
                 } else if(this._arr[i].trim().toLowerCase() === 'false') {
-                    this._arr[i] = 0;
+                    for (let j = 0; j < 4; j++) {
+                        this._result += "0,";
+                    }
                 } else {
                     return this._result = "ERROR: Please enter in 'true' or 'false' format for boolean type.";
                 }
             }
+            this._result = this._result.slice(0,-1);
+            return this._result;
         }
         for (let i = 0; i < this._arr.length; i++) {
-            if(!/^[0-9\\.\-\\/]+$/.test(this._arr[i])) {return this._result = "ERROR: Please enter digits and decimal points only.";}
+            if (!/^[0-9\\.\-\\/]+$/.test(this._arr[i].trim())) { return this._result = "ERROR: Please enter digits and decimal points only."; }
             let v = this.calculate(parseFloat(this._arr[i]), this._typeIndex, this._bits[this._typeIndex]/8);
             if(!v) {
                 return this._result = "ERROR: Data does not match type.";
