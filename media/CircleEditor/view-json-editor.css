@@ -4,13 +4,14 @@
 
 .jsonEditor-applybutton { padding: 8px 8px 8px 32px; background-color: rgba(0, 0, 0, 0); border: 0px; text-decoration: none; font-size: 15px; color: #777777; opacity: 1.0; display: block; transition: 0.2s; position: absolute; top: 0; right: 50px; margin-left: 50px; user-select: none; -webkit-user-select: none; -moz-user-select: none; }
 .jsonEditor-applybutton:hover { color: #242424; }
-.jsonEditor-content { padding-left: 20px; padding-right: 20px; margin-bottom: 20px; overflow-y: auto; height: calc(100vh - 60px); resize: none;}
+.jsonEditor-content { padding-left: 20px; padding-right: 20px; margin-bottom: 20px; height: calc(100vh - 60px); outline: none;}
+.jsonEditor-content:focus { outline: none; }
+.vscode-dark .jsonEditor #jsonEditor-content { background-color: #2d2d2d; color: #dfdfdf; border-left: 1px solid #000; outline: none;}
 
-.vscode-dark .jsonEditor .jsonEditor-content { background-color: #2d2d2d; color: #dfdfdf; border-left: 1px solid #000; }
 .vscode-dark .jsonEditor { background-color: #2d2d2d; color: #dfdfdf; border-left: 1px solid #000; }
 .calculator-name { font-weight: bold; font-size: 11px; text-transform: uppercase; line-height: 1.25; margin-top: 16px; margin-bottom: 16px; display: block; user-select: none; -webkit-user-select: none; -moz-user-select: none; cursor: default; }
 .vscode-dark .calculator-name { color: #dfdfdf; }
-.calculator-box { padding-left: 20px; padding-right: 20px; margin-bottom: 20px; overflow-y: auto; height: 100px; }
+.calculator-box { padding-left: 20px; padding-right: 20px; margin-bottom: 0px; overflow-y: auto; height: 100px; }
 .calculator-name-box { display: flex; align-items: center; }
 .toggle-button { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; float: right; color: #aaa; cursor: pointer; user-select: none; -webkit-user-select: none; -moz-user-select: none; font-size: 11px; margin-left: 8px; font-weight: bold;}
 .toggle-button:hover { color: #000; }
