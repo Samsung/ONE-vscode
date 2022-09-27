@@ -57,7 +57,6 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 
 	makeEdit(message: RequestMessage) {
 		const oldModelData = this.modelData;
-
 		switch (message.type) {
 			case "attribute":
 				this.editAttribute(message.data);
@@ -229,6 +228,33 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
   }
 
   loadJson(){
+	// let jsonModel = "{\n";
+	// jsonModel += `\t"version": `;
+	// jsonModel += JSON.stringify(this._model.version, null, 2);
+	// jsonModel +=`,\n\t"operatorCodes": [`;
+	// jsonModel += JSON.stringify(this._model.operatorCodes, null, 2).slice(1,-1);
+	// jsonModel +="],";
+	// jsonModel += JSON.stringify(this._model.subgraphs,null,2).slice(1,-1);
+	// jsonModel +=",";
+	// jsonModel += JSON.stringify(this._model.description, null, 2).slice(1,-1);
+	// jsonModel +=",";
+
+	// let bufferArray = this._model.buffers;
+	// for(let i=0; i< bufferArray.length; i++){
+	// 	jsonModel += JSON.stringify(bufferArray[i]);
+	// 	jsonModel +=",\n";
+	// }
+	
+	// jsonModel += JSON.stringify(this._model.buffers).slice(1,-1);
+	// jsonModel += "\n";
+	// jsonModel += JSON.stringify(this._model.metadataBuffer, null, 2).slice(1,-1);
+	// jsonModel +="\n";
+	// jsonModel += JSON.stringify(this._model.metadata, null, 2).slice(1,-1);
+	// jsonModel +="\n";
+	// jsonModel += JSON.stringify(this._model.signatureDefs,null,2).slice(1,-1);
+	// jsonModel += "\n}";
+
+
 	let jsonModel = JSON.stringify(this._model, null,2);
 		jsonModel.match(/\[[0-9,\s]*\]/gi)?.forEach(text => {
 			let replaced = text.replace(/,\s*/gi, ", ").replace(/\[\s*/gi, "[").replace(/\s*\]/gi, "]");
@@ -414,7 +440,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		let bufferData : any = null;
 		name = data?._name;
 		subgraphIdx = Number(data._subgraphIdx);
-		if(!name||!subgraphIdx) {
+		if(name === undefined || subgraphIdx === undefined) {
 			Balloon.error("input data is undefined");
 			return;
 		}
@@ -424,7 +450,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		const isChanged : boolean = argument._isChanged;
 		tensorType = argument._type._dataType;
 		tensorShape = argument._type._shape._dimensions;
-		if(!argname || !tensorIdx || !tensorType || !tensorShape) {
+		if(argname === undefined || tensorIdx === undefined || tensorType === undefined || tensorShape === undefined) {
 			Balloon.error("input data is undefined");
 			return;
 		}
@@ -454,7 +480,6 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 			const editBufferIdx : number = targetTensor.buffer;
 			this._model.buffers[editBufferIdx].data = bufferData;
 		}
-		
 		return;
 	}
 
