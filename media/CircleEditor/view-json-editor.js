@@ -15,16 +15,25 @@ jsonEditor.jsonEditor = class {
                 this.close();
             }
         };
+        this._applyEditHandler = (e) => {
+            e.preventDefault();
+            const value = this._host.document.getElementById('jsonEditor-content');
+            const data = value.value;
+
+            vscode.postMessage({
+                command: 'updateJson',
+                data: data,
+            });
+        };
     }
 
     open() {
         this.close();
 
         // need to add a postMessage
-        // vscode.postMessage({
-        //     command: 'json'
-        // });
-        this._activate();
+        vscode.postMessage({
+            command: 'loadJson'
+        });
     }
 
     close() {
@@ -52,6 +61,10 @@ jsonEditor.jsonEditor = class {
                 closeButton.removeEventListener('click', this._closeJsonEditorHandler);
                 closeButton.style.color = '#f8f8f8';
             }
+            const applyButton = this._host.document.getElementById('jsonEditor-applybutton');
+            if (applyButton) {
+                applyButton.removeEventListener('click', this._applyEditHandler);
+            }
 
             this._host.document.removeEventListener('keydown', this._closeJsonEditorKeyDownHandler);
         }
@@ -71,10 +84,20 @@ jsonEditor.jsonEditor = class {
             closeButton.addEventListener('click', this._closeJsonEditorHandler);
             jsonEditorBox.appendChild(closeButton);
 
-            const content = this._host.document.createElement('div');
+            const applyButton = this._host.document.createElement('button');
+            applyButton.classList.add('jsonEditor-applybutton');
+            applyButton.setAttribute('id', 'jsonEditor-applybutton');
+            applyButton.addEventListener('click', this._applyEditHandler);
+            applyButton.innerHTML = 'apply';
+            jsonEditor.appendChild(applyButton);
+
+            const content = this._host.document.createElement('textarea');
+            content.style.height = 'calc(100% - 5px)';
+            content.style.width = 'calc(100% - 0px)';
             content.setAttribute('id', 'jsonEditor-content');
-            content.setAttribute('contenteditable', 'true');
-            jsonEditorBox.appendChild(content);
+
+            content.value = item;
+            jsonEditor.appendChild(content);
 
             jsonEditorBox.style.width = 'min(calc(100% * 0.6), 800px)';
             this._host.document.addEventListener('keydown', this._closeJsonEditorKeyDownHandler);
