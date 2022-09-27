@@ -212,7 +212,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 			this._model.signatureDefs = newModel.signatureDefs.map((data: Circle.SignatureDefT) => {
 				data.inputs = data.inputs.map((tensor: Circle.TensorMapT) => {
 					return Object.setPrototypeOf(tensor, Circle.TensorMapT.prototype);
-				})
+				});
 				data.outputs = data.outputs.map((tensor: Circle.TensorMapT) => {
 					return Object.setPrototypeOf(tensor, Circle.TensorMapT.prototype);
 				});
@@ -229,36 +229,11 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
   }
 
   loadJson(){
-	// let jsonModel = "{\n";
-	// jsonModel += `\t"version": `;
-	// jsonModel += JSON.stringify(this._model.version, null, 2);
-	// jsonModel +=`,\n\t"operatorCodes": [`;
-	// jsonModel += JSON.stringify(this._model.operatorCodes, null, 2).slice(1,-1);
-	// jsonModel +="],";
-	// jsonModel += JSON.stringify(this._model.subgraphs,null,2).slice(1,-1);
-	// jsonModel +=",";
-	// jsonModel += JSON.stringify(this._model.description, null, 2).slice(1,-1);
-	// jsonModel +=",";
-
-	// let bufferArray = this._model.buffers;
-	// for(let i=0; i< bufferArray.length; i++){
-	// 	jsonModel += JSON.stringify(bufferArray[i]);
-	// 	jsonModel +=",\n";
-	// }
-	
-	// jsonModel += JSON.stringify(this._model.buffers).slice(1,-1);
-	// jsonModel += "\n";
-	// jsonModel += JSON.stringify(this._model.metadataBuffer, null, 2).slice(1,-1);
-	// jsonModel +="\n";
-	// jsonModel += JSON.stringify(this._model.metadata, null, 2).slice(1,-1);
-	// jsonModel +="\n";
-	// jsonModel += JSON.stringify(this._model.signatureDefs,null,2).slice(1,-1);
-	// jsonModel += "\n}";
-
-
 	let jsonModel = JSON.stringify(this._model, null,2);
-	// jsonModel.replace("\[[0-9,\s]*\]", str=>)
-
+		jsonModel.match(/\[[0-9,\s]*\]/gi)?.forEach(text => {
+			let replaced = text.replace(/,\s*/gi, ", ").replace(/\[\s*/gi, "[").replace(/\s*\]/gi, "]");
+			jsonModel = jsonModel.replace(text, replaced);
+	});
 	let responseJson: ResponseJson = {
 		command: 'loadJson',
 		data: jsonModel
