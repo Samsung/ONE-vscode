@@ -282,7 +282,7 @@ sidebar.EditAttributesView = class{
         if(isCustom === true){
             const addAttribute = this._host.document.createElement('div');
             addAttribute.className = 'sidebar-view-item-value-add';
-            addAttribute.innerText = '+';
+            addAttribute.innerText = '+ new attributes';
             addAttribute.addEventListener('click', () => {
                 this.add();
             });

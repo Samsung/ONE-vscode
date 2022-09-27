@@ -151,14 +151,14 @@ host.BrowserHost = class {
                 case 'reload':
                     this._msgReload(message);
                     break;
-                /**
-                 * change a model when the file changed
-                 */
                 case 'edit':
                     this._msgLoadModel(message);
                     break;
                 case 'CustomType':
                     this._msgGetType(message);
+                    break;
+                case 'loadJson':
+                    this._msgLoadJson(message);
                     break;
             }
         });
@@ -179,6 +179,11 @@ host.BrowserHost = class {
                 {label: 'Find...', accelerator: 'CmdOrCtrl+F', click: () => this._view.find()});
             this._menu.add({});
         }
+        this._menu.add({
+            label: () => 'JSON Editor',
+            accelerator: 'Alt+J',
+            click: () => this._view.showJsonEditor()
+        });
         this._menu.add({
             label: () => this._view.options.attributes ? 'Hide Attributes' : 'Show Attributes',
             accelerator: 'CmdOrCtrl+D',
@@ -569,6 +574,11 @@ host.BrowserHost = class {
                 }
             }
         }
+    }
+
+    _msgLoadJson(message) {
+        const data = message.data;
+        this._view._jsonEditor._activate(data);
     }
 };
 
