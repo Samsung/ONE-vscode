@@ -34,6 +34,7 @@ import * as crypto from 'crypto';
 /* istanbul ignore next */
 export class MetadataEventManager {
   private fileWatcher = vscode.workspace.createFileSystemWatcher(`**/*`); // glob pattern
+  private pathToHashObj:any;
 
   public static didHideExtra: boolean = false;
 
@@ -60,50 +61,13 @@ export class MetadataEventManager {
     }
 
     const provider = new MetadataEventManager(workspaceRoot, context.extension.extensionKind);
-
-    // let timerId: NodeJS.Timeout | undefined=undefined;
-
-    // let uri = vscode.Uri.file("/home/pjt01/Workspace/Test_space/a.log") //string to vscode.Uri(type)
-    // let path = uri.fsPath; // file:///home/pjt01/Workspace/Test_space/a.log // vscode.Uri(type) to string 
-          // provider.fileWatcher.onDidCreate(async uri => {
-      //   console.log(uri); provider.refresh('Create'); // test code
-      //   // case 1. Contents change event (when uri already in pathToHash)
-      //   // case 2. Baseline event (when create file in file system or copy from external source)
-      //   // case 3. Rename or Move File (processing like case 1 or ignore)
-      //   // case 4. Generate Product from ONE (processing like case 1 or ignore)
-      //   if (uri.fsPath.endsWith('a.log')){
-      //     let path='a.log';
-      //     console.log(1);
-      //     let hash=await Metadata.contentHash(path);
-      //     console.log(hash);
-      //     let content=await Metadata.getMetadata(hash);
-      //     console.log(content);
-      //     content['b.log']="Test";
-      //     await Metadata.setMetadata(hash, content);
-      //   }
-      // }),
-      // vscode.workspace.onDidRenameFiles(uri => {
-      //   provider.refresh('Rename'); //test code
-
-      //   if(provider.isValidFile(uri['files'][0]['oldUri'].fsPath) && provider.isValidFile(uri['files'][0]['newUri'].fsPath)){
-      //   // case 1. file rename  > command event
-      //     console.log('Yes Rename');
-      //   }
-      //   else if(fs.statSync(uri['files'][0]['newUri'].fsPath).isDirectory()){
-      //   // case 2. Directory check > child(pathToHash) updated & command event
-      //     console.log('Directory  Rename');
-      //   }
-      //   else{
-      //   // case 3. ignore
-      //     console.log('No  Rename');
-      //   }
-      // }),
     let timerId:NodeJS.Timeout | undefined=undefined;
+
     let registrations = [
       provider.fileWatcher.onDidChange(async uri => {
         provider.refresh('Change'); // test code
         console.log('onDidChange  '+uri.fsPath);
-        if(workspaceRoot){ await provider.changeEvent(workspaceRoot.fsPath, uri.fsPath);}
+        if(workspaceRoot){ await provider.changeEvent(uri);}
       }),
       provider.fileWatcher.onDidDelete(async uri => { // To Semi Jeong
         // FIXME: declare PathToHash instance outside of the function (i.e. make instance member variable)
@@ -136,33 +100,21 @@ export class MetadataEventManager {
         provider.refresh('Create'); // test code
         console.log('onDidCreate  '+uri.fsPath);
         MetadataEventManager.createUri=uri;
-        if(fs.statSync(uri.fsPath).isDirectory()){
-          //provider.createDir(); (1) call search > listup files > while [case4]
-        }
-        else if(provider.isValidFile(uri.fsPath)){
-          //if(pathToHash()){await provider.changeEvent(workspaceRoot.fsPath, uri.fsPath  }
-          //else{}
-        }
-        
-
-        //if dir
-        // [case 5] > (1) call search > listup files > while [case4]
-        //else files
-        // validcheck(endswith)
-        // pathToHash search [case 1] > (1) call contentHash (2) change pathToHash (3) deactivate hash from pathToHash (4) insert hash from contentHash
-        // [case 4] > (1) call contentHash (2) getMetadata (3) compare to path(activate?) > Yes(ignore), No(Setup)
-        let temp=await vscode.workspace.findFiles('a.log/**');
-        console.log(temp);
-        timerId=setTimeout(()=>{MetadataEventManager.createUri=undefined; console.log('test  '+ MetadataEventManager.createUri);},0);
-        ////// case 1. [File] Contents change event (refer to pathToHash)
-        ////// case 2(ignore). [File] Move contents > Processing in Delete
-        ////// case 3(ignore). [Dir]  Move contents > Processing in Delete (reconginition Dir when Dir+File moved)
+        let relPath=vscode.workspace.asRelativePath(uri);
+        // case 1. [File] Contents change event (refer to pathToHash)
+        // case 2(ignore). [File] Move contents > Processing in Delete
+        // case 3(ignore). [Dir]  Move contents > Processing in Delete (reconginition Dir when Dir+File moved)
         // case 4. [File] Copy many files
         // case 5. [Dir]  Copy with files > Serch all the file in the Dir
-        // *if already exist, ignore the creation events.
-        // *always new path.
-        // *
         // case 4. [File] Generate Product from ONE (processing like case 1 or ignore)
+        if(fs.statSync(uri.fsPath).isDirectory()){
+          await provider.createDirEvent(uri);
+        }
+        else if(Metadata.isValidFile(uri)){
+          if(provider.pathToHashObj.getPathToHash(uri)&&workspaceRoot){await provider.changeEvent(uri);}
+          else{await provider.createFileEvent(uri);}
+        }
+        timerId=setTimeout(()=>{MetadataEventManager.createUri=undefined; console.log('test  '+ MetadataEventManager.createUri);},0);
       }),
     ];
 
@@ -170,21 +122,17 @@ export class MetadataEventManager {
   }
 
   constructor(private workspaceRoot: vscode.Uri | undefined, private _extensionKind: vscode.ExtensionKind) {
+    PathToHash.getInstance().then(data=>{this.pathToHashObj=data});
   }
 
   refresh(message: string): void {
     vscode.window.showInformationMessage(message);
   }
 
-  isValidFile(path: string): boolean{
-    let ends=['.pb','.onnx','.tflite','.circle','.cfg','.log'];
-    return ends.some((x)=>path.endsWith(x));
-  }
 
-  async changeEvent(root: string, path: string): Promise<void> {
+  async changeEvent(uri:vscode.Uri): Promise<void> {
     // case 1. [File] Contents change event
-    const relativePath = path.split(root+'/')[1];
-    const uri = vscode.Uri.file(path);
+    const relativePath = vscode.workspace.asRelativePath(uri);
     console.log(uri);
     console.log(1, relativePath);
 
@@ -204,7 +152,7 @@ export class MetadataEventManager {
     if(metadata[relativePath]) {  // TODO: change path to filename
         // step 4. If exists, deactivate (set deleted_time) that path.
         // FIXME: Do we need to deactivate it from pathToHash too? > If we deactivate pathToHash, if rename event came, we cannot specify what hash value the path is for.
-        metadata[relativePath]["deleted_time"] = new Date();
+        metadata[relativePath]["is_deleted"] = true;
         console.log(6, metadata);
         // await Metadata.setMetadata(beforehash, metadata);
     }
@@ -224,30 +172,89 @@ export class MetadataEventManager {
     console.log(9, await Metadata.getMetadata(afterhash));
     
     const afterMetadata: any = {};
-    const filename: any = path.split('/').pop();
-    const stats: any = await MetadataEventManager.getStats(afterhash);
+    const filename: any = relativePath.split('/').pop();
+    const stats: any = await MetadataEventManager.getStats(uri);
     console.log(stats);
 
-    afterMetadata[filename] = {};
-    afterMetadata[filename]["name"] = filename.split(".")[0];
-    afterMetadata[filename]["file_extension"] = filename.split(".")[1];
-    afterMetadata[filename]["create_time"] = stats.birthtime;
-    afterMetadata[filename]["modified_time"] = stats.mtime;
-    afterMetadata[filename]["deleted_time"] = "삭제 시각(date)";  // TODO: 빈문자열?
+    afterMetadata[relativePath] = {};
+    afterMetadata[relativePath]["name"] = filename;
+    afterMetadata[relativePath]["file_extension"] = filename.split(".")[1];
+    afterMetadata[relativePath]["create_time"] = stats.birthtime;
+    afterMetadata[relativePath]["modified_time"] = stats.mtime;
+    afterMetadata[relativePath]["is_deleted"] = false;
     await Metadata.setMetadata(afterhash, afterMetadata);
     
     console.log(11, await Metadata.getMetadata(afterhash));
     //afterMetadata[path]=data;
   }
-
-  public static getStats(hash:any) {
+  public static getStats(uri:vscode.Uri) {
     return new Promise(function (resolve, reject) {
-      fs.stat(vscode.Uri.file(obtainWorkspaceRoot()).fsPath + `/.meta/hash_objects/${hash.substring(0, 2)}/${hash.substring(2)}.json`, function (err, stats) {
+      fs.stat(uri.fsPath, function (err, stats) {
         if (err) {
           return reject(err);
         }
         return resolve(stats);
       });
     });
+  }
+
+  async createDirEvent(uri:vscode.Uri){
+    //(1) call search
+    let fileList=await vscode.workspace.findFiles('**'+uri.fsPath+'/*.{pb,log,onnx,tflite,circle,cfg}');
+    fileList.forEach((uri)=>{
+      this.createFileEvent(uri);
+    })
+  }
+
+  async createFileEvent(uri:vscode.Uri){
+    //(1) refer to getPathToHash
+    let relPath=vscode.workspace.asRelativePath(uri);
+
+    //(2) insert PathToHash
+    await this.pathToHashObj.addPath(uri);
+    let newHash=await this.pathToHashObj.getPathToHash(uri);
+
+    //(3) Hash로 getMetadata
+    let metadata=await Metadata.getMetadata(newHash);
+    //(4) Metadata Exist (searching with Hash)? (activate | deactivate) : copy format 
+    if(Object.keys(metadata).length !== 0){ // metadata exist
+      if(metadata[relPath]){
+        if (!metadata[relPath]["is_deleted"]) return; // path already activate. ignore this case
+        metadata[relPath]["is_deleted"]=false;  // path deactive > activate    
+      }
+      else{ // for copy format
+        const keyList=Object.keys(metadata);
+        const keyResult=keyList.filter(key=> !metadata[key]["is_deleted"]) // find activate. or last key of KeyList;
+
+        //data copy
+        let data=metadata[keyList[keyList.length-1]];
+        if(keyResult.length){ data=metadata[keyResult[0]]; }
+        else {data["is_deleted"]=false;}
+
+
+        //data update
+        const stats: any = await MetadataEventManager.getStats(uri);
+        data["name"]=uri.fsPath.split('/').pop();
+        data["file_extension"]=uri.fsPath.split('.').pop();
+        data["created_time"]=stats.birthtime;
+        data["modified_time"]=stats.mtime;
+
+        metadata[relPath]=data;
+      }
+    }
+    else{ // metadata doesn't exist : common file        
+      const splitPath=uri.fsPath.split('.');
+      const stats: any = await MetadataEventManager.getStats(uri);
+
+      metadata[relPath]={
+        "name":uri.fsPath.split('/').pop(),
+        "file_extension": uri.fsPath.split('.').pop(),
+        "created_time": stats.birthtime,
+        "modified_time": stats.mtime,
+        "is_deleted": false,
+      };
+    }
+    //(6) Metadata Generation
+    await Metadata.setMetadata(newHash,metadata);
   }
 }

@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as crypto from 'crypto';
+import { ConsoleReporter } from '@vscode/test-electron';
 
 export class PathToHash{
     private static instance: PathToHash;
@@ -83,19 +84,19 @@ export class PathToHash{
     public isFile(uri: vscode.Uri): boolean {
         const relativeFolderPath = vscode.workspace.asRelativePath(uri);
         console.log(`PathToHash::isFile():: relativeFolderPath=${relativeFolderPath}`);
-        const hash = this.getPathToHash(relativeFolderPath);
+        const hash = this.getPathToHash(uri);
         console.log(typeof(hash) === 'string')
         return typeof(hash) === 'string';
     }
 
     public exists(uri: vscode.Uri): boolean {
-        return this.getPathToHash(vscode.workspace.asRelativePath(uri)) !== undefined;
+        return this.getPathToHash(uri) !== undefined;
     }
 
     public getFilesUnderFolder(uri: vscode.Uri): vscode.Uri[] {
         const relativeFolderPath = vscode.workspace.asRelativePath(uri);
         console.log(`PathToHash::getFilesUnderFolder():: relativeFolderPath=${relativeFolderPath}`);
-        const folder = this.getPathToHash(relativeFolderPath);
+        const folder = this.getPathToHash(uri);
         const files: vscode.Uri[] = [];
         if (typeof (folder) === 'string') {
             // not a folder

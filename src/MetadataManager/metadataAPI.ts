@@ -1,4 +1,6 @@
 import * as vscode from 'vscode';
+import * as crypto from 'crypto';
+import * as fs from 'fs';
 import { obtainWorkspaceRoot } from '../Utils/Helpers';
 import { PathToHash } from './pathToHash';
 
@@ -22,7 +24,8 @@ interface Data{
     "is_deleted" : boolean
 }
 
-export class Metadata {
+
+export class Metadata{
     private _disposables: vscode.Disposable[] = [];
     constructor() { }
     public static register(context: vscode.ExtensionContext): void {
@@ -179,13 +182,13 @@ export class Metadata {
         const relationUri = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, ".meta/relation.json");
         const relationJSON: any = JSON.parse(Buffer.from(await vscode.workspace.fs.readFile(relationUri)).toString());
         
-        // 반환 객체 생성
+        // Return Object generation
         const relations: Relation = {
             "selected" :  "",
             "relationData" : []
         };
 
-        // 현재 노드 메타데이터 불러오기
+        // load metadata of target node
 
         const nowMetadata: any = await this.getMetadata(nowHash);
 
@@ -194,7 +197,7 @@ export class Metadata {
         relations.relationData.push({ "id": nowHash, "parent": relationJSON[nowHash].parent, "representIdx": 0, "dataList": this.getDataList(nowMetadata) });
        
     
-        // 부모 노드 찾기
+        // find parents node
         let tempHash: string = relationJSON[nowHash].parent;
         while (true) {
             
@@ -210,7 +213,7 @@ export class Metadata {
             }
         }
 
-        // 자식 노드 찾기
+        // find child node
         let tempHashs: string[] = relationJSON[nowHash].children;
         while (true) {
             let hashs: string[] = [];
@@ -237,15 +240,22 @@ export class Metadata {
     }
 
     //get all Metadata of same hash object by hash
+    //This function should be called after building PathToHash.
     public static async getMetadata(hash: string) {
         if (vscode.workspace.workspaceFolders !== undefined) {
-            const metaUri = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, `.meta/hash_objects/${hash.substring(0, 2)}/${hash.substring(2)}.json`);    
-            return JSON.parse(Buffer.from(await vscode.workspace.fs.readFile(metaUri)).toString());
+            const metaUri = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, `.meta/hash_objects/${hash.substring(0, 2)}/${hash.substring(2)}.json`);
+            if(!fs.existsSync(metaUri.fsPath)) {
+                await vscode.workspace.fs.writeFile(metaUri,Buffer.from(JSON.stringify({}, null, 4),'utf8'));
+                return {};
+            }
+            else {
+                return JSON.parse(Buffer.from(await vscode.workspace.fs.readFile(metaUri)).toString());
+            }
         }
     }
 
     //set all Metadata of same hash object by hash
-    public static async setMetadata(hash: string | undefined, value: object) { //.meta 기준 relative path [=== workspace assert 로직이 필요할 것 같다.]
+    public static async setMetadata(hash: string | undefined, value: object) {
         const workspaceroot=obtainWorkspaceRoot();
         if(hash){
             const Uri = vscode.Uri.joinPath(vscode.Uri.file(workspaceroot), `.meta/hash_objects/${hash.substring(0, 2)}/${hash.substring(2)}.json`);
@@ -266,12 +276,19 @@ export class Metadata {
                 "toolchain_version": element.toolchain_version,
                 "is_deleted":element.is_deleted
             };
-
             dataList.push(data);
         }
-
         return dataList;
     }
+    // public static d_getFilesUnderDir(path: string): string[] { // to Semi Jeong : is this function really needed?
+    //     if (Metadata.d_isDir(path)) {
+    //       // FIXME: what will be returned when we call?
+    //       return ['test/while_000.log', 'test/while_000 copy.log'];
+    //     }
+    //     return []; // 파일일 때
+    // }
+
+    //     return dataList;
 }
 
 
