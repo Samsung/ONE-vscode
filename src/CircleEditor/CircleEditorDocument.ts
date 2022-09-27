@@ -484,6 +484,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 	}
 
 	private editAttribute(data:any){
+		console.log(data);
 		let subgraphIdx : number = Number(data._subgraphIdx);
 		let operatorIdx : number = Number(data._nodeIdx);
 		let inputTypeName : string = data.name;
@@ -518,6 +519,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 				Balloon.error("built-in Options is null");
 				return;
 			}
+			
 			operator.builtinOptionsType = Types.BuiltinOptionsType[inputTypeOptionName];
 			const key = data._attribute.name;
 			const value : any = data._attribute._value;
@@ -525,7 +527,6 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 			// 해당 타입에 접근해서 enum 값을 뽑아와야한다.
 			
 			// 현재는 type변경 없다고 생각하고 구현
-			const upValue = value.toUpperCase();
 			let targetKey : any = null;
 			for(const obj in operator.builtinOptions){
 				let compKey : any = key;
@@ -538,14 +539,27 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 					targetKey = obj;
 				}
 			}
+
 			const circleTypeArr = Object.keys(Types._CircleType);
 			if(circleTypeArr.find(element => element === type ) !== undefined){
 				// Circle Type 참조
-				operator.builtinOptions[targetKey] = Types._CircleType[type][upValue];
+				operator.builtinOptions[targetKey] = Types._CircleType[type][value];
 			}
 			else{
 				// 보여주는 타입을 그대로 띄워줌
-				if(type !== "float"){
+				if(type === 'boolean'){
+					if(value === 'false'){
+						operator.builtinOptions[targetKey] = false;
+					}
+					else if(value === 'true'){
+						operator.builtinOptions[targetKey] = true;
+					}
+					else{
+						Balloon.error("'boolean' type must be 'true' or 'false'.");
+						return;
+					}
+				}
+				else if(type !== "float16" || type !== "float32" || type !== "float64" || type !== "float"){
 					operator.builtinOptions[targetKey] = Types._NormalType[type](value);
 				}
 				else{
