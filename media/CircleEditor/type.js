@@ -13,7 +13,7 @@ var typeName = {
     'bool':['true', 'false']
 };
 
-var tensorType = ['FLOAT32', 'FLOAT16', 'INT32', 'UINT8', 'INT64', 'STRING', 'BOOL', 'INT16', 'COMPLEX64', 'INT8', 'FLOAT64', 'COMPLEX128', 'UINT64', 'RESOURCE', 'VARIANT', 'UINT32'];
+var tensorType = ['FLOAT32', 'FLOAT16', 'INT32', 'UINT8', 'INT64', 'BOOL', 'INT16', 'INT8', 'FLOAT64', 'UINT64', 'UINT32'];
 
 var customType = ['int', 'float', 'boolean', 'string']
 

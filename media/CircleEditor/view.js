@@ -53,6 +53,7 @@ var flatbuffers = flatbuffers || require('./flatbuffers');
 var python = python || require('./python');
 var sidebar = sidebar || require('./view-sidebar');
 var grapher = grapher || require('./view-grapher');
+var jsonEditor = jsonEditor || require('./view-grapher');
 
 view.View = class {
     constructor(host, id) {
@@ -72,6 +73,7 @@ view.View = class {
                 this._selection = [];
                 this._selectionNodes = [];  // selection of view.Node
                 this._sidebar = new sidebar.Sidebar(this._host, id);
+                this._jsonEditor = new jsonEditor.jsonEditor(this._host, id);
                 this._searchText = '';
                 this._theme = undefined;
                 this._scrollToSelected = true;  // TODO add menu for this
@@ -1114,6 +1116,10 @@ view.View = class {
     }
 
     showModelProperties() {
+        if (this._jsonEditor) {
+            this._jsonEditor.close();
+        }
+
         if (this._model) {
             try {
                 const modelSidebar =
@@ -1136,7 +1142,19 @@ view.View = class {
         }
     }
 
+    showJsonEditor() {
+        if (this._sidebar) {
+            this._sidebar.close();
+        }
+
+        const jsonEditor = this._jsonEditor.open();
+    }
+
     showNodeProperties(node, input) {
+        if (this._jsonEditor) {
+            this._jsonEditor.close();
+        }
+
         if (node) {
             try {
                 const nodeSidebar = new sidebar.NodeSidebar(this._host, node);
@@ -1197,6 +1215,10 @@ view.View = class {
     }
 
     showDocumentation(type) {
+        if (this._jsonEditor) {
+            this._jsonEditor.close();
+        }
+        
         if (type && (type.description || type.inputs || type.outputs || type.attributes)) {
             if (type.nodes && type.nodes.length > 0) {
                 this.pushGraph(type);

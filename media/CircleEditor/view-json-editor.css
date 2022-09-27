@@ -1,0 +1,25 @@
+.jsonEditor { font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif; font-size: 12px; height: 100%; width: 0; position: fixed; transition: 0.2s; z-index: 1; top: 0; right: 0; background-color: #ececec; color: #242424; overflow: hidden; border-left: 1px solid #ccc; }
+.jsonEditor-closebutton { padding: 8px 8px 8px 32px; text-decoration: none; font-size: 25px; color: #777777; opacity: 1.0; display: block; transition: 0.2s; position: absolute; top: 0; right: 15px; margin-left: 50px; user-select: none; -webkit-user-select: none; -moz-user-select: none; }
+.jsonEditor-closebutton:hover { color: #242424; }
+
+.jsonEditor-applybutton { padding: 8px 8px 8px 32px; text-decoration: none; font-size: 25px; color: #777777; opacity: 1.0; display: block; transition: 0.2s; position: absolute; top: 0; right: 50px; margin-left: 50px; user-select: none; -webkit-user-select: none; -moz-user-select: none; }
+.jsonEditor-applybutton:hover { color: #242424; }
+.jsonEditor-content { padding-left: 20px; padding-right: 20px; margin-bottom: 20px; overflow-y: auto; height: calc(100vh - 60px); }
+
+.vscode-dark .jsonEditor { background-color: #2d2d2d; color: #dfdfdf; border-left: 1px solid #000; }
+.calculator-name { font-weight: bold; font-size: 11px; text-transform: uppercase; line-height: 1.25; margin-top: 16px; margin-bottom: 16px; display: block; user-select: none; -webkit-user-select: none; -moz-user-select: none; cursor: default; }
+.vscode-dark .calculator-name { color: #dfdfdf; }
+.calculator-box { padding-left: 20px; padding-right: 20px; margin-bottom: 20px; overflow-y: auto; height: calc(100vh - 60px); }
+.calculator-name-box { display: flex; align-items: center; }
+.toggle-button { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; float: right; color: #aaa; cursor: pointer; user-select: none; -webkit-user-select: none; -moz-user-select: none; font-size: 11px; margin-left: 8px; font-weight: bold;}
+.toggle-button:hover { color: #000; }
+.input { font-family: inherit; font-size: 11px; background-color: #fcfcfc; border: 0; overflow: auto; padding: 4px 6px 4px 6px; width: 60%; word-wrap: break-word; }
+.input:focus { outline: none; }
+.vscode-dark .input { background-color: #383838; border-color: #383838; color: #dfdfdf; }
+.select { font-family: inherit; font-size: 11px; background-color: #fcfcfc; border: 0; overflow: auto; padding: 3px 6px 4px 2px; width: 100px; margin-left: 8px;}
+.select:focus { outline: none; }
+.vscode-dark .select { background-color: #383838; border-color: #383838; color: #dfdfdf; }
+.convert-button { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; float: right; color: #aaa; cursor: pointer; user-select: none; -webkit-user-select: none; -moz-user-select: none; padding: 4px 6px 4px 6px; font-size: 9px; margin-right: 20px; margin-top: 2px; }
+.convert-button:hover { color: #000; }
+.output { font-family: inherit; font-size: 11px; background-color: #fcfcfc; border: 0; overflow: auto; padding: 4px 6px 4px 6px; width: 81%; word-wrap: break-word; margin-top: 8px;}
+.vscode-dark .output { background-color: #383838; border-color: #383838; color: #dfdfdf; }
