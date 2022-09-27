@@ -15,7 +15,7 @@ var typeName = {
 
 var tensorType = ['FLOAT32', 'FLOAT16', 'INT32', 'UINT8', 'INT64', 'BOOL', 'INT16', 'INT8', 'FLOAT64', 'UINT64', 'UINT32'];
 
-var customType = ['int', 'float', 'boolean', 'string']
+var customType = ['int', 'boolean', 'string']
 
 var builtinOperatorType = {
     'ADD': 0,
