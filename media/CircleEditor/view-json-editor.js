@@ -15,6 +15,7 @@ jsonEditor.jsonEditor = class {
                 this.close();
             }
         };
+
         this._applyEditHandler = (e) => {
             e.preventDefault();
             const value = this._host.document.getElementById('jsonEditor-content');
@@ -91,14 +92,9 @@ jsonEditor.jsonEditor = class {
             applyButton.addEventListener('click', this._applyEditHandler);
             applyButton.innerHTML = 'apply';
             jsonEditorBox.appendChild(applyButton);
-
-            const content = this._host.document.createElement('textarea');
-            content.style.height = 'calc(100% - 32px)';
-            content.style.width = 'calc(100% - 0px)';
-            content.setAttribute('id', 'jsonEditor-content');
-
-            content.value = item;
-            jsonEditorBox.appendChild(content);
+            
+            const content = new jsonEditor.content(this._host, item);
+            jsonEditorBox.appendChild(content.render());
 
             jsonEditorBox.style.width = 'min(calc(100% * 0.6), 800px)';
             this._host.document.addEventListener('keydown', this._closeJsonEditorKeyDownHandler);
@@ -107,6 +103,50 @@ jsonEditor.jsonEditor = class {
         if (container) {
             container.style.width = 'max(40vw, calc(100vw - 800px))';
         }
+    }
+};
+
+jsonEditor.content = class {
+    constructor(host, item) {
+        this._host = host;
+        this._item = item;
+        this._elements = [];
+
+        this._tabEvent = (value) => {
+            event.preventDefault();
+            if (event.keyCode === 9) {
+                const tab = '\t';
+                value.selection = this._host.document.selection.createRange();
+                value.selection.text = tab;
+                event.returnValue = false;
+            }
+        };
+
+        const content = this._host.document.createElement('textarea');
+        content.style.height = '95%';
+        content.style.width = 'calc(100% - 6px)';
+        content.setAttribute('id', 'jsonEditor-content');
+        content.style.resize = 'none';
+        content.value = item;
+
+        content.addEventListener('keydown', (e) => {
+            if (e.keyCode === 9) {
+                e.preventDefault();
+                const tab = '  ';
+                const value = e.target.value;
+                const start = e.target.selectionStart;
+                const end = e.target.selectionEnd;
+                e.target.value = value.substring(0, start) + tab + value.substring(end);
+                e.target.selectionEnd = start+tab.length;
+                return;
+            }
+        });
+
+        this._elements.push(content);
+    }
+
+    render() {
+        return this._elements[0];
     }
 };
 
@@ -124,7 +164,7 @@ jsonEditor.Calculator = class {
         this._toggle.className = 'toggle-button';
         calculatorNameBox.className = 'calculator-name-box';
 
-        this._calculatorBox.style.height = "27px";
+        this._calculatorBox.style.height = "5%";
         
         this._toggle.innerText = '+';
         calculatorName.innerText = 'Calculator';
@@ -143,10 +183,10 @@ jsonEditor.Calculator = class {
         if(this._toggle.innerText === '+') {
             this._toggle.innerText = '-';
 
-            this._calculatorBox.style.height = "110px";
+            this._calculatorBox.style.height = "12%";
 
             const editBox = this._host.document.getElementById('jsonEditor-content');
-            editBox.style.height = 'calc(100% - 150px)';
+            editBox.style.height = '88%';
 
             this._input = this._host.document.createElement('input');
             this._select = this._host.document.createElement('select');
@@ -182,9 +222,9 @@ jsonEditor.Calculator = class {
             this._toggle.innerText = '+';
 
             const editBox = this._host.document.getElementById('jsonEditor-content');
-            editBox.style.height = 'calc(100% - 32px)';
+            editBox.style.height = '95%';
 
-            this._calculatorBox.style.height = "27px";
+            this._calculatorBox.style.height = "5%";
             while (this._elements[0].childElementCount > 1) {
                 this._elements[0].removeChild(this._elements[0].lastChild);
             }
