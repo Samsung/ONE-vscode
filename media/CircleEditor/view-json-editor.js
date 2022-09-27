@@ -421,17 +421,17 @@ jsonEditor.Converter = class {
                 if (this._arr[i].trim().toLowerCase() === 'true') {
                     this._result += "1,";
                     for (let j = 0; j < 3; j++) {
-                        this._result += "0,";
+                        this._result += "0, ";
                     }
                 } else if (this._arr[i].trim().toLowerCase() === 'false') {
                     for (let j = 0; j < 4; j++) {
-                        this._result += "0,";
+                        this._result += "0, ";
                     }
                 } else {
                     return this._result = "ERROR: Please enter in 'true' or 'false' format for boolean type.";
                 }
             }
-            this._result = this._result.slice(0, -1);
+            this._result = this._result.slice(0, -2);
             return this._result;
         } else {
             for (let i = 0; i < this._arr.length; i++) {
@@ -441,11 +441,11 @@ jsonEditor.Converter = class {
                     return this._result = "ERROR: Data does not match type.";
                 } else {
                     for (let j = 0; j < v.byteLength; j++) {
-                        this._result += v.getUint8(j) + ",";
+                        this._result += v.getUint8(j) + ", ";
                     }
                 }
             }
-            this._result = this._result.slice(0, -1);
+            this._result = this._result.slice(0, -2);
             return this._result;
         }
     }
