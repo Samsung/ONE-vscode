@@ -16,7 +16,7 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
-		"viewsWelcome": [
+    "viewsWelcome": [
       {
         "view": "OneExplorerView",
         "contents": "Open folder which includes models and configuration files.\n[Open Folder](Command:workbench.action.files.openFolder)\nFollowing types of models will be displayed.\n- *.tflite, *pb and *.onnx\n- Intermediate and compiled models of backend(s).\n\nTo learn more about ONE-vscode extension usage [read our docs](https://github.com/Samsung/ONE-vscode/blob/main/docs/Tutorial.md)."
@@ -81,6 +81,16 @@
       {
         "viewType": "one.viewer.circle",
         "displayName": "Circle Viewer",
+        "selector": [
+          {
+            "filenamePattern": "*.circle"
+          }
+        ],
+        "priority": "default"
+      },
+      {
+        "viewType": "one.editor.circle",
+        "displayName": "Circle Editor",
         "selector": [
           {
             "filenamePattern": "*.circle"
@@ -363,7 +373,7 @@
     "pretest": "npm run compile && npm run lint && npm run lintjs && npm run lintcss && npm run linthtml",
     "lint": "eslint src --ext ts --max-warnings 0",
     "lintjs": "eslint media --ext js --max-warnings 0",
-    "lintcss": "stylelint media/**/*.css src/**/*.css -i media/CircleGraph/external/**/*.css",
+    "lintcss": "stylelint media/**/*.css src/**/*.css -i media/CircleEditor/external/**/*.css",
     "linthtml": "htmlhint media src",
     "unittest": "node ./out/Tests/runTest.js",
     "test": "npm run unittest",
@@ -405,7 +415,9 @@
     "@vscode/codicons": "^0.0.29",
     "@vscode/webview-ui-toolkit": "^0.9.3",
     "configparser": "^0.3.9",
+    "flatbuffers": "^2.0.7",
     "ini": "^2.0.0",
+    "update": "^0.7.4",
     "which": "^2.0.2"
   }
 }
