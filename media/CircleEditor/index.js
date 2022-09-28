@@ -586,7 +586,8 @@ host.BrowserHost = class {
     }
 
     _msgGetBuffer(message) {
-        console.log(message);
+        const output = this._document.getElementById('output');
+        output.value = message.data.join(', ');
     }
 };
 

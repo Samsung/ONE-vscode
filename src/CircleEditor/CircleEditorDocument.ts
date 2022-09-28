@@ -57,7 +57,6 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 
 	makeEdit(message: RequestMessage) {
 		const oldModelData = this.modelData;
-
 		switch (message.type) {
 			case "attribute":
 				this.editAttribute(message.data);
@@ -229,6 +228,33 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
   }
 
   loadJson(){
+	// let jsonModel = "{\n";
+	// jsonModel += `\t"version": `;
+	// jsonModel += JSON.stringify(this._model.version, null, 2);
+	// jsonModel +=`,\n\t"operatorCodes": [`;
+	// jsonModel += JSON.stringify(this._model.operatorCodes, null, 2).slice(1,-1);
+	// jsonModel +="],";
+	// jsonModel += JSON.stringify(this._model.subgraphs,null,2).slice(1,-1);
+	// jsonModel +=",";
+	// jsonModel += JSON.stringify(this._model.description, null, 2).slice(1,-1);
+	// jsonModel +=",";
+
+	// let bufferArray = this._model.buffers;
+	// for(let i=0; i< bufferArray.length; i++){
+	// 	jsonModel += JSON.stringify(bufferArray[i]);
+	// 	jsonModel +=",\n";
+	// }
+	
+	// jsonModel += JSON.stringify(this._model.buffers).slice(1,-1);
+	// jsonModel += "\n";
+	// jsonModel += JSON.stringify(this._model.metadataBuffer, null, 2).slice(1,-1);
+	// jsonModel +="\n";
+	// jsonModel += JSON.stringify(this._model.metadata, null, 2).slice(1,-1);
+	// jsonModel +="\n";
+	// jsonModel += JSON.stringify(this._model.signatureDefs,null,2).slice(1,-1);
+	// jsonModel += "\n}";
+
+
 	let jsonModel = JSON.stringify(this._model, null,2);
 		jsonModel.match(/\[[0-9,\s]*\]/gi)?.forEach(text => {
 			let replaced = text.replace(/,\s*/gi, ", ").replace(/\[\s*/gi, "[").replace(/\s*\]/gi, "]");
@@ -454,11 +480,11 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 			const editBufferIdx : number = targetTensor.buffer;
 			this._model.buffers[editBufferIdx].data = bufferData;
 		}
-		
 		return;
 	}
 
 	private editAttribute(data:any){
+		console.log(data);
 		let subgraphIdx : number = Number(data._subgraphIdx);
 		let operatorIdx : number = Number(data._nodeIdx);
 		let inputTypeName : string = data.name;
@@ -493,6 +519,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 				CircleException.inputException("built-in Options is null");
 				return;
 			}
+			
 			operator.builtinOptionsType = Types.BuiltinOptionsType[inputTypeOptionName];
 			const key = data._attribute.name;
 			const value : any = data._attribute._value;
@@ -500,7 +527,6 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 			// 해당 타입에 접근해서 enum 값을 뽑아와야한다.
 			
 			// 현재는 type변경 없다고 생각하고 구현
-			const upValue = value.toUpperCase();
 			let targetKey : any = null;
 			for(const obj in operator.builtinOptions){
 				let compKey : any = key;
@@ -513,14 +539,27 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 					targetKey = obj;
 				}
 			}
+
 			const circleTypeArr = Object.keys(Types._CircleType);
 			if(circleTypeArr.find(element => element === type ) !== undefined){
 				// Circle Type 참조
-				operator.builtinOptions[targetKey] = Types._CircleType[type][upValue];
+				operator.builtinOptions[targetKey] = Types._CircleType[type][value];
 			}
 			else{
 				// 보여주는 타입을 그대로 띄워줌
-				if(type !== "float"){
+				if(type === 'boolean'){
+					if(value === 'false'){
+						operator.builtinOptions[targetKey] = false;
+					}
+					else if(value === 'true'){
+						operator.builtinOptions[targetKey] = true;
+					}
+					else{
+						CircleException.inputException("'boolean' type must be 'true' or 'false'.");
+						return;
+					}
+				}
+				else if(type !== "float16" || type !== "float32" || type !== "float64" || type !== "float"){
 					operator.builtinOptions[targetKey] = Types._NormalType[type](value);
 				}
 				else{
