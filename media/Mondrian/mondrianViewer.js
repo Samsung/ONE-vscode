@@ -148,7 +148,7 @@ window.addEventListener('message', event => {
   }
 });
 
-segmentSelect.addEventListener('change', event => {
+segmentSelect.addEventListener('change', () => {
   let state = vscode.getState();
   state.viewer.activeSegment = parseInt(segmentSelect.value);
 

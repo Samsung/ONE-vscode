@@ -99,31 +99,31 @@ editor.Editor = class {
     });
 
     // change 'default' backend to current backend of combobox
-    this.document.getElementById('circle-be-def').addEventListener('click', (e) => {
+    this.document.getElementById('circle-be-def').addEventListener('click', () => {
       this.updateDefaultBackend();
       this.updateDocument();
     });
 
     // set backend by clicking 'Set' button
-    this.document.getElementById('set-be').addEventListener('click', (e) => {
+    this.document.getElementById('set-be').addEventListener('click', () => {
       this.updateSelectedBackend();
       this.updateDocument();
     });
 
     // clear backend by clicking 'Clear' button
-    this.document.getElementById('clear-be').addEventListener('click', (e) => {
+    this.document.getElementById('clear-be').addEventListener('click', () => {
       this.updateSelectedBackendCode(0);
       this.updateDocument();
     });
 
     // show graph view with identical node selection
-    this.document.getElementById('circle-graph').addEventListener('click', (e) => {
+    this.document.getElementById('circle-graph').addEventListener('click', () => {
       let names = this.getSelectionNames();
       vscode.postMessage({command: 'selectByGraph', selection: names});
     });
 
     // find operators with text
-    this.document.getElementById('find-node').addEventListener('input', (e) => {
+    this.document.getElementById('find-node').addEventListener('input', () => {
       this.findNodes();
     });
   }
