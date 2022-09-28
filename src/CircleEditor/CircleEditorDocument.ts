@@ -5,7 +5,7 @@ import * as flatbuffers from 'flatbuffers';
 import { ResponseModel, RequestMessage, CustomInfoMessage, ResponseModelPath, ResponseFileRequest, ResponseJson } from './MessageType';
 import * as flexbuffers from 'flatbuffers/js/flexbuffers';
 import * as Types from './CircleType';
-import { Balloon } from "../Utils/Balloon";
+import { CircleException } from "../Utils/CircleException";
 
 export class CircleEditorDocument extends Disposable implements vscode.CustomDocument{
   private readonly _uri: vscode.Uri;
@@ -16,7 +16,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
   public get model(): Circle.ModelT { return this._model; }
   public get modelData(): Uint8Array {
     let fbb = new flatbuffers.Builder(1024);
-		Circle.Model.finishModelBuffer(fbb, this._model.pack(fbb));
+	Circle.Model.finishModelBuffer(fbb, this._model.pack(fbb));
     return fbb.asUint8Array();
   }
 
@@ -224,7 +224,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 			this.notifyEdit(oldModelData, newModelData);
 			
 		} catch (e) {
-        Balloon.error("invalid model");
+        CircleException.inputException("invalid model");
     }
   }
 
@@ -265,13 +265,13 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 					fbb.add(false);
 				}
 				else{ 
-					Balloon.error("'boolean' type must be 'true' or 'false'.");
+					CircleException.inputException("'boolean' type must be 'true' or 'false'.");
 					return;
 				} // true, false 오타 에러처리
 			}
 			else if(valType === "int"){
 				if(this.guessExactType(val) === 'float') {
-					Balloon.error("'int' type doesn't include decimal point.");
+					CircleException.inputException("'int' type doesn't include decimal point.");
 					return;
 				} // 소수점 들어간거 에러처리
 				fbb.addInt(Number(val));
@@ -415,7 +415,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		name = data?._name;
 		subgraphIdx = Number(data._subgraphIdx);
 		if(!name||!subgraphIdx) {
-			Balloon.error("input data is undefined");
+			CircleException.inputException("input data is undefined");
 			return;
 		}
 		const argument = data._arguments;
@@ -425,7 +425,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		tensorType = argument._type._dataType;
 		tensorShape = argument._type._shape._dimensions;
 		if(!argname || !tensorIdx || !tensorType || !tensorShape) {
-			Balloon.error("input data is undefined");
+			CircleException.inputException("input data is undefined");
 			return;
 		}
 		if(argument._initializer !== null){
@@ -441,7 +441,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		// 정보 갱신
 		const targetTensor = this._model?.subgraphs[subgraphIdx]?.tensors[tensorIdx];
 		if(!targetTensor) {
-			Balloon.error("model is undefined");
+			CircleException.inputException("model is undefined");
 			return;
 		}
 		targetTensor.name = argname;
@@ -463,7 +463,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		let operatorIdx : number = Number(data._nodeIdx);
 		let inputTypeName : string = data.name;
 		if(inputTypeName === undefined || subgraphIdx === undefined || operatorIdx === undefined){
-			Balloon.error("input data is undefined");
+			CircleException.inputException("input data is undefined");
 			return;
 		}
 		inputTypeName = inputTypeName.toUpperCase();
@@ -483,14 +483,14 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		}
 		const operator : any = this._model.subgraphs[subgraphIdx].operators[operatorIdx];
 		if(!operator){
-			Balloon.error("model is undefined");
+			CircleException.inputException("model is undefined");
 			return;
 		}
 		// builtin Case
 		// builtinOptionsType 수정
 		if(operatorCode !== 32){ // builtinOptions
 			if(operator.builtinOptions === null) {
-				Balloon.error("built-in Options is null");
+				CircleException.inputException("built-in Options is null");
 				return;
 			}
 			operator.builtinOptionsType = Types.BuiltinOptionsType[inputTypeOptionName];
@@ -554,13 +554,13 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 						fbb.add(false);
 					}
 					else{ 
-						Balloon.error("'boolean' type must be 'true' or 'false'.");
+						CircleException.inputException("'boolean' type must be 'true' or 'false'.");
 						return;
 					} // true, false 오타 에러처리
 				}
 				else if(valType === "int"){
 					if(this.guessExactType(val) === 'float') {
-						Balloon.error("'int' type doesn't include decimal point.");
+						CircleException.inputException("'int' type doesn't include decimal point.");
 						return;
 					} // 소수점 들어간거 에러처리
 					fbb.addInt(Number(val));

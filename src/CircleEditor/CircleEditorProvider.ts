@@ -1,9 +1,9 @@
 import * as vscode from "vscode";
 import { CircleEditorDocument } from "./CircleEditorDocument";
 import { disposeAll } from "./dispose";
-import { Balloon } from "../Utils/Balloon";
 import * as fs from "fs";
 import { getNonce } from "../Utils/external/Nonce";
+import { CircleException } from "../Utils/CircleException";
 
 export enum MessageDefs {
   // message command
@@ -162,7 +162,7 @@ export class CircleEditorProvider
   private onMessage(document: CircleEditorDocument, message: any) {
     switch (message.command) {
       case MessageDefs.alert:
-        Balloon.error(message.text); //error msg
+        CircleException.inputException(message.text); //error msg
         return;
       case MessageDefs.request:
         this.handleRequest(document, message.url, message.encoding);
