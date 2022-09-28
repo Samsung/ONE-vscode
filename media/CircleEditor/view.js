@@ -784,6 +784,7 @@ view.View = class {
 
     _updateActiveGraph(graph) {
         this._sidebar.close();
+        this._jsonEditor.close();
         if (this._model) {
             const model = this._model;
             this.show('welcome spinner');

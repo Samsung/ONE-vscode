@@ -114,16 +114,6 @@ jsonEditor.content = class {
         this._item = item;
         this._elements = [];
 
-        this._tabEvent = (value) => {
-            event.preventDefault();
-            if (event.keyCode === 9) {
-                const tab = '\t';
-                value.selection = this._host.document.selection.createRange();
-                value.selection.text = tab;
-                event.returnValue = false;
-            }
-        };
-
         const content = this._host.document.createElement('textarea');
         content.style.height = '95%';
         content.style.width = 'calc(100% - 6px)';
