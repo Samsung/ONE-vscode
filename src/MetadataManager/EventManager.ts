@@ -31,10 +31,29 @@ import * as crypto from 'crypto';
 // import {OneStorage} from './OneStorage';
 
 
+export class Mutex{
+  private mutex = Promise.resolve();
+
+  lock(): PromiseLike<()=>void>{
+    let begin: (unlock:()=>void)=> void = unlock =>{};
+
+    this.mutex=this.mutex.then(()=>{
+      return new Promise(begin);
+    });
+
+    return new Promise(res=>{
+      begin=res;
+    })
+  }
+
+}
+
+
+
 /* istanbul ignore next */
 export class MetadataEventManager {
   private fileWatcher = vscode.workspace.createFileSystemWatcher(`**/*`); // glob pattern
-  private pathToHashObj:any;
+  private mutexLock:any;
 
   public static didHideExtra: boolean = false;
 
@@ -67,12 +86,14 @@ export class MetadataEventManager {
       provider.fileWatcher.onDidChange(async uri => {
         provider.refresh('Change'); // test code
         console.log('onDidChange  '+uri.fsPath);
+        const unlock=await provider.mutexLock.lock();
         if(workspaceRoot){ await provider.changeEvent(uri);}
+        unlock();
       }),
       provider.fileWatcher.onDidDelete(async uri => { // To Semi Jeong
         // FIXME: declare PathToHash instance outside of the function (i.e. make instance member variable)
         const instance = await PathToHash.getInstance();
-        if (!instance.exists(uri)) {return;}
+        if (!instance.exists(uri)) {{return;}}
         console.log('onDidDelete::', uri); provider.refresh('Delete'); // test code
         const path = uri.path;
         if (MetadataEventManager.createUri) {
@@ -80,41 +101,57 @@ export class MetadataEventManager {
           // The file/folder is moved/renamed
           if (fs.statSync(newUri.path).isDirectory()) {
             // case 4. [Dir]+Path       | move > search (delete & new)
+            const unlock=await provider.mutexLock.lock();
             await Metadata.moveMetadataUnderFolder(uri, newUri);
+            unlock();
           } else {
             // case 3. [File]+Path      | move (delete & new)
+            const unlock=await provider.mutexLock.lock();
             await Metadata.moveMetadata(uri, newUri);
+            unlock();
           }
         } else {
           const pathToHash = await PathToHash.getInstance();
           if (!pathToHash.isFile(uri)) {
             // case 2. [Dir]+undefined  | deactive > search
+            const unlock=await provider.mutexLock.lock();
             await Metadata.disableMetadataUnderFolder(uri);
+            unlock();
           } else {
             // case 1. [File]+undefined | deactive
+            const unlock=await provider.mutexLock.lock();
             await Metadata.disableMetadata(uri);
+            unlock();
           }
         }
       }),
       provider.fileWatcher.onDidCreate(async uri => {
         provider.refresh('Create'); // test code
         console.log('onDidCreate  '+uri.fsPath);
-        MetadataEventManager.createUri=uri;
-        let relPath=vscode.workspace.asRelativePath(uri);
-        // case 1. [File] Contents change event (refer to pathToHash)
-        // case 2(ignore). [File] Move contents > Processing in Delete
-        // case 3(ignore). [Dir]  Move contents > Processing in Delete (reconginition Dir when Dir+File moved)
-        // case 4. [File] Copy many files
-        // case 5. [Dir]  Copy with files > Serch all the file in the Dir
-        // case 4. [File] Generate Product from ONE (processing like case 1 or ignore)
+        MetadataEventManager.createUri=uri;       
+        timerId=setTimeout(()=>{MetadataEventManager.createUri=undefined; console.log('test  '+ MetadataEventManager.createUri);},0);
+
+        const instance= await PathToHash.getInstance();
         if(fs.statSync(uri.fsPath).isDirectory()){
+          // case 1. [Dir]  Copy with files > Serch all the file in the Dir
+          const unlock=await provider.mutexLock.lock();
           await provider.createDirEvent(uri);
+          unlock();
         }
         else if(Metadata.isValidFile(uri)){
-          if(provider.pathToHashObj.getPathToHash(uri)&&workspaceRoot){await provider.changeEvent(uri);}
-          else{await provider.createFileEvent(uri);}
+          if(instance.getPathToHash(uri)&&workspaceRoot){
+            //case 2. [File] Contents change event in Ubuntu terminal (refer to pathToHash)
+            const unlock=await provider.mutexLock.lock();
+            await provider.changeEvent(uri);
+            unlock();
+          }
+        else{
+          // case 3. [File] File generation event
+          const unlock=await provider.mutexLock.lock();
+          await provider.createFileEvent(uri);
+          unlock();
         }
-        timerId=setTimeout(()=>{MetadataEventManager.createUri=undefined; console.log('test  '+ MetadataEventManager.createUri);},0);
+        }
       }),
     ];
 
@@ -122,7 +159,7 @@ export class MetadataEventManager {
   }
 
   constructor(private workspaceRoot: vscode.Uri | undefined, private _extensionKind: vscode.ExtensionKind) {
-    PathToHash.getInstance().then(data=>{this.pathToHashObj=data;});
+    this.mutexLock=new Mutex();
   }
 
   refresh(message: string): void {
@@ -163,10 +200,12 @@ export class MetadataEventManager {
 
     metadata[relativePath] = {};
     metadata[relativePath]["name"] = filename;
+
     metadata[relativePath]["fileExtension"] = filename.split(".").at(-1);
     metadata[relativePath]["createTime"] = stats.birthtime;
     metadata[relativePath]["modifiedTime"] = stats.mtime;
     metadata[relativePath]["isDeleted"] = false;
+
     await Metadata.setMetadata(afterhash, metadata);    
   }
   
@@ -192,16 +231,18 @@ export class MetadataEventManager {
   async createFileEvent(uri:vscode.Uri){
     //(1) refer to getPathToHash
     let relPath=vscode.workspace.asRelativePath(uri);
+    const instance=await PathToHash.getInstance();
 
     //(2) insert PathToHash
-    await this.pathToHashObj.addPath(uri);
-    let newHash=await this.pathToHashObj.getPathToHash(uri);
+    await instance.addPath(uri);
+    let newHash=await instance.getPathToHash(uri);
 
     //(3) Hash로 getMetadata
     let metadata=await Metadata.getMetadata(newHash);
     //(4) Metadata Exist (searching with Hash)? (activate | deactivate) : copy format 
     if(Object.keys(metadata).length !== 0){ // metadata exist
       if(metadata[relPath]){
+
         if (!metadata[relPath]["isDeleted"]) {return;} // path already activate. ignore this case
         metadata[relPath]["isDeleted"]=false;  // path deactive > activate    
       }
@@ -210,6 +251,7 @@ export class MetadataEventManager {
         const keyResult=keyList.filter(key=> !metadata[key]["isDeleted"]); // find activate. or last key of KeyList;
 
         //data copy
+
         let data=metadata[keyList[keyList.length-1]];
         if(keyResult.length){ data=metadata[keyResult[0]]; }
         else {data["isDeleted"]=false;}
@@ -239,5 +281,6 @@ export class MetadataEventManager {
     }
     //(6) Metadata Generation
     await Metadata.setMetadata(newHash,metadata);
+    // Todo. [File] Generate Product from ONE (processing like case 1 or ignore)
   }
 }

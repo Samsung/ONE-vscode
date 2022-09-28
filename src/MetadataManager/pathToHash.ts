@@ -297,6 +297,4 @@ export class PathToHash{
             delete parent[path];
         }
     }
-
-    
 }

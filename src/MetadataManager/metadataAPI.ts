@@ -295,15 +295,6 @@ export class Metadata{
         }
         return dataList;
     }
-    // public static d_getFilesUnderDir(path: string): string[] { // to Semi Jeong : is this function really needed?
-    //     if (Metadata.d_isDir(path)) {
-    //       // FIXME: what will be returned when we call?
-    //       return ['test/while_000.log', 'test/while_000 copy.log'];
-    //     }
-    //     return []; // 파일일 때
-    // }
-
-    //     return dataList;
 }
 
 
