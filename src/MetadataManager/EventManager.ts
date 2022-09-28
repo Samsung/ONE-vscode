@@ -143,7 +143,7 @@ export class MetadataEventManager {
     //(2) deactivate changed hash object
     let metadata: any = await Metadata.getMetadata(beforehash);
     if(Object.keys(metadata).length !== 0 && metadata[relativePath]) {
-        metadata[relativePath]["is_deleted"] = true;
+        metadata[relativePath]["isDeleted"] = true;
         await Metadata.setMetadata(beforehash, metadata);
     }
 
@@ -163,10 +163,10 @@ export class MetadataEventManager {
 
     metadata[relativePath] = {};
     metadata[relativePath]["name"] = filename;
-    metadata[relativePath]["file_extension"] = filename.split(".").at(-1);
-    metadata[relativePath]["create_time"] = stats.birthtime;
-    metadata[relativePath]["modified_time"] = stats.mtime;
-    metadata[relativePath]["is_deleted"] = false;
+    metadata[relativePath]["fileExtension"] = filename.split(".").at(-1);
+    metadata[relativePath]["createTime"] = stats.birthtime;
+    metadata[relativePath]["modifiedTime"] = stats.mtime;
+    metadata[relativePath]["isDeleted"] = false;
     await Metadata.setMetadata(afterhash, metadata);    
   }
   
@@ -202,25 +202,25 @@ export class MetadataEventManager {
     //(4) Metadata Exist (searching with Hash)? (activate | deactivate) : copy format 
     if(Object.keys(metadata).length !== 0){ // metadata exist
       if(metadata[relPath]){
-        if (!metadata[relPath]["is_deleted"]) {return;} // path already activate. ignore this case
-        metadata[relPath]["is_deleted"]=false;  // path deactive > activate    
+        if (!metadata[relPath]["isDeleted"]) {return;} // path already activate. ignore this case
+        metadata[relPath]["isDeleted"]=false;  // path deactive > activate    
       }
       else{ // for copy format
         const keyList=Object.keys(metadata);
-        const keyResult=keyList.filter(key=> !metadata[key]["is_deleted"]); // find activate. or last key of KeyList;
+        const keyResult=keyList.filter(key=> !metadata[key]["isDeleted"]); // find activate. or last key of KeyList;
 
         //data copy
         let data=metadata[keyList[keyList.length-1]];
         if(keyResult.length){ data=metadata[keyResult[0]]; }
-        else {data["is_deleted"]=false;}
+        else {data["isDeleted"]=false;}
 
 
         //data update
         const stats: any = await MetadataEventManager.getStats(uri);
         data["name"]=uri.fsPath.split('/').pop();
-        data["file_extension"]=uri.fsPath.split('.').pop();
-        data["created_time"]=stats.birthtime;
-        data["modified_time"]=stats.mtime;
+        data["fileExtension"]=uri.fsPath.split('.').pop();
+        data["createdTime"]=stats.birthtime;
+        data["modifiedTime"]=stats.mtime;
 
         metadata[relPath]=data;
       }
@@ -231,10 +231,10 @@ export class MetadataEventManager {
 
       metadata[relPath]={
         "name":uri.fsPath.split('/').pop(),
-        "file_extension": uri.fsPath.split('.').pop(),
-        "created_time": stats.birthtime,
-        "modified_time": stats.mtime,
-        "is_deleted": false,
+        "fileExtension": uri.fsPath.split('.').pop(),
+        "createdTime": stats.birthtime,
+        "modifiedTime": stats.mtime,
+        "isDeleted": false,
       };
     }
     //(6) Metadata Generation

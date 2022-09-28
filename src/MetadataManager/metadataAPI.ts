@@ -1,5 +1,20 @@
+/*
+ * Copyright (c) 2022 Samsung Electronics Co., Ltd. All Rights Reserved
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import * as vscode from 'vscode';
-import * as crypto from 'crypto';
 import * as fs from 'fs';
 import { obtainWorkspaceRoot } from '../Utils/Helpers';
 import { PathToHash } from './pathToHash';
@@ -19,9 +34,9 @@ interface Node{
 interface Data{
     "path": string,
     "name": string,
-    "onecc_version"?: string,
-    "toolchain_version"?: string,
-    "is_deleted" : boolean
+    "oneccVersion"?: string,
+    "toolchainVersion"?: string,
+    "isDeleted" : boolean
 }
 
 
@@ -81,7 +96,7 @@ export class Metadata{
         const data = metadata[relativePath];
         if(data) {
             // step 4. If exists, deactivate (set 'is_deleted') that path.
-            metadata[relativePath]["is_deleted"] = true;
+            metadata[relativePath]["isDeleted"] = true;
             await Metadata.setMetadata(hash, metadata);
 
             // step 5. Update pathToHash
@@ -272,9 +287,9 @@ export class Metadata{
             const data: Data = {
                 "path": keys[i],
                 "name": element.name,
-                "onecc_version": element.onecc_version,
-                "toolchain_version": element.toolchain_version,
-                "is_deleted":element.is_deleted
+                "oneccVersion": element.oneccVersion,
+                "toolchainVersion": element.toolchainVersion,
+                "isDeleted":element.isDeleted
             };
             dataList.push(data);
         }
