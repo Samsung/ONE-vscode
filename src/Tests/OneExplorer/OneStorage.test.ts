@@ -193,7 +193,7 @@ input_path=${modelName}
       });
     });
 
-    suite('#getCfgs()', function() {
+    suite('#getCfgsObjs()', function() {
       test('A tflite file with a cfg', function() {
         const configName = 'model.cfg';
         const modelName = 'model.tflite';
@@ -216,19 +216,19 @@ input_path=${modelName}
           assert.isDefined(OneStorage.getCfgObj(configPath));
           assert.strictEqual(OneStorage.getCfgObj(configPath)?.getBaseModelsExists[0].path, modelPath);
         }
+      });
 
-        test('NEG: Returns null for not existing path', function() {
-          { assert.isUndefined(OneStorage.getCfgObj('invalid/path')); }
-        });
+      test('NEG: Returns nothing for not existing path', function() {
+        { assert.notExists(OneStorage.getCfgObj('invalid/path')); }
+      });
 
-        test('NEG: Returns null for non-cfg files', function() {
-          const modelName = 'model.circle';
+      test('NEG: Returns nothing for non-cfg files', function() {
+        const modelName = 'model.circle';
 
-          testBuilder.writeFileSync(modelName, '', 'workspace');
+        testBuilder.writeFileSync(modelName, '', 'workspace');
 
-          const modelPath = testBuilder.getPath(modelName, 'workspace');
-          { assert.isNull(OneStorage.getCfgs(modelPath)); }
-        });
+        const modelPath = testBuilder.getPath(modelName, 'workspace');
+        { assert.notExists(OneStorage.getCfgObj(modelPath)); }
       });
     });
 
