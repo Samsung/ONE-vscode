@@ -75,12 +75,15 @@ function calc(str, type) {
             } else if(arr[i].trim().toLowerCase() === 'false') {
                 arr[i] = 0;
             } else {
-                return "ERROR: Please enter in 'true' or 'false' format for boolean type."
+                return "ERROR: Please enter in 'true' or 'false' format for boolean type.";
             }
         }
     }
     for (let i = 0; i < arr.length; i++) {
-        if(!/^\d+$/.test(arr[i])) {return "ERROR: Please enter digits and decimal points only.";}
+        if (!/^[0-9.-]+$/.test(arr[i].replace(/\s/g, ''))) {
+            console.log(arr[i]);
+            return "ERROR: Please enter digits and decimal points only.";
+        }
         let v = calculate(parseFloat(arr[i]), typeIndex, bits[typeIndex]/8);
         if(!v) {
             return "ERROR: Data does not match type.";
