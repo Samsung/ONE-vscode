@@ -79,7 +79,7 @@ export class MetadataEventManager {
       }
     }
 
-    const provider = new MetadataEventManager(workspaceRoot, context.extension.extensionKind);
+    const provider = new MetadataEventManager();
     let timerId:NodeJS.Timeout | undefined=undefined;
 
     let registrations = [
@@ -158,7 +158,7 @@ export class MetadataEventManager {
     registrations.forEach(disposable => context.subscriptions.push(disposable));
   }
 
-  constructor(private workspaceRoot: vscode.Uri | undefined, private _extensionKind: vscode.ExtensionKind) {
+  constructor() {
     this.mutexLock=new Mutex();
   }
 
@@ -268,7 +268,7 @@ export class MetadataEventManager {
       }
     }
     else{ // metadata doesn't exist : common file        
-      const splitPath=uri.fsPath.split('.');
+      // const splitPath=uri.fsPath.split('.');
       const stats: any = await MetadataEventManager.getStats(uri);
 
       metadata[relPath]={

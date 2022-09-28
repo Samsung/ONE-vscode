@@ -41,7 +41,7 @@ interface Data{
 
 
 export class Metadata{
-    private _disposables: vscode.Disposable[] = [];
+    // private _disposables: vscode.Disposable[] = [];
     constructor() { }
     public static register(context: vscode.ExtensionContext): void {
         const registrations = [
@@ -166,7 +166,7 @@ export class Metadata{
         console.log(`moveMetadataUnderFolder():`, fromUri, toUri);
         const pathToHash = await PathToHash.getInstance();
         const relativeToPath = vscode.workspace.asRelativePath(toUri);
-        const relativeFromPath = vscode.workspace.asRelativePath(fromUri);
+        // const relativeFromPath = vscode.workspace.asRelativePath(fromUri);
         const files = await vscode.workspace.findFiles(`${relativeToPath}/**/*`);
         for(let file of files) {
             const fileToPath = file.path;
