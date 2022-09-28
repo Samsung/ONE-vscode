@@ -148,7 +148,13 @@ export const _NormalType: any = {
 	"uint16" : Number,
 	"uint32" : Number,
 	"uint64" : Number,
-};
+  "int32[]" : Int32Array,
+  "int16[]" : Int16Array,
+  "uint32[]" : Uint32Array,
+  "uint16[]" : Uint16Array,
+  "float32[]" : Float32Array,
+  "float64[]" : Float64Array
+ };
 
 export const _FindAttribute: any = {
 	"CONV2DOPTIONS" : Circle.Conv2DOptionsT,
