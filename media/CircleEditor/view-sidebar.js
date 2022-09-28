@@ -282,7 +282,7 @@ sidebar.EditAttributesView = class{
         if(isCustom === true){
             const addAttribute = this._host.document.createElement('div');
             addAttribute.className = 'sidebar-view-item-value-add';
-            addAttribute.innerText = '+ new attributes';
+            addAttribute.innerText = '+ New Attributes';
             addAttribute.addEventListener('click', () => {
                 this.add();
             });
@@ -1405,7 +1405,7 @@ sidebar.ArgumentView = class {
         const name = this._argument.name.split('\n');
         const nameValue = this._element.childNodes[2].lastChild.value;
         name[0] = nameValue;
-        this._editObject._arguments._name = name[0] + '\n' + name[1];
+        this._editObject._arguments._name = name[0];
 
         if (this._isCustom === true) {
             const input = this._host.document.getElementById(this._title + this._index);
