@@ -15,17 +15,17 @@
  */
 
 import {Command} from '../Backend/Command';
-import {Job} from '../Job/Job';
+import {JobType} from '../Job/Job';
 import {JobCommand} from '../Job/JobCommand';
 
 class JobPrerequisites extends JobCommand {
-  jobType: Job.Type;
+  jobType: JobType;
   name: string;
   valid: boolean;
 
   constructor(cmd: Command) {
     super(cmd);
-    this.jobType = Job.Type.tPrerequisites;
+    this.jobType = JobType.tPrerequisites;
     this.name = 'prerequisites';
     this.valid = true;
   }
