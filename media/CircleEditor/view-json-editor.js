@@ -412,7 +412,7 @@ jsonEditor.Converter = class {
         if (this._type.toLowerCase() === 'bool') {
             for (let i = 0; i < this._arr.length; i++) {
                 if (this._arr[i].trim().toLowerCase() === 'true') {
-                    this._result += "1,";
+                    this._result += "1, ";
                     for (let j = 0; j < 3; j++) {
                         this._result += "0, ";
                     }
