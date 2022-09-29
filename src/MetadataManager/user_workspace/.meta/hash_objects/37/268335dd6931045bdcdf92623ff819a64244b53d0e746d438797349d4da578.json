@@ -1,9 +1,9 @@
 {
     "test_onnx.log": {
         "name": "test_onnx.log",
-        "file_extension": "log",
-        "create_time": "2022-09-26T05:04:41.283Z",
-        "modified_time": "2022-09-26T05:04:41.283Z",
-        "is_deleted": false
+        "file-extension": "log",
+        "create-time": "2022-09-29T00:26:05.031Z",
+        "modified-time": "2022-09-29T00:26:05.031Z",
+        "is-deleted": false
     }
 }

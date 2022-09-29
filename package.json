@@ -101,11 +101,6 @@
     ],
     "commands": [
       {
-        "command": "one.metadata.showMetadata",
-        "title": "hello test",
-        "category": "ONE"
-      },
-      {
         "command": "one.explorer.refresh",
         "title": "Refresh",
         "category": "ONE",

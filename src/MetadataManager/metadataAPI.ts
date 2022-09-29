@@ -21,42 +21,27 @@ import { PathToHash } from './pathToHash';
 
 interface Relation{
     "selected": string,
-    "relationData": Node[]
+    "relation-data": Node[]
 }
 
 interface Node{
     "id": string,
     "parent": string,
-    "representIdx": number,
-    "dataList": Data[]
+    "represent-idx": number,
+    "data-list": Data[]
 }
 
 interface Data{
     "path": string,
     "name": string,
-    "oneccVersion"?: string,
-    "toolchainVersion"?: string,
-    "isDeleted" : boolean
+    "onecc-version"?: string,
+    "toolchain-version"?: string,
+    "is-deleted" : boolean
 }
 
 
 export class Metadata{
-    // private _disposables: vscode.Disposable[] = [];
     constructor() { }
-    public static register(context: vscode.ExtensionContext): void {
-        const registrations = [
-            vscode.commands.registerCommand('one.metadata.showMetadata', async () => {
-                if(vscode.workspace.workspaceFolders === undefined) {return;}
-                const testUri: vscode.Uri = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri,"while_000.log"); // 절대경로
-                console.log(await Metadata.getFileInfo(testUri));
-                // await Metadata.getRelationInfo(testUri);
-            })
-        ];
-
-        registrations.forEach(disposable => {
-            context.subscriptions.push(disposable);
-        });
-    }
 
     public static async getFileHash(uri: vscode.Uri) {
         const instance = await PathToHash.getInstance();
@@ -102,7 +87,7 @@ export class Metadata{
         const data = metadata[relativePath];
         if(data) {
             // step 4. If exists, deactivate (set 'is_deleted') that path.
-            metadata[relativePath]["isDeleted"] = true;
+            metadata[relativePath]["is-deleted"] = true;
             await Metadata.setMetadata(hash, metadata);
 
             // step 5. Update pathToHash
@@ -125,6 +110,7 @@ export class Metadata{
         }
     }
 
+
     public static async moveMetadata(input:{[key:string]:any}) {
 
         const oldUri=input["oldUri"];
@@ -141,7 +127,6 @@ export class Metadata{
         } else if(!Metadata.isValidFile(oldUri) || !Metadata.isValidFile(newUri)) {
             return;
         }
-        console.log(`moveMetadata:: old: ${oldRelativePath}, new: ${newRelativePath}`);
 
         // 1. Get hash from pathToHash
         const pathToHash = await PathToHash.getInstance();
@@ -175,6 +160,7 @@ export class Metadata{
     /**
      * Move metadata of the files and folders under the fromUri folder to the toUri folder
      */
+
     public static async moveMetadataUnderFolder(input:{[key:string]:any}) {
         const fromUri=input["fromUri"];
         const toUri=input["toUri"]
@@ -187,7 +173,6 @@ export class Metadata{
         for(let file of files) {
             const fileToPath = file.path;
             const fileFromUri = vscode.Uri.joinPath(fromUri, fileToPath.substring(fileToPath.lastIndexOf(toUri.path) + toUri.path.length));
-            // console.log('moveMetadataUnderFolder:: fileFromPath=', fileFromUri);
             if (!pathToHash.isFile(fileFromUri)) {
                 await Metadata.moveMetadataUnderFolder({"fromUri":fileFromUri, "toUri":file});
             } else if (Metadata.isValidFile(file)) {
@@ -216,7 +201,7 @@ export class Metadata{
         // Return Object generation
         const relations: Relation = {
             "selected" :  "",
-            "relationData" : []
+            "relation-data" : []
         };
 
         // load metadata of target node
@@ -225,7 +210,7 @@ export class Metadata{
 
         relations.selected = nowHash;
 
-        relations.relationData.push({ "id": nowHash, "parent": relationJSON[nowHash].parent, "representIdx": 0, "dataList": this.getDataList(nowMetadata) });
+        relations["relation-data"].push({ "id": nowHash, "parent": relationJSON[nowHash].parent, "represent-idx": 0, "data-list": this.getDataList(nowMetadata) });
        
     
         // find parents node
@@ -239,7 +224,7 @@ export class Metadata{
 
                 const tempMetadata: any = await this.getMetadata(tempHash);
                 
-                relations.relationData.push({ "id": tempHash, "parent": relationJSON[tempHash].parent, "representIdx": 0, "dataList": this.getDataList(tempMetadata) });
+                relations["relation-data"].push({ "id": tempHash, "parent": relationJSON[tempHash].parent, "represent-idx": 0, "data-list": this.getDataList(tempMetadata) });
                 tempHash = relationJSON[tempHash].parent;
             }
         }
@@ -256,7 +241,7 @@ export class Metadata{
                 for (let i = 0; i < tempHashs.length; i++){
                     const tempMetadata: any = await this.getMetadata(tempHashs[i]);
                     
-                    relations.relationData.push({ "id": tempHashs[i], "parent": relationJSON[tempHashs[i]].parent, "representIdx": 0, "dataList": this.getDataList(tempMetadata) });
+                    relations["relation-data"].push({ "id": tempHashs[i], "parent": relationJSON[tempHashs[i]].parent, "represent-idx": 0, "data-list": this.getDataList(tempMetadata) });
                     hashs = [...relationJSON[tempHashs[i]].children];
                 }
                 
@@ -264,7 +249,6 @@ export class Metadata{
             }
         }
 
-        console.log(relations);
         
         return relations;
 
@@ -304,14 +288,25 @@ export class Metadata{
             const data: Data = {
                 "path": keys[i],
                 "name": element.name,
-                "oneccVersion": element.oneccVersion,
-                "toolchainVersion": element.toolchainVersion,
-                "isDeleted":element.isDeleted
+                "onecc-version": element["onecc-version"],
+                "toolchain-version": element["toolchain-version"],
+                "is-deleted":element["is-deleted"]
             };
             dataList.push(data);
         }
         return dataList;
     }
+    
+    public static getStats(uri:vscode.Uri) {
+        return new Promise(function (resolve, reject) {
+          fs.stat(uri.fsPath, function (err, stats) {
+            if (err) {
+              return reject(err);
+            }
+            return resolve(stats);
+          });
+        });
+      }
 }
 
 

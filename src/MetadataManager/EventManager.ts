@@ -120,6 +120,7 @@ export class MetadataEventManager {
 
     let registrations = [
       provider.fileWatcher.onDidChange(async uri => {
+
         // provider.refresh('Change');
         // console.log('onDidChange  '+uri.fsPath);
         if(workspaceRoot){ provider.eventBuffer.setEvent(provider.changeEvent,{"uri":uri});}
@@ -154,9 +155,10 @@ export class MetadataEventManager {
         }
       }),
       provider.fileWatcher.onDidCreate(async uri => {
+
         // provider.refresh('Create'); // test code
         // console.log('onDidCreate  '+uri.fsPath);
-        MetadataEventManager.createUri=uri;       
+        MetadataEventManager.createUri=uri;     
 
         const instance= await PathToHash.getInstance();
         if(fs.statSync(uri.fsPath).isDirectory()){
@@ -198,7 +200,7 @@ export class MetadataEventManager {
     //(2) deactivate changed hash object
     let metadata: any = await Metadata.getMetadata(beforehash);
     if(Object.keys(metadata).length !== 0 && metadata[relativePath]) {
-        metadata[relativePath]["isDeleted"] = true;
+        metadata[relativePath]["is-deleted"] = true;
         await Metadata.setMetadata(beforehash, metadata);
     }
 
@@ -222,7 +224,7 @@ export class MetadataEventManager {
 
     const relativePath = vscode.workspace.asRelativePath(uri);
     const filename: any = relativePath.split('/').pop();
-    const stats: any = await MetadataEventManager.getStats(uri);
+    const stats: any = await Metadata.getStats(uri);
 
     metadata[relativePath] = {};
     metadata[relativePath]["name"] = filename;
@@ -232,17 +234,6 @@ export class MetadataEventManager {
     metadata[relativePath]["is-deleted"] = false;
 
     return metadata;
-  }
-  
-  public static getStats(uri:vscode.Uri) {
-    return new Promise(function (resolve, reject) {
-      fs.stat(uri.fsPath, function (err, stats) {
-        if (err) {
-          return reject(err);
-        }
-        return resolve(stats);
-      });
-    });
   }
 
   async createDirEvent(input:{[key:string]:any}){
@@ -283,11 +274,12 @@ export class MetadataEventManager {
         //data copy
         let data=JSON.parse(JSON.stringify(metadata[keyList[keyList.length-1]]));
         if(keyResult.length){data=JSON.parse(JSON.stringify(metadata[keyResult[0]]));}
+
         else {data["is-deleted"]=false;}
 
 
         //data update
-        const stats: any = await MetadataEventManager.getStats(uri);
+        const stats: any = await Metadata.getStats(uri);
         data["name"]=uri.fsPath.split('/').pop();
         data["file-extension"]=uri.fsPath.split('.').pop();
         data["created-time"]=stats.birthtime;
@@ -297,7 +289,8 @@ export class MetadataEventManager {
       }
     }
     else{ // metadata doesn't exist : common file        
-      const stats: any = await MetadataEventManager.getStats(uri);
+      const stats: any = await Metadata.getStats(uri);
+
 
       metadata[relPath]={
         "name":uri.fsPath.split('/').pop(),

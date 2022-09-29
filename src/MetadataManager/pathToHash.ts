@@ -18,7 +18,6 @@ import * as vscode from 'vscode';
 import * as crypto from 'crypto';
 import fs from 'fs';
 import {Metadata} from './metadataAPI';
-import {MetadataEventManager} from './EventManager';
 
 export class PathToHash{
     private static _instance: PathToHash;
@@ -50,7 +49,7 @@ export class PathToHash{
             const type: number = array[1];
             
             if (type === 1) {
-                tempPathToHash[name] = await this.generateHash(vscode.Uri.joinPath(uri,"/"+name));
+                tempPathToHash[name] = await PathToHash.generateHash(vscode.Uri.joinPath(uri,"/"+name));
             } else if (type === 2 && name !== '.meta') {
                 const result = await this.getSubPathToHash(vscode.Uri.joinPath(uri, "/" + name));
                 tempPathToHash[name] = result;
@@ -68,7 +67,7 @@ export class PathToHash{
             const type: number = array[1];
             
             if (type === 1) {
-                subPathToHash[name] = await this.generateHash(vscode.Uri.joinPath(uri, "/" + name));
+                subPathToHash[name] = await PathToHash.generateHash(vscode.Uri.joinPath(uri, "/" + name));
             } else if (type === 2) {
                 subPathToHash[name] = await this.getSubPathToHash(vscode.Uri.joinPath(uri, "/" + name));
             }
@@ -135,7 +134,7 @@ export class PathToHash{
             if(vscode.workspace.workspaceFolders === undefined) {
                 return;
             }
-            const stats: any = await MetadataEventManager.getStats(vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, path));
+            const stats: any = await Metadata.getStats(vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, path));
             metadata[path] = {};
             metadata[path]["name"] = filename;
             metadata[path]["file-extension"] = filename.split(".")[1];
@@ -160,8 +159,8 @@ export class PathToHash{
                 let metadata = JSON.parse(Buffer.from(await vscode.workspace.fs.readFile(hashUri)).toString());
                 const hash = array[0] + hashFile[0].split('.')[0];
                 for(const key in metadata){
-                    if(!metadata[key].isDeleted && flattenpathToHash[key] !== hash){
-                        metadata[key].isDeleted = true;
+                    if(!metadata[key]["is-deleted"] && flattenpathToHash[key] !== hash){
+                        metadata[key]["is-deleted"] = true;
                     }
                 }
                 Metadata.setMetadata(hash, metadata);
@@ -187,7 +186,7 @@ export class PathToHash{
     }
 
 
-    private async generateHash(uri: vscode.Uri) {    
+    public static async generateHash(uri: vscode.Uri) {    
         // TODO: Error handling    
         return  crypto.createHash('sha256').update(Buffer.from(await vscode.workspace.fs.readFile(uri)).toString()).digest('hex');
     }
@@ -219,7 +218,7 @@ export class PathToHash{
     public async addPath(uri: vscode.Uri) {
         const path = vscode.workspace.asRelativePath(uri);
         const paths = path.split('/');
-        let content: any = await this.generateHash(uri);
+        let content: any = await PathToHash.generateHash(uri);
         let obj = this._map;
         let idx = 0;
         for (let path = paths[idx]; idx < paths.length - 1; path = paths[++idx]) {

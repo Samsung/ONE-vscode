@@ -26,7 +26,6 @@ import {OneTreeDataProvider} from './OneExplorer/OneExplorer';
 import {PartEditorProvider} from './PartEditor/PartEditor';
 import {PartGraphSelPanel} from './PartEditor/PartGraphSelector';
 import { ToolchainProvider } from './Toolchain/ToolchainProvider';
-import { Metadata } from './MetadataManager/metadataAPI';
 import {Logger} from './Utils/Logger';
 import { PathToHash } from './MetadataManager/pathToHash';
 
@@ -72,8 +71,6 @@ export function activate(context: vscode.ExtensionContext) {
   PartGraphSelPanel.register(context);
 
   CircleViewerProvider.register(context);
-
-  Metadata.register(context);
   
 
   // returning backend registration function that will be called by backend extensions
