@@ -31,24 +31,6 @@ import * as crypto from 'crypto';
 // import {OneStorage} from './OneStorage';
 
 
-export class Mutex{
-  private mutex = Promise.resolve();
-
-  lock(): PromiseLike<()=>void>{
-    let begin: (unlock:()=>void)=> void;
-
-    this.mutex=this.mutex.then(()=>{
-      return new Promise(begin);
-    });
-
-    return new Promise(res=>{
-      begin=res;
-    });
-  }
-
-}
-
-
 
 /* istanbul ignore next */
 export class MetadataEventManager {
@@ -85,9 +67,7 @@ export class MetadataEventManager {
       provider.fileWatcher.onDidChange(async uri => {
         provider.refresh('Change'); // test code
         console.log('onDidChange  '+uri.fsPath);
-        const unlock=await provider.mutexLock.lock();
         if(workspaceRoot){ await provider.changeEvent(uri);}
-        unlock();
       }),
       provider.fileWatcher.onDidDelete(async uri => { // To Semi Jeong
         // FIXME: declare PathToHash instance outside of the function (i.e. make instance member variable)
@@ -97,60 +77,49 @@ export class MetadataEventManager {
         // const path = uri.path;
         if (MetadataEventManager.createUri) {
           const newUri = MetadataEventManager.createUri;
+          MetadataEventManager.createUri=undefined;       
+
           // The file/folder is moved/renamed
           if (fs.statSync(newUri.path).isDirectory()) {
             // case 4. [Dir]+Path       | move > search (delete & new)
-            const unlock=await provider.mutexLock.lock();
             await Metadata.moveMetadataUnderFolder(uri, newUri);
-            unlock();
           } else {
             // case 3. [File]+Path      | move (delete & new)
-            const unlock=await provider.mutexLock.lock();
             await Metadata.moveMetadata(uri, newUri);
-            unlock();
           }
         } else {
           const pathToHash = await PathToHash.getInstance();
           if (!pathToHash.isFile(uri)) {
             // case 2. [Dir]+undefined  | deactive > search
-            const unlock=await provider.mutexLock.lock();
             await Metadata.disableMetadataUnderFolder(uri);
-            unlock();
           } else {
             // case 1. [File]+undefined | deactive
-            const unlock=await provider.mutexLock.lock();
             await Metadata.disableMetadata(uri);
-            unlock();
           }
         }
       }),
       provider.fileWatcher.onDidCreate(async uri => {
         provider.refresh('Create'); // test code
         console.log('onDidCreate  '+uri.fsPath);
-        MetadataEventManager.createUri=uri;       
-        timerId=setTimeout(()=>{MetadataEventManager.createUri=undefined; console.log('test  '+ MetadataEventManager.createUri);},0);
+        MetadataEventManager.createUri=uri;
 
         const instance= await PathToHash.getInstance();
         if(fs.statSync(uri.fsPath).isDirectory()){
           // case 1. [Dir]  Copy with files > Serch all the file in the Dir
-          const unlock=await provider.mutexLock.lock();
           await provider.createDirEvent(uri);
-          unlock();
         }
         else if(Metadata.isValidFile(uri)){
           if(instance.getPathToHash(uri)&&workspaceRoot){
             //case 2. [File] Contents change event in Ubuntu terminal (refer to pathToHash)
-            const unlock=await provider.mutexLock.lock();
             await provider.changeEvent(uri);
-            unlock();
           }
         else{
           // case 3. [File] File generation event
-          const unlock=await provider.mutexLock.lock();
           await provider.createFileEvent(uri);
-          unlock();
         }
         }
+        MetadataEventManager.createUri=undefined;       
+
       }),
     ];
 
@@ -158,7 +127,6 @@ export class MetadataEventManager {
   }
 
   constructor() {
-    this.mutexLock=new Mutex();
   }
 
   refresh(message: string): void {
