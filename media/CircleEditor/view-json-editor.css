@@ -30,7 +30,7 @@
 .expander-area { width: 100%; margin-top: 55px; height: 30%; }
 .title { font-family: inherit; font-size: 11px; border: 0; overflow: auto; padding: 0px 6px 4px 6px; word-wrap: break-word; margin-left: 2.5px; margin-top: 5px; text-align: right; font-weight: bold; }
 .button { background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif; color: #aaa; cursor: pointer; user-select: none; -webkit-user-select: none; -moz-user-select: none; padding: 4px 10px 4px 10px; font-size: 11px; margin-top: 2px; font-weight: bold; width: 50%; text-align: center; }
-.vscode-dark .button { background-color: #808080; }
+.vscode-dark .button { background-color: #383838; }
 .button:hover { color: #000; }
 .button-area { width: 100%; padding-bottom: 3px; display: flex; justify-content: space-between; align-items: center; background-color: #ececec; }
 .vscode-dark .button-area { background-color: #2d2d2d; }
