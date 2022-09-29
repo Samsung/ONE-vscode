@@ -589,7 +589,6 @@ view.View = class {
             for (const nodeId of this._graph.nodes.keys()) {
                 const node = this._graph.node(nodeId);
                 if (node.label.value._outputs) {
-                    let found = false;
                     node.label.value._outputs.forEach((output) => {
                         output._arguments.forEach((arg) => {
                             // NOTE name is tensor_name + tensor_index, in circle.js
@@ -600,7 +599,6 @@ view.View = class {
                                 if (this._scrollToSelected) {
                                     scrollToSelects.push(node.label.element);
                                 }
-                                found = true;
                             }
                         });
                     });

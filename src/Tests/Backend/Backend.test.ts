@@ -20,7 +20,10 @@ import {backendRegistrationApi, globalBackendMap, globalExecutorArray} from '../
 import {Backend} from '../../Backend/Backend';
 import {Compiler, CompilerBase} from '../../Backend/Compiler';
 import {Executor, ExecutorBase} from '../../Backend/Executor';
+import {OneToolchain} from '../../Backend/One/OneToolchain';
 import {gToolchainEnvMap} from '../../Toolchain/ToolchainEnv';
+
+const oneBackendName = 'ONE';
 
 // TODO: Move it to Mockup
 const backendName = 'Mockup';
@@ -53,22 +56,40 @@ class ExecutorMockup extends ExecutorBase {
 
 suite('Backend', function() {
   suite('backendRegistrationApi', function() {
+    test('registers a OneToolchain', function() {
+      backendRegistrationApi();
+      let oneBackend = new OneToolchain();
+      assert.strictEqual(Object.entries(globalBackendMap).length, 1);
+      assert.strictEqual(globalExecutorArray.length, 0);
+
+      const entries = Object.entries(globalBackendMap);
+      assert.strictEqual(entries.length, 1);
+      // this runs once
+      for (const [key, value] of entries) {
+        assert.strictEqual(key, oneBackendName);
+        assert.deepStrictEqual(value, oneBackend);
+      }
+    });
     test('registers a backend', function() {
       let registrationAPI = backendRegistrationApi();
 
-      assert.strictEqual(Object.entries(globalBackendMap).length, 0);
+      assert.strictEqual(Object.entries(globalBackendMap).length, 1);
       assert.strictEqual(globalExecutorArray.length, 0);
 
       let backend = new BackendMockup();
       registrationAPI.registerBackend(backend);
 
       const entries = Object.entries(globalBackendMap);
-      assert.strictEqual(entries.length, 1);
+      assert.strictEqual(entries.length, 2);
+
       // this runs once
       for (const [key, value] of entries) {
-        assert.strictEqual(key, backendName);
-        assert.deepStrictEqual(value, backend);
+        if (key !== oneBackendName) {
+          assert.strictEqual(key, backendName);
+          assert.deepStrictEqual(value, backend);
+        }
       }
+
       assert.strictEqual(globalExecutorArray.length, 1);
       for (const executor of globalExecutorArray) {
         assert.deepStrictEqual(executor, backend.executor());

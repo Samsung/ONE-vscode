@@ -20,6 +20,7 @@ import {Backend} from './Backend';
 import {gToolchainEnvMap, ToolchainEnv} from '../Toolchain/ToolchainEnv';
 import {Logger} from '../Utils/Logger';
 import {Executor} from './Executor';
+import {OneToolchain} from './One/OneToolchain';
 
 /**
  * Interface of backend map
@@ -61,6 +62,8 @@ function backendRegistrationApi() {
       Logger.info(logTag, 'Executor', executor.name(), 'was registered into ONE-vscode.');
     }
   };
+
+  registrationAPI.registerBackend(new OneToolchain());
 
   return registrationAPI;
 }

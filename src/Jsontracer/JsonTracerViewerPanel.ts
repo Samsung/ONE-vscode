@@ -114,7 +114,7 @@ export class JsonTracerViewerPanel implements vscode.CustomTextEditorProvider {
       }
     });
 
-    webviewPanel.onDidChangeViewState(e => {
+    webviewPanel.onDidChangeViewState(() => {
       vscode.commands.executeCommand(
           'setContext', JsonTracerViewerPanel.viewType, webviewPanel.visible);
     }, null, this._disposables);
