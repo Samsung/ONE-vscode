@@ -406,7 +406,6 @@ jsonEditor.Calculator = class {
 
   customOptionsConvert() {
     this._editObject = new Object;
-    console.log(this._inputArea.childNodes[1].childNodes[0].value);
     for(let i = 1 ; i < this._inputArea.childElementCount ; i++){
       const key = this._inputArea.childNodes[i].childNodes[0].value;
       const value = this._inputArea.childNodes[i].childNodes[1].value;
