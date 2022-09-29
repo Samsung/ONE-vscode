@@ -69,7 +69,11 @@ export class Metadata{
         const instance = await PathToHash.getInstance();
         const hash = instance.getPathToHash(uri);
         let metadata = await this.getMetadata(hash);
-        return metadata[vscode.workspace.asRelativePath(uri).toString()];
+        if(Object.keys(metadata).length !== 0){
+            return metadata[vscode.workspace.asRelativePath(uri).toString()];
+        }else{
+            return null;
+        }
     }
 
     // deactivate metadata
