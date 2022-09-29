@@ -138,10 +138,10 @@ export class PathToHash{
             const stats: any = await MetadataEventManager.getStats(vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, path));
             metadata[path] = {};
             metadata[path]["name"] = filename;
-            metadata[path]["fileExtension"] = filename.split(".")[1];
-            metadata[path]["createTime"] = stats.birthtime;
-            metadata[path]["modifiedTime"] = stats.mtime;
-            metadata[path]["isDeleted"] = false;
+            metadata[path]["file-extension"] = filename.split(".")[1];
+            metadata[path]["create-time"] = stats.birthtime;
+            metadata[path]["modified-time"] = stats.mtime;
+            metadata[path]["is-deleted"] = false;
             await Metadata.setMetadata(hash, metadata);  
         }
     }

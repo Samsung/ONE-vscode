@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-// import * as assert from 'assert';
 import * as fs from 'fs';
-// import * as path from 'path';
-// import {TextEncoder} from 'util';
 import * as vscode from 'vscode';
 
 import { Metadata } from './metadataAPI';
@@ -27,20 +24,78 @@ import { Logger } from '../Utils/Logger';
 import { PathToHash } from './pathToHash';
 
 import * as crypto from 'crypto';
-// import {ArtifactAttr} from './ArtifactLocator';
-// import {OneStorage} from './OneStorage';
+
+
+class EventQueue{
+  private inProgress:boolean=false;
+  private queue:{method:any, input:{[key: string]:any}}[]=[];
+
+  constructor(){this.queue=[];}
+  
+  enqueue(method:any, input:{[key: string]: any}):void{
+    this.queue.push({
+      method:method,
+      input:input
+    });
+    this.autoAction();
+  }
+
+  front() {
+    return this.queue[0];
+  }
+  dequeue() {
+    this.queue.shift();
+  }
+  
+  clear(){
+    this.inProgress=false;
+    this.queue=[];
+  }
+
+  isEmpty(){
+    return this.queue.length===0;
+  }
+  
+  autoAction(){
+    if(this.inProgress===false){
+      this.inProgress=true;
+      this.action();
+    }
+  }
+  
+  async action(){
+    const result=await this.front().method();
+    console.log(result);
+    this.dequeue();
+    
+    if(this.isEmpty()){
+      this.clear();
+    }
+    else {
+      this.action();
+    }
+  }
+}
+
+class EventBuffer{
+  private Queue=new EventQueue();
+  constructor(){}
+  public setEvent(request:any, input:{[key: string]:any}){
+    this.Queue.enqueue(()=>{return new Promise(resolve=>{request(input).then((res:any) =>resolve(res))})
+    },input);
+  }
+}
 
 
 
 /* istanbul ignore next */
 export class MetadataEventManager {
   private fileWatcher = vscode.workspace.createFileSystemWatcher(`**/*`); // glob pattern
-  private mutexLock:any;
+  private eventBuffer=new EventBuffer();
 
   public static didHideExtra: boolean = false;
 
   public static createUri: vscode.Uri | undefined = undefined;
-  public static deleteUri: vscode.Uri | undefined = undefined;
 
   public static register(context: vscode.ExtensionContext) {
     let workspaceRoot: vscode.Uri | undefined = undefined;
@@ -65,77 +120,73 @@ export class MetadataEventManager {
 
     let registrations = [
       provider.fileWatcher.onDidChange(async uri => {
-        provider.refresh('Change'); // test code
-        console.log('onDidChange  '+uri.fsPath);
-        if(workspaceRoot){ await provider.changeEvent(uri);}
+        // provider.refresh('Change');
+        // console.log('onDidChange  '+uri.fsPath);
+        if(workspaceRoot){ provider.eventBuffer.setEvent(provider.changeEvent,{"uri":uri});}
       }),
-      provider.fileWatcher.onDidDelete(async uri => { // To Semi Jeong
-        // FIXME: declare PathToHash instance outside of the function (i.e. make instance member variable)
+
+      provider.fileWatcher.onDidDelete(async uri => {
         const instance = await PathToHash.getInstance();
         if (!instance.exists(uri)) {{return;}}
-        console.log('onDidDelete::', uri); provider.refresh('Delete'); // test code
-        // const path = uri.path;
-        if (MetadataEventManager.createUri) {
-          const newUri = MetadataEventManager.createUri;
-          MetadataEventManager.createUri=undefined;       
 
+        // console.log('onDidDelete::', uri); provider.refresh('Delete');
+        const newUri=MetadataEventManager.createUri;
+        if (newUri) {
+
+          MetadataEventManager.createUri=undefined;
           // The file/folder is moved/renamed
           if (fs.statSync(newUri.path).isDirectory()) {
             // case 4. [Dir]+Path       | move > search (delete & new)
-            await Metadata.moveMetadataUnderFolder(uri, newUri);
+            provider.eventBuffer.setEvent(Metadata.moveMetadataUnderFolder,{"fromUri":uri,"toUri":newUri});
           } else {
             // case 3. [File]+Path      | move (delete & new)
-            await Metadata.moveMetadata(uri, newUri);
+            provider.eventBuffer.setEvent(Metadata.moveMetadata,{"oldUri":uri,"newUri":newUri});
           }
         } else {
           const pathToHash = await PathToHash.getInstance();
           if (!pathToHash.isFile(uri)) {
             // case 2. [Dir]+undefined  | deactive > search
-            await Metadata.disableMetadataUnderFolder(uri);
+            provider.eventBuffer.setEvent(Metadata.disableMetadataUnderFolder,{"uri":uri});
           } else {
             // case 1. [File]+undefined | deactive
-            await Metadata.disableMetadata(uri);
+            provider.eventBuffer.setEvent(Metadata.disableMetadata,{"uri":uri});
           }
         }
       }),
       provider.fileWatcher.onDidCreate(async uri => {
-        provider.refresh('Create'); // test code
-        console.log('onDidCreate  '+uri.fsPath);
-        MetadataEventManager.createUri=uri;
+        // provider.refresh('Create'); // test code
+        // console.log('onDidCreate  '+uri.fsPath);
+        MetadataEventManager.createUri=uri;       
 
         const instance= await PathToHash.getInstance();
         if(fs.statSync(uri.fsPath).isDirectory()){
           // case 1. [Dir]  Copy with files > Serch all the file in the Dir
-          await provider.createDirEvent(uri);
+          provider.eventBuffer.setEvent(provider.createDirEvent,{"uri":uri});
         }
         else if(Metadata.isValidFile(uri)){
           if(instance.get(uri)&&workspaceRoot){
             //case 2. [File] Contents change event in Ubuntu terminal (refer to pathToHash)
-            await provider.changeEvent(uri);
+            provider.eventBuffer.setEvent(provider.changeEvent,{"uri":uri});
           }
-        else{
-          // case 3. [File] File generation event
-          await provider.createFileEvent(uri);
+          else{
+            // case 3. [File] File generation event
+            provider.eventBuffer.setEvent(provider.createFileEvent,{"uri":uri});
+          }
         }
-        }
-        MetadataEventManager.createUri=undefined;       
-
+        provider.eventBuffer.setEvent(provider.resetOldUri,{});
       }),
     ];
 
     registrations.forEach(disposable => context.subscriptions.push(disposable));
   }
-
-  constructor() {
+  async resetOldUri(input:{[key:string]:any}){
+    MetadataEventManager.createUri=undefined;
   }
 
-  refresh(message: string): void {
-    vscode.window.showInformationMessage(message);
-  }
-
-
-  async changeEvent(uri:vscode.Uri): Promise<void> {
+  async changeEvent(input:{[key:string]:any}): Promise<void> {
+    const uri=input["uri"];
     if(!Metadata.isValidFile(uri)) {return;}
+
     // case 1. [File] Contents change event
     const relativePath = vscode.workspace.asRelativePath(uri);
 
@@ -175,11 +226,10 @@ export class MetadataEventManager {
 
     metadata[relativePath] = {};
     metadata[relativePath]["name"] = filename;
-
-    metadata[relativePath]["fileExtension"] = filename.split(".").at(-1);
-    metadata[relativePath]["createTime"] = stats.birthtime;
-    metadata[relativePath]["modifiedTime"] = stats.mtime;
-    metadata[relativePath]["isDeleted"] = false;
+    metadata[relativePath]["file-extension"] = filename.split(".").at(-1);
+    metadata[relativePath]["create-time"] = stats.birthtime;
+    metadata[relativePath]["modified-time"] = stats.mtime;
+    metadata[relativePath]["is-deleted"] = false;
 
     return metadata;
   }
@@ -195,7 +245,9 @@ export class MetadataEventManager {
     });
   }
 
-  async createDirEvent(uri:vscode.Uri){
+  async createDirEvent(input:{[key:string]:any}){
+    const uri=input["uri"];
+
     //(1) call search
     let fileList=await vscode.workspace.findFiles('**'+uri.fsPath+'/*.{pb,log,onnx,tflite,circle,cfg}');
     fileList.forEach((uri)=>{
@@ -203,8 +255,10 @@ export class MetadataEventManager {
     });
   }
 
-  async createFileEvent(uri:vscode.Uri){
-    //(1) refer to get
+  async createFileEvent(input:{[key:string]:any}){
+    const uri=input["uri"];
+
+    //(1) refer to getPathToHash
     let relPath=vscode.workspace.asRelativePath(uri);
     const instance=await PathToHash.getInstance();
 
@@ -214,44 +268,43 @@ export class MetadataEventManager {
 
     //(3) Hash로 getMetadata
     let metadata=await Metadata.getMetadata(newHash);
+    
     //(4) Metadata Exist (searching with Hash)? (activate | deactivate) : copy format 
     if(Object.keys(metadata).length !== 0){ // metadata exist
       if(metadata[relPath]){
 
-        if (!metadata[relPath]["isDeleted"]) {return;} // path already activate. ignore this case
-        metadata[relPath]["isDeleted"]=false;  // path deactive > activate    
+        if (!metadata[relPath]["is-deleted"]) {return;} // path already activate. ignore this case
+        metadata[relPath]["is-deleted"]=false;  // path deactive > activate    
       }
       else{ // for copy format
         const keyList=Object.keys(metadata);
-        const keyResult=keyList.filter(key=> !metadata[key]["isDeleted"]); // find activate. or last key of KeyList;
+        const keyResult=keyList.filter(key=> !metadata[key]["is-deleted"]); // find activate. or last key of KeyList;
 
         //data copy
-
-        let data=metadata[keyList[keyList.length-1]];
-        if(keyResult.length){ data=metadata[keyResult[0]]; }
-        else {data["isDeleted"]=false;}
+        let data=JSON.parse(JSON.stringify(metadata[keyList[keyList.length-1]]));
+        if(keyResult.length){data=JSON.parse(JSON.stringify(metadata[keyResult[0]]));}
+        else {data["is-deleted"]=false;}
 
 
         //data update
         const stats: any = await MetadataEventManager.getStats(uri);
         data["name"]=uri.fsPath.split('/').pop();
-        data["fileExtension"]=uri.fsPath.split('.').pop();
-        data["createdTime"]=stats.birthtime;
-        data["modifiedTime"]=stats.mtime;
+        data["file-extension"]=uri.fsPath.split('.').pop();
+        data["created-time"]=stats.birthtime;
+        data["modified-time"]=stats.mtime;
 
         metadata[relPath]=data;
       }
     }
     else{ // metadata doesn't exist : common file        
-      // const splitPath=uri.fsPath.split('.');
       const stats: any = await MetadataEventManager.getStats(uri);
 
       metadata[relPath]={
         "name":uri.fsPath.split('/').pop(),
-        "fileExtension": uri.fsPath.split('.').pop(),
-        "createdTime": stats.birthtime,
-        "modifiedTime": stats.mtime,
-        "isDeleted": false,
+        "file-extension": uri.fsPath.split('.').pop(),
+        "created-time": stats.birthtime,
+        "modified-time": stats.mtime,
+        "is-deleted": false,
       };
     }
     //(6) Metadata Generation
