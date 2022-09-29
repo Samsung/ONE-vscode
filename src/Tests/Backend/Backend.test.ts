@@ -20,7 +20,7 @@ import {backendRegistrationApi, globalBackendMap, globalExecutorArray} from '../
 import {Backend} from '../../Backend/Backend';
 import {Compiler, CompilerBase} from '../../Backend/Compiler';
 import {Executor, ExecutorBase} from '../../Backend/Executor';
-import {ONEToolchain} from '../../Backend/ONE/ONEToolchain';
+import {OneToolchain} from '../../Backend/One/OneToolchain';
 import {gToolchainEnvMap} from '../../Toolchain/ToolchainEnv';
 
 const oneBackendName = 'ONE';
@@ -56,9 +56,9 @@ class ExecutorMockup extends ExecutorBase {
 
 suite('Backend', function() {
   suite('backendRegistrationApi', function() {
-    test('registers a ONEToolchain', function() {
+    test('registers a OneToolchain', function() {
       backendRegistrationApi();
-      let oneBackend = new ONEToolchain();
+      let oneBackend = new OneToolchain();
       assert.strictEqual(Object.entries(globalBackendMap).length, 1);
       assert.strictEqual(globalExecutorArray.length, 0);
 
