@@ -1,4 +1,4 @@
-import { float32 } from 'flatbuffers';
+/* eslint-disable @typescript-eslint/naming-convention */
 import * as Circle from './circle_schema_generated';
 
 export enum BuiltinOptionsType {
@@ -274,7 +274,7 @@ export const _FindAttribute: any = {
 	"BCQGATHEROPTIONS" : Circle.BCQGatherOptionsT,
 	"BCQFULLYCONNECTEDOPTIONS" : Circle.BCQFullyConnectedOptionsT,
 	"INSTANCENORMOPTIONS" : Circle.InstanceNormOptionsT,
-}
+};
 
 export const CodeTobuiltinOptions = {
 	0: null,
@@ -395,11 +395,11 @@ export const CodeTobuiltinOptions = {
   252: Circle.BCQGatherOptionsT,
   253: Circle.BCQFullyConnectedOptionsT,
   254: Circle.InstanceNormOptionsT
-}
+};
 
 export const SparseVector ={
 	0: null,
 	1: Circle.Int32VectorT,
 	2: Circle.Uint16VectorT,
 	3: Circle.Uint8VectorT
-}
+};
