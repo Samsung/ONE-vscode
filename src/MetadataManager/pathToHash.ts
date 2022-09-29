@@ -21,22 +21,22 @@ import {Metadata} from './metadataAPI';
 import {MetadataEventManager} from './EventManager';
 
 export class PathToHash{
-    private static instance: PathToHash;
-    private pathToHash: any;
+    private static _instance: PathToHash;
+    private _map: any;
 
     private constructor() {
     }
     
     public static async getInstance() {
-        if (!this.instance) {
-            this.instance = new PathToHash();
-            this.instance.pathToHash = await this.instance.initPathToHash();
-            await this.instance.validateMetadata(this.instance.pathToHash);
+        if (!this._instance) {
+            this._instance = new PathToHash();
+            this._instance._map = await this._instance.init();
+            await this._instance.validateMetadata(this._instance._map);
         }
-        return this.instance;
+        return this._instance;
     }
 
-    private async initPathToHash() {
+    private async init() {
         if (vscode.workspace.workspaceFolders === undefined) {
             return;
         }
@@ -170,10 +170,10 @@ export class PathToHash{
     }
 
 
-    public getPathToHash(uri: vscode.Uri ) {
+    public get(uri: vscode.Uri ) {
         const path = vscode.workspace.asRelativePath(uri);
         const splitPath = path.split('/');
-        let pathToHash = this.pathToHash;
+        let pathToHash = this._map;
 
         splitPath.forEach((data) => {
 
@@ -187,21 +187,22 @@ export class PathToHash{
     }
 
 
-    private async generateHash(uri: vscode.Uri) {        
+    private async generateHash(uri: vscode.Uri) {    
+        // TODO: Error handling    
         return  crypto.createHash('sha256').update(Buffer.from(await vscode.workspace.fs.readFile(uri)).toString()).digest('hex');
     }
 
     public isFile(uri: vscode.Uri): boolean {
-        const hash = this.getPathToHash(uri);
+        const hash = this.get(uri);
         return typeof(hash) === 'string';
     }
 
     public exists(uri: vscode.Uri): boolean {
-        return this.getPathToHash(uri) !== undefined;
+        return this.get(uri) !== undefined;
     }
 
     public getFilesUnderFolder(uri: vscode.Uri): vscode.Uri[] {
-        const folder = this.getPathToHash(uri);
+        const folder = this.get(uri);
         const files: vscode.Uri[] = [];
         if (typeof (folder) === 'string') {
             // not a folder
@@ -219,7 +220,7 @@ export class PathToHash{
         const path = vscode.workspace.asRelativePath(uri);
         const paths = path.split('/');
         let content: any = await this.generateHash(uri);
-        let obj = this.pathToHash;
+        let obj = this._map;
         let idx = 0;
         for (let path = paths[idx]; idx < paths.length - 1; path = paths[++idx]) {
             if (!obj[path]) {break;}
@@ -244,7 +245,7 @@ export class PathToHash{
         const path = vscode.workspace.asRelativePath(uri);
         const paths = path.split('/');
 
-        let obj = this.pathToHash;
+        let obj = this._map;
         for (let i = 0, path = paths[i]; i < paths.length - 1; path = paths[++i]) {
             if (!obj) {
                 return;
@@ -257,11 +258,11 @@ export class PathToHash{
         }
         delete obj[paths[paths.length-1]];
         if (paths.length > 1) {
-            this.deleteEmptyFolder(this.pathToHash, paths, 0);
+            this.markDeletedFolder(this._map, paths, 0);
         }
     }
 
-    private deleteEmptyFolder(parent: any, paths: string[], idx: number) {
+    private markDeletedFolder(parent: any, paths: string[], idx: number) {
         const path = paths[idx];
         if (paths.length - 2 === idx) {
             if (Object.keys(parent[path]).length === 0) {
@@ -272,7 +273,7 @@ export class PathToHash{
         if (parent[path] === undefined) {
             return;
         }
-        this.deleteEmptyFolder(parent[path], paths, idx + 1);
+        this.markDeletedFolder(parent[path], paths, idx + 1);
         if (Object.keys(parent[path]).length === 0) {
             delete parent[path];
         }
