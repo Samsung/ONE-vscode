@@ -5,8 +5,7 @@ import * as flatbuffers from 'flatbuffers';
 import { ResponseModel, RequestMessage, CustomInfoMessage, ResponseModelPath, ResponseFileRequest, ResponseJson } from './MessageType';
 import * as flexbuffers from 'flatbuffers/js/flexbuffers';
 import * as Types from './CircleType';
-import { CircleException } from "../Utils/CircleException";
-import { composedParent } from "@microsoft/fast-foundation";
+import { CircleException } from "../Utils/CircleEditorException";
 
 export class CircleEditorDocument extends Disposable implements vscode.CustomDocument{
   private readonly _uri: vscode.Uri;

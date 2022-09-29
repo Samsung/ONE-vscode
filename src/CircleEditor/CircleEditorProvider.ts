@@ -3,7 +3,7 @@ import { CircleEditorDocument } from "./CircleEditorDocument";
 import { disposeAll } from "./dispose";
 import * as fs from "fs";
 import { getNonce } from "../Utils/external/Nonce";
-import { CircleException } from "../Utils/CircleException";
+import { CircleException } from "../Utils/CircleEditorException";
 
 export enum MessageDefs {
   // message command
