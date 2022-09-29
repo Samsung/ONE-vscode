@@ -84,7 +84,7 @@ export class CircleGraphPanel extends CircleGraphCtrl {
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
     // Update the content based on view changes
-    this._panel.onDidChangeViewState(e => {
+    this._panel.onDidChangeViewState(() => {
       if (this._panel.visible) {
         // NOTE if we call this.update(), it'll reload the model which may take time.
         // TODO call conditional this.update() when necessary.

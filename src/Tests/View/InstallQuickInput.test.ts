@@ -36,6 +36,7 @@ suite('View', function() {
   // However, we cannot test the ui until now
   // Therefore, we focus on testing things not ui
   suite('InstallQuickInput', function() {
+    const oneBackendName = 'ONE';
     const compiler = new MockCompiler();
     const toolchainEnv = new ToolchainEnv(compiler);
     const toolchainType = toolchainEnv.getToolchainTypes()[0];
@@ -365,8 +366,9 @@ suite('View', function() {
       test('gets all toolchain env names from global toolchain env', function() {
         let quickInput = new InstallQuickInput();
         let envs = quickInput.getAllToolchainEnvNames();
-        assert.strictEqual(envs.length, 1);
-        assert.strictEqual(envs[0], backendName);
+        assert.strictEqual(envs.length, 2);
+        assert.strictEqual(envs[0], oneBackendName);
+        assert.strictEqual(envs[1], backendName);
       });
     });
 
