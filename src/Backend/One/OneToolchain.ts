@@ -20,7 +20,7 @@ import {Compiler} from '../Compiler';
 import {Executor} from '../Executor';
 import {Toolchains} from '../Toolchain';
 
-class ToolchainCompiler implements Compiler {
+class OneCompiler implements Compiler {
   private readonly toolchainTypes: string[];
 
   constructor() {
@@ -44,13 +44,13 @@ class ToolchainCompiler implements Compiler {
   }
 }
 
-class ONEToolchain implements Backend {
+class OneToolchain implements Backend {
   private readonly backendName: string;
   private readonly toolchainCompiler: Compiler|undefined;
 
   constructor() {
     this.backendName = 'ONE';
-    this.toolchainCompiler = new ToolchainCompiler();
+    this.toolchainCompiler = new OneCompiler();
   }
 
   name(): string {
@@ -70,4 +70,4 @@ class ONEToolchain implements Backend {
   }
 }
 
-export {ToolchainCompiler, ONEToolchain};
+export {OneCompiler, OneToolchain};

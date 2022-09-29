@@ -16,15 +16,15 @@
 
 import {assert} from 'chai';
 
-import {ONEToolchain, ToolchainCompiler} from '../../../Backend/ONE/ONEToolchain';
+import {OneCompiler, OneToolchain} from '../../../Backend/One/OneToolchain';
 
 const oneBackendName = 'ONE';
 
 suite('Backend', function() {
-  suite('ToolchainCompiler', function() {
+  suite('OneCompiler', function() {
     suite('#constructor()', function() {
-      test('Create dummy ONEToolchain compiler', function(pass) {
-        assert.doesNotThrow(() => new ToolchainCompiler());
+      test('Create OneToolchain compiler', function(pass) {
+        assert.doesNotThrow(() => new OneCompiler());
 
         pass();
         assert.ok(true);
@@ -48,10 +48,10 @@ suite('Backend', function() {
     // });
   });
 
-  suite('ONEToolchain', function() {
+  suite('OneToolchain', function() {
     suite('#constructor()', function() {
-      test('Create dummy ONEToolchain backend', function(pass) {
-        assert.doesNotThrow(() => new ONEToolchain());
+      test('Create dummy OneToolchain backend', function(pass) {
+        assert.doesNotThrow(() => new OneToolchain());
 
         pass();
         assert.ok(true);
@@ -60,7 +60,7 @@ suite('Backend', function() {
 
     suite('#name()', function() {
       test('returns backend name', function() {
-        const oneBackend = new ONEToolchain();
+        const oneBackend = new OneToolchain();
         assert.strictEqual(oneBackend.name(), oneBackendName);
       });
     });
