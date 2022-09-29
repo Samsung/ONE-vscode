@@ -4,49 +4,67 @@
 
 .jsonEditor-applybutton { padding: 8px 8px 8px 32px; background-color: rgba(0, 0, 0, 0); border: 0px; text-decoration: none; font-size: 15px; color: #777777; opacity: 1.0; display: block; transition: 0.2s; position: absolute; top: 0; right: 50px; margin-left: 50px; user-select: none; -webkit-user-select: none; -moz-user-select: none; }
 .jsonEditor-applybutton:hover { color: #242424; }
-.jsonEditor-content { padding-left: 20px; padding-right: 20px; margin-bottom: 20px; height: calc(100vh - 60px); outline: none;}
+.jsonEditor-content { padding-left: 20px; padding-right: 20px; margin-bottom: 20px; height: calc(100% - 60px); outline: none;}
 .jsonEditor-content:focus { outline: none; }
 .vscode-dark .jsonEditor #jsonEditor-content { background-color: #2d2d2d; color: #dfdfdf; border-left: 1px solid #000; outline: none;}
 
 .vscode-dark .jsonEditor { background-color: #2d2d2d; color: #dfdfdf; border-left: 1px solid #000; }
-.calculator-name { font-weight: bold; font-size: 11px; text-transform: uppercase; line-height: 1.25; margin-top: 16px; margin-bottom: 5px; display: block; user-select: none; -webkit-user-select: none; -moz-user-select: none; cursor: default; }
+.calculator-name { font-weight: bold; font-size: 11px; text-transform: uppercase; line-height: 1.25; display: block; user-select: none; -webkit-user-select: none; -moz-user-select: none; cursor: default; }
 .vscode-dark .calculator-name { color: #dfdfdf; }
-.calculator-box { padding-left: 20px; padding-right: 20px; padding-bottom: 20px; overflow-y: auto; height: 100px; }
-.calculator-name-box { position: absolute; display: flex; align-items: center; background-color: #ececec; width: 100%;}
+.calculator-box { overflow-y: auto; height: auto; }
+.calculator-name-box { width: calc(100% - 40px); padding-bottom: 3px; padding-left: 20px; padding-right: 20px; display: flex; justify-content: space-between; align-items: center; background-color: #ececec; border-bottom: 1px solid #808080; }
 .vscode-dark .calculator-name-box { background-color: #2d2d2d; }
-.toggle-button { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; float: right; color: #aaa; cursor: pointer; user-select: none; -webkit-user-select: none; -moz-user-select: none; font-size: 14px; margin-left: 8px; font-weight: bold; margin-top: 14px; margin-bottom: 5px; }
+.toggle-button { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; float: right; color: #aaa; cursor: pointer; user-select: none; -webkit-user-select: none; -moz-user-select: none; font-size: 16px; margin-bottom: 3px; font-weight: bold; }
 .toggle-button:hover { color: #000; }
-.input { font-family: inherit; font-size: 11px; background-color: #fcfcfc; border: 0; overflow: auto; padding: 4px 6px 4px 6px; width: 100%; word-wrap: break-word; margin-left: 2.5px; margin-top: 5px;}
+.input { font-family: inherit; font-size: 11px; background-color: #fcfcfc; border: 0; overflow: auto; padding: 4px 0px 4px 0px; width: 100%; word-wrap: break-word; margin-top: 5px; }
 .input:focus { outline: none; }
 .vscode-dark .input { background-color: #383838; border-color: #383838; color: #dfdfdf; }
-.select { font-weight: bold; font-family: inherit; font-size: 11px; background-color: #fcfcfc; border: 0; overflow: auto; padding: 3px 6px 4px 2px; width: 70px; height: 22px; margin-top: 5px; }
+.select { font-weight: bold; font-family: inherit; font-size: 11px; background-color: #fcfcfc; border: 0; overflow: auto; padding: 3px 6px 4px 2px; width: 100%; height: 22px; margin-top: 5px; }
 .select:focus { outline: none; }
 .vscode-dark .select { background-color: #383838; border-color: #383838; color: #dfdfdf; }
-.convert-button { position: absolute; left: 84%; font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; color: #aaa; cursor: pointer; user-select: none; -webkit-user-select: none; -moz-user-select: none; padding: 4px 6px 4px 6px; font-size: 9px; margin-top: 6px; margin-left: 2px; height: 16px; }
-.convert-button:hover { color: #000; }
-.clear-button { position: absolute; left: 84%; top: 80px; font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; color: #aaa; cursor: pointer; user-select: none; -webkit-user-select: none; -moz-user-select: none; padding: 4px 6px 4px 6px; font-size: 9px; margin-top: 6px; margin-left: 2px; height: 11px; }
-.clear-button:hover { color: #000; }
+.convert-button { height: 22px; background: #007acc; color: #ffffff; font-family: 'Noto Sans KR', sans-serif; font-size: 13px; font-weight: 400; text-align: center; text-decoration: none; border-radius: 1px; margin-left: 20px; margin-top: 5px; width: 60px; padding: 2px 5px 0px 5px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); cursor: pointer; transition: 0.5s; }
+.convert-button:hover { background-color: #025ce2; }
+.clear-button { color: #ffffff; height: 22px; background: #808080; font-family: 'Noto Sans KR', sans-serif; font-size: 1rem; font-weight: 400; text-align: center; text-decoration: none; border-radius: 1px; margin-top: 5px; width: 60px; padding: 0px 5px 2px 5px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); cursor: pointer; transition: 0.5s; }
+.clear-button:hover { background: #606060; }
 .vscode-dark .output { background-color: #383838; border-color: #383838; color: #dfdfdf; }
-.expander-area { display: flex; width: 100%; margin-top: 60px;}
-.title { font-family: inherit; font-size: 11px; border: 0; overflow: auto; padding: 4px 6px 4px 6px; word-wrap: break-word; margin-left: 2.5px; margin-top: 5px; text-align: right; width : 50px}
-.input-box { width: 60%; margin-right: 21.5px; }
-.button { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; color: #aaa; cursor: pointer; user-select: none; -webkit-user-select: none; -moz-user-select: none; padding: 4px 10px 4px 10px; font-size: 11px; margin-top: 2px; font-weight: bold; }
+.expander-area { width: 100%; margin-top: 55px; height: 30%; }
+.title { font-family: inherit; font-size: 11px; border: 0; overflow: auto; padding: 0px 6px 4px 6px; word-wrap: break-word; margin-left: 2.5px; margin-top: 5px; text-align: right; font-weight: bold; }
+.button { background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif; color: #aaa; cursor: pointer; user-select: none; -webkit-user-select: none; -moz-user-select: none; padding: 4px 10px 4px 10px; font-size: 11px; margin-top: 2px; font-weight: bold; width: 50%; text-align: center; }
+.vscode-dark .button { background-color: #808080; }
 .button:hover { color: #000; }
-.button-area { display: flex; position: absolute; top: 35px; background-color: #ececec; width: 100%; padding-bottom: 5px;}
+.button-area { width: 100%; padding-bottom: 3px; display: flex; justify-content: space-between; align-items: center; background-color: #ececec; }
 .vscode-dark .button-area { background-color: #2d2d2d; }
-.button-selected { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; color: #000; cursor: pointer; user-select: none; -webkit-user-select: none; -moz-user-select: none; padding: 4px 10px 4px 10px; font-size: 11px; margin-top: 2px; font-weight: bold; }
+.button-selected { font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif; color: #000; cursor: default; user-select: none; -webkit-user-select: none; -moz-user-select: none; padding: 4px 10px 4px 10px; font-size: 11px; margin-top: 2px; font-weight: bold; width: 50%; text-align: center; }
 .vscode-dark .button-selected { color: #fff }
-.custom-input { font-family: inherit; font-size: 11px; background-color: #fcfcfc; border: 0; overflow: auto; padding: 4px 6px 4px 6px; width: 28%; word-wrap: break-word; margin-right: 10px; margin-top: 5px; margin-left: 2.5px;}
+.input-line { display: flex; width: auto;}
+.output-area { align-items: center; width: 100%; margin-top: 20px; }
+.output { font-family: inherit; font-size: 11px; background-color: #fcfcfc; border: 0; overflow: auto; padding: 4px 10px 4px 6px; width: 95%; word-wrap: break-word; margin-left: 2.5px; margin-top: 5px; height: 14.667px; }
+.output:focus { outline: none; }
+.plus-button { cursor: pointer; width: calc(100% - 100px); margin-left: 50px; text-align: center; padding: 4px 0px 4px 0px; }
+.plus-button:hover { color: #000; }
+.minus-button { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; color: #aaa; cursor: pointer; user-select: none; -webkit-user-select: none; -moz-user-select: none; padding: 4px 10px 4px 0px; font-size: 14px; margin-top: 2px; font-weight: bold; font-weight: bold; margin-left: 10px; }
+.minus-button:hover { color: #000; }
+.title-area { background-color: #ececec; position: absolute; width: calc(100% - 40px); padding-left: 20px; padding-right: 20px; display: flex; justify-content: space-between; }
+.vscode-dark .title-area { background-color: #2d2d2d; }
+.copy-button { background-color: #fcfcfc; font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; float: right; color: #aaa; cursor: pointer; user-select: none; -webkit-user-select: none; -moz-user-select: none; padding: 4px 6px 4px 6px; font-size: 11px; margin-top: 5px; }
+.vscode-dark .copy-button { background-color: #383838; }
+.navigator { position: absolute; width: 100%; padding-bottom: 3px;  align-items: center; background-color: #ececec; }
+.vscode-dark .navigator { background-color: #2d2d2d; }
+.input-area { display: flex; width: calc(100% - 100px); padding-left: 50px; padding-right: 50px; padding-top: 45px; justify-content: space-between; }
+.custom-input-area { width: calc(100% - 100px); padding-left: 50px; padding-right: 50px; padding-top: 45px; justify-content: space-between; }
+.input-title { text-align: center; width: 100%; }
+.value-area { width: 75%; }
+.type-area { width: 10%; }
+.output-line { display: flex; bottom: 10px; width: calc(100% - 100px); padding-left: 50px; padding-right: 50px; align-items: center; }
+.output-title { background-color: #ececec; font-family: inherit; font-size: 11px; border: 0; overflow: auto; padding: 0px 6px 4px 6px; word-wrap: break-word; margin-left: 20px; margin-top: 5px; font-weight: bold; }
+.vscode-dark .output-title { background-color: #2d2d2d; }
+.input-line { width: 100%; margin-bottom: 10px; }
+.custom-input { font-family: inherit; font-size: 11px; background-color: #fcfcfc; border: 0; overflow: auto; padding: 4px 0px 4px 0px; width: 40%; word-wrap: break-word; margin-top: 5px; margin-right: 20px; }
 .custom-input:focus { outline: none; }
 .vscode-dark .custom-input { background-color: #383838; border-color: #383838; color: #dfdfdf; }
-.box { display: flex; }
-.output-area { display: flex; }
-.output { font-family: inherit; font-size: 11px; background-color: #fcfcfc; border: 0; overflow: auto; padding: 4px 6px 4px 6px; width: 55.5%; word-wrap: break-word; margin-left: 2.5px; margin-top: 5px;}
-.output:focus { outline: none; }
-.plus-button { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; color: #aaa; cursor: pointer; user-select: none; -webkit-user-select: none; -moz-user-select: none; padding: 4px 10px 4px 0px; font-size: 14px; margin-top: 2px; font-weight: bold; font-weight: bold; }
-.plus-button:hover { color: #000; }
-.minus-button { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; color: #aaa; cursor: pointer; user-select: none; -webkit-user-select: none; -moz-user-select: none; padding: 4px 10px 4px 10px; font-size: 14px; margin-top: 2px; font-weight: bold; font-weight: bold; }
-.minus-button:hover { color: #000; }
-.input-area { width: 80%; }
-
-
+.custom-select { font-weight: bold; font-family: inherit; font-size: 11px; background-color: #fcfcfc; border: 0; overflow: auto; padding: 3px 0px 4px 0px; width: 10%; margin-top: 5px; }
+.custom-select:focus { outline: none; }
+.vscode-dark .custom-select { background-color: #383838; border-color: #383838; color: #dfdfdf; }
+.input-title-line { display: flex; }
+.custom-input-title { font-family: inherit; font-size: 11px; border: 0; overflow: auto; width: 40%; word-wrap: break-word; margin-right: 20px; text-align: center; } 
+.custom-select-title { text-align: center; font-family: inherit; font-size: 11px; border: 0; overflow: auto; padding: 0px 0px 0px 0px; width: 10%; }
