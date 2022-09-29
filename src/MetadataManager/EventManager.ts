@@ -109,7 +109,7 @@ export class MetadataEventManager {
           await provider.createDirEvent(uri);
         }
         else if(Metadata.isValidFile(uri)){
-          if(instance.getPathToHash(uri)&&workspaceRoot){
+          if(instance.get(uri)&&workspaceRoot){
             //case 2. [File] Contents change event in Ubuntu terminal (refer to pathToHash)
             await provider.changeEvent(uri);
           }
@@ -162,6 +162,14 @@ export class MetadataEventManager {
       await Metadata.setMetadata(afterhash, {});
     }
     
+    metadata = await MetadataEventManager.createDefaultMetadata(uri, metadata);
+
+    await Metadata.setMetadata(afterhash, metadata);    
+  }
+
+  public static async createDefaultMetadata(uri:vscode.Uri, metadata: any){
+
+    const relativePath = vscode.workspace.asRelativePath(uri);
     const filename: any = relativePath.split('/').pop();
     const stats: any = await MetadataEventManager.getStats(uri);
 
@@ -173,7 +181,7 @@ export class MetadataEventManager {
     metadata[relativePath]["modifiedTime"] = stats.mtime;
     metadata[relativePath]["isDeleted"] = false;
 
-    await Metadata.setMetadata(afterhash, metadata);    
+    return metadata;
   }
   
   public static getStats(uri:vscode.Uri) {
@@ -196,13 +204,13 @@ export class MetadataEventManager {
   }
 
   async createFileEvent(uri:vscode.Uri){
-    //(1) refer to getPathToHash
+    //(1) refer to get
     let relPath=vscode.workspace.asRelativePath(uri);
     const instance=await PathToHash.getInstance();
 
     //(2) insert PathToHash
     await instance.addPath(uri);
-    let newHash=await instance.getPathToHash(uri);
+    let newHash=await instance.get(uri);
 
     //(3) Hash로 getMetadata
     let metadata=await Metadata.getMetadata(newHash);

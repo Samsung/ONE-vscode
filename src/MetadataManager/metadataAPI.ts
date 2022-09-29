@@ -60,17 +60,17 @@ export class Metadata{
 
     public static async getFileHash(uri: vscode.Uri) {
         const instance = await PathToHash.getInstance();
-        const hash = instance.getPathToHash(uri);
+        const hash = instance.get(uri);
         return hash;
     }
 
     //get metadata of file by path
     public static async getFileInfo(uri: vscode.Uri) {
         const instance = await PathToHash.getInstance();
-        const hash = instance.getPathToHash(uri);
+        const hash = instance.get(uri);
         let metadata = await this.getMetadata(hash);
         if(Object.keys(metadata).length !== 0){
-            return metadata[vscode.workspace.asRelativePath(uri).toString()];
+        return metadata[vscode.workspace.asRelativePath(uri).toString()];
         }else{
             return null;
         }
@@ -85,7 +85,7 @@ export class Metadata{
         
         const pathToHash = await PathToHash.getInstance();
         // step 1. Get hash value from pathToHash
-        const hash = pathToHash.getPathToHash(uri);
+        const hash = pathToHash.get(uri);
         if (hash === undefined) {
             return;
         }
@@ -137,7 +137,7 @@ export class Metadata{
 
         // 1. Get hash from pathToHash
         const pathToHash = await PathToHash.getInstance();
-        const hash = pathToHash.getPathToHash(oldUri);
+        const hash = pathToHash.get(oldUri);
         if (hash === undefined) {
             return;
         }
@@ -193,7 +193,7 @@ export class Metadata{
     //get metadata of file by path
     public static async getRelationInfo(uri: vscode.Uri) {
         const instance = await PathToHash.getInstance();
-        const nowHash = instance.getPathToHash(uri);
+        const nowHash = instance.get(uri);
         if (vscode.workspace.workspaceFolders === undefined) {
             return;
         }
@@ -264,7 +264,8 @@ export class Metadata{
         if (vscode.workspace.workspaceFolders !== undefined) {
             const metaUri = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, `.meta/hash_objects/${hash.substring(0, 2)}/${hash.substring(2)}.json`);
             if(!fs.existsSync(metaUri.fsPath)) {
-                await vscode.workspace.fs.writeFile(metaUri,Buffer.from(JSON.stringify({}, null, 4),'utf8'));
+                // await vscode.workspace.fs.writeFile(metaUri,Buffer.from(JSON.stringify({}, null, 4),'utf8'));
+                this.setMetadata(hash, {});
                 return {};
             }
             else {
