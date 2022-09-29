@@ -35,7 +35,7 @@ export class Mutex{
   private mutex = Promise.resolve();
 
   lock(): PromiseLike<()=>void>{
-    let begin: (unlock:()=>void)=> void = unlock =>{};
+    let begin: (unlock:()=>void)=> void;
 
     this.mutex=this.mutex.then(()=>{
       return new Promise(begin);
@@ -43,7 +43,7 @@ export class Mutex{
 
     return new Promise(res=>{
       begin=res;
-    })
+    });
   }
 
 }
@@ -80,7 +80,6 @@ export class MetadataEventManager {
     }
 
     const provider = new MetadataEventManager();
-    let timerId:NodeJS.Timeout | undefined=undefined;
 
     let registrations = [
       provider.fileWatcher.onDidChange(async uri => {
@@ -95,7 +94,7 @@ export class MetadataEventManager {
         const instance = await PathToHash.getInstance();
         if (!instance.exists(uri)) {{return;}}
         console.log('onDidDelete::', uri); provider.refresh('Delete'); // test code
-        const path = uri.path;
+        // const path = uri.path;
         if (MetadataEventManager.createUri) {
           const newUri = MetadataEventManager.createUri;
           // The file/folder is moved/renamed

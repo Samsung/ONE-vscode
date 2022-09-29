@@ -27,11 +27,8 @@ import {PartEditorProvider} from './PartEditor/PartEditor';
 import {PartGraphSelPanel} from './PartEditor/PartGraphSelector';
 import { ToolchainProvider } from './Toolchain/ToolchainProvider';
 import { Metadata } from './MetadataManager/metadataAPI';
-import { obtainWorkspaceRoot } from './Utils/Helpers';
 import {Logger} from './Utils/Logger';
 import { PathToHash } from './MetadataManager/pathToHash';
-import { StringLiteral } from 'typescript';
-import { time } from 'console';
 
 import { MetadataEventManager } from './MetadataManager/EventManager';
 
