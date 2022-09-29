@@ -36,6 +36,12 @@
       "permitted": "yes"
     },
 
+    "flatbuffers@2.0.7": {
+      "licenses": "Apache-2.0",
+      "repository": "https://github.com/google/flatbuffers",
+      "permitted": "yes"
+    },
+
     "rc@1.2.8": {
       "licenses": "(BSD-2-Clause OR MIT OR Apache-2.0)",
       "repository": "https://github.com/dominictarr/rc",
