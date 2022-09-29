@@ -4,7 +4,7 @@
 
 .jsonEditor-applybutton { padding: 8px 8px 8px 32px; background-color: rgba(0, 0, 0, 0); border: 0px; text-decoration: none; font-size: 15px; color: #777777; opacity: 1.0; display: block; transition: 0.2s; position: absolute; top: 0; right: 50px; margin-left: 50px; user-select: none; -webkit-user-select: none; -moz-user-select: none; }
 .jsonEditor-applybutton:hover { color: #242424; }
-.jsonEditor-content { padding-left: 20px; padding-right: 20px; margin-bottom: 20px; height: calc(100vh - 60px); outline: none;}
+.jsonEditor-content { padding-left: 20px; padding-right: 20px; margin-bottom: 20px; height: calc(100% - 60px); outline: none;}
 .jsonEditor-content:focus { outline: none; }
 .vscode-dark .jsonEditor #jsonEditor-content { background-color: #2d2d2d; color: #dfdfdf; border-left: 1px solid #000; outline: none;}
 
@@ -37,7 +37,7 @@
 .button-selected { font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif; color: #000; cursor: default; user-select: none; -webkit-user-select: none; -moz-user-select: none; padding: 4px 10px 4px 10px; font-size: 11px; margin-top: 2px; font-weight: bold; width: 50%; text-align: center; }
 .vscode-dark .button-selected { color: #fff }
 .input-line { display: flex; width: auto;}
-.output-area { display: flex; align-items: center; width: 595px; }
+.output-area { align-items: center; width: 100%; margin-top: 20px; }
 .output { font-family: inherit; font-size: 11px; background-color: #fcfcfc; border: 0; overflow: auto; padding: 4px 10px 4px 6px; width: 95%; word-wrap: break-word; margin-left: 2.5px; margin-top: 5px; height: 14.667px; }
 .output:focus { outline: none; }
 .plus-button { cursor: pointer; width: calc(100% - 100px); margin-left: 50px; text-align: center; padding: 4px 0px 4px 0px; }
@@ -55,16 +55,16 @@
 .input-title { text-align: center; width: 100%; }
 .value-area { width: 75%; }
 .type-area { width: 10%; }
-.output-line { display: flex; position: absolute; bottom: 10px; width: calc(100% - 100px); padding-left: 50px; padding-right: 50px; align-items: center; }
-.output-title { background-color: #ececec; position: absolute; bottom: 40px; font-family: inherit; font-size: 11px; border: 0; overflow: auto; padding: 0px 6px 4px 6px; word-wrap: break-word; margin-left: 20px; margin-top: 5px; text-align: right; font-weight: bold; }
+.output-line { display: flex; bottom: 10px; width: calc(100% - 100px); padding-left: 50px; padding-right: 50px; align-items: center; }
+.output-title { background-color: #ececec; font-family: inherit; font-size: 11px; border: 0; overflow: auto; padding: 0px 6px 4px 6px; word-wrap: break-word; margin-left: 20px; margin-top: 5px; font-weight: bold; }
 .vscode-dark .output-title { background-color: #2d2d2d; }
 .input-line { width: 100%; margin-bottom: 10px; }
-.custom-input { font-family: inherit; font-size: 11px; background-color: #fcfcfc; border: 0; overflow: auto; padding: 4px 0px 4px 0px; width: 40%; word-wrap: break-word; margin-top: 5px; margin-right: 20px;}
+.custom-input { font-family: inherit; font-size: 11px; background-color: #fcfcfc; border: 0; overflow: auto; padding: 4px 0px 4px 0px; width: 40%; word-wrap: break-word; margin-top: 5px; margin-right: 20px; }
 .custom-input:focus { outline: none; }
 .vscode-dark .custom-input { background-color: #383838; border-color: #383838; color: #dfdfdf; }
-.custom-select { font-weight: bold; font-family: inherit; font-size: 11px; background-color: #fcfcfc; border: 0; overflow: auto; padding: 3px 6px 4px 2px; width: 10%; height: 22px; margin-top: 5px; }
+.custom-select { font-weight: bold; font-family: inherit; font-size: 11px; background-color: #fcfcfc; border: 0; overflow: auto; padding: 3px 0px 4px 0px; width: 10%; margin-top: 5px; }
 .custom-select:focus { outline: none; }
 .vscode-dark .custom-select { background-color: #383838; border-color: #383838; color: #dfdfdf; }
 .input-title-line { display: flex; }
-.custom-input-title { width: 40%; font-family: inherit; word-wrap: break-word; margin-right: 20px; text-align: center; }
-.custom-select-title { text-align: center; font-family: inherit; font-size: 11px; border: 0; overflow: auto; padding: 0px 6px 0px 0px; width: 10%; }
+.custom-input-title { font-family: inherit; font-size: 11px; border: 0; overflow: auto; width: 40%; word-wrap: break-word; margin-right: 20px; text-align: center; } 
+.custom-select-title { text-align: center; font-family: inherit; font-size: 11px; border: 0; overflow: auto; padding: 0px 0px 0px 0px; width: 10%; }

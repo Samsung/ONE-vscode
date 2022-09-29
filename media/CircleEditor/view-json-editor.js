@@ -125,7 +125,7 @@ jsonEditor.content = class {
     };
 
     const content = this._host.document.createElement('textarea');
-    content.style.height = '95.5%';
+    content.style.height = 'calc(100% - 35px)';
     content.style.width = 'calc(100% - 6px)';
     content.setAttribute('id', 'jsonEditor-content');
     content.style.resize = 'none';
@@ -159,6 +159,7 @@ jsonEditor.Calculator = class {
 
     this._editObject = {};
     
+    this._jsonEditorBox = this._host.document.getElementById('jsonEditor');
     this._calculatorBox = this.makeTag('div', 'calculator-box');
     const calculatorNameBox = this.makeTag('div', 'calculator-name-box');
     const calculatorName = this.makeTag('div', 'calculator-name');
@@ -195,7 +196,9 @@ jsonEditor.Calculator = class {
     if(this._toggle.innerText === '+') {
       this._toggle.innerText = '-';
       const editBox = this._host.document.getElementById('jsonEditor-content');
-      editBox.style.height = '60%';
+      editBox.style.height = '55%';
+      const div = this.makeTag('div');
+      this._jsonEditorBox.appendChild(div);
       
       this.buffer();
 
@@ -210,7 +213,7 @@ jsonEditor.Calculator = class {
       this._toggle.innerText = '+';
 
       const editBox = this._host.document.getElementById('jsonEditor-content');
-      editBox.style.height = '95.5%';
+      editBox.style.height = 'calc(100% - 35px)';
 
       this._calculatorBox.style.height = "5%";
       while (this._elements[0].childElementCount > 1) {
@@ -223,9 +226,10 @@ jsonEditor.Calculator = class {
     while (this._elements[0].childElementCount > 1) {
       this._elements[0].removeChild(this._elements[0].lastChild);
     }
+    this._jsonEditorBox.removeChild(this._jsonEditorBox.lastChild);
     this._bufferButton.className = 'button-selected';
     this._customOptionsButton.className = 'button';
-    this._calculatorBox.style.height = "39%";
+    this._calculatorBox.style.height = "calc(30% - 22px)";
     const expanderArea = this.makeTag('div', 'expander-area');
     const titleArea = this.makeTag('div', 'title-area');
     const inputTitle = this.makeTag('div', 'title');
@@ -266,8 +270,8 @@ jsonEditor.Calculator = class {
     outputLine.appendChild(copy);
     outputLine.appendChild(clear);
     outputArea.appendChild(outputLine);
-    expanderArea.appendChild(outputArea);
     this._calculatorBox.appendChild(expanderArea);
+    this._jsonEditorBox.appendChild(outputArea);
 
     this._output.setAttribute('readonly', 'true');
 
@@ -296,6 +300,7 @@ jsonEditor.Calculator = class {
     while (this._elements[0].childElementCount > 1) {
       this._elements[0].removeChild(this._elements[0].lastChild);
     }
+    this._jsonEditorBox.removeChild(this._jsonEditorBox.lastChild);
     this._bufferButton.className = 'button';
     this._customOptionsButton.className = 'button-selected';
     const expanderArea = this.makeTag('div', 'expander-area');
@@ -307,6 +312,7 @@ jsonEditor.Calculator = class {
     const keyTitle = this.makeTag('div', 'custom-input-title');
     const valueTitle = this.makeTag('div', 'custom-input-title');
     const typeTitle = this.makeTag('div', 'custom-select-title');
+    const minus = this.makeTag('div', 'minus-button');
     const plus = this.makeTag('div', 'plus-button');
     const outputArea = this.makeTag('div', 'output-area');
     const outputTitle = this.makeTag('div', 'output-title');
@@ -315,6 +321,7 @@ jsonEditor.Calculator = class {
     this._customOutput = this.makeTag('input', 'output');
     this._customOutput.setAttribute('id', 'output');
     const copy = this.makeTag('div', 'copy-button');
+    minus.setAttribute('style', 'visibility: hidden');
 
     convert.innerText = 'Convert';
     inputTitle.innerText = 'Input ';
@@ -323,6 +330,7 @@ jsonEditor.Calculator = class {
     typeTitle.innerText = 'Type';
     clear.innerText = 'Clear';
     outputTitle.innerText = 'Output ';
+    minus.innerText = '-';
     copy.innerText = '📋️';
 
     this._customOutput.setAttribute('readonly', 'true');
@@ -347,6 +355,7 @@ jsonEditor.Calculator = class {
     inputTitleLine.appendChild(keyTitle);
     inputTitleLine.appendChild(valueTitle);
     inputTitleLine.appendChild(typeTitle);
+    inputTitleLine.appendChild(minus);
     this._inputArea.appendChild(inputTitleLine);
     expanderArea.appendChild(this._inputArea);
     outputArea.appendChild(outputTitle);
@@ -354,7 +363,7 @@ jsonEditor.Calculator = class {
     outputLine.appendChild(copy);
     outputLine.appendChild(clear);
     outputArea.appendChild(outputLine);
-    expanderArea.appendChild(outputArea);
+    this._jsonEditorBox.appendChild(outputArea);
     
 
     this._inputArea.appendChild(this.makeLine());
@@ -402,10 +411,9 @@ jsonEditor.Calculator = class {
       const key = this._inputArea.childNodes[i].childNodes[0].value;
       const value = this._inputArea.childNodes[i].childNodes[1].value;
       const type = this._inputArea.childNodes[i].childNodes[2].value;
-      if(key && value){
+      if(key && value) {
         this._editObject[key] = [value, type];
-      }
-      else{
+      } else {
         vscode.postMessage({
           command: 'alert',
           text: 'FORMAT ERROR : Please enter key and value.'
@@ -425,13 +433,13 @@ jsonEditor.Calculator = class {
     this._output.value = '';
   }
 
-  bufferCopy(){
+  bufferCopy() {
     this._output.select();
     document.execCommand('copy');
     this._output.setSelectionRange(0, 0);
   }
 
-  customOptionsCopy(){
+  customOptionsCopy() {
     this._customOutput.select();
     document.execCommand('copy');
     this._customOutput.setSelectionRange(0, 0);
