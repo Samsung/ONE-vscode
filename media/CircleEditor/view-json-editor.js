@@ -468,42 +468,50 @@ jsonEditor.Converter = class {
       this.calc();
   }
 
-  calc() {
-    const types = ['float32', 'float16', 'int32', 'uint8', 'int64', 'string', 'bool', 'int16',
-    'complex64', 'int8', 'float64', 'complex128', 'uint64', 'resource', 'variant', 'uint32'];
-    
-    // 0:float, 1:int, 2:uint, 3:string, 4:boolean, 5:complex, 6:resource, 7:variant
-    this._bits = [32, 16, 32, 8, 64, 0, 32, 16, 64, 8, 64, 128, 64, 0, 0, 32];
-    
-    this._typeIndex = types.indexOf(this._type.toLowerCase());
-    
-    this._arr = this._str.split(',');
-    this._result = "";
-    if(this._type === 'bool') {
-      for (let i = 0; i< this._arr.length; i++) {
-        if(this._arr[i].trim().toLowerCase() === 'true') {
-          this._arr[i] = 1;
-        } else if(this._arr[i].trim().toLowerCase() === 'false') {
-          this._arr[i] = 0;
+    calc() {
+        const types = ['float32', 'float16', 'int32', 'uint8', 'int64', 'string', 'bool', 'int16',
+        'complex64', 'int8', 'float64', 'complex128', 'uint64', 'resource', 'variant', 'uint32'];
+        
+        // 0:float, 1:int, 2:uint, 3:string, 4:boolean, 5:complex, 6:resource, 7:variant
+        this._bits = [32, 16, 32, 8, 64, 0, 32, 16, 64, 8, 64, 128, 64, 0, 0, 32];
+        
+        this._typeIndex = types.indexOf(this._type.toLowerCase());
+        
+        this._arr = this._str.split(',');
+        this._result = "";
+        if (this._type.toLowerCase() === 'bool') {
+            for (let i = 0; i < this._arr.length; i++) {
+                if (this._arr[i].trim().toLowerCase() === 'true') {
+                    this._result += "1, ";
+                    for (let j = 0; j < 3; j++) {
+                        this._result += "0, ";
+                    }
+                } else if (this._arr[i].trim().toLowerCase() === 'false') {
+                    for (let j = 0; j < 4; j++) {
+                        this._result += "0, ";
+                    }
+                } else {
+                    return this._result = "ERROR: Please enter in 'true' or 'false' format for boolean type.";
+                }
+            }
+            this._result = this._result.slice(0, -2);
+            return this._result;
         } else {
-          return this._result = "ERROR: Please enter in 'true' or 'false' format for boolean type.";
+            for (let i = 0; i < this._arr.length; i++) {
+                if (!/^[0-9\\.\-\\/]+$/.test(this._arr[i].trim())) { return this._result = "ERROR: Please enter digits and decimal points only."; }
+                let v = this.calculate(parseFloat(this._arr[i]), this._typeIndex, this._bits[this._typeIndex] / 8);
+                if (!v) {
+                    return this._result = "ERROR: Data does not match type.";
+                } else {
+                    for (let j = 0; j < v.byteLength; j++) {
+                        this._result += v.getUint8(j) + ", ";
+                    }
+                }
+            }
+            this._result = this._result.slice(0, -2);
+            return this._result;
         }
-      }
     }
-    for (let i = 0; i < this._arr.length; i++) {
-      if(!/^[0-9\\.\-\\/]+$/.test(this._arr[i])) {return this._result = "ERROR: Please enter digits and decimal points only.";}
-      let v = this.calculate(parseFloat(this._arr[i]), this._typeIndex, this._bits[this._typeIndex]/8);
-      if(!v) {
-        return this._result = "ERROR: Data does not match type.";
-      }else {
-        for (let j = 0; j < v.byteLength; j++) {
-          this._result += v.getUint8(j) +",";
-        }
-      }
-    }
-    this._result = this._result.slice(0,-1);
-    return this._result;
-  }
   
   calculate(num, c, b) {
 
