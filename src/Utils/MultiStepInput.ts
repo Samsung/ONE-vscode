@@ -57,11 +57,13 @@ interface InputBoxParameters {
 
 /* istanbul ignore next */
 class MultiStepInput {
+  // eslint-disable-next-line no-unused-vars
   static async run<T>(start: InputStep) {
     const input = new MultiStepInput();
     return input.stepThrough(start);
   }
 
+  // eslint-disable-next-line no-unused-vars
   static async runSteps<T>(steps: InputStep[]) {
     if (steps.length === 0) {
       throw new Error('not enough steps');
@@ -80,6 +82,7 @@ class MultiStepInput {
   // this variable sets to public.
   public steps: InputStep[] = [];
 
+  // eslint-disable-next-line no-unused-vars
   private async stepThrough<T>(start: InputStep) {
     let step: InputStep|void = start;
     while (step) {

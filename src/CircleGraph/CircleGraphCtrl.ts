@@ -342,7 +342,7 @@ export class CircleGraphCtrl {
         total: this._modelLength,
         responseArray: modelData
       });
-      fs.close(fd, (err) => {});
+      fs.close(fd, () => {});
     });
   }
 
