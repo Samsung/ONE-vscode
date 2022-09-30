@@ -68,7 +68,7 @@ https://github.com/lutzroeder/netron/blob/ae449ff55642636e6a1eef092eda34ffcba1c6
 .sidebar-view-item-value-line-link:hover { text-decoration: underline; }
 .sidebar-view-item-value-line-border { padding: 4px 6px 4px 6px; border-top: 1px solid rgba(27, 31, 35, 0.05); }
 .sidebar-view-item-value-line-content { white-space: pre; word-wrap: normal; overflow: auto; display: block; }
-.sidebar-view-item-value-expander { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; float: right; color: #aaa; cursor: pointer; user-select: none; -webkit-user-select: none; -moz-user-select: none; padding: 4px 6px 4px 6px; font-size: 9px; margin-top: 2px;}
+.sidebar-view-item-value-expander { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; float: right; color: #aaa; cursor: pointer; user-select: none; -webkit-user-select: none; -moz-user-select: none; padding: 4px 4px 4px 4px; font-size: 11px !important; width: 11px !important; height: 11px !important; margin-top: 2px; }
 .sidebar-view-item-value-expander:hover { color: #000; }
 .sidebar-view-item-select {
     font-family: inherit; font-size: 12px;
@@ -129,11 +129,11 @@ https://github.com/lutzroeder/netron/blob/ae449ff55642636e6a1eef092eda34ffcba1c6
 .vscode-dark .sidebar-view-find input[type=text] { background: #383838; color: #dfdfdf; border-color: #424242; }
 .vscode-dark .sidebar-view-find li:not(:first-child) { border-top: 1px solid #2a2a2a; }
 .vscode-dark .sidebar-view-find li:hover { background: #383838; }
-.sidebar-view-item-value-edit{ font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; float: right; color: #aaa; cursor: pointer; user-select: none; -webkit-user-select: none; -moz-user-select: none; padding: 4px 6px 4px 6px; font-size: 9px; margin-top: 2px;}
+.sidebar-view-item-value-edit{ font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; float: right; color: #aaa; cursor: pointer; user-select: none; -webkit-user-select: none; -moz-user-select: none; padding: 4px 4px 4px 4px; font-size: 11px !important; width: 11px !important; height: 11px !important; margin-top: 2px; }
 .sidebar-view-item-value-edit:hover { color: #000; }
-.sidebar-view-item-value-save{ font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; float: right; color: #aaa; cursor: pointer; user-select: none; -webkit-user-select: none; -moz-user-select: none; padding: 4px 6px 4px 6px; font-size: 9px; margin-top: 2px;}
+.sidebar-view-item-value-save{ font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; float: right; color: #aaa; cursor: pointer; user-select: none; -webkit-user-select: none; -moz-user-select: none; padding: 4px 4px 4px 4px; font-size: 11px !important; width: 11px !important; height: 11px !important; margin-top: 2px; }
 .sidebar-view-item-value-save:hover { color: #000; }
-.sidebar-view-item-value-cancel{ font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; float: right; color: #aaa; cursor: pointer; user-select: none; -webkit-user-select: none; -moz-user-select: none; padding: 4px 6px 4px 6px; font-size: 9px; margin-top: 2px;}
+.sidebar-view-item-value-cancel{ font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; float: right; color: #aaa; cursor: pointer; user-select: none; -webkit-user-select: none; -moz-user-select: none; padding: 4px 4px 4px 4px; font-size: 11px !important; width: 11px !important; height: 11px !important; margin-top: 2px; }
 .sidebar-view-item-value-cancel:hover { color: #000; }
 .sidebar-view-item-value-line-input{ font-family: inherit; font-size: 11px; background-color: #fcfcfc; border: 0; overflow: auto; padding: 4px 6px 4px 6px; width: 65%; word-wrap: break-word;}
 .sidebar-view-item-value-line-input:focus{ font-family: inherit; font-size: 11px; background-color: #fcfcfc; outline:0; overflow: auto; padding: 4px 6px 4px 6px; }
@@ -147,9 +147,9 @@ https://github.com/lutzroeder/netron/blob/ae449ff55642636e6a1eef092eda34ffcba1c6
 .vscode-dark .sidebar-view-item-value-line-inputs{ background-color: #383838; border-color: #383838; color: #dfdfdf; }
 .vscode-dark .sidebar-view-item-value-line-inputs:focus{ background-color: #383838; border-color: #383838; color: #dfdfdf; }
 .vscode-dark .sidebar-view-item-value{ background-color: #383838; }
-.sidebar-view-item-value-add{ font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; text-align: center; color: #aaa; cursor: pointer; user-select: none; -webkit-user-select: none; -moz-user-select: none; font-size: 9px; margin-top: 2px; margin-left: 105px;}
+.sidebar-view-item-value-add{ font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; text-align: center; color: #aaa; cursor: pointer; user-select: none; -webkit-user-select: none; -moz-user-select: none; font-size: 11px; margin-left: 105px; margin-top: 2px; }
 .sidebar-view-item-value-add:hover{ color: #000; }
-.sidebar-view-item-value-remove{ font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; float: right; color: #aaa; cursor: pointer; user-select: none; -webkit-user-select: none; -moz-user-select: none; padding: 4px 6px 4px 6px; font-size: 9px; margin-top: 2px;}
+.sidebar-view-item-value-remove{ font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; float: right; color: #aaa; cursor: pointer; user-select: none; -webkit-user-select: none; -moz-user-select: none; padding: 4px 4px 4px 4px; font-size: 11px !important; width: 11px !important; height: 11px !important; margin-top: 2px; }
 .sidebar-view-item-value-remove:hover { color: #000; }
 .sidebar-view-item-value-line-type-select {font-family: inherit; font-size: 11px; background-color: #fcfcfc; border: 0; overflow: auto; width: 25%; font-weight: bold; }
 .sidebar-view-item-value-line-type-select:focus{ outline: none; }
