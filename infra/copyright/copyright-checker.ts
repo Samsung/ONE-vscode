@@ -28,6 +28,7 @@ const ignorePathList = [
     "**/out/**",
     "**/media/CircleGraph/external/**",
     "**/src/Utils/external/**",
+    "**/media/CircleEditor/external/**"
 ];
 
 glob("**/*.{" + fileFormatsToCheck + "}",
