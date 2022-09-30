@@ -42,7 +42,7 @@ export class PathToHash {
     // TO BE IMPLEMENT
   }
 
-  public async validateMetadata(pathToHash: any) {
+  async validateMetadata(pathToHash: any) {
     // 1. Changing pathToHash, a tree structure, into a one-dimensional structure
     let flattenPathToHash = await this.getFlatMap(pathToHash);
 
@@ -56,36 +56,36 @@ export class PathToHash {
     await this.deleteMetadata(flattenPathToHash);
   }
 
-  public async getFlatMap(map: any) {
+  async getFlatMap(map: any) {
     // TO BE IMPLEMENTED
   }
 
-  public async createMetadata(flattenMap: any) {
+  async createMetadata(flattenMap: any) {
     // TO BE IMPLEMENTED
   }
 
-  public async deleteMetadata(flattenMap: any) {
+  async deleteMetadata(flattenMap: any) {
     // TO BE IMPLEMENTED
   }
 
 
-  public get(uri: vscode.Uri) {
+  get(uri: vscode.Uri) {
     // TO BE IMPLEMENTED
   }
 
-  public getFilesUnderFolder(uri: vscode.Uri) {
+  getFilesUnderFolder(uri: vscode.Uri) {
     // TO BE IMPLEMENTED
   }
 
-  public async addPath(uri: vscode.Uri) {
+  async add(uri: vscode.Uri) {
     // TO BE IMPLEMENTED
   }
 
-  public deletePath(uri: vscode.Uri) {
+  elete(uri: vscode.Uri) {
     // TO BE IMPLEMENTED
   }
 
-  public deleteEmptyPath(parent: any, paths: string[], idx: number) {
+  deleteEmptyPath(parent: any, paths: string[], idx: number) {
     // TO BE IMPLEMENTED
   }
 }
