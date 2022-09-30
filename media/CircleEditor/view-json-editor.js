@@ -22,7 +22,7 @@ jsonEditor.jsonEditor = class {
       e.preventDefault();
       const value = this._host.document.getElementById('jsonEditor-content');
       const data = value.value;
-
+      this._host._view._jsonEditorOpened = false;
       vscode.postMessage({
         command: 'updateJson',
         data: data,
@@ -32,13 +32,14 @@ jsonEditor.jsonEditor = class {
 
   open() {
     this.close();
-    
+    this._host._view._jsonEditorOpened = true;
     vscode.postMessage({
       command: 'loadJson'
     });
   }
 
   close() {
+    this._host._view._jsonEditorOpened = false;
     this._deactivate();
     this._hide();
   }
@@ -91,6 +92,16 @@ jsonEditor.jsonEditor = class {
       applyButton.addEventListener('click', this._applyEditHandler);
       applyButton.innerHTML = 'apply';
       jsonEditorBox.appendChild(applyButton);
+
+			const title = this._host.document.createElement('div');
+			title.classList.add('json-editor-title');
+
+			const titleText = this._host.document.createElement('p');
+			titleText.classList.add('json-editor-title-text');
+			titleText.innerHTML = 'JSON Editor';
+
+			title.appendChild(titleText);
+			jsonEditorBox.appendChild(title);
       
       const content = new jsonEditor.content(this._host, item);
       jsonEditorBox.appendChild(content.render());
@@ -125,7 +136,7 @@ jsonEditor.content = class {
     };
 
     const content = this._host.document.createElement('textarea');
-    content.style.height = 'calc(100% - 35px)';
+    content.style.height = 'calc(95% - 22px)';
     content.style.width = 'calc(100% - 6px)';
     content.setAttribute('id', 'jsonEditor-content');
     content.style.resize = 'none';
@@ -196,7 +207,7 @@ jsonEditor.Calculator = class {
     if(this._toggle.innerText === '+') {
       this._toggle.innerText = '-';
       const editBox = this._host.document.getElementById('jsonEditor-content');
-      editBox.style.height = '55%';
+      editBox.style.height = '58%';
       const div = this.makeTag('div');
       this._jsonEditorBox.appendChild(div);
       
@@ -213,13 +224,14 @@ jsonEditor.Calculator = class {
       this._toggle.innerText = '+';
 
       const editBox = this._host.document.getElementById('jsonEditor-content');
-      editBox.style.height = 'calc(100% - 35px)';
+      editBox.style.height = 'calc(95% - 22px)';
 
       this._calculatorBox.style.height = "5%";
-      while (this._elements[0].childElementCount > 1) {
-        this._elements[0].removeChild(this._elements[0].lastChild);
-      }
-    }
+			
+			while (this._jsonEditorBox.childElementCount > 5) {
+				this._jsonEditorBox.removeChild(this._jsonEditorBox.lastChild);
+			}
+		}
   }
 
   buffer() {
