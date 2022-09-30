@@ -17,6 +17,9 @@
     "Thenable": true,
     "NodeJS": true
   },
+  "extends": [
+    "eslint:recommended"
+  ],
   "rules": {
       "@typescript-eslint/naming-convention": "warn",
       "@typescript-eslint/semi": "warn",
@@ -29,6 +32,7 @@
       "no-case-declarations": "warn",
       "no-useless-escape" : "warn",
       "no-prototype-builtins": "warn",
-      "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }]
+      "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+      "no-undef": "off"
   }
 }
