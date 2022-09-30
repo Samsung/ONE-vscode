@@ -4,6 +4,7 @@ import { disposeAll } from "./dispose";
 import * as fs from "fs";
 import { getNonce } from "../Utils/external/Nonce";
 import { CircleException } from "../Utils/CircleEditorException";
+import {getUri} from '../Utils/external/Uri';
 
 export enum MessageDefs {
   // message command
@@ -219,11 +220,15 @@ export class CircleEditorProvider
         "index.html"
       )
     );
+    const codiconUri = getUri(webview, this._context.extensionUri, ['node_modules','@vscode','codicons','dist','codicon.css']);
     let html = fs.readFileSync(htmlUrl.fsPath, { encoding: "utf-8" });
-
+            
+        console.log(codiconUri);
+        
     const nonce = getNonce();
     html = html.replace(/%nonce%/gi, nonce);
     html = html.replace('%webview.cspSource%', webview.cspSource);
+    html = html.replace(/\${codiconUri}/g, `${codiconUri}`);
     // necessary files from netron to work
     html = this.updateUri(html, webview, '%view-grapher.css%', 'view-grapher.css');
     html = this.updateUri(html, webview, '%view-sidebar.css%', 'view-sidebar.css');

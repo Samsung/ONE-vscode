@@ -683,10 +683,8 @@ class NodeAttributeView {
         if (type) {
             this._expander = this._host.document.createElement('div');
             this._edit = this._host.document.createElement('div');
-            this._expander.className = 'sidebar-view-item-value-expander';
-            this._edit.className = 'sidebar-view-item-value-edit';
-            this._expander.innerText = 'show';
-            this._edit.innerText='edit';
+            this._expander.className = 'sidebar-view-item-value-expander codicon codicon-chevron-down';
+            this._edit.className = "sidebar-view-item-value-expander codicon codicon-edit";
             this._expander.addEventListener('click', () => {
                 this.toggle();
             });
@@ -743,8 +741,8 @@ class NodeAttributeView {
     }
 
     toggle() {
-        if (this._expander.innerText === 'show') {
-            this._expander.innerText = 'less';
+        if (this._expander.className === 'sidebar-view-item-value-expander codicon codicon-chevron-down') {
+            this._expander.className = 'sidebar-view-item-value-expander codicon codicon-chevron-up';
 
             const typeLine = this._host.document.createElement('div');
             typeLine.className = 'sidebar-view-item-value-line-border';
@@ -778,7 +776,7 @@ class NodeAttributeView {
             }
         }
         else {
-            this._expander.innerText = 'show';
+            this._expander.className = 'sidebar-view-item-value-expander codicon codicon-chevron-down';
             while (this._element.childElementCount > 3) {
                 this._element.removeChild(this._element.lastChild);
             }
@@ -800,12 +798,9 @@ class NodeAttributeView {
         this._save = this._host.document.createElement('div');
         this._cancel = this._host.document.createElement('div');
         this._remove = this._host.document.createElement('div');
-        this._save.className = 'sidebar-view-item-value-save';
-        this._cancel.className = 'sidebar-view-item-value-cancel';
-        this._remove.className = 'sidebar-view-item-value-remove';
-        this._save.innerText = 'save';
-        this._cancel.innerText='cancel';
-        this._remove.innerText='-';
+        this._save.className = 'sidebar-view-item-value-save codicon codicon-save';
+        this._cancel.className = 'sidebar-view-item-value-cancel codicon codicon-discard';
+        this._remove.className = 'sidebar-view-item-value-remove codicon codicon-trash';
         this._save.addEventListener('click', (e) => {
             e.preventDefault();
             this.save();
