@@ -1,9 +1,9 @@
 {
-    "model.tflite": {
-        "name": "model.tflite",
-        "file-extension": "tflite",
-        "create-time": "2022-09-29T00:26:05.031Z",
-        "modified-time": "2022-09-29T00:26:05.031Z",
-        "is-deleted": false
-    }
+  "model.tflite": {
+    "name": "model.tflite",
+    "file-extension": "tflite",
+    "create-time": "2022-09-29T00:26:05.031Z",
+    "modified-time": "2022-09-29T00:26:05.031Z",
+    "is-deleted": false
+  }
 }

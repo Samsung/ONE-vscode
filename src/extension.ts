@@ -21,16 +21,15 @@ import {CfgEditorPanel} from './CfgEditor/CfgEditorPanel';
 import {CircleViewerProvider} from './CircleGraph/CircleViewer';
 import {DeviceViewProvider} from './Execute/DeviceViewProvider';
 import {JsonTracerViewerPanel} from './Jsontracer/JsonTracerViewerPanel';
+import {DummyBackendProvider} from './MetadataManager/Dummy/DummyBackendProvider';
+import {MetadataEventManager} from './MetadataManager/EventManager';
+import {PathToHash} from './MetadataManager/pathToHash';
 import {MondrianEditorProvider} from './Mondrian/MondrianEditor';
 import {OneTreeDataProvider} from './OneExplorer/OneExplorer';
 import {PartEditorProvider} from './PartEditor/PartEditor';
 import {PartGraphSelPanel} from './PartEditor/PartGraphSelector';
-import { ToolchainProvider } from './Toolchain/ToolchainProvider';
+import {ToolchainProvider} from './Toolchain/ToolchainProvider';
 import {Logger} from './Utils/Logger';
-import { PathToHash } from './MetadataManager/pathToHash';
-
-import { MetadataEventManager } from './MetadataManager/EventManager';
-import { DummyBackendProvider } from './MetadataManager/Dummy/DummyBackendProvider';
 
 /* istanbul ignore next */
 export function activate(context: vscode.ExtensionContext) {
@@ -51,7 +50,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.executeCommand('setContext', 'one:extensionKind', 'Workspace');
   }
 
-  
+
   PathToHash.getInstance();
 
   MetadataEventManager.register(context);
@@ -74,7 +73,7 @@ export function activate(context: vscode.ExtensionContext) {
   CircleViewerProvider.register(context);
 
   DummyBackendProvider.register();
-  
+
 
   // returning backend registration function that will be called by backend extensions
   return backendRegistrationApi();

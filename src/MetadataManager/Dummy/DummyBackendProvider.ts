@@ -14,31 +14,32 @@
  * limitations under the License.
  */
 
-import { Backend } from '../../Backend/Backend';
+import * as cp from 'child_process';
+import * as fs from 'fs';
+
+import {backendRegistrationApi} from '../../Backend/API';
+import {Backend} from '../../Backend/Backend';
 import {Command} from '../../Backend/Command';
 import {Compiler} from '../../Backend/Compiler';
 import {Executor} from '../../Backend/Executor';
-import {Toolchain, ToolchainInfo, Toolchains} from '../../Backend/Toolchain';
-import { backendRegistrationApi } from '../../Backend/API';
 import {DeviceSpec} from '../../Backend/Spec';
+import {Toolchain, ToolchainInfo, Toolchains} from '../../Backend/Toolchain';
 import {Version} from '../../Backend/Version';
-import * as fs from 'fs';
-import * as cp from 'child_process';
 import {OneStorage} from '../../OneExplorer/OneStorage';
-import { Metadata } from '../metadataAPI';
+import {Metadata} from '../metadataAPI';
 
 const which = require('which');
 
 class DummyBackend implements Backend {
-  private static _name = "dummy backend";
+  private static _name = 'dummy backend';
 
   name(): string {
     return DummyBackend._name;
   }
-  compiler(): Compiler | undefined {
+  compiler(): Compiler|undefined {
     return new DummyCompiler();
   }
-  executor(): Executor | undefined {
+  executor(): Executor|undefined {
     return new DummyExecutor();
   }
   executors(): Executor[] {
@@ -53,14 +54,16 @@ class DummyCompiler implements Compiler {
   /* eslint-disable-next-line */
   getToolchains(toolchainType: string, start: number, count: number): Toolchains {
     const array = new Array<Toolchain>();
-    const toolchainInfo = new ToolchainInfo("metadata toolchain", "Toolchain for metadata", new Version(0, 1, 0));
+    const toolchainInfo =
+        new ToolchainInfo('metadata toolchain', 'Toolchain for metadata', new Version(0, 1, 0));
     array.push(new MetadataToolchain(toolchainInfo));
     return array;
   }
   /* eslint-disable-next-line */
   getInstalledToolchains(toolchainType: string): Toolchains {
     const array = new Array<Toolchain>();
-    const toolchainInfo = new ToolchainInfo("metadata toolchain", "Toolchain for metadata", new Version(0, 1, 0));
+    const toolchainInfo =
+        new ToolchainInfo('metadata toolchain', 'Toolchain for metadata', new Version(0, 1, 0));
     array.push(new MetadataToolchain(toolchainInfo));
     return array;
   }
@@ -71,18 +74,19 @@ class DummyCompiler implements Compiler {
 
 class DummyExecutor implements Executor {
   name(): string {
-    return "dummy executor";
+    return 'dummy executor';
   }
   getExecutableExt(): string[] {
     return ['.cfg', '.pb', '.tflite', 'onnx'];
   }
   toolchains(): Toolchains {
     const array = new Array<Toolchain>();
-    const toolchainInfo = new ToolchainInfo("metadata toolchain", "Toolchain for metadata", new Version(0, 1, 0));
+    const toolchainInfo =
+        new ToolchainInfo('metadata toolchain', 'Toolchain for metadata', new Version(0, 1, 0));
     array.push(new MetadataToolchain(toolchainInfo));
     return array;
   }
-  runInference(_modelPath: string, _options?: string[] | undefined): Command {
+  runInference(_modelPath: string, _options?: string[]|undefined): Command {
     return new Command('');
   }
   require(): DeviceSpec {
@@ -104,29 +108,29 @@ class MetadataToolchain extends Toolchain {
     if (cfgObj) {
       const cfgInfo: any = {};
       const enabledSteps = new Set<string>();
-      for(let [key, value] of Object.entries(cfgObj.rawObj)) {
+      for (let [key, value] of Object.entries(cfgObj.rawObj)) {
         const data: any = {};
         if (key === 'onecc') {
-          for(let [step, isEnabled] of Object.entries(value)) {
+          for (let [step, isEnabled] of Object.entries(value)) {
             if (isEnabled === 'True') {
               data[key] = true;
               // cfgInfo[key] = value;
               enabledSteps.add(step);
             }
           }
-        } else if(enabledSteps.has(key)) {
+        } else if (enabledSteps.has(key)) {
           /* eslint-disable */
           const inputPath = value['input_path'];
           const outputPath = value['output_path'];
           // FIXME: consider when the input path and the output path is same
-          if(inputPath && outputPath && inputPath !== outputPath) {
-            Metadata.setRelationInfoMap(outputPath, inputPath);
-            if(outputPath.split('.').pop() === 'circle') {
-              Metadata.setRelationInfoMap(outputPath+'.log', outputPath);
+          if (inputPath && outputPath && inputPath !== outputPath) {
+            Metadata.setRelationMap(outputPath, inputPath);
+            if (outputPath.split('.').pop() === 'circle') {
+              Metadata.setRelationMap(outputPath + '.log', outputPath);
             }
             /* eslint-enable */
           }
-          for(let [k, v] of Object.entries(value)) {
+          for (let [k, v] of Object.entries(value)) {
             if (k !== 'input_path' && k !== 'output_path') {
               // while(k.)
               data[k.replace(/-/gi, '-')] = v;
@@ -146,7 +150,7 @@ class MetadataToolchain extends Toolchain {
 
     const oneccRealPath = fs.realpathSync(oneccPath);
     const process = cp.spawnSync(oneccRealPath, ['--version']);
-    if(process.status === 0) {
+    if (process.status === 0) {
       const result = Buffer.from(process.stdout).toString();
       const oneccVersion = result.toString().split('\n')[0].split(' ')[2];
       if (cfgObj) {
