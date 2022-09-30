@@ -13,32 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * Copyright (c) Microsoft Corporation
- *
- * All rights reserved.
- *
- * MIT License
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
- * associated documentation files (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge, publish, distribute,
- * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all copies or
- * substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
- * NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-/*
-Some part of this code refers to
-https://github.com/microsoft/vscode-extension-samples/blob/2556c82cb333cf65d372bd01ac30c35ea1898a0e/custom-editor-sample/src/catScratchEditor.ts
-*/
 
 import * as vscode from 'vscode';
 import { getNonce } from '../Utils/external/Nonce';
@@ -57,10 +31,10 @@ export class MetadataViewer{
     this._extensionUri = extensionUri;
   }
 
-  public initMetadataInfo() {
+  public initWebView() {
     this._webview.options = this.getWebviewOptions();
 
-    //웹뷰로부터 메세지 받을때 이벤트 등록
+    //Register for an event when you receive a message from a web view
     this.registerEventHandlers();
 
   }
@@ -87,14 +61,17 @@ export class MetadataViewer{
 
     const nonce = getNonce();
     const jsIndex = panel.webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "media", "MetadataViewer", "index.js"));
-    const cssIndex = panel.webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "media", "MetadataViewer", "index.css"));
+    const cssIndex = panel.webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "media", "MetadataViewer", "style.css"));
+    const codiconsUri = panel.webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'node_modules', '@vscode/codicons', 'dist', 'codicon.css'));
 
     const htmlUri = vscode.Uri.joinPath(extensionUri, "media", "MetadataViewer", "index.html");
 
     let html = Buffer.from(await vscode.workspace.fs.readFile(htmlUri)).toString();
     html = html.replace(/\${nonce}/g, `${nonce}`);
+    html = html.replace(/\${webview.cspSource}/g, `${panel.webview.cspSource}`);
     html = html.replace(/\${index.css}/g, `${cssIndex}`);
     html = html.replace(/\${index.js}/g, `${jsIndex}`);
+    html = html.replace(/\${codicon.css}/g, `${codiconsUri}`);
     panel.webview.html = html;
     
   }
@@ -106,7 +83,7 @@ export class MetadataViewer{
   private registerEventHandlers() {
     // Handle messages from the webview
     this._webview.onDidReceiveMessage(message => {
-      // this.handleReceiveMessage(message);
+      
     }, null, this._disposable);
   }
 
@@ -119,4 +96,3 @@ export class MetadataViewer{
     }
   }
 }
-

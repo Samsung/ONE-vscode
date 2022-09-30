@@ -13,39 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * Copyright (c) Microsoft Corporation
- *
- * All rights reserved.
- *
- * MIT License
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
- * associated documentation files (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge, publish, distribute,
- * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all copies or
- * substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
- * NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-/*
-Some part of this code refers to
-https://github.com/microsoft/vscode-extension-samples/blob/2556c82cb333cf65d372bd01ac30c35ea1898a0e/custom-editor-sample/src/catScratchEditor.ts
-*/
 
 import * as vscode from 'vscode';
 import { MetadataViewerProvider } from '../MetadataViewer/MetadataViewerProvider';
+import { Balloon } from '../Utils/Balloon';
 import { getNonce } from '../Utils/external/Nonce';
 import { getUri } from '../Utils/external/Uri';
 import { obtainWorkspaceRoot } from '../Utils/Helpers';
-import { getRelationData} from './RelationViewerProvider';
+import { getRelationData } from './example/RelationExample';
 
 /* istanbul ignore next */
 export class RelationViewer{
@@ -60,11 +35,11 @@ export class RelationViewer{
     this._panel = panel;
     this._extensionUri = extensionUri;
   }
-  //웹뷰의 옵션과 이벤트 등록
-  public initRelationViewer() {
+  
+  public initWebview() {
     this._webview.options = this.getWebviewOptions();
 
-    //웹뷰로부터 메세지 받을때 이벤트 등록
+    //Register for an event when you receive a message from a web view
     this.registerEventHandlers(this._panel);
 
   }
@@ -79,7 +54,6 @@ export class RelationViewer{
     };
   }
 
-  //웹뷰에 relation 정보를 그린다.
   public loadContent() {
     this._getHtmlForWebview(this._extensionUri,this._panel);
   }
@@ -94,29 +68,15 @@ export class RelationViewer{
         getUri(panel.webview, extensionUri, ['media', 'RelationViewer', 'index.js']);
     const styleUri =
         getUri(panel.webview, extensionUri, ['media', 'RelationViewer', 'style.css']);
-    
-    const toolkitUri = getUri(panel.webview, extensionUri, [
-      'node_modules',
-      '@vscode',
-      'webview-ui-toolkit',
-      'dist',
-      'toolkit.js',
-    ]);
 
-    const codiconUri = getUri(panel.webview, extensionUri, [
-      'node_modules',
-      '@vscode',
-      'codicons',
-      'dist',
-      'codicon.css',
-    ]);
+    const codiconsUri = panel.webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'node_modules', '@vscode/codicons', 'dist', 'codicon.css'));
+
 
     const htmlUri = vscode.Uri.joinPath(extensionUri, "media", "RelationViewer", "index.html");
     let html = Buffer.from(await vscode.workspace.fs.readFile(htmlUri)).toString();
     html = html.replace(/\${nonce}/g, `${nonce}`);
     html = html.replace(/\${webview.cspSource}/g, `${panel.webview.cspSource}`);
-    html = html.replace(/\${toolkitUri}/g, `${toolkitUri}`);
-    html = html.replace(/\${codiconUri}/g, `${codiconUri}`);
+    html = html.replace(/\${codicon.css}/g, `${codiconsUri}`);
     html = html.replace(/\${scriptUri}/g, `${scriptUri}`);
     html = html.replace(/\${styleUri}/g, `${styleUri}`);
     panel.webview.html = html;
@@ -137,6 +97,9 @@ export class RelationViewer{
         case "update":
           //fileUri = vscode.Uri.file(obtainWorkspaceRoot() + '/' + message.path);
           payload = getRelationData(message.path);
+          if(!payload){
+            return Balloon.error('Invalid File Path, please check if file exists.',false);
+          }
           panel.webview.postMessage(
             {type:'update', payload: payload, historyList:message.historyList}
           );
@@ -144,6 +107,9 @@ export class RelationViewer{
         case "history":
           //fileUri = vscode.Uri.file(obtainWorkspaceRoot() + '/' + message.path);
           payload = getRelationData(message.path);
+          if(!payload){
+            return Balloon.error('Invalid File Path, please check if file exists.',false);
+          }
           panel.webview.postMessage(
             {type:'history', payload: payload, historyList:message.historyList}
           );
@@ -174,4 +140,3 @@ export class RelationViewer{
     }
   }
 }
-

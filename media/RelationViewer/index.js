@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-//웹뷰 오른쪽 클릭 막기
+//prevent right-clicks in a Web view
 document.addEventListener('contextmenu', event => event.preventDefault());
 
 const vscode = acquireVsCodeApi();
-//히스토리 저장 리스트
+//history saved List
 let historyList = vscode.getState()?.historyList || [];
 
-//현재 오픈된 파일의 정보 저장
+//Save information for currently open files
 let currentFileInfo = null;
 
-//현재 컨텍스트 메뉴를 킨 노드 경로 저장
+//Save node path to the current context menu
 let selectedNodePath = null;
 
 window.addEventListener('message',(event) => {
   const message = event.data;
-  const { selected, relationData } = message.payload;
+  const selected = message.payload['selected'];
+  const relationData = message.payload['relation-data'];
+  
   getSelectedFileInfo(selected,relationData);
   
   switch (message.type) {
@@ -58,13 +60,13 @@ window.addEventListener('message',(event) => {
   }
 });
 
-//노드 저장
+//save node
 let node;
 
 function attachTree(relationData) {
   
   const wheelInfoBox = document.createElement('div');
-  wheelInfoBox.innerText = '* (ctrl OR shift) + wheel : 확대, 축소';
+  wheelInfoBox.innerText = '* (Ctrl or Shift) + Wheel : 확대, 축소';
   wheelInfoBox.classList.add('wheel-info-box');
   document.body.appendChild(wheelInfoBox);
 
@@ -74,9 +76,9 @@ function attachTree(relationData) {
     .parentId(d => d.parent)
     (relationData);
   
-  let historyDivWidth = (screen.width * 0.11 < 200) ? 200 : screen.width * 0.11;
+  let historyDivWidth = screen.width * 0.11;
   const rectSizeWidth = 130;
-  const rectSizeHeight = 45;
+  const rectSizeHeight = 55;
 
   const [maxWidthCount,maxHeightCount] = countMaxDataNum(relationData);
 
@@ -101,14 +103,14 @@ function attachTree(relationData) {
 
   document.body.appendChild(relationBox);
 
-  //컨텍스트 메뉴 Box 그리기
+  //draw contextMenuBox
   const contextMenuBox = document.createElement('div');
   contextMenuBox.setAttribute('id','context-menu-box');
   contextMenuBox.classList.add('plus-button-context-box');
   contextMenuBox.style.width = `${width + historyDivWidth}px`;
   
 
-  //컨텍스트 메뉴 그리기
+  //draw contextMenu
   const contextMenu = document.createElement('div');
   contextMenu.setAttribute('id','context-menu');
   contextMenu.classList.add('context-menu');
@@ -119,7 +121,7 @@ function attachTree(relationData) {
 
   for (let index = 0; index < contextMenuList.length; index++) {
 
-    //메뉴 구분선 추가
+    //add menu a dividing line
     if(index >= 1){
       const contextMenuInfoLine = document.createElement('div');
       contextMenuInfoLine.classList.add('context-menu-line');
@@ -148,7 +150,7 @@ function attachTree(relationData) {
     });
     
   }
-  //좌 우 클릭 이벤트 등록
+  //append left, right click 
   contextMenuBox.addEventListener('click', (e) => {
     contextMenuBox.style.display = 'none';
     contextMenu.style.display = 'none';
@@ -209,7 +211,7 @@ function attachTree(relationData) {
       return "";
     })
     .style('fill', d => {
-      const nodeData = d.data.dataList[d.data.representIdx];
+      const nodeData = d.data['data-list'][d.data['represent-idx']];
       const nodeFileExtension = nodeData['name'].split('.')[nodeData['name'].split('.').length - 1];
       if(nodeFileExtension === 'log'){
         return 'rgb(25, 40, 60, 1.0)';
@@ -223,88 +225,93 @@ function attachTree(relationData) {
       if (waitForDouble !== null) {
         clearTimeout(waitForDouble);
         waitForDouble = null;
-        console.log('더블 클릭입니다.', d);
       }
     })
     .on("click", (p, d) => {
       if(waitForDouble === null) {
         waitForDouble = setTimeout(() => {
-          postMessage('update',{path: d.data.dataList[d.data.representIdx].path,historyList:historyList});
+          postMessage('update',{path: d.data['data-list'][d.data['represent-idx']].path,historyList:historyList});
           waitForDouble = null;
         }, 300);
       }
     })
     .on("contextmenu",(mouse,d)=>{
-      openContextMenu(mouse,d.data.dataList[d.data.representIdx].path);
+      openContextMenu(mouse,d.data['data-list'][d.data['represent-idx']].path);
     });
     
   
-  // 파일 path 보여줄 호버 텍스트 div 생성
+  // Create hover text_div to show File path 
   const hoverText = document.createElement('div');
   document.body.appendChild(hoverText);
   hoverText.classList.add('hover-text');
 
-  // 파일 확장자 표시
+  // Show file extension
   node.append("text")
-    .attr("y", -rectSizeHeight + 3)
-    .attr('class','text-shadow-white file-extension')
+    .attr("y", -rectSizeHeight + 15)
+    .attr('class','file-extension-custom file-extension')
     .style("text-anchor", "middle")
-    .text(d => d.data.dataList[d.data.representIdx].name.split('.')[d.data.dataList[d.data.representIdx].name.split('.').length - 1])
+    .text(d => d.data['data-list'][d.data['represent-idx']].name.split('.')[d.data['data-list'][d.data['represent-idx']].name.split('.').length - 1])
     .on('mouseover', (mouse, node) => {
       const fileExtensionText = mouse.path[0].getBoundingClientRect();
       hoverText.style.display = 'block';
-      hoverText.innerText = `${node.data.dataList[node.data.representIdx].path}`;
-      hoverText.style.left = `${window.scrollX + fileExtensionText.x - 10}px`;
-      hoverText.style.top = `${window.scrollY + fileExtensionText.y - 23}px`;
+      hoverText.innerText = `${node.data['data-list'][node.data['represent-idx']].path}`;
+      hoverText.style.left = `${fileExtensionText.x - 8}px`;
+      hoverText.style.top = `${fileExtensionText.y - 24}px`;
+      if(node.data['data-list'][node.data['represent-idx']]['is-deleted']){
+        hoverText.classList.add('deleted-text-decoration');
+      }
     }).on('mouseout', (mouse, node) => {
       hoverText.style.display = 'none';
+      if(node.data['data-list'][node.data['represent-idx']]['is-deleted']){
+        hoverText.classList.remove('deleted-text-decoration');
+      }
     });
   
-  //각 노드 이름 그리기
+  //draw node`s name per node
   setDrawInfoInNode('name',node,rectSizeHeight,waitForDouble);
 
-  //이름과 버젼 정보 구분선 처리
+  //draw a dividing line
   setDrawInfoInNode('line',node, rectSizeHeight,waitForDouble);
 
-  //버젼 정보 그리기
+  //draw version info
   setDrawInfoInNode('toolchainVersion',node, rectSizeHeight,waitForDouble);
   setDrawInfoInNode('oneccVersion',node, rectSizeHeight),waitForDouble;
 
-  //플러스 버튼 추가
+  //add a plus button
   node._groups[0].forEach((g) => {
     g.setAttribute('id',`${g.__data__.data.id}-g`);
 
     const rectDom = g.childNodes[0];
 
-    if(g.__data__.data.dataList.length >= 2){
+    if(g.__data__.data['data-list'].length >= 2){
 
-      //플러스버튼 컨텍스트 메뉴
+      //draw plus_button_ctext_menu
       const plusButtonContextMenu = document.createElement('div');
       plusButtonContextMenu.classList.add('plus-button-context-menu');
       plusButtonContextMenu.setAttribute('id',`${g.__data__.data.id}-plus-button-context-menu`);
       document.body.appendChild(plusButtonContextMenu);
 
-      //플러스버튼 컨텍스트 메뉴 헤더 추가
+      //draw plus_button_context_menu_header
       const plusButtonContextMenuHeader = document.createElement('div');
       plusButtonContextMenuHeader.classList.add('plus-button-context-menu-header');
       plusButtonContextMenuHeader.innerText = 'Same Content File List';
       plusButtonContextMenu.appendChild(plusButtonContextMenuHeader);
 
-      //컨텍스 메뉴에 데이터 리스트 정보 추가
-      const dataList = g.__data__.data.dataList;
+      //Add data list information to the context menu
+      const dataList = g.__data__.data['data-list'];
       
       for (let idx = 0; idx < dataList.length; idx++) {
-        if(idx !== g.__data__.data.representIdx){
+        if(idx !== g.__data__.data['represent-idx']){
           const data = dataList[idx];
           for (const key in data) {
             if(key === 'name'){
 
-              //구분선 추가
+              //add a dividing line
               const plusButtonContextMenuLine = document.createElement('div');
               plusButtonContextMenuLine.classList.add('context-menu-line');
               plusButtonContextMenu.appendChild(plusButtonContextMenuLine);
               
-              //플러스 버튼 컨텍스트 메뉴 정보 그리기
+              //draw plus_button_context_menu_info
               const plusButtonContextMenuInfo = document.createElement('div');
               plusButtonContextMenuInfo.innerText = data[key];
               plusButtonContextMenuInfo.classList.add('plus-button-context-menu-info');
@@ -312,7 +319,7 @@ function attachTree(relationData) {
               
               plusButtonContextMenuInfo.addEventListener('click', () => {
                 postMessage('update',{path:dataList[idx]['path'],historyList:historyList});
-                //컨텍스트 메뉴창 숨기기
+                //hide context_menu
                 hidePlusButtonContextMenu(plusButtonContextBox);
               });
             }
@@ -323,17 +330,18 @@ function attachTree(relationData) {
 
     }
     
-    //버젼 정보가 2개 일때는 rect의 높이를 더 크게 해준다.
+    //When there are two versions of the information, 
+    //the height of the rect tag is increased.
     let versionInfoCount = 0;
-    const nodeData = g.__data__.data.dataList[g.__data__.data.representIdx];
+    const nodeData = g.__data__.data['data-list'][g.__data__.data['represent-idx']];
     for (const key in nodeData) {
-      if(key === 'oneccVersion' || key === "toolchainVersion"){
+      if(key === 'onecc-version' || key === "toolchain-version"){
         versionInfoCount += 1;
       }
     }
     rectDom.style.height = versionInfoCount === 2 ? rectSizeHeight + 9 : rectSizeHeight;
     
-    //만약 버젼정보가 없다면 파일 이름 가운데 정렬
+    //If there is no version information, sort the file name in the middle
     if(versionInfoCount === 0) {
       const fileName = g.childNodes[2];
       fileName.style.textAnchor = 'middle';
@@ -341,48 +349,47 @@ function attachTree(relationData) {
     }
   });
 
-  //플러스버튼 컨텍스트 메뉴 바깥의 div
+  //draw plusButtonContextBox
   const plusButtonContextBox = document.createElement('div');
   plusButtonContextBox.classList.add('plus-button-context-box');
   plusButtonContextBox.setAttribute('id',`plus-button-context-box`);
   plusButtonContextBox.style.width = `100%`;
   document.body.appendChild(plusButtonContextBox);
 
-   //+ 버튼 꺼지는 이벤트 처리
+   //add hide_plus_button_Event
    plusButtonContextBox.addEventListener('click',(event) => {
         
-    //컨텍스트 메뉴창 숨기기
+    //hide context_menu
     hidePlusButtonContextMenu(plusButtonContextBox);
   });
 
-  //플러스 마이너스 버튼 추가
+  //draw plus_button and minus_button
   plusMinusButtonCreate('minus',rectSizeWidth,rectSizeHeight);
   plusMinusButtonCreate('plus',rectSizeWidth,rectSizeHeight);
 
-  //마우스 드래그 스크롤 이벤트 추가
+  //add mouse drag and mouse wheel event
   relationBox.addEventListener('mousedown', (e) => _mouseDownHandler(e));
   relationBox.addEventListener('mousewheel', (e) => _wheelHandler(e), {passive: false});
 
-  //히스토리 영역 추가
+  //draw hisory_area
   const historyDiv = document.createElement('div');
   historyDiv.style.width = `${historyDivWidth}px`;
   historyDiv.style.height = `${document.getElementsByTagName('svg')[0].getBoundingClientRect().height - 100}px`;
   historyDiv.classList.add('history-main-box');
   relationBox.appendChild(historyDiv);
 
-  //히스토리 헤더 박스 추가
+  //draw history_box
   const historyDivHeaderBox = document.createElement('div');
   historyDivHeaderBox.classList.add('plus-button-context-menu-header-box');
   historyDiv.appendChild(historyDivHeaderBox);
-  //히스토리 글자 추가
+  //draw history_header
   const historyDivHeader = document.createElement('div');
   historyDivHeader.classList.add('plus-button-context-menu-header');
   historyDivHeader.innerText = 'History';
   historyDivHeader.style.fontSize = '20px';
-  //clear 버튼 추가
+  //add clear button
   const historyDivHeaderClearButton = document.createElement('div');
-  historyDivHeaderClearButton.classList.add('plus-button-context-menu-header-clear-button');
-  historyDivHeaderClearButton.innerText = '[c]';
+  historyDivHeaderClearButton.classList.add('plus-button-context-menu-header-clear-button','codicon','codicon-clear-all');
 
   historyDivHeaderClearButton.addEventListener('click', (e) => {
     historyList = [historyList[0]];
@@ -396,13 +403,27 @@ function attachTree(relationData) {
       }
     }
   });
+  
+  historyDivHeaderClearButton.addEventListener('mouseover',(e) => {
+    const historyClearButtonRect = historyDivHeaderClearButton.getBoundingClientRect();
+    hoverText.innerText = `"Clear history"`;
+    hoverText.style.top = `${historyClearButtonRect.top - historyClearButtonRect.height - 12}px`;
+    hoverText.style.left = `${historyClearButtonRect.left - historyClearButtonRect.width - 37}px`;
+    hoverText.style.display = 'block';
+    hoverText.classList.add('font-bold');
+  });
+
+  historyDivHeaderClearButton.addEventListener('mouseout',(e) => {
+    hoverText.style.display = 'none';
+    hoverText.classList.remove('font-bold');
+  });
 
   historyDivHeaderBox.append(historyDivHeader,historyDivHeaderClearButton);
 
-  //히스토리 내용 추가
+  //append history info
   for (let index = 0; index < historyList.length; index++) {
     
-    //구분선 추가
+    //draw a dividing line
     const historyInfoLine = document.createElement('div');
     historyInfoLine.classList.add('context-menu-line');
     
@@ -410,7 +431,7 @@ function attachTree(relationData) {
     const historyDivInfo = document.createElement('div');
 
     let historyFileName = element.name;
-    //파일이름이 35자를 넘어가면 35자 까지만 표시
+    //limit file_length 
     if(historyFileName.length > 35){
       historyFileName = historyFileName.substring(0,35) + '...';
     }
@@ -423,23 +444,23 @@ function attachTree(relationData) {
     });
 
     if(index === 0){
-      historyDivInfo.style.color = 'darkorange ';
+      historyDivInfo.style.color = '#d7ba7d ';
     }
     historyDiv.append(historyInfoLine,historyDivInfo);
   }
 
-  //로드시 해당 노드를 중심으로 화면 이동
+  //focus screen on the current_node
   const currentNodeRect = document.getElementsByClassName('current-node')[0].getBoundingClientRect();
   const relationBoxRect = document.getElementsByClassName('relation-box')[0].getBoundingClientRect();
   
   relationBox.scrollTo({left:currentNodeRect.left - relationBoxRect.width / 2 + currentNodeRect.width / 2 ,top:currentNodeRect.top - relationBoxRect.height / 2 + currentNodeRect.height / 2 ,behavior:"auto"});
+
 }
 
 function pushCurrentFileInfoObject(historyList) {
-
   const currentFileInfoObject = {
-    name: currentFileInfo.dataList[currentFileInfo.representIdx].name,
-    path: currentFileInfo.dataList[currentFileInfo.representIdx].path
+    name: currentFileInfo['data-list'][currentFileInfo['represent-idx']].name,
+    path: currentFileInfo['data-list'][currentFileInfo['represent-idx']].path
   };
   historyList.unshift(currentFileInfoObject);
 }
@@ -554,32 +575,33 @@ function detachTree() {
   }
 }
 
-//각 노드에 정보 그리기
 function setDrawInfoInNode(type, node, rectSizeHeight, waitForDouble) {
   node.append("text")
   .attr("x", -60)
   .attr('class',d => {
     if(type === 'line'){
       return 'text-shadow-white';
+    } else if(type==='name' && d.data['data-list'][d.data['represent-idx']]['is-deleted']) {
+      return "deleted-text-decoration";
     } else {
       return "";
     }
   })
   .attr("y", d => {
     if(type === 'oneccVersion'){
-      return -rectSizeHeight + 47;
+      return -rectSizeHeight + 58;
     }else if (type === 'toolchainVersion'){
-      return -rectSizeHeight + 37;
+      return -rectSizeHeight + 48;
     } else if(type === 'line') {
-      return -rectSizeHeight + 27;
+      return -rectSizeHeight + 38;
     } else if (type === 'name'){
-      const oneccVersion = d.data.dataList[d.data.representIdx].oneccVersion;
-      const toolchainVersion = d.data.dataList[d.data.representIdx].toolchainVersion;
+      const oneccVersion = d.data['data-list'][d.data['represent-idx']]['onecc-version'];
+      const toolchainVersion = d.data['data-list'][d.data['represent-idx']]['toolchain-version'];
 
       if(oneccVersion || toolchainVersion){
-        return -rectSizeHeight + 18;
+        return -rectSizeHeight + 29;
       } else {
-        return -rectSizeHeight + 28;
+        return -rectSizeHeight + 37;
       }
     }
   })
@@ -599,19 +621,24 @@ function setDrawInfoInNode(type, node, rectSizeHeight, waitForDouble) {
   })
   .text(d => {
     let versionInfo = "";
-    if(type === 'oneccVersion' && d.data.dataList[d.data.representIdx].oneccVersion){
-      versionInfo = d.data.dataList[d.data.representIdx].oneccVersion;
+    if(type === 'oneccVersion' && d.data['data-list'][d.data['represent-idx']]['onecc-version']){
+      versionInfo = d.data['data-list'][d.data['represent-idx']]['onecc-version'];
       versionInfo = `onecc-version: ${versionInfo}`;
-    } else if(type === 'toolchainVersion' && d.data.dataList[d.data.representIdx].toolchainVersion){
-      versionInfo = d.data.dataList[d.data.representIdx].toolchainVersion;
+    } else if(type === 'toolchainVersion' && d.data['data-list'][d.data['represent-idx']]['toolchain-version']){
+      versionInfo = d.data['data-list'][d.data['represent-idx']]['toolchain-version'];
       versionInfo = `toolchain-version: ${versionInfo}`;
-    } else if(type === 'line' && (d.data.dataList[d.data.representIdx].toolchainVersion || d.data.dataList[d.data.representIdx].oneccVersion)) {
+    } else if(type === 'line' && (d.data['data-list'][d.data['represent-idx']]['toolchain-version'] || d.data['data-list'][d.data['represent-idx']]['onecc-version'])) {
       versionInfo = 'ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ';
     } else if (type === 'name'){
-      let fullName = d.data.dataList[d.data.representIdx].name;
+      let fullName = d.data['data-list'][d.data['represent-idx']].name;
       if(fullName.length > 22){
         fullName = fullName.substring(0,22) + '...';
       }
+      
+      if(d.data['data-list'][d.data['represent-idx']]['is-deleted']){
+        fullName = '(deleted)';
+      }
+
       return fullName;
     }
     return versionInfo;
@@ -619,7 +646,6 @@ function setDrawInfoInNode(type, node, rectSizeHeight, waitForDouble) {
   .on("dblclick", (p,d) => {
     if (waitForDouble !== null) {
       clearTimeout(waitForDouble);
-      console.log('더블 클릭입니다.');
       waitForDouble = null;
     }
   })
@@ -627,21 +653,20 @@ function setDrawInfoInNode(type, node, rectSizeHeight, waitForDouble) {
     if(waitForDouble === null) {
       waitForDouble = setTimeout(() => {
         postMessage('update',{
-          path: d.data.dataList[d.data.representIdx].path,
+          path: d.data['data-list'][d.data['represent-idx']].path,
           historyList:historyList});
         waitForDouble = null;
       }, 300);
     }
   }).on("contextmenu",(mouse,d)=>{
-      openContextMenu(mouse,d.data.dataList[d.data.representIdx].path);
-      
+      openContextMenu(mouse,d.data['data-list'][d.data['represent-idx']].path);
   })
   .on('mouseover', (mouse,node) => {
     const rectDom = mouse.target.parentNode.firstChild;
     rectDom.classList.add('text-hover');
   }).on('mouseout',(mouse,node) => {
     const rectDom = mouse.target.parentNode.firstChild;
-    rectDom.classList.remove('text-hover');
+    rectDom.classList?.remove('text-hover');
   });
 }
 
@@ -683,16 +708,21 @@ function openContextMenu(mouse,path) {
 
   const contextMenuRect = contextMenu.getBoundingClientRect();
   
-  //만약 현재 창의 크기보다 컨텍스메뉴의 끝이 더 길다면
+  //If the right of the context menu is longer than the size of the current container,
   if(relationBoxRect.right - mouse.x < contextMenuRect.width){
     contextMenu.style.left = `${mouse.x - contextMenuRect.width}px`;
   }
+
+  //If the bottom of the plus menu is outside the screen,
+  if(relationBoxRect.height - mouse.y  < contextMenuRect.height){
+    contextMenu.style.top = `${mouse.y - contextMenuRect.height}px`;  
+  }
+
 
   selectedNodePath = path;
 
 }
 
-//현재 오픈된 파일 정보 얻기
 function getSelectedFileInfo(selected,relationData) {
   
   for (let idx = 0; idx < relationData.length; idx++) {
@@ -711,19 +741,17 @@ function getSelectedFileInfo(selected,relationData) {
 
 function plusMinusButtonCreate(type,rectSizeWidth,rectSizeHeight) {
 
-  //마이너스 버튼 추가 text
 node.append("text")
 .attr("x",rectSizeWidth / 2 - 14)
 .attr("y", -rectSizeHeight + 9)
 .attr('class',() => {
-  return type === 'minus' ? 
-  'minus-button' : 'plus-button'}
+  return type === 'minus' ? 'minus-button' : 'plus-button';}
   )
 .attr('id',node => {
   return type === 'minus' ? `${node.data.id}-minus-button` : `${node.data.id}-plus-button`;
 })
 .text(node => {
-  if(node.data.dataList.length >= 2){
+  if(node.data['data-list'].length >= 2){
     return type === 'minus' ? `-` : '+';
   }
 })
@@ -752,26 +780,55 @@ node.append("text")
     const plusButtonContextMenuWidth = plusButtonContextMenu.getBoundingClientRect().width;
     const plusButtonContextMenuHeight = plusButtonContextMenu.getBoundingClientRect().height;
     
-    //플러스 메뉴의 넓이가 현재 화면밖을 넘어선다면
+    //the area of the plus menu is outside the current screen
     if(plusButtonRect.right + plusButtonContextMenuWidth > relationBox.getBoundingClientRect().right) {
       plusButtonContextMenu.style.left = `${plusButtonRect.right - plusButtonContextMenuWidth}px`;
     }
-    //플러스 메뉴의 높이가 화면 아래를 벗어난다면
+    //If the bottom of the plus menu is outside the screen,
     if(relationBoxRect.height - plusButtonRect.top  < plusButtonContextMenuHeight){
       plusButtonContextMenu.style.top = `${plusButtonRect.y - plusButtonContextMenuHeight}px`;
     }
   }
+})
+.on('mouseover', (mouse, node) => {
+  const plusButton = mouse.path[0].getBoundingClientRect();
+  const hoverText = document.getElementsByClassName('hover-text')[0];
+  hoverText.style.display = 'block';
+  hoverText.innerText = `"Open the same content file list"`;
+  hoverText.style.left = `${plusButton.x - 80}px`;
+  hoverText.style.top = `${plusButton.y - 12}px`;
+  hoverText.classList.add('font-bold');
+  
+  const hoverTextRect = hoverText.getBoundingClientRect();
+  const relationBoxRect = document.getElementById('relation-box').getBoundingClientRect();
+  //If the right of the hover text is longer than the size of the current container,
+  if(relationBoxRect.right - plusButton.x < hoverTextRect.width){
+    hoverText.style.left = `${plusButton.x - hoverTextRect.width + 20}px`;
+  }
+
+  //If the top of the hover text is outside the screen,
+  if(plusButton.y  < hoverTextRect.height){
+    hoverText.style.top = `${plusButton.y + hoverTextRect.height + 10}px`;  
+  }
+
+}).on('mouseout', (mouse, node) => {
+  const hoverText = document.getElementsByClassName('hover-text')[0];
+  hoverText.style.display = 'none';
+  hoverText.classList.remove('font-bold');
 });
 }
 
 function countMaxDataNum(relationData){
 
-  //d3 그래프의 층 정보
+  //d3 graph layer info
   const d3ClassData = {};
 
-  //d3 그래프의 층당 개수 저장
+  //d3 graph number of nodes for layer
   const d3NumData = {};
+
+  //Maximum Number in One Floor
   let _maxWidthCount = 1;
+  // Total number of floors
   let _maxHeightCount = 1;
   for (const key in relationData) {
     const data = relationData[key];

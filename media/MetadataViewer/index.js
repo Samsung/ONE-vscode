@@ -28,52 +28,68 @@ this.window.addEventListener('message', (event) => {
   }
 });
 
-this.window.onscroll = function () {
-  const breadcrumbs = document.getElementById('breadcrumbs-relativepath');
-  if (this.scrollY <= 0) {
-    breadcrumbs.classList.remove('scrolled');
-  } else {
-    breadcrumbs.classList.add('scrolled');
-  }
-};
-
-//메타데이터 정보를 업데이트
+//Update metadata information
 function updateMetadataInfo(metadata) {
-  //메인 키를 꺼낸다.(파일 이름)
+
+  const mainViewItemBox = document.createElement('div');
+  mainViewItemBox.classList.add('main-view-item-box');
+
+  const viewItemBox = document.createElement('div');
+  viewItemBox.classList.add('view-item-box');
+  viewItemBox.setAttribute('id','common-view-item-box');
+
+  const viewItemHeaderBox = document.createElement('div');
+  viewItemHeaderBox.classList.add('view-item-header-box');
+
+  const viewItemHeader = document.createElement('div');
+  viewItemHeader.classList.add('view-item-header');
+  viewItemHeader.innerText = 'Common';
+
+  const viewItemShowButton = document.createElement('div');
+  viewItemShowButton.setAttribute('id','common-view-item-show-button');
+  viewItemShowButton.classList.add('view-item-show-button','codicon-collapse-all','codicon');
+
+  const viewItemContentBox = document.createElement('div');
+  viewItemContentBox.setAttribute('id','common-view-content-box');
+  viewItemContentBox.classList.add('view-item-content-box');
+
+  document.body.appendChild(mainViewItemBox);
+  mainViewItemBox.appendChild(viewItemBox);
+  viewItemBox.append(viewItemHeaderBox,viewItemContentBox);
+  viewItemHeaderBox.append(viewItemHeader,viewItemShowButton);
+
+  //Pull out the main key.(File Name)
   const mainFileName = Object.keys(metadata)[0];
-  //메인 키의 value인 메타데이터 정보 객체를 변수에 저장
+
+  //Store metadata information in variable 
   const metadataInfo = metadata[mainFileName];
 
-  const mainViewItemBox = document.getElementById('main-view-item-box');
-
   for (const subKey in metadataInfo) {
+
     if (subKey === 'operations') {
-      //서브 키가 operations 정보일 때
       const viewItemBox = document.createElement('div');
       viewItemBox.setAttribute('id', 'operations-view-item-box');
       viewItemBox.classList.add('view-item-box');
 
-      //헤더생성
+      //draw header
       const viewItemHeader = document.createElement('div');
       viewItemHeader.classList.add('view-item-header');
-      viewItemHeader.innerText = subKey;
+      viewItemHeader.innerText = 'Operations';
 
-      // showButton 생성(ex: +,-)
+      //add show button image
       const showButton = document.createElement('div');
-      showButton.classList.add('view-item-show-button');
+      showButton.classList.add('view-item-show-button','codicon-collapse-all','codicon');
       showButton.setAttribute('id', 'operations-view-item-show-button');
-      showButton.innerText = '-';
 
-      //헤더와 showButton을 담을 헤더박스 생성
+      //draw a header box to hold headers and showButton
       const viewItemHeaderBox = document.createElement('div');
       viewItemHeaderBox.classList.add('view-item-header-box');
 
-      //상위 div에 등록
       viewItemHeaderBox.append(viewItemHeader, showButton);
       viewItemBox.appendChild(viewItemHeaderBox);
       mainViewItemBox.appendChild(viewItemBox);
 
-      //내용을 담을 컨텐트 박스 설정
+      //draw content box
       const viewItemContentBox = document.createElement('div');
       viewItemContentBox.classList.add('view-item-content-box');
       viewItemContentBox.setAttribute('id', 'operations-view-content-box');
@@ -83,26 +99,23 @@ function updateMetadataInfo(metadata) {
       for (const operationsKey in metadataInfo[subKey]) {
         metadataDivCreate(operationsKey, metadataInfo[subKey][operationsKey], 'operations');
       }
-    } else if (subKey === 'cfg_settings') {
-      // cfg 정보 일때
+    } else if (subKey === 'cfg-settings') {
+
       const viewItemBox = document.createElement('div');
-      viewItemBox.setAttribute('id', 'cfg_settings-view-item-box');
+      viewItemBox.setAttribute('id', 'cfg-settings-view-item-box');
       viewItemBox.classList.add('view-item-box');
 
-      //헤더와 showButton을 담을 헤더박스 생성
       const viewItemHeaderBox = document.createElement('div');
       viewItemHeaderBox.classList.add('view-item-header-box');
 
-      //헤더 생성(ex: Common Metadata ...)
       const viewItemHeader = document.createElement('div');
       viewItemHeader.classList.add('view-item-header');
-      viewItemHeader.innerText = 'Config Info';
+      viewItemHeader.innerText = 'Config';
 
-      // showButton 생성(ex: +,-)
       const showButton = document.createElement('div');
-      showButton.classList.add('view-item-show-button');
-      showButton.setAttribute('id', 'cfg_settings-view-item-show-button');
-      showButton.innerText = '-';
+      showButton.setAttribute('id', 'cfg-settings-view-item-show-button');
+      showButton.classList.add('view-item-show-button','codicon-collapse-all','codicon');
+      //showButton.innerText = '-';
 
       viewItemHeaderBox.append(viewItemHeader, showButton);
       viewItemBox.appendChild(viewItemHeaderBox);
@@ -110,46 +123,43 @@ function updateMetadataInfo(metadata) {
 
       const viewItemContentBox = document.createElement('div');
       viewItemContentBox.classList.add('view-item-content-box');
-      viewItemContentBox.setAttribute('id', 'cfg_settings-view-content-box');
+      viewItemContentBox.setAttribute('id', 'cfg-settings-view-content-box');
       viewItemBox.appendChild(viewItemContentBox);
 
       const oneccInfo = metadataInfo[subKey];
 
-      // onecc가 true인 값들을 저장
+      // Store values that onecc`s value is true
       const oneccInfoList = [];
 
       for (const configKey in oneccInfo) {
-        // header박스 생성
+
         const viewItemSubHeaderBox = document.createElement('div');
         viewItemSubHeaderBox.classList.add('view-item-header-box');
 
-        //서브 헤더 생성
         const viewItemSubHeader = document.createElement('div');
         viewItemSubHeader.innerText = `[${configKey}]`;
         viewItemSubHeader.classList.add('view-item-sub-header');
 
-        // show버튼 생성
         const showButton = document.createElement('div');
-        showButton.innerText = `[-]`;
+        showButton.innerText = `-`;
         showButton.classList.add('view-item-show-button');
-        showButton.style.fontSize = '14px';
+        showButton.style.fontSize = '20px';
         showButton.setAttribute('id', `${configKey}-view-item-show-button`);
 
         viewItemSubHeaderBox.append(viewItemSubHeader, showButton);
         viewItemContentBox.appendChild(viewItemSubHeaderBox);
 
-        // sub컨텐트박스 만들기
         const subContentBox = document.createElement('div');
         subContentBox.classList.add('sub-view-item-content-box');
         subContentBox.setAttribute('id', `${configKey}-sub-view-content-box`);
 
         viewItemContentBox.appendChild(subContentBox);
 
-        // id로 사용할 현재 키를 저장
+        // Save the current key to use as id
         currentConfigType = configKey;
 
         if (configKey === 'onecc') {
-          //아무런 onecc 정보가 없을 경우 처리
+          // Handle if no onecc information is available
           const viewItemContent = document.createElement('div');
           viewItemContent.innerText = 'There is no config information...';
           viewItemBox.appendChild(viewItemContent);
@@ -158,16 +168,17 @@ function updateMetadataInfo(metadata) {
           for (const oneccSubkey in oneccInfo[configKey]) {
             if (oneccInfo[configKey][oneccSubkey]) {
               oneccInfoList.push(oneccSubkey);
-              //만약 cfg 정보가 있다면 no info 문구 삭제
+
+              // If you have cfg information, delete the no info statement
               viewItemContent ?.remove();
-              metadataDivCreate(oneccSubkey, oneccInfo[configKey][oneccSubkey], 'cfg_settings');
+              metadataDivCreate(oneccSubkey, oneccInfo[configKey][oneccSubkey], 'cfg-settings');
             }
           }
         } else {
           if (oneccInfoList.includes(configKey)) {
             viewItemSubHeader.style.marginTop = '15px';
             for (const oneccSubkey in oneccInfo[configKey]) {
-              metadataDivCreate(oneccSubkey, oneccInfo[configKey][oneccSubkey], 'cfg_settings');
+              metadataDivCreate(oneccSubkey, oneccInfo[configKey][oneccSubkey], 'cfg-settings');
             }
 
           } else {
@@ -176,15 +187,13 @@ function updateMetadataInfo(metadata) {
         }
       }
     } else {
-      // 그외 공통 메타데이터 정보 일때
+      // Other common metadata information
       metadataDivCreate(subKey, metadataInfo[subKey], 'common');
     }
   }
-  //모든 showButton 클릭 이벤트 등록
   showButtonClickEvent();
 }
 
-//해당 메타데이터 정보를 webview에 그린다.
 function metadataDivCreate(subKey, value, type) {
   let viewItemContentBox = null;
   let subContentBox = null;
@@ -192,8 +201,8 @@ function metadataDivCreate(subKey, value, type) {
     viewItemContentBox = document.getElementById('common-view-content-box');
   } else if (type === 'operations') {
     viewItemContentBox = document.getElementById('operations-view-content-box');
-  } else if (type === 'cfg_settings') {
-    viewItemContentBox = document.getElementById('cfg_settings-view-content-box');
+  } else if (type === 'cfg-settings') {
+    viewItemContentBox = document.getElementById('cfg-settings-view-content-box');
     subContentBox = document.getElementById(`${currentConfigType}-sub-view-content-box`);
   }
 
@@ -204,7 +213,7 @@ function metadataDivCreate(subKey, value, type) {
   viewItemName.classList.add('view-item-name');
   viewItemName.innerText = subKey;
 
-  // 만약 해당 키의 값이 다시 object 구조라면 반복문을 돈다.
+  // If the value of the key is the object structure again, turn the repetition door.
   if (typeof value === 'object' && value !== null) {
     const viewItemValueList = document.createElement('div');
     viewItemValueList.classList.add('view-item-value-list');
@@ -213,7 +222,7 @@ function metadataDivCreate(subKey, value, type) {
       const viewItemValue = document.createElement('div');
       viewItemValue.classList.add('view-item-value');
       viewItemValue.innerText = `${key} : ${value[key]}`;
-      //아이템들이 viewer 의 크기가 작아져도 비율에 맞게 작아지도록 설정
+      //if the size of the viewer is smaller, Set items to be smaller in proportion 
       viewItemValue.style.width = 'auto';
       viewItemValue.classList.add('margin-bottom-border-thin-gray');
       viewItemValueList.appendChild(viewItemValue);
@@ -223,14 +232,14 @@ function metadataDivCreate(subKey, value, type) {
     viewItemContent.classList.add('aline-items-baseline');
 
   } else {
-    //단순 string이라면 바로 화면에 보여준다.
+    //If it's a simple string, it's shown on the screen right away.
     const viewItemValue = document.createElement('div');
     viewItemValue.classList.add('view-item-value');
     viewItemValue.innerText = value;
     viewItemContent.append(viewItemName, viewItemValue);
   }
 
-  if (type === 'cfg_settings') {
+  if (type === 'cfg-settings') {
     viewItemContent.style.marginBottom = '1px';
     subContentBox.appendChild(viewItemContent);
 
@@ -239,9 +248,6 @@ function metadataDivCreate(subKey, value, type) {
   }
 }
 
-
-
-//모든 show버튼 클릭 이벤트 처리
 function showButtonClickEvent() {
   const showButtons = document.getElementsByClassName('view-item-show-button');
   let isSubButton = false;
@@ -259,10 +265,26 @@ function showButtonClickEvent() {
       }
 
       if(contentBox?.style.display === 'block' || contentBox.style.display === ''){
-        isSubButton ? button.innerText = '[+]' : button.innerText = '+';
+        isSubButton
+        ? (() => {
+          button.innerText = '+';
+          button.style.fontSize = '14px';
+        })()
+        : (() => {
+          button.classList.remove('codicon-collapse-all');
+          button.classList.add('codicon-unfold');
+        })();
         contentBox.style.display = 'none';
       } else {
-        isSubButton ? button.innerText = '[-]' : button.innerText = '-';
+        isSubButton
+        ? (() => {
+          button.innerText = '-';
+          button.style.fontSize = '20px';
+        })() 
+        : (() => {
+          button.classList.remove('codicon-unfold');
+          button.classList.add('codicon-collapse-all');
+        })();
         contentBox.style.display = 'block';
       }
     });

@@ -22,83 +22,24 @@ body {
 
 /* white테마일 때 처리 */
 body.vscode-light {
-  background-color: #ececec;
+  background-color: #e7e7e7;
 }
 
 body.vscode-light .view-item-header{
-  color: #252526;
+  color: #444444;
 }
 
 body.vscode-light .view-item-name {
-  color: #242424;
+  color: #616161;
 }
 
 body.vscode-light .view-item-sub-header{
-  color: steelblue;
+  color: #a31515;
 }
 
 body.vscode-light .view-item-value{
-  color: black;
+  color: #444444;
   background-color: white;
-}
-
-body.vscode-light .breadcrumbs-relativepath {
-  background-color: #ececec;
-}
-
-body.vscode-light .breadcrumbs-coverbar {
-  background-color: #ececec;
-}
-
-body.vscode-light .scrolled {
-  box-shadow: 0px 3px 10px #888888F0;
-}
-
-.breadcrumbs-relativepath {
-  display: flex;
-  flex-wrap: nowrap;
-  position: fixed;
-  /* min-width: 100vw; */
-  width: 100%;
-  padding: 3px 0px 3px 0px;
-  top: 0px;
-  left: 0px;
-  overflow-x: scroll;
-  background-color: #1E1E1E;
-}
-
-.breadcrumbs-relativepath::-webkit-scrollbar {
-  height: 3px;
-  z-index: 1;
-}
-
-.breadcrumbs-coverbar {
-  width: 100%;
-  height: 3px;
-  position: fixed;
-  top: 23px;
-  left: 0px;
-  opacity: 1;
-  background-color: #1E1E1E;
-  pointer-events: none;
-}
-
-.breadcrumbs:hover .breadcrumbs-coverbar {
-  opacity: 0;
- -webkit-transition: all .5s;
- transition: all .5s;
-}
-
-.path-item:first-child {
-  margin-left: 20px;
-}
-
-.path-item {
-  margin-right: 5px;
-}
-
-.scrolled {
-  box-shadow: 0px 3px 10px #111111F0;
 }
 
 .view-item-header {
@@ -108,10 +49,8 @@ body.vscode-light .scrolled {
   font-size: 20px;
   font-weight: bold;
   font-family: sans-serif;
-  color: lightblue;
+  color: #e7e7e7;
 }
-
-
 
 .view-item-content {
   display: flex;
@@ -136,17 +75,18 @@ body.vscode-light .scrolled {
 }
 
 .view-item-name {
-  color: navajowhite;
+  color: #cccccc;
+  min-width: 100px;
 }
 
 .view-item-content{
-  color:white;
+  color:#e7e7e7;
 }
 
 .view-item-sub-header{
   margin-left: 10px;
   font-size: 16px;
-  color: white;
+  color: #d7ba7d;
   margin-bottom: 10px;
   font-weight: bold;
 }
@@ -172,7 +112,7 @@ body.vscode-light .scrolled {
   color: gray;
 }
 
-#cfg_settings-view-item-box {
+#cfg-settings-view-item-box {
   margin-bottom: 30px;
 }
 
@@ -189,4 +129,3 @@ body.vscode-light .scrolled {
   border-bottom: solid rgba(0, 0, 0, 0.20);
   border-width: 0.1px;
 }
-

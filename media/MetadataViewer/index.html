@@ -17,20 +17,18 @@ limitations under the License.
 -->
 <head>
   <meta charset="UTF-8">
+  <meta
+        http-equiv="Content-Security-Policy"
+        content="img-src vscode;
+                style-src 'unsafe-inline' ${webview.cspSource};
+                script-src 'nonce-${nonce}';">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <link rel="stylesheet" type="text/css" href="${index.css}">
+  <link rel="stylesheet" type="text/css" href="${codicon.css}"> 
   <script type="text/javascript" src="${index.js}" nonce="${nonce}"></script>
 </head>
 <body>
-  <div id="main-view-item-box" class="main-view-item-box" >
-    <div class="view-item-box" id="common-view-item-box">
-      <div class="view-item-header-box">
-        <div class="view-item-header">Common Metadata</div>
-        <div class="view-item-show-button" id="common-view-item-show-button">-</div>
-      </div>
-      <div class="view-item-content-box" id="common-view-content-box"></div>
-    </div>
-  </div>
+
 </body>
 </html>
