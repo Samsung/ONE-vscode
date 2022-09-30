@@ -84,7 +84,7 @@ export class RelationViewerDocument implements vscode.CustomDocument {
     this._metadataViwer.push(view);
 
     //메타데이터 정보를 가져오는 로직(Uri 인자를 이용하면 됨)
-    const seletedMetadata = getMetadata();
+    const seletedMetadata = getMetadata(fileUri);
 
     //패널 타이틀 변경(적용되지 않음)
     //panel.title = `Metadata: ${this._getNameFromPath(fileUri.toString())}`;
@@ -180,7 +180,7 @@ export class MetadataViewerProvider implements
   }
 }
 
-function getMetadata() {
+function getMetadata(path:any) {
   return {
     "test.log": {
       "file_extension": "log",

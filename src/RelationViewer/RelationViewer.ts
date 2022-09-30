@@ -135,12 +135,14 @@ export class RelationViewer{
       let viewType:string = 'default';
       switch (message.type) {
         case "update":
+          //fileUri = vscode.Uri.file(obtainWorkspaceRoot() + '/' + message.path);
           payload = getRelationData(message.path);
           panel.webview.postMessage(
             {type:'update', payload: payload, historyList:message.historyList}
           );
           break;
         case "history":
+          //fileUri = vscode.Uri.file(obtainWorkspaceRoot() + '/' + message.path);
           payload = getRelationData(message.path);
           panel.webview.postMessage(
             {type:'history', payload: payload, historyList:message.historyList}

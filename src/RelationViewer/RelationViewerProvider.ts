@@ -84,10 +84,10 @@ export class RelationViewerDocument implements vscode.CustomDocument {
     this._metadataViwer.push(view);
 
     //상대 경로 받기
-    const relativePath:string = vscode.workspace.asRelativePath(fileUri);
-  
+    //const relativePath:string = vscode.workspace.asRelativePath(fileUri);
+    
     //relationData를 가져오는 함수
-    const payload = getRelationData(relativePath);
+    const payload = getRelationData(fileUri);
     // relation 데이터를 웹뷰로 메세지를 보낸다.
     panel.webview.postMessage(
       {type:'create',payload: payload}
@@ -173,11 +173,13 @@ export class RelationViewerProvider implements
 }
 
 export function getRelationData(path:any) {
+  
   const dummyData = {
     "selected": "1",
     "relationData": [
       {"id": "1", "parent": "", "representIdx": 0, "dataList": [{"name": "baseModelTestTflite123123.tflite", "path": "baseModelTestTflite123123.tflite"},{"name": "model.tflite", "path": "model.tflite"},{"name": "c.tflite", "path": "c.tflite"},{"name": "d.tflite", "path": "d.tflite"}]},  // TODO: id, parentid: hashId
       {"id": "2", "parent": "1", "representIdx": 0, "dataList": [{"name": "test1.circle", "path": "src/hello/test1.circle", "oneccVersion": "1.0.0", "toolchainVersion": "1.0.0"}]},
+      {"id": "3", "parent": "2", "representIdx": 0, "dataList": [{"name": "test2.circle", "path": "src/trudiv/model/test2.circle", "oneccVersion": "1.0.0", "toolchainVersion": "1.0.0"}]},
       {"id": "3", "parent": "2", "representIdx": 0, "dataList": [{"name": "test2.circle", "path": "src/trudiv/model/test2.circle", "oneccVersion": "1.0.0", "toolchainVersion": "1.0.0"}]},
       {"id": "4", "parent": "1", "representIdx": 0, "dataList": [{"name": "test1.log", "path": "test1.log", "oneccVersion": "1.0.0", "toolchainVersion": "1.0.0"}]},
       {"id": "5", "parent": "2", "representIdx": 0, "dataList": [{"name": "test2.log", "path": "test2.log", "toolchainVersion": "1.0.0"}]},

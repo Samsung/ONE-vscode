@@ -58,23 +58,34 @@ window.addEventListener('message',(event) => {
   }
 });
 
+//노드 저장
+let node;
+
 function attachTree(relationData) {
   
+  const wheelInfoBox = document.createElement('div');
+  wheelInfoBox.innerText = '* (ctrl OR shift) + wheel : 확대, 축소';
+  wheelInfoBox.classList.add('wheel-info-box');
+  document.body.appendChild(wheelInfoBox);
+
   //  assigns the data to a hierarchy using parent-child relationships
   const treeData = d3.stratify()
     .id(d => d.id)
     .parentId(d => d.parent)
     (relationData);
   
-  const historyDivWidth = screen.width * 0.11;
-  if(historyDivWidth < 200){
+  let historyDivWidth = (screen.width * 0.11 < 200) ? 200 : screen.width * 0.11;
+  const rectSizeWidth = 130;
+  const rectSizeHeight = 45;
 
-  }
+  const [maxWidthCount,maxHeightCount] = countMaxDataNum(relationData);
+
   // set the dimensions and margins of the diagram
-  const margin = {top: 60, right: 0, bottom: 60, left: 0},
-      width = screen.width * 0.8  - historyDivWidth - margin.left - margin.right,
-      height = screen.height * 0.6  - margin.top - margin.bottom;
-  
+  const margin = {top: 70, right: 0, bottom: 60, left: 0};
+  let width = (maxWidthCount + 4) * rectSizeWidth  - margin.left - margin.right;
+  width = (width < screen.width * 0.7) ? screen.width * 0.7 : width;
+  let height = screen.height * 0.6  - margin.top - margin.bottom;
+  height = (rectSizeHeight * maxHeightCount < height) ? height : rectSizeHeight * maxHeightCount;
   // declares a tree layout and assigns the size
   const treemap = d3.tree()
       .size([width, height]);
@@ -85,12 +96,9 @@ function attachTree(relationData) {
   // Main Box Create
   const relationBox = document.createElement('div');
   relationBox.classList.add('relation-box');
+  relationBox.setAttribute('id','relation-box');
   relationBox.style.width = `${historyDivWidth + width}px`;
 
-  const relationMainBox = document.createElement('div');
-  relationMainBox.classList.add('relation-main-box');
-
-  relationBox.appendChild(relationMainBox);
   document.body.appendChild(relationBox);
 
   //컨텍스트 메뉴 Box 그리기
@@ -154,7 +162,9 @@ function attachTree(relationData) {
   // appends a 'group' element to 'svg'
   // moves the 'group' element to the top left margin
   // TODO: background-color 다른 색으로 바꾸기.
-  const svg = d3.select(".relation-main-box").append("svg")
+  const svg = d3.select(".relation-box").append("svg")
+        .attr("preserveAspectRatio", "xMidYMid meet")
+        .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .style("background-color", "#545454"),
@@ -175,15 +185,14 @@ function attachTree(relationData) {
          });
   
   // adds each node as a group
-  const node = g.selectAll(".node")
+  node = g.selectAll(".node")
       .data(nodes.descendants())
       .enter().append("g")
       .attr("class", d => "node" + (d.children ? " node--internal" : " node--leaf"))
       .attr("transform", d => "translate(" + d.x + "," + d.y + ")");
   
   let waitForDouble = null;
-  const rectSizeWidth = 130;
-  const rectSizeHeight = 45;
+  
 
   // adds the rectangle to the node
   node.append("rect")
@@ -238,14 +247,15 @@ function attachTree(relationData) {
   // 파일 확장자 표시
   node.append("text")
     .attr("y", -rectSizeHeight + 3)
-    .attr('class','text-shadow-white')
+    .attr('class','text-shadow-white file-extension')
     .style("text-anchor", "middle")
     .text(d => d.data.dataList[d.data.representIdx].name.split('.')[d.data.dataList[d.data.representIdx].name.split('.').length - 1])
     .on('mouseover', (mouse, node) => {
+      const fileExtensionText = mouse.path[0].getBoundingClientRect();
       hoverText.style.display = 'block';
       hoverText.innerText = `${node.data.dataList[node.data.representIdx].path}`;
-      hoverText.style.left = `${node.x - 35}px`;
-      hoverText.style.top = `${node.y + 10}px`;
+      hoverText.style.left = `${window.scrollX + fileExtensionText.x - 10}px`;
+      hoverText.style.top = `${window.scrollY + fileExtensionText.y - 23}px`;
     }).on('mouseout', (mouse, node) => {
       hoverText.style.display = 'none';
     });
@@ -261,34 +271,17 @@ function attachTree(relationData) {
   setDrawInfoInNode('oneccVersion',node, rectSizeHeight),waitForDouble;
 
   //플러스 버튼 추가
-  //console.log(node._groups[0]);
   node._groups[0].forEach((g) => {
     g.setAttribute('id',`${g.__data__.data.id}-g`);
 
     const rectDom = g.childNodes[0];
+
     if(g.__data__.data.dataList.length >= 2){
-      
-      //플러스 버튼 생성 및 css 처리
-      const rect = rectDom.getBoundingClientRect();
-      
-      const plusButton = document.createElement('div');
-      plusButton.setAttribute('id',`${g.__data__.data.id}-plus-button`);
-      plusButton.classList.add('plus-button');
-      plusButton.style.top = `${window.scrollY + rect.y - 17}px`;
-      plusButton.style.left = `${window.scrollX + rect.x + rect.width - 13}px`;
-      plusButton.innerText = `+`;
 
-      document.body.append(plusButton);
-
-      //플러스버튼 컨텍스트 메뉴 바깥의 div
-      const plusButtonContextBox = document.createElement('div');
-      plusButtonContextBox.classList.add('plus-button-context-box');
-      plusButtonContextBox.style.width = `${width + historyDivWidth}px`;
-      document.body.appendChild(plusButtonContextBox);
-      
       //플러스버튼 컨텍스트 메뉴
       const plusButtonContextMenu = document.createElement('div');
       plusButtonContextMenu.classList.add('plus-button-context-menu');
+      plusButtonContextMenu.setAttribute('id',`${g.__data__.data.id}-plus-button-context-menu`);
       document.body.appendChild(plusButtonContextMenu);
 
       //플러스버튼 컨텍스트 메뉴 헤더 추가
@@ -320,7 +313,7 @@ function attachTree(relationData) {
               plusButtonContextMenuInfo.addEventListener('click', () => {
                 postMessage('update',{path:dataList[idx]['path'],historyList:historyList});
                 //컨텍스트 메뉴창 숨기기
-                hidePlusButtonContextMenu(plusButtonContextBox,plusButtonContextMenu,plusButton);
+                hidePlusButtonContextMenu(plusButtonContextBox);
               });
             }
           } 
@@ -328,41 +321,6 @@ function attachTree(relationData) {
         
       }
 
-      //플러스 버튼 클릭이벤트 처리
-      plusButton.addEventListener('click',(mouse) => {
-        const plusButtontop = parseInt(plusButton.style.top.split('px')[0]);
-        if(plusButtonContextBox.style.display === 'none' || plusButtonContextBox.style.display === ""){
-          plusButtonContextBox.style.display = 'block';
-          const plusButtonRect = plusButton.getBoundingClientRect();
-          
-          plusButtonContextMenu.style.top = `${plusButtonRect.top + window.scrollY}px`;
-          plusButtonContextMenu.style.left = `${plusButtonRect.right + window.scrollX}px`;
-          plusButtonContextMenu.style.display = 'block';
-
-          plusButton.innerText = '-';
-          plusButton.style.fontSize = '40px';
-          plusButton.style.top = `${plusButtontop - 13}px`;
-          plusButton.style.zIndex = 2;
-
-          //플러스 버튼 컨텍스트 메뉴가 열린 후 해당 컨텍스트 메뉴로 스크롤 이동
-          window.scrollTo({left:(plusButtonRect.left + window.scrollX) - rectSizeWidth * 2,top:(plusButtonRect.top + window.scrollY),behavior: "smooth"});
-          
-        } else {
-          plusButtonContextBox.style.display = 'none';
-          plusButtonContextMenu.style.display = 'none';
-          plusButton.innerText = '+';
-          plusButton.style.fontSize = '25px';
-          plusButton.style.top = `${plusButtontop + 13}px`;
-          plusButton.style.zIndex = 1;
-        }
-      });
-
-      //+ 버튼 꺼지는 이벤트 처리
-      plusButtonContextBox.addEventListener('click',(event) => {
-        
-        //컨텍스트 메뉴창 숨기기
-        hidePlusButtonContextMenu(plusButtonContextBox,plusButtonContextMenu,plusButton);
-      });
     }
     
     //버젼 정보가 2개 일때는 rect의 높이를 더 크게 해준다.
@@ -383,13 +341,32 @@ function attachTree(relationData) {
     }
   });
 
+  //플러스버튼 컨텍스트 메뉴 바깥의 div
+  const plusButtonContextBox = document.createElement('div');
+  plusButtonContextBox.classList.add('plus-button-context-box');
+  plusButtonContextBox.setAttribute('id',`plus-button-context-box`);
+  plusButtonContextBox.style.width = `100%`;
+  document.body.appendChild(plusButtonContextBox);
+
+   //+ 버튼 꺼지는 이벤트 처리
+   plusButtonContextBox.addEventListener('click',(event) => {
+        
+    //컨텍스트 메뉴창 숨기기
+    hidePlusButtonContextMenu(plusButtonContextBox);
+  });
+
+  //플러스 마이너스 버튼 추가
+  plusMinusButtonCreate('minus',rectSizeWidth,rectSizeHeight);
+  plusMinusButtonCreate('plus',rectSizeWidth,rectSizeHeight);
+
   //마우스 드래그 스크롤 이벤트 추가
-  document.getElementsByClassName('relation-box')[0].addEventListener('mousedown', (e) => _mouseDownHandler(e));
+  relationBox.addEventListener('mousedown', (e) => _mouseDownHandler(e));
+  relationBox.addEventListener('mousewheel', (e) => _wheelHandler(e), {passive: false});
 
   //히스토리 영역 추가
   const historyDiv = document.createElement('div');
   historyDiv.style.width = `${historyDivWidth}px`;
-  historyDiv.style.height = `${height}px`;
+  historyDiv.style.height = `${document.getElementsByTagName('svg')[0].getBoundingClientRect().height - 100}px`;
   historyDiv.classList.add('history-main-box');
   relationBox.appendChild(historyDiv);
 
@@ -451,6 +428,11 @@ function attachTree(relationData) {
     historyDiv.append(historyInfoLine,historyDivInfo);
   }
 
+  //로드시 해당 노드를 중심으로 화면 이동
+  const currentNodeRect = document.getElementsByClassName('current-node')[0].getBoundingClientRect();
+  const relationBoxRect = document.getElementsByClassName('relation-box')[0].getBoundingClientRect();
+  
+  relationBox.scrollTo({left:currentNodeRect.left - relationBoxRect.width / 2 + currentNodeRect.width / 2 ,top:currentNodeRect.top - relationBoxRect.height / 2 + currentNodeRect.height / 2 ,behavior:"auto"});
 }
 
 function pushCurrentFileInfoObject(historyList) {
@@ -461,6 +443,61 @@ function pushCurrentFileInfoObject(historyList) {
   };
   historyList.unshift(currentFileInfoObject);
 }
+let _zoom = 1;
+function _wheelHandler(e) {
+  if (e.shiftKey || e.ctrlKey) {
+      const delta = -e.deltaY * (e.deltaMode === 1 ? 0.05 : e.deltaMode ? 1 : 0.002) *
+          (e.ctrlKey ? 10 : 1);
+      _updateZoom(_zoom * Math.pow(2, delta), e);
+      e.preventDefault();
+  } else {
+    const container = document.getElementsByClassName('relation-box')[0]; 
+    _scrollLeft = container.scrollLeft;
+    _scrollTop = container.scrollTop;
+  }
+}
+
+
+let _scrollLeft = 0;
+let _scrollTop = 0;
+let _width = 0;
+let _height = 0;
+function _updateZoom(zoom, e) {
+
+  const canvas = document.getElementsByTagName('svg')[0];
+  _width = canvas.width.animVal.value;
+  _height = canvas.height.animVal.value;
+  
+  const container = document.getElementsByClassName('relation-box')[0];
+  const historyMainBox = document.getElementsByClassName('history-main-box')[0];
+
+  const limit = container.clientHeight / _height;
+  const min = Math.min(Math.max(limit, 0.15), 1);
+  zoom = Math.max(min, Math.min(zoom, 1.4));
+  const width = zoom * _width;
+  const height = zoom * _height;
+  
+  if(zoom !== 1){
+    historyMainBox.style.height = height * 0.7 + 'px';
+  } else {
+    historyMainBox.style.height = height - 100 + 'px';
+  }
+
+  canvas.style.width = width + 'px';
+  canvas.style.height = height + 'px';
+  const scrollLeft = _scrollLeft || container.scrollLeft;
+  const scrollTop = _scrollTop || container.scrollTop;
+  const x = e.pageX + scrollLeft;
+  const y = e.pageY + scrollTop;
+  _scrollLeft = Math.max(0, ((x * zoom) / _zoom) - (x - scrollLeft));
+  _scrollTop = Math.max(0, ((y * zoom) / _zoom) - (y - scrollTop));
+
+  container.scrollLeft = _scrollLeft;
+  container.scrollTop = _scrollTop;
+  _zoom = zoom;
+
+}
+
 
 function _mouseDownHandler(e) {
   
@@ -469,7 +506,7 @@ function _mouseDownHandler(e) {
       html.style.cursor = 'grabbing';
       const container = document.getElementsByClassName('relation-box')[0];
       let _mousePosition =
-          {left: window.scrollX, top: window.scrollY, x: e.clientX, y: e.clientY};
+          {left: container.scrollLeft, top: container.scrollTop, x: e.clientX, y: e.clientY};
       e.stopImmediatePropagation();
 
       const mouseMoveHandler = (e) => {
@@ -480,7 +517,10 @@ function _mouseDownHandler(e) {
           _mousePosition.moved = dx * dx + dy * dy > 0;
           
           if (_mousePosition.moved) {
-              window.scrollTo(_mousePosition.left - dx,_mousePosition.top - dy);
+              container.scrollLeft = _mousePosition.left - dx;
+              container.scrollTop = _mousePosition.top - dy;
+              _scrollLeft = container.scrollLeft;
+              _scrollTop = container.scrollTop;
           }
       };
 
@@ -605,41 +645,51 @@ function setDrawInfoInNode(type, node, rectSizeHeight, waitForDouble) {
   });
 }
 
-function hidePlusButtonContextMenu(plusButtonContextBox,plusButtonContextMenu,plusButton) {
+function hidePlusButtonContextMenu(plusButtonContextBox,plusButton) {
 
   if(plusButtonContextBox.style.display === 'block'){
 
     plusButtonContextBox.style.display = 'none';
-    plusButtonContextMenu.style.display = 'none';
-    if(plusButton){
-      const top = parseInt(plusButton.style.top.split('px')[0]);
-      plusButton.innerText = '+';
-      plusButton.style.fontSize = '25px';
-      plusButton.style.top = `${top + 13}px`;
-      plusButton.style.zIndex = 1;
+    const plusButtonContextMenus = document.getElementsByClassName('plus-button-context-menu');
+    for (let index = 0; index < plusButtonContextMenus.length; index++) {
+      const element = plusButtonContextMenus[index];
+      element.style.display = 'none';
+    }
+    const plusButtons = document.getElementsByClassName('plus-button');
+    for (let index = 0; index < plusButtons.length; index++) {
+      const element = plusButtons[index];
+      element.style.display = 'block';
+    }
+    const minusButton = document.getElementsByClassName('minus-button');
+    for (let index = 0; index < minusButton.length; index++) {
+      const element = minusButton[index];
+      element.style.display = 'none';
     }
   }
+
 }
 
 function openContextMenu(mouse,path) {
   const contextMenuBox = document.getElementById('context-menu-box');
   const contextMenu = document.getElementById('context-menu');
-
+  const relationBox = document.getElementById('relation-box');
+  const relationBoxRect = relationBox.getBoundingClientRect();
+  
   contextMenuBox.style.display = 'block';
   contextMenu.style.display = 'block';
 
-  contextMenu.style.top = `${window.scrollY + mouse.y}px`;
-  contextMenu.style.left = `${window.scrollX + mouse.x}px`;
+  contextMenu.style.top = `${mouse.y}px`;
+  contextMenu.style.left = `${mouse.x}px`;
 
   const contextMenuRect = contextMenu.getBoundingClientRect();
-
+  
   //만약 현재 창의 크기보다 컨텍스메뉴의 끝이 더 길다면
-  if(document.body.clientWidth < (contextMenuRect.right + window.scrollX)){
-    console.log(document.body.clientWidth,contextMenuRect.right + window.scrollX);
-    window.scrollTo({left:(contextMenuRect.left + window.scrollX) - contextMenuRect.width / 2,top:(contextMenuRect.top + window.scrollY) + contextMenuRect.height,behavior: "smooth"});
+  if(relationBoxRect.right - mouse.x < contextMenuRect.width){
+    contextMenu.style.left = `${mouse.x - contextMenuRect.width}px`;
   }
 
   selectedNodePath = path;
+
 }
 
 //현재 오픈된 파일 정보 얻기
@@ -657,4 +707,86 @@ function getSelectedFileInfo(selected,relationData) {
       break;
     }
   }
+}
+
+function plusMinusButtonCreate(type,rectSizeWidth,rectSizeHeight) {
+
+  //마이너스 버튼 추가 text
+node.append("text")
+.attr("x",rectSizeWidth / 2 - 14)
+.attr("y", -rectSizeHeight + 9)
+.attr('class',() => {
+  return type === 'minus' ? 
+  'minus-button' : 'plus-button'}
+  )
+.attr('id',node => {
+  return type === 'minus' ? `${node.data.id}-minus-button` : `${node.data.id}-plus-button`;
+})
+.text(node => {
+  if(node.data.dataList.length >= 2){
+    return type === 'minus' ? `-` : '+';
+  }
+})
+.on('click', (mouse,node)=> {
+  const minusButton = document.getElementById(`${node.data.id}-minus-button`);
+  const plusButton = document.getElementById(`${node.data.id}-plus-button`);
+  const plusButtonContextBox = document.getElementById(`plus-button-context-box`);
+  const plusButtonContextMenu = document.getElementById(`${node.data.id}-plus-button-context-menu`);
+  const relationBox = document.getElementById(`relation-box`);
+  const relationBoxRect = relationBox.getBoundingClientRect();
+
+  if(type === 'minus'){
+    minusButton.style.display = 'none';
+    plusButton.style.display = 'display';
+    plusButtonContextBox.style.display = 'none';
+    plusButtonContextMenu.style.display = 'none';
+  } else {
+    const plusButtonRect = mouse.path[0].getBoundingClientRect();
+    minusButton.style.display = 'block';
+    plusButton.style.display = 'none';
+    plusButtonContextBox.style.display = 'block';
+    plusButtonContextMenu.style.display = 'block';
+    plusButtonContextMenu.style.top = `${plusButtonRect.y}px`;
+    plusButtonContextMenu.style.left = `${plusButtonRect.right}px`;
+ 
+    const plusButtonContextMenuWidth = plusButtonContextMenu.getBoundingClientRect().width;
+    const plusButtonContextMenuHeight = plusButtonContextMenu.getBoundingClientRect().height;
+    
+    //플러스 메뉴의 넓이가 현재 화면밖을 넘어선다면
+    if(plusButtonRect.right + plusButtonContextMenuWidth > relationBox.getBoundingClientRect().right) {
+      plusButtonContextMenu.style.left = `${plusButtonRect.right - plusButtonContextMenuWidth}px`;
+    }
+    //플러스 메뉴의 높이가 화면 아래를 벗어난다면
+    if(relationBoxRect.height - plusButtonRect.top  < plusButtonContextMenuHeight){
+      plusButtonContextMenu.style.top = `${plusButtonRect.y - plusButtonContextMenuHeight}px`;
+    }
+  }
+});
+}
+
+function countMaxDataNum(relationData){
+
+  //d3 그래프의 층 정보
+  const d3ClassData = {};
+
+  //d3 그래프의 층당 개수 저장
+  const d3NumData = {};
+  let _maxWidthCount = 1;
+  let _maxHeightCount = 1;
+  for (const key in relationData) {
+    const data = relationData[key];
+
+    if(!d3ClassData[data.parent]){
+      d3ClassData[data.id] = 1;
+    } else {
+      d3ClassData[data.id] = d3ClassData[data.parent] + 1;
+    }
+
+    d3NumData[d3ClassData[data.id]] = (d3NumData[d3ClassData[data.id]] ? d3NumData[d3ClassData[data.id]] : 0) + 1;
+    if(_maxWidthCount < d3NumData[d3ClassData[data.id]]){
+      _maxWidthCount = d3NumData[d3ClassData[data.id]];
+    }
+  }
+  _maxHeightCount = Object.keys(d3NumData).length;
+  return [_maxWidthCount,_maxHeightCount];
 }
