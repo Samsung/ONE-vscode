@@ -30,6 +30,7 @@ import {Logger} from './Utils/Logger';
 import { PathToHash } from './MetadataManager/pathToHash';
 
 import { MetadataEventManager } from './MetadataManager/EventManager';
+import { DummyBackendProvider } from './MetadataManager/Dummy/DummyBackendProvider';
 
 /* istanbul ignore next */
 export function activate(context: vscode.ExtensionContext) {
@@ -71,6 +72,8 @@ export function activate(context: vscode.ExtensionContext) {
   PartGraphSelPanel.register(context);
 
   CircleViewerProvider.register(context);
+
+  DummyBackendProvider.register();
   
 
   // returning backend registration function that will be called by backend extensions

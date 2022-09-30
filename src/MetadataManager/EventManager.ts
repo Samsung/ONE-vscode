@@ -64,7 +64,7 @@ class EventQueue{
   }
   
   async action(){
-    const result=await this.front().method();
+    const result = await this.front().method();
     console.log(result);
     this.dequeue();
     
@@ -78,10 +78,17 @@ class EventQueue{
 }
 
 class EventBuffer{
-  private Queue=new EventQueue();
+  private _queue=new EventQueue();
   constructor(){}
   public setEvent(request:any, input:{[key: string]:any}){
-    this.Queue.enqueue(()=>{return new Promise(resolve=>{request(input).then((res:any) =>resolve(res))})
+    this._queue.enqueue(() => {
+      return new Promise(resolve => {
+        if (Object.keys(input).length === 0) {
+          request().then((res: any) => resolve(res));
+        } else {
+          request(input).then((res: any) => resolve(res));
+        }
+      });
     },input);
   }
 }
@@ -181,7 +188,7 @@ export class MetadataEventManager {
 
     registrations.forEach(disposable => context.subscriptions.push(disposable));
   }
-  async resetOldUri(input:{[key:string]:any}){
+  async resetOldUri(){
     MetadataEventManager.createUri=undefined;
   }
 
@@ -216,6 +223,8 @@ export class MetadataEventManager {
     }
     
     metadata = await MetadataEventManager.createDefaultMetadata(uri, metadata);
+    Metadata.setBuildInfoMetadata(metadata[relativePath], uri);
+    await Metadata.setRelationInfo(uri);
 
     await Metadata.setMetadata(afterhash, metadata);    
   }
@@ -277,7 +286,6 @@ export class MetadataEventManager {
 
         else {data["is-deleted"]=false;}
 
-
         //data update
         const stats: any = await Metadata.getStats(uri);
         data["name"]=uri.fsPath.split('/').pop();
@@ -300,6 +308,8 @@ export class MetadataEventManager {
         "is-deleted": false,
       };
     }
+    Metadata.setBuildInfoMetadata(metadata[relPath], uri);
+    await Metadata.setRelationInfo(uri);
     //(6) Metadata Generation
     await Metadata.setMetadata(newHash,metadata);
     // Todo. [File] Generate Product from ONE (processing like case 1 or ignore)
