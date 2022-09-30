@@ -81,7 +81,7 @@ export class PathToHash {
     // TO BE IMPLEMENTED
   }
 
-  elete(uri: vscode.Uri) {
+  delete(uri: vscode.Uri) {
     // TO BE IMPLEMENTED
   }
 
