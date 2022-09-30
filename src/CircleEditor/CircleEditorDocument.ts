@@ -5,7 +5,7 @@ import * as flatbuffers from 'flatbuffers';
 import { ResponseModel, RequestMessage, CustomInfoMessage, ResponseModelPath, ResponseFileRequest, ResponseJson } from './MessageType';
 import * as flexbuffers from 'flatbuffers/js/flexbuffers';
 import * as Types from './CircleType';
-import { CircleException } from "../Utils/CircleException";
+import { CircleException } from "../Utils/CircleEditorException";
 import { composedParent } from "@microsoft/fast-foundation";
 
 export class CircleEditorDocument extends Disposable implements vscode.CustomDocument{
@@ -581,6 +581,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		// 커스텀인 경우 문자열로 받아온다.
 		
 		else if(operatorCode === 32){
+			console.log(data._attribute);
 			operator.builtinOptionsType = 0;
 			operator.builtinOPtions = null;
 			const customName = data._attribute.name;
