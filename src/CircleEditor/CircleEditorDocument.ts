@@ -547,10 +547,33 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 			else{
 				// 보여주는 타입을 그대로 띄워줌
 				if(type.includes('[]')){
-					const valArrType = type.slice(0,type.indexOf('[]'));
-					const valArr = value.split(',');
+					let editValue = value;
+					// 맨 뒤 콤마 알아서 빼주는 로직
+					let lastCommaIdx=value.lastIndexOf(',');
+					let lastNumberIdx : number = value.length-1;
+					for(let i = value.length-1; i>=0; i--){
+						if(value[i] >= '0' && value[i] <= '9'){
+							lastNumberIdx = i;
+							break;
+						}
+					}
+					if(lastCommaIdx > lastNumberIdx){
+						editValue = value.slice(0,lastCommaIdx);
+					}
+					const valArr = editValue.split(',');
 					const valNumArr = [];
 					for(let i =0; i<valArr.length; i++){
+						// 콤마가 여러번 들어가서 숫자가 입력되지 않은 경우의 로직
+						if(valArr[i].search('0') === -1 && valArr[i].indexOf('1') === -1 && valArr[i].search('2') === -1 && valArr[i].search('3') === -1 && 
+						valArr[i].search('4') === -1 && valArr[i].search('5') === -1 && valArr[i].search('6') === -1 && valArr[i].search('7') === -1 &&
+						valArr[i].search('8') === -1 && valArr[i].search('9') === -1) {
+							CircleException.inputException('Check your input array! you typed double comma (\',,\') or you didn\'t typed number');
+							return;
+						}
+						else if(isNaN(Number(valArr[i]))){
+							CircleException.inputException('Check your input array! you didn\'t typed number');
+							return;
+						}
 						valNumArr.push(Number(valArr[i]));
 					}
 					const resArr = new Types._NormalType[type](valNumArr);
@@ -580,6 +603,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		// 커스텀인 경우 문자열로 받아온다.
 		
 		else if(operatorCode === 32){
+			console.log(data._attribute);
 			operator.builtinOptionsType = 0;
 			operator.builtinOPtions = null;
 			const customName = data._attribute.name;

@@ -74,6 +74,7 @@ view.View = class {
                 this._selectionNodes = [];  // selection of view.Node
                 this._sidebar = new sidebar.Sidebar(this._host, id);
                 this._jsonEditor = new jsonEditor.jsonEditor(this._host, id);
+                this._jsonEditorOpened = false;
                 this._searchText = '';
                 this._theme = undefined;
                 this._scrollToSelected = true;  // TODO add menu for this
@@ -740,6 +741,7 @@ view.View = class {
     open(context, subgraphIdx, nodeIdx) {
         this._host.event('Model', 'Open', 'Size', context.stream ? context.stream.length : 0);
         this._sidebar.close();
+        this._jsonEditor.close();
         return this._timeout(2).then(() => {
             return this._modelFactoryService.open(context).then((model) => {
                 const format = [];
@@ -1147,7 +1149,6 @@ view.View = class {
         if (this._sidebar) {
             this._sidebar.close();
         }
-
         const jsonEditor = this._jsonEditor.open();
     }
 

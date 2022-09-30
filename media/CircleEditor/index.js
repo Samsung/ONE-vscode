@@ -158,7 +158,9 @@ host.BrowserHost = class {
                     this._msgGetType(message);
                     break;
                 case 'loadJson':
-                    this._msgLoadJson(message);
+                    if (this._view._jsonEditorOpened) {
+                        this._msgLoadJson(message);
+                    }
                     break;
                 case 'responseEncodingData':
                     this._msgGetBuffer(message);
@@ -499,6 +501,8 @@ host.BrowserHost = class {
                 const file1 = new File(this._modelData, this._modelPath, {type: ''});
                 if (this._viewingSubgraph !== null && this._viewingNode !== null) {
                     this._view._host._open(file1, [file1], this._viewingSubgraph, this._viewingNode);
+                } else if (this._viewingSubgraph !== null) {
+                    this._view._host._open(file1, [file1], this._viewingSubgraph);
                 } else {
                     this._view._host._open(file1, [file1]);
                 }
