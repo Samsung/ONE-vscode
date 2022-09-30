@@ -117,6 +117,16 @@
           }
         ],
         "priority": "option"
+      },
+      {
+        "viewType": "one.viewer.relation",
+        "displayName": "Relation Viewer",
+        "selector": [
+          {
+            "filenamePattern": "*"
+          }
+        ],
+        "priority": "option"
       }
     ],
     "commands": [
@@ -225,6 +235,16 @@
         "command": "one.viewer.metadata.showFromOneExplorer",
         "title": "ONE: Show Metadata",
         "category": "ONE"
+      },
+      {
+        "command": "one.viewer.relation.showFromOneExplorer",
+        "title": "ONE: Show Relation",
+        "category": "ONE"
+      },
+      {
+        "command": "one.viewer.relation.showFromDefaultExplorer",
+        "title": "Show Relation",
+        "category": "ONE"
       }
     ],
     "menus": {
@@ -310,6 +330,11 @@
           "command": "one.viewer.metadata.showFromOneExplorer",
           "when": "view == OneExplorerView && viewItem =~ /baseModel|product/",
           "group": "7_metadata@1"
+        },
+        {
+          "command": "one.viewer.relation.showFromOneExplorer",
+          "when": "view == OneExplorerView && viewItem =~ /baseModel|product/",
+          "group": "7_metadata@2"
         }
       ],
       "explorer/context": [
@@ -317,6 +342,11 @@
           "command": "one.viewer.metadata.showFromDefaultExplorer",
           "when": "resourceExtname in one.metadata.supportedFiles && !explorerResourceIsFolder",
           "group": "7_metadata@1"
+        },
+        {
+          "command": "one.viewer.relation.showFromDefaultExplorer",
+          "when": "resourceExtname in one.relation.supportedFiles && !explorerResourceIsFolder",
+          "group": "7_metadata@2"
         }
       ],
       "commandPalette": [
@@ -390,6 +420,14 @@
         },
         {
           "command": "one.viewer.metadata.showFromOneExplorer",
+          "when": "false"
+        },
+        {
+          "command": "one.viewer.relation.showFromDefaultExplorer",
+          "when": "false"
+        },
+        {
+          "command": "one.viewer.relation.showFromOneExplorer",
           "when": "false"
         }
       ]
