@@ -1,6 +1,25 @@
-/* eslint-disable @typescript-eslint/naming-convention */
+/*
+ * Copyright (c) 2022 Samsung Electronics Co., Ltd. All Rights Reserved
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* eslint-disable @typescript-eslint/naming-convention*/
 import * as Circle from './circle_schema_generated';
 
+/**
+ * BuiltinOptionsType with uppercase to resolve naming convention conflict.
+ */
 export enum BuiltinOptionsType {
   NONE = 0,
   CONV2DOPTIONS = 1,
@@ -119,45 +138,54 @@ export enum BuiltinOptionsType {
   RANDOMOPTIONS = 114,
   BCQGATHEROPTIONS = 252,
   BCQFULLYCONNECTEDOPTIONS = 253,
-  INSTANCENORMOPTIONS = 254
-  }
+  INSTANCENORMOPTIONS = 254,
+}
 
-export const _CircleType: any  = {
-    TensorType : Circle.TensorType,
-    DimensionType : Circle.DimensionType,
-    Padding : Circle.Padding,
-    ActivationFunctionType : Circle.ActivationFunctionType,
-    LSHProjectionType : Circle.LSHProjectionType,
-    FullyConnectedOptionsWeightsFormat : Circle.FullyConnectedOptionsWeightsFormat,
-    LSTMKernelType : Circle.LSTMKernelType,
-    CombinerType : Circle.CombinerType,
-    MirrorPadMode : Circle.MirrorPadMode,
-    CustomOptionsFormat : Circle.CustomOptionsFormat,
-    DataFormat : Circle.DataFormat,
+/**
+ * map CircleType string to CircleType class.
+ */
+export const CircleType: any = {
+  'TensorType': Circle.TensorType,
+  'DimensionType': Circle.DimensionType,
+  'Padding': Circle.Padding,
+  'ActivationFunctionType': Circle.ActivationFunctionType,
+  'LSHProjectionType': Circle.LSHProjectionType,
+  'FullyConnectedOptionsWeightsFormat': Circle.FullyConnectedOptionsWeightsFormat,
+  'LSTMKernelType': Circle.LSTMKernelType,
+  'CombinerType': Circle.CombinerType,
+  'MirrorPadMode': Circle.MirrorPadMode,
+  'CustomOptionsFormat': Circle.CustomOptionsFormat,
+  'DataFormat': Circle.DataFormat,
 };
 
-export const _NormalType: any = {
-	int : Number,
-	int32 : Number,
-	string : String,
-	byte : Number,
-	ubyte : Number,
-	uint : Number,
-	int64 : Number,
-	int16 : Number,
-	uint16 : Number,
-	uint32 : Number,
-	uint64 : Number,
-  'int32[]' : Int32Array,
-  'int16[]' : Int16Array,
-  'uint32[]' : Uint32Array,
-  'uint16[]' : Uint16Array,
-  'float32[]' : Float32Array,
-  'float64[]' : Float64Array
- };
+/**
+ * map normal type to typescript type.
+ */
+export const NormalType: any = {
+  'int': Number,
+  'int32': Number,
+  'string': String,
+  'byte': Number,
+  'ubyte': Number,
+  'uint': Number,
+  'int64': Number,
+  'int16': Number,
+  'uint16': Number,
+  'uint32': Number,
+  'uint64': Number,
+  'int32[]': Int32Array,
+  'int16[]': Int16Array,
+  'uint32[]': Uint32Array,
+  'uint16[]': Uint16Array,
+  'float32[]': Float32Array,
+  'float64[]': Float64Array,
+};
 
-export const CodeTobuiltinOptions = {
-	0: null,
+/**
+ * map BuilinOptionsType enum to BuiltInOptions class.
+ */
+export const NumberToBuiltinOptions = {
+  0: null,
   1: Circle.Conv2DOptionsT,
   2: Circle.DepthwiseConv2DOptionsT,
   3: Circle.ConcatEmbeddingsOptionsT,
@@ -274,12 +302,15 @@ export const CodeTobuiltinOptions = {
   114: Circle.RandomOptionsT,
   252: Circle.BCQGatherOptionsT,
   253: Circle.BCQFullyConnectedOptionsT,
-  254: Circle.InstanceNormOptionsT
+  254: Circle.InstanceNormOptionsT,
 };
 
-export const SparseVector ={
-	0: null,
-	1: Circle.Int32VectorT,
-	2: Circle.Uint16VectorT,
-	3: Circle.Uint8VectorT
+/**
+ * map SparseIndexVector enum to VectorClass.
+ */
+export const SparseVector = {
+  0: null,
+  1: Circle.Int32VectorT,
+  2: Circle.Uint16VectorT,
+  3: Circle.Uint8VectorT,
 };
