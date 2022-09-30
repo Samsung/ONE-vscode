@@ -566,12 +566,9 @@ sidebar.ValueTextView = class {
                 this._saveButton = this._host.document.createElement('div');
                 this._cancelButton = this._host.document.createElement('div');
                 this._input.className = 'sidebar-view-item-value-line-input';
-                this._editButton.className = 'sidebar-view-item-value-expander';
-                this._saveButton.className = 'sidebar-view-item-value-expander';
-                this._cancelButton.className = 'sidebar-view-item-value-expander';
-                this._editButton.innerText = 'edit';
-                this._saveButton.innerText = 'save';
-                this._cancelButton.innerText = 'cancel';
+                this._editButton.className = 'sidebar-view-item-value-expander codicon codicon-edit';
+                this._saveButton.className = 'sidebar-view-item-value-expander codicon codicon-save';
+                this._cancelButton.className = 'sidebar-view-item-value-expander codicon codicon-discard';
                 this._input.value = item;
                 this._input.disabled = true;
                 this._saveButton.setAttribute('style', 'display: none;');
@@ -696,8 +693,7 @@ class NodeAttributeView {
         }
         else{
             this._edit = this._host.document.createElement('div');
-            this._edit.className = 'sidebar-view-item-value-edit';
-            this._edit.innerText='edit';
+            this._edit.className = 'sidebar-view-item-value-edit codicon codicon-edit';
             this._edit.addEventListener('click', () => {
                 this.edit();
             });
@@ -1112,8 +1108,8 @@ sidebar.ArgumentView = class {
 
     toggle() {
         if (this._expander) {
-            if (this._expander.innerText === 'show') {
-                this._expander.innerText = 'less';
+            if (this._expander.className === 'sidebar-view-item-value-expander codicon codicon-chevron-down') {
+                this._expander.className = 'sidebar-view-item-value-expander codicon codicon-chevron-up';
 
                 const initializer = this._argument.initializer;
                 if (this._hasId && this._hasKind) {
@@ -1194,7 +1190,7 @@ sidebar.ArgumentView = class {
                 }
             }
             else {
-                this._expander.innerText = 'show';
+                this._expander.className = 'sidebar-view-item-value-expander codicon codicon-chevron-down';
                 while (this._element.childElementCount > 3) {
                     this._element.removeChild(this._element.lastChild);
                 }
@@ -1223,10 +1219,8 @@ sidebar.ArgumentView = class {
         if (type || initializer || quantization || location) {
             this._expander = this._host.document.createElement('div');
             this._edit = this._host.document.createElement('div');
-            this._expander.className = 'sidebar-view-item-value-expander';
-            this._edit.className = 'sidebar-view-item-value-edit';
-            this._expander.innerText = 'show';
-            this._edit.innerText='edit';
+            this._expander.className = 'sidebar-view-item-value-expander codicon codicon-chevron-down';
+            this._edit.className = 'sidebar-view-item-value-edit codicon codicon-edit';
             this._expander.addEventListener('click', () => {
                 this.toggle();
             });
@@ -1284,10 +1278,8 @@ sidebar.ArgumentView = class {
         if (type || initializer || quantization || location) {
             this._save = this._host.document.createElement('div');
             this._cancel = this._host.document.createElement('div');
-            this._save.className = 'sidebar-view-item-value-save';
-            this._cancel.className = 'sidebar-view-item-value-cancel';
-            this._save.innerText = 'save';
-            this._cancel.innerText='cancel';
+            this._save.className = 'sidebar-view-item-value-save codicon codicon-save';
+            this._cancel.className = 'sidebar-view-item-value-cancel codicon codicon-discard';
             this._save.addEventListener('click', (e) => {
                 e.preventDefault();
                 this.save();
