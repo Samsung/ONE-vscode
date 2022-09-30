@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import * as fs from 'fs';
 import * as vscode from 'vscode';
 
 import {Balloon} from '../Utils/Balloon';
@@ -23,7 +21,7 @@ import {Logger} from '../Utils/Logger';
 
 class MetadataEventQueue {
   private inProgress: boolean = false;
-  private queue: {method: any, input: {[key: string]: any}}[] = [];
+  private queue: {method: Function, input: {[key: string]: any}}[] = [];
 
   constructor() {
     this.queue = [];
@@ -59,6 +57,7 @@ class MetadataEventQueue {
 
   async action() {
     await this.front().method();
+
     this.dequeue();
 
     if (this.isEmpty()) {
@@ -86,7 +85,6 @@ class MetadataEventBuffer {
 }
 
 
-
 /* istanbul ignore next */
 export class MetadataEventManager {
   private fileWatcher = vscode.workspace.createFileSystemWatcher(`**/*`);  // glob pattern
@@ -94,7 +92,7 @@ export class MetadataEventManager {
 
     /**
    * Communicates among events
-   * didCreateUri : 
+   * didCreateUri : communicates created file uri to delete event when file is renamed/moved.
    */
   public static didCreateUri: vscode.Uri|undefined = undefined;
 
@@ -118,7 +116,20 @@ export class MetadataEventManager {
     }
 
     const manager = new MetadataEventManager();
-    
+
+    let registrations = [
+      manager.fileWatcher.onDidChange(async uri => {
+        manager.eventBuffer.setEvent(manager.changeFileEvent, {'uri': uri});
+      }),
+      manager.fileWatcher.onDidDelete(async () => {
+        //TO BE IMPLEMENTED.
+      }),
+      manager.fileWatcher.onDidCreate(async () => {
+        //TO BE IMPLEMENTED.
+      }),
+    ];
+
+    registrations.forEach(disposable => context.subscriptions.push(disposable)); 
     //TO BE DONE.
   }
 
@@ -126,29 +137,29 @@ export class MetadataEventManager {
     //TO BE IMPLEMENTED.
   }
 
-  async changeFileEvent(input: {[key: string]: any}): Promise<void> {
+  async changeFileEvent(_input: {[key: string]: any}): Promise<void> {
     //TO BE IMPLEMENTED
   }
 
-  async createDirEvent(input: {[key: string]: any}) {
+  async createDirEvent(_input: {[key: string]: any}) {
     //TO BE IMPLEMENTED
   }
 
-  async createFileEvent(input: {[key: string]: any}) {
+  async createFileEvent(_input: {[key: string]: any}) {
     //TO BE IMPLEMENTED
   }
 
-  async deleteDirEvent(input: {[key: string]: any}){
+  async deleteDirEvent(_input: {[key: string]: any}){
     //TO BE IMPLEMENTED
   }
 
-  async deleteFileEvent(input: {[key: string]: any}){
+  async deleteFileEvent(_input: {[key: string]: any}){
     //TO BE IMPLEMENTED
   }
-  async moveDirEvent(input: {[key: string]: any}){
+  async moveDirEvent(_input: {[key: string]: any}){
     //TO BE IMPLEMENTED   
   }
-  async moveFileEvent(input: {[key: string]: any}){
+  async moveFileEvent(_input: {[key: string]: any}){
     //TO BE IMPLEMENTED   
   }
 }
