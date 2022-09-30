@@ -5,398 +5,467 @@ var customType = customType || {};
 
 jsonEditor.jsonEditor = class {
 
-    constructor(host, id) {
-        this._host = host;
-        this._id = id ? ('-' + id) : '';
-        this._closeJsonEditorHandler = () => {
-            this.close();
-        };
-        this._closeJsonEditorKeyDownHandler = (e) => {
-            if (e.keyCode === 27) {
-                e.preventDefault();
-                this.close();
-            }
-        };
-
-        this._applyEditHandler = (e) => {
-            e.preventDefault();
-            const value = this._host.document.getElementById('jsonEditor-content');
-            const data = value.value;
-
-            vscode.postMessage({
-                command: 'updateJson',
-                data: data,
-            });
-        };
-    }
-
-    open() {
+  constructor(host, id) {
+    this._host = host;
+    this._id = id ? ('-' + id) : '';
+    this._closeJsonEditorHandler = () => {
+         this.close();
+    };
+    this._closeJsonEditorKeyDownHandler = (e) => {
+      if (e.keyCode === 27) {
+        e.preventDefault();
         this.close();
-        
-        vscode.postMessage({
-            command: 'loadJson'
-        });
+      }
+    };
+
+    this._applyEditHandler = (e) => {
+      e.preventDefault();
+      const value = this._host.document.getElementById('jsonEditor-content');
+      const data = value.value;
+
+      vscode.postMessage({
+        command: 'updateJson',
+        data: data,
+      });
+    };
+  }
+
+  open() {
+    this.close();
+    
+    vscode.postMessage({
+      command: 'loadJson'
+    });
+  }
+
+  close() {
+    this._deactivate();
+    this._hide();
+  }
+
+  _hide() {
+    const jsonEditor = this._host.document.getElementById('jsonEditor');
+    if (jsonEditor) {
+      jsonEditor.style.width = '0px';
     }
-
-    close() {
-        this._deactivate();
-        this._hide();
+    const container = this._host.document.getElementById('graph');
+    if (container) {
+      container.style.width = '100%';
+      container.focus();
     }
+  }
 
-    _hide() {
-        const jsonEditor = this._host.document.getElementById('jsonEditor');
-        if (jsonEditor) {
-            jsonEditor.style.width = '0px';
-        }
-        const container = this._host.document.getElementById('graph');
-        if (container) {
-            container.style.width = '100%';
-            container.focus();
-        }
+  _deactivate() {
+    const jsonEditor = this._host.document.getElementById('jsonEditor');
+    if (jsonEditor) {
+      const closeButton = this._host.document.getElementById('jsonEditor-closebutton');
+      if (closeButton) {
+        closeButton.removeEventListener('click', this._closeJsonEditorHandler);
+        closeButton.style.color = '#f8f8f8';
+      }
+      const applyButton = this._host.document.getElementById('jsonEditor-applybutton');
+      if (applyButton) {
+        applyButton.removeEventListener('click', this._applyEditHandler);
+      }
+
+      this._host.document.removeEventListener('keydown', this._closeJsonEditorKeyDownHandler);
     }
+  }
 
-    _deactivate() {
-        const jsonEditor = this._host.document.getElementById('jsonEditor');
-        if (jsonEditor) {
-            const closeButton = this._host.document.getElementById('jsonEditor-closebutton');
-            if (closeButton) {
-                closeButton.removeEventListener('click', this._closeJsonEditorHandler);
-                closeButton.style.color = '#f8f8f8';
-            }
-            const applyButton = this._host.document.getElementById('jsonEditor-applybutton');
-            if (applyButton) {
-                applyButton.removeEventListener('click', this._applyEditHandler);
-            }
+  _activate(item) {
+    const jsonEditorBox = this._host.document.getElementById('jsonEditor');
+    if (jsonEditorBox) {
+      jsonEditorBox.innerHTML = '';
 
-            this._host.document.removeEventListener('keydown', this._closeJsonEditorKeyDownHandler);
-        }
+      const closeButton = this._host.document.createElement('a');
+      closeButton.classList.add('jsonEditor-closebutton');
+      closeButton.setAttribute('id', 'jsonEditor-closebutton');
+      closeButton.setAttribute('href', 'javascript:void(0)');
+      closeButton.innerHTML = '&times;';
+      closeButton.addEventListener('click', this._closeJsonEditorHandler);
+      jsonEditorBox.appendChild(closeButton);
+
+      const applyButton = this._host.document.createElement('button');
+      applyButton.classList.add('jsonEditor-applybutton');
+      applyButton.setAttribute('id', 'jsonEditor-applybutton');
+      applyButton.addEventListener('click', this._applyEditHandler);
+      applyButton.innerHTML = 'apply';
+      jsonEditorBox.appendChild(applyButton);
+      
+      const content = new jsonEditor.content(this._host, item);
+      jsonEditorBox.appendChild(content.render());
+
+      jsonEditorBox.style.width = 'min(calc(100% * 0.6), 800px)';
+      this._host.document.addEventListener('keydown', this._closeJsonEditorKeyDownHandler);
+
+      const calculatorBox = new jsonEditor.Calculator(this._host).render();
+      jsonEditorBox.appendChild(calculatorBox[0]);
     }
-
-    _activate(item) {
-        const jsonEditorBox = this._host.document.getElementById('jsonEditor');
-        if (jsonEditorBox) {
-            jsonEditorBox.innerHTML = '';
-
-            const calculatorBox = new jsonEditor.Calculator(this._host).render();
-            jsonEditorBox.appendChild(calculatorBox[0]);
-
-            const closeButton = this._host.document.createElement('a');
-            closeButton.classList.add('jsonEditor-closebutton');
-            closeButton.setAttribute('id', 'jsonEditor-closebutton');
-            closeButton.setAttribute('href', 'javascript:void(0)');
-            closeButton.innerHTML = '&times;';
-            closeButton.addEventListener('click', this._closeJsonEditorHandler);
-            jsonEditorBox.appendChild(closeButton);
-
-            const applyButton = this._host.document.createElement('button');
-            applyButton.classList.add('jsonEditor-applybutton');
-            applyButton.setAttribute('id', 'jsonEditor-applybutton');
-            applyButton.addEventListener('click', this._applyEditHandler);
-            applyButton.innerHTML = 'apply';
-            jsonEditorBox.appendChild(applyButton);
-            
-            const content = new jsonEditor.content(this._host, item);
-            jsonEditorBox.appendChild(content.render());
-
-            jsonEditorBox.style.width = 'min(calc(100% * 0.6), 800px)';
-            this._host.document.addEventListener('keydown', this._closeJsonEditorKeyDownHandler);
-        }
-        const container = this._host.document.getElementById('graph');
-        if (container) {
-            container.style.width = 'max(40vw, calc(100vw - 800px))';
-        }
+    const container = this._host.document.getElementById('graph');
+    if (container) {
+      container.style.width = 'max(40vw, calc(100vw - 800px))';
     }
+  }
 };
 
 jsonEditor.content = class {
-    constructor(host, item) {
-        this._host = host;
-        this._item = item;
-        this._elements = [];
+  constructor(host, item) {
+    this._host = host;
+    this._item = item;
+    this._elements = [];
 
-        const content = this._host.document.createElement('textarea');
-        content.style.height = '95%';
-        content.style.width = 'calc(100% - 6px)';
-        content.setAttribute('id', 'jsonEditor-content');
-        content.style.resize = 'none';
-        content.value = item;
+    this._tabEvent = (value) => {
+      event.preventDefault();
+      if (event.keyCode === 9) {
+          const tab = '\t';
+          value.selection = this._host.document.selection.createRange();
+          value.selection.text = tab;
+          event.returnValue = false;
+      }
+    };
 
-        content.addEventListener('keydown', (e) => {
-            if (e.keyCode === 9) {
-                e.preventDefault();
-                const tab = '  ';
-                const value = e.target.value;
-                const start = e.target.selectionStart;
-                const end = e.target.selectionEnd;
-                e.target.value = value.substring(0, start) + tab + value.substring(end);
-                e.target.selectionEnd = start+tab.length;
-                return;
-            }
-        });
+    const content = this._host.document.createElement('textarea');
+    content.style.height = 'calc(100% - 35px)';
+    content.style.width = 'calc(100% - 6px)';
+    content.setAttribute('id', 'jsonEditor-content');
+    content.style.resize = 'none';
+    content.value = item;
 
-        this._elements.push(content);
-    }
+    content.addEventListener('keydown', (e) => {
+      if (e.keyCode === 9) {
+        e.preventDefault();
+        const tab = '  ';
+        const value = e.target.value;
+        const start = e.target.selectionStart;
+        const end = e.target.selectionEnd;
+        e.target.value = value.substring(0, start) + tab + value.substring(end);
+        e.target.selectionEnd = start+tab.length;
+        return;
+      }
+    });
 
-    render() {
-        return this._elements[0];
-    }
+    this._elements.push(content);
+  }
+
+  render() {
+    return this._elements[0];
+  }
 };
 
 jsonEditor.Calculator = class {
-    constructor(host) {
-        this._host = host;
-        this._elements = [];
+  constructor(host) {
+    this._host = host;
+    this._elements = [];
 
-        this._editObject = {
-            
-        };
-        
-        this._calculatorBox = this.makeTag('div', 'calculator-box');
-        const calculatorNameBox = this.makeTag('div', 'calculator-name-box');
-        const calculatorName = this.makeTag('div', 'calculator-name');
-        this._toggle = this.makeTag('div', 'toggle-button');
+    this._editObject = {};
+    
+    this._jsonEditorBox = this._host.document.getElementById('jsonEditor');
+    this._calculatorBox = this.makeTag('div', 'calculator-box');
+    const calculatorNameBox = this.makeTag('div', 'calculator-name-box');
+    const calculatorName = this.makeTag('div', 'calculator-name');
+    this._toggle = this.makeTag('div', 'toggle-button');
+    const navigator = this.makeTag('div', 'navigator');
+    const buttonArea = this.makeTag('div', 'button-area');
+    this._bufferButton = this.makeTag('div', 'button');
+    this._customOptionsButton = this.makeTag('div', 'button');
 
-        this._calculatorBox.style.height = "5%";
-        
-        this._toggle.innerText = '+';
-        calculatorName.innerText = 'Calculator';
-        calculatorNameBox.appendChild(calculatorName);
-        calculatorNameBox.appendChild(this._toggle);
-        this._calculatorBox.appendChild(calculatorNameBox);
+    this._calculatorBox.style.height = "5%";
+    
+    this._toggle.innerText = '+';
+    calculatorName.innerText = 'Calculator';
+    navigator.appendChild(calculatorNameBox);
+    calculatorNameBox.appendChild(calculatorName);
+    calculatorNameBox.appendChild(this._toggle);
 
-        this._toggle.addEventListener('click', () => {
-            this.toggle();
-        });
+    this._bufferButton.innerText = 'Buffer';
+    this._customOptionsButton.innerText = 'Custom';
 
-        this._elements.push(this._calculatorBox);
+    buttonArea.appendChild(this._bufferButton);
+    buttonArea.appendChild(this._customOptionsButton);
+    navigator.appendChild(buttonArea);
+    this._calculatorBox.appendChild(navigator);
+
+    this._toggle.addEventListener('click', () => {
+      this.toggle();
+    });
+
+    this._elements.push(this._calculatorBox);
+  }
+
+  toggle() {
+    if(this._toggle.innerText === '+') {
+      this._toggle.innerText = '-';
+      const editBox = this._host.document.getElementById('jsonEditor-content');
+      editBox.style.height = '55%';
+      const div = this.makeTag('div');
+      this._jsonEditorBox.appendChild(div);
+      
+      this.buffer();
+
+      this._bufferButton.addEventListener('click', () => {
+        this.buffer();
+      });
+
+      this._customOptionsButton.addEventListener('click', () => {
+        this.customOptions();
+      });
+    } else {
+      this._toggle.innerText = '+';
+
+      const editBox = this._host.document.getElementById('jsonEditor-content');
+      editBox.style.height = 'calc(100% - 35px)';
+
+      this._calculatorBox.style.height = "5%";
+      while (this._elements[0].childElementCount > 1) {
+        this._elements[0].removeChild(this._elements[0].lastChild);
+      }
+    }
+  }
+
+  buffer() {
+    while (this._elements[0].childElementCount > 1) {
+      this._elements[0].removeChild(this._elements[0].lastChild);
+    }
+    this._jsonEditorBox.removeChild(this._jsonEditorBox.lastChild);
+    this._bufferButton.className = 'button-selected';
+    this._customOptionsButton.className = 'button';
+    this._calculatorBox.style.height = "calc(30% - 22px)";
+    const expanderArea = this.makeTag('div', 'expander-area');
+    const titleArea = this.makeTag('div', 'title-area');
+    const inputTitle = this.makeTag('div', 'title');
+    const convert = this.makeTag('div', 'convert-button');
+    const inputArea = this.makeTag('div', 'input-area');
+    const valueArea = this.makeTag('div', 'value-area');
+    const typeArea = this.makeTag('div', 'type-area');
+    const valueTitle = this.makeTag('div', 'input-title');
+    const typeTitle = this.makeTag('div', 'input-title');
+    this._input = this.makeTag('input', 'input');
+    this._select = this.makeTag('select', 'select');
+    const outputArea = this.makeTag('div', 'output-area');
+    const outputTitle = this.makeTag('div', 'output-title');
+    const outputLine = this.makeTag('div', 'output-line');
+    const clear = this.makeTag('div', 'clear-button');
+    this._output = this.makeTag('input', 'output');
+    const copy = this.makeTag('div', 'copy-button');
+    convert.innerText = 'Convert';
+    clear.innerText = 'Clear';
+    inputTitle.innerText = 'Input ';
+    outputTitle.innerText = 'Output ';
+    copy.innerText = '📋️';
+    valueTitle.innerText = 'Value';
+    typeTitle.innerText = 'Type';
+    
+    titleArea.appendChild(inputTitle);
+    titleArea.appendChild(convert);
+    expanderArea.appendChild(titleArea);
+    valueArea.appendChild(valueTitle);
+    valueArea.appendChild(this._input);
+    typeArea.appendChild(typeTitle);
+    typeArea.appendChild(this._select);
+    inputArea.appendChild(valueArea);
+    inputArea.appendChild(typeArea);
+    expanderArea.appendChild(inputArea);
+    outputArea.appendChild(outputTitle);
+    outputLine.appendChild(this._output);
+    outputLine.appendChild(copy);
+    outputLine.appendChild(clear);
+    outputArea.appendChild(outputLine);
+    this._calculatorBox.appendChild(expanderArea);
+    this._jsonEditorBox.appendChild(outputArea);
+
+    this._output.setAttribute('readonly', 'true');
+
+    convert.addEventListener('click', () => {
+      this.bufferConvert();
+    });
+
+    clear.addEventListener('click', () => {
+      this.bufferClear();
+    });
+
+    copy.addEventListener('click', () => {
+      this.bufferCopy();
+    });
+
+    for(const type of tensorType){
+      const option = this._host.document.createElement('option');
+      option.setAttribute('value', type);
+      option.innerText = type.toLowerCase();
+
+      this._select.appendChild(option);
+    }
+  }
+
+  customOptions() {
+    while (this._elements[0].childElementCount > 1) {
+      this._elements[0].removeChild(this._elements[0].lastChild);
+    }
+    this._jsonEditorBox.removeChild(this._jsonEditorBox.lastChild);
+    this._bufferButton.className = 'button';
+    this._customOptionsButton.className = 'button-selected';
+    const expanderArea = this.makeTag('div', 'expander-area');
+    const titleArea = this.makeTag('div', 'title-area');
+    const inputTitle = this.makeTag('div', 'title');
+    const convert = this.makeTag('div', 'convert-button');
+    this._inputArea = this.makeTag('div', 'custom-input-area');
+    const inputTitleLine = this.makeTag('div', 'input-title-line');
+    const keyTitle = this.makeTag('div', 'custom-input-title');
+    const valueTitle = this.makeTag('div', 'custom-input-title');
+    const typeTitle = this.makeTag('div', 'custom-select-title');
+    const minus = this.makeTag('div', 'minus-button');
+    const plus = this.makeTag('div', 'plus-button');
+    const outputArea = this.makeTag('div', 'output-area');
+    const outputTitle = this.makeTag('div', 'output-title');
+    const outputLine = this.makeTag('div', 'output-line');
+    const clear = this.makeTag('div', 'clear-button');
+    this._customOutput = this.makeTag('input', 'output');
+    this._customOutput.setAttribute('id', 'output');
+    const copy = this.makeTag('div', 'copy-button');
+    minus.setAttribute('style', 'visibility: hidden');
+
+    convert.innerText = 'Convert';
+    inputTitle.innerText = 'Input ';
+    keyTitle.innerText = 'Key';
+    valueTitle.innerText = 'Value';
+    typeTitle.innerText = 'Type';
+    clear.innerText = 'Clear';
+    outputTitle.innerText = 'Output ';
+    minus.innerText = '-';
+    copy.innerText = '📋️';
+
+    this._customOutput.setAttribute('readonly', 'true');
+    plus.innerText = '+ New Attributes';
+
+    convert.addEventListener('click', () => {
+      this.customOptionsConvert();
+    });
+    clear.addEventListener('click', () => {
+      this.customOptions();
+    });
+    plus.addEventListener('click', () => {
+      this._inputArea.appendChild(this.makeLine());
+    });
+    copy.addEventListener('click', () => {
+      this.customOptionsCopy();
+    });
+
+    titleArea.appendChild(inputTitle);
+    titleArea.appendChild(convert);
+    expanderArea.appendChild(titleArea);
+    inputTitleLine.appendChild(keyTitle);
+    inputTitleLine.appendChild(valueTitle);
+    inputTitleLine.appendChild(typeTitle);
+    inputTitleLine.appendChild(minus);
+    this._inputArea.appendChild(inputTitleLine);
+    expanderArea.appendChild(this._inputArea);
+    outputArea.appendChild(outputTitle);
+    outputLine.appendChild(this._customOutput);
+    outputLine.appendChild(copy);
+    outputLine.appendChild(clear);
+    outputArea.appendChild(outputLine);
+    this._jsonEditorBox.appendChild(outputArea);
+    
+
+    this._inputArea.appendChild(this.makeLine());
+    expanderArea.appendChild(this._inputArea);
+    expanderArea.appendChild(plus);
+    this._calculatorBox.appendChild(expanderArea);
+  }
+
+  makeLine() {
+    const inputLine = this.makeTag('div', 'input-line');
+    const key = this.makeTag('input', 'custom-input');
+    const value = this.makeTag('input', 'custom-input');
+    const select = this.makeTag('select', 'custom-select');
+    const minus = this.makeTag('div', 'minus-button');
+    minus.innerText = '-';
+
+    for(const type of customType){
+      const option = this._host.document.createElement('option');
+      option.setAttribute('value', type);
+      option.innerText = type.toLowerCase();
+
+      select.appendChild(option);
     }
 
-    toggle() {
-        if(this._toggle.innerText === '+') {
-            this._toggle.innerText = '-';
-            const editBox = this._host.document.getElementById('jsonEditor-content');
-            editBox.style.height = '88%';
+    minus.addEventListener('click', () => {
+      this._inputArea.removeChild(inputLine);
+    });
+    
+    inputLine.appendChild(key);
+    inputLine.appendChild(value);
+    inputLine.appendChild(select);
+    inputLine.appendChild(minus);
 
-            const buttonArea = this.makeTag('div', 'button-area');
-            this._bufferButton = this.makeTag('div', 'button');
-            this._customOptionsButton = this.makeTag('div', 'button');
+    return inputLine;
+  }
 
-            this._bufferButton.innerText = 'buffer';
-            this._customOptionsButton.innerText = 'custom options';
+  bufferConvert() {
+    this._output.value = new jsonEditor.Converter(this._input.value, this._select.value).render();
+  }
 
-            buttonArea.appendChild(this._bufferButton);
-            buttonArea.appendChild(this._customOptionsButton);
-            this._calculatorBox.appendChild(buttonArea);
-            
-            this.buffer();
-
-            this._bufferButton.addEventListener('click', () => {
-                this.buffer();
-            });
-
-            this._customOptionsButton.addEventListener('click', () => {
-                this.customOptions();
-            });
-        } else {
-            this._toggle.innerText = '+';
-
-            const editBox = this._host.document.getElementById('jsonEditor-content');
-            editBox.style.height = '95%';
-
-            this._calculatorBox.style.height = "5%";
-            while (this._elements[0].childElementCount > 1) {
-                this._elements[0].removeChild(this._elements[0].lastChild);
-            }
-        }
-    }
-
-    buffer() {
-        while (this._elements[0].childElementCount > 2) {
-            this._elements[0].removeChild(this._elements[0].lastChild);
-        }
-        this._bufferButton.className = 'button-selected';
-        this._customOptionsButton.className = 'button';
-        this._calculatorBox.style.height = "120px";
-        this._input = this.makeTag('input', 'input');
-        this._select = this.makeTag('select', 'select');
-        const convert = this.makeTag('div', 'convert-button');
-        const clear = this.makeTag('div', 'clear-button');
-        this._output = this.makeTag('input', 'input');
-        const titleBox = this.makeTag('div', 'title-box');
-        const inputBox = this.makeTag('div', 'input-box');
-        const inputTitle = this.makeTag('div', 'title');
-        const outputTitle = this.makeTag('div', 'title');
-        const expanderArea = this.makeTag('div', 'expander-area');
-        convert.innerText = 'convert';
-        clear.innerText = 'clear';
-        inputTitle.innerText = 'input :';
-        outputTitle.innerText = 'output :';
-        titleBox.appendChild(inputTitle);
-        titleBox.appendChild(outputTitle);
-        inputBox.appendChild(this._input);
-        inputBox.appendChild(this._output);
-
-        this._output.setAttribute('readonly', 'true');
-
-        convert.addEventListener('click', () => {
-            this.bufferConvert();
-        });
-
-        clear.addEventListener('click', () => {
-            this.bufferClear();
-        });
-
-        for(const type of tensorType){
-            const option = this._host.document.createElement('option');
-            option.setAttribute('value', type);
-            option.innerText = type.toLowerCase();
-
-            this._select.appendChild(option);
-        }
-
-        expanderArea.appendChild(titleBox);
-        expanderArea.appendChild(inputBox);
-        expanderArea.appendChild(this._select);
-        expanderArea.appendChild(convert);
-        expanderArea.appendChild(clear);
-        this._calculatorBox.appendChild(expanderArea);
-    }
-
-    customOptions() {
-        while (this._elements[0].childElementCount > 2) {
-            this._elements[0].removeChild(this._elements[0].lastChild);
-        }
-        this._bufferButton.className = 'button';
-        this._customOptionsButton.className = 'button-selected';
-        const expanderArea = this.makeTag('div', 'expander-area');
-        this._inputArea = this.makeTag('div', 'input-area');
-        const convert = this.makeTag('div', 'convert-button');
-        const clear = this.makeTag('div', 'clear-button');
-        const plus = this.makeTag('div', 'plus-button');
-        const outputArea = this.makeTag('div', 'output-area');
-        const outputTitle = this.makeTag('div', 'title');
-        this._customOutput = this.makeTag('input', 'output');
-        this._customOutput.setAttribute('id', 'output');
-
-        this._customOutput.setAttribute('readonly', 'true');
-        outputTitle.innerText = 'output : ';
-        convert.innerText = 'convert';
-        clear.innerText = 'clear';
-        plus.innerText = '+';
-
-        convert.addEventListener('click', () => {
-            this.customOptionsConvert();
-        });
-        clear.addEventListener('click', () => {
-            this.customOptions();
-        });
-        plus.addEventListener('click', () => {
-            this._inputArea.appendChild(this.makeLine());
-        });
-
-        this._inputArea.appendChild(this.makeLine());
-        outputArea.appendChild(outputTitle);
-        outputArea.appendChild(this._customOutput);
-        expanderArea.appendChild(this._inputArea);
-        expanderArea.appendChild(plus);
-        expanderArea.appendChild(convert);
-        expanderArea.appendChild(clear);
-        this._calculatorBox.appendChild(expanderArea);
-        this._calculatorBox.appendChild(outputArea);
-    }
-
-    makeLine() {
-        const box = this.makeTag('div', 'box');
-        const keyName = this.makeTag('div', 'title');
-        const valueName = this.makeTag('div', 'title');
-        const keyVal = this.makeTag('input', 'custom-input');
-        const valueVal = this.makeTag('input', 'custom-input');
-        const select = this.makeTag('select', 'select');
-        const minus = this.makeTag('div', 'minus-button');
-        minus.innerText = '-';
-
-        for(const type of customType){
-            const option = this._host.document.createElement('option');
-            option.setAttribute('value', type);
-            option.innerText = type.toLowerCase();
-
-            select.appendChild(option);
-        }
-
-        minus.addEventListener('click', () => {
-            if(this._inputArea.childElementCount > 1){
-                this._inputArea.removeChild(box);
-            }
-        });
-
-        keyName.innerText = "key : ";
-        valueName.innerText = "value : ";
-
-        box.appendChild(keyName);
-        box.appendChild(keyVal);
-        box.appendChild(valueName);
-        box.appendChild(valueVal);
-        box.appendChild(select);
-        box.appendChild(minus);
-
-        return box;
-    }
-
-    bufferConvert() {
-        this._output.value = new jsonEditor.Converter(this._input.value, this._select.value).render();
-    }
-
-    customOptionsConvert() {
-        this._editObject = new Object;
-        for(const child of this._inputArea.childNodes){
-            const key = child.childNodes[1].value;
-            const value = child.childNodes[3].value;
-            const type = child.childNodes[4].value;
-            if(key && value){
-                this._editObject[key] = [value, type];
-            }
-            else{
-                vscode.postMessage({
-                    command: 'alert',
-                    text: 'FORMAT ERROR : Please enter commas and numbers only.'
-                });
-                return;
-            }
-        }
-
+  customOptionsConvert() {
+    this._editObject = new Object;
+    for(let i = 1 ; i < this._inputArea.childElementCount ; i++){
+      const key = this._inputArea.childNodes[i].childNodes[0].value;
+      const value = this._inputArea.childNodes[i].childNodes[1].value;
+      const type = this._inputArea.childNodes[i].childNodes[2].value;
+      if(key && value) {
+        this._editObject[key] = [value, type];
+      } else {
         vscode.postMessage({
-            command: 'requestEncodingData',
-            data : this._editObject
+          command: 'alert',
+          text: 'FORMAT ERROR : Please enter key and value.'
         });
+        return;
+      }
     }
 
-    bufferClear() {
-        this._input.value = '';
-        this._output.value = '';
+    vscode.postMessage({
+      command: 'requestEncodingData',
+      data : this._editObject
+    });
+  }
+
+  bufferClear() {
+    this._input.value = '';
+    this._output.value = '';
+  }
+
+  bufferCopy() {
+    this._output.select();
+    document.execCommand('copy');
+    this._output.setSelectionRange(0, 0);
+  }
+
+  customOptionsCopy() {
+    this._customOutput.select();
+    document.execCommand('copy');
+    this._customOutput.setSelectionRange(0, 0);
+  }
+
+  makeTag(tag, className) {
+    const temp = this._host.document.createElement(tag);
+    if(className){
+      temp.className = className;
     }
 
-    makeTag(tag, className) {
-        const temp = this._host.document.createElement(tag);
-        if(className){
-            temp.className = className;
-        }
+    return temp;
+  }
 
-        return temp;
-    }
-
-    render() {
-        return this._elements;
-    }
+  render() {
+    return this._elements;
+  }
 };
 
 jsonEditor.Converter = class {
 
-    constructor(str, type) {
-        this._str = str;
-        this._type = type;
+  constructor(str, type) {
+      this._str = str;
+      this._type = type;
 
-        this.calc();
-    }
+      this.calc();
+  }
 
     calc() {
         const types = ['float32', 'float16', 'int32', 'uint8', 'int64', 'string', 'bool', 'int16',
@@ -442,66 +511,65 @@ jsonEditor.Converter = class {
             return this._result;
         }
     }
-    
-    calculate(num, c, b) {
+  
+  calculate(num, c, b) {
 
-        var buffer = new ArrayBuffer(b);
-        var view = new DataView(buffer);
-    
-        switch (c) {
-            case 0:
-                view.setFloat32(0, num, true);
-                break;
-            case 1:
-                view.setFloat16(0, num, true);
-                break;
-            case 2:
-                view.setInt32(0, num, true);
-                break;
-            case 3:
-                if(num < 0) { return; }
-                view.setUint8(0, num, true);
-                break;
-            case 4:
-                view.setBigInt64(0, BigInt(parseInt(String(num))), true);
-                break;
-            case 5:
-                break;
-            case 6:
-                view.setInt32(0, num, true);
-                break;
-            case 7:
-                view.setInt16(0, num, true);
-                break;
-            case 8:
-                break;
-            case 9:
-                view.setInt8(0, num, true);
-                break;
-            case 10:
-                view.setFloat64(0, num, true);
-                break;
-            case 11:
-                break;
-            case 12:
-                if(num < 0) { return; }
-                view.setBigUint64(0, BigInt(parseInt(String(num))), true);
-                break;
-            case 13:
-                break;
-            case 14:
-                break;
-            case 15:
-                if(num < 0) { return; }
-                view.setUInt32(0, num, true);
-                break;
-        }
-    
-        return view;
-    
+    var buffer = new ArrayBuffer(b);
+    var view = new DataView(buffer);
+
+    switch (c) {
+      case 0:
+        view.setFloat32(0, num, true);
+        break;
+      case 1:
+        view.setFloat16(0, num, true);
+        break;
+      case 2:
+        view.setInt32(0, num, true);
+        break;
+      case 3:
+        if(num < 0) { return; }
+        view.setUint8(0, num, true);
+        break;
+      case 4:
+        view.setBigInt64(0, BigInt(parseInt(String(num))), true);
+        break;
+      case 5:
+        break;
+      case 6:
+        view.setInt32(0, num, true);
+        break;
+      case 7:
+        view.setInt16(0, num, true);
+        break;
+      case 8:
+        break;
+      case 9:
+        view.setInt8(0, num, true);
+        break;
+      case 10:
+        view.setFloat64(0, num, true);
+        break;
+      case 11:
+        break;
+      case 12:
+        if(num < 0) { return; }
+        view.setBigUint64(0, BigInt(parseInt(String(num))), true);
+        break;
+      case 13:
+        break;
+      case 14:
+        break;
+      case 15:
+        if(num < 0) { return; }
+        view.setUInt32(0, num, true);
+        break;
     }
 
-    render() {
-        return this._result;
-    }
+    return view;
+  }
+
+  render() {
+    return this._result;
+  }
 };

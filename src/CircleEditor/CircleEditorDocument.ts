@@ -6,7 +6,10 @@ import { ResponseModel, RequestMessage, CustomInfoMessage, ResponseModelPath, Re
 import * as flexbuffers from 'flatbuffers/js/flexbuffers';
 import * as Types from './CircleType';
 import { CircleException } from "../Utils/CircleEditorException";
+<<<<<<< HEAD
 import { composedParent } from "@microsoft/fast-foundation";
+=======
+>>>>>>> main
 
 export class CircleEditorDocument extends Disposable implements vscode.CustomDocument{
   private readonly _uri: vscode.Uri;
