@@ -78,7 +78,7 @@ function getCfgList(root: string = obtainWorkspaceRoot()): string[] {
   }
 
   // Get the list of all the cfg files inside workspace root
-  const cfgList = readdirSyncRecursive(root).filter(val => val.endsWith('.cfg'));
+  const cfgList = readdirSyncRecursive(root).filter(val => val.endsWith('.cfg')||val.endsWith('.workflow.json'));
 
   return cfgList;
 }
