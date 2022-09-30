@@ -21,7 +21,7 @@ export type JobCallback = {
 };
 
 export interface Job {
-  jobType: Job.Type;
+  jobType: JobType;
   name: string;
   notiTitle?: string;
   valid: boolean;
@@ -42,9 +42,7 @@ export interface Job {
 // - tool: apt-get
 // - toolArgs: install pkg_name
 
-export namespace Job {
-
-export const enum Type {
+export const enum JobType {
   tUndefined = 0,  // TODO maybe use Job.jobType = undefined?
   tConfig,
   tPrerequisites,
@@ -52,5 +50,3 @@ export const enum Type {
   tUninstall,
   // TODO add more
 }
-
-}  // namespace Job

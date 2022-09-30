@@ -18,12 +18,12 @@ import assert from 'assert';
 
 import {Command} from '../Backend/Command';
 
-import {Job, JobCallback} from './Job';
+import {Job, JobCallback, JobType} from './Job';
 import {ToolArgs} from './ToolArgs';
 
 // NOTE: JobBase will be replaced by this
 class JobCommand implements Job {
-  jobType: Job.Type;
+  jobType: JobType;
   name: string;
   notiTitle?: string;
   valid: boolean;
@@ -37,7 +37,7 @@ class JobCommand implements Job {
 
   constructor(cmd: Command) {
     // should be implemented by child classes
-    this.jobType = Job.Type.tUndefined;
+    this.jobType = JobType.tUndefined;
     this.name = '';
     this.valid = false;
     this.workDir = require('os').homedir();

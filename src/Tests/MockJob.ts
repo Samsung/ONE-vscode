@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import {Job} from '../Job/Job';
+import {Job, JobType} from '../Job/Job';
 import {ToolArgs} from '../Job/ToolArgs';
 
 class MockJob implements Job {
-  jobType: Job.Type = Job.Type.tUndefined;
+  jobType: JobType = JobType.tUndefined;
   name: string;
   root: boolean = false;
   workDir: string = require('os').homedir();
@@ -44,7 +44,7 @@ class MockJob implements Job {
 }
 
 class MockFailedJob implements Job {
-  jobType: Job.Type = Job.Type.tUndefined;
+  jobType: JobType = JobType.tUndefined;
   name: string;
   root: boolean = false;
   workDir: string = require('os').homedir();

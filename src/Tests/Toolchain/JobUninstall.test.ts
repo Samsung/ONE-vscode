@@ -17,7 +17,7 @@
 import {assert} from 'chai';
 
 import {Command} from '../../Backend/Command';
-import {Job} from '../../Job/Job';
+import {JobType} from '../../Job/Job';
 import {JobUninstall} from '../../Toolchain/JobUninstall';
 
 suite('Toolchain', function() {
@@ -33,7 +33,7 @@ suite('Toolchain', function() {
         assert.deepStrictEqual(job.toolArgs[0], cmd[1]);
         assert.deepStrictEqual(job.toolArgs[1], cmd[2]);
         assert.deepStrictEqual(job.name, 'uninstall');
-        assert.equal(job.jobType, Job.Type.tUninstall);
+        assert.equal(job.jobType, JobType.tUninstall);
         assert.isTrue(job.valid);
       });
     });

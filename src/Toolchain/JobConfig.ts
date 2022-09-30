@@ -15,17 +15,17 @@
  */
 
 import {Command} from '../Backend/Command';
-import {Job} from '../Job/Job';
+import {JobType} from '../Job/Job';
 import {JobCommand} from '../Job/JobCommand';
 
 class JobConfig extends JobCommand {
-  jobType: Job.Type;
+  jobType: JobType;
   name: string;
   valid: boolean;
 
   constructor(cmd: Command) {
     super(cmd);
-    this.jobType = Job.Type.tConfig;
+    this.jobType = JobType.tConfig;
     this.name = 'config';
     this.notiTitle = 'Running onecc...';
     this.valid = true;
