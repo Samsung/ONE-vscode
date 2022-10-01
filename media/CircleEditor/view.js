@@ -168,6 +168,10 @@ view.View = class {
             }
         }
         this._page = page;
+
+        if (typeof (this._host._viewingNode) === 'number') {
+            this.showNodeProperties(this._graphs[0]._nodes[this._host._viewingNode], null);
+        }
     }
 
     cut() {
@@ -742,7 +746,7 @@ view.View = class {
                 }
                 return this._timeout(20).then(() => {
                     const graphs = Array.isArray(model.graphs) && model.graphs.length > 0 ?
-                        [model.graphs[0]] :
+                        [model.graphs[this._host._viewingSubgraph]] :
                         [];
                     return this._updateGraph(model, graphs);
                 });
@@ -820,6 +824,24 @@ view.View = class {
                 .then(() => {
                     if (this._page !== 'default') {
                         this.show('default');
+                    }
+                    for (let idx = 0; idx < model.graphs.length; idx++) {
+                        model._graphs[idx]['_subgraphIdx'] = idx;
+                        for (let jdx = 0; jdx < model.graphs[idx].nodes.length; jdx++) {
+                            model._graphs[idx]._nodes[jdx]['_subgraphIdx'] = idx;
+                            if (builtinOperatorType
+                                    [model._graphs[idx]._nodes[jdx]._type.name.toUpperCase()] ===
+                                undefined) {
+                                model._graphs[idx]._nodes[jdx]._isCustom = true;
+                                vscode.postMessage({
+                                    command: 'customType',
+                                    data: {
+                                        _subgraphIdx: idx,
+                                        _nodeIdx: jdx,
+                                    }
+                                });
+                            }
+                        }
                     }
                     update();
                     return this._model;
@@ -1085,8 +1107,11 @@ view.View = class {
                     new sidebar.ModelSidebar(this._host, this._model, this.activeGraph);
                 modelSidebar.on('update-active-graph', (sender, graph) => {
                     this._updateActiveGraph(graph);
+                    this._host._viewingSubgraph = graph._subgraphIdx;
+                    this._host._viewingNode = null;
                 });
                 const content = modelSidebar.render();
+                this._host._viewingNode = null;
                 this._sidebar.open(content, 'Model Properties');
             } catch (error) {
                 const content = ' in \'' + this._model.identifier + '\'.';
@@ -1145,6 +1170,8 @@ view.View = class {
                     nodeSidebar.toggleInput(input.name);
                 }
                 this._sidebar.open(nodeSidebar.render(), 'Node Properties');
+
+                this._host._viewingNode = parseInt(node._location);
             } catch (error) {
                 const content = ' in \'' + this._model.identifier + '\'.';
                 if (error && !error.message.endsWith(content) &&
@@ -1166,6 +1193,7 @@ view.View = class {
                 this._host.openURL(e.link);
             });
             const title = type.type === 'function' ? 'Function' : 'Documentation';
+            this._host._viewingNode = null;
             this._sidebar.push(documentationSidebar.render(), title);
         }
     }

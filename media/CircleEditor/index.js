@@ -46,7 +46,8 @@
 
 var host = {};
 
-const vscode = acquireVsCodeApi();
+var vscode = acquireVsCodeApi();
+const builtinOperatorType = builtinOperatorType || {};
 
 const viewMode = {
     viewer: 0,
@@ -87,6 +88,9 @@ host.BrowserHost = class {
         if (__viewMode === 'selector') {
             this._mode = viewMode.selector;
         }
+
+        this._viewingSubgraph = 0;
+        this._viewingNode = null;
     }
 
     get window() {
@@ -145,6 +149,12 @@ host.BrowserHost = class {
                     break;
                 case 'reload':
                     this._msgReload(message);
+                    break;
+                case 'edit':
+                    this._msgLoadModel(message);
+                    break;
+                case 'customType':
+                    this._msgGetType(message);
                     break;
             }
         });
@@ -537,10 +547,19 @@ host.BrowserHost = class {
         vscode.postMessage({command: 'loadmodel', offset: '0'});
     }
 
-    /**
-     * TODO Implement _msgGetType(message)
-     * Get custom operator attributes type
-     */
+    _msgGetType(message) {
+        const data = message.data;
+        const graphs = data._view._model._graphs;
+        const values = data._type;
+        const node = graphs[data._subgraphIdx]._nodes[data._nodeIdx];
+        for (const key of Object.keys(values)) {
+            for (let i in node.attributes) {
+                if (node.attributes[i].name === key) {
+                    node.attributes[i]._type = values[key];
+                }
+            }
+        }
+    }
 };
 
 host.Dropdown = class {
