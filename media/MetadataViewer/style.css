@@ -15,7 +15,7 @@
  */
 
 body {
-  background-color: #1E1E1E;
+  background-color: #1e1e1e;
   max-width: 800px;
   margin-left: 20px;
 }
@@ -57,7 +57,6 @@ body.vscode-light .view-item-value {
   align-items: center;
   justify-content: end;
   margin-bottom: 10px;
-  
 }
 
 
