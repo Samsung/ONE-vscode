@@ -10,7 +10,7 @@ import { CircleException } from "../Utils/CircleEditorException";
 export class CircleEditorDocument extends Disposable implements vscode.CustomDocument{
   private readonly _uri: vscode.Uri;
   private _model: Circle.ModelT;
-  private readonly packetSize = 1024 * 1024 * 10;
+  private readonly packetSize = 1024 * 1024 * 1024;
 
   public get uri(): vscode.Uri { return this._uri; }
   public get model(): Circle.ModelT { return this._model; }

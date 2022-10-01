@@ -1486,8 +1486,6 @@ sidebar.ArgumentView = class {
             type : 'tensor',
             data : this._editObject
         });
-        console.log(this._argument);
-        console.log(this._editObject);
     }
 
     cancel(){
