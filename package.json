@@ -100,17 +100,7 @@
       },
       {
         "viewType": "one.viewer.metadata",
-        "displayName": "Metadata",
-        "selector": [
-          {
-            "filenamePattern": "*"
-          }
-        ],
-        "priority": "option"
-      },
-      {
-        "viewType": "one.viewer.relation",
-        "displayName": "Relation",
+        "displayName": "Metadata Viewer",
         "selector": [
           {
             "filenamePattern": "*"
@@ -220,16 +210,6 @@
         "command": "one.viewer.metadata.show",
         "title": "Show Metadata",
         "category": "ONE"
-      },
-      {
-        "command": "one.viewer.relation.show",
-        "title": "Show Relation",
-        "category": "ONE"
-      },
-      {
-        "command": "one.metadata.updateViewerState",
-        "title": "Update Metadata Viewer State",
-        "category": "ONE"
       }
     ],
     "menus": {
@@ -315,11 +295,6 @@
           "command": "one.viewer.metadata.show",
           "when": "view == OneExplorerView && viewItem =~ /baseModel|product/",
           "group": "7_metadata@1"
-        },
-        {
-          "command": "one.viewer.relation.show",
-          "when": "view == OneExplorerView && viewItem =~ /baseModel|product/",
-          "group": "7_metadata@2"
         }
       ],
       "explorer/context": [
@@ -327,11 +302,6 @@
           "command": "one.viewer.metadata.show",
           "when": "resourceExtname in one.metadata.supportedFiles && !explorerResourceIsFolder",
           "group": "7_metadata@1"
-        },
-        {
-          "command": "one.viewer.relation.show",
-          "when": "resourceExtname in one.relation.supportedFiles && !explorerResourceIsFolder",
-          "group": "7_metadata@2"
         }
       ],
       "commandPalette": [
@@ -397,6 +367,10 @@
         },
         {
           "command": "one.viewer.jsonTracer",
+          "when": "false"
+        },
+        {
+          "command": "one.viewer.metadata.show",
           "when": "false"
         }
       ]
