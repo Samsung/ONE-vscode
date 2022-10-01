@@ -16,7 +16,7 @@
 
 import * as vscode from 'vscode';
 
-import {Logger} from './Logger';
+import {Logger} from '../Utils/Logger';
 
 /* istanbul ignore next */
 export class CircleException {
@@ -40,7 +40,7 @@ export class CircleException {
   }
 
   // Info notification message does not show 'See log' button by default
-  static inputException(msg: string, showSeeLogBtn: boolean = false) {
+  static exceptionAlert(msg: string, showSeeLogBtn: boolean = false) {
     let func = vscode.window.showErrorMessage;
     if (showSeeLogBtn) {
       func(msg, 'OK', CircleException.seeLogBtn).then(CircleException.handleBtn);

@@ -3,7 +3,7 @@ import { CircleEditorDocument } from "./CircleEditorDocument";
 import { disposeAll } from "./dispose";
 import * as fs from "fs";
 import { getNonce } from "../Utils/external/Nonce";
-import { CircleException } from "../Utils/CircleEditorException";
+import { CircleException } from "./CircleEditorException";
 import {getUri} from '../Utils/external/Uri';
 
 export enum MessageDefs {
@@ -29,7 +29,7 @@ export enum MessageDefs {
   partition = "partition",
   // edit circle
   edit = "edit",
-  customType = "CustomType",
+  customType = "customType",
   loadJson = "loadJson",
   updateJson = "updateJson",
   requestEncodingData = "requestEncodingData"
@@ -163,7 +163,7 @@ export class CircleEditorProvider
   private onMessage(document: CircleEditorDocument, message: any) {
     switch (message.command) {
       case MessageDefs.alert:
-        CircleException.inputException(message.text); //error msg
+        CircleException.exceptionAlert(message.text); //error msg
         return;
       case MessageDefs.request:
         this.handleRequest(document, message.url, message.encoding);
