@@ -100,7 +100,7 @@
       },
       {
         "viewType": "one.viewer.metadata",
-        "displayName": "Metadata",
+        "displayName": "Metadata Viewer",
         "selector": [
           {
             "filenamePattern": "*"
@@ -110,7 +110,7 @@
       },
       {
         "viewType": "one.viewer.relation",
-        "displayName": "Relation",
+        "displayName": "Relation Viewer",
         "selector": [
           {
             "filenamePattern": "*"
@@ -397,6 +397,14 @@
         },
         {
           "command": "one.viewer.jsonTracer",
+          "when": "false"
+        },
+        {
+          "command": "one.viewer.metadata.show",
+          "when": "false"
+        },
+        {
+          "command": "one.viewer.relation.show",
           "when": "false"
         }
       ]

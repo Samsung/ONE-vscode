@@ -15,7 +15,6 @@
  */
 
 import * as vscode from 'vscode';
-import { Node } from '../OneExplorer/OneExplorer';
 import { RelationViewer } from './RelationViewer';
 import {getRelationData} from './example/RelationExample';
 
@@ -95,10 +94,7 @@ export class RelationViewerProvider implements
       }),
       vscode.commands.registerCommand('one.viewer.relation.show', async (uri) => {
         //If the method is executed in the ONE explorer, change the uri.
-        let fileUri = uri;
-        if(uri instanceof Node){
-          fileUri = uri.uri;
-        }
+        let fileUri = uri.uri ? uri.uri : uri;
         
         vscode.commands.executeCommand('vscode.openWith', fileUri, RelationViewerProvider.viewType);
       })

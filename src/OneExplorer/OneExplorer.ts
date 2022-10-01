@@ -137,7 +137,7 @@ enum NodeType {
   product,
 }
 
-export abstract class Node {
+abstract class Node {
   abstract readonly type: NodeType;
   /**
    * @protected _childNodes

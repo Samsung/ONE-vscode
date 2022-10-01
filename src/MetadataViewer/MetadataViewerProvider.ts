@@ -15,7 +15,6 @@
  */
 
 import * as vscode from 'vscode';
-import { Node } from '../OneExplorer/OneExplorer';
 import { MetadataViewer } from './MetadataViewer';
 import { getMetadata } from './example/MetadataExample';
 
@@ -93,11 +92,9 @@ export class MetadataViewerProvider implements
         }
       }),
       vscode.commands.registerCommand('one.viewer.metadata.show', async (uri) => {
-        let fileUri = uri;
         //If the method is executed in the ONE Explorer, change the uri instance.
-        if(uri instanceof Node){
-          fileUri = uri.uri;
-        }
+        let fileUri = uri.uri ? uri.uri : uri;
+        
         vscode.commands.executeCommand('vscode.openWith', fileUri, MetadataViewerProvider.viewType);
       })
       // Add command registration here
