@@ -38,8 +38,9 @@ class MetadataSynchronizer{
     for (let path in flattenMap) {
       const hash = flattenMap[path];
 
-      Metadata.createDefault(vscode.Uri.file(path), hash);
-
+      if(vscode.workspace.workspaceFolders !== undefined){
+        Metadata.createDefault(vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, path), hash);
+      }
     }
   }
 
@@ -60,7 +61,7 @@ class MetadataSynchronizer{
         const hash = file[0] + hashFile[0].split('.')[0];
         for (const path in metaObj) {
           if(flattenMap[path] === undefined){
-            const uri = vscode.Uri.file(path);
+            const uri = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, path);
             Metadata.disable(uri, hash);
           }
         }
@@ -98,7 +99,7 @@ export class PathToHash {
     }
     const uri = vscode.workspace.workspaceFolders[0].uri;
 
-    const map = this.scanRecursively(uri);
+    const map = await this.scanRecursively(uri);
     await MetadataSynchronizer.run(await this.getFlatMap(map));
     return map;
   }
@@ -143,7 +144,7 @@ export class PathToHash {
           vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, node[1]).path;
       if (fs.lstatSync(path).isDirectory()) {
         for (let key in node[0]) {
-          queue.push([key, node[0][key], node[1] + '/' + key]);
+          queue.push([node[0][key], node[1] + '/' + key]);
         }
       } else {
         flatMap[node[1]] = node[0];
@@ -190,8 +191,7 @@ export class PathToHash {
    * @brief Input uri, extract path and hash values, and store them in a '_map'
    */  
   async add(uri: vscode.Uri) {
-    const path = vscode.workspace.asRelativePath(uri);
-    const splitPath = path.split('/');
+    const splitPath = vscode.workspace.asRelativePath(uri).split('/');
     let content: any = await Utils.generateHash(uri);
     let subMap = this._map;
     let idx = 0;
