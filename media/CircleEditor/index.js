@@ -154,7 +154,7 @@ host.BrowserHost = class {
                 case 'edit':
                     this._msgLoadModel(message);
                     break;
-                case 'CustomType':
+                case 'customType':
                     this._msgGetType(message);
                     break;
                 case 'loadJson':
