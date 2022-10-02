@@ -315,23 +315,6 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 				buf[i] = view[i];
 		}
 		const data = Array.from(buf);
-
-		// //debug Code
-		// const debugbuffer = Buffer.from(data);
-		// // Buffer to ArrayBuffer
-		// const debugab = new ArrayBuffer(debugbuffer.length);
-		// const tmpview = new Uint8Array(debugab);
-		// for (let i = 0; i < debugbuffer.length; ++i) {
-		// 		tmpview[i] = debugbuffer[i];
-		// }
-		// // decodding flexbuffer
-		// const debugcustomObj : any = flexbuffers.toObject(debugab);	
-		// console.log(debugcustomObj);
-		// for(const debugkey in debugcustomObj){
-		// 	console.log(typeof(debugcustomObj[debugkey]));
-		// }
-		// // debug end
-			
 		let responseData:CustomInfoMessage = {
 			command: 'responseEncodingData',
 			data: data
@@ -492,13 +475,19 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 			return;
 		}
 		inputTypeName = inputTypeName.toUpperCase();
-		const inputTypeOptionName : any = inputTypeName + "OPTIONS";
+		let inputTypeOptionName : any = inputTypeName + "OPTIONS";
 		// for문으로 BuiltinOperator enum key 파싱 및 enum val 찾기
 		let operatorCode : number = 0;
 		for(let i = -4; i <= 146; i++){
 			let builtinOperatorKey = Circle.BuiltinOperator[i];
 			if(builtinOperatorKey === undefined) {continue;}
-			builtinOperatorKey = Circle.BuiltinOperator[i].replace('_','');
+			let tempKey : any = Circle.BuiltinOperator[i];
+			while(1){
+				const tempKey2 =  tempKey.replace('_','');
+				if(tempKey.length === tempKey2.length) {break;}
+				tempKey = tempKey2;
+			}
+			builtinOperatorKey = tempKey;
 			builtinOperatorKey = builtinOperatorKey.toUpperCase();
 			if(builtinOperatorKey === inputTypeName){
 			// enum_val을 찾았으면 입력
@@ -518,7 +507,9 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 				CircleException.exceptionAlert("built-in Options is null");
 				return;
 			}
-			
+			if(inputTypeOptionName.indexOf("POOL2D") !== -1){
+				inputTypeOptionName = "POOL2DOPTIONS";
+			}
 			operator.builtinOptionsType = Types.BuiltinOptionsType[inputTypeOptionName];
 			const key = data._attribute.name;
 			const value : any = data._attribute._value;
@@ -603,7 +594,6 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		// 커스텀인 경우 문자열로 받아온다.
 		
 		else if(operatorCode === 32){
-			console.log(data._attribute);
 			operator.builtinOptionsType = 0;
 			operator.builtinOPtions = null;
 			const customName = data._attribute.name;
