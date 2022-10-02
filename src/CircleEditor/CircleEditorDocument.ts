@@ -339,7 +339,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 			resData._type[key] = customObjDataType;
 		}
 		let responseData:CustomInfoMessage = {
-			command: 'CustomType',
+			command: 'customType',
 			data: resData
 		};
 
