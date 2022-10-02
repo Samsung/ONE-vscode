@@ -109,7 +109,7 @@ export class PathToHash {
     if (!this._instance) {
       this._instance = new PathToHash();
       this._instance._map = await this._instance.init();
-      await SyncMetadata.validateMetadata(this._instance.getFlatMap());
+      await SyncMetadata.validateMetadata(await this._instance.getFlatMap());
     }
     return this._instance;
   }
@@ -124,7 +124,7 @@ export class PathToHash {
   }
 
   private async scanRecursively(uri: vscode.Uri) {
-    let subPathToHash: {[key: string]: any} = {};
+    let subMap: {[key: string]: any} = {};
     const files = await vscode.workspace.fs.readDirectory(uri);
 
     for (const file of files) {
@@ -132,13 +132,16 @@ export class PathToHash {
       const type: number = file[1];
 
       if (type === 1) {
-        subPathToHash[name] = await PathToHash.generateHash(vscode.Uri.joinPath(uri, '/' + name));
+        subMap[name] = await PathToHash.generateHash(vscode.Uri.joinPath(uri, '/' + name));
       } else if (type === 2 && name !== '.meta') {
-        subPathToHash[name] = await this.scanRecursively(vscode.Uri.joinPath(uri, '/' + name));
+        subMap[name] = await this.scanRecursively(vscode.Uri.joinPath(uri, '/' + name));
       }
     }
+    if(subMap === {}) {
+      return;
+    }
 
-    return subPathToHash;
+    return subMap;
   }
 
   async getFlatMap() {
