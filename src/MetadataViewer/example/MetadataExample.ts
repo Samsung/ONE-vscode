@@ -28,15 +28,7 @@ export function getMetadata(_path: any) {
 
       'toolchain-version': 'toolchain v1.3.0',
       'onecc-version': '1.20.0',
-      'operations': {
-        'op-total': 50,
-        'ops': {
-          'conv2d': 1,
-          'relu': 1,
-          'conv': 3,
-          'spp': 1,
-        }
-      },
+      'operations': {'op-total': 50, 'ops': ['conv2d', 'relu', 'conv', 'spp']},
       'cfg-settings': {
         'onecc': {
           'one-import-tf': true,

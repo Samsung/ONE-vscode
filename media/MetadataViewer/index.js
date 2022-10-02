@@ -216,7 +216,7 @@ function metadataDivCreate(subKey, value, type) {
     for (const key in value) {
       const viewItemValue = document.createElement('div');
       viewItemValue.classList.add('view-item-value');
-      viewItemValue.innerText = `${key} : ${value[key]}`;
+      viewItemValue.innerText = `${value[key]}`;
       // if the size of the viewer is smaller, Set items to be smaller in proportion
       viewItemValue.style.width = 'auto';
       viewItemValue.classList.add('margin-bottom-border-thin-gray');

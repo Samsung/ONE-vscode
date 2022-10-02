@@ -208,7 +208,7 @@
       },
       {
         "command": "one.viewer.metadata.showFromDefaultExplorer",
-        "title": "ONE: Show Metadata",
+        "title": "Show Metadata",
         "category": "ONE"
       },
       {
