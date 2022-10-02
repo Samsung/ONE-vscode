@@ -15,13 +15,14 @@
  */
 
 import * as vscode from 'vscode';
-import { MetadataViewer } from './MetadataViewer';
-import { getMetadata } from './example/MetadataExample';
+
+import {getMetadata} from './example/MetadataExample';
+import {MetadataViewer} from './MetadataViewer';
 
 export class RelationViewerDocument implements vscode.CustomDocument {
   private readonly _uri: vscode.Uri;
   private _metadataViwer: MetadataViewer[];
-  
+
 
   static async create(uri: vscode.Uri):
       Promise<RelationViewerDocument|PromiseLike<RelationViewerDocument>> {
@@ -31,7 +32,6 @@ export class RelationViewerDocument implements vscode.CustomDocument {
   private constructor(uri: vscode.Uri) {
     this._uri = uri;
     this._metadataViwer = [];
-    
   }
 
   public get uri() {
@@ -49,19 +49,19 @@ export class RelationViewerDocument implements vscode.CustomDocument {
     this._metadataViwer = [];
   }
 
-  public openView(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, fileUri:vscode.Uri) {
-    let view = new MetadataViewer(panel,extensionUri);
+  public openView(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, fileUri: vscode.Uri) {
+    let view = new MetadataViewer(panel, extensionUri);
 
     view.initWebView();
     view.loadContent();
     this._metadataViwer.push(view);
 
-    
+
     const seletedMetadata = getMetadata(fileUri);
 
-    //Sends a message to the web view with the metadata.
-    panel.webview.postMessage({command:'showMetadata',metadata: seletedMetadata});
-    
+    // Sends a message to the web view with the metadata.
+    panel.webview.postMessage({command: 'showMetadata', metadata: seletedMetadata});
+
     panel.onDidDispose(() => {
       // TODO make faster
       this._metadataViwer.forEach((view, index) => {
@@ -91,23 +91,30 @@ export class MetadataViewerProvider implements
           retainContextWhenHidden: true,
         }
       }),
-      vscode.commands.registerCommand('one.viewer.metadata.show', async (uri) => {
-        //If the method is executed in the ONE Explorer, change the uri instance.
-        let fileUri = uri.uri ? uri.uri : uri;
-        
-        vscode.commands.executeCommand('vscode.openWith', fileUri, MetadataViewerProvider.viewType);
-      })
+      vscode.commands.registerCommand(
+          'one.viewer.metadata.showFromOneExplorer',
+          async (uri) => {
+            // If the method is executed in the ONE Explorer, change the uri instance.
+            const fileUri = uri.uri;
+
+            vscode.commands.executeCommand(
+                'vscode.openWith', fileUri, MetadataViewerProvider.viewType);
+          }),
+      vscode.commands.registerCommand(
+          'one.viewer.metadata.showFromDefaultExplorer',
+          async (uri) => {
+            const fileUri = uri;
+
+            vscode.commands.executeCommand(
+                'vscode.openWith', fileUri, MetadataViewerProvider.viewType);
+          })
       // Add command registration here
     ];
 
     // supported file extension to show relations context menu
-    vscode.commands.executeCommand('setContext', 'one.metadata.supportedFiles', [
-      '.tflite',
-      '.pb',
-      '.onnx',
-      '.circle',
-      '.log'
-    ]);
+    vscode.commands.executeCommand(
+        'setContext', 'one.metadata.supportedFiles',
+        ['.tflite', '.pb', '.onnx', '.circle', '.log']);
 
     registrations.forEach(disposable => context.subscriptions.push(disposable));
   }
@@ -118,7 +125,7 @@ export class MetadataViewerProvider implements
 
   // CustomReadonlyEditorProvider implements
   async openCustomDocument(
-      uri: vscode.Uri, openContext: {backupId?: string},
+      uri: vscode.Uri, _openContext: {backupId?: string},
       _token: vscode.CancellationToken): Promise<RelationViewerDocument> {
     const document: RelationViewerDocument = await RelationViewerDocument.create(uri);
     // NOTE as a readonly viewer, there is not much to do

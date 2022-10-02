@@ -15,28 +15,26 @@
  */
 
 let currentConfigType = null;
-const vscode = acquireVsCodeApi();
 
 this.window.addEventListener('message', (event) => {
   const message = event.data;
   switch (message.command) {
     case 'showMetadata':
-      this.updateMetadataInfo(message.metadata);
+      updateMetadataInfo(message.metadata);
       break;
     default:
       break;
   }
 });
 
-//Update metadata information
+// Update metadata information
 function updateMetadataInfo(metadata) {
-
   const mainViewItemBox = document.createElement('div');
   mainViewItemBox.classList.add('main-view-item-box');
 
   const viewItemBox = document.createElement('div');
   viewItemBox.classList.add('view-item-box');
-  viewItemBox.setAttribute('id','common-view-item-box');
+  viewItemBox.setAttribute('id', 'common-view-item-box');
 
   const viewItemHeaderBox = document.createElement('div');
   viewItemHeaderBox.classList.add('view-item-header-box');
@@ -46,42 +44,41 @@ function updateMetadataInfo(metadata) {
   viewItemHeader.innerText = 'Common';
 
   const viewItemShowButton = document.createElement('div');
-  viewItemShowButton.setAttribute('id','common-view-item-show-button');
-  viewItemShowButton.classList.add('view-item-show-button','codicon-collapse-all','codicon');
+  viewItemShowButton.setAttribute('id', 'common-view-item-show-button');
+  viewItemShowButton.classList.add('view-item-show-button', 'codicon-collapse-all', 'codicon');
 
   const viewItemContentBox = document.createElement('div');
-  viewItemContentBox.setAttribute('id','common-view-content-box');
+  viewItemContentBox.setAttribute('id', 'common-view-content-box');
   viewItemContentBox.classList.add('view-item-content-box');
 
   document.body.appendChild(mainViewItemBox);
   mainViewItemBox.appendChild(viewItemBox);
-  viewItemBox.append(viewItemHeaderBox,viewItemContentBox);
-  viewItemHeaderBox.append(viewItemHeader,viewItemShowButton);
+  viewItemBox.append(viewItemHeaderBox, viewItemContentBox);
+  viewItemHeaderBox.append(viewItemHeader, viewItemShowButton);
 
-  //Pull out the main key.(File Name)
+  // Pull out the main key.(File Name)
   const mainFileName = Object.keys(metadata)[0];
 
-  //Store metadata information in variable 
+  // Store metadata information in variable
   const metadataInfo = metadata[mainFileName];
 
   for (const subKey in metadataInfo) {
-
     if (subKey === 'operations') {
       const viewItemBox = document.createElement('div');
       viewItemBox.setAttribute('id', 'operations-view-item-box');
       viewItemBox.classList.add('view-item-box');
 
-      //draw header
+      // draw header
       const viewItemHeader = document.createElement('div');
       viewItemHeader.classList.add('view-item-header');
       viewItemHeader.innerText = 'Operations';
 
-      //add show button image
+      // add show button image
       const showButton = document.createElement('div');
-      showButton.classList.add('view-item-show-button','codicon-collapse-all','codicon');
+      showButton.classList.add('view-item-show-button', 'codicon-collapse-all', 'codicon');
       showButton.setAttribute('id', 'operations-view-item-show-button');
 
-      //draw a header box to hold headers and showButton
+      // draw a header box to hold headers and showButton
       const viewItemHeaderBox = document.createElement('div');
       viewItemHeaderBox.classList.add('view-item-header-box');
 
@@ -89,7 +86,7 @@ function updateMetadataInfo(metadata) {
       viewItemBox.appendChild(viewItemHeaderBox);
       mainViewItemBox.appendChild(viewItemBox);
 
-      //draw content box
+      // draw content box
       const viewItemContentBox = document.createElement('div');
       viewItemContentBox.classList.add('view-item-content-box');
       viewItemContentBox.setAttribute('id', 'operations-view-content-box');
@@ -100,7 +97,6 @@ function updateMetadataInfo(metadata) {
         metadataDivCreate(operationsKey, metadataInfo[subKey][operationsKey], 'operations');
       }
     } else if (subKey === 'cfg-settings') {
-
       const viewItemBox = document.createElement('div');
       viewItemBox.setAttribute('id', 'cfg-settings-view-item-box');
       viewItemBox.classList.add('view-item-box');
@@ -114,8 +110,8 @@ function updateMetadataInfo(metadata) {
 
       const showButton = document.createElement('div');
       showButton.setAttribute('id', 'cfg-settings-view-item-show-button');
-      showButton.classList.add('view-item-show-button','codicon-collapse-all','codicon');
-      //showButton.innerText = '-';
+      showButton.classList.add('view-item-show-button', 'codicon-collapse-all', 'codicon');
+      // showButton.innerText = '-';
 
       viewItemHeaderBox.append(viewItemHeader, showButton);
       viewItemBox.appendChild(viewItemHeaderBox);
@@ -132,7 +128,6 @@ function updateMetadataInfo(metadata) {
       const oneccInfoList = [];
 
       for (const configKey in oneccInfo) {
-
         const viewItemSubHeaderBox = document.createElement('div');
         viewItemSubHeaderBox.classList.add('view-item-header-box');
 
@@ -221,8 +216,8 @@ function metadataDivCreate(subKey, value, type) {
     for (const key in value) {
       const viewItemValue = document.createElement('div');
       viewItemValue.classList.add('view-item-value');
-      viewItemValue.innerText = `${key} : ${value[key]}`;
-      //if the size of the viewer is smaller, Set items to be smaller in proportion 
+      viewItemValue.innerText = `${value[key]}`;
+      // if the size of the viewer is smaller, Set items to be smaller in proportion
       viewItemValue.style.width = 'auto';
       viewItemValue.classList.add('margin-bottom-border-thin-gray');
       viewItemValueList.appendChild(viewItemValue);
@@ -232,7 +227,7 @@ function metadataDivCreate(subKey, value, type) {
     viewItemContent.classList.add('aline-items-baseline');
 
   } else {
-    //If it's a simple string, it's shown on the screen right away.
+    // If it's a simple string, it's shown on the screen right away.
     const viewItemValue = document.createElement('div');
     viewItemValue.classList.add('view-item-value');
     viewItemValue.innerText = value;
@@ -265,26 +260,24 @@ function showButtonClickEvent() {
       }
 
       if(contentBox?.style.display === 'block' || contentBox.style.display === ''){
-        isSubButton
-        ? (() => {
+        isSubButton ? (() => {
           button.innerText = '+';
           button.style.fontSize = '14px';
-        })()
-        : (() => {
-          button.classList.remove('codicon-collapse-all');
-          button.classList.add('codicon-unfold');
-        })();
+        })() :
+                      (() => {
+                        button.classList.remove('codicon-collapse-all');
+                        button.classList.add('codicon-unfold');
+                      })();
         contentBox.style.display = 'none';
       } else {
-        isSubButton
-        ? (() => {
+        isSubButton ? (() => {
           button.innerText = '-';
           button.style.fontSize = '20px';
-        })() 
-        : (() => {
-          button.classList.remove('codicon-unfold');
-          button.classList.add('codicon-collapse-all');
-        })();
+        })() :
+                      (() => {
+                        button.classList.remove('codicon-unfold');
+                        button.classList.add('codicon-collapse-all');
+                      })();
         contentBox.style.display = 'block';
       }
     });

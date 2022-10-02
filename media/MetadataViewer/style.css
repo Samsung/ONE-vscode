@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-body {
-  background-color: #1E1E1E;
+ body {
+  background-color: #1e1e1e;
   max-width: 800px;
   margin-left: 20px;
 }
@@ -25,7 +25,7 @@ body.vscode-light {
   background-color: #e7e7e7;
 }
 
-body.vscode-light .view-item-header{
+body.vscode-light .view-item-header {
   color: #444444;
 }
 
@@ -33,11 +33,11 @@ body.vscode-light .view-item-name {
   color: #616161;
 }
 
-body.vscode-light .view-item-sub-header{
+body.vscode-light .view-item-sub-header {
   color: #a31515;
 }
 
-body.vscode-light .view-item-value{
+body.vscode-light .view-item-value {
   color: #444444;
   background-color: white;
 }
@@ -57,7 +57,6 @@ body.vscode-light .view-item-value{
   align-items: center;
   justify-content: end;
   margin-bottom: 10px;
-  
 }
 
 
@@ -79,11 +78,11 @@ body.vscode-light .view-item-value{
   min-width: 100px;
 }
 
-.view-item-content{
+.view-item-content {
   color:#e7e7e7;
 }
 
-.view-item-sub-header{
+.view-item-sub-header {
   margin-left: 10px;
   font-size: 16px;
   color: #d7ba7d;
@@ -91,7 +90,7 @@ body.vscode-light .view-item-value{
   font-weight: bold;
 }
 
-.view-item-info-content{
+.view-item-info-content {
   font-size: 20px;
   margin-left: 20px;
   margin-top: 10px;
@@ -103,12 +102,12 @@ body.vscode-light .view-item-value{
   justify-content: space-between;
 }
 
-.view-item-show-button{
+.view-item-show-button {
   font-size: 30px;
   cursor: pointer;
 }
 
-.view-item-show-button:hover{
+.view-item-show-button:hover {
   color: gray;
 }
 
@@ -116,7 +115,7 @@ body.vscode-light .view-item-value{
   margin-bottom: 30px;
 }
 
-.view-item-content-box{
+.view-item-content-box {
   display: block;
 }
 
@@ -124,7 +123,7 @@ body.vscode-light .view-item-value{
   align-items: baseline;
 }
 
-.margin-bottom-border-thin-gray{
+.margin-bottom-border-thin-gray {
   box-sizing: border-box;
   border-bottom: solid rgba(0, 0, 0, 0.20);
   border-width: 0.1px;

@@ -217,18 +217,23 @@
         "category": "ONE"
       },
       {
-        "command": "one.viewer.metadata.show",
+        "command": "one.viewer.metadata.showFromDefaultExplorer",
         "title": "Show Metadata",
         "category": "ONE"
       },
       {
-        "command": "one.viewer.relation.show",
+        "command": "one.viewer.metadata.showFromOneExplorer",
+        "title": "ONE: Show Metadata",
+        "category": "ONE"
+      },
+      {
+        "command": "one.viewer.relation.showFromDefaultExplorer",
         "title": "Show Relation",
         "category": "ONE"
       },
       {
-        "command": "one.metadata.updateViewerState",
-        "title": "Update Metadata Viewer State",
+        "command": "one.viewer.relation.showFromOneExplorer",
+        "title": "ONE: Show Relation",
         "category": "ONE"
       }
     ],
@@ -312,26 +317,26 @@
           "group": "inline"
         },
         {
-          "command": "one.viewer.metadata.show",
+          "command": "one.viewer.metadata.showFromOneExplorer",
           "when": "view == OneExplorerView && viewItem =~ /baseModel|product/",
           "group": "7_metadata@1"
         },
         {
-          "command": "one.viewer.relation.show",
+          "command": "one.viewer.relation.showFromOneExplorer",
           "when": "view == OneExplorerView && viewItem =~ /baseModel|product/",
-          "group": "7_metadata@2"
+          "group": "7_metadata@1"
         }
       ],
       "explorer/context": [
         {
-          "command": "one.viewer.metadata.show",
+          "command": "one.viewer.metadata.showFromDefaultExplorer",
           "when": "resourceExtname in one.metadata.supportedFiles && !explorerResourceIsFolder",
           "group": "7_metadata@1"
         },
         {
-          "command": "one.viewer.relation.show",
-          "when": "resourceExtname in one.relation.supportedFiles && !explorerResourceIsFolder",
-          "group": "7_metadata@2"
+          "command": "one.viewer.relation.showFromDefaultExplorer",
+          "when": "resourceExtname in one.metadata.supportedFiles && !explorerResourceIsFolder",
+          "group": "7_metadata@1"
         }
       ],
       "commandPalette": [
@@ -400,11 +405,19 @@
           "when": "false"
         },
         {
-          "command": "one.viewer.metadata.show",
+          "command": "one.viewer.metadata.showFromDefaultExplorer",
           "when": "false"
         },
         {
-          "command": "one.viewer.relation.show",
+          "command": "one.viewer.metadata.showFromOneExplorer",
+          "when": "false"
+        },
+        {
+          "command": "one.viewer.relation.showFromDefaultExplorer",
+          "when": "false"
+        },
+        {
+          "command": "one.viewer.relation.showFromOneExplorer",
           "when": "false"
         }
       ]
@@ -470,6 +483,7 @@
     "@vscode/codicons": "^0.0.29",
     "@vscode/webview-ui-toolkit": "^0.9.3",
     "configparser": "^0.3.9",
+    "flatbuffers": "2.0.7",
     "ini": "^2.0.0",
     "which": "^2.0.2"
   }

@@ -15,12 +15,12 @@
  */
 
 import * as vscode from 'vscode';
-import { getNonce } from '../Utils/external/Nonce';
+import {getNonce} from '../Utils/external/Nonce';
 
 /* istanbul ignore next */
-export class MetadataViewer{
+export class MetadataViewer {
   private readonly _panel: vscode.WebviewPanel;
-  private _disposable:vscode.Disposable[];
+  private _disposable: vscode.Disposable[];
   protected readonly _webview: vscode.Webview;
   protected readonly _extensionUri: vscode.Uri;
 
@@ -34,13 +34,11 @@ export class MetadataViewer{
   public initWebView() {
     this._webview.options = this.getWebviewOptions();
 
-    //Register for an event when you receive a message from a web view
+    // Register for an event when you receive a message from a web view
     this.registerEventHandlers();
-
   }
 
-  private getWebviewOptions(): vscode.WebviewOptions
-      &vscode.WebviewPanelOptions {
+  private getWebviewOptions(): vscode.WebviewOptions&vscode.WebviewPanelOptions {
     return {
       // Enable javascript in the webview
       enableScripts: true,
@@ -51,20 +49,23 @@ export class MetadataViewer{
 
 
   public loadContent() {
-    this._getHtmlForWebview(this._extensionUri,this._panel);
+    this._getHtmlForWebview(this._extensionUri, this._panel);
   }
 
-  private async _getHtmlForWebview(extensionUri:vscode.Uri, panel:vscode.WebviewPanel){
+  private async _getHtmlForWebview(extensionUri: vscode.Uri, panel: vscode.WebviewPanel) {
     panel.webview.options = {
       enableScripts: true,
     };
 
     const nonce = getNonce();
-    const jsIndex = panel.webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "media", "MetadataViewer", "index.js"));
-    const cssIndex = panel.webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, "media", "MetadataViewer", "style.css"));
-    const codiconsUri = panel.webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'node_modules', '@vscode/codicons', 'dist', 'codicon.css'));
+    const jsIndex = panel.webview.asWebviewUri(
+        vscode.Uri.joinPath(extensionUri, 'media', 'MetadataViewer', 'index.js'));
+    const cssIndex = panel.webview.asWebviewUri(
+        vscode.Uri.joinPath(extensionUri, 'media', 'MetadataViewer', 'style.css'));
+    const codiconsUri = panel.webview.asWebviewUri(vscode.Uri.joinPath(
+        extensionUri, 'node_modules', '@vscode/codicons', 'dist', 'codicon.css'));
 
-    const htmlUri = vscode.Uri.joinPath(extensionUri, "media", "MetadataViewer", "index.html");
+    const htmlUri = vscode.Uri.joinPath(extensionUri, 'media', 'MetadataViewer', 'index.html');
 
     let html = Buffer.from(await vscode.workspace.fs.readFile(htmlUri)).toString();
     html = html.replace(/\${nonce}/g, `${nonce}`);
@@ -73,7 +74,6 @@ export class MetadataViewer{
     html = html.replace(/\${index.js}/g, `${jsIndex}`);
     html = html.replace(/\${codicon.css}/g, `${codiconsUri}`);
     panel.webview.html = html;
-    
   }
 
   public owner(panel: vscode.WebviewPanel) {
@@ -82,12 +82,14 @@ export class MetadataViewer{
 
   private registerEventHandlers() {
     // Handle messages from the webview
-    this._webview.onDidReceiveMessage(message => {
-      
-    }, null, this._disposable);
+    this._webview.onDidReceiveMessage(
+        _message => {
+
+        },
+        null, this._disposable);
   }
 
-  public disposeMetadataView(){
+  public disposeMetadataView() {
     while (this._disposable.length) {
       const x = this._disposable.pop();
       if (x) {

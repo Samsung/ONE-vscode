@@ -15,13 +15,13 @@
  */
 
 import * as vscode from 'vscode';
-import { RelationViewer } from './RelationViewer';
+
 import {getRelationData} from './example/RelationExample';
+import {RelationViewer} from './RelationViewer';
 
 export class RelationViewerDocument implements vscode.CustomDocument {
   private readonly _uri: vscode.Uri;
-  private _metadataViwer: RelationViewer[];
-  
+  private _relationViewer: RelationViewer[];
 
   static async create(uri: vscode.Uri):
       Promise<RelationViewerDocument|PromiseLike<RelationViewerDocument>> {
@@ -30,8 +30,7 @@ export class RelationViewerDocument implements vscode.CustomDocument {
 
   private constructor(uri: vscode.Uri) {
     this._uri = uri;
-    this._metadataViwer = [];
-    
+    this._relationViewer = [];
   }
 
   public get uri() {
@@ -41,34 +40,32 @@ export class RelationViewerDocument implements vscode.CustomDocument {
   // CustomDocument implements
   dispose(): void {
     // NOTE panel is closed before document and this is just for safety
-    this._metadataViwer.forEach((view) => {
-      while (this._metadataViwer.length) {
+    this._relationViewer.forEach((view) => {
+      while (this._relationViewer.length) {
         view.disposeMetadataView();
       }
     });
-    this._metadataViwer = [];
+    this._relationViewer = [];
   }
 
-  public openView(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, fileUri:vscode.Uri) {
-    let view = new RelationViewer(panel,extensionUri);
+  public openView(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, fileUri: vscode.Uri) {
+    let view = new RelationViewer(panel, extensionUri);
 
     view.initWebview();
     view.loadContent();
-    this._metadataViwer.push(view);
-    
+    this._relationViewer.push(view);
+
     const payload = getRelationData(fileUri);
 
-    // Send a message the relation data to the web view 
-    panel.webview.postMessage(
-      {type:'create',payload: payload}
-    );
-    
+    // Send a message the relation data to the web view
+    panel.webview.postMessage({type: 'create', payload: payload});
+
     panel.onDidDispose(() => {
       // TODO make faster
-      this._metadataViwer.forEach((view, index) => {
+      this._relationViewer.forEach((view, index) => {
         if (view.owner(panel)) {
           view.disposeMetadataView();
-          this._metadataViwer.splice(index, 1);
+          this._relationViewer.splice(index, 1);
         }
       });
     });
@@ -80,7 +77,6 @@ export class RelationViewerDocument implements vscode.CustomDocument {
 export class RelationViewerProvider implements
     vscode.CustomReadonlyEditorProvider<RelationViewerDocument> {
   public static readonly viewType = 'one.viewer.relation';
-
   private _context: vscode.ExtensionContext;
 
   public static register(context: vscode.ExtensionContext): void {
@@ -92,23 +88,30 @@ export class RelationViewerProvider implements
           retainContextWhenHidden: true,
         }
       }),
-      vscode.commands.registerCommand('one.viewer.relation.show', async (uri) => {
-        //If the method is executed in the ONE explorer, change the uri.
-        let fileUri = uri.uri ? uri.uri : uri;
-        
-        vscode.commands.executeCommand('vscode.openWith', fileUri, RelationViewerProvider.viewType);
-      })
+      vscode.commands.registerCommand(
+          'one.viewer.relation.showFromDefaultExplorer',
+          async (uri) => {
+            const fileUri = uri;
+
+            vscode.commands.executeCommand(
+                'vscode.openWith', fileUri, RelationViewerProvider.viewType);
+          }),
+      vscode.commands.registerCommand(
+          'one.viewer.relation.showFromOneExplorer',
+          async (uri) => {
+            // If the method is executed in the ONE Explorer, change the uri instance.
+            const fileUri = uri.uri;
+
+            vscode.commands.executeCommand(
+                'vscode.openWith', fileUri, RelationViewerProvider.viewType);
+          })
       // Add command registration here
     ];
-    
+
     // supported file extension to show relations context menu
-    vscode.commands.executeCommand('setContext', 'one.relation.supportedFiles', [
-      '.tflite',
-      '.pb',
-      '.onnx',
-      '.circle',
-      '.log'  
-    ]);
+    vscode.commands.executeCommand(
+        'setContext', 'one.relation.supportedFiles',
+        ['.tflite', '.pb', '.onnx', '.circle', '.log']);
 
     registrations.forEach(disposable => context.subscriptions.push(disposable));
   }
@@ -119,7 +122,7 @@ export class RelationViewerProvider implements
 
   // CustomReadonlyEditorProvider implements
   async openCustomDocument(
-      uri: vscode.Uri, openContext: {backupId?: string},
+      uri: vscode.Uri, _openContext: {backupId?: string},
       _token: vscode.CancellationToken): Promise<RelationViewerDocument> {
     const document: RelationViewerDocument = await RelationViewerDocument.create(uri);
     // NOTE as a readonly viewer, there is not much to do

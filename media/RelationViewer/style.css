@@ -31,48 +31,52 @@ body.vscode-light .history-main-box {
   background-color: #e7e7e7;
 }
 
-body.vscode-light .context-menu-line{
+body.vscode-light .history-open-box {
+  background-color: #e7e7e7;
+}
+
+body.vscode-light .context-menu-line {
   border-bottom:solid rgba(0, 0, 0, 0.425);
 }
 
-body.vscode-light .plus-button-context-menu{
+body.vscode-light .plus-button-context-menu {
   background-color: #ececec;
 }
 
-body.vscode-light .plus-button-context-menu-info{
+body.vscode-light .plus-button-context-menu-info {
   color: black;
 }
 
-body.vscode-light .context-menu{
+body.vscode-light .context-menu {
   background-color: #ececec;
 }
 
-body.vscode-light .plus-button-context-menu-header-clear-button{
+body.vscode-light .plus-button-context-menu-header-clear-button {
   color: gray;
 }
 
-body.vscode-light .link{
+body.vscode-light .link {
   stroke: #1e1e1e;
 }
 
-body.vscode-light .hover-text{
+body.vscode-light .hover-text {
   background-color: black;
   color: white;
 }
 
-body.vscode-light .plus-button{
+body.vscode-light .plus-button {
   fill: #a69c9c;
 }
 
-body.vscode-light .minus-button{
+body.vscode-light .minus-button {
   fill: #a69c9c;
 }
 
-body.vscode-light .context-menu-info{
+body.vscode-light .context-menu-info {
   color: black;
 }
 
-body.vscode-light .plus-button-context-menu-header{
+body.vscode-light .plus-button-context-menu-header {
   color: black;
 }
 
@@ -80,16 +84,20 @@ body.vscode-light .context-menu-info:hover {
   background-color: white;
 }
 
-body.vscode-light .plus-button-context-menu-info:hover{
+body.vscode-light .plus-button-context-menu-info:hover {
   background-color: white;
 }
 
-body.vscode-light .plus-button:hover{
+body.vscode-light .plus-button:hover {
   fill: white;
 }
 
-body.vscode-light .plus-button-context-menu-header-clear-button:hover{
+body.vscode-light .plus-button-context-menu-header-clear-button:hover {
   color: white;
+}
+
+body.vscode-light .current-history-color {
+  color: rgb(163, 21, 21);
 }
 
 html {
@@ -97,9 +105,10 @@ html {
   height: 100%;
   overflow: hidden;
 }
+
 body {
   background-color: #545454;
-  padding : 0;
+  padding: 0;
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -125,20 +134,19 @@ svg {
   cursor: pointer;
 }
 
-.node rect:hover{
+.node rect:hover {
   opacity: 0.5;
   stroke: black;
   stroke-width: 5px;
 }
 
-.text-hover { 
+.text-hover {
   opacity: 0.5;
   stroke: black !important;
   stroke-width: 5px !important;
 }
 
-  
-.node text { 
+.node text {
   font: 15px sans-serif;
   cursor: pointer;
 
@@ -165,10 +173,9 @@ svg {
   fill: none;
   stroke: #ccc;
   stroke-width: 2px;
-  
 }
 
-.relation-box{
+.relation-box {
   width: 100% !important;
   height: 100% !important;
   display: flex;
@@ -177,7 +184,7 @@ svg {
   overflow: auto;
 }
 
-.hover-text{
+.hover-text {
   position: absolute;
   background-color: white;
   color: black;
@@ -205,7 +212,7 @@ svg {
   fill: #ececec;
 }
 
-.plus-button:hover{
+.plus-button:hover {
   fill: #888888;
 }
 
@@ -213,13 +220,13 @@ svg {
   position: absolute;
   top:0;
   left: 0;
-  width : 100%;
+  width: 100%;
   height: 100%;
   display: none;
   z-index: 1;
 }
 
-.plus-button-context-menu{
+.plus-button-context-menu {
   display: none;
   position: absolute;
   width: 250px;
@@ -233,20 +240,21 @@ svg {
   padding-bottom: 10px;
 }
 
-.plus-button-context-menu-info{
+.plus-button-context-menu-info {
   font-size: 13px;
   cursor: pointer;
   padding: 4px 10px;
   word-break: break-all;
 }
 
-.plus-button-context-menu-header-box{
+.plus-button-context-menu-header-box {
   display: flex;
   justify-content: space-around;
   align-items: flex-end;
+  padding: 5px;
 }
 
-.plus-button-context-menu-header{
+.plus-button-context-menu-header {
   font-size: 16px;
   text-align: center;
   font-weight: bold;
@@ -255,7 +263,7 @@ svg {
   flex-grow: 1;
 }
 
-.plus-button-context-menu-header-clear-button{
+.plus-button-context-menu-header-clear-button {
   text-align: center;
   padding-right: 5px;
   cursor: pointer;
@@ -263,15 +271,15 @@ svg {
   color: gray;
 }
 
-.plus-button-context-menu-header-clear-button:hover{
+.plus-button-context-menu-header-clear-button:hover {
   color: #fff;
 }
 
-.plus-button-context-menu-info:hover{
+.plus-button-context-menu-info:hover {
   background-color: #04395e;
 }
 
-.context-menu-line{
+.context-menu-line {
   box-sizing: border-box;
   border-bottom: solid rgba(255, 255, 255, 0.425);
   border-width: 0.1px;
@@ -284,7 +292,7 @@ svg {
   stroke-width: 3px !important;
 }
 
-.context-menu{
+.context-menu {
   display: none;
   position: absolute;
   max-height: 300px;
@@ -298,38 +306,39 @@ svg {
   padding-bottom: 10px;
 }
 
-.context-menu-info{
+.context-menu-info {
   font-size: 13px;
   cursor: pointer;
   padding: 4px 20px;
 }
 
-.context-menu-info:hover{
+.context-menu-info:hover {
   background-color: #04395e;
 }
 
-.history-main-box{
+.history-main-box {
   background-color: #2a2929;
   border-radius: 5px;
   overflow: scroll;
-  margin: 100px 0;
-  margin-right: 10px;
-  flex-shrink: 0;
-  
+  position: absolute;
+  right: 30px;
+  top: 50px;
+  display: block;
 }
+
 /* scroll hide */
-.history-main-box::-webkit-scrollbar{
+.history-main-box::-webkit-scrollbar {
   display: none;
 }
 
-.wheel-info-box{
+.wheel-info-box {
   position: absolute;
   top:10px;
   left: 10px;
   color: white;
 }
 
-.deleted-text-decoration{
+.deleted-text-decoration {
   text-decoration: line-through !important;
   font-style: italic !important;
   fill: gray !important;
@@ -338,4 +347,33 @@ svg {
 
 .font-bold {
   font-weight: bold;
+}
+
+.history-open-box {
+  display: none;
+  align-items: flex-end;
+  background-color: #2a2929;
+  border-radius: 5px;
+  height: max-content;
+  position: absolute;
+  top: 50px;
+  right: 30px;
+  padding-top: 5px;
+  padding-bottom: 8px;
+  opacity: 0.7;
+}
+
+.history-close-button {
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+.history-open-button {
+  margin-left: 10px;
+  margin-right: 0;
+  cursor: pointer;
+}
+
+.current-history-color {
+  color: #d7ba7d;
 }

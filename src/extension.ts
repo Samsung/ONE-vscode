@@ -25,10 +25,10 @@ import {MondrianEditorProvider} from './Mondrian/MondrianEditor';
 import {OneTreeDataProvider} from './OneExplorer/OneExplorer';
 import {PartEditorProvider} from './PartEditor/PartEditor';
 import {PartGraphSelPanel} from './PartEditor/PartGraphSelector';
+import {RelationViewerProvider} from './RelationViewer/RelationViewerProvider';
+import {MetadataViewerProvider} from './MetadataViewer/MetadataViewerProvider';
 import {ToolchainProvider} from './Toolchain/ToolchainProvider';
 import {Logger} from './Utils/Logger';
-import { MetadataViewerProvider} from './MetadataViewer/MetadataViewerProvider';
-import { RelationViewerProvider } from './RelationViewer/RelationViewerProvider';
 
 /* istanbul ignore next */
 export function activate(context: vscode.ExtensionContext) {
@@ -66,9 +66,9 @@ export function activate(context: vscode.ExtensionContext) {
 
   CircleViewerProvider.register(context);
 
-  MetadataViewerProvider.register(context);
-
   RelationViewerProvider.register(context);
+
+  MetadataViewerProvider.register(context);
 
   // returning backend registration function that will be called by backend extensions
   return backendRegistrationApi();
