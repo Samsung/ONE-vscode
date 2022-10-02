@@ -43,33 +43,8 @@ class SyncMetadata{
     for (let path in flattenMap) {
       const hash = flattenMap[path];
 
+      // Metadata.createDefault(path-> uri, hash);
 
-      // It will probably be replaced by the code of the Metadata module from here
-      // maybe Metadata.create(hash)
-      let metadata: any = await Metadata.get(hash);
-
-      if (Object.keys(metadata).length === 0) {
-        await Metadata.set(hash, {});
-
-      } else if (metadata[path]) {
-        return;
-      }
-
-      const filename: any = path.split('/').pop();
-      if (vscode.workspace.workspaceFolders === undefined) {
-        return;
-      }
-      const stats: any = await Metadata.getStats(
-          vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, path));
-      metadata[path] = {};
-      metadata[path]['name'] = filename;
-      metadata[path]['file-extension'] = filename.split('.')[1];
-      metadata[path]['create-time'] = stats.birthtime;
-      metadata[path]['modified-time'] = stats.mtime;
-      metadata[path]['is-deleted'] = false;
-      await Metadata.set(hash, metadata);
-
-      // to here
     }
   }
 
@@ -85,15 +60,13 @@ class SyncMetadata{
       const hashList = await vscode.workspace.fs.readDirectory(hashFolderUri);
       for (const hashFile of hashList) {
         const hashUri = vscode.Uri.joinPath(hashFolderUri, hashFile[0]);
-        let metadata =
+        let metaObj =
             JSON.parse(Buffer.from(await vscode.workspace.fs.readFile(hashUri)).toString());
         const hash = file[0] + hashFile[0].split('.')[0];
-        for (const key in metadata) {
-          if (!metadata[key]['is-deleted'] && flattenMap[key] !== hash) {
-            metadata[key]['is-deleted'] = true;
-          }
+        for (const path in metaObj) {
+          const uri = vscode.Uri.file(path);
+          // Metadata.disable(uri, hash);
         }
-        Metadata.set(hash, metadata);
       }
     }
   }
