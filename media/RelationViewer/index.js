@@ -196,10 +196,9 @@ function attachTree(relationData) {
   node.append('rect')
       .attr('x', -rectSizeWidth / 2)
       .attr('y', -rectSizeHeight)
+      .attr('ry',3)
       .attr('width', rectSizeWidth)
-      .attr('height', rectSizeHeight)
-      .attr('rx', 8)
-      .attr('ry', 8)
+      .attr('height', 25)
       .attr(
           'class',
           d => {
@@ -250,11 +249,9 @@ function attachTree(relationData) {
   // adds the rectangle to the node
   node.append('rect')
       .attr('x', -rectSizeWidth / 2)
-      .attr('y', -rectSizeHeight * 2)
+      .attr('y', -rectSizeHeight + 25)
       .attr('width', rectSizeWidth)
-      .attr('height', rectSizeHeight)
-      .attr('rx', 8)
-      .attr('ry', 8)
+      .attr('height', 25)
       .attr(
           'class',
           d => {
@@ -266,16 +263,52 @@ function attachTree(relationData) {
       .style(
           'fill',
           d => {
-            const nodeData = d.data['data-list'][d.data['represent-idx']];
-            const nodeFileExtension =
-                nodeData['name'].split('.')[nodeData['name'].split('.').length - 1];
-            if (nodeFileExtension === 'log') {
-              return 'rgb(25, 40, 60, 1.0)';
-            } else if (nodeFileExtension === 'circle') {
-              return 'rgba(75, 27, 22, 1.0)';
-            } else {
-              return '';
+            return "#2d2d2d";
+          })
+      .on('dblclick',
+          () => {
+            if (waitForDouble !== null) {
+              clearTimeout(waitForDouble);
+              waitForDouble = null;
             }
+          })
+      .on('click',
+          (_p, d) => {
+            if (waitForDouble === null) {
+              waitForDouble = setTimeout(() => {
+                postMessage('update', {
+                  path: d.data['data-list'][d.data['represent-idx']].path,
+                  historyList: historyList,
+                  isOpenHistoryBox:
+                      document.getElementsByClassName('history-main-box')[0].style.display
+                });
+                waitForDouble = null;
+              }, 300);
+            }
+          })
+      .on('contextmenu', (mouse, d) => {
+        openContextMenu(mouse, d.data['data-list'][d.data['represent-idx']].path);
+      });
+  
+  // adds the rectangle to the node
+  node.append('rect')
+      .attr('x', -rectSizeWidth / 2)
+      .attr('y', -rectSizeHeight + 25 + 25)
+      .attr('rx',3)
+      .attr('width', rectSizeWidth)
+      .attr('height', 30)
+      .attr(
+          'class',
+          d => {
+            if (d.data.id === currentFileInfo.id) {
+              return 'current-node';
+            }
+            return '';
+          })
+      .style(
+          'fill',
+          d => {
+            return "rgb(37 50 37)";
           })
       .on('dblclick',
           () => {
@@ -309,9 +342,9 @@ function attachTree(relationData) {
 
   // Show file extension
   node.append('text')
+      .attr('x', -60)
       .attr('y', -rectSizeHeight + 15)
       .attr('class', 'file-extension-custom file-extension')
-      .style('text-anchor', 'middle')
       .text(
           d => d.data['data-list'][d.data['represent-idx']].name.split(
               '.')[d.data['data-list'][d.data['represent-idx']].name.split('.').length - 1])
@@ -337,7 +370,7 @@ function attachTree(relationData) {
   setDrawInfoInNode('name', node, rectSizeHeight, waitForDouble);
 
   // draw a dividing line
-  setDrawInfoInNode('line', node, rectSizeHeight, waitForDouble);
+  //setDrawInfoInNode('line', node, rectSizeHeight, waitForDouble);
 
   // draw version info
   setDrawInfoInNode('toolchainVersion', node, rectSizeHeight, waitForDouble);
@@ -402,13 +435,17 @@ function attachTree(relationData) {
         versionInfoCount += 1;
       }
     }
-    rectDom.style.height = versionInfoCount === 2 ? rectSizeHeight + 9 : rectSizeHeight;
+    //rectDom.style.height = versionInfoCount === 2 ? rectSizeHeight + 9 : rectSizeHeight;
 
     // If there is no version information, sort the file name in the middle
+    const versionInfoRect = g.childNodes[2];
     if (versionInfoCount === 0) {
-      const fileName = g.childNodes[2];
-      fileName.style.textAnchor = 'middle';
-      fileName.setAttribute('x', 0);
+      const nameInfoRect = g.childNodes[1];
+      versionInfoRect.remove();
+
+      nameInfoRect.style.rx = 3;
+    } else if (versionInfoCount === 1){
+      versionInfoRect.style.height = `20px`;
     }
   });
 
@@ -707,9 +744,9 @@ function setDrawInfoInNode(type, node, rectSizeHeight, waitForDouble) {
           'y',
           d => {
             if (type === 'oneccVersion') {
-              return -rectSizeHeight + 58;
+              return -rectSizeHeight + 75;
             } else if (type === 'toolchainVersion') {
-              return -rectSizeHeight + 48;
+              return -rectSizeHeight + 63;
             } else if (type === 'line') {
               return -rectSizeHeight + 38;
             } else if (type === 'name') {
@@ -718,9 +755,9 @@ function setDrawInfoInNode(type, node, rectSizeHeight, waitForDouble) {
                   d.data['data-list'][d.data['represent-idx']]['toolchain-version'];
 
               if (oneccVersion || toolchainVersion) {
-                return -rectSizeHeight + 29;
+                return -rectSizeHeight + 41;
               } else {
-                return -rectSizeHeight + 37;
+                return -rectSizeHeight + 41;
               }
             }
           })
@@ -730,7 +767,7 @@ function setDrawInfoInNode(type, node, rectSizeHeight, waitForDouble) {
             if (type === 'line') {
               return '5px';
             } else {
-              return '10px';
+              return '11px';
             }
           })
       .style(
@@ -799,12 +836,12 @@ function setDrawInfoInNode(type, node, rectSizeHeight, waitForDouble) {
           })
       .on('mouseover',
           (mouse) => {
-            const rectDom = mouse.target.parentNode.firstChild;
-            rectDom.classList.add('text-hover');
+            //const rectDom = mouse.target.parentNode.firstChild;
+            //rectDom.classList.add('text-hover');
           })
       .on('mouseout', (mouse) => {
-        const rectDom = mouse.target.parentNode.firstChild;
-        rectDom.classList ?.remove('text-hover');
+        //const rectDom = mouse.target.parentNode.firstChild;
+        //rectDom.classList ?.remove('text-hover');
       });
 }
 

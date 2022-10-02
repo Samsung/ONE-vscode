@@ -129,21 +129,21 @@ svg {
 
 .node rect {
   fill: #2a2929;
-  stroke: gray;
+  stroke: #fff;
   stroke-width: 1px;
   cursor: pointer;
 }
 
 .node rect:hover {
   opacity: 0.5;
-  stroke: black;
-  stroke-width: 5px;
+  /* stroke: black;
+  stroke-width: 5px; */
 }
 
 .text-hover {
   opacity: 0.5;
-  stroke: black !important;
-  stroke-width: 5px !important;
+  /* stroke: black !important;
+  stroke-width: 5px !important; */
 }
 
 .node text {
@@ -165,6 +165,7 @@ svg {
 
 .file-extension-custom {
   fill: #e7e7e7;
+  font-size: 11px !important;
   font-weight: bold !important;
 }
 
@@ -289,7 +290,7 @@ svg {
 
 .current-node {
   stroke: #d7ba7d !important;
-  stroke-width: 3px !important;
+  stroke-width: 2px !important;
 }
 
 .context-menu {
