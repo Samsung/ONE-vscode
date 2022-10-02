@@ -133,7 +133,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
     try{
       let newModel = JSON.parse(message.data);
 
-	  //copying model starts from here
+	  //copying model from message to _model starts from here
       //this is required as parsed json object do not have any prototypes necessary for Circle.ModelT object
       // version
       this._model.version = newModel.version;
@@ -164,7 +164,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
                   if (sparseVectorClass && sparseVectorClass[1]) {
                     dimMeta.arraySegments = Object.setPrototypeOf(dimMeta.arraySegments === null ? {} : dimMeta.arraySegments, sparseVectorClass[1].prototype);
                   } else {
-                    dimMeta.arraySegments = null; //여기 삼항연산자에서 {}로 한 번 처리하는데 추가로 해줘야 해?
+                    dimMeta.arraySegments = null;
                   }
                 }
                 if(dimMeta.arrayIndicesType){
