@@ -1770,7 +1770,6 @@ sidebar.ArgumentView = class {
                 }
             }
         
-        /* boolean -> ?  or ? -> boolean */
         } else if (typeclass[newTypeIndex] === 4) { // current type : boolean or new type : boolean
             for (let i = 0; i < modifiedArr.length; i++) {
                 if (modifiedArr[i]) {
