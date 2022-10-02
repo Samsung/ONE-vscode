@@ -207,8 +207,13 @@
         "category": "ONE"
       },
       {
-        "command": "one.viewer.metadata.show",
-        "title": "Show Metadata",
+        "command": "one.viewer.metadata.showFromDefaultExplorer",
+        "title": "ONE: Show Metadata",
+        "category": "ONE"
+      },
+      {
+        "command": "one.viewer.metadata.showFromOneExplorer",
+        "title": "ONE: Show Metadata",
         "category": "ONE"
       }
     ],
@@ -292,14 +297,14 @@
           "group": "inline"
         },
         {
-          "command": "one.viewer.metadata.show",
+          "command": "one.viewer.metadata.showFromOneExplorer",
           "when": "view == OneExplorerView && viewItem =~ /baseModel|product/",
           "group": "7_metadata@1"
         }
       ],
       "explorer/context": [
         {
-          "command": "one.viewer.metadata.show",
+          "command": "one.viewer.metadata.showFromDefaultExplorer",
           "when": "resourceExtname in one.metadata.supportedFiles && !explorerResourceIsFolder",
           "group": "7_metadata@1"
         }
@@ -370,7 +375,11 @@
           "when": "false"
         },
         {
-          "command": "one.viewer.metadata.show",
+          "command": "one.viewer.metadata.showFromDefaultExplorer",
+          "when": "false"
+        },
+        {
+          "command": "one.viewer.metadata.showFromOneExplorer",
           "when": "false"
         }
       ]

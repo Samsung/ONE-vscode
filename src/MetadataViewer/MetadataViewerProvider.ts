@@ -92,10 +92,18 @@ export class MetadataViewerProvider implements
         }
       }),
       vscode.commands.registerCommand(
-          'one.viewer.metadata.show',
+          'one.viewer.metadata.showFromOneExplorer',
           async (uri) => {
             // If the method is executed in the ONE Explorer, change the uri instance.
-            let fileUri = uri.uri ? uri.uri : uri;
+            const fileUri = uri.uri;
+
+            vscode.commands.executeCommand(
+                'vscode.openWith', fileUri, MetadataViewerProvider.viewType);
+          }),
+      vscode.commands.registerCommand(
+          'one.viewer.metadata.showFromDefaultExplorer',
+          async (uri) => {
+            const fileUri = uri;
 
             vscode.commands.executeCommand(
                 'vscode.openWith', fileUri, MetadataViewerProvider.viewType);
