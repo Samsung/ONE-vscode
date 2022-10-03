@@ -66,7 +66,7 @@ let node;
 
 function attachTree(relationData) {
   const wheelInfoBox = document.createElement('div');
-  wheelInfoBox.innerText = '* (Ctrl or Shift) + Wheel : 확대, 축소';
+  wheelInfoBox.innerText = '* (Ctrl or Shift) + Wheel : Zoom In, Zoom Out';
   wheelInfoBox.classList.add('wheel-info-box');
   document.body.appendChild(wheelInfoBox);
 
@@ -75,13 +75,13 @@ function attachTree(relationData) {
 
   let historyDivWidth = screen.width * 0.11;
   const rectSizeWidth = 130;
-  const rectSizeHeight = 55;
+  const rectSizeHeight = 50;
 
   const [maxWidthCount, maxHeightCount] = countMaxDataNum(relationData);
 
   // set the dimensions and margins of the diagram
   const margin = {top: 70, right: 0, bottom: 60, left: 0};
-  let width = (maxWidthCount + 4) * rectSizeWidth - margin.left - margin.right;
+  let width = (maxWidthCount + 5) * rectSizeWidth - margin.left - margin.right;
   width = (width < screen.width * 0.7) ? screen.width * 0.7 : width;
   let height = screen.height * 0.6 - margin.top - margin.bottom;
   height = (rectSizeHeight * maxHeightCount < height) ? height : rectSizeHeight * maxHeightCount;
@@ -157,7 +157,6 @@ function attachTree(relationData) {
   // append the svg obgect to the body of the page
   // appends a 'group' element to 'svg'
   // moves the 'group' element to the top left margin
-  // TODO: background-color 다른 색으로 바꾸기.
   const svg =
       d3.select('.relation-box')
           .append('svg')
@@ -191,186 +190,20 @@ function attachTree(relationData) {
 
   let waitForDouble = null;
 
-
   // adds the rectangle to the node
-  node.append('rect')
-      .attr('x', -rectSizeWidth / 2)
-      .attr('y', -rectSizeHeight)
-      .attr('ry',3)
-      .attr('width', rectSizeWidth)
-      .attr('height', 25)
-      .attr(
-          'class',
-          d => {
-            if (d.data.id === currentFileInfo.id) {
-              return 'current-node';
-            }
-            return '';
-          })
-      .style(
-          'fill',
-          d => {
-            const nodeData = d.data['data-list'][d.data['represent-idx']];
-            const nodeFileExtension =
-                nodeData['name'].split('.')[nodeData['name'].split('.').length - 1];
-            if (nodeFileExtension === 'log') {
-              return 'rgb(25, 40, 60, 1.0)';
-            } else if (nodeFileExtension === 'circle') {
-              return 'rgba(75, 27, 22, 1.0)';
-            } else {
-              return '';
-            }
-          })
-      .on('dblclick',
-          () => {
-            if (waitForDouble !== null) {
-              clearTimeout(waitForDouble);
-              waitForDouble = null;
-            }
-          })
-      .on('click',
-          (_p, d) => {
-            if (waitForDouble === null) {
-              waitForDouble = setTimeout(() => {
-                postMessage('update', {
-                  path: d.data['data-list'][d.data['represent-idx']].path,
-                  historyList: historyList,
-                  isOpenHistoryBox:
-                      document.getElementsByClassName('history-main-box')[0].style.display
-                });
-                waitForDouble = null;
-              }, 300);
-            }
-          })
-      .on('contextmenu', (mouse, d) => {
-        openContextMenu(mouse, d.data['data-list'][d.data['represent-idx']].path);
-      });
-
-  // adds the rectangle to the node
-  node.append('rect')
-      .attr('x', -rectSizeWidth / 2)
-      .attr('y', -rectSizeHeight + 25)
-      .attr('width', rectSizeWidth)
-      .attr('height', 25)
-      .attr(
-          'class',
-          d => {
-            if (d.data.id === currentFileInfo.id) {
-              return 'current-node';
-            }
-            return '';
-          })
-      .style(
-          'fill',
-          d => {
-            return "#2d2d2d";
-          })
-      .on('dblclick',
-          () => {
-            if (waitForDouble !== null) {
-              clearTimeout(waitForDouble);
-              waitForDouble = null;
-            }
-          })
-      .on('click',
-          (_p, d) => {
-            if (waitForDouble === null) {
-              waitForDouble = setTimeout(() => {
-                postMessage('update', {
-                  path: d.data['data-list'][d.data['represent-idx']].path,
-                  historyList: historyList,
-                  isOpenHistoryBox:
-                      document.getElementsByClassName('history-main-box')[0].style.display
-                });
-                waitForDouble = null;
-              }, 300);
-            }
-          })
-      .on('contextmenu', (mouse, d) => {
-        openContextMenu(mouse, d.data['data-list'][d.data['represent-idx']].path);
-      });
-  
-  // adds the rectangle to the node
-  node.append('rect')
-      .attr('x', -rectSizeWidth / 2)
-      .attr('y', -rectSizeHeight + 25 + 25)
-      .attr('rx',3)
-      .attr('width', rectSizeWidth)
-      .attr('height', 30)
-      .attr(
-          'class',
-          d => {
-            if (d.data.id === currentFileInfo.id) {
-              return 'current-node';
-            }
-            return '';
-          })
-      .style(
-          'fill',
-          d => {
-            return "rgb(37 50 37)";
-          })
-      .on('dblclick',
-          () => {
-            if (waitForDouble !== null) {
-              clearTimeout(waitForDouble);
-              waitForDouble = null;
-            }
-          })
-      .on('click',
-          (_p, d) => {
-            if (waitForDouble === null) {
-              waitForDouble = setTimeout(() => {
-                postMessage('update', {
-                  path: d.data['data-list'][d.data['represent-idx']].path,
-                  historyList: historyList,
-                  isOpenHistoryBox:
-                      document.getElementsByClassName('history-main-box')[0].style.display
-                });
-                waitForDouble = null;
-              }, 300);
-            }
-          })
-      .on('contextmenu', (mouse, d) => {
-        openContextMenu(mouse, d.data['data-list'][d.data['represent-idx']].path);
-      });
-
+  drawRect('extension',rectSizeWidth,rectSizeHeight,waitForDouble);
+  drawRect('fileName',rectSizeWidth,rectSizeHeight,waitForDouble);
+  drawRect('versionInfo',rectSizeWidth,rectSizeHeight,waitForDouble);
+ 
   // Create hover text_div to show File path
   const hoverText = document.createElement('div');
   document.body.appendChild(hoverText);
   hoverText.classList.add('hover-text');
 
-  // Show file extension
-  node.append('text')
-      .attr('x', -60)
-      .attr('y', -rectSizeHeight + 15)
-      .attr('class', 'file-extension-custom file-extension')
-      .text(
-          d => d.data['data-list'][d.data['represent-idx']].name.split(
-              '.')[d.data['data-list'][d.data['represent-idx']].name.split('.').length - 1])
-      .on('mouseover',
-          (mouse, node) => {
-            const fileExtensionText = mouse.path[0].getBoundingClientRect();
-            hoverText.style.display = 'block';
-            hoverText.innerText = `${node.data['data-list'][node.data['represent-idx']].path}`;
-            hoverText.style.left = `${fileExtensionText.x - 8}px`;
-            hoverText.style.top = `${fileExtensionText.y - 24}px`;
-            if (node.data['data-list'][node.data['represent-idx']]['is-deleted']) {
-              hoverText.classList.add('deleted-text-decoration');
-            }
-          })
-      .on('mouseout', (mouse, node) => {
-        hoverText.style.display = 'none';
-        if (node.data['data-list'][node.data['represent-idx']]['is-deleted']) {
-          hoverText.classList.remove('deleted-text-decoration');
-        }
-      });
-
-  // draw node`s name per node
+  // draw node`s extension
+  setDrawInfoInNode('extension', node, rectSizeHeight, waitForDouble);
+  // draw node`s fileName
   setDrawInfoInNode('name', node, rectSizeHeight, waitForDouble);
-
-  // draw a dividing line
-  //setDrawInfoInNode('line', node, rectSizeHeight, waitForDouble);
 
   // draw version info
   setDrawInfoInNode('toolchainVersion', node, rectSizeHeight, waitForDouble);
@@ -379,8 +212,6 @@ function attachTree(relationData) {
   // add a plus button
   node._groups[0].forEach((g) => {
     g.setAttribute('id', `${g.__data__.data.id}-g`);
-
-    const rectDom = g.childNodes[0];
 
     if (g.__data__.data['data-list'].length >= 2) {
       // draw plus_button_ctext_menu
@@ -435,7 +266,6 @@ function attachTree(relationData) {
         versionInfoCount += 1;
       }
     }
-    //rectDom.style.height = versionInfoCount === 2 ? rectSizeHeight + 9 : rectSizeHeight;
 
     // If there is no version information, sort the file name in the middle
     const versionInfoRect = g.childNodes[2];
@@ -499,6 +329,7 @@ function attachTree(relationData) {
   });
   historyOpenDivHeaderOpenButton.addEventListener('mouseout', () => {
     hoverText.style.display = 'none';
+    hoverText.classList.remove('font-bold');
   });
 
   historyOpenDiv.append(historyOpenDivHeaderOpenButton, historyOpenDivHeader);
@@ -572,6 +403,7 @@ function attachTree(relationData) {
   });
   historyDivHeaderCloseButton.addEventListener('mouseout', () => {
     hoverText.style.display = 'none';
+    hoverText.classList.remove('font-bold');
   });
 
   historyDivHeaderBox.append(
@@ -646,8 +478,8 @@ let _width = 0;
 let _height = 0;
 function _updateZoom(zoom, e) {
   const canvas = document.getElementsByTagName('svg')[0];
-  _width = canvas.width.animVal.value;
-  _height = canvas.height.animVal.value;
+  _width = _width || canvas.width.animVal.value;
+  _height = _height || canvas.height.animVal.value;
 
   const container = document.getElementsByClassName('relation-box')[0];
 
@@ -659,8 +491,8 @@ function _updateZoom(zoom, e) {
 
   canvas.style.width = width + 'px';
   canvas.style.height = height + 'px';
-  const scrollLeft = _scrollLeft || container.scrollLeft;
-  const scrollTop = _scrollTop || container.scrollTop;
+  const scrollLeft = container.scrollLeft || _scrollLeft;
+  const scrollTop = container.scrollTop || _scrollTop;
   const x = e.pageX + scrollLeft;
   const y = e.pageY + scrollTop;
   _scrollLeft = Math.max(0, ((x * zoom) / _zoom) - (x - scrollLeft));
@@ -726,19 +558,23 @@ function detachTree() {
 }
 
 function setDrawInfoInNode(type, node, rectSizeHeight, waitForDouble) {
+  let currentRect = '';
+
   node.append('text')
       .attr('x', -60)
       .attr(
           'class',
           d => {
-            if (type === 'line') {
-              return 'text-shadow-white';
+            let classList = '';
+            if (type === 'extension') {
+              classList += 'file-extension-custom file-extension ';
             } else if (
                 type === 'name' && d.data['data-list'][d.data['represent-idx']]['is-deleted']) {
-              return 'deleted-text-decoration';
-            } else {
-              return '';
-            }
+                classList += 'deleted-text-decoration ';
+            } else if (type === 'name') {
+              classList += 'text-file-name';
+              }
+            return classList;
           })
       .attr(
           'y',
@@ -747,36 +583,18 @@ function setDrawInfoInNode(type, node, rectSizeHeight, waitForDouble) {
               return -rectSizeHeight + 75;
             } else if (type === 'toolchainVersion') {
               return -rectSizeHeight + 63;
-            } else if (type === 'line') {
-              return -rectSizeHeight + 38;
+            } else if (type === 'extension') {
+              return -rectSizeHeight + 15;
             } else if (type === 'name') {
               const oneccVersion = d.data['data-list'][d.data['represent-idx']]['onecc-version'];
               const toolchainVersion =
                   d.data['data-list'][d.data['represent-idx']]['toolchain-version'];
 
               if (oneccVersion || toolchainVersion) {
-                return -rectSizeHeight + 41;
+                return -rectSizeHeight + 42;
               } else {
-                return -rectSizeHeight + 41;
+                return -rectSizeHeight + 42;
               }
-            }
-          })
-      .style(
-          'font-size',
-          () => {
-            if (type === 'line') {
-              return '5px';
-            } else {
-              return '11px';
-            }
-          })
-      .style(
-          'fill',
-          () => {
-            if (type === 'line') {
-              return 'black';
-            } else {
-              return `white`;
             }
           })
       .text(d => {
@@ -790,11 +608,9 @@ function setDrawInfoInNode(type, node, rectSizeHeight, waitForDouble) {
             d.data['data-list'][d.data['represent-idx']]['toolchain-version']) {
           versionInfo = d.data['data-list'][d.data['represent-idx']]['toolchain-version'];
           versionInfo = `toolchain-version: ${versionInfo}`;
-        } else if (
-            type === 'line' &&
-            (d.data['data-list'][d.data['represent-idx']]['toolchain-version'] ||
-             d.data['data-list'][d.data['represent-idx']]['onecc-version'])) {
-          versionInfo = 'ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ';
+        } else if ( type === 'extension') {
+          versionInfo = d.data['data-list'][d.data['represent-idx']].name.split(
+            '.')[d.data['data-list'][d.data['represent-idx']].name.split('.').length - 1];
         } else if (type === 'name') {
           let fullName = d.data['data-list'][d.data['represent-idx']].name;
           if (fullName.length > 22) {
@@ -804,7 +620,6 @@ function setDrawInfoInNode(type, node, rectSizeHeight, waitForDouble) {
           if (d.data['data-list'][d.data['represent-idx']]['is-deleted']) {
             fullName = '(deleted)';
           }
-
           return fullName;
         }
         return versionInfo;
@@ -835,13 +650,37 @@ function setDrawInfoInNode(type, node, rectSizeHeight, waitForDouble) {
             openContextMenu(mouse, d.data['data-list'][d.data['represent-idx']].path);
           })
       .on('mouseover',
-          (mouse) => {
-            //const rectDom = mouse.target.parentNode.firstChild;
-            //rectDom.classList.add('text-hover');
+          (mouse, node) => {
+            if(type === 'name'){
+              const hoverText = document.getElementsByClassName('hover-text')[0];
+              const fileExtensionText = mouse.path[0].getBoundingClientRect();
+              hoverText.style.display = 'block';
+              hoverText.innerText = `${node.data['data-list'][node.data['represent-idx']].path}`;
+              hoverText.style.left = `${fileExtensionText.x - 8}px`;
+              hoverText.style.top = `${fileExtensionText.y - 24}px`;
+              if (node.data['data-list'][node.data['represent-idx']]['is-deleted']) {
+                hoverText.classList.add('deleted-text-decoration');
+              }
+            } 
+
+            currentRect = mouse.fromElement;
+            if(mouse.fromElement?.tagName !== 'rect') {
+              currentRect = mouse.path[1].childNodes[2];
+            }
+            currentRect.classList.add('rect-hover-fill');
+            
           })
-      .on('mouseout', (mouse) => {
-        //const rectDom = mouse.target.parentNode.firstChild;
-        //rectDom.classList ?.remove('text-hover');
+      .on('mouseout', (_mouse, node) => {
+          if(type === 'name'){
+            const hoverText = document.getElementsByClassName('hover-text')[0];
+            hoverText.style.display = 'none';
+            if (node.data['data-list'][node.data['represent-idx']]['is-deleted']) {
+              hoverText.classList.remove('deleted-text-decoration');
+            }
+          }
+
+          currentRect.classList.remove('rect-hover-fill');
+          
       });
 }
 
@@ -1047,4 +886,83 @@ function historyMainBoxDisplay(type, isOpenHistoryBox) {
     historyMainBox.style.display = 'block';
     historyOpenBox.style.display = 'none';
   }
+}
+
+function drawRect(type,rectSizeWidth,rectSizeHeight,waitForDouble) {
+  node.append('rect')
+      .attr('x', -rectSizeWidth / 2)
+      .attr('y',() => {
+        switch (type) {
+          case 'extension':
+            return -rectSizeHeight;
+          case 'fileName':
+            return -rectSizeHeight + 25;
+          case 'versionInfo':
+            return -rectSizeHeight + 25 + 25;
+          default:
+            break;
+        }
+      })
+      .attr('rx',() => {
+        return type === 'extension' ? 3 : null;
+      })
+      .attr('ry',() => {
+        return type === 'versionInfo' ? 3 : null;
+      })
+      .attr('width', rectSizeWidth)
+      .attr('height', type === 'versionInfo' ? 30 : 25)
+      .attr(
+          'class',
+          d => {
+            let classList = '';
+            if (d.data.id === currentFileInfo.id) {
+              classList += 'current-node ';
+            }
+            if (type === 'fileName'){
+              classList += 'rect-file-name';
+            }
+            return classList;
+          })
+      .style(
+          'fill',
+          d => {
+            if(type === 'extension'){
+              const nodeData = d.data['data-list'][d.data['represent-idx']];
+              const nodeFileExtension =
+              nodeData['name'].split('.')[nodeData['name'].split('.').length - 1];
+              if (nodeFileExtension === 'log') {
+                return 'rgb(25, 40, 60, 1.0)';
+              } else if (nodeFileExtension === 'circle') {
+                return 'rgba(75, 27, 22, 1.0)';
+              } else {
+                return '#161515';
+              }
+            } else if(type === 'versionInfo'){
+              return "rgb(37 50 37)";
+            }
+          })
+      .on('dblclick',
+          () => {
+            if (waitForDouble !== null) {
+              clearTimeout(waitForDouble);
+              waitForDouble = null;
+            }
+          })
+      .on('click',
+          (_p, d) => {
+            if (waitForDouble === null) {
+              waitForDouble = setTimeout(() => {
+                postMessage('update', {
+                  path: d.data['data-list'][d.data['represent-idx']].path,
+                  historyList: historyList,
+                  isOpenHistoryBox:
+                      document.getElementsByClassName('history-main-box')[0].style.display
+                });
+                waitForDouble = null;
+              }, 300);
+            }
+          })
+      .on('contextmenu', (mouse, d) => {
+        openContextMenu(mouse, d.data['data-list'][d.data['represent-idx']].path);
+      });
 }

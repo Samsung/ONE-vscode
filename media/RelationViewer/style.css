@@ -100,6 +100,31 @@ body.vscode-light .current-history-color {
   color: rgb(163, 21, 21);
 }
 
+body.vscode-light .node rect {
+  stroke: #a69c9c;
+}
+
+body.vscode-light .text-file-name {
+  fill: black !important;
+}
+
+body.vscode-light .rect-file-name {
+  fill: white !important;
+}
+
+body.vscode-light .node rect:hover {
+  fill : rgb(141, 141, 141, 0.8) !important;
+}
+
+body.vscode-light .rect-hover-fill {
+  fill : rgb(141, 141, 141, 0.8) !important;
+}
+
+body.vscode-light .current-node {
+  stroke: rgb(163, 21, 21) !important;
+  stroke-width: 2px !important;
+}
+
 html {
   width: 100%;
   height: 100%;
@@ -123,32 +148,30 @@ body {
 }
 
 svg {
+  margin : 0 auto;
   margin-top: 30px;
   flex-shrink: 0;
 }
 
 .node rect {
   fill: #2a2929;
-  stroke: #fff;
+  stroke: black;
   stroke-width: 1px;
   cursor: pointer;
 }
 
 .node rect:hover {
-  opacity: 0.5;
-  /* stroke: black;
-  stroke-width: 5px; */
+  fill: #525252 !important;
 }
 
 .text-hover {
   opacity: 0.5;
-  /* stroke: black !important;
-  stroke-width: 5px !important; */
 }
 
 .node text {
-  font: 15px sans-serif;
+  font: 11px sans-serif;
   cursor: pointer;
+  fill : white;
 
   /* default drag function */
   -webkit-touch-callout: none;
@@ -169,7 +192,6 @@ svg {
   font-weight: bold !important;
 }
 
-
 .link {
   fill: none;
   stroke: #ccc;
@@ -180,8 +202,6 @@ svg {
   width: 100% !important;
   height: 100% !important;
   display: flex;
-  /* justify-content: space-between; */
-  /* align-items: center; */
   overflow: auto;
 }
 
@@ -377,4 +397,16 @@ svg {
 
 .current-history-color {
   color: #d7ba7d;
+}
+
+.rect-hover-fill {
+  fill: #525252 !important;
+}
+
+.text-file-name {
+  fill: white !important;
+}
+
+.rect-file-name {
+  fill: #2d2d2d !important;
 }
