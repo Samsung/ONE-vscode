@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
+import * as fs from 'fs';
 import * as vscode from 'vscode';
+
+import {Metadata} from './Metadata';
+import {PathToHash} from './PathToHash';
 
 /**
  * Relation information for displaying data in relation viewer
@@ -42,7 +46,7 @@ interface NodeData {
  * Relation is a class which controls relation data of the base models and production files.
  */
 export class Relation {
-  constructor() { }
+  constructor() {}
   /**
    * A map to save relation bewteen a child path and a parent path
    */
@@ -56,34 +60,34 @@ export class Relation {
   }
 
   /**
-   * Save relation of the `uri` to the `relation.json` file, using the information stored in `_childToParentMap`
+   * Save relation of the `uri` to the `relation.json` file, using the information stored in
+   * `_childToParentMap`
    * @param uri An uri to save its relation
    */
   public static async updateFile(uri: vscode.Uri) {
     const path = uri.path;
-    const relation = await Utils.readJson('relation');
-
+    const relation = await readJson('relation');
     const parentPath = this._childToParentMap.get(path);
     if (parentPath === undefined) {
       return;
     }
-    
+
     const pathToHash = await PathToHash.getInstance();
-    const hash = await pathToHash.get(uri);
+    const hash = await pathToHash.getHash(uri);
     if (hash === undefined || hash === '') {
       return;
     }
 
-    let parentHash = await pathToHash.get(vscode.Uri.parse(parentPath));
+    let parentHash = await pathToHash.getHash(vscode.Uri.parse(parentPath));
     if (parentHash === undefined) {
       parentHash = '';
     }
-    
+
     Relation._setParent(relation, hash, parentHash);
     if (parentHash !== '') {
       Relation._setChild(relation, parentHash, hash);
     }
-    await Utils.saveJson('relation', relation);
+    await saveJson('relation', relation);
   }
 
   /**
@@ -125,7 +129,7 @@ export class Relation {
     }
     return data;
   }
-  
+
   /**
    * Get relation information of the file to display in the relation viewer
    * @param uri The uri of the file
@@ -133,7 +137,7 @@ export class Relation {
    */
   public static async getRelationInfo(uri: vscode.Uri) {
     const pathToHash = await PathToHash.getInstance();
-    const nowHash = pathToHash.get(uri);
+    const nowHash = pathToHash.getHash(uri);
     if (vscode.workspace.workspaceFolders === undefined) {
       return;
     }
@@ -147,7 +151,7 @@ export class Relation {
     const relationInfos: RelationInfo = {'selected': '', 'relation-data': []};
 
     // load metadata of target node
-    const nowMetadata: any = await Metadata.get(nowHash);
+    const nowMetadata: any = await Metadata.getObj(nowHash);
 
     relationInfos.selected = nowHash;
 
@@ -165,7 +169,7 @@ export class Relation {
       if (!parentHash) {
         break;
       } else {
-        const parentMetadata: any = await Metadata.get(parentHash);
+        const parentMetadata: any = await Metadata.getObj(parentHash);
 
         relationInfos['relation-data'].push({
           'id': parentHash,
@@ -185,7 +189,7 @@ export class Relation {
         break;
       } else {
         for (let i = 0; i < childrenHash.length; i++) {
-          const childMetadata: any = await Metadata.get(childrenHash[i]);
+          const childMetadata: any = await Metadata.getObj(childrenHash[i]);
 
           relationInfos['relation-data'].push({
             'id': childrenHash[i],
@@ -206,7 +210,7 @@ export class Relation {
   /**
    * Get a list of the entire data from metadata
    * @param metadata A map containing data to be listed
-   * @returns 
+   * @returns
    */
   private static _getNodeDataList(metadata: any) {
     const dataList: NodeData[] = [];
@@ -226,4 +230,29 @@ export class Relation {
     }
     return dataList;
   }
+}
+
+async function saveJson(name: string, data: any) {
+  if (vscode.workspace.workspaceFolders === undefined) {
+    return;
+  }
+
+  const uri =
+      vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, '.meta', name + '.json');
+  await vscode.workspace.fs.writeFile(uri, Buffer.from(JSON.stringify(data, null, 4), 'utf8'));
+}
+
+async function readJson(name: string) {
+  if (vscode.workspace.workspaceFolders === undefined) {
+    return;
+  }
+
+  const uri =
+      vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, '.meta', name + '.json');
+  if (!fs.existsSync(uri.fsPath)) {
+    await vscode.workspace.fs.writeFile(uri, Buffer.from(JSON.stringify({}, null, 4), 'utf8'));
+    return {};
+  }
+  const json: any = JSON.parse(Buffer.from(await vscode.workspace.fs.readFile(uri)).toString());
+  return json;
 }
