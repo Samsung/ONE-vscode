@@ -135,3 +135,9 @@ export async function saveDirtyDocuments(filepath: string): Promise<boolean> {
     return false;
   }
 }
+
+export function isOneExplorerTargetFile(uri: vscode.Uri): boolean {
+  const path = uri.path;
+  const ends = ['.pb', '.onnx', '.tflite', '.circle', '.cfg', '.log'];
+  return ends.some((x) => path.endsWith(x));
+}
