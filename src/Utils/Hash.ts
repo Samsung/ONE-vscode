@@ -17,7 +17,6 @@
 import * as crypto from 'crypto';
 import vscode from 'vscode';
 
-
 export async function generateHash(uri: vscode.Uri) {
   // TODO: Error handling
   return crypto.createHash('sha256')

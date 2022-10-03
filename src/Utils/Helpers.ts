@@ -136,6 +136,7 @@ export async function saveDirtyDocuments(filepath: string): Promise<boolean> {
   }
 }
 
+// TODO Manager target file ext in ONE Explorer
 export function isOneExplorerTargetFile(uri: vscode.Uri): boolean {
   const path = uri.path;
   const ends = ['.pb', '.onnx', '.tflite', '.circle', '.cfg', '.log'];
