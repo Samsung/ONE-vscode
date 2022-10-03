@@ -215,7 +215,6 @@ export class PathToHash {
     let subMap = this._map;
     let idx = 0;
     for (let name = splitPath[idx]; idx < splitPath.length - 1; name = splitPath[++idx]) {
-      console.log(name);
       if (!subMap[name]) {
         subMap[name] = {};
       }
