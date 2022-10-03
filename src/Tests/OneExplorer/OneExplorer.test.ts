@@ -21,7 +21,7 @@ import {_unit_test_BaseModelNode as BaseModelNode, _unit_test_ConfigNode as Conf
 import {TestBuilder} from '../TestBuilder';
 
 suite('OneExplorer', function() {
-  suite('OneExplorer2', function() {
+  suite('OneExplorer', function() {
     let testBuilder: TestBuilder;
     setup(() => {
       testBuilder = new TestBuilder(this);
