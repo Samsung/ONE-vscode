@@ -232,7 +232,7 @@ export class PathToHash {
    * @param uri 
    * @brief Input uri, extract path and hash values, and delete them in a '_map'
    */
-  delete(uri: vscode.Uri) {
+  async delete(uri: vscode.Uri) {
     let subMap = this._map;
     const splitPath = vscode.workspace.asRelativePath(uri).split('/');
 
@@ -248,7 +248,7 @@ export class PathToHash {
     }
     delete subMap[splitPath[splitPath.length - 1]];
     if (splitPath.length > 1) {
-      this.deleteEmptyDirPath(this._map, splitPath, 0);
+      await this.deleteEmptyDirPath(this._map, splitPath, 0);
     }
   }
 
@@ -261,7 +261,7 @@ export class PathToHash {
    * @param splitPath 
    * @param idx 
    */
-  deleteEmptyDirPath(subMap: any, splitPath: string[], idx: number) {
+  async deleteEmptyDirPath(subMap: any, splitPath: string[], idx: number) {
     const name = splitPath[idx];
     if (splitPath.length - 2 === idx) {
       if (Object.keys(subMap[name]).length === 0) {
@@ -272,7 +272,7 @@ export class PathToHash {
     if (subMap[name] === undefined) {
       return;
     }
-    this.deleteEmptyDirPath(subMap[name], splitPath, idx + 1);
+    await this.deleteEmptyDirPath(subMap[name], splitPath, idx + 1);
     if (Object.keys(subMap[name]).length === 0) {
       delete subMap[name];
     }
