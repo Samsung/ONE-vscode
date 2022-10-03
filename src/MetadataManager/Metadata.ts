@@ -20,7 +20,7 @@ import * as vscode from 'vscode';
 import {ToolchainInfo} from '../Backend/Toolchain';
 import {obtainWorkspaceRoot} from '../Utils/Helpers';
 
-import {isValidFile} from './Utils';
+import {isOneExplorerTargetFile} from '../Utils/Helpers';
 
 type BuildInfoKeys = 'onecc'|'toolchain'|'cfg';
 
@@ -138,7 +138,7 @@ export class Metadata {
   // NOTE When the deleted file is recovered, metadata is also recovered.
   //    For that situation, metadata is not deleted but deactivated.
   public static async disable(uri: vscode.Uri, hash: string) {
-    if (!isValidFile(uri)) {
+    if (!isOneExplorerTargetFile(uri)) {
       return;
     }
     // step 1. Find hash object with hash value
