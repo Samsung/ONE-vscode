@@ -169,7 +169,7 @@ view.View = class {
         }
         this._page = page;
 
-        if (typeof (this._host._viewingNode) === 'number') {
+        if (this._host._viewingNode !== null) {
             this.showNodeProperties(this._graphs[0]._nodes[this._host._viewingNode], null);
         }
     }
