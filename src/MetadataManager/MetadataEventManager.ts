@@ -180,7 +180,7 @@ export class MetadataEventManager {
           //console.log('createDir');
           // case 1. [Dir]  Copy with files > Serch all the file in the Dir
           MetadataEventManager.eventBuffer.setEvent(manager.createDirEvent, {'uri': uri});
-        } else if (isOneExplorerTargetFile(uri)) {
+        } else if (isTarget(uri)) {
           if (caseFlag) {
             ////console.log('b');
             // case 2. [File] Contents change event in Ubuntu terminal (already file exists but call
@@ -268,7 +268,7 @@ export class MetadataEventManager {
     const uriList = await vscode.workspace.findFiles(`${relPath}/**/*`);
     console.log(uriList);
     for (let uri of uriList) {
-      if (isOneExplorerTargetFile(uri)) {
+      if (isTarget(uri)) {
         MetadataEventManager.eventBuffer.setEvent(MetadataEventManager.createFileEvent,{'uri': uri});
       }
     }
@@ -329,7 +329,7 @@ export class MetadataEventManager {
   public static async deleteFileEvent(input: {[key: string]: any}) {
     const uri = input['uri'];
     ////console.log('aa');
-    if (!isOneExplorerTargetFile(uri)) {
+    if (!isTarget(uri)) {
       return;
     }
     ////console.log('aa=');
@@ -375,15 +375,18 @@ export class MetadataEventManager {
     const toUri = input['toUri'];
 
     const fromRelPath = vscode.workspace.asRelativePath(fromUri);
-    //console.log('1');
+    // console.log('1');
     const pathToHash = await PathToHash.getInstance();
-    if (isOneExplorerTargetFile(fromUri) && !isOneExplorerTargetFile(toUri)) {
+    const isFromUriTarget = isTarget(fromUri);
+    const isToUriTarget = isTarget(toUri);
+    if (isFromUriTarget && !isToUriTarget) {
       // when the file is renamed from a valid file name to a invalid file name
       // ex. a.log > a.txt
-      await MetadataEventManager.deleteFileEvent(fromUri);
-      //console.log('2');
-    } else if (!isOneExplorerTargetFile(fromUri) || !isOneExplorerTargetFile(toUri)) {
-      //console.log('3');
+      await MetadataEventManager.deleteFileEvent({uri: fromUri});
+      // console.log('2');
+      return;
+    } else if (!isFromUriTarget || !isToUriTarget) {
+      // console.log('3');
       return;
     }
 
@@ -420,4 +423,9 @@ export class MetadataEventManager {
     await Metadata.createDefault(toUri, toHash);
     //console.log('15');
   }
+}
+
+function isTarget(uri: vscode.Uri) {
+  const relPath = vscode.workspace.asRelativePath(uri);
+  return isOneExplorerTargetFile(uri) && relPath.split('/').every(p => p !== '.meta');
 }
