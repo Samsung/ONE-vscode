@@ -134,7 +134,7 @@ export class PathToHash {
       queue.push([map[data], data.toString()]);
     }
     while (queue.length !== 0) {
-      const node = queue.pop();
+      const node: any = queue.pop();
       if (node === undefined) {
         continue;
       }
