@@ -110,13 +110,13 @@ export class PathToHash {
       const name: string = file[0];
       const type: number = file[1];
 
-      if (type === 1) {
+      if (type === vscode.FileType.File) {
         if(vscode.workspace.workspaceFolders !==undefined){
           if(isValidFile(vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, name))){
             subMap[name] = await generateHash(vscode.Uri.joinPath(uri, '/' + name));
           }
         }
-      } else if (type === 2 && name !== '.meta') {
+      } else if (type === vscode.FileType.Directory && name !== '.meta') {
         subMap[name] = await this.scanRecursively(vscode.Uri.joinPath(uri, '/' + name));
       }
     }
