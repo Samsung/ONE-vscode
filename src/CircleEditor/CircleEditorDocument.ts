@@ -395,57 +395,60 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
   }
 
   private editTensor(data : any){
-	let name;
-	let subgraphIdx : number = 0 ;
-	let argname : string;
-	let tensorIdx : number;
-	let isVariable : boolean= false;
-	let tensorType;
-	let tensorShape;
-	let bufferData : any = null;
-	name = data?._name;
-	subgraphIdx = Number(data._subgraphIdx);
-	if(name === undefined || name === undefined) {
-		CircleException.exceptionAlert("input data is undefined");
-		return;
-	}
-	const argument = data._arguments;
-	argname = argument._name;
-	tensorIdx = Number(argument._location);
-	const isChanged : boolean = argument._isChanged;
-	tensorType = argument._type._dataType;
-	tensorShape = argument._type._shape._dimensions;
-	if(name === undefined || name === undefined || name === undefined || name === undefined) {
-		CircleException.exceptionAlert("input data is undefined");
-		return;
-	}
-	if(argument._initializer !== null){
-		const ini = argument._initializer;
-		if(isChanged === true){
-			bufferData = ini._data;
+		let name;
+		let subgraphIdx : number = 0 ;
+		let argname : string;
+		let tensorIdx : number;
+		let isVariable : boolean= false;
+		let tensorType;
+		let tensorShape;
+		let bufferData : any = null;
+		name = data?._name;
+		subgraphIdx = Number(data._subgraphIdx);
+		if(name === undefined || name === undefined) {
+			CircleException.exceptionAlert("input data is undefined");
+			return;
 		}
-		isVariable = ini._is_variable;
-	}
-	//enum화 시키기 위해서 대문자화 시켜야한다.
-	tensorType = tensorType.toUpperCase();
+		const argument = data._arguments;
+		argname = argument._name;
+		tensorIdx = Number(argument._location);
+		const isChanged : boolean = argument._isChanged;
+		tensorType = argument._type._dataType;
+		tensorShape = argument._type._shape._dimensions;
+		if(name === undefined || name === undefined || name === undefined || name === undefined) {
+			CircleException.exceptionAlert("input data is undefined");
+			return;
+		}
+		if(argument._initializer !== null){
+			const ini = argument._initializer;
+			if(isChanged === true){
+				bufferData = ini._data;
+			}
+			isVariable = ini._is_variable;
+		}
+		//enum화 시키기 위해서 대문자화 시켜야한다.
+		tensorType = tensorType.toUpperCase();
 
-	// 정보 갱신
-	const targetTensor = this._model?.subgraphs[subgraphIdx]?.tensors[tensorIdx];
-	if(targetTensor === undefined) {
-		CircleException.exceptionAlert("model is undefined");
+		// 정보 갱신
+		const targetTensor = this._model?.subgraphs[subgraphIdx]?.tensors[tensorIdx];
+		if(targetTensor === undefined) {
+			CircleException.exceptionAlert("model is undefined");
+			return;
+		}
+		targetTensor.name = argname;
+		//type은 enum참조   
+		if(tensorType === 'BOOLEAN'){
+			tensorType = 'BOOL';
+		}
+		let tensorTypeNum : any = Circle.TensorType[tensorType];
+		targetTensor.type = tensorTypeNum;
+		targetTensor.shape = tensorShape;
+		if(bufferData !== null){
+			// 버퍼 크기와 shape 크기가 다르면 에러 메시지를 보내주면 된다.
+			const editBufferIdx : number = targetTensor.buffer;
+			this._model.buffers[editBufferIdx].data = bufferData;
+		}
 		return;
-	}
-	targetTensor.name = argname;
-	//type은 enum참조   
-	let tensorTypeNum : any = Circle.TensorType[tensorType];
-	targetTensor.type = tensorTypeNum;
-	targetTensor.shape = tensorShape;
-	if(bufferData !== null){
-		// 버퍼 크기와 shape 크기가 다르면 에러 메시지를 보내주면 된다.
-		const editBufferIdx : number = targetTensor.buffer;
-		this._model.buffers[editBufferIdx].data = bufferData;
-	}
-	return;
   }
 
 	private editAttribute(data:any){
