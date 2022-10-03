@@ -46,8 +46,7 @@
 
 var host = {};
 
-var vscode = acquireVsCodeApi();
-const builtinOperatorType = builtinOperatorType || {};
+const vscode = acquireVsCodeApi();
 
 const viewMode = {
     viewer: 0,

@@ -829,9 +829,7 @@ view.View = class {
                         model._graphs[idx]['_subgraphIdx'] = idx;
                         for (let jdx = 0; jdx < model.graphs[idx].nodes.length; jdx++) {
                             model._graphs[idx]._nodes[jdx]['_subgraphIdx'] = idx;
-                            if (builtinOperatorType
-                                    [model._graphs[idx]._nodes[jdx]._type.name.toUpperCase()] ===
-                                undefined) {
+                            if (model._graphs[idx]._nodes[jdx]._type?.category === 'custom') {
                                 model._graphs[idx]._nodes[jdx]._isCustom = true;
                                 vscode.postMessage({
                                     command: 'customType',
