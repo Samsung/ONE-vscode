@@ -156,8 +156,8 @@ export class PathToHash {
 
   /**
    * @brief Obtain a hash of the file of given 'uri' by searching in the map
-   * @param uri 
-   * @returns hash :string
+   * @param uri the target file's uri
+   * @returns string hash of the file. undefined if not found
    */
   getHash(uri: vscode.Uri) {
     const splitPath = vscode.workspace.asRelativePath(uri).split('/');
@@ -173,7 +173,19 @@ export class PathToHash {
     return map;
   }
 
-  getFilesUnderFolder(uri: vscode.Uri) {
+  /**
+   * @brief Obtain a list of hashes of files in the directory of given 'uri', by searching in the map
+   * @param uri the target directory's uri
+   * @example
+   *  (workspace)
+   *    dir/A.txt
+   *       /B.txt
+   *       /subdir/C.txt
+   *  (return)
+   *     [hash(A.txt), hash(B.txt), hash(C.txt)]
+   * @returns A list of string hashs. An emtpy list if it's not a directory or is an empty directory.
+   */
+  getAllHashesUnderFolder(uri: vscode.Uri) {
     const folder = this.getHash(uri);
     const files: vscode.Uri[] = [];
     if (typeof (folder) === 'string') {
