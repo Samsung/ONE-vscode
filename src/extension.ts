@@ -28,6 +28,9 @@ import {PartGraphSelPanel} from './PartEditor/PartGraphSelector';
 import {ToolchainProvider} from './Toolchain/ToolchainProvider';
 import {Logger} from './Utils/Logger';
 
+import {MetadataEventManager} from './MetadataManager/MetadataEventManager';
+import {PathToHash} from './MetadataManager/PathToHash';
+
 /* istanbul ignore next */
 export function activate(context: vscode.ExtensionContext) {
   const tag = 'activate';
@@ -46,6 +49,9 @@ export function activate(context: vscode.ExtensionContext) {
   } else {
     vscode.commands.executeCommand('setContext', 'one:extensionKind', 'Workspace');
   }
+
+  PathToHash.getInstance().then(()=>{});
+  MetadataEventManager.register(context);
 
   OneTreeDataProvider.register(context);
 
