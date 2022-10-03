@@ -119,7 +119,10 @@ export class PathToHash {
           }
         }
       } else if (type === vscode.FileType.Directory && name !== '.meta') {
-        subMap[name] = await this.scanRecursively(vscode.Uri.joinPath(uri, '/' + name));
+        const temp = await this.scanRecursively(vscode.Uri.joinPath(uri, '/' + name));
+        if(temp !==undefined){
+          subMap[name] = temp; 
+        }
       }
     }
     if (Object.keys(subMap).length === 0) {

@@ -348,6 +348,7 @@ export class MetadataEventManager {
 
     // step 3. Update pathToHash
     await pathToHash.delete(uri);
+    console.log(pathToHash);
     ////console.log('opa');
   }
 
