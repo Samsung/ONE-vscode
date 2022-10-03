@@ -42,6 +42,7 @@ class MetadataEventQueue {
     return this.queue[0];
   }
   dequeue() {
+    console.log('q',this.queue);
     this.queue.shift();
   }
 
@@ -62,11 +63,8 @@ class MetadataEventQueue {
   }
 
   async action() {
-    ////console.log('f');
     await this.front().method();
-    ////console.log('e');
     this.dequeue();
-    ////console.log(this.queue);
 
     if (this.isEmpty()) {
       this.clear();
@@ -95,7 +93,7 @@ class MetadataEventBuffer {
 
 /* istanbul ignore next */
 export class MetadataEventManager {
-  private fileWatcher = vscode.workspace.createFileSystemWatcher(`**/*`);  // glob pattern
+  private fileWatcher = vscode.workspace.createFileSystemWatcher("**");  // glob pattern
   public static eventBuffer = new MetadataEventBuffer();
   public static didCreateUri: vscode.Uri|undefined = undefined;
 
@@ -136,9 +134,11 @@ export class MetadataEventManager {
         MetadataEventManager.eventBuffer.setEvent(manager.changeFileEvent, {'uri': uri});
       }),
       manager.fileWatcher.onDidDelete(async uri => {
+        
         const toUri = MetadataEventManager.didCreateUri;
         const pathToHash = await PathToHash.getInstance();
         const caseFlag = pathToHash.getHash(uri);
+        console.log('delete event!', toUri, caseFlag);
         if (!caseFlag) {
           if (toUri) {
             Logger.info('Metadata Manager', 'Unsupervised directory/file have been renamed/moved');
@@ -207,6 +207,7 @@ export class MetadataEventManager {
   }
 
   async changeFileEvent(input: {[key: string]: any}) {
+    console.log("change file")
     const uri = input['uri'];
     const relPath = vscode.workspace.asRelativePath(uri);
     const pathToHash = await PathToHash.getInstance();
@@ -279,6 +280,7 @@ export class MetadataEventManager {
     const relPath = vscode.workspace.asRelativePath(uri);
     const pathToHash = await PathToHash.getInstance();
 
+    console.log("create!");
     //(1) insert PathToHash
     await pathToHash.add(uri);
     const hash: string = pathToHash.getHash(uri);
@@ -287,6 +289,7 @@ export class MetadataEventManager {
 
     if(!metaObj){metaObj={};}
 
+    console.log("pass");
 
     //(3) Metadata copy : metaObj exists, metaEntry doesn't exist
     if (Object.keys(metaObj).length !== 0 && !metaObj[relPath]) {
@@ -316,11 +319,13 @@ export class MetadataEventManager {
 
   async deleteDirEvent(input: {[key: string]: any}) {
     const uri = input['uri'];
-
+    console.log("directDirEvent ", uri);
     //if it is a folder, deactivate all of its child files
     const pathToHash = await PathToHash.getInstance();
+    console.log('underFolder', pathToHash.getAllHashesUnderFolder(uri));
     for (let file of pathToHash.getAllHashesUnderFolder(uri)) {
-      if (typeof (pathToHash.getHash(uri)) !== 'string') {
+      if (typeof (file.path) === 'string') {
+        console.log("important!!! ", pathToHash);
         await MetadataEventManager.deleteFileEvent({'uri': file});
       }
     }
@@ -328,13 +333,14 @@ export class MetadataEventManager {
 
   public static async deleteFileEvent(input: {[key: string]: any}) {
     const uri = input['uri'];
-    ////console.log('aa');
+    console.log('deleteFileEvent', uri);
     if (!isTarget(uri)) {
       return;
     }
     ////console.log('aa=');
 
     const pathToHash = await PathToHash.getInstance();
+    console.log("important22",pathToHash);
     // step 1. Get hash value from pathToHash
     const hash = pathToHash.getHash(uri);
     if (hash === undefined) {
@@ -355,15 +361,13 @@ export class MetadataEventManager {
   async moveDirEvent(input: {[key: string]: any}) {
     const fromDirUri = input['fromUri'];
     const toDirUri = input['toUri'];
+    console.log("moveDirEvent", fromDirUri, toDirUri);
 
     const pathToHash = await PathToHash.getInstance();
     const toRelPath = vscode.workspace.asRelativePath(toDirUri);
     const uriList = await vscode.workspace.findFiles(`${toRelPath}/**/*`);
 
-    console.log(uriList);
-
     for (let toUri of uriList) {
-      console.log(toUri);
       const toPath=toUri.path;
       const fromUri= vscode.Uri.joinPath(fromDirUri, toPath.substring(toPath.lastIndexOf(toDirUri.path) + toDirUri.path.length));
       if(typeof (pathToHash.getHash(fromUri)) === 'string'){
@@ -374,7 +378,7 @@ export class MetadataEventManager {
   public static async moveFileEvent(input: {[key: string]: any}) {
     const fromUri = input['fromUri'];
     const toUri = input['toUri'];
-
+    console.log("moveFileEvent", fromUri, toUri);
     const fromRelPath = vscode.workspace.asRelativePath(fromUri);
     // console.log('1');
     const pathToHash = await PathToHash.getInstance();
