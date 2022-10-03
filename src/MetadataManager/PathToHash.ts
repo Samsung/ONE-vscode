@@ -214,11 +214,12 @@ export class PathToHash {
     let content: any = await generateHash(uri);
     let subMap = this._map;
     let idx = 0;
-    for (let path = splitPath[idx]; idx < splitPath.length - 1; path = splitPath[++idx]) {
-      if (!subMap[path]) {
-        break;
+    for (let name = splitPath[idx]; idx < splitPath.length - 1; name = splitPath[++idx]) {
+      console.log(name);
+      if (!subMap[name]) {
+        subMap[name] = {};
       }
-      subMap = subMap[path];
+      subMap = subMap[name];
     }
     if (splitPath.length - 1 === idx) {  // paths.length - 1: index of a file name
       // When all of the folder path are stored in pathToHash
