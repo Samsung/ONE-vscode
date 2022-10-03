@@ -46,7 +46,7 @@ class MetadataSynchronizer {
   }
 
   static async deleteMetadata(flattenMap: any) {
-    if (vscode.workspace.workspaceFolders === undefined) {
+    if (vscode.workspace.workspaceFolders === undefined || !fs.existsSync(".meta/hash_objects")) {
       return;
     }
     const baseUri =
@@ -126,7 +126,7 @@ export class PathToHash {
       }
     }
     if (Object.keys(subMap).length === 0) {
-      return;
+      return {};
     }
 
     return subMap;
