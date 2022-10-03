@@ -216,7 +216,7 @@ export class PathToHash {
     let idx = 0;
     for (let path = splitPath[idx]; idx < splitPath.length - 1; path = splitPath[++idx]) {
       if (!subMap[path]) {
-        break;
+        subMap[path] = {};
       }
       subMap = subMap[path];
     }
