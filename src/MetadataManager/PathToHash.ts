@@ -17,10 +17,10 @@
 import fs from 'fs';
 import * as vscode from 'vscode';
 
+import {generateHash} from '../Utils/Hash';
+import {isOneExplorerTargetFile} from '../Utils/Helpers';
+
 import {Metadata} from './Metadata';
-import {generateHash, isValidFile} from './Utils';
-
-
 
 class MetadataSynchronizer {
   static async run(flattenMap: any) {
@@ -113,7 +113,8 @@ export class PathToHash {
 
       if (type === vscode.FileType.File) {
         if (vscode.workspace.workspaceFolders !== undefined) {
-          if (isValidFile(vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, name))) {
+          if (isOneExplorerTargetFile(
+                  vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, name))) {
             subMap[name] = await generateHash(vscode.Uri.joinPath(uri, '/' + name));
           }
         }
@@ -266,17 +267,20 @@ export class PathToHash {
    */
   async deleteEmptyDirPath(subMap: any, splitPath: string[], idx: number) {
     const name = splitPath[idx];
+
     if (splitPath.length - 2 === idx) {
-      if (Object.keys(subMap[name]).length === 0) {
+      if (subMap[name] !== undefined && Object.keys(subMap[name]).length === 0) {
         delete subMap[name];
       }
       return;
     }
+
     if (subMap[name] === undefined) {
       return;
     }
+
     await this.deleteEmptyDirPath(subMap[name], splitPath, idx + 1);
-    if (Object.keys(subMap[name]).length === 0) {
+    if (subMap[name] !== undefined && Object.keys(subMap[name]).length === 0) {
       delete subMap[name];
     }
   }
