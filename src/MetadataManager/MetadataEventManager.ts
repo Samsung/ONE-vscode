@@ -324,7 +324,7 @@ export class MetadataEventManager {
     const pathToHash = await PathToHash.getInstance();
     console.log('underFolder', pathToHash.getAllHashesUnderFolder(uri));
     for (let file of pathToHash.getAllHashesUnderFolder(uri)) {
-      if (typeof (file.path) === 'string') {
+      if (typeof (pathToHash.getHash(uri)) !== 'string') {
         console.log("important!!! ", pathToHash);
         await MetadataEventManager.deleteFileEvent({'uri': file});
       }

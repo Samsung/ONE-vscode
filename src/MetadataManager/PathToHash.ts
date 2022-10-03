@@ -16,6 +16,7 @@
 
 import fs from 'fs';
 import * as vscode from 'vscode';
+import { SubOptionsT } from '../CircleEditor/circle_schema_generated';
 
 import {generateHash} from '../Utils/Hash';
 import {isOneExplorerTargetFile} from '../Utils/Helpers';
@@ -249,16 +250,19 @@ export class PathToHash {
     let subMap = this._map;
     const splitPath = vscode.workspace.asRelativePath(uri).split('/');
 
+    console.log("delete");
     for (let i = 0, name = splitPath[i]; i < splitPath.length - 1; name = splitPath[++i]) {
       if (!subMap) {
         return;
       }
       subMap = subMap[name];
     }
+    console.log("test",subMap);
     if (subMap === undefined) {
       // already deleted
       return;
     }
+    console.log("test delete",subMap[splitPath[splitPath.length-1]]);
     delete subMap[splitPath[splitPath.length - 1]];
     if (splitPath.length > 1) {
       await this.deleteEmptyDirPath(this._map, splitPath, 0);
