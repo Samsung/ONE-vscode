@@ -21,10 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import vscode from 'vscode';
 import * as crypto from 'crypto';
-import * as fs from 'fs';
 import * as flatbuffers from 'flatbuffers';
+import * as fs from 'fs';
+import vscode from 'vscode';
+
 import * as Circle from '../../CircleEditor/circle_schema_generated';
 
 export function isValidFile(uri: vscode.Uri): boolean {
@@ -36,8 +37,8 @@ export function isValidFile(uri: vscode.Uri): boolean {
 export async function generateHash(uri: vscode.Uri) {
   // TODO: Error handling
   return crypto.createHash('sha256')
-    .update(Buffer.from(await vscode.workspace.fs.readFile(uri)).toString())
-    .digest('hex');
+      .update(Buffer.from(await vscode.workspace.fs.readFile(uri)).toString())
+      .digest('hex');
 }
 
 export async function getOperators(uri: vscode.Uri) {
