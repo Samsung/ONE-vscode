@@ -33,7 +33,7 @@ export class TestBuilder {
 
   constructor(suite: Mocha.Suite) {
     TestBuilder.testCount++;
-    
+
     const suiteName = suite.fullTitle().replace(' ', '/');
     this.testLabel = `${suiteName}/${TestBuilder.testCount}`;
     this.dirInTemp = `${TestBuilder.tempDir}/${suiteName}/${TestBuilder.testCount}`;
