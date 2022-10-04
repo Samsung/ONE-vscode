@@ -15,7 +15,8 @@
  */
 
 import * as vscode from 'vscode';
-import { Relation } from '../MetadataManager/Relation';
+import {PathToHash} from '../MetadataManager/PathToHash';
+import {Relation} from '../MetadataManager/Relation';
 
 import {RelationViewer} from './RelationViewer';
 
@@ -50,7 +51,6 @@ export class RelationViewerDocument implements vscode.CustomDocument {
 
   public openView(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, fileUri: vscode.Uri) {
     let view = new RelationViewer(panel, extensionUri);
-
     view.initWebview();
     view.loadContent();
     this._relationViewer.push(view);

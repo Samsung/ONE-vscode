@@ -17,9 +17,8 @@ import * as fs from 'fs';
 import * as vscode from 'vscode';
 
 import {Balloon} from '../Utils/Balloon';
-import {obtainWorkspaceRoot, isOneExplorerTargetFile} from '../Utils/Helpers';
+import {isOneExplorerTargetFile, obtainWorkspaceRoot} from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
-
 
 import {BuildInfo, Metadata} from './Metadata';
 import {PathToHash} from './PathToHash';
@@ -42,7 +41,7 @@ class MetadataEventQueue {
     return this.queue[0];
   }
   dequeue() {
-    console.log('q',this.queue);
+    console.log('q', this.queue);
     this.queue.shift();
   }
 
@@ -81,9 +80,9 @@ class MetadataEventBuffer {
     this._queue.enqueue(() => {
       return new Promise(resolve => {
         if (Object.keys(input).length === 0) {
-          request().then((res:any)=>resolve(res));
+          request().then((res: any) => resolve(res));
         } else {
-          request(input).then((res:any)=>resolve(res));
+          request(input).then((res: any) => resolve(res));
         }
       });
     }, input);
@@ -93,7 +92,7 @@ class MetadataEventBuffer {
 
 /* istanbul ignore next */
 export class MetadataEventManager {
-  private fileWatcher = vscode.workspace.createFileSystemWatcher("**");  // glob pattern
+  private fileWatcher = vscode.workspace.createFileSystemWatcher('**');  // glob pattern
   public static eventBuffer = new MetadataEventBuffer();
   public static didCreateUri: vscode.Uri|undefined = undefined;
 
@@ -134,12 +133,12 @@ export class MetadataEventManager {
         MetadataEventManager.eventBuffer.setEvent(manager.changeFileEvent, {'uri': uri});
       }),
       vscode.workspace.onDidDeleteFiles(async tempUriObj => {
-        const uri=tempUriObj['files'][0];
+        const uri = tempUriObj['files'][0];
         const pathToHash = await PathToHash.getInstance();
         const caseFlag = pathToHash.getHash(uri);
         const toUri = MetadataEventManager.didCreateUri;
 
-        if(toUri){
+        if (toUri) {
           return;
         } else {
           if (typeof (caseFlag) !== 'string') {
@@ -149,7 +148,6 @@ export class MetadataEventManager {
         }
       }),
       manager.fileWatcher.onDidDelete(async uri => {
-        
         const toUri = MetadataEventManager.didCreateUri;
         const pathToHash = await PathToHash.getInstance();
         const caseFlag = pathToHash.getHash(uri);
@@ -167,18 +165,22 @@ export class MetadataEventManager {
           // The file/folder is moved/renamed
           if (typeof (caseFlag) === 'string') {
             // case 1. [File]+Path      | move (delete & new)
-            MetadataEventManager.eventBuffer.setEvent(MetadataEventManager.moveFileEvent, {'fromUri': uri, 'toUri': toUri});
+            MetadataEventManager.eventBuffer.setEvent(
+                MetadataEventManager.moveFileEvent, {'fromUri': uri, 'toUri': toUri});
           } else {
             // case 2. [Dir]+Path       | move > search (delete & new)
-            MetadataEventManager.eventBuffer.setEvent(manager.moveDirEvent, {'fromUri': uri, 'toUri': toUri});
+            MetadataEventManager.eventBuffer.setEvent(
+                manager.moveDirEvent, {'fromUri': uri, 'toUri': toUri});
           }
         } else {
           if (typeof (caseFlag) === 'string') {
             // case 3. [File]+undefined | deactive
-            MetadataEventManager.eventBuffer.setEvent(MetadataEventManager.deleteFileEvent, {'uri': uri});
+            MetadataEventManager.eventBuffer.setEvent(
+                MetadataEventManager.deleteFileEvent, {'uri': uri});
           } else {
             // case 4. [Dir]+undefined  | deactive > search for Terminal
-            MetadataEventManager.eventBuffer.setEvent(manager.deleteDirEvent, {'uri': uri,'manager':manager});
+            MetadataEventManager.eventBuffer.setEvent(
+                manager.deleteDirEvent, {'uri': uri, 'manager': manager});
           }
         }
       }),
@@ -195,7 +197,8 @@ export class MetadataEventManager {
             MetadataEventManager.eventBuffer.setEvent(manager.changeFileEvent, {'uri': uri});
           } else {
             // case 3. [File] File generation event
-            MetadataEventManager.eventBuffer.setEvent(MetadataEventManager.createFileEvent, {'uri': uri});
+            MetadataEventManager.eventBuffer.setEvent(
+                MetadataEventManager.createFileEvent, {'uri': uri});
           }
         } else {
           Logger.info('Metadata Manager', 'Unsupervised directory/file have been created');
@@ -213,7 +216,7 @@ export class MetadataEventManager {
   }
 
   async changeFileEvent(input: {[key: string]: any}) {
-    console.log("change file")
+    console.log('change file')
     const uri = input['uri'];
     const relPath = vscode.workspace.asRelativePath(uri);
     const pathToHash = await PathToHash.getInstance();
@@ -231,12 +234,15 @@ export class MetadataEventManager {
 
     //(4) get metaObj from hash
     let metaObj = await Metadata.getObj(toHash);
-    if(!metaObj){metaObj={};}
+    if (!metaObj) {
+      metaObj = {};
+    }
 
     //(5) Metadata copy : metaObj exists, metaEntry doesn't exist
     if (Object.keys(metaObj).length !== 0 && !metaObj[relPath]) {
       const keyList = Object.keys(metaObj);
-      const keyResult = keyList.filter(key => !metaObj[key]['is-deleted']);  // find activate or last key of KeyList;
+      const keyResult = keyList.filter(
+          key => !metaObj[key]['is-deleted']);  // find activate or last key of KeyList;
 
       // data deep copy
       let metaEntry = JSON.parse(JSON.stringify(metaObj[keyList[keyList.length - 1]]));
@@ -267,7 +273,8 @@ export class MetadataEventManager {
 
     for (let uri of uriList) {
       if (isTarget(uri)) {
-        MetadataEventManager.eventBuffer.setEvent(MetadataEventManager.createFileEvent,{'uri': uri});
+        MetadataEventManager.eventBuffer.setEvent(
+            MetadataEventManager.createFileEvent, {'uri': uri});
       }
     }
   }
@@ -277,21 +284,24 @@ export class MetadataEventManager {
     const relPath = vscode.workspace.asRelativePath(uri);
     const pathToHash = await PathToHash.getInstance();
 
-    console.log("create!");
+    console.log('create!');
     //(1) insert PathToHash
     await pathToHash.add(uri);
     const hash: string = pathToHash.getHash(uri);
 
     //(2) get metaObj from hash
     let metaObj = await Metadata.getObj(hash);
-    if(!metaObj){metaObj={};}
+    if (!metaObj) {
+      metaObj = {};
+    }
 
-    console.log("pass");
+    console.log('pass');
 
     //(3) Metadata copy : metaObj exists, metaEntry doesn't exist
     if (Object.keys(metaObj).length !== 0 && !metaObj[relPath]) {
       const keyList = Object.keys(metaObj);
-      const keyResult = keyList.filter(key => !metaObj[key]['is-deleted']);  // find activate or last key of KeyList;
+      const keyResult = keyList.filter(
+          key => !metaObj[key]['is-deleted']);  // find activate or last key of KeyList;
 
       // data deep copy
       let metaEntry = JSON.parse(JSON.stringify(metaObj[keyList[keyList.length - 1]]));
@@ -313,16 +323,17 @@ export class MetadataEventManager {
 
   async deleteDirEvent(input: {[key: string]: any}) {
     const uri = input['uri'];
-    console.log("directDirEvent ", uri);
-    //if it is a folder, deactivate all of its child files
+    console.log('directDirEvent ', uri);
+    // if it is a folder, deactivate all of its child files
     const pathToHash = await PathToHash.getInstance();
     console.log('underFolder', pathToHash.getAllHashesUnderFolder(uri));
     for (let file of pathToHash.getAllHashesUnderFolder(uri)) {
       if (isTarget(file)) {
-        MetadataEventManager.eventBuffer.setEvent(MetadataEventManager.deleteFileEvent,{'uri': file});
-      //if (typeof (pathToHash.getHash(uri)) !== 'string') {
-      //  console.log("important!!! ", pathToHash);
-      //  await MetadataEventManager.deleteFileEvent({'uri': file});
+        MetadataEventManager.eventBuffer.setEvent(
+            MetadataEventManager.deleteFileEvent, {'uri': file});
+        // if (typeof (pathToHash.getHash(uri)) !== 'string') {
+        //  console.log("important!!! ", pathToHash);
+        //  await MetadataEventManager.deleteFileEvent({'uri': file});
       }
     }
   }
@@ -351,17 +362,19 @@ export class MetadataEventManager {
   async moveDirEvent(input: {[key: string]: any}) {
     const fromDirUri = input['fromUri'];
     const toDirUri = input['toUri'];
-    console.log("moveDirEvent", fromDirUri, toDirUri);
+    console.log('moveDirEvent', fromDirUri, toDirUri);
 
     const pathToHash = await PathToHash.getInstance();
     const toRelPath = vscode.workspace.asRelativePath(toDirUri);
     const uriList = await vscode.workspace.findFiles(`${toRelPath}/**/*`);
 
     for (let toUri of uriList) {
-      const toPath=toUri.path;
-      const fromUri= vscode.Uri.joinPath(fromDirUri, toPath.substring(toPath.lastIndexOf(toDirUri.path) + toDirUri.path.length));
-      if(typeof (pathToHash.getHash(fromUri)) === 'string'){
-        MetadataEventManager.eventBuffer.setEvent(MetadataEventManager.moveFileEvent,{'fromUri': fromUri, 'toUri': toUri});
+      const toPath = toUri.path;
+      const fromUri = vscode.Uri.joinPath(
+          fromDirUri, toPath.substring(toPath.lastIndexOf(toDirUri.path) + toDirUri.path.length));
+      if (typeof (pathToHash.getHash(fromUri)) === 'string') {
+        MetadataEventManager.eventBuffer.setEvent(
+            MetadataEventManager.moveFileEvent, {'fromUri': fromUri, 'toUri': toUri});
       }
     }
   }
@@ -394,13 +407,15 @@ export class MetadataEventManager {
 
     // 3. Get metadata from the old path
     let fromMetaEntry = await Metadata.getEntry(fromUri, fromHash);
-    if(!fromMetaEntry){fromMetaEntry={};}
+    if (!fromMetaEntry) {
+      fromMetaEntry = {};
+    }
 
     if (Object.keys(fromMetaEntry).length !== 0) {
       await Metadata.delete(fromUri, fromHash);
       await Metadata.setEntry(toUri, toHash, fromMetaEntry);
     }
-    
+
     // 4. Move metadata to the new path
     await Metadata.createDefault(toUri, toHash);
   }

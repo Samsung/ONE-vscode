@@ -21,17 +21,16 @@ import {CfgEditorPanel} from './CfgEditor/CfgEditorPanel';
 import {CircleViewerProvider} from './CircleGraph/CircleViewer';
 import {DeviceViewProvider} from './Execute/DeviceViewProvider';
 import {JsonTracerViewerPanel} from './Jsontracer/JsonTracerViewerPanel';
+import {MetadataEventManager} from './MetadataManager/MetadataEventManager';
+import {PathToHash} from './MetadataManager/PathToHash';
+import {MetadataViewerProvider} from './MetadataViewer/MetadataViewerProvider';
 import {MondrianEditorProvider} from './Mondrian/MondrianEditor';
 import {OneTreeDataProvider} from './OneExplorer/OneExplorer';
 import {PartEditorProvider} from './PartEditor/PartEditor';
 import {PartGraphSelPanel} from './PartEditor/PartGraphSelector';
 import {RelationViewerProvider} from './RelationViewer/RelationViewerProvider';
-import {MetadataViewerProvider} from './MetadataViewer/MetadataViewerProvider';
 import {ToolchainProvider} from './Toolchain/ToolchainProvider';
 import {Logger} from './Utils/Logger';
-
-import {MetadataEventManager} from './MetadataManager/MetadataEventManager';
-import {PathToHash} from './MetadataManager/PathToHash';
 
 /* istanbul ignore next */
 export function activate(context: vscode.ExtensionContext) {
@@ -52,8 +51,12 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.executeCommand('setContext', 'one:extensionKind', 'Workspace');
   }
 
-  PathToHash.getInstance().then(()=>{});
-  MetadataEventManager.register(context);
+  PathToHash.getInstance().then(() => {
+    MetadataEventManager.register(context);
+    RelationViewerProvider.register(context);
+    MetadataViewerProvider.register(context);
+  });
+
 
   OneTreeDataProvider.register(context);
 
@@ -72,9 +75,6 @@ export function activate(context: vscode.ExtensionContext) {
 
   CircleViewerProvider.register(context);
 
-  RelationViewerProvider.register(context);
-
-  MetadataViewerProvider.register(context);
 
   // returning backend registration function that will be called by backend extensions
   return backendRegistrationApi();

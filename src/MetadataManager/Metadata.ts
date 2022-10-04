@@ -73,6 +73,7 @@ export class Metadata {
   }
 
   public static async setObj(hash: string, obj: object) {
+    console.log('setObj');
     const workspaceroot = obtainWorkspaceRoot();
     const jsonUri = vscode.Uri.joinPath(
         vscode.Uri.file(workspaceroot),

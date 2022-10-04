@@ -16,7 +16,6 @@
 
 import fs from 'fs';
 import * as vscode from 'vscode';
-import { SubOptionsT } from '../CircleEditor/circle_schema_generated';
 
 import {generateHash} from '../Utils/Hash';
 import {isOneExplorerTargetFile} from '../Utils/Helpers';
@@ -47,7 +46,7 @@ class MetadataSynchronizer {
   }
 
   static async deleteMetadata(flattenMap: any) {
-    if (vscode.workspace.workspaceFolders === undefined || !fs.existsSync(".meta/hash_objects")) {
+    if (vscode.workspace.workspaceFolders === undefined || !fs.existsSync('.meta/hash_objects')) {
       return;
     }
     const baseUri =
@@ -91,6 +90,7 @@ export class PathToHash {
       this._instance = new PathToHash();
       this._instance._map = await this._instance.init();
     }
+    console.log('pathtohash 완성');
     return this._instance;
   }
 
@@ -121,8 +121,8 @@ export class PathToHash {
         }
       } else if (type === vscode.FileType.Directory && name !== '.meta') {
         const temp = await this.scanRecursively(vscode.Uri.joinPath(uri, '/' + name));
-        if(temp !==undefined){
-          subMap[name] = temp; 
+        if (temp !== undefined) {
+          subMap[name] = temp;
         }
       }
     }
@@ -193,7 +193,7 @@ export class PathToHash {
    * @returns A list of string hashs. An emtpy list if it's not a directory or is an empty
    *     directory.
    */
-   getAllHashesUnderFolder(uri: vscode.Uri) {
+  getAllHashesUnderFolder(uri: vscode.Uri) {
     const folder = this.getHash(uri);
     const files: vscode.Uri[] = [];
     if (typeof (folder) === 'string') {
@@ -209,8 +209,7 @@ export class PathToHash {
         });
       }
     }
-    console.log('uri',uri);
-    console.log('files',files);
+
     return files;
   }
 
@@ -251,19 +250,19 @@ export class PathToHash {
     let subMap = this._map;
     const splitPath = vscode.workspace.asRelativePath(uri).split('/');
 
-    console.log("delete");
+    console.log('delete');
     for (let i = 0, name = splitPath[i]; i < splitPath.length - 1; name = splitPath[++i]) {
       if (!subMap) {
         return;
       }
       subMap = subMap[name];
     }
-    console.log("test",subMap);
+    console.log('test', subMap);
     if (subMap === undefined) {
       // already deleted
       return;
     }
-    console.log("test delete",subMap[splitPath[splitPath.length-1]]);
+    console.log('test delete', subMap[splitPath[splitPath.length - 1]]);
     delete subMap[splitPath[splitPath.length - 1]];
     if (splitPath.length > 1) {
       await this.deleteEmptyDirPath(this._map, splitPath, 0);

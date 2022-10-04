@@ -136,6 +136,8 @@ export class Relation {
    * @returns `RelationInfo` of the file
    */
   public static async getRelationInfo(uri: vscode.Uri) {
+    console.log('실행됨');
+    console.log(uri);
     const pathToHash = await PathToHash.getInstance();
     const nowHash = pathToHash.getHash(uri);
     if (vscode.workspace.workspaceFolders === undefined) {
@@ -150,16 +152,27 @@ export class Relation {
     // Return Object generation
     const relationInfos: RelationInfo = {'selected': '', 'relation-data': []};
 
+    console.log(nowHash);
+    console.log('여긴옴');
     // load metadata of target node
     const nowMetadata: any = await Metadata.getObj(nowHash);
+    console.log('여긴 왜 안되');
+    console.log(nowMetadata);
+    let nowIdx = 0;
 
+    let keys = Object.keys(nowMetadata);
+    for (let i = 0; i < keys.length; i++) {
+      if (keys[i] === vscode.workspace.asRelativePath(uri)) {
+        nowIdx = i;
+      }
+    }
     relationInfos.selected = nowHash;
 
     if (relJSON[nowHash] === undefined) {
       relationInfos['relation-data'].push({
         'id': nowHash,
         'parent': '',
-        'represent-idx': 0,
+        'represent-idx': nowIdx,
         'data-list': Relation._getNodeDataList(nowMetadata)
       });
       return relationInfos;
@@ -168,7 +181,7 @@ export class Relation {
     relationInfos['relation-data'].push({
       'id': nowHash,
       'parent': relJSON[nowHash].parent,
-      'represent-idx': 0,
+      'represent-idx': nowIdx,
       'data-list': Relation._getNodeDataList(nowMetadata)
     });
 
@@ -180,6 +193,21 @@ export class Relation {
       } else {
         const parentMetadata: any = await Metadata.getObj(parentHash);
 
+        parentMetadata.sort((o1: any, o2: any) => {
+          let o1Rank, o2Rank;
+          if (o1['is-deleted']) {
+            o1Rank = 0;
+          } else {
+            o1Rank = 1;
+          }
+          if (o2['is-deleted']) {
+            o2Rank = 0;
+          } else {
+            o2Rank = 1;
+          }
+
+          return o1Rank - o2Rank;
+        });
         relationInfos['relation-data'].push({
           'id': parentHash,
           'parent': relJSON[parentHash].parent,

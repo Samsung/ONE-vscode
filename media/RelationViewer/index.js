@@ -31,7 +31,7 @@ window.addEventListener('message', (event) => {
   const message = event.data;
   const selected = message.payload['selected'];
   const relationData = message.payload['relation-data'];
-  
+
   getSelectedFileInfo(selected, relationData);
 
   switch (message.type) {
@@ -191,10 +191,10 @@ function attachTree(relationData) {
   let waitForDouble = null;
 
   // adds the rectangle to the node
-  drawRect('extension',rectSizeWidth,rectSizeHeight,waitForDouble);
-  drawRect('fileName',rectSizeWidth,rectSizeHeight,waitForDouble);
-  drawRect('versionInfo',rectSizeWidth,rectSizeHeight,waitForDouble);
- 
+  drawRect('extension', rectSizeWidth, rectSizeHeight, waitForDouble);
+  drawRect('fileName', rectSizeWidth, rectSizeHeight, waitForDouble);
+  drawRect('versionInfo', rectSizeWidth, rectSizeHeight, waitForDouble);
+
   // Create hover text_div to show File path
   const hoverText = document.createElement('div');
   document.body.appendChild(hoverText);
@@ -246,8 +246,12 @@ function attachTree(relationData) {
               plusButtonContextMenu.appendChild(plusButtonContextMenuInfo);
 
               plusButtonContextMenuInfo.addEventListener('click', () => {
-                postMessage('update', {path: dataList[idx]['path'], historyList: historyList, isOpenHistoryBox:
-                document.getElementsByClassName('history-main-box')[0].style.display});
+                postMessage('update', {
+                  path: dataList[idx]['path'],
+                  historyList: historyList,
+                  isOpenHistoryBox:
+                      document.getElementsByClassName('history-main-box')[0].style.display
+                });
                 // hide context_menu
                 hidePlusButtonContextMenu(plusButtonContextBox);
               });
@@ -274,7 +278,7 @@ function attachTree(relationData) {
       versionInfoRect.remove();
 
       nameInfoRect.style.rx = 3;
-    } else if (versionInfoCount === 1){
+    } else if (versionInfoCount === 1) {
       versionInfoRect.style.height = `20px`;
     }
   });
@@ -570,10 +574,10 @@ function setDrawInfoInNode(type, node, rectSizeHeight, waitForDouble) {
               classList += 'file-extension-custom file-extension ';
             } else if (
                 type === 'name' && d.data['data-list'][d.data['represent-idx']]['is-deleted']) {
-                classList += 'deleted-text-decoration ';
+              classList += 'deleted-text-decoration ';
             } else if (type === 'name') {
               classList += 'text-file-name';
-              }
+            }
             return classList;
           })
       .attr(
@@ -608,9 +612,9 @@ function setDrawInfoInNode(type, node, rectSizeHeight, waitForDouble) {
             d.data['data-list'][d.data['represent-idx']]['toolchain-version']) {
           versionInfo = d.data['data-list'][d.data['represent-idx']]['toolchain-version'];
           versionInfo = `toolchain-version: ${versionInfo}`;
-        } else if ( type === 'extension') {
+        } else if (type === 'extension') {
           versionInfo = d.data['data-list'][d.data['represent-idx']].name.split(
-            '.')[d.data['data-list'][d.data['represent-idx']].name.split('.').length - 1];
+              '.')[d.data['data-list'][d.data['represent-idx']].name.split('.').length - 1];
         } else if (type === 'name') {
           let fullName = d.data['data-list'][d.data['represent-idx']].name;
           if (fullName.length > 22) {
@@ -651,7 +655,7 @@ function setDrawInfoInNode(type, node, rectSizeHeight, waitForDouble) {
           })
       .on('mouseover',
           (mouse, node) => {
-            if(type === 'name'){
+            if (type === 'name') {
               const hoverText = document.getElementsByClassName('hover-text')[0];
               const fileExtensionText = mouse.path[0].getBoundingClientRect();
               hoverText.style.display = 'block';
@@ -661,26 +665,24 @@ function setDrawInfoInNode(type, node, rectSizeHeight, waitForDouble) {
               if (node.data['data-list'][node.data['represent-idx']]['is-deleted']) {
                 hoverText.classList.add('deleted-text-decoration');
               }
-            } 
+            }
 
             currentRect = mouse.fromElement;
             if(mouse.fromElement?.tagName !== 'rect') {
               currentRect = mouse.path[1].childNodes[2];
             }
             currentRect.classList.add('rect-hover-fill');
-            
           })
       .on('mouseout', (_mouse, node) => {
-          if(type === 'name'){
-            const hoverText = document.getElementsByClassName('hover-text')[0];
-            hoverText.style.display = 'none';
-            if (node.data['data-list'][node.data['represent-idx']]['is-deleted']) {
-              hoverText.classList.remove('deleted-text-decoration');
-            }
+        if (type === 'name') {
+          const hoverText = document.getElementsByClassName('hover-text')[0];
+          hoverText.style.display = 'none';
+          if (node.data['data-list'][node.data['represent-idx']]['is-deleted']) {
+            hoverText.classList.remove('deleted-text-decoration');
           }
+        }
 
-          currentRect.classList.remove('rect-hover-fill');
-          
+        currentRect.classList.remove('rect-hover-fill');
       });
 }
 
@@ -888,27 +890,33 @@ function historyMainBoxDisplay(type, isOpenHistoryBox) {
   }
 }
 
-function drawRect(type,rectSizeWidth,rectSizeHeight,waitForDouble) {
+function drawRect(type, rectSizeWidth, rectSizeHeight, waitForDouble) {
   node.append('rect')
       .attr('x', -rectSizeWidth / 2)
-      .attr('y',() => {
-        switch (type) {
-          case 'extension':
-            return -rectSizeHeight;
-          case 'fileName':
-            return -rectSizeHeight + 25;
-          case 'versionInfo':
-            return -rectSizeHeight + 25 + 25;
-          default:
-            break;
-        }
-      })
-      .attr('rx',() => {
-        return type === 'extension' ? 3 : null;
-      })
-      .attr('ry',() => {
-        return type === 'versionInfo' ? 3 : null;
-      })
+      .attr(
+          'y',
+          () => {
+            switch (type) {
+              case 'extension':
+                return -rectSizeHeight;
+              case 'fileName':
+                return -rectSizeHeight + 25;
+              case 'versionInfo':
+                return -rectSizeHeight + 25 + 25;
+              default:
+                break;
+            }
+          })
+      .attr(
+          'rx',
+          () => {
+            return type === 'extension' ? 3 : null;
+          })
+      .attr(
+          'ry',
+          () => {
+            return type === 'versionInfo' ? 3 : null;
+          })
       .attr('width', rectSizeWidth)
       .attr('height', type === 'versionInfo' ? 30 : 25)
       .attr(
@@ -918,7 +926,7 @@ function drawRect(type,rectSizeWidth,rectSizeHeight,waitForDouble) {
             if (d.data.id === currentFileInfo.id) {
               classList += 'current-node ';
             }
-            if (type === 'fileName'){
+            if (type === 'fileName') {
               classList += 'rect-file-name';
             }
             return classList;
@@ -926,10 +934,10 @@ function drawRect(type,rectSizeWidth,rectSizeHeight,waitForDouble) {
       .style(
           'fill',
           d => {
-            if(type === 'extension'){
+            if (type === 'extension') {
               const nodeData = d.data['data-list'][d.data['represent-idx']];
               const nodeFileExtension =
-              nodeData['name'].split('.')[nodeData['name'].split('.').length - 1];
+                  nodeData['name'].split('.')[nodeData['name'].split('.').length - 1];
               if (nodeFileExtension === 'log') {
                 return 'rgb(25, 40, 60, 1.0)';
               } else if (nodeFileExtension === 'circle') {
@@ -937,8 +945,8 @@ function drawRect(type,rectSizeWidth,rectSizeHeight,waitForDouble) {
               } else {
                 return '#161515';
               }
-            } else if(type === 'versionInfo'){
-              return "rgb(37 50 37)";
+            } else if (type === 'versionInfo') {
+              return 'rgb(37 50 37)';
             }
           })
       .on('dblclick',

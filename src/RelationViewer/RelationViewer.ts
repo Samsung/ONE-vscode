@@ -15,8 +15,8 @@
  */
 
 import * as vscode from 'vscode';
-import { Relation } from '../MetadataManager/Relation';
-import { MetadataViewerProvider } from '../MetadataViewer/MetadataViewerProvider';
+import {Relation} from '../MetadataManager/Relation';
+import {MetadataViewerProvider} from '../MetadataViewer/MetadataViewerProvider';
 import {Balloon} from '../Utils/Balloon';
 import {getNonce} from '../Utils/external/Nonce';
 import {getUri} from '../Utils/external/Uri';
@@ -117,7 +117,8 @@ export class RelationViewer {
           fileUri = vscode.Uri.file(obtainWorkspaceRoot() + '/' + message.path);
           // This code opens the metadata viewer directly.
           // It is necessary if the code of the metadata viewer is added.
-          vscode.commands.executeCommand('vscode.openWith', fileUri, MetadataViewerProvider.viewType);
+          vscode.commands.executeCommand(
+              'vscode.openWith', fileUri, MetadataViewerProvider.viewType);
           break;
         case 'openFile':
           if (message.path.split('.').slice(-1)[0] === 'circle') {
