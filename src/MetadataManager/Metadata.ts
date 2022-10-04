@@ -57,16 +57,30 @@ export class BuildInfo {
 
 export class Operator {
   public static async get(uri: vscode.Uri) {
-    if (!uri.fsPath.endsWith('.circle')) {
-      return [];
-    }
     const bytes = new Uint8Array(await vscode.workspace.fs.readFile(uri));
     const buf = new flatbuffers.ByteBuffer(bytes);
     const model = Circle.Model.getRootAsModel(buf).unpack();
-    const operators = model.operatorCodes.map((operator) => {
-      Circle.BuiltinOperator[operator.deprecatedBuiltinCode];
-    });
+    const operators = model.operatorCodes.map(
+        (operator) => Circle.BuiltinOperator[operator.deprecatedBuiltinCode]);
     return operators;
+  }
+
+  public static async save(metaEntry: any, uri: vscode.Uri) {
+    if (!uri.fsPath.endsWith('.circle')) {
+      return;
+    }
+
+    const stat = fs.statSync(uri.fsPath);
+    const operations: any = {};
+    // TODO deal with large files
+    if (stat.size > 10000) {
+      operations['error-message'] = 'File size is too large';
+    } else {
+      const opInfo = await Operator.get(uri);
+      operations['op-total'] = opInfo.length;
+      operations['ops'] = opInfo;
+    }
+    metaEntry['operations'] = operations;
   }
 }
 

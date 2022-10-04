@@ -15,8 +15,8 @@
  */
 
 import * as vscode from 'vscode';
-import { Metadata } from '../MetadataManager/Metadata';
-import { PathToHash } from '../MetadataManager/PathToHash';
+import {Metadata} from '../MetadataManager/Metadata';
+import {PathToHash} from '../MetadataManager/PathToHash';
 
 import {MetadataViewer} from './MetadataViewer';
 
@@ -60,7 +60,7 @@ export class RelationViewerDocument implements vscode.CustomDocument {
     // logic for getting metadata information (using uri argument)
     getMetadata(fileUri).then((payload: any) => {
       // send message(metadata information) to the webview
-      panel.webview.postMessage({command:'showMetadata',metadata: payload});
+      panel.webview.postMessage({command: 'showMetadata', metadata: payload});
     });
 
     panel.onDidDispose(() => {

@@ -20,7 +20,7 @@ import {Balloon} from '../Utils/Balloon';
 import {isOneExplorerTargetFile, obtainWorkspaceRoot} from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
-import {BuildInfo, Metadata} from './Metadata';
+import {BuildInfo, Metadata, Operator} from './Metadata';
 import {PathToHash} from './PathToHash';
 import {Relation} from './Relation';
 
@@ -216,7 +216,7 @@ export class MetadataEventManager {
   }
 
   async changeFileEvent(input: {[key: string]: any}) {
-    console.log('change file')
+    console.log('change file');
     const uri = input['uri'];
     const relPath = vscode.workspace.asRelativePath(uri);
     const pathToHash = await PathToHash.getInstance();
@@ -260,6 +260,7 @@ export class MetadataEventManager {
     let metaEntry = await Metadata.getEntry(uri, toHash);
 
     BuildInfo.save(metaEntry, uri);
+    await Operator.save(metaEntry, uri);
     await Relation.updateFile(uri);
     await Metadata.setEntry(uri, toHash, metaEntry);
   }
@@ -317,6 +318,7 @@ export class MetadataEventManager {
     await Metadata.createDefault(uri, hash);
     let metaEntry = await Metadata.getEntry(uri, hash);
     BuildInfo.save(metaEntry, uri);
+    await Operator.save(metaEntry, uri);
     await Relation.updateFile(uri);
     await Metadata.setEntry(uri, hash, metaEntry);
   }

@@ -16,7 +16,7 @@ import {Version} from '../Version';
 const which = require('which');
 
 export class LocalToolchain implements Backend {
-  private static _name = 'dummy backend';
+  private static _name = 'Local';
 
   name(): string {
     return LocalToolchain._name;
@@ -39,7 +39,7 @@ class DummyCompiler implements Compiler {
   getToolchains(_toolchainType: string, _start: number, _count: number): Toolchains {
     const array = new Array<Toolchain>();
     const toolchainInfo =
-        new ToolchainInfo('metadata toolchain', 'Toolchain for metadata', new Version(1, 2, 3));
+        new ToolchainInfo('Metadata Toolchain', 'Toolchain for metadata', new Version(0, 1, 0));
     array.push(new MetadataToolchain(toolchainInfo));
     return array;
     // const array = new Array<Toolchain>();
@@ -49,7 +49,7 @@ class DummyCompiler implements Compiler {
   getInstalledToolchains(_toolchainType: string): Toolchains {
     const array = new Array<Toolchain>();
     const toolchainInfo =
-        new ToolchainInfo('metadata toolchain', 'Toolchain for metadata', new Version(1, 2, 3));
+        new ToolchainInfo('Metadata Toolchain', 'Toolchain for metadata', new Version(0, 1, 0));
     array.push(new MetadataToolchain(toolchainInfo));
     return array;
     // const array = new Array<Toolchain>();
@@ -71,7 +71,7 @@ class DummyExecutor implements Executor {
   toolchains(): Toolchains {
     const array = new Array<Toolchain>();
     const toolchainInfo =
-        new ToolchainInfo('metadata toolchain', 'Toolchain for metadata', new Version(1, 2, 3));
+        new ToolchainInfo('Metadata Toolchain', 'Toolchain for metadata', new Version(1, 2, 3));
     array.push(new MetadataToolchain(toolchainInfo));
     return array;
   }

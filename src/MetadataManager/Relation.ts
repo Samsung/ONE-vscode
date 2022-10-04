@@ -144,23 +144,21 @@ export class Relation {
     if (vscode.workspace.workspaceFolders === undefined) {
       return;
     }
-    if(!nowHash){
+    if (!nowHash) {
       return;
     }
-    const relUri =
-      vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, '.meta/relation.json');
-    
+
     // Return Object generation
     const relationInfos: RelationInfo = {'selected': '', 'relation-data': []};
     console.log(nowHash);
     console.log('여긴옴');
-    
+
     // load metadata of target node
     const nowMetadata: any = await Metadata.getObj(nowHash);
     console.log('여긴 왜 안되');
     console.log(nowMetadata);
     let nowIdx = 0;
-    
+
     const relJSON: any = await readJson('relation');
 
     let keys = Object.keys(nowMetadata);
@@ -228,7 +226,7 @@ export class Relation {
         childrenHash = hashs;
       }
     }
-    
+
     console.log('qwewqerqwe');
     console.log(relationInfos);
     return relationInfos;

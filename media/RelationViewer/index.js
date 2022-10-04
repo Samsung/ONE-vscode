@@ -651,7 +651,7 @@ function setDrawInfoInNode(type, node, rectSizeHeight, waitForDouble) {
           })
       .on('contextmenu',
           (mouse, node) => {
-            if(!node.data['data-list'][node.data['represent-idx']]['is-deleted']){
+            if (!node.data['data-list'][node.data['represent-idx']]['is-deleted']) {
               openContextMenu(mouse, node.data['data-list'][node.data['represent-idx']].path);
             }
           })
@@ -973,7 +973,7 @@ function drawRect(type, rectSizeWidth, rectSizeHeight, waitForDouble) {
             }
           })
       .on('contextmenu', (mouse, node) => {
-        if(!node.data['data-list'][node.data['represent-idx']]['is-deleted']){
+        if (!node.data['data-list'][node.data['represent-idx']]['is-deleted']) {
           openContextMenu(mouse, node.data['data-list'][node.data['represent-idx']].path);
         }
       });

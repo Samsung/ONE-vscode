@@ -17,7 +17,7 @@
 import * as vscode from 'vscode';
 
 import {backendRegistrationApi} from './Backend/API';
-import { LocalToolchain } from './Backend/One/LocalToolchain';
+import {LocalToolchain} from './Backend/One/LocalToolchain';
 import {CfgEditorPanel} from './CfgEditor/CfgEditorPanel';
 import {CircleViewerProvider} from './CircleGraph/CircleViewer';
 import {DeviceViewProvider} from './Execute/DeviceViewProvider';
