@@ -1,6 +1,5 @@
 var sidebar = sidebar || {};
 var base = base || require('./external/base');
-var vscode = vscode || {};
 var typeName = typeName || {};
 var tensorType = tensorType || {};
 var customType = customType || {};
