@@ -3,9 +3,12 @@ import { CircleEditorDocument } from "./CircleEditorDocument";
 import { disposeAll } from "./dispose";
 import * as fs from "fs";
 import { getNonce } from "../Utils/external/Nonce";
-import { CircleException } from "../Utils/CircleEditorException";
+import { CircleException } from "./CircleEditorException";
 import {getUri} from '../Utils/external/Uri';
 
+/**
+ * Message commands for communicating with webviews
+ */
 export enum MessageDefs {
   // message command
   alert = "alert",
@@ -27,33 +30,30 @@ export enum MessageDefs {
   tensors = "tensors",
   // partiton of backends
   partition = "partition",
-  // edit circle
+  // commands for custom editor features
   edit = "edit",
-  customType = "CustomType",
+  customType = "customType",
   loadJson = "loadJson",
   updateJson = "updateJson",
   requestEncodingData = "requestEncodingData"
 }
 
-export class CircleEditorProvider
-  implements vscode.CustomEditorProvider<CircleEditorDocument>
-{
+/**
+ * Custom Editor Provider necessary for vscode extension API
+ */
+export class CircleEditorProvider implements vscode.CustomEditorProvider<CircleEditorDocument>{
   public static readonly viewType = "one.editor.circle";
   private readonly folderMediaCircleEditor = "media/CircleEditor";
 
-  //constructor
   constructor(private readonly _context: vscode.ExtensionContext) {}
 
   private readonly _onDidChangeCustomDocument = new vscode.EventEmitter<
     vscode.CustomDocumentEditEvent<CircleEditorDocument>
   >();
-  public readonly onDidChangeCustomDocument =
-    this._onDidChangeCustomDocument.event;
+  public readonly onDidChangeCustomDocument = this._onDidChangeCustomDocument.event;
 
   private readonly webviews = new WebviewCollection();
 
-  //register from CircleViewer
-  //registerCommand excluded
   public static register(context: vscode.ExtensionContext): void {
     const provider = new CircleEditorProvider(context);
 
@@ -68,14 +68,13 @@ export class CircleEditorProvider
           supportsMultipleEditorsPerDocument: true,
         }
       ),
-      // Add command registration here
+      // TODO: Add command registrations
     ];
     registrations.forEach((disposable) =>
       context.subscriptions.push(disposable)
     );
   }
 
-  //from CircleViewer create function + add listeners
   async openCustomDocument(
     uri: vscode.Uri,
     openContext: { backupId?: string },
@@ -163,7 +162,7 @@ export class CircleEditorProvider
   private onMessage(document: CircleEditorDocument, message: any) {
     switch (message.command) {
       case MessageDefs.alert:
-        CircleException.inputException(message.text); //error msg
+        CircleException.exceptionAlert(message.text); //error msg
         return;
       case MessageDefs.request:
         this.handleRequest(document, message.url, message.encoding);
@@ -253,19 +252,17 @@ export class CircleEditorProvider
     // modified for one-vscode
     html = this.updateUri(html, webview, '%index.js%', 'index.js');
     html = this.updateUri(html, webview, '%view.js%', 'view.js');
-    // viewMode
+    // viewMode: this is replaced as a comment as we do not provide selection mode
     // html = html.replace('%viewMode%', this._viewMode);
 
     return html;
   }
 
-
   private getMediaPath(file: string) {
     return vscode.Uri.joinPath(this._context.extensionUri, this.folderMediaCircleEditor, file);
   }
 
-  private updateExternalUri(
-      html: string, webview: vscode.Webview, search: string, replace: string) {
+  private updateExternalUri(html: string, webview: vscode.Webview, search: string, replace: string) {
     const replaceUri = this.getUriFromPath(webview, 'external/' + replace);
     return html.replace(search, `${replaceUri}`);
   }
@@ -282,6 +279,9 @@ export class CircleEditorProvider
   }
 }
 
+/**
+ * class for retaining webviews opened
+ */
 class WebviewCollection {
   private readonly _webviews = new Set<{
     readonly resource: string;

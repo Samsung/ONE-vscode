@@ -852,7 +852,7 @@ view.View = class {
                             if(builtinOperatorType[model._graphs[idx]._nodes[jdx]._type.name.toUpperCase()] === undefined){
                                 model._graphs[idx]._nodes[jdx]._isCustom = true;
                                 vscode.postMessage({
-                                    command: "CustomType",
+                                    command: "customType",
                                     data:{
                                         _subgraphIdx: idx,
                                         _nodeIdx: jdx,

@@ -1544,7 +1544,7 @@ sidebar.ArgumentView = class {
                         original[i] = view.getUint8(0);
                         break;
                     case 4: // int64
-                        view.setBigInt64(0, parseBigInt(bufferArr[i]), true);
+                        view.setBigInt64(0, BigInt(parseInt(bufferArr[i])), true);
                         for (let j = 0; j < 8; j++) {
                             original[i * 8 + j] = view.getUint8(j);
                         }
@@ -1579,7 +1579,7 @@ sidebar.ArgumentView = class {
                     case 11:
                         break;
                     case 12: // uint64
-                        view.setBigUint64(0, parseBigInt(bufferArr[i]), true);
+                        view.setBigUint64(0, BigInt(parseInt(bufferArr[i])), true);
                         for (let j = 0; j < 8; j++) {
                             original[i * 8 + j] = view.getUint8(j);
                         }
@@ -1748,7 +1748,7 @@ sidebar.ArgumentView = class {
                     } else if (bits[newTypeIndex] === 32) { // int32
                         view.setInt32(0, data, true);
                     } else if (bits[newTypeIndex] === 64) { // int64
-                        view.setBigInt64(0, data, true);
+                        view.setBigInt64(0, BigInt(parseInt(String(data))), true);
                     }
                 } else { // uint
                     if (data < 0) {
@@ -1760,7 +1760,7 @@ sidebar.ArgumentView = class {
                     } else if (bits[newTypeIndex] === 32) { // uint32
                         view.setUint32(0, data, true);
                     } else if (bits[newTypeIndex] === 64) { // uint64
-                        view.setBigUint64(0, data, true);
+                        view.setBigUint64(0, BigInt(parseInt(String(data))), true);
                     }
                 }
                 for (let j = 0; j < bits[newTypeIndex] / 8; j++) {
@@ -1768,7 +1768,6 @@ sidebar.ArgumentView = class {
                 }
             }
         
-        /* boolean -> ?  or ? -> boolean */
         } else if (typeclass[newTypeIndex] === 4) { // current type : boolean or new type : boolean
             for (let i = 0; i < modifiedArr.length; i++) {
                 if (modifiedArr[i]) {
