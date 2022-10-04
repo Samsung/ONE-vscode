@@ -46,7 +46,10 @@ class MetadataSynchronizer {
   }
 
   static async deleteMetadata(flattenMap: any) {
-    if (vscode.workspace.workspaceFolders === undefined || !fs.existsSync('.meta/hash_objects')) {
+    if (vscode.workspace.workspaceFolders === undefined ||
+        !fs.existsSync(
+            vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, '.meta/hash_objects')
+                .fsPath)) {
       return;
     }
     const baseUri =
