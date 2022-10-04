@@ -87,6 +87,9 @@ host.BrowserHost = class {
         if (__viewMode === 'selector') {
             this._mode = viewMode.selector;
         }
+
+        this._viewingSubgraph = 0;
+        this._viewingNode = null;
     }
 
     get window() {
@@ -145,6 +148,9 @@ host.BrowserHost = class {
                     break;
                 case 'reload':
                     this._msgReload(message);
+                    break;
+                case 'setCustomOpAttrT':
+                    this._msgSetCustomOpAttrT(message);
                     break;
             }
         });
@@ -537,10 +543,19 @@ host.BrowserHost = class {
         vscode.postMessage({command: 'loadmodel', offset: '0'});
     }
 
-    /**
-     * TODO Implement _msgGetType(message)
-     * Get custom operator attributes type
-     */
+    _msgSetCustomOpAttrT(message) {
+        const data = message.data;
+        const graphs = this._view._model._graphs;
+        const types = data._type;
+        const node = graphs[data._subgraphIdx]._nodes[data._nodeIdx];
+        for (const key of Object.keys(types)) {
+            for (let i in node.attributes) {
+                if (node.attributes[i].name === key) {
+                    node.attributes[i]._type = types[key];
+                }
+            }
+        }
+    }
 };
 
 host.Dropdown = class {
