@@ -1,5 +1,4 @@
 var jsonEditor = jsonEditor || {};
-var vscode = vscode || {};
 var tensorType = tensorType || {};
 var customType = customType || {};
 

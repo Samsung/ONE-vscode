@@ -143,7 +143,7 @@ view.View = class {
         }
     }
 
-    show(page, nodeIdx) {
+    show(page) {
         this.updateThemeColor();
 
         if (!page) {
@@ -172,8 +172,8 @@ view.View = class {
         }
         this._page = page;
         // if nodeIdx is not null, the nodesidebar is opened
-        if (nodeIdx) {
-            this.showNodeProperties(this._graphs[0]._nodes[parseInt(nodeIdx)], null);
+        if (this._host._viewingNode !== null) {
+            this.showNodeProperties(this._graphs[0]._nodes[this._host._viewingNode], null);
         }
     }
 
@@ -738,7 +738,7 @@ view.View = class {
      * if subgraphIdx isn't null,
      * the subgraph that is turned on is the subgraphIdx graph.
      */
-    open(context, subgraphIdx, nodeIdx) {
+    open(context) {
         this._host.event('Model', 'Open', 'Size', context.stream ? context.stream.length : 0);
         this._sidebar.close();
         this._jsonEditor.close();
@@ -755,15 +755,10 @@ view.View = class {
                     this._host.event('Model', 'Format', format.join(' '));
                 }
                 return this._timeout(20).then(() => {
-                    let graphs = [];
-                    if (subgraphIdx) {
-                        graphs = [model.graphs[parseInt(subgraphIdx)]];
-                    } else {
-                        graphs = Array.isArray(model.graphs) && model.graphs.length > 0 ?
-                            [model.graphs[0]] :
-                            [];
-                    }
-                    return this._updateGraph(model, graphs, nodeIdx);
+                    const graphs = Array.isArray(model.graphs) && model.graphs.length > 0 ?
+                        [model.graphs[this._host._viewingSubgraph]] :
+                        [];
+                    return this._updateGraph(model, graphs);
                 });
             });
         });
@@ -804,7 +799,7 @@ view.View = class {
         return Array.isArray(this._graphs) && this._graphs.length > 0 ? this._graphs[0] : null;
     }
 
-    _updateGraph(model, graphs, nodeIdx) {
+    _updateGraph(model, graphs) {
         const lastModel = this._model;
         const lastGraphs = this._graphs;
         this._model = model;
@@ -839,21 +834,17 @@ view.View = class {
             return this.renderGraph(this._model, this.activeGraph)
                 .then(() => {
                     if (this._page !== 'default') {
-                        if (nodeIdx) {
-                            this.show('default', nodeIdx);
-                        } else {
                             this.show('default');
-                        }
                     }
                     for (let idx = 0; idx < model.graphs.length; idx++) {
                         model._graphs[idx]['_subgraphIdx'] = idx;
                         for (let jdx = 0; jdx < model.graphs[idx].nodes.length; jdx++) {
                             model._graphs[idx]._nodes[jdx]['_subgraphIdx'] = idx;
-                            if(builtinOperatorType[model._graphs[idx]._nodes[jdx]._type.name.toUpperCase()] === undefined){
+                            if (model._graphs[idx]._nodes[jdx]._type?.category === 'custom') {
                                 model._graphs[idx]._nodes[jdx]._isCustom = true;
                                 vscode.postMessage({
-                                    command: "customType",
-                                    data:{
+                                    command: 'customType',
+                                    data: {
                                         _subgraphIdx: idx,
                                         _nodeIdx: jdx,
                                     }
@@ -1133,6 +1124,7 @@ view.View = class {
                     this._host._viewingNode = null;
                 });
                 const content = modelSidebar.render();
+                this._host._viewingNode = null;
                 this._sidebar.open(content, 'Model Properties');
             } catch (error) {
                 const content = ' in \'' + this._model.identifier + '\'.';
@@ -1230,6 +1222,7 @@ view.View = class {
                 this._host.openURL(e.link);
             });
             const title = type.type === 'function' ? 'Function' : 'Documentation';
+            this._host._viewingNode = null;
             this._sidebar.push(documentationSidebar.render(), title);
         }
     }
