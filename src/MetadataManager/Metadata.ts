@@ -180,8 +180,10 @@ export class Metadata {
     await Metadata.setObj(hash, metaObj);
   }
 
-  // NOTE enable does not seem necessary because eventmanager does not call it.
-  //    When it's clear, this will be deleted.
-  // public static async enable(uri: vscode.Uri, hash: string) {
-  // }
+  public static async getInfo(uri: vscode.Uri, hash: string) {
+    const metaEntry = await Metadata.getEntry(uri, hash);
+    const info: any = {};
+    info[metaEntry['name']] = metaEntry;
+    return info;
+  }
 }
