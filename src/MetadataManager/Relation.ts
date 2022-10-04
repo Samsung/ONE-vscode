@@ -155,13 +155,24 @@ export class Relation {
 
     relationInfos.selected = nowHash;
 
+    if (relJSON[nowHash] === undefined) {
+      relationInfos['relation-data'].push({
+        'id': nowHash,
+        'parent': '',
+        'represent-idx': 0,
+        'data-list': Relation._getNodeDataList(nowMetadata)
+      });
+      console.log('getRelationInfo');
+      console.log(relationInfos);
+      return relationInfos;
+    }
+
     relationInfos['relation-data'].push({
       'id': nowHash,
       'parent': relJSON[nowHash].parent,
       'represent-idx': 0,
       'data-list': Relation._getNodeDataList(nowMetadata)
     });
-
 
     // find parents node
     let parentHash: string = relJSON[nowHash].parent;
