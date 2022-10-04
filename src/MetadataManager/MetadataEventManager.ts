@@ -73,11 +73,11 @@ class MetadataEventBuffer {
   constructor() {}
   public setEvent(request: any, input: {[key: string]: any}) {
     this._queue.enqueue(() => {
-      return new Promise(() => {
+      return new Promise(resolve => {
         if (Object.keys(input).length === 0) {
-          request();
+          request().then((res: any) => resolve(res));
         } else {
-          request(input);
+          request(input).then((res: any) => resolve(res));
         }
       });
     }, input);
@@ -88,13 +88,13 @@ class MetadataEventBuffer {
 /* istanbul ignore next */
 export class MetadataEventManager {
   private fileWatcher = vscode.workspace.createFileSystemWatcher(`**/*`);  // glob pattern
-  private eventBuffer = new MetadataEventBuffer();
+  public static eventBuffer = new MetadataEventBuffer();
+  public static didCreateUri: vscode.Uri|undefined = undefined;
 
   /**
    * Communicates among events
    * didCreateUri : communicates created file uri to delete event when file is renamed/moved.
    */
-  public static didCreateUri: vscode.Uri|undefined = undefined;
 
   public static register(context: vscode.ExtensionContext) {
     let workspaceRoot: vscode.Uri|undefined = undefined;
@@ -118,9 +118,14 @@ export class MetadataEventManager {
     const manager = new MetadataEventManager();
 
     let registrations = [
-      manager.fileWatcher.onDidChange(async uri => {
-        manager.eventBuffer.setEvent(manager.changeFileEvent, {'uri': uri});
-      }),
+      manager.fileWatcher.onDidChange(
+          async () => {
+              // TO BE IMPLEMENTED.
+          }),
+      vscode.workspace.onDidDeleteFiles(
+          async () => {
+              // TO BE IMPLEMENTED.
+          }),
       manager.fileWatcher.onDidDelete(
           async () => {
               // TO BE IMPLEMENTED.
@@ -136,7 +141,7 @@ export class MetadataEventManager {
   }
 
   async resetDidCreateUri() {
-    // TO BE IMPLEMENTED.
+    MetadataEventManager.didCreateUri = undefined;
   }
 
   async changeFileEvent(_input: {[key: string]: any}): Promise<void> {
@@ -147,7 +152,7 @@ export class MetadataEventManager {
     // TO BE IMPLEMENTED
   }
 
-  async createFileEvent(_input: {[key: string]: any}) {
+  public static async createFileEvent(_input: {[key: string]: any}) {
     // TO BE IMPLEMENTED
   }
 
@@ -155,13 +160,13 @@ export class MetadataEventManager {
     // TO BE IMPLEMENTED
   }
 
-  async deleteFileEvent(_input: {[key: string]: any}) {
+  public static async deleteFileEvent(_input: {[key: string]: any}) {
     // TO BE IMPLEMENTED
   }
   async moveDirEvent(_input: {[key: string]: any}) {
     // TO BE IMPLEMENTED
   }
-  async moveFileEvent(_input: {[key: string]: any}) {
+  public static async moveFileEvent(_input: {[key: string]: any}) {
     // TO BE IMPLEMENTED
   }
 }
