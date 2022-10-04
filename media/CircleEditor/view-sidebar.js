@@ -945,7 +945,6 @@ class NodeAttributeView {
             this._attribute._name = input.value;
             this._attribute._type = this._select.value;
         }
-        this._attribute._value = this._line.value;
 
         while (this._element.childElementCount) {
             this._element.removeChild(this._element.lastChild);
