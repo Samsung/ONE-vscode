@@ -91,10 +91,6 @@ export class MetadataEventManager {
   public static eventBuffer = new MetadataEventBuffer();
   public static didCreateUri: vscode.Uri|undefined = undefined;
 
-  /**
-   * Communicates among events
-   * didCreateUri : communicates created file uri to delete event when file is renamed/moved.
-   */
 
   public static register(context: vscode.ExtensionContext) {
     let workspaceRoot: vscode.Uri|undefined = undefined;
