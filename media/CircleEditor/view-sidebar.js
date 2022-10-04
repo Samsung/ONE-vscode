@@ -1668,7 +1668,7 @@ sidebar.ArgumentView = class {
         const originalArr = this.removeBracket(this._argument._initializer.toString()); //---> 파일 이동 후 원본데이터 가져오면 주석 해제해서 쓰기
     
         /* compare changed elements and update data */
-        const types = ['float32', 'float16', 'int32', 'uint8', 'int64', 'string', 'bool', 'int16',
+        const types = ['float32', 'float16', 'int32', 'uint8', 'int64', 'string', 'boolean', 'int16',
             'complex64', 'int8', 'float64', 'complex128', 'uint64', 'resource', 'variant', 'uint32'];
         if (currentType === 'string') {
             this.changeBufferType("string", modified, shape);
@@ -1687,7 +1687,7 @@ sidebar.ArgumentView = class {
             return;
         }
 
-        const types = ['float32', 'float16', 'int32', 'uint8', 'int64', 'string', 'bool', 'int16',
+        const types = ['float32', 'float16', 'int32', 'uint8', 'int64', 'string', 'boolean', 'int16',
             'complex64', 'int8', 'float64', 'complex128', 'uint64', 'resource', 'variant', 'uint32'];
         
         // 0:float, 1:int, 2:uint, 3:string, 4:boolean, 5:complex, 6:resource, 7:variant
