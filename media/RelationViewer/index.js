@@ -31,7 +31,7 @@ window.addEventListener('message', (event) => {
   const message = event.data;
   const selected = message.payload['selected'];
   const relationData = message.payload['relation-data'];
-
+  
   getSelectedFileInfo(selected, relationData);
 
   switch (message.type) {
@@ -230,8 +230,8 @@ function attachTree(relationData) {
       const dataList = g.__data__.data['data-list'];
 
       for (let idx = 0; idx < dataList.length; idx++) {
-        if (idx !== g.__data__.data['represent-idx']) {
-          const data = dataList[idx];
+        const data = dataList[idx];
+        if (idx !== g.__data__.data['represent-idx'] && !data['is-deleted']) {
           for (const key in data) {
             if (key === 'name') {
               // add a dividing line

@@ -162,8 +162,6 @@ export class Relation {
         'represent-idx': 0,
         'data-list': Relation._getNodeDataList(nowMetadata)
       });
-      console.log('getRelationInfo');
-      console.log(relationInfos);
       return relationInfos;
     }
 

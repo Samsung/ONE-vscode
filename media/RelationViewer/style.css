@@ -250,6 +250,7 @@ svg {
 .plus-button-context-menu {
   display: none;
   position: absolute;
+  overflow: scroll;
   width: 250px;
   max-height: 300px;
   border: 1px solid black;
@@ -259,6 +260,10 @@ svg {
   border-radius: 10px;
   padding-top: 10px;
   padding-bottom: 10px;
+}
+
+.plus-button-context-menu::-webkit-scrollbar {
+  display: none;
 }
 
 .plus-button-context-menu-info {

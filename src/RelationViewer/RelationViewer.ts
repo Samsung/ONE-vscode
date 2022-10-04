@@ -21,7 +21,6 @@ import {Balloon} from '../Utils/Balloon';
 import {getNonce} from '../Utils/external/Nonce';
 import {getUri} from '../Utils/external/Uri';
 import {obtainWorkspaceRoot} from '../Utils/Helpers';
-import {getRelationData} from './example/RelationExample';
 
 /* istanbul ignore next */
 export class RelationViewer {
@@ -87,31 +86,32 @@ export class RelationViewer {
   private registerEventHandlers(panel: vscode.WebviewPanel) {
     // Handle messages from the webview
     this._webview.onDidReceiveMessage(message => {
-      let payload;
       let fileUri: vscode.Uri;
       let viewType: string = 'default';
       switch (message.type) {
         case 'update':
           fileUri = vscode.Uri.file(obtainWorkspaceRoot() + '/' + message.path);
-          payload = Relation.getRelationInfo(fileUri);
-          if (!payload) {
-            return Balloon.error('Invalid File Path, please check if file exists.', false);
-          }
-          panel.webview.postMessage({
-            type: 'update',
-            payload: payload,
-            historyList: message.historyList,
-            isOpenHistoryBox: message.isOpenHistoryBox
+          Relation.getRelationInfo(fileUri).then(payload => {
+            if (!payload) {
+              return Balloon.error('Invalid File Path, please check if file exists.', false);
+            }
+            panel.webview.postMessage({
+              type: 'update',
+              payload: payload,
+              historyList: message.historyList,
+              isOpenHistoryBox: message.isOpenHistoryBox
+            });
           });
           break;
         case 'history':
           fileUri = vscode.Uri.file(obtainWorkspaceRoot() + '/' + message.path);
-          payload = Relation.getRelationInfo(fileUri);
-          if (!payload) {
-            return Balloon.error('Invalid File Path, please check if file exists.', false);
-          }
-          panel.webview.postMessage(
-              {type: 'history', payload: payload, historyList: message.historyList});
+          Relation.getRelationInfo(fileUri).then(payload => {
+            if (!payload) {
+              return Balloon.error('Invalid File Path, please check if file exists.', false);
+            }
+            panel.webview.postMessage(
+                {type: 'history', payload: payload, historyList: message.historyList});
+          });
           break;
         case 'showMetadata':
           fileUri = vscode.Uri.file(obtainWorkspaceRoot() + '/' + message.path);
