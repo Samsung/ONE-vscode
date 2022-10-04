@@ -1434,7 +1434,7 @@ sidebar.ArgumentView = class {
     }
 
     save(){
-        const type = this._select.value.toLowerCase();
+        const currentType = this._select.value.toLowerCase();
 
         if (!this.check()) {
             vscode.postMessage({
@@ -1447,22 +1447,29 @@ sidebar.ArgumentView = class {
         let shape = this._shape.value;
         shape = '{ "data": [' + shape + '] }';
         shape = JSON.parse(shape).data;
+        
+        const originalString = this._argument._initializer.toString();
+        const currentString = this._data.value;
 
-        this._editObject._arguments._isChanged = true;
+        if (originalString === currentString) {
+            this._editObject._arguments._isChanged = false;
+        } else {
+            this._editObject._arguments._isChanged = true;
+        }
 
-        if (this._argument._initializer) {
+        if (this._argument._initializer && this._editObject._arguments._isChanged) {
             let data;
             if (this._data) {
                 data = this._data.value;
             }
             
-            const currentType = this._argument._type.dataType;
+            const originalType = this._argument._type.dataType;
             
             let result;
-            if (data && type === currentType && shape === this._argument._type._shape._dimensions ) {
-                result = this.editBuffer(data, type, shape);
+            if (data && currentType === originalType && shape === this._argument._type._shape._dimensions ) {
+                result = this.editBuffer(data, currentType, shape);
             } else if (data) {
-                result = this.changeBufferType(type, data, shape);
+                result = this.changeBufferType(currentType, data, shape);
             }
 
             if (!result) {
@@ -1473,16 +1480,14 @@ sidebar.ArgumentView = class {
                 return;
             }
         } else {
-            this._editObject._arguments._isChanged = false;
+            this._editObject._arguments._initializer = null;
         }
 
-        this._editObject._arguments._type._dataType = type;
-        
+        this._editObject._arguments._type._dataType = currentType;
         this._editObject._arguments._type._shape._dimensions = shape;
-        const name = this._argument.name.split('\n');
+
         const nameValue = this._element.childNodes[2].lastChild.value;
-        name[0] = nameValue;
-        this._editObject._arguments._name = name[0];
+        this._editObject._arguments._name = nameValue;
 
         if (this._isCustom === true) {
             const input = this._host.document.getElementById(this._title + this._index);
@@ -1511,8 +1516,8 @@ sidebar.ArgumentView = class {
     }
 
     check(){
-        for(const ch of this._shape.value){
-            if(ch !== ',' && (ch>'9' || ch < '0')){
+        for (const ch of this._shape.value) {
+            if (ch !== ',' && (ch > '9' || ch < '0')) {
                 return false;
             }
         }
@@ -1520,8 +1525,8 @@ sidebar.ArgumentView = class {
     }
     
     compareData(bufferArr, originalArr, original, type) {
-    
-        for (let i = 0; i < originalArr.length; i++) {
+        let dataLength = type === 4 ? bufferArr.length * 2 : bufferArr.length;
+        for (let i = 0; i < dataLength; i++) {
     
             /* compare string formatted buffer data */
             if (originalArr[i] !== bufferArr[i]) {
@@ -1553,9 +1558,9 @@ sidebar.ArgumentView = class {
                         original[i] = view.getUint8(0);
                         break;
                     case 4: // int64
-                        view.setBigInt64(0, BigInt(parseInt(bufferArr[i])), true);
-                        for (let j = 0; j < 8; j++) {
-                            original[i * 8 + j] = view.getUint8(j);
+                        view.setInt32(0, parseInt(bufferArr[i]), true);
+                        for (let j = 0; j < 4; j++) {
+                            original[i * 4 + j] = view.getUint8(j);
                         }
                         break;
                     case 5: // string
@@ -1617,16 +1622,20 @@ sidebar.ArgumentView = class {
     }
     
     removeBracket(buffer) {
-        var str = buffer;
+        let str = buffer;
         str = str.replace(/\[/g, "");
         str = str.replace(/\]/g, "");
         str = str.replace(/\n/g, "");
         str = str.replace(/ /g, "");
+        str = str.replace(/\{/g, "");
+        str = str.replace(/\}/g, "");
+        str = str.replace(/"/g, "");
+        str = str.replace(/low | high/g, "");
         const arr = str.split(",");
         return arr;
     }
     
-    validationCheck(modified, shape) {
+    validationCheck(modified, shape, type) {
         /* data validation - bracket check */
         const stack = [];
         for (let i = 0; i < modified.length; i++) {
@@ -1652,27 +1661,31 @@ sidebar.ArgumentView = class {
 
 
         /* data validation - shape count */ 
-        var shapeCnt = 1;
+        let shapeCnt = 1;
         for (let i = 0; i < shape.length; i++) {
             shapeCnt *= shape[i];
+        }
+        if (type === 'int64') {
+            shapeCnt *= 2;
         }
         if (modifiedArr.length !== shapeCnt) {
             // alert(error! Shape and data count does not match);
             return;
-        }
+        } 
 
         return modifiedArr;
     }
     
     /* buffer data modified - type change NOT allowed simultaneously */
     editBuffer(modified, currentType, shape) {
-        const modifiedArr = this.validationCheck(modified, shape);
+        const modifiedArr = this.validationCheck(modified, shape, currentType);
 
         if (!modifiedArr) {
+            vscode.postMessage({ command: 'alert', text: 'Validation Error!'});
             return;
         }
     
-        const originalArr = this.removeBracket(this._argument._initializer.toString()); //---> 파일 이동 후 원본데이터 가져오면 주석 해제해서 쓰기
+        const originalArr = this.removeBracket(this._argument._initializer.toString());
     
         /* compare changed elements and update data */
         const types = ['float32', 'float16', 'int32', 'uint8', 'int64', 'string', 'boolean', 'int16',
@@ -1682,13 +1695,12 @@ sidebar.ArgumentView = class {
         } else {
             this.compareData(modifiedArr, originalArr, this._editObject._arguments._initializer._data, types.indexOf(currentType.toLowerCase()));
         }
-        return 1;
     }
     
     /* buffer type modified - data change NOT detected */
     changeBufferType(newType, modified, shape) {
         // original =  textarea.value
-        const modifiedArr = this.validationCheck(modified, shape); //---> 파일 이동 후 원본데이터 가져오면 주석 해제해서 쓰기
+        const modifiedArr = this.validationCheck(modified, shape, newType);
         
         if (!modifiedArr) {
             return;
@@ -1699,7 +1711,7 @@ sidebar.ArgumentView = class {
         
         // 0:float, 1:int, 2:uint, 3:string, 4:boolean, 5:complex, 6:resource, 7:variant
         const typeclass = [0, 0, 1, 2, 1, 3, 4, 1, 5, 1, 0, 5, 2, 6, 7, 2];
-        const bits = [32, 16, 32, 8, 64, 0, 8, 16, 64, 8, 64, 128, 64, 0, 0, 32];
+        const bits = [32, 16, 32, 8, 32, 0, 8, 16, 64, 8, 64, 128, 64, 0, 0, 32];
     
         const buffer = new ArrayBuffer(8);
         const view = new DataView(buffer);
@@ -1754,10 +1766,8 @@ sidebar.ArgumentView = class {
                         view.setInt8(0, data, true);
                     } else if (bits[newTypeIndex] === 16) { // int16
                         view.setInt16(0, data, true);
-                    } else if (bits[newTypeIndex] === 32) { // int32
+                    } else if (bits[newTypeIndex] === 32) { // int32, int64
                         view.setInt32(0, data, true);
-                    } else if (bits[newTypeIndex] === 64) { // int64
-                        view.setBigInt64(0, BigInt(parseInt(String(data))), true);
                     }
                 } else { // uint
                     if (data < 0) {
