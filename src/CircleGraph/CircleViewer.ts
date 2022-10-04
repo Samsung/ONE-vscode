@@ -75,7 +75,7 @@ export class CircleViewerDocument implements vscode.CustomDocument {
 
   public openView(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
     let view = new CircleViewer(panel, extensionUri);
-    view.initGraphCtrl(this.uri.path, undefined);
+    view.initGraphCtrl(this.uri.fsPath, undefined);
     view.loadContent();
     this._circleViewer.push(view);
 
