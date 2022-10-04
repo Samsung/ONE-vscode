@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+import * as flatbuffers from 'flatbuffers';
 import * as fs from 'fs';
 import * as vscode from 'vscode';
 
 import {ToolchainInfo} from '../Backend/Toolchain';
+import * as Circle from '../CircleEditor/circle_schema_generated';
 import {obtainWorkspaceRoot} from '../Utils/Helpers';
 
 import {isOneExplorerTargetFile} from '../Utils/Helpers';
@@ -53,6 +55,21 @@ export class BuildInfo {
   }
 }
 
+export class Operator {
+  public static async get(uri: vscode.Uri) {
+    if (!uri.fsPath.endsWith('.circle')) {
+      return [];
+    }
+    const bytes = new Uint8Array(await vscode.workspace.fs.readFile(uri));
+    const buf = new flatbuffers.ByteBuffer(bytes);
+    const model = Circle.Model.getRootAsModel(buf).unpack();
+    const operators = model.operatorCodes.map((operator) => {
+      Circle.BuiltinOperator[operator.deprecatedBuiltinCode];
+    });
+    return operators;
+  }
+}
+
 export class Metadata {
   constructor() {}
 
@@ -73,7 +90,6 @@ export class Metadata {
   }
 
   public static async setObj(hash: string, obj: object) {
-    console.log('setObj');
     const workspaceroot = obtainWorkspaceRoot();
     const jsonUri = vscode.Uri.joinPath(
         vscode.Uri.file(workspaceroot),
@@ -170,9 +186,4 @@ export class Metadata {
     info[metaEntry['name']] = metaEntry;
     return info;
   }
-
-  // NOTE enable does not seem necessary because eventmanager does not call it.
-  //    When it's clear, this will be deleted.
-  // public static async enable(uri: vscode.Uri, hash: string) {
-  // }
 }
