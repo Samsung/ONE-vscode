@@ -89,6 +89,7 @@ class MetadataEventBuffer {
 export class MetadataEventManager {
   private fileWatcher = vscode.workspace.createFileSystemWatcher(`**/*`);  // glob pattern
   public static eventBuffer = new MetadataEventBuffer();
+  // Used to communicate between events when file is renamed or moved
   public static didCreateUri: vscode.Uri|undefined = undefined;
 
 
