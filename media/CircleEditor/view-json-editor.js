@@ -568,7 +568,7 @@ jsonEditor.Converter = class {
         break;
       case 15:
         if(num < 0) { return; }
-        view.setUInt32(0, num, true);
+        view.setUint32(0, num, true);
         break;
     }
 

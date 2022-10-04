@@ -920,21 +920,32 @@ class NodeAttributeView {
     }
 
     save(){
-        let value;
-        if(this._isCustom === true){
-            value = this._line.value;
+        if (this._attribute._type === 'int32') {
+            if(this._line.value - 0 > 2147483648) {
+                vscode.postMessage({
+                    command : 'alert',
+                    text: 'Can\'t exceed 2,147,483,648'
+                });
+                return;
+            }
         }
-        else{
-            value = this._line.value;
-        }
-        this._attribute._value = value;
-        
-        if(this._isCustom === true){
+
+        if (this._isCustom === true) {
             const input = this._host.document.getElementById('attribute' + this._index);
+            if (this._select.value === 'int') {
+                if (this._line.value - 0 > 2147483648) {
+                    vscode.postMessage({
+                        command : 'alert',
+                        text: 'Can\'t exceed 2,147,483,648'
+                    });
+                    return;
+                }
+            }
             input.disabled = true;
             this._attribute._name = input.value;
             this._attribute._type = this._select.value;
         }
+        this._attribute._value = this._line.value;
 
         while (this._element.childElementCount) {
             this._element.removeChild(this._element.lastChild);
@@ -942,7 +953,7 @@ class NodeAttributeView {
 
         if (!this._isCustom) {
             this._editObject._attribute.name = this._attribute.name;
-            this._editObject._attribute._value = value;
+            this._editObject._attribute._value = this._line.value;
             this._editObject._attribute._type = this._attribute.type;
         } else {
             this.makeEditCustomObject();
@@ -1666,7 +1677,7 @@ sidebar.ArgumentView = class {
         const originalArr = this.removeBracket(this._argument._initializer.toString()); //---> 파일 이동 후 원본데이터 가져오면 주석 해제해서 쓰기
     
         /* compare changed elements and update data */
-        const types = ['float32', 'float16', 'int32', 'uint8', 'int64', 'string', 'bool', 'int16',
+        const types = ['float32', 'float16', 'int32', 'uint8', 'int64', 'string', 'boolean', 'int16',
             'complex64', 'int8', 'float64', 'complex128', 'uint64', 'resource', 'variant', 'uint32'];
         if (currentType === 'string') {
             this.changeBufferType("string", modified, shape);
@@ -1685,7 +1696,7 @@ sidebar.ArgumentView = class {
             return;
         }
 
-        const types = ['float32', 'float16', 'int32', 'uint8', 'int64', 'string', 'bool', 'int16',
+        const types = ['float32', 'float16', 'int32', 'uint8', 'int64', 'string', 'boolean', 'int16',
             'complex64', 'int8', 'float64', 'complex128', 'uint64', 'resource', 'variant', 'uint32'];
         
         // 0:float, 1:int, 2:uint, 3:string, 4:boolean, 5:complex, 6:resource, 7:variant
