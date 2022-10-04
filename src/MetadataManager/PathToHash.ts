@@ -82,6 +82,7 @@ class MetadataSynchronizer {
 export class PathToHash {
   private static _instance: PathToHash;
   private _map: any;
+  public static startFlag:boolean=false;
 
   private constructor() {}
 
@@ -89,6 +90,7 @@ export class PathToHash {
     if (!this._instance) {
       this._instance = new PathToHash();
       this._instance._map = await this._instance.init();
+      PathToHash.startFlag=true;
     }
     console.log('pathtohash 완성');
     return this._instance;

@@ -34,7 +34,9 @@ class MetadataEventQueue {
 
   enqueue(method: any, input: {[key: string]: any}): void {
     this.queue.push({method: method, input: input});
-    this.autoAction();
+    if(PathToHash.startFlag){
+      this.autoAction();
+    }
   }
 
   front() {
@@ -71,6 +73,10 @@ class MetadataEventQueue {
       this.action();
     }
   }
+
+  start(){
+    this.autoAction();
+  }
 }
 
 class MetadataEventBuffer {
@@ -86,6 +92,10 @@ class MetadataEventBuffer {
         }
       });
     }, input);
+  }
+  
+  public startQueue(){
+    this._queue.start();
   }
 }
 
@@ -150,6 +160,7 @@ export class MetadataEventManager {
       manager.fileWatcher.onDidDelete(async uri => {
         const toUri = MetadataEventManager.didCreateUri;
         const pathToHash = await PathToHash.getInstance();
+        console.log('event',pathToHash);
         const caseFlag = pathToHash.getHash(uri);
         if (!caseFlag) {
           if (toUri) {
@@ -284,6 +295,7 @@ export class MetadataEventManager {
     const uri = input['uri'];
     const relPath = vscode.workspace.asRelativePath(uri);
     const pathToHash = await PathToHash.getInstance();
+    console.log('create1',pathToHash);
 
     console.log('create!');
     //(1) insert PathToHash

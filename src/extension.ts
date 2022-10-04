@@ -51,13 +51,15 @@ export function activate(context: vscode.ExtensionContext) {
   } else {
     vscode.commands.executeCommand('setContext', 'one:extensionKind', 'Workspace');
   }
+  
+  MetadataEventManager.register(context);
 
   PathToHash.getInstance().then(() => {
-    MetadataEventManager.register(context);
     RelationViewerProvider.register(context);
     MetadataViewerProvider.register(context);
+    MetadataEventManager.eventBuffer.startQueue();
   });
-
+  
 
   OneTreeDataProvider.register(context);
 
