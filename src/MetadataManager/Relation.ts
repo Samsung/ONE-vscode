@@ -143,7 +143,9 @@ export class Relation {
     if (vscode.workspace.workspaceFolders === undefined) {
       return;
     }
-
+    if(!nowHash){
+      return;
+    }
     const relUri =
         vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, '.meta/relation.json');
     const relJSON: any =

@@ -15,7 +15,6 @@
  */
 
 import * as vscode from 'vscode';
-import {PathToHash} from '../MetadataManager/PathToHash';
 import {Relation} from '../MetadataManager/Relation';
 
 import {RelationViewer} from './RelationViewer';

@@ -650,8 +650,10 @@ function setDrawInfoInNode(type, node, rectSizeHeight, waitForDouble) {
             }
           })
       .on('contextmenu',
-          (mouse, d) => {
-            openContextMenu(mouse, d.data['data-list'][d.data['represent-idx']].path);
+          (mouse, node) => {
+            if(!node.data['data-list'][node.data['represent-idx']]['is-deleted']){
+              openContextMenu(mouse, node.data['data-list'][node.data['represent-idx']].path);
+            }
           })
       .on('mouseover',
           (mouse, node) => {
@@ -970,7 +972,9 @@ function drawRect(type, rectSizeWidth, rectSizeHeight, waitForDouble) {
               }, 300);
             }
           })
-      .on('contextmenu', (mouse, d) => {
-        openContextMenu(mouse, d.data['data-list'][d.data['represent-idx']].path);
+      .on('contextmenu', (mouse, node) => {
+        if(!node.data['data-list'][node.data['represent-idx']]['is-deleted']){
+          openContextMenu(mouse, node.data['data-list'][node.data['represent-idx']].path);
+        }
       });
 }
