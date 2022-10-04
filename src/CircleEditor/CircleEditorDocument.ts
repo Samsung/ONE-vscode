@@ -194,7 +194,18 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
           const optionsClass = Object.entries(Types.CodeTobuiltinOptions).find(element => {
             return operator.builtinOptionsType === parseInt(element[0]);
           });
-          if (optionsClass && optionsClass[1]) {
+          if (optionsClass && optionsClass[1] && operator.builtinOptions) {
+			      let tmpBuiltinOptions = new optionsClass[1];
+			      Object.keys(operator.builtinOptions).forEach((element) => {
+              if(!(element in tmpBuiltinOptions)){
+				      	throw new Error;
+			        }
+			      });
+            Object.keys(tmpBuiltinOptions).forEach((element) => {
+              if(operator.builtinOptions && !(element in operator.builtinOptions)){
+				      	throw new Error;
+			        }
+			      });
             operator.builtinOptions = Object.setPrototypeOf(operator.builtinOptions === null ? {} : operator.builtinOptions, optionsClass[1].prototype);
           } else {
             operator.builtinOptions = null;
