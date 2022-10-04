@@ -149,7 +149,7 @@ host.BrowserHost = class {
                 case 'reload':
                     this._msgReload(message);
                     break;
-                // TODO add message listener 'setCustomOpAttrT'
+                    // TODO add message listener 'setCustomOpAttrT'
             }
         });
 
