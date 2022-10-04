@@ -80,7 +80,7 @@ export class Metadata {
 
     const jsonUri = vscode.Uri.joinPath(
         vscode.workspace.workspaceFolders[0].uri,
-        `.meta/hash_objects/${hash.substring(0, 2)}/${hash.substring(2)}.json`);
+        `.one-vscode/info/hash_objects/${hash.substring(0, 2)}/${hash.substring(2)}.json`);
 
     if (fs.existsSync(jsonUri.fsPath)) {
       return JSON.parse(Buffer.from(await vscode.workspace.fs.readFile(jsonUri)).toString());
@@ -93,7 +93,7 @@ export class Metadata {
     const workspaceroot = obtainWorkspaceRoot();
     const jsonUri = vscode.Uri.joinPath(
         vscode.Uri.file(workspaceroot),
-        `.meta/hash_objects/${hash.substring(0, 2)}/${hash.substring(2)}.json`);
+        `.one-vscode/info/hash_objects/${hash.substring(0, 2)}/${hash.substring(2)}.json`);
     await vscode.workspace.fs.writeFile(jsonUri, Buffer.from(JSON.stringify(obj, null, 4), 'utf8'));
   }
 
@@ -111,7 +111,7 @@ export class Metadata {
     const workspaceroot = obtainWorkspaceRoot();
     const jsonUri = vscode.Uri.joinPath(
         vscode.Uri.file(workspaceroot),
-        `.meta/hash_objects/${hash.substring(0, 2)}/${hash.substring(2)}.json`);
+        `.one-vscode/info/hash_objects/${hash.substring(0, 2)}/${hash.substring(2)}.json`);
 
     const relPath = vscode.workspace.asRelativePath(uri);
     const metaObj = await Metadata.getObj(hash);
@@ -153,7 +153,7 @@ export class Metadata {
   }
 
   // NOTE When the deleted file is recovered, metadata is also recovered.
-  //    For that situation, metadata is not deleted but deactivated.
+  // For that situation, metadata is not deleted but deactivated.
   public static async disable(uri: vscode.Uri, hash: string) {
     if (!isOneExplorerTargetFile(uri)) {
       return;
