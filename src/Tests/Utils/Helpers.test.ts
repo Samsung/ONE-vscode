@@ -15,8 +15,9 @@
  */
 
 import {assert} from 'chai';
+import vscode from 'vscode';
 
-import {obtainWorkspaceRoot, RealPath} from '../../Utils/Helpers';
+import {isOneExplorerTargetFile, obtainWorkspaceRoot, RealPath} from '../../Utils/Helpers';
 
 suite('Utils', function() {
   suite('Helpers', function() {
@@ -154,6 +155,27 @@ suite('Utils', function() {
         assert.isFalse(RealPath.exists(undefined));
         assert.isFalse(RealPath.exists('/dummy/not/exist'));
         assert.isTrue(RealPath.exists('/'));
+      });
+    });
+
+    suite('#isOneExplorerTargetFile()', function() {
+      test('check if it is target file of OneExplorer', function() {
+        assert.isTrue(isOneExplorerTargetFile(vscode.Uri.file('test.pb')));
+        assert.isTrue(isOneExplorerTargetFile(vscode.Uri.file('test.onnx')));
+        assert.isTrue(isOneExplorerTargetFile(vscode.Uri.file('test.tflite')));
+        assert.isTrue(isOneExplorerTargetFile(vscode.Uri.file('test.circle')));
+        assert.isTrue(isOneExplorerTargetFile(vscode.Uri.file('test.cfg')));
+        assert.isTrue(isOneExplorerTargetFile(vscode.Uri.file('test.log')));
+        assert.isFalse(isOneExplorerTargetFile(vscode.Uri.file('test.any')));
+      });
+      test('NEG: check empty path', function() {
+        assert.isFalse(isOneExplorerTargetFile(vscode.Uri.file('')));
+      });
+      test('NEG: check directory', function() {
+        assert.isFalse(isOneExplorerTargetFile(vscode.Uri.file('.onnx/')));
+      });
+      test('NEG: check a file without ext', function() {
+        assert.isFalse(isOneExplorerTargetFile(vscode.Uri.file('onnx')));
       });
     });
   });
