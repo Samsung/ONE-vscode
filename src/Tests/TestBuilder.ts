@@ -128,8 +128,6 @@ export class TestBuilder {
     } catch (e) {
       // Do not throw to proceed the test
       console.error('Cannot remove the test directory');
-    } finally {
-      console.log(`Removed ${TestBuilder.tempDir} and ${TestBuilder.tempDir}.`);
     }
   }
 }
