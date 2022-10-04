@@ -37,6 +37,11 @@ If you want to compile your model into a code for, e.g., a specific model of NPU
 
 Backend extension should be installed _after_ installing ONE-vscode extension.
 
+### Use ONE-vscode without any backend extension
+ONE-vscode supports `ONE` backend by default. This requires [Docker Installation](https://docs.docker.com/desktop/install/ubuntu/) and [root privileges](https://docs.docker.com/engine/install/linux-postinstall/). However it supports only basic compilation. If you want to compile for a specific hardware model, please install backend extensions.
+
+<img src="./OneToolchain.jpg" width=1000/>
+
 ### Build from source
 
 For developers who want to build the latest extension file by themselves, read [How To Build From Source](./HowToBuildFromSource.md) document.
