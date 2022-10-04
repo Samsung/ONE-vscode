@@ -149,8 +149,8 @@ host.BrowserHost = class {
                 case 'reload':
                     this._msgReload(message);
                     break;
-                case 'customType':
-                    this._msgGetType(message);
+                case 'getCustomOpAttrT':
+                    this._msgGetCustomOpAttrT(message);
                     break;
             }
         });
@@ -543,9 +543,9 @@ host.BrowserHost = class {
         vscode.postMessage({command: 'loadmodel', offset: '0'});
     }
 
-    _msgGetType(message) {
+    _msgGetCustomOpAttrT(message) {
         const data = message.data;
-        const graphs = data._view._model._graphs;
+        const graphs = this._view._model._graphs;
         const types = data._type;
         const node = graphs[data._subgraphIdx]._nodes[data._nodeIdx];
         for (const key of Object.keys(types)) {

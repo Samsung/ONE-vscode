@@ -832,7 +832,7 @@ view.View = class {
                             if (model._graphs[idx]._nodes[jdx]._type?.category === 'custom') {
                                 model._graphs[idx]._nodes[jdx]._isCustom = true;
                                 vscode.postMessage({
-                                    command: 'customType',
+                                    command: 'getCustomOpAttrT',
                                     data: {
                                         _subgraphIdx: idx,
                                         _nodeIdx: jdx,
