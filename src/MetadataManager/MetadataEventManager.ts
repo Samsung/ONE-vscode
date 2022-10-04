@@ -35,6 +35,7 @@ class MetadataEventQueue {
   front() {
     return this.queue[0];
   }
+  
   dequeue() {
     this.queue.shift();
   }
