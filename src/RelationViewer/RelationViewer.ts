@@ -15,6 +15,7 @@
  */
 
 import * as vscode from 'vscode';
+import { Relation } from '../MetadataManager/Relation';
 import { MetadataViewerProvider } from '../MetadataViewer/MetadataViewerProvider';
 import {Balloon} from '../Utils/Balloon';
 import {getNonce} from '../Utils/external/Nonce';
@@ -91,8 +92,8 @@ export class RelationViewer {
       let viewType: string = 'default';
       switch (message.type) {
         case 'update':
-          // fileUri = vscode.Uri.file(obtainWorkspaceRoot() + '/' + message.path);
-          payload = getRelationData(message.path);
+          fileUri = vscode.Uri.file(obtainWorkspaceRoot() + '/' + message.path);
+          payload = Relation.getRelationInfo(fileUri);
           if (!payload) {
             return Balloon.error('Invalid File Path, please check if file exists.', false);
           }
@@ -104,8 +105,8 @@ export class RelationViewer {
           });
           break;
         case 'history':
-          // fileUri = vscode.Uri.file(obtainWorkspaceRoot() + '/' + message.path);
-          payload = getRelationData(message.path);
+          fileUri = vscode.Uri.file(obtainWorkspaceRoot() + '/' + message.path);
+          payload = Relation.getRelationInfo(fileUri);
           if (!payload) {
             return Balloon.error('Invalid File Path, please check if file exists.', false);
           }

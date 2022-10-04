@@ -15,6 +15,7 @@
  */
 
 import * as vscode from 'vscode';
+import { Relation } from '../MetadataManager/Relation';
 
 import {getRelationData} from './example/RelationExample';
 import {RelationViewer} from './RelationViewer';
@@ -55,7 +56,7 @@ export class RelationViewerDocument implements vscode.CustomDocument {
     view.loadContent();
     this._relationViewer.push(view);
 
-    const payload = getRelationData(fileUri);
+    const payload = Relation.getRelationInfo(fileUri);
 
     // Send a message the relation data to the web view
     panel.webview.postMessage({type: 'create', payload: payload});
