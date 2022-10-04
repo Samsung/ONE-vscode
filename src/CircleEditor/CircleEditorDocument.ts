@@ -7,6 +7,10 @@ import * as flexbuffers from 'flatbuffers/js/flexbuffers';
 import * as Types from './CircleType';
 import { CircleException } from "./CircleEditorException";
 
+(BigInt.prototype as any).toJSON = function () {
+	return this.toString();
+};
+
 /**
  * Custom Editor Document necessary for vscode extension API
  * This class contains model object as _model variable and manages its state when modification is occured.
@@ -150,36 +154,45 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
           if (tensor.quantization) {
             if (tensor.quantization.details) {
               tensor.quantization.details = Object.setPrototypeOf(tensor.quantization?.details, Circle.CustomQuantizationT.prototype);
-            }
+						}
+						tensor.quantization.zeroPoint = tensor.quantization.zeroPoint.map(value => {
+							return BigInt(value);
+						});
             tensor.quantization = Object.setPrototypeOf(tensor.quantization, Circle.QuantizationParametersT.prototype);
           }
           //sparsity parameters
           if(tensor.sparsity) {
             if(tensor.sparsity.dimMetadata){
               tensor.sparsity.dimMetadata = tensor.sparsity.dimMetadata.map((dimMeta: Circle.DimensionMetadataT)=>{
-                if(dimMeta.arraySegmentsType){
+                if(dimMeta.arraySegmentsType && dimMeta.arraySegments){
                   const sparseVectorClass = Object.entries(Types.SparseVector).find(element => {
                     return dimMeta.arraySegmentsType === parseInt(element[0]);
                   });
                   if (sparseVectorClass && sparseVectorClass[1]) {
                     dimMeta.arraySegments = Object.setPrototypeOf(dimMeta.arraySegments === null ? {} : dimMeta.arraySegments, sparseVectorClass[1].prototype);
-                  } else {
-                    dimMeta.arraySegments = null;
                   }
-                }
-                if(dimMeta.arrayIndicesType){
+								} else {
+									dimMeta.arraySegments = null;
+								}
+                if(dimMeta.arrayIndicesType && dimMeta.arrayIndices){
                   const sparseVectorClass = Object.entries(Types.SparseVector).find(element => {
                     return dimMeta.arrayIndicesType === parseInt(element[0]);
                   });
                   if (sparseVectorClass && sparseVectorClass[1]) {
                     dimMeta.arrayIndices = Object.setPrototypeOf(dimMeta.arrayIndices === null ? {} : dimMeta.arrayIndices, sparseVectorClass[1].prototype);
-				          } else {
-                    dimMeta.arrayIndices = null; 
-				          }
-			          }
+                  }
+								} else {
+									dimMeta.arrayIndices = null; 
+								}
                 return Object.setPrototypeOf(dimMeta, Circle.DimensionMetadataT.prototype);
               });//end map dimMeta
 
+							if (!tensor.sparsity.traversalOrder || !tensor.sparsity.traversalOrder.length) {
+								tensor.sparsity.traversalOrder = [];
+							}
+							if (!tensor.sparsity.blockMap || !tensor.sparsity.blockMap.length) {
+								tensor.sparsity.blockMap = [];
+							}
               Object.setPrototypeOf(tensor.sparsity.dimMetadata,Circle.DimensionMetadataT.prototype);
             }//end if tensor.sparsity.dimMetadata
 
@@ -202,17 +215,17 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
               return operator.builtinOptionsType === parseInt(element[0]);
             });
             if (optionsClass && optionsClass[1] && operator.builtinOptions) {
-			        let tmpBuiltinOptions = new optionsClass[1];
-			        Object.keys(operator.builtinOptions).forEach((element) => {
+              let tmpBuiltinOptions = new optionsClass[1];
+              Object.keys(operator.builtinOptions).forEach((element) => {
                 if(!(element in tmpBuiltinOptions)){
-				      	  throw new Error("Input does not match with declared builtinOptions.");
-			          }
-			        });
+                  throw new Error("Input does not match with declared builtinOptions.");
+                }
+              });
               Object.keys(tmpBuiltinOptions).forEach((element) => {
                 if(operator.builtinOptions && !(element in operator.builtinOptions)){
-				        	throw new Error("Input does not match with declared builtinOptions.");
-			          }
-			        });
+                  throw new Error("Input does not match with declared builtinOptions.");
+                }
+              });
               operator.builtinOptions = Object.setPrototypeOf(operator.builtinOptions === null ? {} : operator.builtinOptions, optionsClass[1].prototype);
             } else {
               operator.builtinOptions = null;
@@ -255,7 +268,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
       this.notifyEdit(oldModelData, newModelData);
 
     } catch (e) {
-      this._model = this.loadModel(oldModelData);
+			this._model = this.loadModel(oldModelData);
       if(e instanceof Error && e.message) {CircleException.exceptionAlert(e.message);}
       else {CircleException.exceptionAlert("invalid model");}
     }
