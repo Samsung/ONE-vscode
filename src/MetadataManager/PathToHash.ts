@@ -209,7 +209,8 @@ export class PathToHash {
         });
       }
     }
-
+    console.log('uri',uri);
+    console.log('files',files);
     return files;
   }
 
