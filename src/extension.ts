@@ -25,6 +25,8 @@ import {MondrianEditorProvider} from './Mondrian/MondrianEditor';
 import {OneTreeDataProvider} from './OneExplorer/OneExplorer';
 import {PartEditorProvider} from './PartEditor/PartEditor';
 import {PartGraphSelPanel} from './PartEditor/PartGraphSelector';
+import {RelationViewerProvider} from './RelationViewer/RelationViewerProvider';
+import {MetadataViewerProvider} from './MetadataViewer/MetadataViewerProvider';
 import {ToolchainProvider} from './Toolchain/ToolchainProvider';
 import {Logger} from './Utils/Logger';
 
@@ -69,6 +71,10 @@ export function activate(context: vscode.ExtensionContext) {
   PartGraphSelPanel.register(context);
 
   CircleViewerProvider.register(context);
+
+  RelationViewerProvider.register(context);
+
+  MetadataViewerProvider.register(context);
 
   // returning backend registration function that will be called by backend extensions
   return backendRegistrationApi();

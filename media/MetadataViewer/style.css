@@ -1,0 +1,130 @@
+/*
+ * Copyright (c) 2022 Samsung Electronics Co., Ltd. All Rights Reserved
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+ body {
+  background-color: #1e1e1e;
+  max-width: 800px;
+  margin-left: 20px;
+}
+
+/* white테마일 때 처리 */
+body.vscode-light {
+  background-color: #e7e7e7;
+}
+
+body.vscode-light .view-item-header {
+  color: #444444;
+}
+
+body.vscode-light .view-item-name {
+  color: #616161;
+}
+
+body.vscode-light .view-item-sub-header {
+  color: #a31515;
+}
+
+body.vscode-light .view-item-value {
+  color: #444444;
+  background-color: white;
+}
+
+.view-item-header {
+  padding: 10px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-size: 20px;
+  font-weight: bold;
+  font-family: sans-serif;
+  color: #e7e7e7;
+}
+
+.view-item-content {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  margin-bottom: 10px;
+}
+
+
+.view-item-value {
+  margin-left: 10px;
+  background-color: #252526;
+  padding: 10px;
+  width: 650px;
+  border-radius: 3px;
+  font-weight: bold;
+}
+
+.view-item-value-list {
+  width: 680px;
+}
+
+.view-item-name {
+  color: #cccccc;
+  min-width: 100px;
+}
+
+.view-item-content {
+  color:#e7e7e7;
+}
+
+.view-item-sub-header {
+  margin-left: 10px;
+  font-size: 16px;
+  color: #d7ba7d;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.view-item-info-content {
+  font-size: 20px;
+  margin-left: 20px;
+  margin-top: 10px;
+}
+
+.view-item-header-box {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.view-item-show-button {
+  font-size: 30px;
+  cursor: pointer;
+}
+
+.view-item-show-button:hover {
+  color: gray;
+}
+
+#cfg-settings-view-item-box {
+  margin-bottom: 30px;
+}
+
+.view-item-content-box {
+  display: block;
+}
+
+.aline-items-baseline {
+  align-items: baseline;
+}
+
+.margin-bottom-border-thin-gray {
+  box-sizing: border-box;
+  border-bottom: solid rgba(0, 0, 0, 0.20);
+  border-width: 0.1px;
+}
