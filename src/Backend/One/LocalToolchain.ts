@@ -85,7 +85,6 @@ class DummyExecutor implements Executor {
 
 class MetadataToolchain extends Toolchain {
   run(_cfg: string): Command {
-    console.log('LocalToolcahin:run');
     // find onecc path (can find only if it is installed from debian pkg)
     let oneccPath = which.sync('onecc', {nothrow: true});
     if (oneccPath === null) {
@@ -94,7 +93,6 @@ class MetadataToolchain extends Toolchain {
     }
 
     const cfgObj = OneStorage.getCfgObj(_cfg);
-    console.log(cfgObj?.rawObj);
     // const slashIdx = _cfg.lastIndexOf('/');
     // const basePath = _cfg.substring(0, slashIdx == -1 ? 0 : slashIdx);
     if (cfgObj) {
@@ -105,7 +103,7 @@ class MetadataToolchain extends Toolchain {
         if (key === 'onecc') {
           for (let [step, isEnabled] of Object.entries(value)) {
             if (isEnabled === 'True') {
-              data[key] = true;
+              data[step] = true;
               // cfgInfo[key] = value;
               enabledSteps.add(step);
             }
@@ -128,8 +126,7 @@ class MetadataToolchain extends Toolchain {
           }
           for (let [k, v] of Object.entries(value)) {
             if (k !== 'input_path' && k !== 'output_path') {
-              // while(k.)
-              data[k.replace(/_/gi, '-')] = v;
+              data[k.replace(/_/gi, '-')] = v === 'True' ? true : v;
             }
           }
         } else {

@@ -17,6 +17,7 @@
 import * as vscode from 'vscode';
 
 import {backendRegistrationApi} from './Backend/API';
+import { LocalToolchain } from './Backend/One/LocalToolchain';
 import {CfgEditorPanel} from './CfgEditor/CfgEditorPanel';
 import {CircleViewerProvider} from './CircleGraph/CircleViewer';
 import {DeviceViewProvider} from './Execute/DeviceViewProvider';
@@ -76,6 +77,7 @@ export function activate(context: vscode.ExtensionContext) {
   CircleViewerProvider.register(context);
 
 
+  backendRegistrationApi().registerBackend(new LocalToolchain());
   // returning backend registration function that will be called by backend extensions
   return backendRegistrationApi();
 }

@@ -75,6 +75,7 @@ export class Relation {
     const pathToHash = await PathToHash.getInstance();
     const hash = await pathToHash.getHash(uri);
     if (hash === undefined || hash === '') {
+      await saveJson('relation', relation);
       return;
     }
 
@@ -147,20 +148,20 @@ export class Relation {
       return;
     }
     const relUri =
-        vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, '.meta/relation.json');
-    const relJSON: any =
-        JSON.parse(Buffer.from(await vscode.workspace.fs.readFile(relUri)).toString());
-
+      vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, '.meta/relation.json');
+    
     // Return Object generation
     const relationInfos: RelationInfo = {'selected': '', 'relation-data': []};
-
     console.log(nowHash);
     console.log('여긴옴');
+    
     // load metadata of target node
     const nowMetadata: any = await Metadata.getObj(nowHash);
     console.log('여긴 왜 안되');
     console.log(nowMetadata);
     let nowIdx = 0;
+    
+    const relJSON: any = await readJson('relation');
 
     let keys = Object.keys(nowMetadata);
     for (let i = 0; i < keys.length; i++) {
@@ -169,7 +170,7 @@ export class Relation {
       }
     }
     relationInfos.selected = nowHash;
-
+    console.log('relJSON', relJSON);
     if (relJSON[nowHash] === undefined) {
       relationInfos['relation-data'].push({
         'id': nowHash,
@@ -195,21 +196,6 @@ export class Relation {
       } else {
         const parentMetadata: any = await Metadata.getObj(parentHash);
 
-        parentMetadata.sort((o1: any, o2: any) => {
-          let o1Rank, o2Rank;
-          if (o1['is-deleted']) {
-            o1Rank = 0;
-          } else {
-            o1Rank = 1;
-          }
-          if (o2['is-deleted']) {
-            o2Rank = 0;
-          } else {
-            o2Rank = 1;
-          }
-
-          return o1Rank - o2Rank;
-        });
         relationInfos['relation-data'].push({
           'id': parentHash,
           'parent': relJSON[parentHash].parent,
@@ -242,7 +228,9 @@ export class Relation {
         childrenHash = hashs;
       }
     }
-
+    
+    console.log('qwewqerqwe');
+    console.log(relationInfos);
     return relationInfos;
   }
 
@@ -282,6 +270,7 @@ async function saveJson(name: string, data: any) {
 }
 
 async function readJson(name: string) {
+  console.log('readJson');
   if (vscode.workspace.workspaceFolders === undefined) {
     return;
   }
@@ -293,5 +282,6 @@ async function readJson(name: string) {
     return {};
   }
   const json: any = JSON.parse(Buffer.from(await vscode.workspace.fs.readFile(uri)).toString());
+  console.log(json);
   return json;
 }
