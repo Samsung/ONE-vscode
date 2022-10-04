@@ -944,6 +944,7 @@ class NodeAttributeView {
             input.disabled = true;
             this._attribute._name = input.value;
             this._attribute._type = this._select.value;
+            this._attribute._value = this._line.value;
         }
 
         while (this._element.childElementCount) {
@@ -957,7 +958,6 @@ class NodeAttributeView {
         } else {
             this.makeEditCustomObject();
         }
-
         vscode.postMessage({
             command: 'edit',
             type: 'attribute',
