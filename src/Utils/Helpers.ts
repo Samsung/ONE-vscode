@@ -135,3 +135,10 @@ export async function saveDirtyDocuments(filepath: string): Promise<boolean> {
     return false;
   }
 }
+
+// TODO Manage target file ext in ONE Explorer
+export function isOneExplorerTargetFile(uri: vscode.Uri): boolean {
+  const path = uri.fsPath;
+  const ends = ['.pb', '.onnx', '.tflite', '.circle', '.cfg', '.log'];
+  return ends.some((x) => path.endsWith(x));
+}
