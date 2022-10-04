@@ -149,9 +149,6 @@ host.BrowserHost = class {
                 case 'reload':
                     this._msgReload(message);
                     break;
-                case 'edit':
-                    this._msgLoadModel(message);
-                    break;
                 case 'customType':
                     this._msgGetType(message);
                     break;
@@ -549,12 +546,12 @@ host.BrowserHost = class {
     _msgGetType(message) {
         const data = message.data;
         const graphs = data._view._model._graphs;
-        const values = data._type;
+        const types = data._type;
         const node = graphs[data._subgraphIdx]._nodes[data._nodeIdx];
-        for (const key of Object.keys(values)) {
+        for (const key of Object.keys(types)) {
             for (let i in node.attributes) {
                 if (node.attributes[i].name === key) {
-                    node.attributes[i]._type = values[key];
+                    node.attributes[i]._type = types[key];
                 }
             }
         }
