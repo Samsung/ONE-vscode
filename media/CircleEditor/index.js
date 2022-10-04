@@ -46,8 +46,7 @@
 
 var host = {};
 
-var vscode = acquireVsCodeApi();
-var builtinOperatorType = builtinOperatorType || {};
+const vscode = acquireVsCodeApi();
 
 const viewMode = {
     viewer: 0,
@@ -150,9 +149,6 @@ host.BrowserHost = class {
                     break;
                 case 'reload':
                     this._msgReload(message);
-                    break;
-                case 'edit':
-                    this._msgLoadModel(message);
                     break;
                 case 'customType':
                     this._msgGetType(message);
@@ -468,13 +464,13 @@ host.BrowserHost = class {
      * if subgraphIdx and nodeIdx aren't null,
      * reload to reflect the modifications
      */
-    _open(file, files, subgraphIdx, nodeIdx) {
+    _open(file, files) {
         this._view.show('welcome spinner');
         const context = new host.BrowserHost.BrowserFileContext(this, file, files);
         context.open()
             .then(() => {
-                return this._view.open(context, subgraphIdx, nodeIdx).then((model) => {
-                    this._view.show(null, nodeIdx);
+                return this._view.open(context).then((model) => {
+                    this._view.show(null);
                     this.document.title = files[0].name;
                     vscode.postMessage({command: 'finishload'});
                     return model;
@@ -499,13 +495,7 @@ host.BrowserHost = class {
             if (offset + length >= total) {
                 // this is the last packet
                 const file1 = new File(this._modelData, this._modelPath, {type: ''});
-                if (this._viewingSubgraph !== null && this._viewingNode !== null) {
-                    this._view._host._open(file1, [file1], this._viewingSubgraph, this._viewingNode);
-                } else if (this._viewingSubgraph !== null) {
-                    this._view._host._open(file1, [file1], this._viewingSubgraph);
-                } else {
-                    this._view._host._open(file1, [file1]);
-                }
+                this._view._host._open(file1, [file1]);
                 this._loadingModelArray = [];
                 this._view.show('default');
 
@@ -525,7 +515,7 @@ host.BrowserHost = class {
         this._view.setSelection(message);
     }
 
-    _msgColorTheme(message) {
+    _msgColorTheme(_message) {
         this._view.updateThemeColor();
         this._view.applyThemeColor();
     }
@@ -562,7 +552,7 @@ host.BrowserHost = class {
         this._document.head.appendChild(style);
     }
 
-    _msgReload(message) {
+    _msgReload(_message) {
         this._modelData = [];
 
         this._view.reset();
@@ -573,12 +563,12 @@ host.BrowserHost = class {
     _msgGetType(message) {
         const data = message.data;
         const graphs = this._view._model._graphs;
-        const values = data._type;
+        const types = data._type;
         const node = graphs[data._subgraphIdx]._nodes[data._nodeIdx];
-        for (const key of Object.keys(values)) {
-            for(let i in node.attributes){
-                if(node.attributes[i].name === key){
-                    node.attributes[i]._type = values[key];
+        for (const key of Object.keys(types)) {
+            for (let i in node.attributes) {
+                if (node.attributes[i].name === key) {
+                    node.attributes[i]._type = types[key];
                 }
             }
         }

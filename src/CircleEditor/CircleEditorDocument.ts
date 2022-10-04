@@ -173,10 +173,10 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
                   });
                   if (sparseVectorClass && sparseVectorClass[1]) {
                     dimMeta.arrayIndices = Object.setPrototypeOf(dimMeta.arrayIndices === null ? {} : dimMeta.arrayIndices, sparseVectorClass[1].prototype);
-				  } else {
+				          } else {
                     dimMeta.arrayIndices = null; 
-				  }
-			    }
+				          }
+			          }
                 return Object.setPrototypeOf(dimMeta, Circle.DimensionMetadataT.prototype);
               });//end map dimMeta
 
@@ -191,19 +191,37 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 
         //operators
         data.operators = data.operators.map((operator: Circle.OperatorT) => {
-          const optionsClass = Object.entries(Types.CodeTobuiltinOptions).find(element => {
-            return operator.builtinOptionsType === parseInt(element[0]);
-          });
-          if (optionsClass && optionsClass[1]) {
-            operator.builtinOptions = Object.setPrototypeOf(operator.builtinOptions === null ? {} : operator.builtinOptions, optionsClass[1].prototype);
-          } else {
-            operator.builtinOptions = null;
+          //case1 : custom operator
+          if(this._model.operatorCodes[operator.opcodeIndex].deprecatedBuiltinCode===32){
+            if(operator.builtinOptionsType || operator.builtinOptions){
+              throw new Error("Custom operator does not need builtin options");
+            }
+          //case2 : builtin operator
+          }else{
+            const optionsClass = Object.entries(Types.CodeTobuiltinOptions).find(element => {
+              return operator.builtinOptionsType === parseInt(element[0]);
+            });
+            if (optionsClass && optionsClass[1] && operator.builtinOptions) {
+			        let tmpBuiltinOptions = new optionsClass[1];
+			        Object.keys(operator.builtinOptions).forEach((element) => {
+                if(!(element in tmpBuiltinOptions)){
+				      	  throw new Error("Input does not match with declared builtinOptions.");
+			          }
+			        });
+              Object.keys(tmpBuiltinOptions).forEach((element) => {
+                if(operator.builtinOptions && !(element in operator.builtinOptions)){
+				        	throw new Error("Input does not match with declared builtinOptions.");
+			          }
+			        });
+              operator.builtinOptions = Object.setPrototypeOf(operator.builtinOptions === null ? {} : operator.builtinOptions, optionsClass[1].prototype);
+            } else {
+              operator.builtinOptions = null;
+            }
           }
           return Object.setPrototypeOf(operator, Circle.OperatorT.prototype);
-        });
-				
+        });//end map operators
         return Object.setPrototypeOf(data, Circle.SubGraphT.prototype);
-      });
+      });//end map subgraphs
 
       // description
       this._model.description = newModel.description;
@@ -238,7 +256,8 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 
     } catch (e) {
       this._model = this.loadModel(oldModelData);
-      CircleException.exceptionAlert("invalid model");
+      if(e instanceof Error && e.message) {CircleException.exceptionAlert(e.message);}
+      else {CircleException.exceptionAlert("invalid model");}
     }
   }
 
