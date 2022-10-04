@@ -829,7 +829,10 @@ view.View = class {
                         model._graphs[idx]['_subgraphIdx'] = idx;
                         for (let jdx = 0; jdx < model.graphs[idx].nodes.length; jdx++) {
                             model._graphs[idx]._nodes[jdx]['_subgraphIdx'] = idx;
-                            // TODO implement getCustomOpAttrT connecting vscode-extension-api
+                            if (model._graphs[idx]._nodes[jdx]._type?.category === 'custom') {
+                                model._graphs[idx]._nodes[jdx]._isCustom = true;
+                                // TODO implements getCustomOpAttrT request
+                            }
                         }
                     }
                     update();

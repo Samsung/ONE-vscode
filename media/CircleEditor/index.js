@@ -149,7 +149,9 @@ host.BrowserHost = class {
                 case 'reload':
                     this._msgReload(message);
                     break;
-                    // TODO add message listener 'setCustomOpAttrT'
+                case 'setCustomOpAttrT':
+                    this._msgSetCustomOpAttrT(message);
+                    break;
             }
         });
 
@@ -541,7 +543,19 @@ host.BrowserHost = class {
         vscode.postMessage({command: 'loadmodel', offset: '0'});
     }
 
-    // TODO add function msgSetCustomOpAttrT
+    _msgSetCustomOpAttrT(message) {
+        const data = message.data;
+        const graphs = this._view._model._graphs;
+        const types = data._type;
+        const node = graphs[data._subgraphIdx]._nodes[data._nodeIdx];
+        for (const key of Object.keys(types)) {
+            for (let i in node.attributes) {
+                if (node.attributes[i].name === key) {
+                    node.attributes[i]._type = types[key];
+                }
+            }
+        }
+    }
 };
 
 host.Dropdown = class {
