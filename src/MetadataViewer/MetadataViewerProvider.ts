@@ -15,8 +15,9 @@
  */
 
 import * as vscode from 'vscode';
+import { Metadata } from '../MetadataManager/Metadata';
+import { PathToHash } from '../MetadataManager/PathToHash';
 
-import {getMetadata} from './example/MetadataExample';
 import {MetadataViewer} from './MetadataViewer';
 
 export class RelationViewerDocument implements vscode.CustomDocument {
@@ -56,11 +57,11 @@ export class RelationViewerDocument implements vscode.CustomDocument {
     view.loadContent();
     this._metadataViwer.push(view);
 
-
-    const seletedMetadata = getMetadata(fileUri);
-
-    // Sends a message to the web view with the metadata.
-    panel.webview.postMessage({command: 'showMetadata', metadata: seletedMetadata});
+    // logic for getting metadata information (using uri argument)
+    getMetadata(fileUri).then((payload: any) => {
+      // send message(metadata information) to the webview
+      panel.webview.postMessage({command:'showMetadata',metadata: payload});
+    });
 
     panel.onDidDispose(() => {
       // TODO make faster
@@ -139,4 +140,11 @@ export class MetadataViewerProvider implements
       _token: vscode.CancellationToken): Promise<void> {
     document.openView(webviewPanel, this._context.extensionUri, document.uri);
   }
+}
+
+async function getMetadata(uri: vscode.Uri) {
+  const instance = await PathToHash.getInstance();
+  const hash = instance.getHash(uri);
+  const entry = await Metadata.getInfo(uri, hash);
+  return entry;
 }
