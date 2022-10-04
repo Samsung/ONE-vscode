@@ -113,8 +113,8 @@ export class TestBuilder {
       fs.mkdirSync(TestBuilder.tempDir, {recursive: true});
       fs.mkdirSync(TestBuilder.workspaceDir, {recursive: true});
     } catch (e) {
+      // Do not throw to proceed the test
       console.error('Cannot create temporal directory for the test');
-      throw e;
     }
   }
 
