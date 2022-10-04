@@ -68,6 +68,24 @@ export class Operator {
     });
     return operators;
   }
+
+  public static async save(metaEntry: any, uri: vscode.Uri) {
+    if (!uri.fsPath.endsWith('.circle')) {
+      return;
+    }
+
+    const stat = fs.statSync(uri.fsPath);
+    const operations: any = {};
+    // TODO deal with large files
+    if (stat.size > 10000) {
+      operations['error-message'] = 'File size is too large';
+    } else {
+      const opInfo = await Operator.get(uri);
+      operations['op-total'] = opInfo.length;
+      operations['ops'] = opInfo;
+    }
+    metaEntry['operations'] = operations;
+  }
 }
 
 export class Metadata {
