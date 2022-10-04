@@ -221,8 +221,6 @@ export class CircleEditorProvider implements vscode.CustomEditorProvider<CircleE
     );
     const codiconUri = getUri(webview, this._context.extensionUri, ['node_modules','@vscode','codicons','dist','codicon.css']);
     let html = fs.readFileSync(htmlUrl.fsPath, { encoding: "utf-8" });
-            
-        console.log(codiconUri);
         
     const nonce = getNonce();
     html = html.replace(/%nonce%/gi, nonce);

@@ -920,17 +920,27 @@ class NodeAttributeView {
     }
 
     save(){
-        let value;
-        if(this._isCustom === true){
-            value = this._line.value;
+        if (this._attribute._type === 'int32') {
+            if(this._line.value - 0 > 2147483648) {
+                vscode.postMessage({
+                    command : 'alert',
+                    text: 'Can\'t exceed 2,147,483,648'
+                });
+                return;
+            }
         }
-        else{
-            value = this._line.value;
-        }
-        this._attribute._value = value;
-        
-        if(this._isCustom === true){
+
+        if (this._isCustom === true) {
             const input = this._host.document.getElementById('attribute' + this._index);
+            if (this._select.value === 'int') {
+                if (this._line.value - 0 > 2147483648) {
+                    vscode.postMessage({
+                        command : 'alert',
+                        text: 'Can\'t exceed 2,147,483,648'
+                    });
+                    return;
+                }
+            }
             input.disabled = true;
             this._attribute._name = input.value;
             this._attribute._type = this._select.value;
@@ -942,7 +952,7 @@ class NodeAttributeView {
 
         if (!this._isCustom) {
             this._editObject._attribute.name = this._attribute.name;
-            this._editObject._attribute._value = value;
+            this._editObject._attribute._value = this._line.value;
             this._editObject._attribute._type = this._attribute.type;
         } else {
             this.makeEditCustomObject();
@@ -1486,8 +1496,6 @@ sidebar.ArgumentView = class {
             type : 'tensor',
             data : this._editObject
         });
-        console.log(this._argument);
-        console.log(this._editObject);
     }
 
     cancel(){
