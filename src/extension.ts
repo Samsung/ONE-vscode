@@ -21,6 +21,7 @@ import {CfgEditorPanel} from './CfgEditor/CfgEditorPanel';
 import {CircleViewerProvider} from './CircleGraph/CircleViewer';
 import {DeviceViewProvider} from './Execute/DeviceViewProvider';
 import {JsonTracerViewerPanel} from './Jsontracer/JsonTracerViewerPanel';
+import {MetadataViewerProvider} from './MetadataViewer/MetadataViewerProvider';
 import {MondrianEditorProvider} from './Mondrian/MondrianEditor';
 import {OneTreeDataProvider} from './OneExplorer/OneExplorer';
 import {PartEditorProvider} from './PartEditor/PartEditor';
@@ -63,6 +64,8 @@ export function activate(context: vscode.ExtensionContext) {
   PartGraphSelPanel.register(context);
 
   CircleViewerProvider.register(context);
+
+  MetadataViewerProvider.register(context);
 
   // returning backend registration function that will be called by backend extensions
   return backendRegistrationApi();
