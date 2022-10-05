@@ -99,16 +99,6 @@
         "priority": "default"
       },
       {
-        "viewType": "one.editor.circle",
-        "displayName": "Circle Editor",
-        "selector": [
-          {
-            "filenamePattern": "*.circle"
-          }
-        ],
-        "priority": "default"
-      },
-      {
         "viewType": "one.editor.jsonTracer",
         "displayName": "Json Tracer",
         "selector": [
