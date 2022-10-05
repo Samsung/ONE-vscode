@@ -131,7 +131,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
       return;
     }
 
-    let responseModelPath = {command: 'loadmodel', type: 'modelpath', value: this._uri.fsPath};
+    let responseModelPath: ResponseModelPath = {command: 'loadmodel', type: 'modelpath', value: this._uri.fsPath};
     this._onDidChangeContent.fire(responseModelPath);
 
     let responseArray = this.modelData.slice(offset, offset + this.packetSize);
