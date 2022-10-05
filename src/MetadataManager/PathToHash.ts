@@ -48,12 +48,14 @@ class MetadataSynchronizer {
   static async deleteMetadata(flattenMap: any) {
     if (vscode.workspace.workspaceFolders === undefined ||
         !fs.existsSync(
-            vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, '.meta/hash_objects')
+
+            vscode.Uri
+                .joinPath(vscode.workspace.workspaceFolders[0].uri, '.one-vscode/info/hash_objects')
                 .fsPath)) {
       return;
     }
-    const baseUri =
-        vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, '.meta/hash_objects');
+    const baseUri = vscode.Uri.joinPath(
+        vscode.workspace.workspaceFolders[0].uri, '.one-vscode/info/hash_objects');
     const files = await vscode.workspace.fs.readDirectory(baseUri);
     for (const file of files) {
       const hashFolderUri = vscode.Uri.joinPath(baseUri, file[0]);
@@ -85,6 +87,7 @@ class MetadataSynchronizer {
 export class PathToHash {
   private static _instance: PathToHash;
   private _map: any;
+  public static startFlag: boolean = false;
 
   private constructor() {}
 
@@ -92,6 +95,7 @@ export class PathToHash {
     if (!this._instance) {
       this._instance = new PathToHash();
       this._instance._map = await this._instance.init();
+      PathToHash.startFlag = true;
     }
     return this._instance;
   }
@@ -121,7 +125,7 @@ export class PathToHash {
             subMap[name] = await generateHash(vscode.Uri.joinPath(uri, '/' + name));
           }
         }
-      } else if (type === vscode.FileType.Directory && name !== '.meta') {
+      } else if (type === vscode.FileType.Directory && name !== '.one-vscode') {
         const temp = await this.scanRecursively(vscode.Uri.joinPath(uri, '/' + name));
         if (temp !== undefined) {
           subMap[name] = temp;
