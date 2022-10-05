@@ -96,9 +96,9 @@ export class RelationViewerProvider implements
           }),
       vscode.commands.registerCommand(
           'one.viewer.relation.showFromOneExplorer',
-          async (uri) => {
+          async (node) => {
             // If the method is executed in the ONE Explorer, change the uri instance.
-            const fileUri = uri.uri;
+            const fileUri = node.uri;
 
             vscode.commands.executeCommand(
                 'vscode.openWith', fileUri, RelationViewerProvider.viewType);

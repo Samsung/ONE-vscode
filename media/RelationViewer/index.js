@@ -342,7 +342,7 @@ function attachTree(relationData) {
   const historyDiv = document.createElement('div');
   historyDiv.style.width = `${historyDivWidth}px`;
   historyDiv.style.height =
-      `${document.getElementsByTagName('svg')[0].getBoundingClientRect().height - 100}px`;
+      `${screen.height * 0.5}px`;
   historyDiv.classList.add('history-main-box');
   relationBox.appendChild(historyDiv);
 
@@ -769,7 +769,15 @@ function plusMinusButtonCreate(type, rectSizeWidth, rectSizeHeight) {
           })
       .text(node => {
         if (node.data['data-list'].length >= 2) {
-          return type === 'minus' ? `-` : '+';
+          let isDeletedCount = 0;
+          for (let index = 0; index < node.data['data-list'].length; index++) {
+            const element = node.data['data-list'][index];
+            isDeletedCount += (element['is-deleted'] ? 1 : 0);
+          }
+          console.log(node.data['data-list'].length,isDeletedCount);
+          if(isDeletedCount !== node.data['data-list'].length - 1){
+            return type === 'minus' ? `-` : '+';
+          }
         }
       })
       .on('click',
