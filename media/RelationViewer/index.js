@@ -341,8 +341,7 @@ function attachTree(relationData) {
   // draw hisory_area
   const historyDiv = document.createElement('div');
   historyDiv.style.width = `${historyDivWidth}px`;
-  historyDiv.style.height =
-      `${screen.height * 0.5}px`;
+  historyDiv.style.height = `${screen.height * 0.5}px`;
   historyDiv.classList.add('history-main-box');
   relationBox.appendChild(historyDiv);
 
@@ -774,8 +773,8 @@ function plusMinusButtonCreate(type, rectSizeWidth, rectSizeHeight) {
             const element = node.data['data-list'][index];
             isDeletedCount += (element['is-deleted'] ? 1 : 0);
           }
-          console.log(node.data['data-list'].length,isDeletedCount);
-          if(isDeletedCount !== node.data['data-list'].length - 1){
+          console.log(node.data['data-list'].length, isDeletedCount);
+          if (isDeletedCount !== node.data['data-list'].length - 1) {
             return type === 'minus' ? `-` : '+';
           }
         }

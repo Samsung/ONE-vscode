@@ -113,11 +113,11 @@ body.vscode-light .rect-file-name {
 }
 
 body.vscode-light .node rect:hover {
-  fill : rgb(141, 141, 141, 0.8) !important;
+  fill: rgb(141, 141, 141, 0.8) !important;
 }
 
 body.vscode-light .rect-hover-fill {
-  fill : rgb(141, 141, 141, 0.8) !important;
+  fill: rgb(141, 141, 141, 0.8) !important;
 }
 
 body.vscode-light .current-node {
@@ -148,7 +148,7 @@ body {
 }
 
 svg {
-  margin : 0 auto;
+  margin: 0 auto;
   margin-top: 30px;
   flex-shrink: 0;
 }
@@ -171,7 +171,7 @@ svg {
 .node text {
   font: 11px sans-serif;
   cursor: pointer;
-  fill : white;
+  fill: white;
 
   /* default drag function */
   -webkit-touch-callout: none;
