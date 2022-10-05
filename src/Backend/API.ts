@@ -21,6 +21,7 @@ import {gToolchainEnvMap, ToolchainEnv} from '../Toolchain/ToolchainEnv';
 import {Logger} from '../Utils/Logger';
 import {Executor} from './Executor';
 import {OneToolchain} from './One/OneToolchain';
+import {OneLocalToolchain} from './One/LocalToolchain';
 
 /**
  * Interface of backend map
@@ -64,6 +65,7 @@ function backendRegistrationApi() {
   };
 
   registrationAPI.registerBackend(new OneToolchain());
+  registrationAPI.registerBackend(new OneLocalToolchain());
 
   return registrationAPI;
 }
