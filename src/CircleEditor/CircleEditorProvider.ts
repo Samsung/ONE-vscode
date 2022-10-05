@@ -50,7 +50,7 @@ export enum MessageDefs {
   partition = "partition",
   // commands for custom editor features
   edit = "edit",
-  customType = "customType",
+  customType = "getCustomOpAttrT",
   loadJson = "loadJson",
   updateJson = "updateJson",
   requestEncodingData = "requestEncodingData"
