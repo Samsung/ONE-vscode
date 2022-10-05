@@ -1,27 +1,42 @@
-import * as vscode from "vscode";
-import { Disposable } from "./dispose";
-import * as Circle from './circle_schema_generated';
-import * as flatbuffers from 'flatbuffers';
-import { ResponseModel, RequestMessage, CustomInfoMessage, ResponseModelPath, ResponseFileRequest, ResponseJson } from './MessageType';
-import * as flexbuffers from 'flatbuffers/js/flexbuffers';
-import * as Types from './CircleType';
-import { CircleException } from "./CircleEditorException";
+/*
+ * Copyright (c) 2022 Samsung Electronics Co., Ltd. All Rights Reserved
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-(BigInt.prototype as any).toJSON = function () {
-	return this.toString();
-};
+import * as flatbuffers from 'flatbuffers';
+import * as vscode from 'vscode';
+
+import {Disposable} from '../Utils/external/Dispose';
+
+import * as Circle from './circle_schema_generated';
 
 /**
  * Custom Editor Document necessary for vscode extension API
- * This class contains model object as _model variable and manages its state when modification is occured.
+ * This class contains model object as _model variable
+ * and manages its state when modification is occured.
  */
-export class CircleEditorDocument extends Disposable implements vscode.CustomDocument{
+export class CircleEditorDocument extends Disposable implements vscode.CustomDocument {
   private readonly _uri: vscode.Uri;
   private _model: Circle.ModelT;
   private readonly packetSize = 1024 * 1024 * 1024;
 
-  public get uri(): vscode.Uri { return this._uri; }
-  public get model(): Circle.ModelT { return this._model; }
+  public get uri(): vscode.Uri {
+    return this._uri;
+  }
+  public get model(): Circle.ModelT {
+    return this._model;
+  }
   public get modelData(): Uint8Array {
     let fbb = new flatbuffers.Builder(1024);
     Circle.Model.finishModelBuffer(fbb, this._model.pack(fbb));
@@ -29,12 +44,12 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
   }
 
   static async create(uri: vscode.Uri):
-    Promise<CircleEditorDocument|PromiseLike<CircleEditorDocument>> {
-      let bytes = new Uint8Array(await vscode.workspace.fs.readFile(uri));
-      return new CircleEditorDocument(uri, bytes);
+      Promise<CircleEditorDocument|PromiseLike<CircleEditorDocument>> {
+    let bytes = new Uint8Array(await vscode.workspace.fs.readFile(uri));
+    return new CircleEditorDocument(uri, bytes);
   }
 
-  private constructor (uri: vscode.Uri, bytes: Uint8Array) {
+  private constructor(uri: vscode.Uri, bytes: Uint8Array) {
     super();
     this._uri = uri;
     this._model = this.loadModel(bytes);
@@ -45,16 +60,15 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
   public readonly onDidDispose = this._onDidDispose.event;
 
   // tell to webview
-  public readonly _onDidChangeContent = this._register(new vscode.EventEmitter<{
-    readonly modelData: Uint8Array;} | ResponseModel | CustomInfoMessage | ResponseModelPath | ResponseFileRequest | ResponseJson>());
+  public readonly _onDidChangeContent = this._register(new vscode.EventEmitter<any>());
   public readonly onDidChangeContent = this._onDidChangeContent.event;
 
   // tell to vscode
   private readonly _onDidChangeDocument = this._register(new vscode.EventEmitter<{
     readonly label: string,
-      undo(): void,
-      redo(): void,
-    }>());
+    undo(): void,
+    redo(): void,
+  }>());
   public readonly onDidChangeDocument = this._onDidChangeDocument.event;
 
   dispose(): void {
@@ -70,13 +84,13 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
   /**
    * execute appropriate edit feature and calls notifyEdit function
    */
-  makeEdit(message: RequestMessage) {
+  makeEdit(message: any) {
     const oldModelData = this.modelData;
     switch (message.type) {
-      case "attribute":
+      case 'attribute':
         this.editAttribute(message.data);
         break;
-      case "tensor":
+      case 'tensor':
         this.editTensor(message.data);
         break;
       default:
@@ -90,18 +104,18 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
    * calls sendModel function so that webviews can be aware of current model data
    * records old and new model for undo and redo features
    */
-  notifyEdit(oldModelData: Uint8Array, newModelData: Uint8Array) {	
-    this.sendModel('0');
+  notifyEdit(oldModelData: Uint8Array, newModelData: Uint8Array) {
+    this.sendModel();
 
     this._onDidChangeDocument.fire({
       label: 'Model',
       undo: async () => {
         this._model = this.loadModel(oldModelData);
-        this.sendModel('0');
+        this.sendModel();
       },
       redo: async () => {
         this._model = this.loadModel(newModelData);
-        this.sendModel('0');
+        this.sendModel();
       }
     });
   }
@@ -109,30 +123,80 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
   /**
    * send current model data to webviews with declared packetsize
    */
-  sendModel(offset: string) {
-    if (parseInt(offset) > this.modelData.length - 1) {return;}
+  sendModel(offset: number = 0) {
+    if (offset > this.modelData.length - 1) {
+      return;
+    }
 
-    let responseModelPath = { command: 'loadmodel', type: 'modelpath', value: this._uri.fsPath};
+    let responseModelPath = {command: 'loadmodel', type: 'modelpath', value: this._uri.fsPath};
     this._onDidChangeContent.fire(responseModelPath);
 
-    let responseArray = this.modelData.slice(parseInt(offset), parseInt(offset) + this.packetSize);
-		
-    let responseModel:ResponseModel =  {
+    let responseArray = this.modelData.slice(offset, offset + this.packetSize);
+
+    let responseModel = {
       command: 'loadmodel',
-      type : 'uint8array',
-      offset : parseInt(offset),
+      type: 'uint8array',
+      offset: offset,
       length: responseArray.length,
-      total : this.modelData.length,
-      responseArray : responseArray
+      total: this.modelData.length,
+      responseArray: responseArray
     };
 
     this._onDidChangeContent.fire(responseModel);
   }
 
   /**
+   * Called by VS Code when the user saves the document.
+   */
+  async save(cancellation: vscode.CancellationToken): Promise<void> {
+    await this.saveAs(this.uri, cancellation);
+  }
+
+  /**
+   * Called by VS Code when the user saves the document to a new location.
+   */
+  async saveAs(targetResource: vscode.Uri, cancellation: vscode.CancellationToken): Promise<void> {
+    if (cancellation.isCancellationRequested) {
+      return;
+    }
+    await vscode.workspace.fs.writeFile(targetResource, this.modelData);
+  }
+
+  /**
+   * Called by VS Code when the user calls `revert` on a document.
+   */
+  async revert(_cancellation: vscode.CancellationToken): Promise<void> {
+    const oldModelData = this.modelData;
+    const newModelData = await vscode.workspace.fs.readFile(this.uri);
+    this._model = this.loadModel(newModelData);
+    this.notifyEdit(oldModelData, newModelData);
+  }
+
+  /**
+   * Called by VS Code to backup the edited document.
+   * These backups are used to implement hot exit.
+   */
+  async backup(destination: vscode.Uri, cancellation: vscode.CancellationToken):
+      Promise<vscode.CustomDocumentBackup> {
+    await this.saveAs(destination, cancellation);
+
+    return {
+      id: destination.toString(),
+      delete: async () => {
+        try {
+          await vscode.workspace.fs.delete(destination);
+        } catch {
+          // noop
+        }
+      }
+    };
+  }
+
+  
+  /**
    * edit _model state when user modified model through json editor
    */
-  editJsonModel(message: any) {
+   editJsonModel(message: any) {
     const oldModelData = this.modelData;
     try{
       let newModel = JSON.parse(message.data);
@@ -274,6 +338,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
     }
   }
 
+  
   loadJson(){
     let jsonModel = JSON.stringify(this._model, null,2);
     jsonModel.match(/\[[0-9,\s]*\]/gi)?.forEach(text => {
@@ -379,52 +444,6 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		return;
 	}
 
-  /**
-   * Called by VS Code when the user saves the document.
-   */
-  async save(cancellation: vscode.CancellationToken): Promise<void> {
-    await this.saveAs(this.uri, cancellation);
-  }
-
-  /**
-   * Called by VS Code when the user saves the document to a new location.
-   */
-  async saveAs(targetResource: vscode.Uri, cancellation: vscode.CancellationToken): Promise<void> {
-    if (cancellation.isCancellationRequested) {
-      return;
-    }
-    await vscode.workspace.fs.writeFile(targetResource, this.modelData);
-  }
-
-  /**
-   * Called by VS Code when the user calls `revert` on a document.
-   */
-  async revert(_cancellation: vscode.CancellationToken): Promise<void> {
-    const oldModelData = this.modelData;
-    const newModelData = await vscode.workspace.fs.readFile(this.uri);
-    this._model = this.loadModel(newModelData);
-    this.notifyEdit(oldModelData, newModelData);
-  }
-
-  /**
-   * Called by VS Code to backup the edited document.
-   *
-   * These backups are used to implement hot exit.
-   */
-  async backup(destination: vscode.Uri, cancellation: vscode.CancellationToken): Promise<vscode.CustomDocumentBackup> {
-    await this.saveAs(destination, cancellation);
-
-    return {
-      id: destination.toString(),
-      delete: async () => {
-        try {
-          await vscode.workspace.fs.delete(destination);
-        } catch {
-          // noop
-        }
-      }
-    };
-  }
 
   private editTensor(data : any){
 		let name;
