@@ -20,7 +20,7 @@ body {
   margin-left: 20px;
 }
 
-/* white테마일 때 처리 */
+/* white theme */
 body.vscode-light {
   background-color: #e7e7e7;
 }

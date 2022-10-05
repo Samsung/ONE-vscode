@@ -15,7 +15,7 @@
  */
 
 /*
-NOTE this is example logic is that you can get sample MetaData
+NOTE this is example logic that you can get sample MetaData
 TODO Replace this sample logic into real logic
 */
 export function getMetadata(_path: any) {
