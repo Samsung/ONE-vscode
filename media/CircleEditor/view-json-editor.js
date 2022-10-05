@@ -240,7 +240,7 @@ jsonEditor.Calculator = class {
     this._jsonEditorBox.removeChild(this._jsonEditorBox.lastChild);
     this._bufferButton.className = 'button-selected';
     this._customOptionsButton.className = 'button';
-    this._calculatorBox.style.height = "calc(30% - 22px)";
+    this._calculatorBox.style.height = "calc(24% - 22px)";
     const expanderArea = this.makeTag('div', 'expander-area');
     const titleArea = this.makeTag('div', 'title-area');
     const inputTitle = this.makeTag('div', 'title');
