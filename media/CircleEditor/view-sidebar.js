@@ -42,6 +42,9 @@
 
 var sidebar = sidebar || {};
 var base = base || require('./external/base');
+var typeName = typeName || {};
+var tensorType = tensorType || {};
+var customType = customType || {};
 
 sidebar.Sidebar = class {
     constructor(host, id) {
@@ -81,6 +84,8 @@ sidebar.Sidebar = class {
     }
 
     _pop() {
+        // Change the node index shown to null when sidebar is closed
+        this._host._viewingNode = null;
         this._deactivate();
         if (this._stack.length > 0) {
             this._stack.pop();
@@ -167,6 +172,7 @@ sidebar.NodeSidebar = class {
         this._attributes = [];
         this._inputs = [];
         this._outputs = [];
+        this._isCustom = node._isCustom;
 
         if (node.type) {
             let showDocumentation = null;
@@ -178,8 +184,7 @@ sidebar.NodeSidebar = class {
                     this._raise('show-documentation', null);
                 };
             }
-            this._addProperty(
-                'type', new sidebar.ValueTextView(this._host, node.type.name, showDocumentation));
+            this._addProperty('type', new sidebar.ValueTextView(this._host, node.type.name, showDocumentation, node, this._isCustom));
             if (node.type.module) {
                 this._addProperty(
                     'module', new sidebar.ValueTextView(this._host, node.type.module));
@@ -204,32 +209,33 @@ sidebar.NodeSidebar = class {
         }
 
         const attributes = node.attributes;
-        if (attributes && attributes.length > 0) {
-            const sortedAttributes = node.attributes.slice();
-            sortedAttributes.sort((a, b) => {
-                const au = a.name.toUpperCase();
-                const bu = b.name.toUpperCase();
-                return au < bu ? -1 : au > bu ? 1 : 0;
-            });
-            this._addHeader('Attributes');
-            for (const attribute of sortedAttributes) {
-                this._addAttribute(attribute.name, attribute);
+        if(this._isCustom){
+            const attributesElements = new sidebar.EditAttributesView(host, node, this._isCustom).render();
+            for(const attributesElement of attributesElements){
+                this._elements.push(attributesElement);
+            }
+        } else {
+            if (attributes && attributes.length > 0) {
+                const attributesElements = new sidebar.EditAttributesView(host, node, this._isCustom).render();
+                for(const attributesElement of attributesElements){
+                    this._elements.push(attributesElement);
+                }
             }
         }
 
         const inputs = node.inputs;
         if (inputs && inputs.length > 0) {
-            this._addHeader('Inputs');
-            for (const input of inputs) {
-                this._addInput(input.name, input);
+            const inputsElements = new sidebar.EditInputsView(host, inputs, this._isCustom, this._node).render();
+            for (const inputsElement of inputsElements) {
+                this._elements.push(inputsElement);
             }
         }
 
         const outputs = node.outputs;
         if (outputs && outputs.length > 0) {
-            this._addHeader('Outputs');
-            for (const output of outputs) {
-                this._addOutput(output.name, output);
+            const outputsElements = new sidebar.EditOutputsView(host, outputs, this._isCustom, this._node).render();
+            for (const outputsElement of outputsElements) {
+                this._elements.push(outputsElement);
             }
         }
 
@@ -252,41 +258,7 @@ sidebar.NodeSidebar = class {
     _addProperty(name, value) {
         const item = new sidebar.NameValueView(this._host, name, value);
         this._elements.push(item.render());
-    }
-
-    _addAttribute(name, attribute) {
-        const item = new NodeAttributeView(this._host, attribute);
-        item.on('show-graph', (sender, graph) => {
-            this._raise('show-graph', graph);
-        });
-        const view = new sidebar.NameValueView(this._host, name, item);
-        this._attributes.push(view);
-        this._elements.push(view.render());
-    }
-
-    _addInput(name, input) {
-        if (input.arguments.length > 0) {
-            const view = new sidebar.ParameterView(this._host, input);
-            view.on('export-tensor', (sender, tensor) => {
-                this._raise('export-tensor', tensor);
-            });
-            view.on('error', (sender, tensor) => {
-                this._raise('error', tensor);
-            });
-            const item = new sidebar.NameValueView(this._host, name, view);
-            this._inputs.push(item);
-            this._elements.push(item.render());
-        }
-    }
-
-    _addOutput(name, output) {
-        if (output.arguments.length > 0) {
-            const item = new sidebar.NameValueView(
-                this._host, name, new sidebar.ParameterView(this._host, output));
-            this._outputs.push(item);
-            this._elements.push(item.render());
-        }
-    }
+    }    
 
     toggleInput(name) {
         for (const input of this._inputs) {
@@ -311,20 +283,199 @@ sidebar.NodeSidebar = class {
     }
 };
 
-/**
- * TODO Implement sidebar.EditAttributesView Class
- */
+sidebar.EditAttributesView = class{
 
-/**
- * TODO Implement sidebar.EditInputsView Class
- */
+    constructor(host, node, isCustom) {
+        this._host = host;
+        this._node = node;
+        this._elements = [];
+        this._attributes = [];
+        this._isCustom = isCustom;
+        this._attributesBox = host.document.createElement('div');
 
-/**
- * TODO Implement sidebar.EditOutputsView Class
- */
+        this._editObject = {
+            name: 'custom',
+            _attribute: {},
+            _nodeIdx: parseInt(this._node.location),
+            _subgraphIdx: this._node._subgraphIdx
+        };
+
+        const sortedAttributes = node.attributes.slice();
+        sortedAttributes.sort((a, b) => {
+            const au = a.name.toUpperCase();
+            const bu = b.name.toUpperCase();
+            return (au < bu) ? -1 : (au > bu) ? 1 : 0;
+        });
+        this._addHeader('Attributes');
+        let index = 0;
+        for (const attribute of sortedAttributes) {
+            this._addAttribute(attribute.name, attribute, index);
+            index++;
+        }
+        if (isCustom === true) {
+            const addAttribute = this._host.document.createElement('div');
+            addAttribute.className = 'sidebar-view-item-value-add';
+            addAttribute.innerText = '+ New Attributes';
+            addAttribute.addEventListener('click', () => {
+                this.add();
+            });
+            this._attributesBox.appendChild(addAttribute);
+            this._elements.push(this._attributesBox);
+        }
+    }
+
+    _addHeader(title) {
+        const headerElement = this._host.document.createElement('div');
+        headerElement.className = 'sidebar-view-header';
+        headerElement.innerText = title;
+        this._elements.push(headerElement);
+    }
+
+    _addAttribute(name, attribute, index) {
+        const item = new NodeAttributeView(this._host, attribute, this._isCustom, index, this._node);
+        item.on('show-graph', (sender, graph) => {
+            this._raise('show-graph', graph);
+        });
+        const view = new sidebar.NameValueView(this._host, name, item, index, 'attribute');
+        this._attributes.push(view);
+        if(this._isCustom === true){
+            this._attributesBox.appendChild(view.render());
+        }
+        else{
+            this._elements.push(view.render());
+        }
+    }
+
+    add()
+    {
+        this._editObject._attribute.name = this._node.type.name;
+        const keys = [];
+        for(const key of this._node.attributes){
+            keys.push(key.name);
+            this._editObject._attribute[key.name] = key.value;
+            this._editObject._attribute[key.name + '_type'] = key.type;
+        }
+        keys.push('attribute');
+        this._editObject._attribute['attribute'] = 'value';
+        this._editObject._attribute['attribute_type'] = 'string';
+        this._editObject._attribute.keys = keys;
+
+        // vscode.postMessage({
+        //     command: 'edit',
+        //     type: 'attribute',
+        //     data: this._editObject,
+        // });
+    }
+    
+    render() {
+        return this._elements;
+    }
+};
+
+sidebar.EditInputsView = class{
+
+    constructor(host, inputs, isCustom, node) {
+        this._host = host;
+        this._elements = [];
+        this._inputs = [];
+        this._index = 0;
+        this._isCustom = isCustom;
+        this._node = node;
+
+        this._addHeader('Inputs');
+        for (const input of inputs) {
+            this._addInput(input.name, input);
+            this._index++;
+        }
+    }
+
+    _addHeader(title) {
+        const headerElement = this._host.document.createElement('div');
+        headerElement.className = 'sidebar-view-header';
+        headerElement.innerText = title;
+        this._elements.push(headerElement);
+    }
+
+    _addInput(name, input) {
+        if (input.arguments.length > 0) {
+            const inputAttributes = {
+                title: 'input',
+                index: this._index,
+                this: this._isCustom,
+                name: name,
+                nodeIdx: this._node._location,
+                subgraphIdx: this._node._subgraphIdx,
+                visible: true,
+            };
+
+            const view = new sidebar.ParameterView(this._host, input, inputAttributes);
+            view.on('export-tensor', (sender, tensor) => {
+                this._raise('export-tensor', tensor);
+            });
+            view.on('error', (sender, tensor) => {
+                this._raise('error', tensor);
+            });
+            const item = new sidebar.NameValueView(this._host, name, view, this._index, 'input');
+            this._inputs.push(item);
+            this._elements.push(item.render());
+        }
+    }
+    
+    render() {
+        return this._elements;
+    }
+};
+
+sidebar.EditOutputsView = class{
+
+    constructor(host, outputs, isCustom, node) {
+        this._host = host;
+        this._elements = [];
+        this._outputs = [];
+        this._isCustom = isCustom;
+        this._index = 0;
+        this._node = node;
+
+        this._addHeader('Outputs');
+        for (const output of outputs) {
+            this._addOutput(output.name, output);
+            this._index++;
+        }
+    }
+
+    _addHeader(title) {
+        const headerElement = this._host.document.createElement('div');
+        headerElement.className = 'sidebar-view-header';
+        headerElement.innerText = title;
+        this._elements.push(headerElement);
+    }
+
+    _addOutput(name, output) {
+        if (output.arguments.length > 0) {
+            const inputAttributes = {
+                title: 'output',
+                index: this._index,
+                this: this._isCustom,
+                name: name,
+                nodeIdx: this._node._location,
+                subgraphIdx: this._node._subgraphIdx,
+                visible: true,
+            };
+            const view = new sidebar.ParameterView(this._host, output, inputAttributes);
+            const item = new sidebar.NameValueView(this._host, name, view, this._index, 'output');
+            this._outputs.push(item);
+            this._elements.push(item.render());
+        }
+    }
+    
+    render() {
+        return this._elements;
+    }
+};
 
 sidebar.NameValueView = class {
-    constructor(host, name, value) {
+
+    constructor(host, name, value, index, title) {
         this._host = host;
         this._name = name;
         this._value = value;
@@ -333,10 +484,11 @@ sidebar.NameValueView = class {
         nameElement.className = 'sidebar-view-item-name';
 
         const nameInputElement = this._host.document.createElement('input');
+        nameInputElement.setAttribute('id', title + index);
         nameInputElement.setAttribute('type', 'text');
         nameInputElement.setAttribute('value', name);
         nameInputElement.setAttribute('title', name);
-        nameInputElement.setAttribute('readonly', 'true');
+        nameInputElement.disabled = true;
         nameElement.appendChild(nameInputElement);
 
         const valueElement = this._host.document.createElement('div');
@@ -408,12 +560,23 @@ sidebar.SelectView = class {
 };
 
 sidebar.ValueTextView = class {
-    constructor(host, value, action) {
+
+    constructor(host, value, action, node, isCustom) {
         this._host = host;
         this._elements = [];
         const element = this._host.document.createElement('div');
         element.className = 'sidebar-view-item-value';
         this._elements.push(element);
+        this._node = node;
+        if(node){
+            this._type = node.type;
+            this._editObject = {
+                name: 'custom',
+                _attribute: {},
+                _nodeIdx: parseInt(this._node.location),
+                _subgraphIdx: this._node._subgraphIdx
+            };
+        }
 
         if (action) {
             this._action = this._host.document.createElement('div');
@@ -427,13 +590,81 @@ sidebar.ValueTextView = class {
 
         const list = Array.isArray(value) ? value : [value];
         let className = 'sidebar-view-item-value-line';
-        for (const item of list) {
-            const line = this._host.document.createElement('div');
-            line.className = className;
-            line.innerText = item;
-            element.appendChild(line);
-            className = 'sidebar-view-item-value-line-border';
+        if(isCustom === true && this._type){
+            for (const item of list) {
+                const line = this._host.document.createElement('div');
+                this._input = this._host.document.createElement('input');
+                this._editButton = this._host.document.createElement('div');
+                this._saveButton = this._host.document.createElement('div');
+                this._cancelButton = this._host.document.createElement('div');
+                this._input.className = 'sidebar-view-item-value-line-input';
+                this._editButton.className = 'sidebar-view-item-value-expander codicon codicon-edit';
+                this._saveButton.className = 'sidebar-view-item-value-expander codicon codicon-save';
+                this._cancelButton.className = 'sidebar-view-item-value-expander codicon codicon-discard';
+                this._input.value = item;
+                this._input.disabled = true;
+                this._saveButton.setAttribute('style', 'display: none;');
+                this._cancelButton.setAttribute('style', 'display: none;');
+                line.appendChild(this._input);
+                line.appendChild(this._editButton);
+                line.appendChild(this._cancelButton);
+                line.appendChild(this._saveButton);
+                element.appendChild(line);
+                className = 'sidebar-view-item-value-line-border';
+
+                this._editButton.addEventListener('click', () => {
+                    this.edit();
+                });
+
+                this._saveButton.addEventListener('click', () => {
+                    this.save();
+                });
+
+                this._cancelButton.addEventListener('click', () => {
+                    this.cancel();
+                });
+            }
+        } else {
+            for (const item of list) {
+                const line = this._host.document.createElement('div');
+                line.className = className;
+                line.innerText = item;
+                element.appendChild(line);
+                className = 'sidebar-view-item-value-line-border';
+            }
         }
+    }
+
+    edit() {
+        this._input.disabled = false;
+        this._editButton.setAttribute('style', 'display: none;');
+        this._saveButton.setAttribute('style', 'display: ;');
+        this._cancelButton.setAttribute('style', 'display: ;');
+    }
+
+    save() {
+        this._editObject._attribute.name = this._input.value;
+        const keys = [];
+        for(const key of this._node.attributes){
+            keys.push(key.name);
+            this._editObject._attribute[key.name] = key.value;
+            this._editObject._attribute[key.name + '_type'] = key.type;
+        }
+        this._editObject._attribute.keys = keys;
+
+        // vscode.postMessage({
+        //     command: 'edit',
+        //     type: 'attribute',
+        //     data: this._editObject,
+        // });
+    }
+
+    cancel() {
+        this._input.disabled = true;
+        this._editButton.setAttribute('style', 'display: ;');
+        this._saveButton.setAttribute('style', 'display: none;');
+        this._cancelButton.setAttribute('style', 'display: none;');
+        this._input.value = this._type.name;
     }
 
     render() {
@@ -444,23 +675,59 @@ sidebar.ValueTextView = class {
 };
 
 class NodeAttributeView {
-    constructor(host, attribute) {
+
+    constructor(host, attribute, isCustom, index, node) {
         this._host = host;
         this._attribute = attribute;
         this._element = this._host.document.createElement('div');
         this._element.className = 'sidebar-view-item-value';
+        this._isCustom = isCustom;
+        this._attributeName = '';
+        this._index = index;
+        this._node = node;
+        this._line;
+        this._select;
 
+        this._editObject = {
+            name: '',
+            _attribute: {},
+            _nodeIdx: parseInt(this._node.location),
+            _subgraphIdx: this._node._subgraphIdx
+        };
+
+        if (isCustom) {
+            this._editObject.name = 'custom';
+        } else {
+            this._editObject.name = node.type.name;
+        }
+        
+        this.show();
+    }
+
+    show(){
         const type = this._attribute.type;
+        const value = this._attribute._value;
         if (type) {
             this._expander = this._host.document.createElement('div');
-            this._expander.className = 'sidebar-view-item-value-expander';
-            this._expander.innerText = '+';
+            this._edit = this._host.document.createElement('div');
+            this._expander.className = 'sidebar-view-item-value-expander codicon codicon-chevron-down';
+            this._edit.className = "sidebar-view-item-value-expander codicon codicon-edit";
             this._expander.addEventListener('click', () => {
                 this.toggle();
             });
+            this._edit.addEventListener('click', () => {
+                this.edit();
+            });
             this._element.appendChild(this._expander);
+            this._element.appendChild(this._edit);
+        } else {
+            this._edit = this._host.document.createElement('div');
+            this._edit.className = 'sidebar-view-item-value-edit codicon codicon-edit';
+            this._edit.addEventListener('click', () => {
+                this.edit();
+            });
+            this._element.appendChild(this._edit);
         }
-        const value = this._attribute.value;
         switch (type) {
             case 'graph': {
                 const line = this._host.document.createElement('div');
@@ -498,25 +765,20 @@ class NodeAttributeView {
         }
     }
 
-    render() {
-        return [this._element];
-    }
-
     toggle() {
-        if (this._expander.innerText === '+') {
-            this._expander.innerText = '-';
+        if (this._expander.className === 'sidebar-view-item-value-expander codicon codicon-chevron-down') {
+            this._expander.className = 'sidebar-view-item-value-expander codicon codicon-chevron-up';
 
             const typeLine = this._host.document.createElement('div');
             typeLine.className = 'sidebar-view-item-value-line-border';
             const type = this._attribute.type;
             const value = this._attribute.value;
             if (type === 'tensor' && value && value.type) {
-                typeLine.innerHTML = 'type: ' +
-                    '<code><b>' + value.type.toString() + '</b></code>';
+                typeLine.innerHTML = 'type: ' + '<code><b>' + value.type.toString() + '</b></code>';
                 this._element.appendChild(typeLine);
-            } else {
-                typeLine.innerHTML = 'type: ' +
-                    '<code><b>' + this._attribute.type + '</b></code>';
+            }
+            else {
+                typeLine.innerHTML = 'type: ' + '<code><b>' + this._attribute.type + '</b></code>';
                 this._element.appendChild(typeLine);
             }
 
@@ -538,37 +800,252 @@ class NodeAttributeView {
                 this._element.appendChild(valueLine);
             }
         } else {
-            this._expander.innerText = '+';
-            while (this._element.childElementCount > 2) {
+            this._expander.className = 'sidebar-view-item-value-expander codicon codicon-chevron-down';
+            while (this._element.childElementCount > 3) {
                 this._element.removeChild(this._element.lastChild);
             }
         }
     }
 
-    /**
-     * TODO Implement edit()
-     * Attributes edit function
-     */
+    edit() {
+        while (this._element.childElementCount) {
+            this._element.removeChild(this._element.lastChild);
+        }
+        const type = this._attribute.type;
 
-    /**
-     * TODO Implement save()
-     * Attributes save function
-     */
+        if (this._isCustom === true) {
+            const input = this._host.document.getElementById('attribute' + this._index);
+            input.disabled = false;
+            this._attributeName = input.value;
+        }
 
-    /**
-     * TODO Implement cancel()
-     * Attributes cancel function
-     */
+        this._save = this._host.document.createElement('div');
+        this._cancel = this._host.document.createElement('div');
+        this._remove = this._host.document.createElement('div');
+        this._save.className = 'sidebar-view-item-value-save codicon codicon-save';
+        this._cancel.className = 'sidebar-view-item-value-cancel codicon codicon-discard';
+        this._remove.className = 'sidebar-view-item-value-remove codicon codicon-trash';
+        this._save.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.save();
+        });
+        this._cancel.addEventListener('click', () => {
+            this.cancel();
+        });
+        this._remove.addEventListener('click', () => {
+            this.remove();
+        });
+        if(this._isCustom === true){
+            this._element.appendChild(this._remove);
+        }
+        this._element.appendChild(this._cancel);
+        this._element.appendChild(this._save);
+        
+        const value = this._attribute.value;
 
-    /**
-     * TODO Implement remove()
-     * When in custom operator, attributes remove function
-     */
+        switch (type) {
+            case 'graph': {
+                const line = this._host.document.createElement('div');
+                line.className = 'sidebar-view-item-value-line-link';
+                line.innerHTML = value.name;
+                line.addEventListener('click', () => {
+                    this._raise('show-graph', value);
+                });
+                this._element.appendChild(line);
+                break;
+            }
+            case 'function': {
+                const line = this._host.document.createElement('div');
+                line.className = 'sidebar-view-item-value-line-link';
+                line.innerHTML = type === value.type.name;
+                line.addEventListener('click', () => {
+                    this._raise('show-graph', value.type);
+                });
+                this._element.appendChild(line);
+                break;
+            }
+            default: {
+                let content = new sidebar.Formatter(value, type).toString();
+                if (content && content.length > 1000) {
+                    content = content.substring(0, 1000) + '\u2026';
+                }
+                if (content && typeof content === 'string') {
+                    content = content.split('<').join('&lt;').split('>').join('&gt;');
+                }
+                let line;
+                if(typeName[type]){
+                    line = this._host.document.createElement('select');
+                    for(const options of typeName[type]){
+                        const option = this._host.document.createElement('option');
+                        option.setAttribute('value', options);
+                        option.innerText = options;
+                        if(options.toLowerCase() === content.toLowerCase()){
+                            option.setAttribute('selected', 'selected');
+                        }
+                        line.appendChild(option);
+                    }
+                    line.setAttribute('name', type);
+                    line.className = 'sidebar-view-item-value-line-select';
+                } else {
+                    line = this._host.document.createElement('input');
+                    line.setAttribute('type', 'text');
+                    line.className = 'sidebar-view-item-value-line-input';
+                    line.setAttribute('value', content ? content : '&nbsp;');
+                }
+                this._line = line;
+                this._element.appendChild(line);
+            }
+            if (type) {
+                const typeLine = this._host.document.createElement('div');
+                typeLine.className = 'sidebar-view-item-value-line-border';
+                if (!this._isCustom) {
+                    if (type === 'tensor' && value && value.type) {
+                        typeLine.innerHTML = 'type: ' + '<code><b>' + value.type.toString() + '</b></code>';
+                        this._element.appendChild(typeLine);
+                    }
+                    else {
+                        typeLine.innerHTML = 'type: ' + '<code><b>' + this._attribute.type + '</b></code>';
+                        this._element.appendChild(typeLine);
+                    }
+                } else {
+                    typeLine.innerHTML = 'type: ';
+                    this._select = this._host.document.createElement('select');
+                    this._select.className = 'sidebar-view-item-value-line-type-select';
+                    for(const type of customType){
+                        const option = this._host.document.createElement('option');
+                        option.setAttribute('value', type);
+                        option.innerText = type.toLowerCase();
+                        if (type.toLowerCase() === this._attribute.type) {
+                            option.setAttribute('selected', 'selected');
+                        }
+                        this._select.appendChild(option);
+                    }
+                    typeLine.appendChild(this._select);
+                    this._element.appendChild(typeLine);
+                }
 
-    /**
-     * TODO Implement makeEditCustomObject()
-     * Object to send when modifying attributes
-     */
+                const description = this._attribute.description;
+                if (description) {
+                    const descriptionLine = this._host.document.createElement('div');
+                    descriptionLine.className = 'sidebar-view-item-value-line-border';
+                    descriptionLine.innerHTML = description;
+                    this._element.appendChild(descriptionLine);
+                }
+            }
+
+            if (this._attribute.type === 'tensor' && value) {
+                const state = value.state;
+                const valueLine = this._host.document.createElement('div');
+                valueLine.className = 'sidebar-view-item-value-line-border';
+                const contentLine = this._host.document.createElement('pre');
+                contentLine.innerHTML = state || value.toString();
+                valueLine.appendChild(contentLine);
+                this._element.appendChild(valueLine);
+            }
+        }
+    }
+
+    save() {
+        if (this._attribute._type === 'int32') {
+        if (this._line.value - 0 > 2147483648) {
+            // vscode.postMessage({
+            //     command : 'alert',
+            //     text: 'Can\'t exceed 2,147,483,648'
+            // });
+            return;
+            }
+        }
+
+        if (this._isCustom === true) {
+            const input = this._host.document.getElementById('attribute' + this._index);
+            if (this._select.value === 'int') {
+                if (this._line.value - 0 > 2147483648) {
+                    // vscode.postMessage({
+                    //     command : 'alert',
+                    //     text: 'Can\'t exceed 2,147,483,648'
+                    // });
+                    return;
+                }
+            }
+            input.disabled = true;
+            this._attribute._name = input.value;
+            this._attribute._type = this._select.value;
+            this._attribute._value = this._line.value;
+        }
+
+        while (this._element.childElementCount) {
+            this._element.removeChild(this._element.lastChild);
+        }
+
+        if (!this._isCustom) {
+            this._editObject._attribute.name = this._attribute.name;
+            this._editObject._attribute._value = this._line.value;
+            this._editObject._attribute._type = this._attribute.type;
+        } else {
+            this.makeEditCustomObject();
+        }
+        // vscode.postMessage({
+        //     command: 'edit',
+        //     type: 'attribute',
+        //     data: this._editObject,
+        // });
+    }
+
+    makeEditCustomObject() {
+        this._editObject._attribute.name = this._node.type.name;
+        const keys = [];
+        for (const key of this._node.attributes) {
+            keys.push(key.name);
+            this._editObject._attribute[key.name] = key.value;
+            this._editObject._attribute[key.name + '_type'] = key.type;
+        }
+        this._editObject._attribute.keys = keys;
+    }
+
+    cancel() {
+        if (this._isCustom === true) {
+            const input = this._host.document.getElementById('attribute' + this._index);
+            input.disabled = true;
+            input.value = this._attributeName;
+        }
+        while (this._element.childElementCount) {
+            this._element.removeChild(this._element.lastChild);
+        }
+
+        this.show();
+    }
+
+    remove() {
+        const input = this._host.document.getElementById('attribute' + this._index);
+        const box = input.parentElement.parentElement.parentElement;
+        const element = input.parentElement.parentElement;
+        box.removeChild(element);
+        for (const i in this._node._attributes) {
+            if (this._node._attributes[i].name === this._attribute.name) {
+                this._node._attributes.splice(i,1);
+                break;
+            }
+        }
+
+        this._editObject._attribute.name = this._node.type.name;
+        const keys = [];
+        for (const key of this._node.attributes) {
+            keys.push(key.name);
+            this._editObject._attribute[key.name] = key.value;
+            this._editObject._attribute[key.name + '_type'] = key.type;
+        }
+        this._editObject._attribute.keys = keys;
+
+        // vscode.postMessage({
+        //     command: 'edit',
+        //     type: 'attribute',
+        //     data: this._editObject,
+        // });
+    }
+    
+    render() {
+        return [ this._element ];
+    }
 
     on(event, callback) {
         this._events = this._events || {};
@@ -586,12 +1063,13 @@ class NodeAttributeView {
 }
 
 sidebar.ParameterView = class {
-    constructor(host, list) {
-        this._list = list;
+
+    constructor(host, tensors, ioAttributes) {
         this._elements = [];
         this._items = [];
-        for (const argument of list.arguments) {
-            const item = new sidebar.ArgumentView(host, argument);
+
+        for (const argument of tensors.arguments) {
+            const item = new sidebar.ArgumentView(host, argument, tensors, ioAttributes);
             item.on('export-tensor', (sender, tensor) => {
                 this._raise('export-tensor', tensor);
             });
@@ -629,9 +1107,25 @@ sidebar.ParameterView = class {
 };
 
 sidebar.ArgumentView = class {
-    constructor(host, argument) {
+
+    constructor(host, argument, tensors, ioAttributes) {
         this._host = host;
         this._argument = argument;
+        this._select;
+        this._shape;
+        this._data;
+        this._index = ioAttributes.index;
+        this._isCustom = ioAttributes.isCustom;
+        this._tensors = tensors;
+        this._title = ioAttributes.title;
+
+        this._editObject = {
+            _name: ioAttributes.name,
+            _visible : ioAttributes.visible,
+            _arguments: JSON.parse(JSON.stringify(argument)),
+            _subgraphIdx: ioAttributes.subgraphIdx,
+            _nodeIdx: ioAttributes.nodeIdx,
+        };
 
         this._element = this._host.document.createElement('div');
         this._element.className = 'sidebar-view-item-value';
@@ -641,17 +1135,136 @@ sidebar.ArgumentView = class {
             this._element.classList.add('sidebar-view-item-value-dark');
         }
 
-        const quantization = argument.quantization;
-        const type = argument.type;
+        this.show(initializer);
+    }
+
+    render() {
+        return this._element;
+    }
+
+    toggle() {
+        if (this._expander) {
+            if (this._expander.className === 'sidebar-view-item-value-expander codicon codicon-chevron-down') {
+                this._expander.className = 'sidebar-view-item-value-expander codicon codicon-chevron-up';
+
+                const initializer = this._argument.initializer;
+                if (this._hasId && this._hasKind) {
+                    const kindLine = this._host.document.createElement('div');
+                    kindLine.className = 'sidebar-view-item-value-line-border';
+                    kindLine.innerHTML = 'kind: ' + '<b>' + initializer.kind + '</b>';
+                    this._element.appendChild(kindLine);
+                }
+                let type = null;
+                let denotation = null;
+                if (this._argument.type) {
+                    type = this._argument.type.toString();
+                    denotation = this._argument.type.denotation || null;
+                }
+                if (type && (this._hasId || this._hasKind)) {
+                    const typeLine = this._host.document.createElement('div');
+                    typeLine.className = 'sidebar-view-item-value-line-border';
+                    typeLine.innerHTML = 'type: <code><b>' + type.split('<').join('&lt;').split('>').join('&gt;') + '</b></code>';
+                    this._element.appendChild(typeLine);
+                }
+                if (denotation) {
+                    const denotationLine = this._host.document.createElement('div');
+                    denotationLine.className = 'sidebar-view-item-value-line-border';
+                    denotationLine.innerHTML = 'denotation: <code><b>' + denotation + '</b></code>';
+                    this._element.appendChild(denotationLine);
+                }
+
+                const description = this._argument.description;
+                if (description) {
+                    const descriptionLine = this._host.document.createElement('div');
+                    descriptionLine.className = 'sidebar-view-item-value-line-border';
+                    descriptionLine.innerHTML = description;
+                    this._element.appendChild(descriptionLine);
+                }
+
+                const quantization = this._argument.quantization;
+                if (quantization) {
+                    const quantizationLine = this._host.document.createElement('div');
+                    quantizationLine.className = 'sidebar-view-item-value-line-border';
+                    const content = !Array.isArray(quantization) ? quantization : '<br><br>' + quantization.map((value) => '    ' + value).join('<br>');
+                    quantizationLine.innerHTML = '<span class=\'sidebar-view-item-value-line-content\'>quantization: ' + '<b>' + content + '</b></span>';
+                    this._element.appendChild(quantizationLine);
+                }
+
+                if (this._argument.location !== undefined) {
+                    const location = this._host.document.createElement('div');
+                    location.className = 'sidebar-view-item-value-line-border';
+                    location.innerHTML = 'location: ' + '<b>' + this._argument.location + '</b>';
+                    this._element.appendChild(location);
+                }
+
+                if (initializer) {
+                    const contentLine = this._host.document.createElement('pre');
+                    const valueLine = this._host.document.createElement('div');
+                    try {
+                        const state = initializer.state;
+                        if (state === null && this._host.save &&
+                            initializer.type.dataType && initializer.type.dataType !== '?' &&
+                            initializer.type.shape && initializer.type.shape.dimensions /*&& initializer.type.shape.dimensions.length > 0*/) {
+                            this._saveButton = this._host.document.createElement('div');
+                            this._saveButton.className = 'sidebar-view-item-value-expander';
+                            this._saveButton.innerHTML = '&#x1F4BE;';
+                            this._saveButton.addEventListener('click', () => {
+                                this._raise('export-tensor', initializer);
+                            });
+                            this._element.appendChild(this._saveButton);
+                        }
+
+                        valueLine.className = 'sidebar-view-item-value-line-border';
+                        contentLine.innerHTML = state || initializer.toString();
+                    }
+                    catch (err) {
+                        contentLine.innerHTML = err.toString();
+                        this._raise('error', err);
+                    }
+                    valueLine.appendChild(contentLine);
+                    this._element.appendChild(valueLine);
+                }
+            }
+            else {
+                this._expander.className = 'sidebar-view-item-value-expander codicon codicon-chevron-down';
+                while (this._element.childElementCount > 3) {
+                    this._element.removeChild(this._element.lastChild);
+                }
+            }
+        }
+    }
+
+    on(event, callback) {
+        this._events = this._events || {};
+        this._events[event] = this._events[event] || [];
+        this._events[event].push(callback);
+    }
+
+    _raise(event, data) {
+        if (this._events && this._events[event]) {
+            for (const callback of this._events[event]) {
+                callback(this, data);
+            }
+        }
+    }
+
+    show(initializer) {
+        const quantization = this._argument.quantization;
+        const type = this._argument.type;
         const location = this._argument.location !== undefined;
         if (type || initializer || quantization || location) {
             this._expander = this._host.document.createElement('div');
-            this._expander.className = 'sidebar-view-item-value-expander';
-            this._expander.innerText = '+';
+            this._edit = this._host.document.createElement('div');
+            this._expander.className = 'sidebar-view-item-value-expander codicon codicon-chevron-down';
+            this._edit.className = 'sidebar-view-item-value-edit codicon codicon-edit';
             this._expander.addEventListener('click', () => {
                 this.toggle();
             });
+            this._edit.addEventListener('click', () => {
+                this.edit();
+            });
             this._element.appendChild(this._expander);
+            this._element.appendChild(this._edit);
         }
 
         let name = this._argument.name || '';
@@ -683,160 +1296,540 @@ sidebar.ArgumentView = class {
         }
     }
 
-    render() {
-        return this._element;
-    }
+    edit() {
+        while (this._element.childElementCount) {
+            this._element.removeChild(this._element.lastChild);
+        }
 
-    toggle() {
-        if (this._expander) {
-            if (this._expander.innerText === '+') {
-                this._expander.innerText = '-';
+        if (this._isCustom === true) {
+            const input = this._host.document.getElementById(this._title + this._index);
+            input.disabled = false;
+            this._attributeName = input.value;
+        }
 
-                const initializer = this._argument.initializer;
-                if (this._hasId && this._hasKind) {
-                    const kindLine = this._host.document.createElement('div');
-                    kindLine.className = 'sidebar-view-item-value-line-border';
+        const initializer = this._argument.initializer;
+        const quantization = this._argument.quantization;
+        let type = this._argument.type;
+        const location = this._argument.location !== undefined;
+        if (type || initializer || quantization || location) {
+            this._save = this._host.document.createElement('div');
+            this._cancel = this._host.document.createElement('div');
+            this._save.className = 'sidebar-view-item-value-save codicon codicon-save';
+            this._cancel.className = 'sidebar-view-item-value-cancel codicon codicon-discard';
+            this._save.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.save();
+            });
+            this._cancel.addEventListener('click', () => {
+                this.cancel();
+            });
+            this._element.appendChild(this._cancel);
+            this._element.appendChild(this._save);
+        }
+
+        let name = this._argument.name || '';
+        this._hasId = name ? true : false;
+        this._hasKind = initializer && initializer.kind ? true : false;
+        if (this._hasId || (!this._hasKind && !type)) {
+            this._hasId = true;
+            const nameLine = this._host.document.createElement('div');
+            const nameValue = this._host.document.createElement('input');
+            nameValue.setAttribute('type', 'text');
+            nameLine.className = 'sidebar-view-item-value-line';
+            nameValue.className = 'sidebar-view-item-value-line-inputs';
+            if (typeof name !== 'string') {
+                throw new Error("Invalid argument identifier '" + JSON.stringify(name) + "'.");
+            }
+            name = name.split('\n').shift(); // custom argument id
+            name = name || ' ';
+            nameValue.setAttribute('value', name);
+            nameLine.innerHTML = '<span class=\'sidebar-view-item-value-line-content\'>name: </span>';
+            nameLine.appendChild(nameValue);
+            this._element.appendChild(nameLine);
+        } else if (this._hasKind) {
+            const kindLine = this._host.document.createElement('div');
+            kindLine.className = 'sidebar-view-item-value-line';
+            kindLine.innerHTML = 'kind: <b>' + initializer.kind + '</b>';
+            this._element.appendChild(kindLine);
+        } else if (type) {
+            const typeLine = this._host.document.createElement('div');
+            typeLine.className = 'sidebar-view-item-value-line-border';
+            typeLine.innerHTML = 'type: <code><b>' + type.toString().split('<').join('&lt;').split('>').join('&gt;') + '</b></code>';
+            this._element.appendChild(typeLine);
+        }
+        if (this._hasId && this._hasKind) {
+            const kindLine = this._host.document.createElement('div');
+            kindLine.className = 'sidebar-view-item-value-line-border';
                     kindLine.innerHTML = 'kind: ' +
                         '<b>' + initializer.kind + '</b>';
-                    this._element.appendChild(kindLine);
+            this._element.appendChild(kindLine);
+        }
+        let denotation = null;
+        if (this._argument.type) {
+            type = this._argument.type.toString();
+            denotation = this._argument.type.denotation || null;
+        }
+        if (type && (this._hasId || this._hasKind)) {
+            const typeLine = this._host.document.createElement('div');
+            const typeSelect = this._host.document.createElement('select');
+            const shape = this._host.document.createElement('input');
+            typeLine.className = 'sidebar-view-item-value-line-border';
+            typeSelect.className = 'sidebar-view-item-value-line-type-select';
+            shape.className = 'sidebar-view-item-value-line-shape-input';
+            this._select = typeSelect;
+            this._shape = shape;
+            typeLine.innerText = 'type: ';
+            shape.setAttribute('value', this._argument.type.shape.dimensions.toString());
+            for(const type of tensorType){
+                const option = this._host.document.createElement('option');
+                option.setAttribute('value', type);
+                option.innerText = type.toLowerCase();
+                if(type.toLowerCase() === this._argument.type.dataType){
+                    option.setAttribute('selected', 'selected');
                 }
-                let type = null;
-                let denotation = null;
-                if (this._argument.type) {
-                    type = this._argument.type.toString();
-                    denotation = this._argument.type.denotation || null;
-                }
-                if (type && (this._hasId || this._hasKind)) {
-                    const typeLine = this._host.document.createElement('div');
-                    typeLine.className = 'sidebar-view-item-value-line-border';
-                    typeLine.innerHTML = 'type: <code><b>' +
-                        type.split('<').join('&lt;').split('>').join('&gt;') + '</b></code>';
-                    this._element.appendChild(typeLine);
-                }
-                if (denotation) {
-                    const denotationLine = this._host.document.createElement('div');
-                    denotationLine.className = 'sidebar-view-item-value-line-border';
-                    denotationLine.innerHTML = 'denotation: <code><b>' + denotation + '</b></code>';
-                    this._element.appendChild(denotationLine);
-                }
+                typeSelect.appendChild(option);
+            }
+            typeLine.appendChild(typeSelect);
+            typeLine.appendChild(shape);
+            this._element.appendChild(typeLine);
+        }
+        if (denotation) {
+            const denotationLine = this._host.document.createElement('div');
+            denotationLine.className = 'sidebar-view-item-value-line-border';
+            denotationLine.innerHTML = 'denotation: <code><b>' + denotation + '</b></code>';
+            this._element.appendChild(denotationLine);
+        }
 
-                const description = this._argument.description;
-                if (description) {
-                    const descriptionLine = this._host.document.createElement('div');
-                    descriptionLine.className = 'sidebar-view-item-value-line-border';
-                    descriptionLine.innerHTML = description;
-                    this._element.appendChild(descriptionLine);
-                }
+        const description = this._argument.description;
+        if (description) {
+            const descriptionLine = this._host.document.createElement('div');
+            descriptionLine.className = 'sidebar-view-item-value-line-border';
+            descriptionLine.innerHTML = description;
+            this._element.appendChild(descriptionLine);
+        }
 
-                const quantization = this._argument.quantization;
-                if (quantization) {
-                    const quantizationLine = this._host.document.createElement('div');
-                    quantizationLine.className = 'sidebar-view-item-value-line-border';
+        if (quantization) {
+            const quantizationLine = this._host.document.createElement('div');
+            quantizationLine.className = 'sidebar-view-item-value-line-border';
                     const content = !Array.isArray(quantization) ?
                         quantization :
                         '<br><br>' + quantization.map((value) => '  ' + value).join('<br>');
                     quantizationLine.innerHTML =
                         '<span class=\'sidebar-view-item-value-line-content\'>quantization: ' +
                         '<b>' + content + '</b></span>';
-                    this._element.appendChild(quantizationLine);
-                }
+            this._element.appendChild(quantizationLine);
+        }
 
-                if (this._argument.location !== undefined) {
-                    const location = this._host.document.createElement('div');
-                    location.className = 'sidebar-view-item-value-line-border';
+        if (this._argument.location !== undefined) {
+            const location = this._host.document.createElement('div');
+            location.className = 'sidebar-view-item-value-line-border';
                     location.innerHTML = 'location: ' +
                         '<b>' + this._argument.location + '</b>';
-                    this._element.appendChild(location);
-                }
+            this._element.appendChild(location);
+        }
 
-                if (initializer) {
-                    const contentLine = this._host.document.createElement('pre');
-                    const valueLine = this._host.document.createElement('div');
-                    try {
-                        const state = initializer.state;
+        function resize(obj) {
+            obj.style.height = '1px';
+            obj.style.height = (12 + obj.scrollHeight) + 'px';
+        }
+
+        if (initializer) {
+            const contentLine = this._host.document.createElement('textarea');
+            const valueLine = this._host.document.createElement('div');
+            try {
+                const state = initializer.state;
                         if (state === null && this._host.save && initializer.type.dataType &&
                             initializer.type.dataType !== '?' && initializer.type.shape &&
                             initializer.type.shape
                                 .dimensions /*&& initializer.type.shape.dimensions.length > 0*/) {
-                            this._saveButton = this._host.document.createElement('div');
-                            this._saveButton.className = 'sidebar-view-item-value-expander';
-                            this._saveButton.innerHTML = '&#x1F4BE;';
-                            this._saveButton.addEventListener('click', () => {
-                                this._raise('export-tensor', initializer);
-                            });
-                            this._element.appendChild(this._saveButton);
+                    this._saveButton = this._host.document.createElement('div');
+                    this._saveButton.className = 'sidebar-view-item-value-expander';
+                    this._saveButton.innerHTML = '&#x1F4BE;';
+                    this._saveButton.addEventListener('click', () => {
+                        this._raise('export-tensor', initializer);
+                    });
+                    this._element.appendChild(this._saveButton);
+                }
+                this._data = contentLine;
+                valueLine.className = 'sidebar-view-item-value-line-border';
+                contentLine.className = 'sidebar-view-item-value-line-textarea';
+                contentLine.innerHTML = state || initializer.toString();
+                contentLine.style.height = 150 + contentLine.scrollHeight + 'px';
+            } catch (err) {
+                contentLine.innerHTML = err.toString();
+                this._raise('error', err);
+            }
+            valueLine.appendChild(contentLine);
+            this._element.appendChild(valueLine);
+        }
+    }
+
+    save() {
+        const type = this._select.value.toLowerCase();
+
+        if (!this.check()) {
+            // vscode.postMessage({
+            //     command: 'alert',
+            //     text: 'FORMAT ERROR : Please enter commas and numbers only.'
+            // });
+            return;
+        }
+
+        let shape = this._shape.value;
+        shape = '{ "data": [' + shape + '] }';
+        shape = JSON.parse(shape).data;
+
+        this._editObject._arguments._isChanged = true;
+
+        if (this._argument._initializer) {
+            let data;
+            if (this._data) {
+                data = this._data.value;
+            }
+            
+            const currentType = this._argument._type.dataType;
+            
+            let result;
+            if (data && type === currentType && shape === this._argument._type._shape._dimensions ) {
+                result = this.editBuffer(data, type, shape);
+            } else if (data) {
+                result = this.changeBufferType(type, data, shape);
+            }
+
+            if (!result) {
+                // vscode.postMessage({
+                //     command: 'alert',
+                //     text: 'VALIDATION ERROR : Please check your buffer data again.'
+                // });
+                return;
+            }
+        } else {
+            this._editObject._arguments._isChanged = false;
+        }
+
+        this._editObject._arguments._type._dataType = type;
+        
+        this._editObject._arguments._type._shape._dimensions = shape;
+        const name = this._argument.name.split('\n');
+        const nameValue = this._element.childNodes[2].lastChild.value;
+        name[0] = nameValue;
+        this._editObject._arguments._name = name[0];
+
+        if (this._isCustom === true) {
+            const input = this._host.document.getElementById(this._title + this._index);
+            input.disabled = true;
+            this._tensors._name = input.value;
+        }
+
+        // vscode.postMessage({
+        //     command : 'edit',
+        //     type : 'tensor',
+        //     data : this._editObject
+        // });
+    }
+
+    cancel() {
+        if (this._isCustom === true) {
+            const input = this._host.document.getElementById('input' + this._index);
+            input.disabled = true;
+        }
+
+        while (this._element.childElementCount) {
+            this._element.removeChild(this._element.lastChild);
+        }
+        const initializer = this._argument.initializer;
+        this.show(initializer);
+    }
+
+    check() {
+        for(const ch of this._shape.value){
+            if(ch !== ',' && (ch>'9' || ch < '0')){
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    compareData(bufferArr, originalArr, original, type) {
+    
+        for (let i = 0; i < originalArr.length; i++) {
+    
+            /* compare string formatted buffer data */
+            if (originalArr[i] !== bufferArr[i]) {
+    
+                /* when data change detected, update buffer according to type */
+                var buffer = new ArrayBuffer(8);
+                const view = new DataView(buffer);
+                switch (type) {
+                    case 0: // float32
+                        view.setFloat32(0, parseFloat(bufferArr[i]), true);
+                        for (let j = 0; j < 4; j++) {
+                            original[i * 4 + j] = view.getUint8(j);
                         }
+                        break;
+                    case 1: // float16
+                        view.setFloat16(0, parseFloat(bufferArr[i]), true);
+                        for (let j = 0; j < 2; j++) {
+                            original[i * 2 + j] = view.getUint8(j);
+                        }
+                        break;
+                    case 2: // int32
+                        view.setInt32(0, parseInt(bufferArr[i]), true);
+                        for (let j = 0; j < 4; j++) {
+                            original[i * 4 + j] = view.getUint8(j);
+                        }
+                        break;
+                    case 3: // uint8
+                        view.setUint8(0, parseUint(bufferArr[i]), true);
+                        original[i] = view.getUint8(0);
+                        break;
+                    case 4: // int64
+                        view.setBigInt64(0, BigInt(parseInt(bufferArr[i])), true);
+                        for (let j = 0; j < 8; j++) {
+                            original[i * 8 + j] = view.getUint8(j);
+                        }
+                        break;
+                    case 5: // string
+                        break;
+                    case 6: // bool
+                        if (bufferArr[i] === 'false' || bufferArr[i] - 0 === 0) {
+                            original[i] = 0;
+                        } else {
+                            original[i] = 1;
+                        }
+                        break;
+                    case 7: // int16
+                        view.setInt16(0, parseInt(bufferArr[i]), true);
+                        for (let j = 0; j < 2; j++) {
+                            original[i * 2 + j] = view.getUint8(j);
+                        }
+                        break;
+                    case 8:
+                        break;
+                    case 9: // int8
+                        view.setInt8(0, parseInt(bufferArr[i]), true);
+                        original[i] = view.getUint8(0);
+                        break;
+                    case 10: // float64
+                        view.setFloat64(0, parseFloat(bufferArr[i]), true);
+                        for (let j = 0; j < 8; j++) {
+                            original[i * 8 + j] = view.getUint8(j);
+                        }
+                        break;
+                    case 11:
+                        break;
+                    case 12: // uint64
+                        view.setBigUint64(0, BigInt(parseInt(bufferArr[i])), true);
+                        for (let j = 0; j < 8; j++) {
+                            original[i * 8 + j] = view.getUint8(j);
+                        }
+                        break;
+                    case 13:
+                        break;
+                    case 14:
+                        break;
+                    case 15: // uint32
+                        view.setUint32(0, parseInt(bufferArr[i]), true);
+                        for (let j = 0; j < 4; j++) {
+                            original[i * 4 + j] = view.getUint8(j);
+                        }
+                        break;
+                }
+            }
+        }
 
-                        valueLine.className = 'sidebar-view-item-value-line-border';
-                        contentLine.innerHTML = state || initializer.toString();
-                    } catch (err) {
-                        contentLine.innerHTML = err.toString();
-                        this._raise('error', err);
+        const newBuffer = [];
+
+        for(let i = 0; i < Object.keys(original).length ; i++){
+            newBuffer.push(original[i]);
+        }
+
+        this._editObject._arguments._initializer._data = newBuffer;
+    }
+    
+    removeBracket(buffer) {
+        var str = buffer;
+        str = str.replace(/\[/g, "");
+        str = str.replace(/\]/g, "");
+        str = str.replace(/\n/g, "");
+        str = str.replace(/ /g, "");
+        const arr = str.split(",");
+        return arr;
+    }
+    
+    validationCheck(modified, shape) {
+        /* data validation - bracket check */
+        const stack = [];
+        for (let i = 0; i < modified.length; i++) {
+            if (modified.charAt(i) === '[') {
+                stack.push('[');
+            } else if (modified.charAt(i) === ']') {
+                if (stack[stack.length - 1] === '[') {
+                    stack.pop();
+                } else {
+                    // alert(error! Brackets do not match);
+                    return;
+                }
+        }
+        }
+        if (stack.length) {
+            // alert(error! Brackets do not match);
+            return;
+        }
+
+
+        /* parse data to string array */
+        var modifiedArr = this.removeBracket(modified);
+
+
+        /* data validation - shape count */ 
+        var shapeCnt = 1;
+        for (let i = 0; i < shape.length; i++) {
+            shapeCnt *= shape[i];
+        }
+        if (modifiedArr.length !== shapeCnt) {
+            // alert(error! Shape and data count does not match);
+            return;
+        }
+
+        return modifiedArr;
+    }
+    
+    /* buffer data modified - type change NOT allowed simultaneously */
+    editBuffer(modified, currentType, shape) {
+        const modifiedArr = this.validationCheck(modified, shape);
+
+        if (!modifiedArr) {
+            return;
+        }
+    
+        const originalArr = this.removeBracket(this._argument._initializer.toString()); //---> 파일 이동 후 원본데이터 가져오면 주석 해제해서 쓰기
+    
+        /* compare changed elements and update data */
+        const types = ['float32', 'float16', 'int32', 'uint8', 'int64', 'string', 'boolean', 'int16',
+            'complex64', 'int8', 'float64', 'complex128', 'uint64', 'resource', 'variant', 'uint32'];
+        if (currentType === 'string') {
+            this.changeBufferType("string", modified, shape);
+        } else {
+            this.compareData(modifiedArr, originalArr, this._editObject._arguments._initializer._data, types.indexOf(currentType.toLowerCase()));
+        }
+        return 1;
+    }
+    
+    /* buffer type modified - data change NOT detected */
+    changeBufferType(newType, modified, shape) {
+        // original =    textarea.value
+        const modifiedArr = this.validationCheck(modified, shape); //---> 파일 이동 후 원본데이터 가져오면 주석 해제해서 쓰기
+        
+        if (!modifiedArr) {
+            return;
+        }
+
+        const types = ['float32', 'float16', 'int32', 'uint8', 'int64', 'string', 'boolean', 'int16',
+            'complex64', 'int8', 'float64', 'complex128', 'uint64', 'resource', 'variant', 'uint32'];
+        
+        // 0:float, 1:int, 2:uint, 3:string, 4:boolean, 5:complex, 6:resource, 7:variant
+        const typeclass = [0, 0, 1, 2, 1, 3, 4, 1, 5, 1, 0, 5, 2, 6, 7, 2];
+        const bits = [32, 16, 32, 8, 64, 0, 8, 16, 64, 8, 64, 128, 64, 0, 0, 32];
+    
+        const buffer = new ArrayBuffer(8);
+        const view = new DataView(buffer);
+    
+        const newTypeIndex = types.indexOf(newType.toLowerCase());
+    
+        let newArray = [];
+    
+        /* string -> ? or ? -> Float or ? -> Int or ? -> Uint */
+        if (typeclass[newTypeIndex] === 0) { // new type : float
+            for (let i = 0; i < modifiedArr.length; i++) {
+                let data;
+                try {
+                    if (modifiedArr[i] === 'true') {
+                        data = 1;
+                    } else if (modifiedArr[i] === 'false') {
+                        data = 0;
+                    } else {
+                        data = parseFloat(modifiedArr[i]);
                     }
-                    valueLine.appendChild(contentLine);
-                    this._element.appendChild(valueLine);
+                } catch (err) {
+                    return;
                 }
-            } else {
-                this._expander.innerText = '+';
-                while (this._element.childElementCount > 2) {
-                    this._element.removeChild(this._element.lastChild);
+                if (bits[newTypeIndex] === 16) { // float16
+                    view.setFloat16(0, data, true);
+                } else if (bits[newTypeIndex] === 32) { // float32
+                    view.setFloat32(0, data, true);
+                } else if (bits[newTypeIndex] === 64) { // float64
+                    view.setFloat64(0, data, true);
+                }
+                for (let j = 0; j < bits[newTypeIndex] / 8; j++) {
+                    newArray.push(view.getUint8(j));
+                }
+            }
+        } else if (typeclass[newTypeIndex] === 2 || typeclass[newTypeIndex] === 1) { // new type : int or uint
+            for (let i = 0; i < modifiedArr.length; i++) {
+                let data = parseInt(modifiedArr[i]);
+                try {
+                    if (modifiedArr[i] === 'true') {
+                        data = 1;
+                    } else if (modifiedArr[i] === 'false') {
+                        data = 0;
+                    } else {
+                        data = parseInt(modifiedArr[i]);
+                    }
+                } catch (err) {
+                    return;
+                }
+
+                if (typeclass[newTypeIndex] === 1) { // int
+                    if (bits[newTypeIndex] === 8) { // int8
+                        view.setInt8(0, data, true);
+                    } else if (bits[newTypeIndex] === 16) { // int16
+                        view.setInt16(0, data, true);
+                    } else if (bits[newTypeIndex] === 32) { // int32
+                        view.setInt32(0, data, true);
+                    } else if (bits[newTypeIndex] === 64) { // int64
+                        view.setBigInt64(0, BigInt(parseInt(String(data))), true);
+                    }
+                } else { // uint
+                    if (data < 0) {
+                        return;
+                    }
+
+                    if (bits[newTypeIndex] === 8) { // uint8
+                        view.setUint8(0, data, true);
+                    } else if (bits[newTypeIndex] === 32) { // uint32
+                        view.setUint32(0, data, true);
+                    } else if (bits[newTypeIndex] === 64) { // uint64
+                        view.setBigUint64(0, BigInt(parseInt(String(data))), true);
+                    }
+                }
+                for (let j = 0; j < bits[newTypeIndex] / 8; j++) {
+                    newArray.push(view.getUint8(j));
+                }
+            }
+        
+        } else if (typeclass[newTypeIndex] === 4) { // current type : boolean or new type : boolean
+            for (let i = 0; i < modifiedArr.length; i++) {
+                if (modifiedArr[i]) {
+                    newArray.push(1);
+                } else {
+                    newArray.push(0);
                 }
             }
         }
-    }
-
-    /**
-     * TODO Implement edit()
-     * Tensors edit function
-     */
-
-    /**
-     * TODO Implement save()
-     * Tensors save function
-     */
-
-    /**
-     * TODO Implement cancel()
-     * Tensors cancel function
-     */
-
-    /**
-     * TODO Implement compareData()
-     * Compare and change transformed data against corrected data
-     */
-
-    /**
-     * TODO Implement removeBracket()
-     * Bracket remove function
-     */
-
-    /**
-     * TODO Implement validationCheck()
-     * Changed buffers validation check function
-     */
-
-    /**
-     * TODO Implement editBuffer()
-     * Buffer edit function
-     */
-
-    /**
-     * TODO Implement changeBufferType()
-     * Buffer tyep change function
-     */
-
-    on(event, callback) {
-        this._events = this._events || {};
-        this._events[event] = this._events[event] || [];
-        this._events[event].push(callback);
-    }
-
-    _raise(event, data) {
-        if (this._events && this._events[event]) {
-            for (const callback of this._events[event]) {
-                callback(this, data);
+        /* ? -> String */
+        else if (typeclass[newTypeIndex] === 3) {
+            for (let i = 0; i < modifiedArr.length; i++) {
+                var str = String(modifiedArr[i]);
+                for (let j = 0; j < str.length; j++) {
+                    newArray.push(str.charCodeAt(j));
+                }
             }
         }
+
+        this._editObject._arguments._initializer._data = newArray;
+
+        return 1;
     }
 };
 
