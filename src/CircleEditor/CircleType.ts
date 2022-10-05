@@ -164,7 +164,6 @@ export const CircleType: any = {
 export const NormalType: any = {
   'int': Number,
   'int32': Number,
-  'string': String,
   'byte': Number,
   'ubyte': Number,
   'uint': Number,
