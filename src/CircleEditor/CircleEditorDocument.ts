@@ -60,8 +60,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
   public readonly onDidDispose = this._onDidDispose.event;
 
   // tell to webview
-  public readonly _onDidChangeContent = this._register(
-      new vscode.EventEmitter<any>());
+  public readonly _onDidChangeContent = this._register(new vscode.EventEmitter<any>());
   public readonly onDidChangeContent = this._onDidChangeContent.event;
 
   // tell to vscode
