@@ -20,7 +20,6 @@ import {backendRegistrationApi} from './Backend/API';
 import {CfgEditorPanel} from './CfgEditor/CfgEditorPanel';
 import {CircleEditorProvider} from './CircleEditor/CircleEditorProvider';
 import {CircleViewerProvider} from './CircleGraph/CircleViewer';
-import {CircleEditorProvider} from './CircleEditor/CircleEditorProvider';
 import {DeviceViewProvider} from './Execute/DeviceViewProvider';
 import {JsonTracerViewerPanel} from './Jsontracer/JsonTracerViewerPanel';
 import {MondrianEditorProvider} from './Mondrian/MondrianEditor';
@@ -67,7 +66,7 @@ export function activate(context: vscode.ExtensionContext) {
   CircleEditorProvider.register(context);
 
   CircleViewerProvider.register(context);
-  CircleEditorProvider.register(context);
+
 
   // returning backend registration function that will be called by backend extensions
   return backendRegistrationApi();
