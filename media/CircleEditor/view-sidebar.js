@@ -711,7 +711,7 @@ class NodeAttributeView {
             this._expander = this._host.document.createElement('div');
             this._edit = this._host.document.createElement('div');
             this._expander.className = 'sidebar-view-item-value-expander codicon codicon-chevron-down';
-            this._edit.className = "sidebar-view-item-value-expander codicon codicon-edit";
+            this._edit.className = 'sidebar-view-item-value-expander codicon codicon-edit';
             this._expander.addEventListener('click', () => {
                 this.toggle();
             });
