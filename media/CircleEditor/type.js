@@ -15,7 +15,7 @@
  */
 
 /* eslint-disable */
-let typeName = {
+const optionValues = {
     'ActivationFunctionType': ['NONE', 'RELU', 'RELU_N1_TO_1', 'RELU6', 'TANH', 'SIGN_BIT'],
     'Padding': ['SAME', 'VALID'],
     'LSHProjectionType': ['UNKNOWN', 'SPARSE', 'DENSE'],
@@ -28,14 +28,12 @@ let typeName = {
     'DataFormat': ['CHANNELS_LAST', 'CHANNELS_FIRST'],
 };
 
-let tensorType = [
-    'FLOAT32', 'FLOAT16', 'INT32', 'UINT8', 'INT64', 'BOOLEAN', 'INT16', 'INT8', 'FLOAT64',
-    'UINT64', 'UINT32'
-];
+const tensorType =
+    ['FLOAT32', 'FLOAT16', 'INT32', 'UINT8', 'INT64', 'BOOLEAN', 'INT16', 'INT8', 'FLOAT64'];
 
-let customType = ['int', 'boolean', 'string'];
+const customType = ['int', 'boolean', 'string'];
 
-let builtinOperatorType = {
+const builtinOperatorTypeEnum = {
     'ADD': 0,
     'AVERAGEPOOL2D': 1,
     'CONCATENATION': 2,
