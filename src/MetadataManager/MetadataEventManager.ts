@@ -75,7 +75,9 @@ class MetadataEventQueue {
   }
 
   start(){
-    this.autoAction();
+    if(!this.isEmpty()){
+      this.autoAction();
+    }
   }
 }
 
