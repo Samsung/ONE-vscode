@@ -18,6 +18,7 @@ import * as vscode from 'vscode';
 
 import {backendRegistrationApi} from './Backend/API';
 import {CfgEditorPanel} from './CfgEditor/CfgEditorPanel';
+import {CircleEditorProvider} from './CircleEditor/CircleEditorProvider';
 import {CircleViewerProvider} from './CircleGraph/CircleViewer';
 import {DeviceViewProvider} from './Execute/DeviceViewProvider';
 import {JsonTracerViewerPanel} from './Jsontracer/JsonTracerViewerPanel';
@@ -62,6 +63,8 @@ export function activate(context: vscode.ExtensionContext) {
 
   PartEditorProvider.register(context);
   PartGraphSelPanel.register(context);
+
+  CircleEditorProvider.register(context);
 
   CircleViewerProvider.register(context);
 
