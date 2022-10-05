@@ -638,9 +638,11 @@ function setDrawInfoInNode(type, node, rectSizeHeight, waitForDouble) {
           (_p, d) => {
             if (waitForDouble === null) {
               waitForDouble = setTimeout(() => {
+
                 if(d.data['data-list'][d.data['represent-idx']]['is-deleted']) {
                   return;
                 }
+                
                 postMessage('update', {
                   path: d.data['data-list'][d.data['represent-idx']].path,
                   historyList: historyList,
