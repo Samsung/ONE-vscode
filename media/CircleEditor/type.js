@@ -26,12 +26,11 @@ let typeName = {
     'MirrorPadMode': ['REFLECT', 'SYMMETRIC'],
     'CustomOptionsFormat': ['FLEXBUFFERS'],
     'DataFormat': ['CHANNELS_LAST', 'CHANNELS_FIRST'],
-    'boolean': ['true', 'false']
 };
 
 let tensorType = [
-    'FLOAT32', 'FLOAT16', 'INT32', 'UINT8', 'INT64', 'BOOL', 'INT16', 'INT8', 'FLOAT64', 'UINT64',
-    'UINT32'
+    'FLOAT32', 'FLOAT16', 'INT32', 'UINT8', 'INT64', 'BOOLEAN', 'INT16', 'INT8', 'FLOAT64',
+    'UINT64', 'UINT32'
 ];
 
 let customType = ['int', 'boolean', 'string'];
