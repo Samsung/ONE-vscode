@@ -1428,11 +1428,6 @@ sidebar.ArgumentView = class {
             this._element.appendChild(location);
         }
 
-        function resize(obj) {
-            obj.style.height = '1px';
-            obj.style.height = (12 + obj.scrollHeight) + 'px';
-        }
-
         if (initializer) {
             const contentLine = this._host.document.createElement('textarea');
             const valueLine = this._host.document.createElement('div');
