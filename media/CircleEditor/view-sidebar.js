@@ -668,9 +668,8 @@ class NodeAttributeView {
         } else {
             this._editObject.name = node.type.name;
         }
-
-        const value = this._attribute.value;
-        this.show(value);
+        
+        this.show();
     }
 
     show(){
@@ -920,12 +919,12 @@ class NodeAttributeView {
 
     save(){
         if (this._attribute._type === 'int32') {
-            if(this._line.value - 0 > 2147483648) {
-                vscode.postMessage({
-                    command : 'alert',
-                    text: 'Can\'t exceed 2,147,483,648'
-                });
-                return;
+        if(this._line.value - 0 > 2147483648) {
+            vscode.postMessage({
+                command : 'alert',
+                text: 'Can\'t exceed 2,147,483,648'
+            });
+            return;
             }
         }
 
@@ -1158,7 +1157,7 @@ sidebar.ArgumentView = class {
                 if (quantization) {
                     const quantizationLine = this._host.document.createElement('div');
                     quantizationLine.className = 'sidebar-view-item-value-line-border';
-                    const content = !Array.isArray(quantization) ? quantization : '<br><br>' + quantization.map((value) => '  ' + value).join('<br>');
+                    const content = !Array.isArray(quantization) ? quantization : '<br><br>' + quantization.map((value) => '    ' + value).join('<br>');
                     quantizationLine.innerHTML = '<span class=\'sidebar-view-item-value-line-content\'>quantization: ' + '<b>' + content + '</b></span>';
                     this._element.appendChild(quantizationLine);
                 }
@@ -1385,7 +1384,7 @@ sidebar.ArgumentView = class {
         if (quantization) {
             const quantizationLine = this._host.document.createElement('div');
             quantizationLine.className = 'sidebar-view-item-value-line-border';
-            const content = !Array.isArray(quantization) ? quantization : '<br><br>' + quantization.map((value) => '  ' + value).join('<br>');
+            const content = !Array.isArray(quantization) ? quantization : '<br><br>' + quantization.map((value) => '    ' + value).join('<br>');
             quantizationLine.innerHTML = '<span class=\'sidebar-view-item-value-line-content\'>quantization: ' + '<b>' + content + '</b></span>';
             this._element.appendChild(quantizationLine);
         }
@@ -3079,7 +3078,7 @@ markdown.Generator = class {
                 case 'paragraph':
                 case 'text':
                 case 'heading': {
-                    token.tokens  = this._tokenizeInline(token.text, links, false, false, '');
+                    token.tokens    = this._tokenizeInline(token.text, links, false, false, '');
                     break;
                 }
                 case 'table': {

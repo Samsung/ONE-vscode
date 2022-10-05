@@ -1,10 +1,28 @@
-import * as vscode from "vscode";
-import { CircleEditorDocument } from "./CircleEditorDocument";
-import { disposeAll } from "./dispose";
-import * as fs from "fs";
-import { getNonce } from "../Utils/external/Nonce";
-import { CircleException } from "./CircleEditorException";
+/*
+ * Copyright (c) 2022 Samsung Electronics Co., Ltd. All Rights Reserved
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import * as fs from 'fs';
+import * as vscode from 'vscode';
+import {Balloon} from '../Utils/Balloon';
+
+import {disposeAll} from '../Utils/external/Dispose';
+import {getNonce} from '../Utils/external/Nonce';
 import {getUri} from '../Utils/external/Uri';
+
+import {CircleEditorDocument} from './CircleEditorDocument';
 
 /**
  * Message commands for communicating with webviews
@@ -32,7 +50,7 @@ export enum MessageDefs {
   partition = "partition",
   // commands for custom editor features
   edit = "edit",
-  customType = "customType",
+  customType = "getCustomOpAttrT",
   loadJson = "loadJson",
   updateJson = "updateJson",
   requestEncodingData = "requestEncodingData"
@@ -41,15 +59,14 @@ export enum MessageDefs {
 /**
  * Custom Editor Provider necessary for vscode extension API
  */
-export class CircleEditorProvider implements vscode.CustomEditorProvider<CircleEditorDocument>{
-  public static readonly viewType = "one.editor.circle";
-  private readonly folderMediaCircleEditor = "media/CircleEditor";
+export class CircleEditorProvider implements vscode.CustomEditorProvider<CircleEditorDocument> {
+  public static readonly viewType = 'one.editor.circle';
+  private readonly folderMediaCircleEditor = 'media/CircleEditor';
 
   constructor(private readonly _context: vscode.ExtensionContext) {}
 
-  private readonly _onDidChangeCustomDocument = new vscode.EventEmitter<
-    vscode.CustomDocumentEditEvent<CircleEditorDocument>
-  >();
+  private readonly _onDidChangeCustomDocument =
+      new vscode.EventEmitter<vscode.CustomDocumentEditEvent<CircleEditorDocument>>();
   public readonly onDidChangeCustomDocument = this._onDidChangeCustomDocument.event;
 
   private readonly webviews = new WebviewCollection();
@@ -58,60 +75,46 @@ export class CircleEditorProvider implements vscode.CustomEditorProvider<CircleE
     const provider = new CircleEditorProvider(context);
 
     const registrations = [
-      vscode.window.registerCustomEditorProvider(
-        CircleEditorProvider.viewType,
-        provider,
-        {
-          webviewOptions: {
-            retainContextWhenHidden: true,
-          },
-          supportsMultipleEditorsPerDocument: true,
-        }
-      ),
+      vscode.window.registerCustomEditorProvider(CircleEditorProvider.viewType, provider, {
+        webviewOptions: {
+          retainContextWhenHidden: true,
+        },
+        supportsMultipleEditorsPerDocument: true,
+      }),
       // TODO: Add command registrations
     ];
-    registrations.forEach((disposable) =>
-      context.subscriptions.push(disposable)
-    );
+    registrations.forEach((disposable) => context.subscriptions.push(disposable));
   }
 
   async openCustomDocument(
-    uri: vscode.Uri,
-    openContext: { backupId?: string },
-    _token: vscode.CancellationToken
-  ): Promise<CircleEditorDocument> {
+      uri: vscode.Uri, _openContext: {backupId?: string},
+      _token: vscode.CancellationToken): Promise<CircleEditorDocument> {
     const document: CircleEditorDocument = await CircleEditorDocument.create(uri);
 
     const listeners: vscode.Disposable[] = [];
 
-    listeners.push(
-      document.onDidChangeDocument((e) => {
-        // Tell VS Code that the document has been edited by the use.
-        this._onDidChangeCustomDocument.fire({
-          document,
-          ...e,
-        });
-      })
-    );
+    listeners.push(document.onDidChangeDocument((e) => {
+      // Tell VS Code that the document has been edited by the use.
+      this._onDidChangeCustomDocument.fire({
+        document,
+        ...e,
+      });
+    }));
 
-    listeners.push(
-      document.onDidChangeContent((e) => {
-        // Update all webviews when the document changes
-        for (const webviewPanel of this.webviews.get(document.uri)) {
-          this.postMessage(webviewPanel, e);
-        }
-      })
-    );
+    listeners.push(document.onDidChangeContent((e) => {
+      // Update all webviews when the document changes
+      for (const webviewPanel of this.webviews.get(document.uri)) {
+        this.postMessage(webviewPanel, e);
+      }
+    }));
 
     document.onDidDispose(() => disposeAll(listeners));
     return document;
   }
 
   resolveCustomEditor(
-    document: CircleEditorDocument,
-    webviewPanel: vscode.WebviewPanel,
-    token: vscode.CancellationToken
-  ): void | Thenable<void> {
+      document: CircleEditorDocument, webviewPanel: vscode.WebviewPanel,
+      _token: vscode.CancellationToken): void|Thenable<void> {
     this.webviews.add(document.uri, webviewPanel);
 
     // Setup initial content for the webview
@@ -120,61 +123,48 @@ export class CircleEditorProvider implements vscode.CustomEditorProvider<CircleE
     };
     webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview);
 
-    webviewPanel.webview.onDidReceiveMessage((e) =>
-      this.onMessage(document, e)
-    );
+    webviewPanel.webview.onDidReceiveMessage((e) => this.onMessage(document, e));
   }
 
-  saveCustomDocument(
-    document: CircleEditorDocument,
-    cancellation: vscode.CancellationToken
-  ): Thenable<void> {
+  saveCustomDocument(document: CircleEditorDocument, cancellation: vscode.CancellationToken):
+      Thenable<void> {
     return document.save(cancellation);
   }
   saveCustomDocumentAs(
-    document: CircleEditorDocument,
-    destination: vscode.Uri,
-    cancellation: vscode.CancellationToken
-  ): Thenable<void> {
+      document: CircleEditorDocument, destination: vscode.Uri,
+      cancellation: vscode.CancellationToken): Thenable<void> {
     return document.saveAs(destination, cancellation);
   }
-  revertCustomDocument(
-    document: CircleEditorDocument,
-    cancellation: vscode.CancellationToken
-  ): Thenable<void> {
+  revertCustomDocument(document: CircleEditorDocument, cancellation: vscode.CancellationToken):
+      Thenable<void> {
     return document.revert(cancellation);
   }
   backupCustomDocument(
-    document: CircleEditorDocument,
-    context: vscode.CustomDocumentBackupContext,
-    cancellation: vscode.CancellationToken
-  ): Thenable<vscode.CustomDocumentBackup> {
+      document: CircleEditorDocument, context: vscode.CustomDocumentBackupContext,
+      cancellation: vscode.CancellationToken): Thenable<vscode.CustomDocumentBackup> {
     return document.backup(context.destination, cancellation);
   }
 
-  private postMessage(
-    panel: vscode.WebviewPanel,
-    body: any
-  ): void {
-    panel.webview.postMessage( body );
+  private postMessage(panel: vscode.WebviewPanel, body: any): void {
+    panel.webview.postMessage(body);
   }
 
   private onMessage(document: CircleEditorDocument, message: any) {
     switch (message.command) {
       case MessageDefs.alert:
-        CircleException.exceptionAlert(message.text); //error msg
+        Balloon.error(message.text, false);
         return;
       case MessageDefs.request:
         this.handleRequest(document, message.url, message.encoding);
         return;
       case MessageDefs.pageloaded:
-        return; //html load
+        return;
       case MessageDefs.loadmodel:
-        document.sendModel(message.offset);
+        document.sendModel(parseInt(message.offset));
         return;
-      case MessageDefs.finishload: //load model finish
+      case MessageDefs.finishload:
         return;
-      case MessageDefs.selection: //return
+      case MessageDefs.selection:
         return;
       case MessageDefs.edit:
         document.makeEdit(message);
@@ -190,38 +180,38 @@ export class CircleEditorProvider implements vscode.CustomEditorProvider<CircleE
         return;
       case MessageDefs.requestEncodingData:
         document.sendEncodingData(message);
+      default:
+        // TODO: add MessageDefs and appropriate function to handle this request
+        return;
     }
   }
 
-	protected handleRequest(document: CircleEditorDocument, url: string, encoding: string) {
+  protected handleRequest(document: CircleEditorDocument, url: string, encoding: string) {
     // TODO check scheme
     const reqUrl = new URL(url);
     let filePath = vscode.Uri.joinPath(
         this._context.extensionUri, this.folderMediaCircleEditor, reqUrl.pathname);
     if (!fs.existsSync(filePath.fsPath)) {
       filePath = vscode.Uri.joinPath(
-        this._context.extensionUri, `${this.folderMediaCircleEditor}/external`, reqUrl.pathname);
+          this._context.extensionUri, `${this.folderMediaCircleEditor}/external`, reqUrl.pathname);
     }
 
     try {
-      const fileData = fs.readFileSync(filePath.fsPath, { encoding: encoding, flag: 'r' });
-      document._onDidChangeContent.fire({ command: "response", response: fileData });
+      const fileData = fs.readFileSync(filePath.fsPath, {encoding: encoding, flag: 'r'});
+      document._onDidChangeContent.fire({command: 'response', response: fileData});
     } catch (err) {
-      document._onDidChangeContent.fire({command: "error", response: ''});
+      document._onDidChangeContent.fire({command: 'error', response: ''});
     }
   }
-  
+
   private getHtmlForWebview(webview: vscode.Webview): string {
-    const htmlUrl = webview.asWebviewUri(
-      vscode.Uri.joinPath(
-        this._context.extensionUri,
-        this.folderMediaCircleEditor,
-        "index.html"
-      )
-    );
-    const codiconUri = getUri(webview, this._context.extensionUri, ['node_modules','@vscode','codicons','dist','codicon.css']);
-    let html = fs.readFileSync(htmlUrl.fsPath, { encoding: "utf-8" });
-        
+    const htmlUrl = webview.asWebviewUri(vscode.Uri.joinPath(
+        this._context.extensionUri, this.folderMediaCircleEditor, 'index.html'));
+    const codiconUri = getUri(
+        webview, this._context.extensionUri,
+        ['node_modules', '@vscode', 'codicons', 'dist', 'codicon.css']);
+    let html = fs.readFileSync(htmlUrl.fsPath, {encoding: 'utf-8'});
+
     const nonce = getNonce();
     html = html.replace(/%nonce%/gi, nonce);
     html = html.replace('%webview.cspSource%', webview.cspSource);
@@ -262,7 +252,8 @@ export class CircleEditorProvider implements vscode.CustomEditorProvider<CircleE
     return vscode.Uri.joinPath(this._context.extensionUri, this.folderMediaCircleEditor, file);
   }
 
-  private updateExternalUri(html: string, webview: vscode.Webview, search: string, replace: string) {
+  private updateExternalUri(
+      html: string, webview: vscode.Webview, search: string, replace: string) {
     const replaceUri = this.getUriFromPath(webview, 'external/' + replace);
     return html.replace(search, `${replaceUri}`);
   }
@@ -283,15 +274,13 @@ export class CircleEditorProvider implements vscode.CustomEditorProvider<CircleE
  * class for retaining webviews opened
  */
 class WebviewCollection {
-  private readonly _webviews = new Set<{
-    readonly resource: string;
-    readonly webviewPanel: vscode.WebviewPanel;
-  }>();
+  private readonly _webviews =
+      new Set<{readonly resource: string; readonly webviewPanel: vscode.WebviewPanel;}>();
 
   /**
    * Get all known webviews for a given uri.
    */
-  public *get(uri: vscode.Uri): Iterable<vscode.WebviewPanel> {
+  public * get(uri: vscode.Uri): Iterable<vscode.WebviewPanel> {
     const key = uri.toString();
 
     for (const entry of this._webviews) {
@@ -305,7 +294,7 @@ class WebviewCollection {
    * Add a new webview to the collection.
    */
   public add(uri: vscode.Uri, webviewPanel: vscode.WebviewPanel) {
-    const entry = { resource: uri.toString(), webviewPanel };
+    const entry = {resource: uri.toString(), webviewPanel};
     this._webviews.add(entry);
 
     webviewPanel.onDidDispose(() => {
