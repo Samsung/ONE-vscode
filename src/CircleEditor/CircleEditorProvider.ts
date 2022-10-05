@@ -166,7 +166,9 @@ export class CircleEditorProvider implements vscode.CustomEditorProvider<CircleE
       case MessageDefs.edit:
         document.makeEdit(message);
         return;
+      default:
         // TODO: add MessageDefs and appropriate function to handle this request
+        return;
     }
   }
 

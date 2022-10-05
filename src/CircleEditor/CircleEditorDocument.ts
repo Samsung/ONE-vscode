@@ -20,7 +20,6 @@ import * as vscode from 'vscode';
 import {Disposable} from '../Utils/external/Dispose';
 
 import * as Circle from './circle_schema_generated';
-import {CustomInfoMessage, RequestMessage, ResponseFileRequest, ResponseJson, ResponseModel, ResponseModelPath} from './MessageType';
 
 /**
  * Custom Editor Document necessary for vscode extension API
@@ -62,8 +61,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 
   // tell to webview
   public readonly _onDidChangeContent = this._register(
-      new vscode.EventEmitter<{readonly modelData: Uint8Array;}|ResponseModel|CustomInfoMessage|
-                              ResponseModelPath|ResponseFileRequest|ResponseJson>());
+      new vscode.EventEmitter<any>());
   public readonly onDidChangeContent = this._onDidChangeContent.event;
 
   // tell to vscode
@@ -87,7 +85,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
   /**
    * execute appropriate edit feature and calls notifyEdit function
    */
-  makeEdit(message: RequestMessage) {
+  makeEdit(message: any) {
     const oldModelData = this.modelData;
     switch (message.type) {
       case 'attribute':
@@ -131,13 +129,12 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
       return;
     }
 
-    let responseModelPath:
-        ResponseModelPath = {command: 'loadmodel', type: 'modelpath', value: this._uri.fsPath};
+    let responseModelPath = {command: 'loadmodel', type: 'modelpath', value: this._uri.fsPath};
     this._onDidChangeContent.fire(responseModelPath);
 
     let responseArray = this.modelData.slice(offset, offset + this.packetSize);
 
-    let responseModel: ResponseModel = {
+    let responseModel = {
       command: 'loadmodel',
       type: 'uint8array',
       offset: offset,
