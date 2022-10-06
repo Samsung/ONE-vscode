@@ -42,9 +42,6 @@
 
 var sidebar = sidebar || {};
 var base = base || require('./external/base');
-var typeName = typeName || {};
-var tensorType = tensorType || {};
-var customType = customType || {};
 
 sidebar.Sidebar = class {
     constructor(host, id) {
@@ -628,9 +625,9 @@ class NodeAttributeView {
             content = content.split('<').join('&lt;').split('>').join('&gt;');
         }
         let line;
-        if (typeName[type]) {
+        if (optionValues[type]) {
             line = this._host.document.createElement('select');
-            for (const options of typeName[type]) {
+            for (const options of optionValues[type]) {
                 const option = this._host.document.createElement('option');
                 option.setAttribute('value', options);
                 option.innerText = options;
