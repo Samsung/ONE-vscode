@@ -210,9 +210,10 @@ sidebar.NodeSidebar = class {
 
         const attributes = node.attributes;
         if (attributes && attributes.length > 0) {
-                const attributesElements = new sidebar.EditAttributesView(host, node, this._isCustom).render();
-                for(const attributesElement of attributesElements){
-                    this._elements.push(attributesElement);
+            const attributesElements =
+                new sidebar.EditAttributesView(host, node, this._isCustom).render();
+            for (const attributesElement of attributesElements) {
+                this._elements.push(attributesElement);
             }
         }
 
@@ -252,7 +253,7 @@ sidebar.NodeSidebar = class {
         const item = new sidebar.NameValueView(this._host, name, value);
         this._elements.push(item.render());
     }
-    
+
     _addInput(name, input) {
         if (input.arguments.length > 0) {
             const view = new sidebar.ParameterView(this._host, input);
@@ -300,8 +301,7 @@ sidebar.NodeSidebar = class {
     }
 };
 
-sidebar.EditAttributesView = class{
-
+sidebar.EditAttributesView = class {
     constructor(host, node, isCustom) {
         this._host = host;
         this._node = node;
@@ -329,14 +329,16 @@ sidebar.EditAttributesView = class{
             this._addAttribute(attribute.name, attribute, index);
             index++;
         }
-        if(isCustom === true){
+        if (isCustom === true) {
             const addAttribute = this._host.document.createElement('div');
             addAttribute.className = 'sidebar-view-item-value-add';
             addAttribute.innerText = '+ New Attributes';
-            addAttribute.addEventListener('click', () => {
-                // TODO will be implement
-                // this.add();
-            });
+            addAttribute.addEventListener(
+                'click',
+                () => {
+                    // TODO will be implement
+                    // this.add();
+                });
             this._attributesBox.appendChild(addAttribute);
             this._elements.push(this._attributesBox);
         }
@@ -350,25 +352,24 @@ sidebar.EditAttributesView = class{
     }
 
     _addAttribute(name, attribute, index) {
-        const item = new NodeAttributeView(this._host, attribute, this._isCustom, index, this._node);
+        const item =
+            new NodeAttributeView(this._host, attribute, this._isCustom, index, this._node);
         item.on('show-graph', (sender, graph) => {
             this._raise('show-graph', graph);
         });
         const view = new sidebar.NameValueView(this._host, name, item, index, 'attribute');
         this._attributes.push(view);
-        if(this._isCustom === true){
+        if (this._isCustom === true) {
             this._attributesBox.appendChild(view.render());
-        }
-        else{
+        } else {
             this._elements.push(view.render());
         }
     }
 
-    add()
-    {
+    add() {
         this._editObject._attribute.name = this._node.type.name;
         const keys = [];
-        for(const key of this._node.attributes){
+        for (const key of this._node.attributes) {
             keys.push(key.name);
             this._editObject._attribute[key.name] = key.value;
             this._editObject._attribute[key.name + '_type'] = key.type;
@@ -385,7 +386,7 @@ sidebar.EditAttributesView = class{
         //     data: this._editObject,
         // });
     }
-    
+
     render() {
         return this._elements;
     }
