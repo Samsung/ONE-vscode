@@ -438,7 +438,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 			resData._type[key] = customObjDataType;
 		}
 		let responseData = {
-			command: 'customType',
+			command: 'setCustomOpAttrT',
 			data: resData
 		};
 
@@ -458,7 +458,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		let bufferData : any = null;
 		name = data?._name;
 		subgraphIdx = Number(data._subgraphIdx);
-		if(name === undefined || name === undefined) {
+		if(name === undefined || subgraphIdx === undefined) {
 			Balloon.error("input data is undefined", false);
 			return;
 		}
@@ -468,7 +468,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		const isChanged : boolean = argument._isChanged;
 		tensorType = argument._type._dataType;
 		tensorShape = argument._type._shape._dimensions;
-		if(name === undefined || name === undefined || name === undefined || name === undefined) {
+		if(argname === undefined || tensorIdx === undefined || tensorType === undefined || tensorShape === undefined) {
 			Balloon.error("input data is undefined", false);
 			return;
 		}
@@ -520,11 +520,12 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 			let builtinOperatorKey = Circle.BuiltinOperator[i];
 			if(builtinOperatorKey === undefined) {continue;}
 			let tempKey : any = Circle.BuiltinOperator[i];
-			while(1){
-				const tempKey2 =  tempKey.replace('_','');
-				if(tempKey.length === tempKey2.length) {break;}
-				tempKey = tempKey2;
-			}
+			tempKey = tempKey.replaceAll('_','');
+			// while(1){
+			// 	const tempKey2 =  tempKey.replace('_','');
+			// 	if(tempKey.length === tempKey2.length) {break;}
+			// 	tempKey = tempKey2;
+			// }
 			builtinOperatorKey = tempKey;
 			builtinOperatorKey = builtinOperatorKey.toUpperCase();
 			if(builtinOperatorKey === inputTypeName){
@@ -558,11 +559,12 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 			let targetKey : any = null;
 			for(const obj in operator.builtinOptions){
 				let compKey : any = key;
-				while(1){
-					const compKey2 =  compKey.replace('_','');
-					if(compKey.length === compKey2.length) {break;}
-					compKey = compKey2;
-				}
+				compKey = compKey.replaceAll('_','');
+				// while(1){
+				// 	const compKey2 =  compKey.replace('_','');
+				// 	if(compKey.length === compKey2.length) {break;}
+				// 	compKey = compKey2;
+				// }
 				if(obj.toUpperCase() === compKey.toUpperCase()){
 					targetKey = obj;
 				}
