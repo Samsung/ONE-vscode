@@ -657,7 +657,7 @@ class NodeAttributeView {
                     this._element.appendChild(typeLine);
                 } else {
                     typeLine.innerHTML = 'type: ' +
-                        '<code><b>' + this._attribute.type + '</b></code>';
+                        '<code><b>' + type + '</b></code>';
                     this._element.appendChild(typeLine);
                 }
             } else {
@@ -668,7 +668,7 @@ class NodeAttributeView {
                     const option = this._host.document.createElement('option');
                     option.setAttribute('value', type);
                     option.innerText = type.toLowerCase();
-                    if (type.toLowerCase() === this._attribute.type) {
+                    if (type.toLowerCase() === type) {
                         option.setAttribute('selected', 'selected');
                     }
                     this._select.appendChild(option);
@@ -686,7 +686,7 @@ class NodeAttributeView {
             }
         }
 
-        if (this._attribute.type === 'tensor' && value) {
+        if (type === 'tensor' && value) {
             const state = value.state;
             const valueLine = this._host.document.createElement('div');
             valueLine.className = 'sidebar-view-item-value-line-border';
