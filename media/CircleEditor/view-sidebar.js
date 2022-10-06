@@ -513,9 +513,9 @@ sidebar.ValueTextView = class {
             element.appendChild(this._action);
         }
 
-        const list = Array.isArray(value) ? value : [ value ];
+        const list = Array.isArray(value) ? value : [value];
         let className = 'sidebar-view-item-value-line';
-        if(isCustom === true && this._type){
+        if (isCustom === true && this._type) {
             for (const item of list) {
                 const line = this._host.document.createElement('div');
                 this._input = this._host.document.createElement('input');
@@ -523,9 +523,12 @@ sidebar.ValueTextView = class {
                 this._saveButton = this._host.document.createElement('div');
                 this._cancelButton = this._host.document.createElement('div');
                 this._input.className = 'sidebar-view-item-value-line-input';
-                this._editButton.className = 'sidebar-view-item-value-expander codicon codicon-edit';
-                this._saveButton.className = 'sidebar-view-item-value-expander codicon codicon-save';
-                this._cancelButton.className = 'sidebar-view-item-value-expander codicon codicon-discard';
+                this._editButton.className =
+                    'sidebar-view-item-value-expander codicon codicon-edit';
+                this._saveButton.className =
+                    'sidebar-view-item-value-expander codicon codicon-save';
+                this._cancelButton.className =
+                    'sidebar-view-item-value-expander codicon codicon-discard';
                 this._input.value = item;
                 this._input.disabled = true;
                 this._saveButton.setAttribute('style', 'display: none;');
@@ -550,14 +553,14 @@ sidebar.ValueTextView = class {
                 });
             }
         } else {
-        for (const item of list) {
-            const line = this._host.document.createElement('div');
-            line.className = className;
-            line.innerText = item;
-            element.appendChild(line);
-            className = 'sidebar-view-item-value-line-border';
+            for (const item of list) {
+                const line = this._host.document.createElement('div');
+                line.className = className;
+                line.innerText = item;
+                element.appendChild(line);
+                className = 'sidebar-view-item-value-line-border';
+            }
         }
-    }
     }
 
     edit() {
@@ -570,7 +573,7 @@ sidebar.ValueTextView = class {
     save() {
         this._editObject._attribute.name = this._input.value;
         const keys = [];
-        for(const key of this._node.attributes){
+        for (const key of this._node.attributes) {
             keys.push(key.name);
             this._editObject._attribute[key.name] = key.value;
             this._editObject._attribute[key.name + '_type'] = key.type;
