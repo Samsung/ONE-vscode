@@ -17,9 +17,19 @@
 import * as flatbuffers from 'flatbuffers';
 import * as vscode from 'vscode';
 
+import {Balloon} from '../Utils/Balloon';
 import {Disposable} from '../Utils/external/Dispose';
 
 import * as Circle from './circle_schema_generated';
+import * as Types from './CircleType';
+
+/**
+ * Make BigInt data to string type.
+ * This is called by JSON.stringify function.
+ */
+(BigInt.prototype as any).toJSON = function() {
+  return this.toString();
+};
 
 /**
  * Custom Editor Document necessary for vscode extension API
@@ -190,5 +200,177 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
         }
       }
     };
+  }
+
+  /**
+   * edit _model state when user modified model through json editor
+   */
+  editJsonModel(newModelString: string) {
+    const oldModelData = this.modelData;
+    try {
+      let newModel = JSON.parse(newModelString);
+
+      // Copying model from message to _model starts from here.
+      // This is required as parsed json object do not have any prototypes necessary for
+      // Circle.ModelT object.
+
+      // version
+      this._model.version = newModel.version;
+
+      // operatorCodes
+      this._model.operatorCodes = newModel.operatorCodes.map((data: Circle.OperatorCodeT) => {
+        return Object.setPrototypeOf(data, Circle.OperatorCodeT.prototype);
+      });
+
+      // subgraphs
+      this._model.subgraphs = newModel.subgraphs.map((data: Circle.SubGraphT) => {
+        // tensors
+        data.tensors = data.tensors.map((tensor: Circle.TensorT) => {
+          if (tensor.quantization) {
+            if (tensor.quantization.details) {
+              tensor.quantization.details = Object.setPrototypeOf(tensor.quantization?.details, Circle.CustomQuantizationT.prototype);
+            }
+            tensor.quantization.zeroPoint = tensor.quantization.zeroPoint.map(value => {
+              return BigInt(value);
+            });
+            tensor.quantization = Object.setPrototypeOf(
+                tensor.quantization, Circle.QuantizationParametersT.prototype);
+          }
+          // sparsity parameters
+          if (tensor.sparsity) {
+            if (tensor.sparsity.dimMetadata) {
+              tensor.sparsity.dimMetadata =
+                  tensor.sparsity.dimMetadata.map((dimMeta: Circle.DimensionMetadataT) => {
+                    if (dimMeta.arraySegmentsType && dimMeta.arraySegments) {
+                      const sparseVectorClass = Object.entries(Types.SparseVector).find(element => {
+                        return dimMeta.arraySegmentsType === parseInt(element[0]);
+                      });
+                      if (sparseVectorClass && sparseVectorClass[1]) {
+                        dimMeta.arraySegments = Object.setPrototypeOf(
+                            dimMeta.arraySegments, sparseVectorClass[1].prototype);
+                      }
+                    } else {
+                      dimMeta.arraySegments = null;
+                    }
+                    if (dimMeta.arrayIndicesType && dimMeta.arrayIndices) {
+                      const sparseVectorClass = Object.entries(Types.SparseVector).find(element => {
+                        return dimMeta.arrayIndicesType === parseInt(element[0]);
+                      });
+                      if (sparseVectorClass && sparseVectorClass[1]) {
+                        dimMeta.arrayIndices = Object.setPrototypeOf(
+                            dimMeta.arrayIndices, sparseVectorClass[1].prototype);
+                      }
+                    } else {
+                      dimMeta.arrayIndices = null;
+                    }
+                    return Object.setPrototypeOf(dimMeta, Circle.DimensionMetadataT.prototype);
+                  });  // end map dimMeta
+
+              if (!tensor.sparsity.traversalOrder || !tensor.sparsity.traversalOrder.length) {
+                tensor.sparsity.traversalOrder = [];
+              }
+              if (!tensor.sparsity.blockMap || !tensor.sparsity.blockMap.length) {
+                tensor.sparsity.blockMap = [];
+              }
+              Object.setPrototypeOf(
+                  tensor.sparsity.dimMetadata, Circle.DimensionMetadataT.prototype);
+            }  // end if tensor.sparsity.dimMetadata
+
+            tensor.sparsity =
+                Object.setPrototypeOf(tensor.sparsity, Circle.SparsityParametersT.prototype);
+          }  // end if tensor.sparsity
+
+          return Object.setPrototypeOf(tensor, Circle.TensorT.prototype);
+        });
+
+        // operators
+        data.operators = data.operators.map((operator: Circle.OperatorT) => {
+          if (this._model.operatorCodes[operator.opcodeIndex].deprecatedBuiltinCode === 32) {
+            // case1 : custom operator
+            if (operator.builtinOptionsType || operator.builtinOptions) {
+              throw new Error;
+            }
+          } else {
+            // case2 : builtin operator
+            const optionsClass = Object.entries(Types.NumberToBuiltinOptions).find(element => {
+              return operator.builtinOptionsType === parseInt(element[0]);
+            });
+            if (optionsClass && optionsClass[1] && operator.builtinOptions) {
+              let tmpBuiltinOptions = new optionsClass[1];
+              Object.keys(operator.builtinOptions).forEach((element) => {
+                if (!(element in tmpBuiltinOptions)) {
+                  throw new Error;
+                }
+              });
+              Object.keys(tmpBuiltinOptions).forEach((element) => {
+                if (operator.builtinOptions && !(element in operator.builtinOptions)) {
+                  throw new Error;
+                }
+              });
+              operator.builtinOptions = Object.setPrototypeOf(
+                  operator.builtinOptions === null ? {} : operator.builtinOptions,
+                  optionsClass[1].prototype);
+            } else {
+              operator.builtinOptions = null;
+            }
+          }
+          return Object.setPrototypeOf(operator, Circle.OperatorT.prototype);
+        });  // end map operators
+        return Object.setPrototypeOf(data, Circle.SubGraphT.prototype);
+      });  // end map subgraphs
+
+      // description
+      this._model.description = newModel.description;
+
+      // buffers
+      this._model.buffers = newModel.buffers.map((data: Circle.BufferT) => {
+        return Object.setPrototypeOf(data, Circle.BufferT.prototype);
+      });
+
+      // metadataBuffer
+      this._model.metadataBuffer = newModel.metadataBuffer;
+
+      // metadata
+      this._model.metadata = newModel.metadata.map((data: Circle.MetadataT) => {
+        return Object.setPrototypeOf(data, Circle.MetadataT.prototype);
+      });
+
+      // signatureDefs
+      this._model.signatureDefs = newModel.signatureDefs.map((data: Circle.SignatureDefT) => {
+        data.inputs = data.inputs.map((tensor: Circle.TensorMapT) => {
+          return Object.setPrototypeOf(tensor, Circle.TensorMapT.prototype);
+        });
+        data.outputs = data.outputs.map((tensor: Circle.TensorMapT) => {
+          return Object.setPrototypeOf(tensor, Circle.TensorMapT.prototype);
+        });
+        return Object.setPrototypeOf(data, Circle.SignatureDefT.prototype);
+      });
+      // end copying json to model object
+
+      const newModelData = this.modelData;
+      this.notifyEdit(oldModelData, newModelData);
+
+    } catch (e) {
+      this._model = this.loadModel(oldModelData);
+      Balloon.error('invalid model', false);
+    }
+  }
+
+  /**
+   * Send model of JSON format to webview.
+   * TODO: Implement feature to load json with multiple times as this does not work when size of
+   * JSON is too large.
+   */
+  loadJson() {
+    let jsonModel = JSON.stringify(this._model, null, 2);
+    const numberArrayStrings = jsonModel.match(/\[[0-9,\s]*\]/gi);
+    if (numberArrayStrings) {
+      numberArrayStrings.forEach(text => {
+        let replaced = text.replace(/,\s*/gi, ', ').replace(/\[\s*/gi, '[').replace(/\s*\]/gi, ']');
+        jsonModel = jsonModel.replace(text, replaced);
+      });
+    }
+    let responseJson = {command: 'loadJson', data: jsonModel};
+    this._onDidChangeContent.fire(responseJson);
   }
 }
