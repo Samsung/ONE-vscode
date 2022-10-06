@@ -24,14 +24,6 @@ import * as Circle from './circle_schema_generated';
 import * as Types from './CircleType';
 
 /**
- * Make BigInt data to string type.
- * This is called by JSON.stringify function.
- */
-(BigInt.prototype as any).toJSON = function() {
-  return this.toString();
-};
-
-/**
  * Custom Editor Document necessary for vscode extension API
  * This class contains model object as _model variable
  * and manages its state when modification is occured.
@@ -362,7 +354,9 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
    * JSON is too large.
    */
   loadJson() {
-    let jsonModel = JSON.stringify(this._model, null, 2);
+    let jsonModel = JSON.stringify(this._model, (_, v) => {
+      return typeof v === 'bigint' ? v.toString() : v;
+    }, 2);
     const numberArrayStrings = jsonModel.match(/\[[0-9,\s]*\]/gi);
     if (numberArrayStrings) {
       numberArrayStrings.forEach(text => {
