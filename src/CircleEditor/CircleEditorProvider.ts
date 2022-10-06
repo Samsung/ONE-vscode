@@ -49,7 +49,9 @@ export enum MessageDefs {
   // partiton of backends
   partition = 'partition',
   // commands for custom editor features
-  edit = 'edit'
+  edit = 'edit',
+  loadJson = 'loadJson',
+  updateJson = 'updateJson',
   // TODO: define messageDefs for additional features to be implemented
 }
 
@@ -165,6 +167,12 @@ export class CircleEditorProvider implements vscode.CustomEditorProvider<CircleE
         return;
       case MessageDefs.edit:
         document.makeEdit(message);
+        return;
+      case MessageDefs.loadJson:
+        document.loadJson();
+        return;
+      case MessageDefs.updateJson:
+        document.editJsonModel(message.data);
         return;
       default:
         // TODO: add MessageDefs and appropriate function to handle this request
