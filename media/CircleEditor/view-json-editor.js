@@ -83,14 +83,14 @@ jsonEditor.jsonEditor = class {
       closeButton.setAttribute('href', 'javascript:void(0)');
       closeButton.innerHTML = '&times;';
       closeButton.addEventListener('click', this._closeJsonEditorHandler);
-      jsonEditorBox.appendChild(closeButton);
+      // jsonEditorBox.appendChild(closeButton);
 
       const applyButton = this._host.document.createElement('button');
       applyButton.classList.add('jsonEditor-applybutton');
       applyButton.setAttribute('id', 'jsonEditor-applybutton');
       applyButton.addEventListener('click', this._applyEditHandler);
       applyButton.innerHTML = 'apply';
-      jsonEditorBox.appendChild(applyButton);
+      // jsonEditorBox.appendChild(applyButton);
 
 			const title = this._host.document.createElement('div');
 			title.classList.add('json-editor-title');
@@ -98,6 +98,9 @@ jsonEditor.jsonEditor = class {
 			const titleText = this._host.document.createElement('p');
 			titleText.classList.add('json-editor-title-text');
 			titleText.innerHTML = 'JSON Editor';
+
+      title.appendChild(applyButton);
+      title.appendChild(closeButton);
 
 			title.appendChild(titleText);
 			jsonEditorBox.appendChild(title);
