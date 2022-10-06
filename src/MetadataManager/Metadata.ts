@@ -56,6 +56,8 @@ export class BuildInfo {
 }
 
 export class Operator {
+  private static _maxSize = 1000000;
+
   public static async get(uri: vscode.Uri) {
     if (!uri.fsPath.endsWith('.circle')) {
       return [];
@@ -69,6 +71,7 @@ export class Operator {
     return operators;
   }
 
+  // TODO: change to run when users click 'View Metadata'
   public static async save(metaEntry: any, uri: vscode.Uri) {
     if (!uri.fsPath.endsWith('.circle')) {
       return;
@@ -76,8 +79,9 @@ export class Operator {
 
     const stat = fs.statSync(uri.fsPath);
     const operations: any = {};
-    // TODO deal with large files
-    if (stat.size > 10000) {
+
+    // Note maximum size is limited to 1MB at present in order not to affect the running time.
+    if (stat.size > Operator._maxSize) {
       operations['error-message'] = 'File size is too large';
     } else {
       const opInfo = await Operator.get(uri);
