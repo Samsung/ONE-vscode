@@ -1,8 +1,8 @@
 .jsonEditor { font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif; font-size: 12px; height: 100%; width: 0; position: fixed; transition: 0.2s; z-index: 1; top: 0; right: 0; background-color: #ececec; color: #242424; overflow: hidden; border-left: 1px solid #ccc; }
-.jsonEditor-closebutton { padding: 8px 8px 8px 32px; text-decoration: none; font-size: 15px; color: #777777; opacity: 1.0; display: block; transition: 0.2s; position: absolute; top: -10; right: 15px; margin-left: 50px; user-select: none; -webkit-user-select: none; -moz-user-select: none; }
+.jsonEditor-closebutton { padding: 8px 8px 8px 32px; text-decoration: none; font-size: 15px; color: white; opacity: 1.0; display: block; transition: 0.2s; position: absolute; top: -20; right: 15px; margin-left: 50px; user-select: none; -webkit-user-select: none; -moz-user-select: none; }
 .jsonEditor-closebutton:hover { color: #242424; }
 
-.jsonEditor-applybutton { padding: 8px 8px 8px 32px; background-color: rgba(0, 0, 0, 0); border: 0px; text-decoration: none; font-size: 15px; color: #777777; opacity: 1.0; display: block; transition: 0.2s; position: absolute; top: -10; right: 50px; margin-left: 50px; user-select: none; -webkit-user-select: none; -moz-user-select: none; }
+.jsonEditor-applybutton { padding: 8px 8px 8px 32px; background-color: rgba(0, 0, 0, 0); border: 0px; text-decoration: none; font-size: 15px; color: white; opacity: 1.0; display: block; transition: 0.2s; position: absolute; top: -20; right: 50px; margin-left: 50px; user-select: none; -webkit-user-select: none; -moz-user-select: none; cursor: pointer; }
 .jsonEditor-applybutton:hover { color: #242424; }
 .jsonEditor-content { padding-left: 20px; padding-right: 20px; margin-bottom: 20px; height: calc(100% - 60px); outline: none;}
 .jsonEditor-content:focus { outline: none; }

@@ -734,10 +734,6 @@ view.View = class {
         return this._modelFactoryService.accept(file);
     }
 
-    /**
-     * if subgraphIdx isn't null,
-     * the subgraph that is turned on is the subgraphIdx graph.
-     */
     open(context) {
         this._host.event('Model', 'Open', 'Size', context.stream ? context.stream.length : 0);
         this._sidebar.close();
@@ -834,7 +830,7 @@ view.View = class {
             return this.renderGraph(this._model, this.activeGraph)
                 .then(() => {
                     if (this._page !== 'default') {
-                            this.show('default');
+                        this.show('default');
                     }
                     for (let idx = 0; idx < model.graphs.length; idx++) {
                         model._graphs[idx]['_subgraphIdx'] = idx;
@@ -843,7 +839,7 @@ view.View = class {
                             if (model._graphs[idx]._nodes[jdx]._type?.category === 'custom') {
                                 model._graphs[idx]._nodes[jdx]._isCustom = true;
                                 vscode.postMessage({
-                                    command: 'customType',
+                                    command: 'getCustomOpAttrT',
                                     data: {
                                         _subgraphIdx: idx,
                                         _nodeIdx: jdx,
@@ -1195,8 +1191,7 @@ view.View = class {
                 }
                 this._sidebar.open(nodeSidebar.render(), 'Node Properties');
 
-                // 
-                this._host._viewingNode = node.location;
+                this._host._viewingNode = parseInt(node._location);
             } catch (error) {
                 const content = ' in \'' + this._model.identifier + '\'.';
                 if (error && !error.message.endsWith(content) &&
@@ -1409,7 +1404,7 @@ view.Node = class extends grapher.Node {
 
     _add(node) {
         // NOTE this.context = view.Graph
-        //      this.context.view = view
+        //    this.context.view = view
         const host = this.context.view._host;
         const header = this.header();
         const styles = ['node-item-type'];
