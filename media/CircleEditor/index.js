@@ -151,7 +151,7 @@ host.BrowserHost = class {
                     this._msgReload(message);
                     break;
                 case 'setCustomOpAttrT':
-                    this._msgSetCustomOpAttr(message);
+                    this._msgSetCustomOpAttrT(message);
                     break;
                 case 'loadJson':
                     if (this._view._jsonEditorOpened) {
