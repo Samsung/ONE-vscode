@@ -81,6 +81,8 @@ sidebar.Sidebar = class {
     }
 
     _pop() {
+        // Change the node index shown to null when sidebar is closed
+        this._host._viewingNode = null;
         this._deactivate();
         if (this._stack.length > 0) {
             this._stack.pop();
@@ -167,6 +169,7 @@ sidebar.NodeSidebar = class {
         this._attributes = [];
         this._inputs = [];
         this._outputs = [];
+        this._isCustom = node._isCustom;
 
         if (node.type) {
             let showDocumentation = null;
@@ -179,7 +182,9 @@ sidebar.NodeSidebar = class {
                 };
             }
             this._addProperty(
-                'type', new sidebar.ValueTextView(this._host, node.type.name, showDocumentation));
+                'type',
+                new sidebar.ValueTextView(
+                    this._host, node.type.name, showDocumentation, node, this._isCustom));
             if (node.type.module) {
                 this._addProperty(
                     'module', new sidebar.ValueTextView(this._host, node.type.module));
@@ -212,8 +217,23 @@ sidebar.NodeSidebar = class {
                 return au < bu ? -1 : au > bu ? 1 : 0;
             });
             this._addHeader('Attributes');
+            let index = 0;
             for (const attribute of sortedAttributes) {
-                this._addAttribute(attribute.name, attribute);
+                this._addAttribute(attribute.name, attribute, index);
+                index++;
+            }
+            if (this._isCustom === true) {
+                const addAttribute = this._host.document.createElement('div');
+                addAttribute.className = 'sidebar-view-item-value-add';
+                addAttribute.innerText = '+ New Attributes';
+                addAttribute.addEventListener(
+                    'click',
+                    () => {
+                        // TODO will be implemented
+                        // this.add();
+                    });
+                this._attributesBox.appendChild(addAttribute);
+                this._elements.push(this._attributesBox);
             }
         }
 
@@ -254,14 +274,21 @@ sidebar.NodeSidebar = class {
         this._elements.push(item.render());
     }
 
-    _addAttribute(name, attribute) {
-        const item = new NodeAttributeView(this._host, attribute);
+    _addAttribute(name, attribute, index) {
+        const item =
+            new NodeAttributeView(this._host, attribute, this._isCustom, index, this._node);
         item.on('show-graph', (sender, graph) => {
             this._raise('show-graph', graph);
         });
-        const view = new sidebar.NameValueView(this._host, name, item);
+        const view = new sidebar.NameValueView(this._host, name, item, index, 'attribute');
         this._attributes.push(view);
-        this._elements.push(view.render());
+        if (this._isCustom === true) {
+            this._attributesBox = this._host.document.createElement('div');
+            this._attributesBox.appendChild(view.render());
+            this._elements.push(this._attributesBox);
+        } else {
+            this._elements.push(view.render());
+        }
     }
 
     _addInput(name, input) {
@@ -324,7 +351,7 @@ sidebar.NodeSidebar = class {
  */
 
 sidebar.NameValueView = class {
-    constructor(host, name, value) {
+    constructor(host, name, value, index, title) {
         this._host = host;
         this._name = name;
         this._value = value;
@@ -333,10 +360,11 @@ sidebar.NameValueView = class {
         nameElement.className = 'sidebar-view-item-name';
 
         const nameInputElement = this._host.document.createElement('input');
+        nameInputElement.setAttribute('id', title + index);
         nameInputElement.setAttribute('type', 'text');
         nameInputElement.setAttribute('value', name);
         nameInputElement.setAttribute('title', name);
-        nameInputElement.setAttribute('readonly', 'true');
+        nameInputElement.disabled = true;
         nameElement.appendChild(nameInputElement);
 
         const valueElement = this._host.document.createElement('div');
@@ -444,67 +472,76 @@ sidebar.ValueTextView = class {
 };
 
 class NodeAttributeView {
-    constructor(host, attribute) {
+    constructor(host, attribute, isCustom, index, node) {
         this._host = host;
         this._attribute = attribute;
         this._element = this._host.document.createElement('div');
         this._element.className = 'sidebar-view-item-value';
+        this._isCustom = isCustom;
+        this._attributeName = '';
+        this._index = index;
+        this._node = node;
+        this._line;
+        this._select;
 
+        this._editObject = {
+            name: '',
+            _attribute: {},
+            _nodeIdx: parseInt(this._node.location),
+            _subgraphIdx: this._node._subgraphIdx
+        };
+
+        if (isCustom) {
+            this._editObject.name = 'custom';
+        } else {
+            this._editObject.name = node.type.name;
+        }
+
+        this.show();
+    }
+
+    show() {
         const type = this._attribute.type;
+        const value = this._attribute._value;
         if (type) {
             this._expander = this._host.document.createElement('div');
-            this._expander.className = 'sidebar-view-item-value-expander';
-            this._expander.innerText = '+';
+            this._edit = this._host.document.createElement('div');
+            this._expander.className =
+                'sidebar-view-item-value-expander codicon codicon-chevron-down';
+            this._edit.className = 'sidebar-view-item-value-expander codicon codicon-edit';
             this._expander.addEventListener('click', () => {
                 this.toggle();
             });
+            this._edit.addEventListener('click', () => {
+                this.edit();
+            });
             this._element.appendChild(this._expander);
+            this._element.appendChild(this._edit);
+        } else {
+            this._edit = this._host.document.createElement('div');
+            this._edit.className = 'sidebar-view-item-value-edit codicon codicon-edit';
+            this._edit.addEventListener('click', () => {
+                this.edit();
+            });
+            this._element.appendChild(this._edit);
         }
-        const value = this._attribute.value;
-        switch (type) {
-            case 'graph': {
-                const line = this._host.document.createElement('div');
-                line.className = 'sidebar-view-item-value-line-link';
-                line.innerHTML = value.name;
-                line.addEventListener('click', () => {
-                    this._raise('show-graph', value);
-                });
-                this._element.appendChild(line);
-                break;
-            }
-            case 'function': {
-                const line = this._host.document.createElement('div');
-                line.className = 'sidebar-view-item-value-line-link';
-                line.innerHTML = type === value.type.name;
-                line.addEventListener('click', () => {
-                    this._raise('show-graph', value.type);
-                });
-                this._element.appendChild(line);
-                break;
-            }
-            default: {
-                let content = new sidebar.Formatter(value, type).toString();
-                if (content && content.length > 1000) {
-                    content = content.substring(0, 1000) + '\u2026';
-                }
-                if (content && typeof content === 'string') {
-                    content = content.split('<').join('&lt;').split('>').join('&gt;');
-                }
-                const line = this._host.document.createElement('div');
-                line.className = 'sidebar-view-item-value-line';
-                line.innerHTML = content ? content : '&nbsp;';
-                this._element.appendChild(line);
-            }
-        }
-    }
 
-    render() {
-        return [this._element];
+        let content = new sidebar.Formatter(value, type).toString();
+        if (content) {
+            content = content.length > 1000 ? content.substring(0, 1000) + '\u2026' : content;
+            content = content.split('<').join('&lt;').split('>').join('&gt;');
+        }
+        const line = this._host.document.createElement('div');
+        line.className = 'sidebar-view-item-value-line';
+        line.innerHTML = content ? content : '&nbsp;';
+        this._element.appendChild(line);
     }
 
     toggle() {
-        if (this._expander.innerText === '+') {
-            this._expander.innerText = '-';
+        if (this._expander.className ===
+            'sidebar-view-item-value-expander codicon codicon-chevron-down') {
+            this._expander.className =
+                'sidebar-view-item-value-expander codicon codicon-chevron-up';
 
             const typeLine = this._host.document.createElement('div');
             typeLine.className = 'sidebar-view-item-value-line-border';
@@ -538,37 +575,232 @@ class NodeAttributeView {
                 this._element.appendChild(valueLine);
             }
         } else {
-            this._expander.innerText = '+';
-            while (this._element.childElementCount > 2) {
+            this._expander.className =
+                'sidebar-view-item-value-expander codicon codicon-chevron-down';
+            while (this._element.childElementCount > 3) {
                 this._element.removeChild(this._element.lastChild);
             }
         }
     }
 
-    /**
-     * TODO Implement edit()
-     * Attributes edit function
-     */
+    edit() {
+        while (this._element.childElementCount) {
+            this._element.removeChild(this._element.lastChild);
+        }
+        const type = this._attribute.type;
 
-    /**
-     * TODO Implement save()
-     * Attributes save function
-     */
+        if (this._isCustom === true) {
+            const input = this._host.document.getElementById('attribute' + this._index);
+            input.disabled = false;
+            this._attributeName = input.value;
+        }
 
-    /**
-     * TODO Implement cancel()
-     * Attributes cancel function
-     */
+        this._save = this._host.document.createElement('div');
+        this._cancel = this._host.document.createElement('div');
+        this._remove = this._host.document.createElement('div');
+        this._save.className = 'sidebar-view-item-value-save codicon codicon-save';
+        this._cancel.className = 'sidebar-view-item-value-cancel codicon codicon-discard';
+        this._remove.className = 'sidebar-view-item-value-remove codicon codicon-trash';
+        this._save.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.save();
+        });
+        this._cancel.addEventListener('click', () => {
+            this.cancel();
+        });
+        this._remove.addEventListener('click', () => {
+            this.remove();
+        });
+        if (this._isCustom === true) {
+            this._element.appendChild(this._remove);
+        }
+        this._element.appendChild(this._cancel);
+        this._element.appendChild(this._save);
 
-    /**
-     * TODO Implement remove()
-     * When in custom operator, attributes remove function
-     */
+        const value = this._attribute.value;
 
-    /**
-     * TODO Implement makeEditCustomObject()
-     * Object to send when modifying attributes
-     */
+        let content = new sidebar.Formatter(value, type).toString();
+        if (content) {
+            content = content.length > 1000 ? content.substring(0, 1000) + '\u2026' : content;
+            content = content.split('<').join('&lt;').split('>').join('&gt;');
+        }
+        let line;
+        if (optionValues[type]) {
+            line = this._host.document.createElement('select');
+            for (const options of optionValues[type]) {
+                const option = this._host.document.createElement('option');
+                option.setAttribute('value', options);
+                option.innerText = options;
+                if (options.toLowerCase() === content.toLowerCase()) {
+                    option.setAttribute('selected', 'selected');
+                }
+                line.appendChild(option);
+            }
+            line.setAttribute('name', type);
+            line.className = 'sidebar-view-item-value-line-select';
+        } else {
+            line = this._host.document.createElement('input');
+            line.setAttribute('type', 'text');
+            line.className = 'sidebar-view-item-value-line-input';
+            line.setAttribute('value', content ? content : '&nbsp;');
+        }
+        this._line = line;
+        this._element.appendChild(line);
+
+        if (type) {
+            const typeLine = this._host.document.createElement('div');
+            typeLine.className = 'sidebar-view-item-value-line-border';
+            if (!this._isCustom) {
+                if (type === 'tensor' && value && value.type) {
+                    typeLine.innerHTML = 'type: ' +
+                        '<code><b>' + value.type.toString() + '</b></code>';
+                    this._element.appendChild(typeLine);
+                } else {
+                    typeLine.innerHTML = 'type: ' +
+                        '<code><b>' + type + '</b></code>';
+                    this._element.appendChild(typeLine);
+                }
+            } else {
+                typeLine.innerHTML = 'type: ';
+                this._select = this._host.document.createElement('select');
+                this._select.className = 'sidebar-view-item-value-line-type-select';
+                for (const type of customType) {
+                    const option = this._host.document.createElement('option');
+                    option.setAttribute('value', type);
+                    option.innerText = type.toLowerCase();
+                    if (type.toLowerCase() === type) {
+                        option.setAttribute('selected', 'selected');
+                    }
+                    this._select.appendChild(option);
+                }
+                typeLine.appendChild(this._select);
+                this._element.appendChild(typeLine);
+            }
+
+            const description = this._attribute.description;
+            if (description) {
+                const descriptionLine = this._host.document.createElement('div');
+                descriptionLine.className = 'sidebar-view-item-value-line-border';
+                descriptionLine.innerHTML = description;
+                this._element.appendChild(descriptionLine);
+            }
+        }
+
+        if (type === 'tensor' && value) {
+            const state = value.state;
+            const valueLine = this._host.document.createElement('div');
+            valueLine.className = 'sidebar-view-item-value-line-border';
+            const contentLine = this._host.document.createElement('pre');
+            contentLine.innerHTML = state || value.toString();
+            valueLine.appendChild(contentLine);
+            this._element.appendChild(valueLine);
+        }
+    }
+
+    save() {
+        if (this._attribute._type === 'int32') {
+            if (this._line.value - 0 > 2147483648) {
+                // TODO Enable posting message
+                // vscode.postMessage({
+                //     command : 'alert',
+                //     text: 'Can\'t exceed 2,147,483,648'
+                // });
+                return;
+            }
+        }
+
+        // TODO It will be implemented when the attribute type of the CustomOperator can be
+        // received. if (this._isCustom === true) {
+        //     const input = this._host.document.getElementById('attribute' + this._index);
+        //     if (this._select.value === 'int') {
+        //         if (this._line.value - 0 > 2147483648) {
+        //             // TODO Enable posting message
+        //             // vscode.postMessage({
+        //             //     command : 'alert',
+        //             //     text: 'Can\'t exceed 2,147,483,648'
+        //             // });
+        //             return;
+        //         }
+        //     }
+        //     input.disabled = true;
+        //     this._attribute._name = input.value;
+        //     this._attribute._type = this._select.value;
+        //     this._attribute._value = this._line.value;
+        // }
+
+        while (this._element.childElementCount) {
+            this._element.removeChild(this._element.lastChild);
+        }
+
+        if (!this._isCustom) {
+            this._editObject._attribute.name = this._attribute.name;
+            this._editObject._attribute._value = this._line.value;
+            this._editObject._attribute._type = this._attribute.type;
+        }
+        // } else {
+        //     this._editObject._attribute.name = this._node.type.name;
+        //     const keys = [];
+        //     for (const key of this._node.attributes) {
+        //         keys.push(key.name);
+        //         this._editObject._attribute[key.name] = key.value;
+        //         this._editObject._attribute[key.name + '_type'] = key.type;
+        //     }
+        //     this._editObject._attribute.keys = keys;
+        // }
+
+        // TODO Enable posting message
+        // vscode.postMessage({
+        //     command: 'edit',
+        //     type: 'attribute',
+        //     data: this._editObject,
+        // });
+    }
+
+    cancel() {
+        if (this._isCustom === true) {
+            const input = this._host.document.getElementById('attribute' + this._index);
+            input.disabled = true;
+            input.value = this._attributeName;
+        }
+        while (this._element.childElementCount) {
+            this._element.removeChild(this._element.lastChild);
+        }
+
+        this.show();
+    }
+
+    remove() {
+        const input = this._host.document.getElementById('attribute' + this._index);
+        const box = input.parentElement.parentElement.parentElement;
+        const element = input.parentElement.parentElement;
+        box.removeChild(element);
+        for (const i in this._node._attributes) {
+            if (this._node._attributes[i].name === this._attribute.name) {
+                this._node._attributes.splice(i, 1);
+                break;
+            }
+        }
+
+        this._editObject._attribute.name = this._node.type.name;
+        const keys = [];
+        for (const key of this._node.attributes) {
+            keys.push(key.name);
+            this._editObject._attribute[key.name] = key.value;
+            this._editObject._attribute[key.name + '_type'] = key.type;
+        }
+        this._editObject._attribute.keys = keys;
+
+        // TODO Enable posting message
+        // vscode.postMessage({
+        //     command: 'edit',
+        //     type: 'attribute',
+        //     data: this._editObject,
+        // });
+    }
+
+    render() {
+        return [this._element];
+    }
 
     on(event, callback) {
         this._events = this._events || {};
