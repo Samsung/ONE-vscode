@@ -486,12 +486,22 @@ sidebar.SelectView = class {
 };
 
 sidebar.ValueTextView = class {
-    constructor(host, value, action) {
+    constructor(host, value, action, node, isCustom) {
         this._host = host;
         this._elements = [];
         const element = this._host.document.createElement('div');
         element.className = 'sidebar-view-item-value';
         this._elements.push(element);
+        this._node = node;
+        if (node) {
+            this._type = node.type;
+            this._editObject = {
+                name: 'custom',
+                _attribute: {},
+                _nodeIdx: parseInt(this._node.location),
+                _subgraphIdx: this._node._subgraphIdx
+            };
+        }
 
         if (action) {
             this._action = this._host.document.createElement('div');
@@ -505,13 +515,85 @@ sidebar.ValueTextView = class {
 
         const list = Array.isArray(value) ? value : [value];
         let className = 'sidebar-view-item-value-line';
-        for (const item of list) {
-            const line = this._host.document.createElement('div');
-            line.className = className;
-            line.innerText = item;
-            element.appendChild(line);
-            className = 'sidebar-view-item-value-line-border';
+        if (isCustom === true && this._type) {
+            for (const item of list) {
+                const line = this._host.document.createElement('div');
+                this._input = this._host.document.createElement('input');
+                this._editButton = this._host.document.createElement('div');
+                this._saveButton = this._host.document.createElement('div');
+                this._cancelButton = this._host.document.createElement('div');
+                this._input.className = 'sidebar-view-item-value-line-input';
+                this._editButton.className =
+                    'sidebar-view-item-value-expander codicon codicon-edit';
+                this._saveButton.className =
+                    'sidebar-view-item-value-expander codicon codicon-save';
+                this._cancelButton.className =
+                    'sidebar-view-item-value-expander codicon codicon-discard';
+                this._input.value = item;
+                this._input.disabled = true;
+                this._saveButton.setAttribute('style', 'display: none;');
+                this._cancelButton.setAttribute('style', 'display: none;');
+                line.appendChild(this._input);
+                line.appendChild(this._editButton);
+                line.appendChild(this._cancelButton);
+                line.appendChild(this._saveButton);
+                element.appendChild(line);
+                className = 'sidebar-view-item-value-line-border';
+
+                this._editButton.addEventListener('click', () => {
+                    this.edit();
+                });
+
+                this._saveButton.addEventListener('click', () => {
+                    this.save();
+                });
+
+                this._cancelButton.addEventListener('click', () => {
+                    this.cancel();
+                });
+            }
+        } else {
+            for (const item of list) {
+                const line = this._host.document.createElement('div');
+                line.className = className;
+                line.innerText = item;
+                element.appendChild(line);
+                className = 'sidebar-view-item-value-line-border';
+            }
         }
+    }
+
+    edit() {
+        this._input.disabled = false;
+        this._editButton.setAttribute('style', 'display: none;');
+        this._saveButton.setAttribute('style', 'display: ;');
+        this._cancelButton.setAttribute('style', 'display: ;');
+    }
+
+    save() {
+        this._editObject._attribute.name = this._input.value;
+        const keys = [];
+        for (const key of this._node.attributes) {
+            keys.push(key.name);
+            this._editObject._attribute[key.name] = key.value;
+            this._editObject._attribute[key.name + '_type'] = key.type;
+        }
+        this._editObject._attribute.keys = keys;
+
+        // TODO Enable posting message
+        // vscode.postMessage({
+        //     command: 'edit',
+        //     type: 'attribute',
+        //     data: this._editObject,
+        // });
+    }
+
+    cancel() {
+        this._input.disabled = true;
+        this._editButton.setAttribute('style', 'display: ;');
+        this._saveButton.setAttribute('style', 'display: none;');
+        this._cancelButton.setAttribute('style', 'display: none;');
+        this._input.value = this._type.name;
     }
 
     render() {
