@@ -210,30 +210,10 @@ sidebar.NodeSidebar = class {
 
         const attributes = node.attributes;
         if (attributes && attributes.length > 0) {
-            const sortedAttributes = node.attributes.slice();
-            sortedAttributes.sort((a, b) => {
-                const au = a.name.toUpperCase();
-                const bu = b.name.toUpperCase();
-                return au < bu ? -1 : au > bu ? 1 : 0;
-            });
-            this._addHeader('Attributes');
-            let index = 0;
-            for (const attribute of sortedAttributes) {
-                this._addAttribute(attribute.name, attribute, index);
-                index++;
-            }
-            if (this._isCustom === true) {
-                const addAttribute = this._host.document.createElement('div');
-                addAttribute.className = 'sidebar-view-item-value-add';
-                addAttribute.innerText = '+ New Attributes';
-                addAttribute.addEventListener(
-                    'click',
-                    () => {
-                        // TODO will be implemented
-                        // this.add();
-                    });
-                this._attributesBox.appendChild(addAttribute);
-                this._elements.push(this._attributesBox);
+            const attributesElements =
+                new sidebar.EditAttributesView(host, node, this._isCustom).render();
+            for (const attributesElement of attributesElements) {
+                this._elements.push(attributesElement);
             }
         }
 
@@ -272,23 +252,6 @@ sidebar.NodeSidebar = class {
     _addProperty(name, value) {
         const item = new sidebar.NameValueView(this._host, name, value);
         this._elements.push(item.render());
-    }
-
-    _addAttribute(name, attribute, index) {
-        const item =
-            new NodeAttributeView(this._host, attribute, this._isCustom, index, this._node);
-        item.on('show-graph', (sender, graph) => {
-            this._raise('show-graph', graph);
-        });
-        const view = new sidebar.NameValueView(this._host, name, item, index, 'attribute');
-        this._attributes.push(view);
-        if (this._isCustom === true) {
-            this._attributesBox = this._host.document.createElement('div');
-            this._attributesBox.appendChild(view.render());
-            this._elements.push(this._attributesBox);
-        } else {
-            this._elements.push(view.render());
-        }
     }
 
     _addInput(name, input) {
@@ -338,9 +301,96 @@ sidebar.NodeSidebar = class {
     }
 };
 
-/**
- * TODO Implement sidebar.EditAttributesView Class
- */
+sidebar.EditAttributesView = class {
+    constructor(host, node, isCustom) {
+        this._host = host;
+        this._node = node;
+        this._elements = [];
+        this._attributes = [];
+        this._isCustom = isCustom;
+        this._attributesBox = host.document.createElement('div');
+
+        this._editObject = {
+            name: 'custom',
+            _attribute: {},
+            _nodeIdx: parseInt(this._node.location),
+            _subgraphIdx: this._node._subgraphIdx
+        };
+
+        const sortedAttributes = node.attributes.slice();
+        sortedAttributes.sort((a, b) => {
+            const au = a.name.toUpperCase();
+            const bu = b.name.toUpperCase();
+            return (au < bu) ? -1 : (au > bu) ? 1 : 0;
+        });
+        this._addHeader('Attributes');
+        let index = 0;
+        for (const attribute of sortedAttributes) {
+            this._addAttribute(attribute.name, attribute, index);
+            index++;
+        }
+        if (isCustom === true) {
+            const addAttribute = this._host.document.createElement('div');
+            addAttribute.className = 'sidebar-view-item-value-add';
+            addAttribute.innerText = '+ New Attributes';
+            addAttribute.addEventListener(
+                'click',
+                () => {
+                    // TODO will be implement
+                    // this.add();
+                });
+            this._attributesBox.appendChild(addAttribute);
+            this._elements.push(this._attributesBox);
+        }
+    }
+
+    _addHeader(title) {
+        const headerElement = this._host.document.createElement('div');
+        headerElement.className = 'sidebar-view-header';
+        headerElement.innerText = title;
+        this._elements.push(headerElement);
+    }
+
+    _addAttribute(name, attribute, index) {
+        const item =
+            new NodeAttributeView(this._host, attribute, this._isCustom, index, this._node);
+        item.on('show-graph', (sender, graph) => {
+            this._raise('show-graph', graph);
+        });
+        const view = new sidebar.NameValueView(this._host, name, item, index, 'attribute');
+        this._attributes.push(view);
+        if (this._isCustom === true) {
+            this._attributesBox.appendChild(view.render());
+        } else {
+            this._elements.push(view.render());
+        }
+    }
+
+    add() {
+        this._editObject._attribute.name = this._node.type.name;
+        const keys = [];
+        for (const key of this._node.attributes) {
+            keys.push(key.name);
+            this._editObject._attribute[key.name] = key.value;
+            this._editObject._attribute[key.name + '_type'] = key.type;
+        }
+        keys.push('attribute');
+        this._editObject._attribute['attribute'] = 'value';
+        this._editObject._attribute['attribute_type'] = 'string';
+        this._editObject._attribute.keys = keys;
+
+        // TODO Enable posting message
+        // vscode.postMessage({
+        //     command: 'edit',
+        //     type: 'attribute',
+        //     data: this._editObject,
+        // });
+    }
+
+    render() {
+        return this._elements;
+    }
+};
 
 /**
  * TODO Implement sidebar.EditInputsView Class
