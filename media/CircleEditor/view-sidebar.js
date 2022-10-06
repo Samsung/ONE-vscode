@@ -530,10 +530,8 @@ class NodeAttributeView {
         }
 
         let content = new sidebar.Formatter(value, type).toString();
-        if (content && content.length > 1000) {
-            content = content.substring(0, 1000) + '\u2026';
-        }
-        if (content && typeof content === 'string') {
+        if (content) {
+            content = content.length > 1000 ? content.substring(0, 1000) + '\u2026' : content;
             content = content.split('<').join('&lt;').split('>').join('&gt;');
         }
         const line = this._host.document.createElement('div');
@@ -625,10 +623,8 @@ class NodeAttributeView {
         const value = this._attribute.value;
 
         let content = new sidebar.Formatter(value, type).toString();
-        if (content && content.length > 1000) {
-            content = content.substring(0, 1000) + '\u2026';
-        }
-        if (content && typeof content === 'string') {
+        if (content) {
+            content = content.length > 1000 ? content.substring(0, 1000) + '\u2026' : content;
             content = content.split('<').join('&lt;').split('>').join('&gt;');
         }
         let line;
