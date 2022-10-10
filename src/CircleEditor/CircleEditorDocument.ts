@@ -552,8 +552,6 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
     }
     // built-in operator Case
     if (operatorCode !== 32) {
-      // TODO: modify logic to check if input data has an appropriate option
-
       // AVERAGE_POOL_2D, L2_POOL_2D, and MAX_POOL_2D all use Pool2DOptions
       if (inputTypeOptionName.indexOf('POOL2D') !== -1) {
         inputTypeOptionName = 'POOL2DOPTIONS';
@@ -563,9 +561,30 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
       const value: any = data._attribute._value;
       const type: any = data._attribute._type;
       let targetKey: any = null;
+
+      let builtinOptionsKeyArr : any = null;
+			let compKey: any = key;
+			compKey = compKey.replaceAll('_', '');
+			compKey = compKey.toUpperCase();
+
+			if(operator.builtinOptionsType !== 0) {
+				if(operator.builtinOptions === null){
+					Balloon.error('This attribute does not belong to this operator', false);
+					return;
+				}
+        builtinOptionsKeyArr = Object.keys(operator.builtinOptions).map(val=>val.toUpperCase());
+				if(!builtinOptionsKeyArr.includes(compKey)){
+					Balloon.error('This attribute does not belong to this operator', false);
+					return;
+				}
+			} else {
+				if(data._attribute !== null) {
+					Balloon.error('This attribute does not belong to this operator', false);
+				}
+				return;
+			}
+
       for (const obj in operator.builtinOptions) {
-        let compKey: any = key;
-        compKey = compKey.replaceAll('_', '');
         if (obj.toUpperCase() === compKey.toUpperCase()) {
           targetKey = obj;
         }
