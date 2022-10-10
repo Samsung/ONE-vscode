@@ -562,27 +562,27 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
       const type: any = data._attribute._type;
       let targetKey: any = null;
 
-      let builtinOptionsKeyArr : any = null;
-			let compKey: any = key;
-			compKey = compKey.replaceAll('_', '');
-			compKey = compKey.toUpperCase();
+      let builtinOptionsKeyArr: any = null;
+      let compKey: any = key;
+      compKey = compKey.replaceAll('_', '');
+      compKey = compKey.toUpperCase();
 
-			if(operator.builtinOptionsType !== 0) {
-				if(operator.builtinOptions === null){
-					Balloon.error('This attribute does not belong to this operator', false);
-					return;
-				}
-        builtinOptionsKeyArr = Object.keys(operator.builtinOptions).map(val=>val.toUpperCase());
-				if(!builtinOptionsKeyArr.includes(compKey)){
-					Balloon.error('This attribute does not belong to this operator', false);
-					return;
-				}
-			} else {
-				if(data._attribute !== null) {
-					Balloon.error('This attribute does not belong to this operator', false);
-				}
-				return;
-			}
+      if (operator.builtinOptionsType !== 0) {
+        if (operator.builtinOptions === null) {
+          Balloon.error('This attribute does not belong to this operator', false);
+          return;
+        }
+        builtinOptionsKeyArr = Object.keys(operator.builtinOptions).map(val => val.toUpperCase());
+        if (!builtinOptionsKeyArr.includes(compKey)) {
+          Balloon.error('This attribute does not belong to this operator', false);
+          return;
+        }
+      } else {
+        if (data._attribute !== null) {
+          Balloon.error('This attribute does not belong to this operator', false);
+        }
+        return;
+      }
 
       for (const obj in operator.builtinOptions) {
         if (obj.toUpperCase() === compKey.toUpperCase()) {
