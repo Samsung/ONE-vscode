@@ -622,13 +622,13 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
             type === 'float16' || type === 'float32' || type === 'float64' || type === 'float' ||
             type === 'epsilon') {
           operator.builtinOptions[targetKey] = parseFloat(value);
-        } else if(type === 'string') {
-					operator.builtinOptions[targetKey] = String(value);
-				} else {
-          if(isNaN(value)){
-						Balloon.error("Check your input data.", false);
-						return;
-					}
+        } else if (type === 'string') {
+          operator.builtinOptions[targetKey] = String(value);
+        } else {
+          if (isNaN(value)) {
+            Balloon.error('Check your input data.', false);
+            return;
+          }
           operator.builtinOptions[targetKey] = Types.NormalType[type](value);
         }
       }
