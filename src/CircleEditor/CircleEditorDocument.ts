@@ -381,6 +381,8 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
       return 'int';
     } else if (Number(n) % 1 !== 0) {
       return 'float';
+    } else {
+      return 'not supported type';
     }
   }
 
@@ -409,7 +411,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
         if (guessType === 'float') {
           Balloon.error('\'int\' type doesn\'t include decimal point.', false);
           return;
-        } else if (guessType === 'error') {
+        } else if (guessType === 'error' || guessType === 'not supported type') {
           Balloon.error('it\'s not a number', false);
           return;
         }
@@ -448,7 +450,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
       let customObjDataType: any = typeof (customObj[key]);
       if (customObjDataType === 'number') {
         customObjDataType = this.guessExactType(customObj[key]);
-        if (customObjDataType === 'error') {
+        if (customObjDataType === 'error' || customObjDataType === 'not supported type') {
           Balloon.error('It\'s not a number.', false);
           return;
         }
@@ -679,7 +681,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
           if (guessType === 'float') {
             Balloon.error('\'int\' type doesn\'t include decimal point.', false);
             return;
-          } else if (guessType === 'error') {
+          } else if (guessType === 'error' || guessType === 'not supported type') {
             Balloon.error('it\'s not a number', false);
             return;
           }
