@@ -613,7 +613,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
           const valArr = editValue.split(',');
           const valNumArr = [];
           for (let i = 0; i < valArr.length; i++) {
-            if (valArr[i].search('0') === -1 && valArr[i].indexOf('1') === -1 &&
+            if (valArr[i].search('0') === -1 && valArr[i].search('1') === -1 &&
                 valArr[i].search('2') === -1 && valArr[i].search('3') === -1 &&
                 valArr[i].search('4') === -1 && valArr[i].search('5') === -1 &&
                 valArr[i].search('6') === -1 && valArr[i].search('7') === -1 &&
