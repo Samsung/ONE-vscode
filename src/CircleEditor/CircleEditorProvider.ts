@@ -52,7 +52,8 @@ export enum MessageDefs {
   edit = 'edit',
   loadJson = 'loadJson',
   updateJson = 'updateJson',
-  // TODO: define messageDefs for additional features to be implemented
+  getCustomOpAttrT = 'getCustomOpAttrT',
+  requestEncodingData = 'requestEncodingData'
 }
 
 /**
@@ -173,6 +174,12 @@ export class CircleEditorProvider implements vscode.CustomEditorProvider<CircleE
         return;
       case MessageDefs.updateJson:
         document.editJsonModel(message.data);
+        return;
+      case MessageDefs.getCustomOpAttrT:
+        document.setCustomOpAttrT(message);
+        return;
+      case MessageDefs.requestEncodingData:
+        document.sendEncodingData(message);
         return;
       default:
         // TODO: add MessageDefs and appropriate function to handle this request
