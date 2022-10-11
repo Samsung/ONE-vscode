@@ -15,6 +15,7 @@
  */
 
 import * as flatbuffers from 'flatbuffers';
+import * as flexbuffers from 'flatbuffers/js/flexbuffers';
 import * as vscode from 'vscode';
 
 import {Balloon} from '../Utils/Balloon';
@@ -90,10 +91,10 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
     const oldModelData = this.modelData;
     switch (message.type) {
       case 'attribute':
-        // TODO: implement functions to edit attributes of operator in model
+        this.editAttribute(message.data);
         break;
       case 'tensor':
-        // TODO: implement functions to edit tensors in model
+        this.editTensor(message.data);
         break;
       default:
         return;
@@ -366,5 +367,334 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
     }
     let responseJson = {command: 'loadJson', data: jsonModel};
     this._onDidChangeContent.fire(responseJson);
+  }
+
+  /**
+   * Guess data's type (int or float)
+   */
+  private guessExactType(n: any) {
+    if (isNaN(Number(n))) {
+      return 'error';
+    }
+
+    if (Number(n) % 1 === 0) {
+      return 'int';
+    } else if (Number(n) % 1 !== 0) {
+      return 'float';
+    } else {
+      return 'not supported type';
+    }
+  }
+
+  /**
+   * Encode key and value entered in the calculator using flexbuffers.
+   * Send encoded data.
+   */
+  public sendEncodingData(message: any) {
+    let fbb = flexbuffers.builder();
+    fbb.startMap();
+    for (const key in message.data) {
+      fbb.addKey(key);
+      const val = message.data[key][0];
+      const valType = message.data[key][1];
+      if (valType === 'boolean') {
+        if (val === 'true' || val === true) {
+          fbb.add(true);
+        } else if (val === 'false' || val === false) {
+          fbb.add(false);
+        } else {
+          Balloon.error('\'boolean\' type must be \'true\' or \'false\'.', false);
+          return;
+        }
+      } else if (valType === 'int') {
+        const guessType = this.guessExactType(val);
+        if (guessType === 'float') {
+          Balloon.error('\'int\' type doesn\'t include decimal point.', false);
+          return;
+        } else if (guessType === 'error' || guessType === 'not supported type') {
+          Balloon.error('it\'s not a number', false);
+          return;
+        }
+      } else {
+        fbb.add(String(val));
+      }
+    }
+    fbb.end();
+    const res = fbb.finish();
+    const data = Array.from(res);
+    let responseData = {command: 'responseEncodingData', data: data};
+    this._onDidChangeContent.fire(responseData);
+  }
+
+  /**
+   * Decode customOptions using flexbuffers when we click custom operator's node.
+   * Send value's type of custom operator.
+   */
+  public setCustomOpAttrT(message: any) {
+    const msgData: any = message.data;
+    const subgraphIdx: number = msgData._subgraphIdx;
+    const operatorIdx: number = msgData._nodeIdx;
+    const target = this._model.subgraphs[subgraphIdx].operators[operatorIdx].customOptions;
+    const buffer = Buffer.from(target);
+    const ab = new ArrayBuffer(buffer.length);
+    const view = new Uint8Array(ab);
+    for (let i = 0; i < buffer.length; ++i) {
+      view[i] = buffer[i];
+    }
+    const customObj: any = flexbuffers.toObject(ab);
+    let resData: any = new Object;
+    resData._subgraphIdx = subgraphIdx;
+    resData._nodeIdx = operatorIdx;
+    resData._type = new Object;
+    for (const key in customObj) {
+      let customObjDataType: any = typeof (customObj[key]);
+      if (customObjDataType === 'number') {
+        customObjDataType = this.guessExactType(customObj[key]);
+        if (customObjDataType === 'error' || customObjDataType === 'not supported type') {
+          Balloon.error('It\'s not a number.', false);
+          return;
+        }
+      }
+      resData._type[key] = customObjDataType;
+    }
+    let responseData = {command: 'setCustomOpAttrT', data: resData};
+
+    this._onDidChangeContent.fire(responseData);
+    return;
+  }
+
+  /**
+   * This function edits Tensor's name and shape, data's type of buffer, buffer's data.
+   */
+  private editTensor(data: any) {
+    let name = data ?._name;
+    let subgraphIdx: number = Number(data._subgraphIdx);
+    let argname: string;
+    let tensorIdx: number;
+    let tensorType;
+    let tensorShape;
+    let bufferData: any = null;
+    if (name === undefined || subgraphIdx === undefined) {
+      Balloon.error('input data is undefined', false);
+      return;
+    }
+    const argument = data._arguments;
+    argname = argument._name;
+    tensorIdx = Number(argument._location);
+    const isChanged: boolean = argument._isChanged;
+    tensorType = argument._type._dataType;
+    tensorShape = argument._type._shape._dimensions;
+    if (argname === undefined || tensorIdx === undefined || tensorType === undefined ||
+        tensorShape === undefined) {
+      Balloon.error('input data is undefined', false);
+      return;
+    }
+    if (argument._initializer !== null) {
+      const ini = argument._initializer;
+      if (isChanged === true) {
+        bufferData = ini._data;
+      }
+    }
+    tensorType = tensorType.toUpperCase();
+
+    const targetTensor = this._model ?.subgraphs[subgraphIdx] ?.tensors[tensorIdx];
+    if (targetTensor === undefined) {
+      Balloon.error('model is undefined', false);
+      return;
+    }
+    targetTensor.name = argname;
+    if (tensorType === 'BOOLEAN') {
+      tensorType = 'BOOL';
+    }
+    let tensorTypeNum: any = Circle.TensorType[tensorType];
+    targetTensor.type = tensorTypeNum;
+    targetTensor.shape = tensorShape;
+    if (bufferData !== null) {
+      const editBufferIdx: number = targetTensor.buffer;
+      this._model.buffers[editBufferIdx].data = bufferData;
+    }
+    return;
+  }
+
+  /**
+   * This function edits Attribute for built-in operators and custom operators.
+   * If operator code is 32, encodes key and value for custom operators and overwrites
+   * customOptions's int array. Else, edits built-in operator's attributes according to Custom Type
+   * and Normal Type in CircleType.ts.
+   */
+  private editAttribute(data: any) {
+    let subgraphIdx: number = Number(data._subgraphIdx);
+    let operatorIdx: number = Number(data._nodeIdx);
+    let inputTypeName: string = data.name;
+    if (inputTypeName === undefined || subgraphIdx === undefined || operatorIdx === undefined) {
+      Balloon.error('input data is undefined', false);
+      return;
+    }
+    inputTypeName = inputTypeName.toUpperCase();
+    let inputTypeOptionName: any = inputTypeName + 'OPTIONS';
+    let operatorCode: number = 0;
+    for (let i = -4; i <= 146; i++) {
+      let builtinOperatorKey = Circle.BuiltinOperator[i];
+      if (builtinOperatorKey === undefined) {
+        continue;
+      }
+      let tempKey: any = Circle.BuiltinOperator[i];
+      tempKey = tempKey.replaceAll('_', '');
+      builtinOperatorKey = tempKey;
+      builtinOperatorKey = builtinOperatorKey.toUpperCase();
+      if (builtinOperatorKey === inputTypeName) {
+        operatorCode = i;
+        break;
+      }
+    }
+    const operator: any = this._model.subgraphs[subgraphIdx].operators[operatorIdx];
+    if (operator === undefined) {
+      Balloon.error('model is undefined', false);
+      return;
+    }
+    // built-in operator Case
+    if (operatorCode !== 32) {
+      // AVERAGE_POOL_2D, L2_POOL_2D, and MAX_POOL_2D all use Pool2DOptions
+      if (inputTypeOptionName.indexOf('POOL2D') !== -1) {
+        inputTypeOptionName = 'POOL2DOPTIONS';
+      }
+      operator.builtinOptionsType = Types.BuiltinOptionsType[inputTypeOptionName];
+      const key = data._attribute.name;
+      const value: any = data._attribute._value;
+      const type: any = data._attribute._type;
+      let targetKey: any = null;
+
+      let builtinOptionsKeyArr: any = null;
+      let compKey: any = key;
+      compKey = compKey.replaceAll('_', '');
+      compKey = compKey.toUpperCase();
+
+      if (operator.builtinOptionsType !== 0) {
+        if (operator.builtinOptions === null) {
+          Balloon.error('This attribute does not belong to this operator', false);
+          return;
+        }
+        builtinOptionsKeyArr = Object.keys(operator.builtinOptions).map(val => val.toUpperCase());
+        if (!builtinOptionsKeyArr.includes(compKey)) {
+          Balloon.error('This attribute does not belong to this operator', false);
+          return;
+        }
+      } else {
+        if (data._attribute !== null) {
+          Balloon.error('This attribute does not belong to this operator', false);
+        }
+        return;
+      }
+
+      for (const obj in operator.builtinOptions) {
+        if (obj.toUpperCase() === compKey.toUpperCase()) {
+          targetKey = obj;
+        }
+      }
+
+      const circleTypeArr = Object.keys(Types.CircleType);
+      if (circleTypeArr.find(element => element === type) !== undefined) {
+        // CircleType options in CircleType.ts
+        operator.builtinOptions[targetKey] = Types.CircleType[type][value];
+      } else {  // NormalType options in CircleType.ts
+        if (type.includes('[]')) {
+          let editValue = value;
+          let lastCommaIdx = value.lastIndexOf(',');
+          let lastNumberIdx: number = value.length - 1;
+          for (let i = value.length - 1; i >= 0; i--) {
+            if (value[i] >= '0' && value[i] <= '9') {
+              lastNumberIdx = i;
+              break;
+            }
+          }
+          if (lastCommaIdx > lastNumberIdx) {
+            editValue = value.slice(0, lastCommaIdx);
+          }
+          const valArr = editValue.split(',');
+          const valNumArr = [];
+          for (let i = 0; i < valArr.length; i++) {
+            if (valArr[i].search('0') === -1 && valArr[i].search('1') === -1 &&
+                valArr[i].search('2') === -1 && valArr[i].search('3') === -1 &&
+                valArr[i].search('4') === -1 && valArr[i].search('5') === -1 &&
+                valArr[i].search('6') === -1 && valArr[i].search('7') === -1 &&
+                valArr[i].search('8') === -1 && valArr[i].search('9') === -1) {
+              Balloon.error(
+                  'Check your input array! you typed double comma (\',,\') or you didn\'t typed number',
+                  false);
+              return;
+            } else if (isNaN(Number(valArr[i]))) {
+              Balloon.error('Check your input array! you didn\'t typed number', false);
+              return;
+            }
+            valNumArr.push(Number(valArr[i]));
+          }
+          const resArr = new Types.NormalType[type](valNumArr);
+          operator.builtinOptions[targetKey] = resArr;
+        } else if (type === 'boolean') {
+          if (value === 'false') {
+            operator.builtinOptions[targetKey] = false;
+          } else if (value === 'true') {
+            operator.builtinOptions[targetKey] = true;
+          } else {
+            Balloon.error('\'boolean\' type must be \'true\' or \'false\'.', false);
+            return;
+          }
+        } else if (
+            type === 'float16' || type === 'float32' || type === 'float64' || type === 'float' ||
+            type === 'epsilon') {
+          operator.builtinOptions[targetKey] = parseFloat(value);
+        } else if (type === 'string') {
+          operator.builtinOptions[targetKey] = String(value);
+        } else {
+          if (isNaN(value)) {
+            Balloon.error('Check your input data.', false);
+            return;
+          }
+          operator.builtinOptions[targetKey] = Types.NormalType[type](value);
+        }
+      }
+    } else if (operatorCode === 32) {  // custom operator case
+      operator.builtinOptionsType = 0;
+      operator.builtinOPtions = null;
+      const customName = data._attribute.name;
+      const customKeyArray = data._attribute.keys;
+      const opCodeIdx = operator.opcodeIndex;
+      this._model.operatorCodes[opCodeIdx].customCode = customName;
+
+      let fbb = flexbuffers.builder();
+      fbb.startMap();
+      for (const key of customKeyArray) {
+        fbb.addKey(key);
+        let val = data._attribute[key];
+        const valType = data._attribute[key + '_type'];
+        if (valType === 'boolean') {
+          if (val === 'true' || val === true) {
+            fbb.add(true);
+          } else if (val === 'false' || val === false) {
+            fbb.add(false);
+          } else {
+            Balloon.error('\'boolean\' type must be \'true\' or \'false\'.', false);
+            return;
+          }
+        } else if (valType === 'int') {
+          const guessType = this.guessExactType(val);
+          if (guessType === 'float') {
+            Balloon.error('\'int\' type doesn\'t include decimal point.', false);
+            return;
+          } else if (guessType === 'error' || guessType === 'not supported type') {
+            Balloon.error('it\'s not a number', false);
+            return;
+          }
+          fbb.addInt(Number(val));
+        } else {
+          fbb.add(String(val));
+        }
+      }
+      fbb.end();
+      let res = fbb.finish();
+      let resArray = Array.from(res);
+      operator.customOptions = resArray;
+    }
+    return;
   }
 }
