@@ -853,10 +853,7 @@ class NodeAttributeView {
     save() {
         if (this._attribute._type === 'int32') {
             if (this._line.value - 0 > 2147483648) {
-                vscode.postMessage({
-                    command : 'alert',
-                    text: 'Can\'t exceed 2,147,483,648'
-                });
+                vscode.postMessage({command: 'alert', text: 'Can\'t exceed 2,147,483,648'});
                 return;
             }
         }
@@ -865,10 +862,7 @@ class NodeAttributeView {
             const input = this._host.document.getElementById('attribute' + this._index);
             if (this._select.value === 'int') {
                 if (this._line.value - 0 > 2147483648) {
-                    vscode.postMessage({
-                        command : 'alert',
-                        text: 'Can\'t exceed 2,147,483,648'
-                    });
+                    vscode.postMessage({command: 'alert', text: 'Can\'t exceed 2,147,483,648'});
                     return;
                 }
             }
@@ -1360,10 +1354,8 @@ sidebar.ArgumentView = class {
         const currentType = this._select.value.toLowerCase();
 
         if (!this.check()) {
-            vscode.postMessage({
-                command: 'alert',
-                text: 'FORMAT ERROR : Please enter commas and numbers only.'
-            });
+            vscode.postMessage(
+                {command: 'alert', text: 'FORMAT ERROR : Please enter commas and numbers only.'});
             return;
         }
 
@@ -1391,8 +1383,8 @@ sidebar.ArgumentView = class {
             const originalType = this._argument._type.dataType;
 
             let result;
-            if (data && currentType === originalType && shape ===
-            this._argument._type._shape._dimensions ) {
+            if (data && currentType === originalType &&
+                shape === this._argument._type._shape._dimensions) {
                 result = this.editBuffer(data, currentType, shape);
             } else if (data) {
                 result = this.changeBufferType(currentType, data, shape);
@@ -1421,11 +1413,7 @@ sidebar.ArgumentView = class {
             this._tensors._name = input.value;
         }
 
-        vscode.postMessage({
-            command : 'edit',
-            type : 'tensor',
-            data : this._editObject
-        });
+        vscode.postMessage({command: 'edit', type: 'tensor', data: this._editObject});
     }
 
     cancel() {
@@ -1453,52 +1441,50 @@ sidebar.ArgumentView = class {
     compareData(bufferArr, originalArr, original, type) {
         let dataLength = type === 4 ? bufferArr.length * 2 : bufferArr.length;
         for (let i = 0; i < dataLength; i++) {
-    
             /* compare string formatted buffer data */
             if (originalArr[i] !== bufferArr[i]) {
-    
                 /* when data change detected, update buffer according to type */
                 var buffer = new ArrayBuffer(8);
                 const view = new DataView(buffer);
                 switch (type) {
-                    case 0: // float32
+                    case 0:  // float32
                         view.setFloat32(0, parseFloat(bufferArr[i]), true);
                         for (let j = 0; j < 4; j++) {
                             original[i * 4 + j] = view.getUint8(j);
                         }
                         break;
-                    case 1: // float16
+                    case 1:  // float16
                         view.setFloat16(0, parseFloat(bufferArr[i]), true);
                         for (let j = 0; j < 2; j++) {
                             original[i * 2 + j] = view.getUint8(j);
                         }
                         break;
-                    case 2: // int32
+                    case 2:  // int32
                         view.setInt32(0, parseInt(bufferArr[i]), true);
                         for (let j = 0; j < 4; j++) {
                             original[i * 4 + j] = view.getUint8(j);
                         }
                         break;
-                    case 3: // uint8
+                    case 3:  // uint8
                         view.setUint8(0, parseUint(bufferArr[i]), true);
                         original[i] = view.getUint8(0);
                         break;
-                    case 4: // int64
+                    case 4:  // int64
                         view.setInt32(0, parseInt(bufferArr[i]), true);
                         for (let j = 0; j < 4; j++) {
                             original[i * 4 + j] = view.getUint8(j);
                         }
                         break;
-                    case 5: // string
+                    case 5:  // string
                         break;
-                    case 6: // bool
+                    case 6:  // bool
                         if (bufferArr[i] === 'false' || bufferArr[i] - 0 === 0) {
                             original[i] = 0;
                         } else {
                             original[i] = 1;
                         }
                         break;
-                    case 7: // int16
+                    case 7:  // int16
                         view.setInt16(0, parseInt(bufferArr[i]), true);
                         for (let j = 0; j < 2; j++) {
                             original[i * 2 + j] = view.getUint8(j);
@@ -1506,11 +1492,11 @@ sidebar.ArgumentView = class {
                         break;
                     case 8:
                         break;
-                    case 9: // int8
+                    case 9:  // int8
                         view.setInt8(0, parseInt(bufferArr[i]), true);
                         original[i] = view.getUint8(0);
                         break;
-                    case 10: // float64
+                    case 10:  // float64
                         view.setFloat64(0, parseFloat(bufferArr[i]), true);
                         for (let j = 0; j < 8; j++) {
                             original[i * 8 + j] = view.getUint8(j);
@@ -1518,7 +1504,7 @@ sidebar.ArgumentView = class {
                         break;
                     case 11:
                         break;
-                    case 12: // uint64
+                    case 12:  // uint64
                         view.setBigUint64(0, BigInt(parseInt(bufferArr[i])), true);
                         for (let j = 0; j < 8; j++) {
                             original[i * 8 + j] = view.getUint8(j);
@@ -1528,7 +1514,7 @@ sidebar.ArgumentView = class {
                         break;
                     case 14:
                         break;
-                    case 15: // uint32
+                    case 15:  // uint32
                         view.setUint32(0, parseInt(bufferArr[i]), true);
                         for (let j = 0; j < 4; j++) {
                             original[i * 4 + j] = view.getUint8(j);
@@ -1540,7 +1526,7 @@ sidebar.ArgumentView = class {
 
         const newBuffer = [];
 
-        for(let i = 0; i < Object.keys(original).length ; i++){
+        for (let i = 0; i < Object.keys(original).length; i++) {
             newBuffer.push(original[i]);
         }
 
@@ -1549,15 +1535,15 @@ sidebar.ArgumentView = class {
 
     removeBracket(buffer) {
         let str = buffer;
-        str = str.replace(/\[/g, "");
-        str = str.replace(/\]/g, "");
-        str = str.replace(/\n/g, "");
-        str = str.replace(/ /g, "");
-        str = str.replace(/\{/g, "");
-        str = str.replace(/\}/g, "");
-        str = str.replace(/"/g, "");
-        str = str.replace(/low | high/g, "");
-        const arr = str.split(",");
+        str = str.replace(/\[/g, '');
+        str = str.replace(/\]/g, '');
+        str = str.replace(/\n/g, '');
+        str = str.replace(/ /g, '');
+        str = str.replace(/\{/g, '');
+        str = str.replace(/\}/g, '');
+        str = str.replace(/"/g, '');
+        str = str.replace(/low | high/g, '');
+        const arr = str.split(',');
         return arr;
     }
 
@@ -1574,7 +1560,7 @@ sidebar.ArgumentView = class {
                     // alert(error! Brackets do not match);
                     return;
                 }
-        }
+            }
         }
         if (stack.length) {
             // alert(error! Brackets do not match);
@@ -1586,7 +1572,7 @@ sidebar.ArgumentView = class {
         var modifiedArr = this.removeBracket(modified);
 
 
-        /* data validation - shape count */ 
+        /* data validation - shape count */
         let shapeCnt = 1;
         for (let i = 0; i < shape.length; i++) {
             shapeCnt *= shape[i];
@@ -1597,7 +1583,7 @@ sidebar.ArgumentView = class {
         if (modifiedArr.length !== shapeCnt) {
             // alert(error! Shape and data count does not match);
             return;
-        } 
+        }
 
         return modifiedArr;
     }
@@ -1607,19 +1593,23 @@ sidebar.ArgumentView = class {
         const modifiedArr = this.validationCheck(modified, shape, currentType);
 
         if (!modifiedArr) {
-            vscode.postMessage({ command: 'alert', text: 'Validation Error!'});
+            vscode.postMessage({command: 'alert', text: 'Validation Error!'});
             return;
         }
-    
+
         const originalArr = this.removeBracket(this._argument._initializer.toString());
-    
+
         /* compare changed elements and update data */
-        const types = ['float32', 'float16', 'int32', 'uint8', 'int64', 'string', 'boolean', 'int16',
-            'complex64', 'int8', 'float64', 'complex128', 'uint64', 'resource', 'variant', 'uint32'];
+        const types = [
+            'float32', 'float16', 'int32', 'uint8', 'int64', 'string', 'boolean', 'int16',
+            'complex64', 'int8', 'float64', 'complex128', 'uint64', 'resource', 'variant', 'uint32'
+        ];
         if (currentType === 'string') {
-            this.changeBufferType("string", modified, shape);
+            this.changeBufferType('string', modified, shape);
         } else {
-            this.compareData(modifiedArr, originalArr, this._editObject._arguments._initializer._data, types.indexOf(currentType.toLowerCase()));
+            this.compareData(
+                modifiedArr, originalArr, this._editObject._arguments._initializer._data,
+                types.indexOf(currentType.toLowerCase()));
         }
     }
 
@@ -1627,27 +1617,29 @@ sidebar.ArgumentView = class {
     changeBufferType(newType, modified, shape) {
         // original =  textarea.value
         const modifiedArr = this.validationCheck(modified, shape, newType);
-        
+
         if (!modifiedArr) {
             return;
         }
 
-        const types = ['float32', 'float16', 'int32', 'uint8', 'int64', 'string', 'boolean', 'int16',
-            'complex64', 'int8', 'float64', 'complex128', 'uint64', 'resource', 'variant', 'uint32'];
-        
+        const types = [
+            'float32', 'float16', 'int32', 'uint8', 'int64', 'string', 'boolean', 'int16',
+            'complex64', 'int8', 'float64', 'complex128', 'uint64', 'resource', 'variant', 'uint32'
+        ];
+
         // 0:float, 1:int, 2:uint, 3:string, 4:boolean, 5:complex, 6:resource, 7:variant
         const typeclass = [0, 0, 1, 2, 1, 3, 4, 1, 5, 1, 0, 5, 2, 6, 7, 2];
         const bits = [32, 16, 32, 8, 32, 0, 8, 16, 64, 8, 64, 128, 64, 0, 0, 32];
-    
+
         const buffer = new ArrayBuffer(8);
         const view = new DataView(buffer);
-    
+
         const newTypeIndex = types.indexOf(newType.toLowerCase());
-    
+
         let newArray = [];
-    
+
         /* string -> ? or ? -> Float or ? -> Int or ? -> Uint */
-        if (typeclass[newTypeIndex] === 0) { // new type : float
+        if (typeclass[newTypeIndex] === 0) {  // new type : float
             for (let i = 0; i < modifiedArr.length; i++) {
                 let data;
                 try {
@@ -1661,18 +1653,19 @@ sidebar.ArgumentView = class {
                 } catch (err) {
                     return;
                 }
-                if (bits[newTypeIndex] === 16) { // float16
+                if (bits[newTypeIndex] === 16) {  // float16
                     view.setFloat16(0, data, true);
-                } else if (bits[newTypeIndex] === 32) { // float32
+                } else if (bits[newTypeIndex] === 32) {  // float32
                     view.setFloat32(0, data, true);
-                } else if (bits[newTypeIndex] === 64) { // float64
+                } else if (bits[newTypeIndex] === 64) {  // float64
                     view.setFloat64(0, data, true);
                 }
                 for (let j = 0; j < bits[newTypeIndex] / 8; j++) {
                     newArray.push(view.getUint8(j));
                 }
             }
-        } else if (typeclass[newTypeIndex] === 2 || typeclass[newTypeIndex] === 1) { // new type : int or uint
+        } else if (typeclass[newTypeIndex] === 2 || typeclass[newTypeIndex] === 1) {  // new type :
+                                                                                      // int or uint
             for (let i = 0; i < modifiedArr.length; i++) {
                 let data = parseInt(modifiedArr[i]);
                 try {
@@ -1687,24 +1680,24 @@ sidebar.ArgumentView = class {
                     return;
                 }
 
-                if (typeclass[newTypeIndex] === 1) { // int
-                    if (bits[newTypeIndex] === 8) { // int8
+                if (typeclass[newTypeIndex] === 1) {  // int
+                    if (bits[newTypeIndex] === 8) {   // int8
                         view.setInt8(0, data, true);
-                    } else if (bits[newTypeIndex] === 16) { // int16
+                    } else if (bits[newTypeIndex] === 16) {  // int16
                         view.setInt16(0, data, true);
-                    } else if (bits[newTypeIndex] === 32) { // int32, int64
+                    } else if (bits[newTypeIndex] === 32) {  // int32, int64
                         view.setInt32(0, data, true);
                     }
-                } else { // uint
+                } else {  // uint
                     if (data < 0) {
                         return;
                     }
 
-                    if (bits[newTypeIndex] === 8) { // uint8
+                    if (bits[newTypeIndex] === 8) {  // uint8
                         view.setUint8(0, data, true);
-                    } else if (bits[newTypeIndex] === 32) { // uint32
+                    } else if (bits[newTypeIndex] === 32) {  // uint32
                         view.setUint32(0, data, true);
-                    } else if (bits[newTypeIndex] === 64) { // uint64
+                    } else if (bits[newTypeIndex] === 64) {  // uint64
                         view.setBigUint64(0, BigInt(parseInt(String(data))), true);
                     }
                 }
@@ -1712,8 +1705,8 @@ sidebar.ArgumentView = class {
                     newArray.push(view.getUint8(j));
                 }
             }
-        
-        } else if (typeclass[newTypeIndex] === 4) { // current type : boolean or new type : boolean
+
+        } else if (typeclass[newTypeIndex] === 4) {  // current type : boolean or new type : boolean
             for (let i = 0; i < modifiedArr.length; i++) {
                 if (modifiedArr[i]) {
                     newArray.push(1);
