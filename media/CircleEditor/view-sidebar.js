@@ -1383,7 +1383,7 @@ sidebar.ArgumentView = class {
             const originalType = this._argument._type.dataType;
 
             let result;
-            
+
             if (data && currentType === originalType &&
                 shape === this._argument._type._shape._dimensions) {
                 result = this.editBuffer(data, currentType, shape);
@@ -1511,7 +1511,7 @@ sidebar.ArgumentView = class {
                             originalBuf[i * 4 + j] = view.getUint8(j);
                         }
                         break;
-                    default: // TODO Enable other types
+                    default:  // TODO Enable other types
                         break;
                 }
             }
@@ -1649,11 +1649,11 @@ sidebar.ArgumentView = class {
                 } else if (bits === 32) {
                     view.setInt32(0, data, true);
                 } else if (bits === 64) {
-                    view.setBigInt64(0,BigInt(data), true);
+                    view.setBigInt64(0, BigInt(data), true);
                 } else {
                     bits = Number(newType.slice(-1));
 
-                    if(bits === 8){
+                    if (bits === 8) {
                         view.setInt8(0, data, true);
                     }
                 }
@@ -1661,7 +1661,7 @@ sidebar.ArgumentView = class {
                     newArray.push(view.getUint8(j));
                 }
             }
-        } else if (newType.startsWith('uint')){
+        } else if (newType.startsWith('uint')) {
             let bits = Number(newType.slice(-2));
 
             for (let i = 0; i < modifiedArr.length; i++) {
