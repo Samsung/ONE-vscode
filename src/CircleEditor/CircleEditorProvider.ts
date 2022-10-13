@@ -29,25 +29,25 @@ import {CircleEditorDocument} from './CircleEditorDocument';
  */
 export enum MessageDefs {
   // message command
-  alert = "alert",
-  request = "request",
-  response = "response",
-  pageloaded = "pageloaded",
-  loadmodel = "loadmodel",
-  finishload = "finishload",
-  reload = "reload",
-  selection = "selection",
-  backendColor = "backendColor",
-  error = "error",
-  colorTheme = "colorTheme",
+  alert = 'alert',
+  request = 'request',
+  response = 'response',
+  pageloaded = 'pageloaded',
+  loadmodel = 'loadmodel',
+  finishload = 'finishload',
+  reload = 'reload',
+  selection = 'selection',
+  backendColor = 'backendColor',
+  error = 'error',
+  colorTheme = 'colorTheme',
   // loadmodel type
-  modelpath = "modelpath",
-  uint8array = "uint8array",
+  modelpath = 'modelpath',
+  uint8array = 'uint8array',
   // selection
-  names = "names",
-  tensors = "tensors",
+  names = 'names',
+  tensors = 'tensors',
   // partiton of backends
-  partition = "partition",
+  partition = 'partition',
   // commands for custom editor features
   edit = 'edit',
   loadJson = 'loadJson',
