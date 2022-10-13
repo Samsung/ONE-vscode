@@ -238,7 +238,8 @@ export class PathToHash {
       }
       subMap = subMap[path];
     }
-    if (splitPath.length - 1 === idx) {  // paths.length - 1: index of a file name
+    if (splitPath.length - 1 === idx) {
+      // paths.length - 1: index of a file name
       // When all of the folder path are stored in pathToHash
       // update / create pathToHash for a file
       subMap[splitPath[idx]] = content;
@@ -254,7 +255,6 @@ export class PathToHash {
   }
 
   /**
-   * @param uri
    * @brief Input uri, extract path and hash values, and delete them in a '_map'
    */
   async delete(uri: vscode.Uri) {
@@ -282,9 +282,6 @@ export class PathToHash {
    * and deletes all empty directories up to the deleted file path.
    * To this end, the variable that recursively searches for '_map' is subMap,
    * and if 'subMap[splitPath[idx]]' is empty, it is deleted.
-   * @param subMap
-   * @param splitPath
-   * @param idx
    */
   async deleteEmptyDirPath(subMap: any, splitPath: string[], idx: number) {
     const name = splitPath[idx];
