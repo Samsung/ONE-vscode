@@ -1591,7 +1591,7 @@ sidebar.ArgumentView = class {
 
         /* compare changed elements and update data */
         if (currentType === 'string') {
-            this.changeBufferType('string', bufData, shape);
+            // TODO string type
         } else {
             this.compareData(
                 dataArr, originalArr, this._editObject._arguments._initializer._data,
