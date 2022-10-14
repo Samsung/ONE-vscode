@@ -1381,8 +1381,8 @@ sidebar.ArgumentView = class {
 
             if (!this._data) {
                 result = false;
-            } else if (currentType === originalType &&
-                shape === this._argument._type._shape._dimensions) {
+            } else if (
+                currentType === originalType && shape === this._argument._type._shape._dimensions) {
                 this.editBuffer(this._data.value, currentType, shape);
                 result = true;
             } else {
