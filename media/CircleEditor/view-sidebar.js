@@ -1601,7 +1601,6 @@ sidebar.ArgumentView = class {
 
     /* buffer type modified - data change NOT detected */
     changeBufferType(newType, bufData, shape) {
-        // original =  textarea.value
         const dataArr = this.parseBufData(bufData, shape, newType);
 
         if (dataArr.length === 0) {
