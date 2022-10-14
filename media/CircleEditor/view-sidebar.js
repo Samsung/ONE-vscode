@@ -1505,7 +1505,6 @@ sidebar.ArgumentView = class {
         for (let i = 0; i < Object.keys(original).length; i++) {
             newBuffer.push(original[i]);
         }
-
     }
 
     removeBracket(str) {
@@ -1578,8 +1577,7 @@ sidebar.ArgumentView = class {
             // TODO string type
         } else {
             this.storeData(
-                dataArr, this._editObject._arguments._initializer._data,
-                currentType.toLowerCase());
+                dataArr, this._editObject._arguments._initializer._data, currentType.toLowerCase());
         }
     }
 
