@@ -1375,20 +1375,18 @@ sidebar.ArgumentView = class {
         this._editObject._arguments._isChanged = true;
 
         if (this._argument._initializer) {
-            let data;
-            if (this._data) {
-                data = this._data.value;
-            }
-
             const originalType = this._argument._type.dataType;
 
             let result;
 
-            if (data && currentType === originalType &&
+            if (!this._data) {
+                result = false;
+            } else if (currentType === originalType &&
                 shape === this._argument._type._shape._dimensions) {
-                result = this.editBuffer(data, currentType, shape);
-            } else if (data) {
-                result = this.changeBufferType(currentType, data, shape);
+                this.editBuffer(this._data.value, currentType, shape);
+                result = true;
+            } else {
+                result = this.changeBufferType(currentType, this._data.value, shape);
             }
 
             if (!result) {
@@ -1526,8 +1524,7 @@ sidebar.ArgumentView = class {
         this._editObject._arguments._initializer._data = newBuffer;
     }
 
-    removeBracket(buffer) {
-        let str = buffer;
+    removeBracket(str) {
         str = str.replace(/\[/g, '');
         str = str.replace(/\]/g, '');
         str = str.replace(/\n/g, '');
@@ -1540,13 +1537,13 @@ sidebar.ArgumentView = class {
         return arr;
     }
 
-    parseBufData(modified, shape, type) {
+    parseBufData(bufData, shape, type) {
         /* data validation - bracket check */
         const stack = [];
-        for (let i = 0; i < modified.length; i++) {
-            if (modified.charAt(i) === '[') {
+        for (let i = 0; i < bufData.length; i++) {
+            if (bufData.charAt(i) === '[') {
                 stack.push('[');
-            } else if (modified.charAt(i) === ']') {
+            } else if (bufData.charAt(i) === ']') {
                 if (stack[stack.length - 1] === '[') {
                     stack.pop();
                 } else {
@@ -1562,7 +1559,7 @@ sidebar.ArgumentView = class {
 
 
         /* parse data to string array */
-        var modifiedArr = this.removeBracket(modified);
+        var dataArr = this.removeBracket(bufData);
 
 
         /* data validation - shape count */
@@ -1573,19 +1570,19 @@ sidebar.ArgumentView = class {
         if (type === 'int64') {
             shapeCnt *= 2;
         }
-        if (modifiedArr.length !== shapeCnt) {
+        if (dataArr.length !== shapeCnt) {
             // alert(error! Shape and data count does not match);
             return [];
         }
 
-        return modifiedArr;
+        return dataArr;
     }
 
     /* buffer data modified - type change NOT allowed simultaneously */
-    editBuffer(modified, currentType, shape) {
-        const modifiedArr = this.parseBufData(modified, shape, currentType);
+    editBuffer(bufData, currentType, shape) {
+        const dataArr = this.parseBufData(bufData, shape, currentType);
 
-        if (modifiedArr.length === 0) {
+        if (dataArr.length === 0) {
             vscode.postMessage({command: 'alert', text: 'Validation Error!'});
             return;
         }
@@ -1594,21 +1591,21 @@ sidebar.ArgumentView = class {
 
         /* compare changed elements and update data */
         if (currentType === 'string') {
-            this.changeBufferType('string', modified, shape);
+            this.changeBufferType('string', bufData, shape);
         } else {
             this.compareData(
-                modifiedArr, originalArr, this._editObject._arguments._initializer._data,
+                dataArr, originalArr, this._editObject._arguments._initializer._data,
                 currentType.toLowerCase());
         }
     }
 
     /* buffer type modified - data change NOT detected */
-    changeBufferType(newType, modified, shape) {
+    changeBufferType(newType, bufData, shape) {
         // original =  textarea.value
-        const modifiedArr = this.parseBufData(modified, shape, newType);
+        const dataArr = this.parseBufData(bufData, shape, newType);
 
-        if (modifiedArr.length === 0) {
-            return;
+        if (dataArr.length === 0) {
+            return false;
         }
 
         const buffer = new ArrayBuffer(8);
@@ -1619,8 +1616,8 @@ sidebar.ArgumentView = class {
         if (newType.startsWith('float')) {
             const bits = Number(newType.slice(-2));
 
-            for (let i = 0; i < modifiedArr.length; i++) {
-                const data = parseFloat(modifiedArr[i]);
+            for (let i = 0; i < dataArr.length; i++) {
+                const data = parseFloat(dataArr[i]);
 
                 if (isNaN(data)) {
                     return false;
@@ -1639,8 +1636,8 @@ sidebar.ArgumentView = class {
         } else if (newType.startsWith('int')) {
             let bits = Number(newType.slice(-2));
 
-            for (let i = 0; i < modifiedArr.length; i++) {
-                const data = parseInt(modifiedArr[i]);
+            for (let i = 0; i < dataArr.length; i++) {
+                const data = parseInt(dataArr[i]);
 
                 if (isNaN(data)) {
                     return false;
@@ -1664,8 +1661,8 @@ sidebar.ArgumentView = class {
         } else if (newType.startsWith('uint')) {
             let bits = Number(newType.slice(-2));
 
-            for (let i = 0; i < modifiedArr.length; i++) {
-                const data = parseInt(modifiedArr[i]);
+            for (let i = 0; i < dataArr.length; i++) {
+                const data = parseInt(dataArr[i]);
 
                 if (data < 0) {
                     return false;
@@ -1689,8 +1686,8 @@ sidebar.ArgumentView = class {
                 }
             }
         } else if (newType === 'boolean') {
-            for (let i = 0; i < modifiedArr.length; i++) {
-                if (modifiedArr[i]) {
+            for (let i = 0; i < dataArr.length; i++) {
+                if (dataArr[i]) {
                     newArray.push(1);
                 } else {
                     newArray.push(0);
