@@ -163,5 +163,44 @@ suite('Job', function() {
         assert.throw(() => toolRunner.kill());
       });
     });
+
+    suite('#sudo', function() {
+      test('when "sudo" cmd does not exist', function() {
+        let toolRunner = new ToolRunner();
+
+        toolRunner._setSudoExists(false);
+
+        let args = new ToolArgs();
+        const ROOT = true;
+
+        // Even though getRunner is called with root=true
+        // this should succeeds.
+        const runner = toolRunner.getRunner('true', 'true', args, obtainWorkspaceRoot(), ROOT);
+        runner
+            .then((val: SuccessResult) => {
+              assert.ok(true);
+            })
+            .catch(exitcode => {
+              assert.fail();
+            });
+      });
+
+      test('NEG: runnig sudo without pw should fail', function() {
+        let toolRunner = new ToolRunner();
+
+        let args = new ToolArgs();
+        const ROOT = true;
+
+        // Calling with root=true but without pw should fail.
+        const runner = toolRunner.getRunner('true', 'true', args, obtainWorkspaceRoot(), ROOT);
+        runner
+            .then((val: SuccessResult) => {
+              assert.fail();
+            })
+            .catch(exitcode => {
+              assert.ok(true);
+            });
+      });
+    });
   });
 });

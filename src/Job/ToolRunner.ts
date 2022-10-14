@@ -59,6 +59,20 @@ export class ToolRunner {
   // This value must be set to false when starting a process
   private killedByMe = false;
 
+  private sudoExists = true;
+
+  constructor() {
+    // When one-vscode runs inside docker container that does not have 'sudo'
+    if (which.sync('sudo', {nothrow: true}) === null) {
+      this.sudoExists = false;
+    }
+  }
+
+  // Only for unit test
+  public _setSudoExists(sudoExist: boolean) {
+    this.sudoExists = sudoExist;
+  }
+
   private handlePromise(
       resolve: (value: SuccessResult|PromiseLike<SuccessResult>) => void,
       reject: (value: ErrorResult|PromiseLike<ErrorResult>) => void, root: boolean) {
@@ -106,7 +120,9 @@ export class ToolRunner {
         2. Calling `sudo -k` after first sudo process finishes seems to make
           `echo wrong_pw | sudo -S ...` fail.
         */
-        cp.spawnSync('sudo', ['-k']);
+        if (this.sudoExists) {
+          cp.spawnSync('sudo', ['-k']);
+        }
       }
 
       // From https://nodejs.org/api/child_process.html#event-exit
@@ -214,8 +230,13 @@ export class ToolRunner {
           throw Error('Cannot find required environment variable');
         }
         // sudo -S gets pw from stdin
-        const args = ['-S', tool].concat(toolargs);
-        this.child = pipedSpawn('echo', [process.env.userp], {cwd: cwd}, 'sudo', args, {cwd: cwd});
+        if (this.sudoExists) {
+          const args = ['-S', tool].concat(toolargs);
+          this.child =
+              pipedSpawn('echo', [process.env.userp], {cwd: cwd}, 'sudo', args, {cwd: cwd});
+        } else {
+          this.child = cp.spawn(tool, toolargs, {cwd: cwd});
+        }
       } else {
         this.child = cp.spawn(tool, toolargs, {cwd: cwd});
       }
