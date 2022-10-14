@@ -145,27 +145,31 @@ export class CircleGraphCtrl {
   private registerEventHandlers() {
     // Handle messages from the webview
     this._webview.onDidReceiveMessage(message => {
+      switch (message.command) {
+        case MessageDefs.alert:
+          Balloon.error(message.text);
+          return;
+        case MessageDefs.request:
+          this.handleRequest(message.url, message.encoding);
+          return;
+        case MessageDefs.loadmodel:
+          this.handleLoadModel(parseInt(message.offset));  // to number
+          return;
+        case MessageDefs.finishload:
+          this.handleFinishLoad();
+          return;
+        default:
+          break;
+      }
       this.handleReceiveMessage(message);
     }, null, this._ctrlDisposables);
   }
 
   protected handleReceiveMessage(message: any) {
     switch (message.command) {
-      case MessageDefs.alert:
-        Balloon.error(message.text);
-        return;
-      case MessageDefs.request:
-        this.handleRequest(message.url, message.encoding);
-        return;
       case MessageDefs.pageloaded:
         this.handlePageLoaded();
         break;
-      case MessageDefs.loadmodel:
-        this.handleLoadModel(parseInt(message.offset));  // to number
-        return;
-      case MessageDefs.finishload:
-        this.handleFinishLoad();
-        return;
       case MessageDefs.selection:
         this.handleSelection(message.names, message.tensors);
         return;
