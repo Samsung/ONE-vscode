@@ -1383,7 +1383,7 @@ sidebar.ArgumentView = class {
                 result = false;
             } else if (
                 currentType === originalType && shape === this._argument._type._shape._dimensions) {
-                this.editBuffer(this._data.value, currentType, shape);
+                this.editBufferData(this._data.value, currentType, shape);
                 result = true;
             } else {
                 result = this.changeBufferType(currentType, this._data.value, shape);
@@ -1437,81 +1437,66 @@ sidebar.ArgumentView = class {
         return true;
     }
 
-    compareData(bufferArr, originalArr, originalBuf, arrType) {
-        let dataLength = arrType === 4 ? bufferArr.length * 2 : bufferArr.length;
+    // 'data' is string formatted even they are numbers
+    storeData(buf, data, dataType) {
+        let dataLength = dataType === 'int64' ? bufferArr.length * 2 : bufferArr.length;
         for (let i = 0; i < dataLength; i++) {
-            /* compare string formatted buffer data */
-            if (originalArr[i] !== bufferArr[i]) {
-                /* when data change detected, update buffer according to type */
-                var buffer = new ArrayBuffer(8);
-                const view = new DataView(buffer);
-                switch (arrType) {
-                    case 'float32':
-                        view.setFloat32(0, parseFloat(bufferArr[i]), true);
-                        for (let j = 0; j < 4; j++) {
-                            originalBuf[i * 4 + j] = view.getUint8(j);
-                        }
-                        break;
-                    case 'float16':
-                        view.setFloat16(0, parseFloat(bufferArr[i]), true);
-                        for (let j = 0; j < 2; j++) {
-                            originalBuf[i * 2 + j] = view.getUint8(j);
-                        }
-                        break;
-                    case 'int32':
-                        view.setInt32(0, parseInt(bufferArr[i]), true);
-                        for (let j = 0; j < 4; j++) {
-                            originalBuf[i * 4 + j] = view.getUint8(j);
-                        }
-                        break;
-                    case 'uint8':
-                        view.setUint8(0, parseUint(bufferArr[i]), true);
-                        originalBuf[i] = view.getUint8(0);
-                        break;
-                    case 'int64':
-                        view.setBigInt64(0, BigInt(parseInt(bufferArr[i])), true);
-                        for (let j = 0; j < 4; j++) {
-                            originalBuf[i * 4 + j] = view.getUint8(j);
-                        }
-                        break;
-                    case 'boolean':
-                        if (bufferArr[i] === 'false' || bufferArr[i] - 0 === 0) {
-                            originalBuf[i] = 0;
-                        } else {
-                            originalBuf[i] = 1;
-                        }
-                        break;
-                    case 'int16':
-                        view.setInt16(0, parseInt(bufferArr[i]), true);
-                        for (let j = 0; j < 2; j++) {
-                            originalBuf[i * 2 + j] = view.getUint8(j);
-                        }
-                        break;
-                    case 'int8':
-                        view.setInt8(0, parseInt(bufferArr[i]), true);
-                        originalBuf[i] = view.getUint8(0);
-                        break;
-                    case 'float64':
-                        view.setFloat64(0, parseFloat(bufferArr[i]), true);
-                        for (let j = 0; j < 8; j++) {
-                            originalBuf[i * 8 + j] = view.getUint8(j);
-                        }
-                        break;
-                    case 'uint64':
-                        view.setBigUint64(0, BigInt(parseInt(bufferArr[i])), true);
-                        for (let j = 0; j < 8; j++) {
-                            originalBuf[i * 8 + j] = view.getUint8(j);
-                        }
-                        break;
-                    case 'uint32':
-                        view.setUint32(0, parseInt(bufferArr[i]), true);
-                        for (let j = 0; j < 4; j++) {
-                            originalBuf[i * 4 + j] = view.getUint8(j);
-                        }
-                        break;
-                    default:  // TODO Enable other types
-                        break;
-                }
+            var buffer = new ArrayBuffer(8);
+            const view = new DataView(buffer);
+            switch (dataType) {
+                case 'float32':
+                    view.setFloat32(0, parseFloat(data[i]), true);
+                    for (let j = 0; j < 4; j++) {
+                        buf[i * 4 + j] = view.getUint8(j);
+                    }
+                    break;
+                case 'float16':
+                    view.setFloat16(0, parseFloat(data[i]), true);
+                    for (let j = 0; j < 2; j++) {
+                        buf[i * 2 + j] = view.getUint8(j);
+                    }
+                    break;
+                case 'int32':
+                    view.setInt32(0, parseInt(data[i]), true);
+                    for (let j = 0; j < 4; j++) {
+                        buf[i * 4 + j] = view.getUint8(j);
+                    }
+                    break;
+                case 'uint8':
+                    view.setUint8(0, parseUint(data[i]), true);
+                    buf[i] = view.getUint8(0);
+                    break;
+                case 'int64':
+                    view.setBigInt64(0, BigInt(parseInt(data[i])), true);
+                    for (let j = 0; j < 4; j++) {
+                        buf[i * 4 + j] = view.getUint8(j);
+                    }
+                    break;
+                case 'boolean':
+                    if (data[i] === 'false' || data[i] - 0 === 0) {
+                        buf[i] = 0;
+                    } else {
+                        buf[i] = 1;
+                    }
+                    break;
+                case 'int16':
+                    view.setInt16(0, parseInt(data[i]), true);
+                    for (let j = 0; j < 2; j++) {
+                        buf[i * 2 + j] = view.getUint8(j);
+                    }
+                    break;
+                case 'int8':
+                    view.setInt8(0, parseInt(data[i]), true);
+                    buf[i] = view.getUint8(0);
+                    break;
+                case 'float64':
+                    view.setFloat64(0, parseFloat(data[i]), true);
+                    for (let j = 0; j < 8; j++) {
+                        buf[i * 8 + j] = view.getUint8(j);
+                    }
+                    break;
+                default:  // TODO Enable other types uint32, uint64, string
+                    break;
             }
         }
 
@@ -1521,7 +1506,6 @@ sidebar.ArgumentView = class {
             newBuffer.push(original[i]);
         }
 
-        this._editObject._arguments._initializer._data = newBuffer;
     }
 
     removeBracket(str) {
@@ -1532,7 +1516,9 @@ sidebar.ArgumentView = class {
         str = str.replace(/\{/g, '');
         str = str.replace(/\}/g, '');
         str = str.replace(/"/g, '');
-        str = str.replace(/low | high/g, '');
+        str = str.replace(/:/g, '');
+        str = str.replace(/low/g, '');
+        str = str.replace(/high/g, '');
         const arr = str.split(',');
         return arr;
     }
@@ -1579,7 +1565,7 @@ sidebar.ArgumentView = class {
     }
 
     /* buffer data modified - type change NOT allowed simultaneously */
-    editBuffer(bufData, currentType, shape) {
+    editBufferData(bufData, currentType, shape) {
         const dataArr = this.parseBufData(bufData, shape, currentType);
 
         if (dataArr.length === 0) {
@@ -1587,19 +1573,18 @@ sidebar.ArgumentView = class {
             return;
         }
 
-        const originalArr = this.removeBracket(this._argument._initializer.toString());
-
         /* compare changed elements and update data */
         if (currentType === 'string') {
             // TODO string type
         } else {
-            this.compareData(
-                dataArr, originalArr, this._editObject._arguments._initializer._data,
+            this.storeData(
+                dataArr, this._editObject._arguments._initializer._data,
                 currentType.toLowerCase());
         }
     }
 
-    /* buffer type modified - data change NOT detected */
+    // Data can be changed according to the types
+    // e.g. int32 <--> float32
     changeBufferType(newType, bufData, shape) {
         const dataArr = this.parseBufData(bufData, shape, newType);
 
@@ -1670,9 +1655,9 @@ sidebar.ArgumentView = class {
                 if (isNaN(data)) {
                     return false;
                 } else if (bits === 32) {  // uint32
-                    view.setUint32(0, data, true);
+                    // TODO Support uint32
                 } else if (bits === 64) {  // uint64
-                    view.setBigUint64(0, BigInt(data), true);
+                    // TODO Support uint64
                 } else {
                     bits = Number(newType.slice(-1));
 
