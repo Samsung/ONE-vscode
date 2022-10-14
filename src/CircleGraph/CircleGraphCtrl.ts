@@ -44,9 +44,6 @@ export class MessageDefs {
   // loadmodel type
   public static readonly modelpath = 'modelpath';
   public static readonly uint8array = 'uint8array';
-  // selection
-  public static readonly names = 'names';
-  public static readonly tensors = 'tensors';
   // partiton of backends
   public static readonly partition = 'partition';
 }
