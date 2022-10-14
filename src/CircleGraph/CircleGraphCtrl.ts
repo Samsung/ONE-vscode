@@ -57,6 +57,8 @@ export class MessageDefs {
   public static readonly uint8array = 'uint8array';
   // partiton of backends
   public static readonly partition = 'partition';
+  // visq data
+  public static readonly visq = 'visq';
 }
 
 export interface CircleGraphEvent {
@@ -141,6 +143,10 @@ export class CircleGraphCtrl {
 
   public sendBackendColor(backends: BackendColor[]) {
     this._webview.postMessage({command: MessageDefs.backendColor, backends: backends});
+  }
+
+  public sendVisq(visq: any) {
+    this._webview.postMessage({command: MessageDefs.visq, visq: visq});
   }
 
   public reloadModel() {

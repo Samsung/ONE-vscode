@@ -117,6 +117,16 @@
           }
         ],
         "priority": "option"
+      },
+      {
+        "viewType": "one.viewer.visq",
+        "displayName": "Visq Viewer",
+        "selector": [
+          {
+            "filenamePattern": "*.visq.json"
+          }
+        ],
+        "priority": "default"
       }
     ],
     "commands": [

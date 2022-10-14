@@ -84,6 +84,10 @@ host.BrowserHost = class {
         // backends
         this._backends = [];
 
+        // visq
+        this._visqScheme = [];
+        this._visqError = undefined;
+
         // default mode of viewer
         this._mode = viewMode.viewer;
         if (__viewMode === 'selector') {
@@ -149,6 +153,9 @@ host.BrowserHost = class {
                     break;
                 case 'reload':
                     this._msgReload(message);
+                    break;
+                case 'visq':
+                    this._msgVisq(message);
                     break;
             }
         });
@@ -219,9 +226,15 @@ host.BrowserHost = class {
         });
 
         this._view.show('welcome spinner');
-        // start to load model by requesting the model
-        // NOTE to start loading from extension, we have to check view is ready.
-        vscode.postMessage({command: 'loadmodel', offset: '0'});
+        if (this._mode === viewMode.visq) {
+            // request visq data prior to model
+            // model is inside visq data
+            vscode.postMessage({command: 'visq'});
+        } else {
+            // start to load model by requesting the model
+            // NOTE to start loading from extension, we have to check view is ready.
+            vscode.postMessage({command: 'loadmodel', offset: '0'});
+        }
     }
 
     environment(name) {
@@ -332,6 +345,32 @@ host.BrowserHost = class {
             let v = this._view.getSelection();
             vscode.postMessage({command: 'selection', names: v.names, tensors: v.tensors});
         }
+    }
+
+    visqIndex(name) {
+        const visqNodes = this._visqError[0];
+        if (!Object.prototype.hasOwnProperty.call(visqNodes, name)) {
+            return undefined;
+        }
+        console.log('Access visqNodes[name]', name);
+        let qerror = parseFloat(visqNodes[name]);
+        for (const idx in this._visqScheme) {
+            let item = this._visqScheme[idx];
+            console.log('Access item', name, item);
+            if (item.b <= qerror && qerror < item.e) {
+                return idx;
+            }
+        }
+        return undefined;
+    }
+
+    visqValue(name) {
+        console.log('visqValue(name)', name);
+        const visqNodes = this._visqError[0];
+        if (!Object.prototype.hasOwnProperty.call(visqNodes, name)) {
+            return undefined;
+        }
+        return ` (${visqNodes[name]})`;
     }
 
     _request(url, headers, encoding, timeout) {
@@ -539,6 +578,91 @@ host.BrowserHost = class {
         this._view.reset();
         this._view.show('welcome spinner');
         vscode.postMessage({command: 'loadmodel', offset: '0'});
+    }
+
+    _msgVisq(message) {
+        const visq = message.visq;
+
+        this._setVisqStyle(visq);
+        this._setVisqNodes(visq);
+        this._addVisqLegends(visq);
+
+        vscode.postMessage({command: 'loadmodel', offset: '0'});
+    }
+
+    _colorSingle(c) {
+        c = c + c;
+        return parseInt(c, 16);
+    }
+
+    // get gray level (0x00~0xff) from color with #RRGGBB/#RGB format
+    // anything else gives 0xff
+    _colorLuminance(colorValue) {
+        if (colorValue.substring(0, 1) !== '#') {
+            return 0xff;
+        }
+        let r = 255, g = 255, b = 255;
+        let colorHex = colorValue.substring(1);
+        if (colorHex.length === 3) {  // #RGB format
+            r = _colorSingle(colorHex.substring(0, 1));
+            g = _colorSingle(colorHex.substring(1, 2));
+            b = _colorSingle(colorHex.substring(2, 3));
+        } else if (colorHex.length === 6) {
+            r = parseInt(colorHex.substring(0, 2), 16);
+            g = parseInt(colorHex.substring(2, 4), 16);
+            b = parseInt(colorHex.substring(4, 6), 16);
+        }
+        let lum = (0.299 * r + 0.587 * g + 0.114 * b);
+        return Math.min(lum, 0xff);
+    }
+
+    _setVisqStyle(visq) {
+        let styleElement = document.createElement('style');
+        let styleHTML = '';
+        let index = 0;
+        for (const idx in visq.meta.colorscheme) {
+            let item = visq.meta.colorscheme[idx];
+            this._visqScheme.push(item);
+
+            let color = item.c;
+            let add = `.node-item-type-visq-${index} path { fill: ${color}; }\n`;
+            styleHTML = styleHTML + add;
+            styleHTML = styleHTML + '.vscode-dark ' + add;
+            // text color depending on fill color luminance
+            let lum = this._colorLuminance(color);
+            let colorText = lum > 0x80 ? '#000' : '#fff';
+            add = `.node-item-type-visq-${index} text { fill: ${colorText}; }\n`;
+            styleHTML = styleHTML + add;
+            styleHTML = styleHTML + '.vscode-dark ' + add;
+
+            index = index + 1;
+        }
+        styleElement.innerHTML = styleHTML;
+        document.getElementsByTagName('head')[0].appendChild(styleElement);
+    }
+
+    _setVisqNodes(visq) {
+        this._visqError = visq.error;
+    }
+
+    _addVisqLegends(visq) {
+        let legendDiv = document.getElementById('legend');
+        let table = document.createElement('table');
+        for (const idx in visq.meta.colorscheme) {
+            const item = visq.meta.colorscheme[idx];
+            const lum = this._colorLuminance(item.c);
+            const color = lum > 0x80 ? '#000' : '#fff';
+            const metric = visq.meta.metric;
+            let tr = document.createElement('tr');
+            let td = document.createElement('td');
+            td.innerText = `${metric} ${item.b} ~ ${item.e}`;
+            td.style.background = item.c;
+            td.style.color = color;
+            tr.appendChild(td);
+            table.appendChild(tr);
+        }
+        legendDiv.appendChild(table);
+        legendDiv.style.visibility = 'visible';
     }
 };
 

@@ -1363,6 +1363,25 @@ view.Node = class extends grapher.Node {
                 styles.push('node-item-type-' + category.toLowerCase());
             }
         }
+        let visqValue = undefined;
+        if (host._mode === viewMode.visq) {
+            if (node.outputs) {
+                node.outputs.forEach((output) => {
+                    output._arguments.forEach((arg) => {
+                        // NOTE name is tensor_name + tensor_index, in circle.js
+                        const mixed = arg._name.split(/\n/);
+                        const nodeName = mixed[0];
+                        // this.context is view.Graph
+                        let index = host.visqIndex(nodeName);
+                        if (index !== undefined) {
+                            let qstyle = 'node-item-type-visq-' + index;
+                            styles.push(qstyle);
+                        }
+                        visqValue = host.visqValue(nodeName);
+                    });
+                });
+            }
+        }
         if (typeof type.name !== 'string' || !type.name.split) {  // #416
             const identifier = this.context.model && this.context.model.identifier ?
                 this.context.model.identifier :
@@ -1377,7 +1396,8 @@ view.Node = class extends grapher.Node {
         const tooltip = this.context.view.options.names && (node.name || node.location) ?
             type.name :
             (node.name || node.location);
-        const title = header.add(null, styles, content, tooltip);
+        const contentVisq = visqValue ? content + visqValue : content;
+        const title = header.add(null, styles, contentVisq, tooltip);
 
         if (host._mode === viewMode.viewer || host._mode === viewMode.visq) {
             title.on('click', () => this.context.view.showNodeProperties(node, null));
