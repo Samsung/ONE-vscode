@@ -91,6 +91,7 @@ button { font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI"
 .toolbar-back-button:hover { background: #000000; border-color: #000000; }
 .toolbar-name-button { float: left; background: rgba(255, 255, 255, 0.95); border-top-right-radius: 6px; border-bottom-right-radius: 6px; border: 1px solid #777; color: #777; border-left: 1px; border-left-color: #ffffff; margin: 2px 0 2px 0; padding: 0 12px 0 6px; cursor: pointer; width: auto; height: 20px; font-size: 11px; line-height: 0; transition: 0.1s; }
 .toolbar-name-button:hover { color: #000000; }
+.legend { position: absolute; top: 50px; left: 5px; padding: 5px; margin: 5px; border: 1px solid #555; user-select: none; -webkit-user-select: none; -moz-user-select: none; visibility: hidden; }
 .icon .border { stroke: #fff; }
 .icon .stroke { stroke: #808080; }
 .icon:hover .stroke { stroke: #000000; }
@@ -132,10 +133,12 @@ button { font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI"
 .welcome.consent .consent-message { opacity: 1; display: block; }
 .welcome.spinner .graph { display: flex; opacity: 0; }
 .welcome .toolbar { display: none; }
+.welcome .legend { display: none; }
 .default { background-color: #ffffff; }
 .default .logo { display: none; }
 .default .graph { display: flex; opacity: 1; }
 .default .toolbar { display: table; }
+.default .legend { display: table; }
 .vscode-dark.default { background-color: #404040; padding: 0px; }
 .vscode-dark .graph { background-color: #404040; }
 .vscode-dark.welcome { background-color: #1e1e1e; color: #888888; }
@@ -228,6 +231,7 @@ button { font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI"
         </p>
     </div>
 </div>
+<div id="legend" class="legend"></div>
 <div id="transparent" class="transparent"></div>
 <div class="center logo">
     <a href="https://github.com/lutzroeder/netron" target="blank_">
