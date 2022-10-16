@@ -533,6 +533,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
             vscode.commands.executeCommand('one.toolchain.runCfg', node.uri.fsPath);
           }),
       vscode.commands.registerCommand('one.explorer.delete', (node: Node) => provider.delete(node)),
+      vscode.commands.registerCommand('one.explorer.rename', (node: Node) => provider.rename(node)),
     ];
 
     if (provider.isLocal) {
@@ -629,6 +630,69 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
    */
   openContainingFolder(node: Node): void {
     vscode.commands.executeCommand('revealFileInOS', node.uri);
+  }
+
+  /**
+   * Rename a file of all types of nodes (baseModel, product, config) excepts for directory.
+   * It only alters the file name, not the path.
+   * @command one.explorer.rename
+   */
+  rename(node: Node): void {
+    // TODO: prohibit special characters for security ('..', '*', etc)
+    let warningMessage;
+
+    if (node.type === NodeType.baseModel) {
+      // TODO automatically change the corresponding files
+      warningMessage = `WARNING! ${
+          node.getChildren()
+              .map(node => `'${node.name}'`)
+              .toString()} will disappear from the view.`;
+    } else if (node.type === NodeType.product) {
+      // TODO automatically change the corresponding files
+      warningMessage = `WARNING! '${node.name}' may disappear from the view.`;
+    } else if (node.type == NodeType.config) {
+      // DO NOTHING
+      // Renaming config doesn't affect ONE Explorer view
+    } else if (node.type == NodeType.directory) {
+      assert.fail('Renaming is not allowed for directories.');
+    }
+
+    const validateInputPath = (newname: string): string|undefined => {
+      const oldpath = node.path;
+      const dirpath = path.dirname(node.uri.fsPath);
+      const newpath: string = path.join(dirpath, newname);
+      if (!newname.endsWith(path.extname(oldpath))) {
+        // NOTE
+        // `if (path.extname(newpath) !== path.extname(oldpath))`
+        // Do not use above code here.
+        // It will evaluate '.tflite' as false, because it's extname is ''.
+        return `A file extension must be (${path.extname(oldpath)})`;
+      }
+      if (newpath !== oldpath && fs.existsSync(newpath)) {
+        return `A file or folder ${
+            newname} already exists at this location. Please choose a different name.`;
+      }
+    };
+
+    vscode.window
+        .showInputBox({
+          title: 'Enter a file name:',
+          value: `${path.basename(node.uri.fsPath)}`,
+          valueSelection:
+              [0, path.basename(node.uri.fsPath).length - path.parse(node.uri.fsPath).ext.length],
+          placeHolder: `Enter a new name for ${path.basename(node.uri.fsPath)}`,
+          prompt: warningMessage,
+          validateInput: validateInputPath
+        })
+        .then(newname => {
+          if (newname) {
+            const dirpath = path.dirname(node.uri.fsPath);
+            const newpath = `${dirpath}/${newname}`;
+            vscode.workspace.fs.rename(node.uri, vscode.Uri.file(newpath)).then(() => {
+              this.refresh();
+            });
+          }
+        });
   }
 
   /**
