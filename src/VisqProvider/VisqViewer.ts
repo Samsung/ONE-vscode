@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import * as fs from 'fs';
+import * as path from 'path';
 import * as vscode from 'vscode';
 
 import {CircleGraphCtrl} from '../CircleGraph/CircleGraphCtrl';
@@ -38,6 +40,29 @@ class VisqViewer extends CircleGraphCtrl {
   }
 }
 
+// *.visq.json format example
+/*
+{
+  "meta" : {
+    "title" : "Test of VISQ"
+    "model" : "test_error.circle",
+    "metric": "MPEIR",
+    "colorscheme" : [
+      { "b": "0.0020", "e": "0.0929", "c": "#ffeda0" },
+      { "b": "0.0929", "e": "0.1838", "c": "#feb24c" },
+      { "b": "0.1838", "e": "0.2747", "c": "#fc4e2a" }
+    ]
+  },
+  "error": [
+    {
+      "ofm_conv": "0.01",
+      "ofm_mul": "0.1",
+      "ofm_add": "0.2"
+    }
+  ]
+}
+*/
+
 /**
  * @brief Read only document for visq.json file
  */
@@ -45,6 +70,8 @@ class VisqViewer extends CircleGraphCtrl {
 export class VisqViewerDocument implements vscode.CustomDocument {
   private readonly _uri: vscode.Uri;
   private _visqViewer: VisqViewer|undefined;
+  private _visqJson: any = undefined;
+  private _modelPath = '';
 
   static async create(uri: vscode.Uri):
       Promise<VisqViewerDocument|PromiseLike<VisqViewerDocument>> {
@@ -68,8 +95,22 @@ export class VisqViewerDocument implements vscode.CustomDocument {
     }
   }
 
+  private loadVisqFile(visqPath: string) {
+    const fileData = fs.readFileSync(visqPath, {encoding: 'utf8', flag: 'r'});
+    this._visqJson = JSON.parse(fileData);
+
+    this._modelPath = this._visqJson.meta.model;
+    if (!path.isAbsolute(this._modelPath)) {
+      // model is relative, make it relative to .visq.json file
+      let visqPath = path.parse(this.uri.fsPath);
+      // TODO check with using path.resolve(), path.join()
+      this._modelPath = path.normalize(visqPath.dir + '/' + this._visqJson.meta.model);
+    }
+  }
+
   public openView(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
-    // TODO load model
+    this.loadVisqFile(this.uri.fsPath);
+
     let view = new VisqViewer(panel, extensionUri, this);
     // TODO initialize view
 
