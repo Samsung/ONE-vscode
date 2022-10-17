@@ -661,7 +661,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
         assert.fail('Renaming is not allowed for directories.');
         break;
       default: {
-        // ..
+        assert.fail('Cannot reach here');
         break;
       }
     }
