@@ -287,6 +287,8 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
     if (proceed) {
       return this._run(cfg);
     }
+
+    return false;
   }
 
   public setDefaultToolchain(tnode: ToolchainNode): boolean|undefined {
