@@ -94,7 +94,9 @@ function updateMetadataInfo(metadata) {
 
 
       for (const operationsKey in metadataInfo[subKey]) {
-        metadataDivCreate(operationsKey, metadataInfo[subKey][operationsKey], 'operations');
+        if (Object.prototype.hasOwnProperty.call(metadataInfo[subKey], operationsKey)) {
+          metadataDivCreate(operationsKey, metadataInfo[subKey][operationsKey], 'operations');
+        }
       }
     } else if (subKey === 'cfg-settings') {
       const viewItemBox = document.createElement('div');
@@ -128,56 +130,60 @@ function updateMetadataInfo(metadata) {
       const oneccInfoList = [];
 
       for (const configKey in oneccInfo) {
-        const viewItemSubHeaderBox = document.createElement('div');
-        viewItemSubHeaderBox.classList.add('view-item-header-box');
+        if (Object.prototype.hasOwnProperty.call(oneccInfo, configKey)) {
+          const viewItemSubHeaderBox = document.createElement('div');
+          viewItemSubHeaderBox.classList.add('view-item-header-box');
 
-        const viewItemSubHeader = document.createElement('div');
-        viewItemSubHeader.innerText = `[${configKey}]`;
-        viewItemSubHeader.classList.add('view-item-sub-header');
+          const viewItemSubHeader = document.createElement('div');
+          viewItemSubHeader.innerText = `[${configKey}]`;
+          viewItemSubHeader.classList.add('view-item-sub-header');
 
-        const showButton = document.createElement('div');
-        showButton.innerText = `-`;
-        showButton.classList.add('view-item-show-button');
-        showButton.style.fontSize = '20px';
-        showButton.setAttribute('id', `${configKey}-view-item-show-button`);
+          const showButton = document.createElement('div');
+          showButton.innerText = `-`;
+          showButton.classList.add('view-item-show-button');
+          showButton.style.fontSize = '20px';
+          showButton.setAttribute('id', `${configKey}-view-item-show-button`);
 
-        viewItemSubHeaderBox.append(viewItemSubHeader, showButton);
-        viewItemContentBox.appendChild(viewItemSubHeaderBox);
+          viewItemSubHeaderBox.append(viewItemSubHeader, showButton);
+          viewItemContentBox.appendChild(viewItemSubHeaderBox);
 
-        const subContentBox = document.createElement('div');
-        subContentBox.classList.add('sub-view-item-content-box');
-        subContentBox.setAttribute('id', `${configKey}-sub-view-content-box`);
+          const subContentBox = document.createElement('div');
+          subContentBox.classList.add('sub-view-item-content-box');
+          subContentBox.setAttribute('id', `${configKey}-sub-view-content-box`);
 
-        viewItemContentBox.appendChild(subContentBox);
+          viewItemContentBox.appendChild(subContentBox);
 
-        // Save the current key to use as id
-        currentConfigType = configKey;
+          // Save the current key to use as id
+          currentConfigType = configKey;
 
-        if (configKey === 'onecc') {
-          // Handle if no onecc information is available
-          const viewItemContent = document.createElement('div');
-          viewItemContent.innerText = 'There is no config information...';
-          viewItemBox.appendChild(viewItemContent);
-          viewItemContent.classList.add('view-item-info-content');
+          if (configKey === 'onecc') {
+            // Handle if no onecc information is available
+            const viewItemContent = document.createElement('div');
+            viewItemContent.innerText = 'There is no config information...';
+            viewItemBox.appendChild(viewItemContent);
+            viewItemContent.classList.add('view-item-info-content');
 
-          for (const oneccSubkey in oneccInfo[configKey]) {
-            if (oneccInfo[configKey][oneccSubkey]) {
-              oneccInfoList.push(oneccSubkey);
-
-              // If you have cfg information, delete the no info statement
-              viewItemContent ?.remove();
-              metadataDivCreate(oneccSubkey, oneccInfo[configKey][oneccSubkey], 'cfg-settings');
-            }
-          }
-        } else {
-          if (oneccInfoList.includes(configKey)) {
-            viewItemSubHeader.style.marginTop = '15px';
             for (const oneccSubkey in oneccInfo[configKey]) {
-              metadataDivCreate(oneccSubkey, oneccInfo[configKey][oneccSubkey], 'cfg-settings');
-            }
+              if (oneccInfo[configKey][oneccSubkey]) {
+                oneccInfoList.push(oneccSubkey);
 
+                // If you have cfg information, delete the no info statement
+                viewItemContent ?.remove();
+                metadataDivCreate(oneccSubkey, oneccInfo[configKey][oneccSubkey], 'cfg-settings');
+              }
+            }
           } else {
-            viewItemSubHeader ?.remove();
+            if (oneccInfoList.includes(configKey)) {
+              viewItemSubHeader.style.marginTop = '15px';
+              for (const oneccSubkey in oneccInfo[configKey]) {
+                if (Object.prototype.hasOwnProperty.call(oneccInfo[configKey], oneccSubkey)) {
+                  metadataDivCreate(oneccSubkey, oneccInfo[configKey][oneccSubkey], 'cfg-settings');
+                }
+              }
+
+            } else {
+              viewItemSubHeader ?.remove();
+            }
           }
         }
       }
@@ -214,13 +220,15 @@ function metadataDivCreate(subKey, value, type) {
     viewItemValueList.classList.add('view-item-value-list');
 
     for (const key in value) {
-      const viewItemValue = document.createElement('div');
-      viewItemValue.classList.add('view-item-value');
-      viewItemValue.innerText = `${value[key]}`;
-      // if the size of the viewer is smaller, Set items to be smaller in proportion
-      viewItemValue.style.width = 'auto';
-      viewItemValue.classList.add('margin-bottom-border-thin-gray');
-      viewItemValueList.appendChild(viewItemValue);
+      if (Object.prototype.hasOwnProperty.call(value, key)) {
+        const viewItemValue = document.createElement('div');
+        viewItemValue.classList.add('view-item-value');
+        viewItemValue.innerText = `${value[key]}`;
+        // if the size of the viewer is smaller, Set items to be smaller in proportion
+        viewItemValue.style.width = 'auto';
+        viewItemValue.classList.add('margin-bottom-border-thin-gray');
+        viewItemValueList.appendChild(viewItemValue);
+      }
     }
 
     viewItemContent.append(viewItemName, viewItemValueList);
