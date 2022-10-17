@@ -151,6 +151,11 @@
         "icon": "$(play)"
       },
       {
+        "command": "one.explorer.rename",
+        "title": "Rename",
+        "category": "ONE"
+      },
+      {
         "command": "one.explorer.delete",
         "title": "Delete",
         "category": "ONE"
@@ -272,6 +277,11 @@
           "group": "inline"
         },
         {
+          "command": "one.explorer.rename",
+          "when": "view == OneExplorerView && viewItem != directory",
+          "group": "7_modification"
+        },
+        {
           "command": "one.explorer.delete",
           "when": "view == OneExplorerView",
           "group": "7_modification@9"
@@ -338,6 +348,10 @@
         },
         {
           "command": "one.toolchain.setDefaultToolchain",
+          "when": "false"
+        },
+        {
+          "command": "one.explorer.rename",
           "when": "false"
         },
         {
