@@ -26,6 +26,7 @@ import {obtainWorkspaceRoot} from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
 import {ArtifactAttr} from './ArtifactLocator';
+import {ConfigObj} from './ConfigObject';
 import {OneStorage} from './OneStorage';
 
 // Exported for unit testing only
@@ -636,35 +637,34 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
    * Rename a file of all types of nodes (baseModel, product, config) excepts for directory.
    * It only alters the file name, not the path.
    * @command one.explorer.rename
+   *
+   * TODO: prohibit special characters from new name for security ('..', '*', etc)
    */
   rename(node: Node): void {
-    // TODO: prohibit special characters for security ('..', '*', etc)
-    let warningMessage;
+    const oldpath = node.path;
 
-    if (node.type === NodeType.baseModel) {
-      // TODO automatically change the corresponding files
-      warningMessage = `WARNING! ${
-          node.getChildren()
-              .map(node => `'${node.name}'`)
-              .toString()} will disappear from the view.`;
-    } else if (node.type === NodeType.product) {
-      // TODO automatically change the corresponding files
-      warningMessage = `WARNING! '${node.name}' may disappear from the view.`;
-    } else if (node.type == NodeType.config) {
-      // DO NOTHING
-      // Renaming config doesn't affect ONE Explorer view
-    } else if (node.type == NodeType.directory) {
-      assert.fail('Renaming is not allowed for directories.');
-    }
+    const getWarningMessage = ():
+        string|undefined => {
+          if (node.type === NodeType.baseModel) {
+            return undefined;
+          } else if (node.type === NodeType.product) {
+            return `NOTE that '${node.name}' may disappear from the view.`;
+          } else if (node.type === NodeType.config) {
+            // DO NOTHING
+            // Renaming config doesn't affect ONE Explorer view
+            return undefined;
+          } else if (node.type === NodeType.directory) {
+            assert.fail('Renaming is not allowed for directories.');
+          }
+        }
 
     const validateInputPath = (newname: string): string|undefined => {
-      const oldpath = node.path;
       const dirpath = path.dirname(node.uri.fsPath);
       const newpath: string = path.join(dirpath, newname);
       if (!newname.endsWith(path.extname(oldpath))) {
         // NOTE
+        // DO NOT use the code below.
         // `if (path.extname(newpath) !== path.extname(oldpath))`
-        // Do not use above code here.
         // It will evaluate '.tflite' as false, because it's extname is ''.
         return `A file extension must be (${path.extname(oldpath)})`;
       }
@@ -674,25 +674,59 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
       }
     };
 
-    vscode.window
-        .showInputBox({
-          title: 'Enter a file name:',
-          value: `${path.basename(node.uri.fsPath)}`,
-          valueSelection:
-              [0, path.basename(node.uri.fsPath).length - path.parse(node.uri.fsPath).ext.length],
-          placeHolder: `Enter a new name for ${path.basename(node.uri.fsPath)}`,
-          prompt: warningMessage,
-          validateInput: validateInputPath
-        })
-        .then(newname => {
-          if (newname) {
-            const dirpath = path.dirname(node.uri.fsPath);
-            const newpath = `${dirpath}/${newname}`;
-            vscode.workspace.fs.rename(node.uri, vscode.Uri.file(newpath)).then(() => {
-              this.refresh();
-            });
+    const askNewName = () => vscode.window.showInputBox({
+      title: 'Enter a file name:',
+      value: `${path.basename(node.uri.fsPath)}`,
+      valueSelection:
+          [0, path.basename(node.uri.fsPath).length - path.parse(node.uri.fsPath).ext.length],
+      placeHolder: `Enter a new name for ${path.basename(node.uri.fsPath)}`,
+      prompt: getWarningMessage(),
+      validateInput: validateInputPath
+    });
+
+    const askUpdatingChildren = (newpath: string) => {
+        const children = node.getChildren();
+
+        if (children.length > 0) {
+          const replacePaths = () =>
+              vscode.window
+                  .showInformationMessage(
+                      `Change corresponding input_path fields in these following files?`, {
+                        detail: `${children.length} file(s): ${
+                            children.map(node => node.name).toString()}`,
+                        modal: true
+                      },
+                      'Change All')
+                  .then(() => {
+                    children.forEach(child => {
+                      const cfgObj = OneStorage.getCfgObj(child.path);
+                      if (cfgObj) {
+                        cfgObj.updateBaseModelField(oldpath, newpath).then(() => {
+                          return Logger.info(
+                              'OneExplorer',
+                              `Replaced ${oldpath} with ${newpath} in ${
+                                  child.path}`);
+                        });
+                      }
+                    });
+                  });
+            return replacePaths();
+        }
+    };
+
+    askNewName().then(newname => {
+      if (newname) {
+        const dirpath = path.dirname(node.uri.fsPath);
+        const newpath = `${dirpath}/${newname}`;
+        vscode.workspace.fs.rename(node.uri, vscode.Uri.file(newpath)).then(() => {
+          this.refresh();
+
+          if(node.type === NodeType.baseModel) {
+            askUpdatingChildren(newpath);
           }
         });
+      }
+    });
   }
 
   /**
