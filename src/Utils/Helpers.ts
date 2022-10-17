@@ -108,8 +108,9 @@ export interface FileSelector {
 export async function saveDirtyDocuments(filepath: string): Promise<boolean> {
   const unsavedDocuments = vscode.workspace.textDocuments.filter(td => {
     if ((td.fileName === filepath) && td.isDirty) {
-      return td;
+      return true;
     }
+    return false;
   });
 
   if (unsavedDocuments.length === 0) {
