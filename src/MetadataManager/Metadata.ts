@@ -97,7 +97,8 @@ export class Metadata {
 
   public static async getObj(hash: string) {
     if (!vscode.workspace.workspaceFolders) {
-      return;
+      // TODO: Error Handling
+      return undefined;
     }
 
     const jsonUri = vscode.Uri.joinPath(
