@@ -18,14 +18,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-import {CircleGraphCtrl} from '../CircleGraph/CircleGraphCtrl';
+import {CircleGraphCtrl, CircleGraphEvent, MessageDefs} from '../CircleGraph/CircleGraphCtrl';
 
 
 /**
  * @brief VisqViewer with CircleGraphCtrl
  */
 /* istanbul ignore next */
-class VisqViewer extends CircleGraphCtrl {
+class VisqViewer extends CircleGraphCtrl implements CircleGraphEvent {
   private readonly _panel: vscode.WebviewPanel;
   private readonly _document: VisqViewerDocument;
 
@@ -33,6 +33,17 @@ class VisqViewer extends CircleGraphCtrl {
     super(extensionUri, panel.webview);
     this._panel = panel;
     this._document = document;
+  }
+
+  /**
+   * CircleGraphEvent interface implementations
+   */
+  public onViewMessage(message: any) {
+    switch (message.command) {
+      case MessageDefs.visq:
+        this.sendVisq(this._document.visq);
+        break;
+    }
   }
 
   public owner(panel: vscode.WebviewPanel) {
@@ -87,6 +98,10 @@ export class VisqViewerDocument implements vscode.CustomDocument {
     return this._uri;
   }
 
+  public get visq() {
+    return this._visqJson;
+  }
+
   // CustomDocument implements
   dispose(): void {
     if (this._visqViewer) {
@@ -112,7 +127,9 @@ export class VisqViewerDocument implements vscode.CustomDocument {
     this.loadVisqFile(this.uri.fsPath);
 
     let view = new VisqViewer(panel, extensionUri, this);
-    // TODO initialize view
+    view.initGraphCtrl(this._modelPath, view);
+    view.setMode('visq');
+    view.loadContent();
 
     this._visqViewer = view;
 
