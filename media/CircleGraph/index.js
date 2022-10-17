@@ -49,9 +49,10 @@ var host = {};
 const vscode = acquireVsCodeApi();
 
 const viewMode = {
-    viewer: 0,
-    selector: 1,
-    visq: 2,
+    viewer: 0,    // default circle viewer
+    selector: 1,  // circle partition editor node selector
+    visq: 2,      // quantization error viewer
+                  // refer https://github.com/Samsung/ONE-vscode/issues/1350
 };
 
 host.BrowserHost = class {
