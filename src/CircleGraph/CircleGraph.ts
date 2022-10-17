@@ -114,8 +114,4 @@ export class CircleGraphPanel extends CircleGraphCtrl {
   public setTitle(title: string) {
     this._panel.title = title;
   }
-
-  public loadContent() {
-    this._panel.webview.html = this.getHtmlForWebview(this._panel.webview);
-  }
 }

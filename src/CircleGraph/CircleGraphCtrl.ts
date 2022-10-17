@@ -324,6 +324,10 @@ export class CircleGraphCtrl {
     }
   }
 
+  public loadContent() {
+    this._webview.html = this.getHtmlForWebview(this._webview);
+  }
+
   public getHtmlForWebview(webview: vscode.Webview) {
     const htmlPath = this.getMediaPath('index.html');
     let html = fs.readFileSync(htmlPath.fsPath, {encoding: 'utf-8'});
