@@ -29,6 +29,7 @@ import {PartEditorProvider} from './PartEditor/PartEditor';
 import {PartGraphSelPanel} from './PartEditor/PartGraphSelector';
 import {ToolchainProvider} from './Toolchain/ToolchainProvider';
 import {Logger} from './Utils/Logger';
+import {VisqViewerProvider} from './VisqProvider/VisqViewer';
 
 /* istanbul ignore next */
 export function activate(context: vscode.ExtensionContext) {
@@ -67,6 +68,8 @@ export function activate(context: vscode.ExtensionContext) {
   CircleEditorProvider.register(context);
 
   CircleViewerProvider.register(context);
+
+  VisqViewerProvider.register(context);
 
   MetadataViewerProvider.register(context);
 
