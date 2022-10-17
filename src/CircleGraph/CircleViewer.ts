@@ -31,10 +31,6 @@ class CircleViewer extends CircleGraphCtrl {
     this._panel = panel;
   }
 
-  public loadContent() {
-    this._panel.webview.html = this.getHtmlForWebview(this._panel.webview);
-  }
-
   public owner(panel: vscode.WebviewPanel) {
     return this._panel === panel;
   }
