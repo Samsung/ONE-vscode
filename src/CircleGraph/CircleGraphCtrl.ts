@@ -28,6 +28,17 @@ class CtrlStatus {
   public static readonly disposed = 3;
 }
 
+/**
+ * @note about received message from webView
+ *
+ * 'request'     to provide 'request()' method feature
+ * 'loadmodel'   incremental bidirectional loading model to webView
+ * 'pageloaded'  window.load event is called
+ * 'finishload'  load is finished and graph is ready
+ * 'selection'   when selection is changed from webView
+ *               where 'names': containing tensor names of selected nodes
+ *                     'tensors': containing tensor index of selected nodes
+ */
 export class MessageDefs {
   // message command
   public static readonly alert = 'alert';
