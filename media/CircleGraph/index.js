@@ -51,6 +51,7 @@ const vscode = acquireVsCodeApi();
 const viewMode = {
     viewer: 0,
     selector: 1,
+    visq: 2,
 };
 
 host.BrowserHost = class {
@@ -86,6 +87,8 @@ host.BrowserHost = class {
         this._mode = viewMode.viewer;
         if (__viewMode === 'selector') {
             this._mode = viewMode.selector;
+        } else if (__viewMode === 'visq') {
+            this._mode = viewMode.visq;
         }
     }
 
@@ -154,7 +157,7 @@ host.BrowserHost = class {
             'zoom', params.has('zoom') ? params.get('zoom') : this._environment.get('zoom'));
 
         this._menu = new host.Dropdown(this, 'menu-button', 'menu-dropdown');
-        if (this._mode === viewMode.viewer) {
+        if (this._mode === viewMode.viewer || this._mode === viewMode.visq) {
             this._menu.add({
                 label: 'Properties...',
                 accelerator: 'CmdOrCtrl+Enter',

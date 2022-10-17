@@ -91,7 +91,7 @@ view.View = class {
                 this._getElementById('sidebar').addEventListener('mousewheel', (e) => {
                     this._preventDefault(e);
                 }, {passive: true});
-                if (this._host._mode === viewMode.viewer) {
+                if (this._host._mode === viewMode.viewer || this._host._mode === viewMode.visq) {
                     this._host.document.addEventListener('keydown', () => {
                         this.clearSelection();
                     });
@@ -189,7 +189,7 @@ view.View = class {
     find() {
         if (this._graph) {
             let hostMode = this._host._mode;
-            if (hostMode === viewMode.viewer) {
+            if (hostMode === viewMode.viewer || hostMode === viewMode.visq) {
                 this.clearSelection();
             }
             const graphElement = this._getElementById('canvas');
@@ -434,7 +434,7 @@ view.View = class {
     }
 
     select(selection) {
-        if (this._host._mode === viewMode.viewer) {
+        if (this._host._mode === viewMode.viewer || this._host._mode === viewMode.visq) {
             this.clearSelection();
         }
         if (selection && selection.length > 0) {
@@ -1379,7 +1379,7 @@ view.Node = class extends grapher.Node {
             (node.name || node.location);
         const title = header.add(null, styles, content, tooltip);
 
-        if (host._mode === viewMode.viewer) {
+        if (host._mode === viewMode.viewer || host._mode === viewMode.visq) {
             title.on('click', () => this.context.view.showNodeProperties(node, null));
         } else if (host._mode === viewMode.selector) {
             // toggle select with click
@@ -1422,7 +1422,7 @@ view.Node = class extends grapher.Node {
         });
         if (initializers.length > 0 || hiddenInitializers || sortedAttributes.length > 0) {
             const list = this.list();
-            if (host._mode === viewMode.viewer) {
+            if (host._mode === viewMode.viewer || host._mode === viewMode.visq) {
                 list.on('click', () => this.context.view.showNodeProperties(node));
             }
             for (const initializer of initializers) {
