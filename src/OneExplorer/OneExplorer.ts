@@ -641,20 +641,29 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
     // TODO: prohibit special characters for security ('..', '*', etc)
     let warningMessage;
 
-    if (node.type === NodeType.baseModel) {
-      // TODO automatically change the corresponding files
-      warningMessage = `WARNING! ${
-          node.getChildren()
-              .map(node => `'${node.name}'`)
-              .toString()} will disappear from the view.`;
-    } else if (node.type === NodeType.product) {
-      // TODO automatically change the corresponding files
-      warningMessage = `WARNING! '${node.name}' may disappear from the view.`;
-    } else if (node.type === NodeType.config) {
-      // DO NOTHING
-      // Renaming config doesn't affect ONE Explorer view
-    } else if (node.type === NodeType.directory) {
-      assert.fail('Renaming is not allowed for directories.');
+    switch (node.type) {
+      case NodeType.baseModel:
+        // TODO automatically change the corresponding files
+        warningMessage = `WARNING! ${
+            node.getChildren()
+                .map(node => `'${node.name}'`)
+                .toString()} will disappear from the view.`;
+        break;
+      case NodeType.product:
+        // TODO automatically change the corresponding files
+        warningMessage = `WARNING! '${node.name}' may disappear from the view.`;
+        break;
+      case NodeType.config:
+        // DO NOTHING
+        // Renaming config doesn't affect ONE Explorer view
+        break;
+      case NodeType.directory:
+        assert.fail('Renaming is not allowed for directories.');
+        break;
+      default: {
+        // ..
+        break;
+      }
     }
 
     const validateInputPath = (newname: string): string|undefined => {
