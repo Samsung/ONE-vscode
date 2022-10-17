@@ -49,6 +49,7 @@ export class MessageDefs {
 }
 
 export interface CircleGraphEvent {
+  onViewMessage(message: any): void;
   onPageLoaded(): void;
   onSelection(names: string[], tensors: string[]): void;
   onStartLoadModel(): void;
@@ -153,12 +154,14 @@ export class CircleGraphCtrl {
           this.handleLoadModel(parseInt(message.offset));  // to number
           return;
         case MessageDefs.finishload:
-          this.handleFinishLoad();
+          this.handleFinishLoad(message);
           return;
         default:
           break;
       }
-      this.handleReceiveMessage(message);
+      if (this._eventHandler) {
+        this._eventHandler.onViewMessage(message);
+      }
     }, null, this._ctrlDisposables);
   }
 
@@ -248,11 +251,11 @@ export class CircleGraphCtrl {
   /**
    * @brief handler for load is finished and graph is ready
    */
-  protected handleFinishLoad() {
+  protected handleFinishLoad(message: any) {
     this._state = CtrlStatus.ready;
 
     if (this._eventHandler) {
-      this._eventHandler.onFinishLoadModel();
+      this._eventHandler.onViewMessage(message);
     }
 
     this.applySelection();
