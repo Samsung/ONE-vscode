@@ -19,7 +19,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import {BackendColor} from '../CircleGraph/BackendColor';
-import {CircleGraphCtrl, CircleGraphEvent} from '../CircleGraph/CircleGraphCtrl';
+import {CircleGraphCtrl, CircleGraphEvent, MessageDefs} from '../CircleGraph/CircleGraphCtrl';
 
 export interface PartGraphEvent {
   onSelection(names: string[], tensors: string[]): void;
@@ -240,6 +240,24 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
   /**
    * CircleGraphEvent interface implementations
    */
+  public onViewMessage(message: any) {
+    switch (message.command) {
+      case MessageDefs.pageloaded:
+        this.sendBackendColor(this._backendColors);
+        break;
+      case MessageDefs.finishload:
+        this.applyDocumentToGraph();
+        break;
+      case MessageDefs.selection:
+        // we need to update the document, but not save to file.
+        // pass to owner to handle this.
+        if (this._partEventHandler) {
+          this._partEventHandler.onSelection(message.names, message.tensors);
+        }
+        break;
+    }
+  }
+
   public onPageLoaded() {
     this.sendBackendColor(this._backendColors);
   }
