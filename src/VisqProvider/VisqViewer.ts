@@ -103,8 +103,7 @@ export class VisqViewerDocument implements vscode.CustomDocument {
     if (!path.isAbsolute(this._modelPath)) {
       // model is relative, make it relative to .visq.json file
       let visqPath = path.parse(this.uri.fsPath);
-      // TODO check with using path.resolve(), path.join()
-      this._modelPath = path.normalize(visqPath.dir + '/' + this._visqJson.meta.model);
+      this._modelPath = path.join(visqPath.dir, this._visqJson.meta.model);
     }
   }
 
