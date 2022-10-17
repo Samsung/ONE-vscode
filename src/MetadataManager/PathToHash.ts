@@ -102,7 +102,7 @@ export class PathToHash {
 
   private async init() {
     if (vscode.workspace.workspaceFolders === undefined) {
-      return;
+      throw new Error('Need workspace');
     }
     const uri = vscode.workspace.workspaceFolders[0].uri;
     const map = await this.scanRecursively(uri);
@@ -149,7 +149,7 @@ export class PathToHash {
 
   private async getFlatMap(map: {[key: string]: any}) {
     if (vscode.workspace.workspaceFolders === undefined) {
-      return;
+      throw new Error('Need workspace');
     }
     let flatMap: any = {};
     let queue = [];
