@@ -50,10 +50,6 @@ export class MessageDefs {
 
 export interface CircleGraphEvent {
   onViewMessage(message: any): void;
-  onPageLoaded(): void;
-  onSelection(names: string[], tensors: string[]): void;
-  onStartLoadModel(): void;
-  onFinishLoadModel(): void;
 }
 
 /* istanbul ignore next */
@@ -165,17 +161,6 @@ export class CircleGraphCtrl {
     }, null, this._ctrlDisposables);
   }
 
-  protected handleReceiveMessage(message: any) {
-    switch (message.command) {
-      case MessageDefs.pageloaded:
-        this.handlePageLoaded();
-        break;
-      case MessageDefs.selection:
-        this.handleSelection(message.names, message.tensors);
-        return;
-    }
-  }
-
   protected handleChangeConfiguration(e: vscode.ConfigurationChangeEvent) {
     if (e.affectsConfiguration('workbench.colorTheme')) {
       if (this.isReady()) {
@@ -220,9 +205,7 @@ export class CircleGraphCtrl {
     if (offset === 0) {
       this._state = CtrlStatus.loading;
 
-      if (this._eventHandler) {
-        this._eventHandler.onStartLoadModel();
-      }
+      // TODO call _eventHandler with startload message if needed
       // TODO add request for model path with separate command
       this.sendModelPath();
 
@@ -277,27 +260,6 @@ export class CircleGraphCtrl {
 
     // cleanup
     this._selectionNames = undefined;
-  }
-
-  /**
-   * @brief handlePageLoaded is called when window.load event is called
-   */
-  private handlePageLoaded() {
-    if (this._eventHandler) {
-      this._eventHandler.onPageLoaded();
-    }
-  }
-
-  /**
-   * @brief handleSelection will respond with 'selection' message from WebView
-   * @param names containing tensor names of selected nodes
-   * @param tensors containing tensor index of selected nodes
-   * @note  selection information should be sent to user of this control
-   */
-  private handleSelection(names: string[], tensors: string[]) {
-    if (this._eventHandler) {
-      this._eventHandler.onSelection(names, tensors);
-    }
   }
 
   private sendModelPath() {

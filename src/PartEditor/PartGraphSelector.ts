@@ -258,29 +258,6 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
     }
   }
 
-  public onPageLoaded() {
-    this.sendBackendColor(this._backendColors);
-  }
-
-  public onSelection(names: string[], tensors: string[]) {
-    // we need to update the document, but not save to file.
-    // pass to owner to handle this.
-    if (this._partEventHandler) {
-      this._partEventHandler.onSelection(names, tensors);
-    }
-  }
-
-  public onStartLoadModel() {
-    // TODO implement
-  }
-
-  public onFinishLoadModel() {
-    // TODO set selection here?
-
-    // set node backend assignment
-    this.applyDocumentToGraph();
-  }
-
   public onForwardSelection(selection: string) {
     let selections: string[] = [];
     let items = selection.split(/\r?\n/);
