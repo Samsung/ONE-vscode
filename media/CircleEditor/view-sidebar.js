@@ -1566,7 +1566,8 @@ sidebar.ArgumentView = class {
         }
 
         /* compare changed elements and update data */
-        this.storeData(dataArr, this._editObject._arguments._initializer._data, currentType.toLowerCase());
+        this.storeData(
+            dataArr, this._editObject._arguments._initializer._data, currentType.toLowerCase());
     }
 
     // Data can be changed according to the types
