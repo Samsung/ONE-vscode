@@ -1499,12 +1499,6 @@ sidebar.ArgumentView = class {
                     break;
             }
         }
-
-        const newBuffer = [];
-
-        for (let i = 0; i < Object.keys(original).length; i++) {
-            newBuffer.push(original[i]);
-        }
     }
 
     removeBracket(str) {
@@ -1563,7 +1557,6 @@ sidebar.ArgumentView = class {
         return dataArr;
     }
 
-    /* buffer data modified - type change NOT allowed simultaneously */
     editBufferData(bufData, currentType, shape) {
         const dataArr = this.parseBufData(bufData, shape, currentType);
 
@@ -1573,12 +1566,7 @@ sidebar.ArgumentView = class {
         }
 
         /* compare changed elements and update data */
-        if (currentType === 'string') {
-            // TODO string type
-        } else {
-            this.storeData(
-                dataArr, this._editObject._arguments._initializer._data, currentType.toLowerCase());
-        }
+        this.storeData(dataArr, this._editObject._arguments._initializer._data, currentType.toLowerCase());
     }
 
     // Data can be changed according to the types
