@@ -219,16 +219,18 @@ sidebar.NodeSidebar = class {
 
         const inputs = node.inputs;
         if (inputs && inputs.length > 0) {
-            const inputsElements = new sidebar.EditInputsView(host, inputs, this._isCustom, this._node).render();
-            for(const inputsElement of inputsElements){
+            const inputsElements =
+                new sidebar.EditInputsView(host, inputs, this._isCustom, this._node).render();
+            for (const inputsElement of inputsElements) {
                 this._elements.push(inputsElement);
             }
         }
 
         const outputs = node.outputs;
         if (outputs && outputs.length > 0) {
-            const outputsElements = new sidebar.EditOutputsView(host, outputs, this._isCustom, this._node).render();
-            for(const outputsElement of outputsElements){
+            const outputsElements =
+                new sidebar.EditOutputsView(host, outputs, this._isCustom, this._node).render();
+            for (const outputsElement of outputsElements) {
                 this._elements.push(outputsElement);
             }
         }
@@ -414,7 +416,7 @@ sidebar.EditInputsView = class {
             this._elements.push(item.render());
         }
     }
-    
+
     render() {
         return this._elements;
     }
@@ -460,7 +462,7 @@ sidebar.EditOutputsView = class {
             this._elements.push(item.render());
         }
     }
-    
+
     render() {
         return this._elements;
     }
