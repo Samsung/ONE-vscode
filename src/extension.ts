@@ -29,7 +29,7 @@ import {PartEditorProvider} from './PartEditor/PartEditor';
 import {PartGraphSelPanel} from './PartEditor/PartGraphSelector';
 import {ToolchainProvider} from './Toolchain/ToolchainProvider';
 import {Logger} from './Utils/Logger';
-import {VisqViewerProvider} from './VisqProvider/VisqViewer';
+import {VisqViewerProvider} from './Visquv/VisqViewer';
 
 /* istanbul ignore next */
 export function activate(context: vscode.ExtensionContext) {
