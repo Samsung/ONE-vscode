@@ -418,7 +418,7 @@ sidebar.EditInputsView = class {
     render() {
         return this._elements;
     }
-}
+};
 
 sidebar.EditOutputsView = class {
     constructor(host, outputs, isCustom, node) {
@@ -464,7 +464,7 @@ sidebar.EditOutputsView = class {
     render() {
         return this._elements;
     }
-}
+};
 
 sidebar.NameValueView = class {
     constructor(host, name, value, index, title) {
