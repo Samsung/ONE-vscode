@@ -219,9 +219,15 @@ host.BrowserHost = class {
         });
 
         this._view.show('welcome spinner');
-        // start to load model by requesting the model
-        // NOTE to start loading from extension, we have to check view is ready.
-        vscode.postMessage({command: 'loadmodel', offset: '0'});
+        if (this._mode === viewMode.visq) {
+            // request visq data prior to model
+            // model is inside visq data
+            vscode.postMessage({command: 'visq'});
+        } else {
+            // start to load model by requesting the model
+            // NOTE to start loading from extension, we have to check view is ready.
+            vscode.postMessage({command: 'loadmodel', offset: '0'});
+        }
     }
 
     environment(name) {
