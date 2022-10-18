@@ -311,11 +311,9 @@ sidebar.EditAttributesView = class {
             const addAttribute = this._host.document.createElement('div');
             addAttribute.className = 'sidebar-view-item-value-add';
             addAttribute.innerText = '+ New Attributes';
-            addAttribute.addEventListener(
-                'click',
-                () => {
-                    this.add();
-                });
+            addAttribute.addEventListener('click', () => {
+                this.add();
+            });
             this._attributesBox.appendChild(addAttribute);
             this._elements.push(this._attributesBox);
         }
@@ -408,7 +406,8 @@ sidebar.EditInputsView = class {
             view.on('error', (sender, tensor) => {
                 this._raise('error', tensor);
             });
-            const item = new sidebar.NameValueView(this._host, name, view, this._inputs.length, 'input');
+            const item =
+                new sidebar.NameValueView(this._host, name, view, this._inputs.length, 'input');
             this._inputs.push(item);
             this._elements.push(item.render());
         }
@@ -452,7 +451,8 @@ sidebar.EditOutputsView = class {
                 visible: true,
             };
             const view = new sidebar.ParameterView(this._host, output, inputAttributes);
-            const item = new sidebar.NameValueView(this._host, name, view, this._outputs.length, 'output');
+            const item =
+                new sidebar.NameValueView(this._host, name, view, this._outputs.length, 'output');
             this._outputs.push(item);
             this._elements.push(item.render());
         }
