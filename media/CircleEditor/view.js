@@ -831,7 +831,13 @@ view.View = class {
                             model._graphs[idx]._nodes[jdx]['_subgraphIdx'] = idx;
                             if (model._graphs[idx]._nodes[jdx]._type?.category === 'custom') {
                                 model._graphs[idx]._nodes[jdx]._isCustom = true;
-                                // TODO implements getCustomOpAttrT request
+                                vscode.postMessage({
+                                    command: 'getCustomOpAttrT',
+                                    data: {
+                                        _subgraphIdx: idx,
+                                        _nodeIdx: jdx,
+                                    }
+                                });
                             }
                         }
                     }

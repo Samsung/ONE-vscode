@@ -402,12 +402,11 @@ sidebar.EditAttributesView = class {
         this._editObject._attribute['attribute_type'] = 'string';
         this._editObject._attribute.keys = keys;
 
-        // TODO Enable posting message
-        // vscode.postMessage({
-        //     command: 'edit',
-        //     type: 'attribute',
-        //     data: this._editObject,
-        // });
+        vscode.postMessage({
+            command: 'edit',
+            type: 'attribute',
+            data: this._editObject,
+        });
     }
 
     render() {
@@ -603,12 +602,11 @@ sidebar.ValueTextView = class {
         }
         this._editObject._attribute.keys = keys;
 
-        // TODO Enable posting message
-        // vscode.postMessage({
-        //     command: 'edit',
-        //     type: 'attribute',
-        //     data: this._editObject,
-        // });
+        vscode.postMessage({
+            command: 'edit',
+            type: 'attribute',
+            data: this._editObject,
+        });
     }
 
     cancel() {
@@ -855,33 +853,24 @@ class NodeAttributeView {
     save() {
         if (this._attribute._type === 'int32') {
             if (this._line.value - 0 > 2147483648) {
-                // TODO Enable posting message
-                // vscode.postMessage({
-                //     command : 'alert',
-                //     text: 'Can\'t exceed 2,147,483,648'
-                // });
+                vscode.postMessage({command: 'alert', text: 'Can\'t exceed 2,147,483,648'});
                 return;
             }
         }
 
-        // TODO It will be implemented when the attribute type of the CustomOperator can be
-        // received. if (this._isCustom === true) {
-        //     const input = this._host.document.getElementById('attribute' + this._index);
-        //     if (this._select.value === 'int') {
-        //         if (this._line.value - 0 > 2147483648) {
-        //             // TODO Enable posting message
-        //             // vscode.postMessage({
-        //             //     command : 'alert',
-        //             //     text: 'Can\'t exceed 2,147,483,648'
-        //             // });
-        //             return;
-        //         }
-        //     }
-        //     input.disabled = true;
-        //     this._attribute._name = input.value;
-        //     this._attribute._type = this._select.value;
-        //     this._attribute._value = this._line.value;
-        // }
+        if (this._isCustom === true) {
+            const input = this._host.document.getElementById('attribute' + this._index);
+            if (this._select.value === 'int') {
+                if (this._line.value - 0 > 2147483648) {
+                    vscode.postMessage({command: 'alert', text: 'Can\'t exceed 2,147,483,648'});
+                    return;
+                }
+            }
+            input.disabled = true;
+            this._attribute._name = input.value;
+            this._attribute._type = this._select.value;
+            this._attribute._value = this._line.value;
+        }
 
         while (this._element.childElementCount) {
             this._element.removeChild(this._element.lastChild);
@@ -891,24 +880,22 @@ class NodeAttributeView {
             this._editObject._attribute.name = this._attribute.name;
             this._editObject._attribute._value = this._line.value;
             this._editObject._attribute._type = this._attribute.type;
+        } else {
+            this._editObject._attribute.name = this._node.type.name;
+            const keys = [];
+            for (const key of this._node.attributes) {
+                keys.push(key.name);
+                this._editObject._attribute[key.name] = key.value;
+                this._editObject._attribute[key.name + '_type'] = key.type;
+            }
+            this._editObject._attribute.keys = keys;
         }
-        // } else {
-        //     this._editObject._attribute.name = this._node.type.name;
-        //     const keys = [];
-        //     for (const key of this._node.attributes) {
-        //         keys.push(key.name);
-        //         this._editObject._attribute[key.name] = key.value;
-        //         this._editObject._attribute[key.name + '_type'] = key.type;
-        //     }
-        //     this._editObject._attribute.keys = keys;
-        // }
 
-        // TODO Enable posting message
-        // vscode.postMessage({
-        //     command: 'edit',
-        //     type: 'attribute',
-        //     data: this._editObject,
-        // });
+        vscode.postMessage({
+            command: 'edit',
+            type: 'attribute',
+            data: this._editObject,
+        });
     }
 
     cancel() {
@@ -945,12 +932,11 @@ class NodeAttributeView {
         }
         this._editObject._attribute.keys = keys;
 
-        // TODO Enable posting message
-        // vscode.postMessage({
-        //     command: 'edit',
-        //     type: 'attribute',
-        //     data: this._editObject,
-        // });
+        vscode.postMessage({
+            command: 'edit',
+            type: 'attribute',
+            data: this._editObject,
+        });
     }
 
     render() {
@@ -1368,51 +1354,51 @@ sidebar.ArgumentView = class {
         const currentType = this._select.value.toLowerCase();
 
         if (!this.check()) {
-            // TODO Enable posting message
-            // vscode.postMessage({
-            //     command: 'alert',
-            //     text: 'FORMAT ERROR : Please enter commas and numbers only.'
-            // });
+            vscode.postMessage(
+                {command: 'alert', text: 'FORMAT ERROR : Please enter commas and numbers only.'});
             return;
         }
 
         let shape = this._shape.value;
         shape = '{ "data": [' + shape + '] }';
-        shape = JSON.parse(shape).data;
 
-        // const originalString = this._argument._initializer.toString();
-        // const currentString = this._data.value;
+        try {
+            shape = JSON.parse(shape).data;
+        } catch (err) {
+            vscode.postMessage({
+                command: 'alert',
+                text: 'VALIDATION ERROR : Please check your buffer data again.'
+            });
+            return;
+        }
 
         this._editObject._arguments._isChanged = true;
 
-        // TODO will be implement
-        // if (this._argument._initializer && this._editObject._arguments._isChanged) {
-        //     let data;
-        //     if (this._data) {
-        //         data = this._data.value;
-        //     }
+        if (this._argument._initializer) {
+            const originalType = this._argument._type.dataType;
 
-        //     const originalType = this._argument._type.dataType;
+            let result;
 
-        //     let result;
-        //     if (data && currentType === originalType && shape ===
-        //     this._argument._type._shape._dimensions ) {
-        //         result = this.editBuffer(data, currentType, shape);
-        //     } else if (data) {
-        //         result = this.changeBufferType(currentType, data, shape);
-        //     }
+            if (!this._data) {
+                result = false;
+            } else if (
+                currentType === originalType && shape === this._argument._type._shape._dimensions) {
+                this.editBufferData(this._data.value, currentType, shape);
+                result = true;
+            } else {
+                result = this.changeBufferType(currentType, this._data.value, shape);
+            }
 
-        //     if (!result) {
-        //         // TODO Enable posting message
-        //         // vscode.postMessage({
-        //         //     command: 'alert',
-        //         //     text: 'VALIDATION ERROR : Please check your buffer data again.'
-        //         // });
-        //         return;
-        //     }
-        // } else {
-        //     this._editObject._arguments._initializer = null;
-        // }
+            if (!result) {
+                vscode.postMessage({
+                    command: 'alert',
+                    text: 'VALIDATION ERROR : Please check your buffer data again.'
+                });
+                return;
+            }
+        } else {
+            this._editObject._arguments._initializer = null;
+        }
 
         this._editObject._arguments._type._dataType = currentType;
         this._editObject._arguments._type._shape._dimensions = shape;
@@ -1426,12 +1412,7 @@ sidebar.ArgumentView = class {
             this._tensors._name = input.value;
         }
 
-        // TODO Enable posting message
-        // vscode.postMessage({
-        //     command : 'edit',
-        //     type : 'tensor',
-        //     data : this._editObject
-        // });
+        vscode.postMessage({command: 'edit', type: 'tensor', data: this._editObject});
     }
 
     cancel() {
@@ -1456,30 +1437,238 @@ sidebar.ArgumentView = class {
         return true;
     }
 
-    /**
-     * TODO Implement compareData()
-     * Compare and change transformed data against corrected data
-     */
+    // 'data' is string formatted even they are numbers
+    storeData(buf, data, dataType) {
+        let dataLength = dataType === 'int64' ? bufferArr.length * 2 : bufferArr.length;
+        for (let i = 0; i < dataLength; i++) {
+            var buffer = new ArrayBuffer(8);
+            const view = new DataView(buffer);
+            switch (dataType) {
+                case 'float32':
+                    view.setFloat32(0, parseFloat(data[i]), true);
+                    for (let j = 0; j < 4; j++) {
+                        buf[i * 4 + j] = view.getUint8(j);
+                    }
+                    break;
+                case 'float16':
+                    view.setFloat16(0, parseFloat(data[i]), true);
+                    for (let j = 0; j < 2; j++) {
+                        buf[i * 2 + j] = view.getUint8(j);
+                    }
+                    break;
+                case 'int32':
+                    view.setInt32(0, parseInt(data[i]), true);
+                    for (let j = 0; j < 4; j++) {
+                        buf[i * 4 + j] = view.getUint8(j);
+                    }
+                    break;
+                case 'uint8':
+                    view.setUint8(0, parseUint(data[i]), true);
+                    buf[i] = view.getUint8(0);
+                    break;
+                case 'int64':
+                    view.setBigInt64(0, BigInt(parseInt(data[i])), true);
+                    for (let j = 0; j < 4; j++) {
+                        buf[i * 4 + j] = view.getUint8(j);
+                    }
+                    break;
+                case 'boolean':
+                    if (data[i] === 'false' || data[i] - 0 === 0) {
+                        buf[i] = 0;
+                    } else {
+                        buf[i] = 1;
+                    }
+                    break;
+                case 'int16':
+                    view.setInt16(0, parseInt(data[i]), true);
+                    for (let j = 0; j < 2; j++) {
+                        buf[i * 2 + j] = view.getUint8(j);
+                    }
+                    break;
+                case 'int8':
+                    view.setInt8(0, parseInt(data[i]), true);
+                    buf[i] = view.getUint8(0);
+                    break;
+                case 'float64':
+                    view.setFloat64(0, parseFloat(data[i]), true);
+                    for (let j = 0; j < 8; j++) {
+                        buf[i * 8 + j] = view.getUint8(j);
+                    }
+                    break;
+                default:  // TODO Enable other types uint32, uint64, string
+                    break;
+            }
+        }
+    }
 
-    /**
-     * TODO Implement removeBracket()
-     * Bracket remove function
-     */
+    removeBracket(str) {
+        str = str.replace(/\[/g, '');
+        str = str.replace(/\]/g, '');
+        str = str.replace(/\n/g, '');
+        str = str.replace(/ /g, '');
+        str = str.replace(/\{/g, '');
+        str = str.replace(/\}/g, '');
+        str = str.replace(/"/g, '');
+        str = str.replace(/:/g, '');
+        str = str.replace(/low/g, '');
+        str = str.replace(/high/g, '');
+        const arr = str.split(',');
+        return arr;
+    }
 
-    /**
-     * TODO Implement validationCheck()
-     * Changed buffers validation check function
-     */
+    parseBufData(bufData, shape, type) {
+        /* data validation - bracket check */
+        const stack = [];
+        for (let i = 0; i < bufData.length; i++) {
+            if (bufData.charAt(i) === '[') {
+                stack.push('[');
+            } else if (bufData.charAt(i) === ']') {
+                if (stack[stack.length - 1] === '[') {
+                    stack.pop();
+                } else {
+                    // alert(error! Brackets do not match);
+                    return [];
+                }
+            }
+        }
+        if (stack.length) {
+            // alert(error! Brackets do not match);
+            return [];
+        }
 
-    /**
-     * TODO Implement editBuffer()
-     * Buffer edit function
-     */
 
-    /**
-     * TODO Implement changeBufferType()
-     * Buffer tyep change function
-     */
+        /* parse data to string array */
+        var dataArr = this.removeBracket(bufData);
+
+
+        /* data validation - shape count */
+        let shapeCnt = 1;
+        for (let i = 0; i < shape.length; i++) {
+            shapeCnt *= shape[i];
+        }
+        if (type === 'int64') {
+            shapeCnt *= 2;
+        }
+        if (dataArr.length !== shapeCnt) {
+            // alert(error! Shape and data count does not match);
+            return [];
+        }
+
+        return dataArr;
+    }
+
+    editBufferData(bufData, currentType, shape) {
+        const dataArr = this.parseBufData(bufData, shape, currentType);
+
+        if (dataArr.length === 0) {
+            vscode.postMessage({command: 'alert', text: 'Validation Error!'});
+            return;
+        }
+
+        this.storeData(
+            dataArr, this._editObject._arguments._initializer._data, currentType.toLowerCase());
+    }
+
+    // Data can be changed according to the types
+    // e.g. int32 <--> float32
+    changeBufferType(newType, bufData, shape) {
+        const dataArr = this.parseBufData(bufData, shape, newType);
+
+        if (dataArr.length === 0) {
+            return false;
+        }
+
+        const buffer = new ArrayBuffer(8);
+        const view = new DataView(buffer);
+
+        let newArray = [];
+
+        if (newType.startsWith('float')) {
+            const bits = Number(newType.slice(-2));
+
+            for (let i = 0; i < dataArr.length; i++) {
+                const data = parseFloat(dataArr[i]);
+
+                if (isNaN(data)) {
+                    return false;
+                } else if (bits === 16) {
+                    view.setFloat16(0, data, true);
+                } else if (bits === 32) {
+                    view.setFloat32(0, data, true);
+                } else if (bits === 64) {
+                    view.setFloat64(0, data, true);
+                }
+
+                for (let j = 0; j < bits / 8; j++) {
+                    newArray.push(view.getUint8(j));
+                }
+            }
+        } else if (newType.startsWith('int')) {
+            let bits = Number(newType.slice(-2));
+
+            for (let i = 0; i < dataArr.length; i++) {
+                const data = parseInt(dataArr[i]);
+
+                if (isNaN(data)) {
+                    return false;
+                } else if (bits === 16) {
+                    view.setInt16(0, data, true);
+                } else if (bits === 32) {
+                    view.setInt32(0, data, true);
+                } else if (bits === 64) {
+                    view.setBigInt64(0, BigInt(data), true);
+                } else {
+                    bits = Number(newType.slice(-1));
+
+                    if (bits === 8) {
+                        view.setInt8(0, data, true);
+                    }
+                }
+                for (let j = 0; j < bits / 8; j++) {
+                    newArray.push(view.getUint8(j));
+                }
+            }
+        } else if (newType.startsWith('uint')) {
+            let bits = Number(newType.slice(-2));
+
+            for (let i = 0; i < dataArr.length; i++) {
+                const data = parseInt(dataArr[i]);
+
+                if (data < 0) {
+                    return false;
+                }
+
+                if (isNaN(data)) {
+                    return false;
+                } else if (bits === 32) {  // uint32
+                    // TODO Support uint32
+                } else if (bits === 64) {  // uint64
+                    // TODO Support uint64
+                } else {
+                    bits = Number(newType.slice(-1));
+
+                    if (bits === 8) {  // uint8
+                        view.setUint8(0, data, true);
+                    }
+                }
+                for (let j = 0; j < bits / 8; j++) {
+                    newArray.push(view.getUint8(j));
+                }
+            }
+        } else if (newType === 'boolean') {
+            for (let i = 0; i < dataArr.length; i++) {
+                if (dataArr[i]) {
+                    newArray.push(1);
+                } else {
+                    newArray.push(0);
+                }
+            }
+        }
+
+        this._editObject._arguments._initializer._data = newArray;
+
+        return true;
+    }
 
     on(event, callback) {
         this._events = this._events || {};
