@@ -15,7 +15,6 @@
  */
 
 import {assert} from 'chai';
-import {execSync} from 'child_process';
 import * as vscode from 'vscode';
 
 import {OneCompiler, OneDebianToolchain, OneToolchain} from '../../../Backend/One/OneToolchain';
@@ -158,19 +157,10 @@ suite('OneCompiler', function() {
       assert.isDefined(oneCompiler.getInstalledToolchains);
     });
 
-    test('NEG: check invalid toolchain', function() {
-      const dummyToolchainName = 'dummyToolchain';
-      const isInstalledToolchain =
-          execSync(`dpkg-query --show ${dummyToolchainName} > /dev/null 2>&1; echo $?`).toString();
-      assert.strictEqual(parseInt(isInstalledToolchain), 1);
-    });
-
     test('NEG: request wrong toolchain type', function() {
       const oneCompiler = new OneCompiler();
       const dummyToolchainType = 'dummy';
-      const start = 0;
-      const count = 1;
-      assert.throws(() => oneCompiler.getToolchains(dummyToolchainType, start, count));
+      assert.throws(() => oneCompiler.getInstalledToolchains(dummyToolchainType));
     });
   });
 
