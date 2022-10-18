@@ -218,22 +218,20 @@ sidebar.NodeSidebar = class {
         }
 
         const inputs = node.inputs;
-        let inputIdx = 0;
         if (inputs && inputs.length > 0) {
-            this._addHeader('Inputs');
-            for (const input of inputs) {
-                this._addInput(input.name, input, inputIdx);
-                inputIdx++;
+            const inputsElements =
+                new sidebar.EditInputsView(host, inputs, this._isCustom, this._node).render();
+            for (const inputsElement of inputsElements) {
+                this._elements.push(inputsElement);
             }
         }
 
         const outputs = node.outputs;
-        let outputIdx = 0;
         if (outputs && outputs.length > 0) {
-            this._addHeader('Outputs');
-            for (const output of outputs) {
-                this._addOutput(output.name, output, outputIdx);
-                outputIdx++;
+            const outputsElements =
+                new sidebar.EditOutputsView(host, outputs, this._isCustom, this._node).render();
+            for (const outputsElement of outputsElements) {
+                this._elements.push(outputsElement);
             }
         }
 
@@ -256,49 +254,6 @@ sidebar.NodeSidebar = class {
     _addProperty(name, value) {
         const item = new sidebar.NameValueView(this._host, name, value);
         this._elements.push(item.render());
-    }
-
-    _addInput(name, input, idx) {
-        if (input.arguments.length > 0) {
-            const inputAttributes = {
-                title: 'input',
-                index: idx,
-                this: this._isCustom,
-                name: name,
-                nodeIdx: this._node._location,
-                subgraphIdx: this._node._subgraphIdx,
-                visible: true,
-            };
-
-            const view = new sidebar.ParameterView(this._host, input, inputAttributes);
-            view.on('export-tensor', (sender, tensor) => {
-                this._raise('export-tensor', tensor);
-            });
-            view.on('error', (sender, tensor) => {
-                this._raise('error', tensor);
-            });
-            const item = new sidebar.NameValueView(this._host, name, view, idx, 'input');
-            this._inputs.push(item);
-            this._elements.push(item.render());
-        }
-    }
-
-    _addOutput(name, output) {
-        if (output.arguments.length > 0) {
-            const outputAttributes = {
-                title: 'output',
-                index: this._index,
-                this: this._isCustom,
-                name: name,
-                nodeIdx: this._node._location,
-                subgraphIdx: this._node._subgraphIdx,
-                visible: true,
-            };
-            const view = new sidebar.ParameterView(this._host, output, outputAttributes);
-            const item = new sidebar.NameValueView(this._host, name, view, this._index, 'output');
-            this._outputs.push(item);
-            this._elements.push(item.render());
-        }
     }
 
     toggleInput(name) {
@@ -356,12 +311,9 @@ sidebar.EditAttributesView = class {
             const addAttribute = this._host.document.createElement('div');
             addAttribute.className = 'sidebar-view-item-value-add';
             addAttribute.innerText = '+ New Attributes';
-            addAttribute.addEventListener(
-                'click',
-                () => {
-                    // TODO will be implement
-                    // this.add();
-                });
+            addAttribute.addEventListener('click', () => {
+                this.add();
+            });
             this._attributesBox.appendChild(addAttribute);
             this._elements.push(this._attributesBox);
         }
@@ -414,13 +366,102 @@ sidebar.EditAttributesView = class {
     }
 };
 
-/**
- * TODO Implement sidebar.EditInputsView Class
- */
+sidebar.EditInputsView = class {
+    constructor(host, inputs, isCustom, node) {
+        this._host = host;
+        this._elements = [];
+        this._inputs = [];
+        this._isCustom = isCustom;
+        this._node = node;
 
-/**
- * TODO Implement sidebar.EditOutputsView Class
- */
+        this._addHeader('Inputs');
+        for (const input of inputs) {
+            this._addInput(input.name, input);
+        }
+    }
+
+    _addHeader(title) {
+        const headerElement = this._host.document.createElement('div');
+        headerElement.className = 'sidebar-view-header';
+        headerElement.innerText = title;
+        this._elements.push(headerElement);
+    }
+
+    _addInput(name, input) {
+        if (input.arguments.length > 0) {
+            const inputAttributes = {
+                title: 'input',
+                index: this._inputs.length,
+                this: this._isCustom,
+                name: name,
+                nodeIdx: this._node._location,
+                subgraphIdx: this._node._subgraphIdx,
+                visible: true,
+            };
+
+            const view = new sidebar.ParameterView(this._host, input, inputAttributes);
+            view.on('export-tensor', (sender, tensor) => {
+                this._raise('export-tensor', tensor);
+            });
+            view.on('error', (sender, tensor) => {
+                this._raise('error', tensor);
+            });
+            const item =
+                new sidebar.NameValueView(this._host, name, view, this._inputs.length, 'input');
+            this._inputs.push(item);
+            this._elements.push(item.render());
+        }
+    }
+
+    render() {
+        return this._elements;
+    }
+};
+
+sidebar.EditOutputsView = class {
+    constructor(host, outputs, isCustom, node) {
+        this._host = host;
+        this._elements = [];
+        this._outputs = [];
+        this._isCustom = isCustom;
+        this._node = node;
+
+        this._addHeader('Outputs');
+        for (const output of outputs) {
+            this._addOutput(output.name, output);
+        }
+    }
+
+    _addHeader(title) {
+        const headerElement = this._host.document.createElement('div');
+        headerElement.className = 'sidebar-view-header';
+        headerElement.innerText = title;
+        this._elements.push(headerElement);
+    }
+
+    _addOutput(name, output) {
+        if (output.arguments.length > 0) {
+            const inputAttributes = {
+                title: 'output',
+                index: this._outputs.length,
+                this: this._isCustom,
+                name: name,
+                nodeIdx: this._node._location,
+                subgraphIdx: this._node._subgraphIdx,
+                visible: true,
+            };
+            const view = new sidebar.ParameterView(this._host, output, inputAttributes);
+            const item =
+                new sidebar.NameValueView(this._host, name, view, this._outputs.length, 'output');
+            this._outputs.push(item);
+            this._elements.push(item.render());
+        }
+    }
+
+    render() {
+        return this._elements;
+    }
+};
 
 sidebar.NameValueView = class {
     constructor(host, name, value, index, title) {
