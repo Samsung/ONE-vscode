@@ -1565,7 +1565,6 @@ sidebar.ArgumentView = class {
             return;
         }
 
-        /* compare changed elements and update data */
         this.storeData(
             dataArr, this._editObject._arguments._initializer._data, currentType.toLowerCase());
     }
