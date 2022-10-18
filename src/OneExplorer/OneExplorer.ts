@@ -206,8 +206,7 @@ class NodeFactory {
     //
     // A 'TreeDataProvider<element>' expects every elements (Node) to be correspond to visible
     // TreeItem, so let's not build hidden nodes.
-    if(attr && attr?.canHide === true && OneTreeDataProvider.didHideExtra === true)
-    {
+    if (attr && attr?.canHide && OneTreeDataProvider.didHideExtra) {
       return undefined;
     }
 
@@ -633,47 +632,27 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
   }
 
   /**
-   * Rename a file of all types of nodes (baseModel, product, config) excepts for directory.
-   * It only alters the file name, not the path.
+   * Rename a file
+   * @note Renaming is only allowed for config files as it has no impact on the explorer view.
    * @command one.explorer.rename
+   * @todo prohibit special characters from new name for security ('..', '*', etc)
    */
   rename(node: Node): void {
-    // TODO: prohibit special characters for security ('..', '*', etc)
-    let warningMessage;
+    assert.ok(node.type === NodeType.config);
 
-    switch (node.type) {
-      case NodeType.baseModel:
-        // TODO automatically change the corresponding files
-        warningMessage = `WARNING! ${
-            node.getChildren()
-                .map(node => `'${node.name}'`)
-                .toString()} will disappear from the view.`;
-        break;
-      case NodeType.product:
-        // TODO automatically change the corresponding files
-        warningMessage = `WARNING! '${node.name}' may disappear from the view.`;
-        break;
-      case NodeType.config:
-        // DO NOTHING
-        // Renaming config doesn't affect ONE Explorer view
-        break;
-      case NodeType.directory:
-        assert.fail('Renaming is not allowed for directories.');
-        break;
-      default: {
-        assert.fail('Cannot reach here');
-        break;
-      }
+    if (node.type !== NodeType.config) {
+      return;
     }
 
+    const oldpath = node.path;
+
     const validateInputPath = (newname: string): string|undefined => {
-      const oldpath = node.path;
       const dirpath = path.dirname(node.uri.fsPath);
       const newpath: string = path.join(dirpath, newname);
       if (!newname.endsWith(path.extname(oldpath))) {
         // NOTE
+        // DO NOT use the code below.
         // `if (path.extname(newpath) !== path.extname(oldpath))`
-        // Do not use above code here.
         // It will evaluate '.tflite' as false, because it's extname is ''.
         return `A file extension must be (${path.extname(oldpath)})`;
       }
@@ -683,25 +662,24 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
       }
     };
 
-    vscode.window
-        .showInputBox({
-          title: 'Enter a file name:',
-          value: `${path.basename(node.uri.fsPath)}`,
-          valueSelection:
-              [0, path.basename(node.uri.fsPath).length - path.parse(node.uri.fsPath).ext.length],
-          placeHolder: `Enter a new name for ${path.basename(node.uri.fsPath)}`,
-          prompt: warningMessage,
-          validateInput: validateInputPath
-        })
-        .then(newname => {
-          if (newname) {
-            const dirpath = path.dirname(node.uri.fsPath);
-            const newpath = `${dirpath}/${newname}`;
-            vscode.workspace.fs.rename(node.uri, vscode.Uri.file(newpath)).then(() => {
-              this.refresh();
-            });
-          }
+    const askNewName = () => vscode.window.showInputBox({
+      title: 'Enter a file name:',
+      value: `${path.basename(node.uri.fsPath)}`,
+      valueSelection:
+          [0, path.basename(node.uri.fsPath).length - path.parse(node.uri.fsPath).ext.length],
+      placeHolder: `Enter a new name for ${path.basename(node.uri.fsPath)}`,
+      validateInput: validateInputPath
+    });
+
+    askNewName().then(newname => {
+      if (newname) {
+        const dirpath = path.dirname(node.uri.fsPath);
+        const newpath = `${dirpath}/${newname}`;
+        vscode.workspace.fs.rename(node.uri, vscode.Uri.file(newpath)).then(() => {
+          this.refresh();
         });
+      }
+    });
   }
 
   /**

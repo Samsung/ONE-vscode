@@ -288,7 +288,7 @@
         },
         {
           "command": "one.explorer.rename",
-          "when": "view == OneExplorerView && viewItem != directory",
+          "when": "view == OneExplorerView && viewItem == config",
           "group": "7_modification"
         },
         {
