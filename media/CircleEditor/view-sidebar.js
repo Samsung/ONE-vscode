@@ -314,8 +314,7 @@ sidebar.EditAttributesView = class {
             addAttribute.addEventListener(
                 'click',
                 () => {
-                    // TODO will be implement
-                    // this.add();
+                    this.add();
                 });
             this._attributesBox.appendChild(addAttribute);
             this._elements.push(this._attributesBox);
@@ -374,14 +373,12 @@ sidebar.EditInputsView = class {
         this._host = host;
         this._elements = [];
         this._inputs = [];
-        this._index = 0;
         this._isCustom = isCustom;
         this._node = node;
 
         this._addHeader('Inputs');
         for (const input of inputs) {
             this._addInput(input.name, input);
-            this._index++;
         }
     }
 
@@ -396,7 +393,7 @@ sidebar.EditInputsView = class {
         if (input.arguments.length > 0) {
             const inputAttributes = {
                 title: 'input',
-                index: this._index,
+                index: this._inputs.length,
                 this: this._isCustom,
                 name: name,
                 nodeIdx: this._node._location,
@@ -428,13 +425,11 @@ sidebar.EditOutputsView = class {
         this._elements = [];
         this._outputs = [];
         this._isCustom = isCustom;
-        this._index = 0;
         this._node = node;
 
         this._addHeader('Outputs');
         for (const output of outputs) {
             this._addOutput(output.name, output);
-            this._index++;
         }
     }
 
@@ -449,7 +444,7 @@ sidebar.EditOutputsView = class {
         if (output.arguments.length > 0) {
             const inputAttributes = {
                 title: 'output',
-                index: this._index,
+                index: this._outputs.length,
                 this: this._isCustom,
                 name: name,
                 nodeIdx: this._node._location,
