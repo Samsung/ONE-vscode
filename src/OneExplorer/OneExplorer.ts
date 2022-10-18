@@ -533,6 +533,8 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
           }),
       vscode.commands.registerCommand('one.explorer.delete', (node: Node) => provider.delete(node)),
       vscode.commands.registerCommand('one.explorer.rename', (node: Node) => provider.rename(node)),
+      vscode.commands.registerCommand(
+          'one.explorer.refactor', (node: Node) => provider.refactor(node)),
     ];
 
     if (provider.isLocal) {
@@ -692,6 +694,68 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
         });
       }
     });
+  }
+
+  /**
+   * Refactor BaseModel or Product(TBD)
+   * It renames the file and changes the corresponding path in its referring config files.
+   * @command one.explorer.refactor
+   * @todo support refactoring of Product
+   * @todo prohibit special characters from new name for security ('..', '*', etc)
+   */
+  async refactor(node: Node): Promise<void> {
+    assert.ok(node.type === NodeType.baseModel);
+
+    // Ask the new name of the model file
+    const newname = await this.askNewName(node);
+    if (!newname) {
+      return;
+    }
+
+    const newpath = `${path.dirname(node.uri.fsPath)}/${newname}`;
+    const children = node.getChildren();
+
+    // If it has no child, simply rename it
+    if (children.length === 0) {
+      vscode.workspace.fs.rename(node.uri, vscode.Uri.file(newpath)).then(() => {
+        this.refresh();
+      });
+      return;
+    }
+
+    // Ask whether the user want to change the config files
+    const askChangingCfgs = () => vscode.window.showInformationMessage(
+        `Change corresponding fields in these following files?`, {
+          detail: `${children.length} file(s): ${children.map(node => ' ' + node.name).toString()}`,
+          modal: true
+        },
+        'Yes');
+
+    if (!await askChangingCfgs()) {
+      return;
+    }
+
+    // Refactor config files
+    const refactorCfgs = () => {
+      return Promise.all(children.map(child => {
+        const cfgObj = OneStorage.getCfgObj(child.path);
+        if (cfgObj) {
+          const oldpath = node.path;
+          return cfgObj.updateBaseModelField(oldpath, newpath).then(() => {
+            return Logger.info(
+                'OneExplorer', `Replaced ${oldpath} with ${newpath} in ${child.path}`);
+          });
+        }
+      }));
+    };
+
+    refactorCfgs()
+        .then(() => vscode.workspace.fs.rename(node.uri, vscode.Uri.file(newpath)).then(() => {
+          this.refresh();
+        }))
+        .catch(() => {
+          Logger.error('OneExplorer', `Refactor`, `Failed to refactor ${node.path}`);
+        });
   }
 
   /**
