@@ -150,6 +150,9 @@ host.BrowserHost = class {
                 case 'reload':
                     this._msgReload(message);
                     break;
+                case 'visq':
+                    this._msgVisq(message);
+                    break;
             }
         });
 
@@ -545,6 +548,28 @@ host.BrowserHost = class {
         this._view.reset();
         this._view.show('welcome spinner');
         vscode.postMessage({command: 'loadmodel', offset: '0'});
+    }
+
+    _msgVisq(message) {
+        const visq = message.visq;
+
+        this._setVisqStyle(visq);
+        this._setVisqNodes(visq);
+        this._addVisqLegends(visq);
+
+        vscode.postMessage({command: 'loadmodel', offset: '0'});
+    }
+
+    _setVisqStyle(_visq) {
+        // TODO implement
+    }
+
+    _setVisqNodes(_visq) {
+        // TODO implement
+    }
+
+    _addVisqLegends(_visq) {
+        // TODO implement
     }
 };
 
