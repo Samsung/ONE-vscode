@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import {execSync} from 'child_process';
+import * as cp from 'child_process';
 import * as vscode from 'vscode';
 
+import {pipedSpawnSync} from '../../Utils/PipedSpawnSync';
 import {Backend} from '../Backend';
 import {Command} from '../Command';
 import {Compiler} from '../Compiler';
@@ -111,24 +112,28 @@ class OneCompiler implements Compiler {
     }
 
     try {
-      execSync(`apt-cache show ${this.toolchainName}`);
+      cp.spawnSync(`apt-cache show ${this.toolchainName}`);
     } catch (error) {
       throw Error(`Getting ${this.toolchainName} package list is failed`);
     }
 
-    const availableToolchains = new Toolchains();
-
-    let toolchainVersions: string;
+    let result;
     try {
-      toolchainVersions =
-          execSync(`apt-cache show ${this.toolchainName} | grep Version | awk '{print $2}' | xargs`)
-              .toString();
+      result = pipedSpawnSync(
+          'apt-cache', ['madison', `${this.toolchainName}`], {encoding: 'utf8'}, 'awk',
+          ['{printf $1" "$3}'], {encoding: 'utf8'});
     } catch (error) {
       throw Error(`Getting ${this.toolchainName} package version list is failed`);
     }
 
+    if (result.status !== 0) {
+      return [];
+    }
+
+    const toolchainVersions: string = result.stdout.toString();
     const versionList = toolchainVersions.trim().split(' ');
 
+    const availableToolchains = new Toolchains();
     for (const version of versionList) {
       const toolchainInfo =
           new ToolchainInfo(this.toolchainName, 'Description: test', this.parseVersion(version));
@@ -145,29 +150,24 @@ class OneCompiler implements Compiler {
       throw Error(`Invalid toolchain type : ${_toolchainType}`);
     }
 
-    let isInstalledToolchain: string;
+    let result;
     try {
-      isInstalledToolchain =
-          execSync(`dpkg-query --show ${this.toolchainName} > /dev/null 2>&1; echo $?`).toString();
+      result = cp.spawnSync(
+          'dpkg-query',
+          ['--show', `--showformat='\${Version} \${Description}'`, `${this.toolchainName}`],
+          {encoding: 'utf8'});
     } catch (error) {
       throw new Error(`Getting installed ${this.toolchainName} package list is failed`);
     }
 
-    if (parseInt(isInstalledToolchain) !== 0) {
+    if (result.status !== 0) {
       return [];
     }
 
-    const installedToolchains = new Toolchains();
-
-    let installedToolchain: string;
-    try {
-      installedToolchain = execSync(`dpkg-query --show --showformat='\${Version} \${Description}' ${
-                                        this.toolchainName} | xargs`)
-                               .toString();
-    } catch (error) {
-      throw new Error(`Getting installed ${this.toolchainName} package list is failed`);
-    }
-
+    // NOTE
+    // The output format string of dpkg-query is '${Version} ${Description}'.
+    // To remove the first and last single quote character of output string, it slices from 1 to -1.
+    const installedToolchain: string = result.stdout.toString().slice(1, -1);
     const descriptionIdx = installedToolchain.search(' ');
     const versionStr = installedToolchain.slice(0, descriptionIdx).trim();
     const description = installedToolchain.slice(descriptionIdx).trim();
@@ -178,20 +178,21 @@ class OneCompiler implements Compiler {
 
     // TODO
     // onecc-docker's depends should be modified later so that we can read the one-compiler version.
-
     const depends: Array<PackageInfo> = [new PackageInfo('one-compiler', new Version(1, 21, 0))];
     const toolchainInfo =
         new ToolchainInfo(this.toolchainName, description, this.parseVersion(versionStr), depends);
     const toolchain = new OneDebianToolchain(toolchainInfo, this.debianRepo, this.debianArch);
-    installedToolchains.push(toolchain);
-    return installedToolchains;
+    return [toolchain];
   }
 
   prerequisitesForGetToolchains(): Command {
     const extensionId = 'Samsung.one-vscode';
     const ext = vscode.extensions.getExtension(extensionId) as vscode.Extension<any>;
+    if (ext === undefined) {
+      throw new Error(`Cannot find the ${extensionId} extension.`);
+    }
     const scriptPath =
-        vscode.Uri.joinPath(ext!.extensionUri, 'script', 'prerequisitesForGetToolchains.sh').fsPath;
+        vscode.Uri.joinPath(ext.extensionUri, 'script', 'prerequisitesForGetToolchains.sh').fsPath;
 
     const cmd = new Command('/bin/sh', [`${scriptPath}`]);
     cmd.setRoot();
