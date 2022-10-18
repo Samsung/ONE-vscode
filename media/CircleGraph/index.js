@@ -347,6 +347,28 @@ host.BrowserHost = class {
         }
     }
 
+    visqIndex(name) {
+        const visqNodes = this._visqError[0];
+        if (Object.prototype.hasOwnProperty.call(visqNodes, name)) {
+            let qerror = parseFloat(visqNodes[name]);
+            for (const idx in this._visqScheme) {
+                let item = this._visqScheme[idx];
+                if (item.b <= qerror && qerror < item.e) {
+                    return idx;
+                }
+            }
+        }
+        return undefined;
+    }
+
+    visqValue(name) {
+        const visqNodes = this._visqError[0];
+        if (Object.prototype.hasOwnProperty.call(visqNodes, name)) {
+            return visqNodes[name];
+        }
+        return undefined;
+    }
+
     _request(url, headers, encoding, timeout) {
         return new Promise((resolve, reject) => {
             if (url.startsWith('vscode-webview://')) {
