@@ -206,7 +206,7 @@ class NodeFactory {
     //
     // A 'TreeDataProvider<element>' expects every elements (Node) to be correspond to visible
     // TreeItem, so let's not build hidden nodes.
-    if (attr && attr?.canHide === true && OneTreeDataProvider.didHideExtra === true) {
+    if (attr && attr?.canHide && OneTreeDataProvider.didHideExtra) {
       return undefined;
     }
 
