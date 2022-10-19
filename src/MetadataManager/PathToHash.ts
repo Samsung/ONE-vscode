@@ -181,10 +181,9 @@ export class PathToHash {
     let map = this._map;
 
     splitPath.forEach((path) => {
-      if (map === undefined) {
-        return undefined;
+      if (map !== undefined) {
+        map = map[path];
       }
-      map = map[path];
     });
 
     return map;
