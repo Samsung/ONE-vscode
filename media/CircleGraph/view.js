@@ -1004,13 +1004,36 @@ view.View = class {
         }
     }
 
+    applyStyleSheetVisq(element) {
+        if (this._host._mode === viewMode.visq) {
+            let rules = [];
+            for (const styleSheet of this._host.document.styleSheets) {
+                if (styleSheet.title === 'visq_style') {
+                    Array.prototype.push.apply(rules, styleSheet.cssRules);
+                }
+            }
+            const nodes = element.getElementsByTagName('*');
+            for (const node of nodes) {
+                for (const rule of rules) {
+                    if (node.matches(rule.selectorText)) {
+                        for (const item of rule.style) {
+                            node.style[item] = rule.style[item];
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     export(file) {
+        console.log('!!! export:', file);
         const lastIndex = file.lastIndexOf('.');
         const extension = (lastIndex !== -1) ? file.substring(lastIndex + 1) : '';
         if (this.activeGraph && (extension === 'png' || extension === 'svg')) {
             const canvas = this._getElementById('canvas');
             const clone = canvas.cloneNode(true);
             this.applyStyleSheet(clone, 'view-grapher.css');
+            this.applyStyleSheetVisq(clone);
             clone.setAttribute('id', 'export');
             clone.removeAttribute('viewBox');
             clone.removeAttribute('width');

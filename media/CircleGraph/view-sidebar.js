@@ -194,6 +194,11 @@ sidebar.NodeSidebar = class {
             this._addProperty('location', new sidebar.ValueTextView(this._host, node.location));
         }
 
+        if (node.visq_error) {
+            this._addProperty(
+                this._host.visqMetric, new sidebar.ValueTextView(this._host, node.visq_error));
+        }
+
         if (node.description) {
             this._addProperty(
                 'description', new sidebar.ValueTextView(this._host, node.description));

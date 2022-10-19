@@ -225,6 +225,19 @@ host.BrowserHost = class {
             accelerator: 'Shift+Backspace',
             click: () => this._view.resetZoom()
         });
+        if (this._mode === viewMode.visq) {
+            this._menu.add({});
+            this._menu.add({
+                label: 'Export as PNG',
+                accelerator: 'CmdOrCtrl+Shift+E',
+                click: () => this._view.export(document.title + '.png')
+            });
+            this._menu.add({
+                label: 'Export as SVG',
+                accelerator: 'CmdOrCtrl+Alt+E',
+                click: () => this._view.export(document.title + '.svg')
+            });
+        }
         this.document.getElementById('menu-button').addEventListener('click', (e) => {
             this._menu.toggle();
             e.preventDefault();
@@ -280,12 +293,12 @@ host.BrowserHost = class {
     }
 
     export(file, blob) {
-        const element = this.document.createElement('a');
-        element.download = file;
-        element.href = URL.createObjectURL(blob);
-        this.document.body.appendChild(element);
-        element.click();
-        this.document.body.removeChild(element);
+        var fileReader = new FileReader();
+        fileReader.onload = function() {
+            const data = new Uint8Array(this.result);
+            vscode.postMessage({command: 'export', file: file, type: blob.type, data: data});
+        };
+        fileReader.readAsArrayBuffer(blob);
     }
 
     request(file, encoding, base) {
@@ -648,6 +661,7 @@ host.BrowserHost = class {
             }
         }
         let style = this._document.createElement('style');
+        style.title = 'visq_style';
         style.innerHTML = styleHTML;
         this._document.head.appendChild(style);
     }
