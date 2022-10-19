@@ -1,2 +1,3 @@
 # External code
 /ONE-vscode/media/CircleGraph/external
+/ONE-vscode/media/CircleEditor/external
