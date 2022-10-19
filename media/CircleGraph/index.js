@@ -352,9 +352,11 @@ host.BrowserHost = class {
         if (Object.prototype.hasOwnProperty.call(visqNodes, name)) {
             let qerror = parseFloat(visqNodes[name]);
             for (const idx in this._visqScheme) {
-                let item = this._visqScheme[idx];
-                if (item.b <= qerror && qerror < item.e) {
-                    return idx;
+                if (Object.prototype.hasOwnProperty.call(this._visqScheme, idx)) {
+                    let item = this._visqScheme[idx];
+                    if (item.b <= qerror && qerror < item.e) {
+                        return idx;
+                    }
                 }
             }
         }
@@ -617,21 +619,23 @@ host.BrowserHost = class {
         let styleHTML = '';
         let index = 0;
         for (const idx in visq.meta.colorscheme) {
-            let item = visq.meta.colorscheme[idx];
-            this._visqScheme.push(item);
+            if (Object.prototype.hasOwnProperty.call(visq.meta.colorscheme, idx)) {
+                let item = visq.meta.colorscheme[idx];
+                this._visqScheme.push(item);
 
-            let color = item.c;
-            let add = `.node-item-type-visq-${index} path { fill: ${color}; }\n`;
-            styleHTML = styleHTML + add;
-            styleHTML = styleHTML + '.vscode-dark ' + add;
-            // text color depending on fill color luminance
-            let lum = this._colorLuminance(color);
-            let colorText = lum > 0x80 ? '#000' : '#fff';
-            add = `.node-item-type-visq-${index} text { fill: ${colorText}; }\n`;
-            styleHTML = styleHTML + add;
-            styleHTML = styleHTML + '.vscode-dark ' + add;
+                let color = item.c;
+                let add = `.node-item-type-visq-${index} path { fill: ${color}; }\n`;
+                styleHTML = styleHTML + add;
+                styleHTML = styleHTML + '.vscode-dark ' + add;
+                // text color depending on fill color luminance
+                let lum = this._colorLuminance(color);
+                let colorText = lum > 0x80 ? '#000' : '#fff';
+                add = `.node-item-type-visq-${index} text { fill: ${colorText}; }\n`;
+                styleHTML = styleHTML + add;
+                styleHTML = styleHTML + '.vscode-dark ' + add;
 
-            index = index + 1;
+                index = index + 1;
+            }
         }
         styleElement.innerHTML = styleHTML;
         document.getElementsByTagName('head')[0].appendChild(styleElement);
@@ -645,17 +649,19 @@ host.BrowserHost = class {
         let legendDiv = document.getElementById('legend');
         let table = document.createElement('table');
         for (const idx in visq.meta.colorscheme) {
-            const item = visq.meta.colorscheme[idx];
-            const lum = this._colorLuminance(item.c);
-            const color = lum > 0x80 ? '#000' : '#fff';
-            const metric = visq.meta.metric;
-            let tr = document.createElement('tr');
-            let td = document.createElement('td');
-            td.innerText = `${metric} ${item.b} ~ ${item.e}`;
-            td.style.background = item.c;
-            td.style.color = color;
-            tr.appendChild(td);
-            table.appendChild(tr);
+            if (Object.prototype.hasOwnProperty.call(visq.meta.colorscheme, idx)) {
+                const item = visq.meta.colorscheme[idx];
+                const lum = this._colorLuminance(item.c);
+                const color = lum > 0x80 ? '#000' : '#fff';
+                const metric = visq.meta.metric;
+                let tr = document.createElement('tr');
+                let td = document.createElement('td');
+                td.innerText = `${metric} ${item.b} ~ ${item.e}`;
+                td.style.background = item.c;
+                td.style.color = color;
+                tr.appendChild(td);
+                table.appendChild(tr);
+            }
         }
         legendDiv.appendChild(table);
         legendDiv.style.visibility = 'visible';
