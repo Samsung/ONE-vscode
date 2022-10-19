@@ -632,21 +632,28 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
   }
 
   /**
-   * Rename a file
-   * @note Renaming is only allowed for config files as it has no impact on the explorer view.
-   * @command one.explorer.rename
-   * @todo prohibit special characters from new name for security ('..', '*', etc)
+   * @brief A helper function to show input box to ask a new file name
    */
-  rename(node: Node): void {
-    assert.ok(node.type === NodeType.config);
+  private askNewName = (node: Node) => {
+    return vscode.window.showInputBox({
+      title: 'Enter a file name:',
+      value: `${path.basename(node.uri.fsPath)}`,
+      valueSelection:
+          [0, path.basename(node.uri.fsPath).length - path.parse(node.uri.fsPath).ext.length],
+      placeHolder: `Enter a new name for ${path.basename(node.uri.fsPath)}`,
+      validateInput: this.validateNewPath(node)
+    });
+  };
 
-    if (node.type !== NodeType.config) {
-      return;
-    }
-
-    const oldpath = node.path;
-
-    const validateInputPath = (newname: string): string|undefined => {
+  /**
+   * @brief A helper function to validate the given path
+   * It checks whether
+   * (1) the new path has the same ext
+   * (2) the new path already exists
+   */
+  private validateNewPath = (node: Node): (newname: string) => string | undefined => {
+    return (newname: string): string|undefined => {
+      const oldpath = node.path;
       const dirpath = path.dirname(node.uri.fsPath);
       const newpath: string = path.join(dirpath, newname);
       if (!newname.endsWith(path.extname(oldpath))) {
@@ -661,17 +668,22 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
             newname} already exists at this location. Please choose a different name.`;
       }
     };
+  };
 
-    const askNewName = () => vscode.window.showInputBox({
-      title: 'Enter a file name:',
-      value: `${path.basename(node.uri.fsPath)}`,
-      valueSelection:
-          [0, path.basename(node.uri.fsPath).length - path.parse(node.uri.fsPath).ext.length],
-      placeHolder: `Enter a new name for ${path.basename(node.uri.fsPath)}`,
-      validateInput: validateInputPath
-    });
+  /**
+   * Rename a file
+   * @note Renaming is only allowed for config files as it has no impact on the explorer view.
+   * @command one.explorer.rename
+   * @todo prohibit special characters from new name for security ('..', '*', etc)
+   */
+  rename(node: Node): void {
+    assert.ok(node.type === NodeType.config);
 
-    askNewName().then(newname => {
+    if (node.type !== NodeType.config) {
+      return;
+    }
+
+    this.askNewName(node).then(newname => {
       if (newname) {
         const dirpath = path.dirname(node.uri.fsPath);
         const newpath = `${dirpath}/${newname}`;
