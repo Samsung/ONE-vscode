@@ -167,7 +167,7 @@
       },
       {
         "command": "one.explorer.refactor",
-        "title": "Refactor",
+        "title": "Rename Model",
         "category": "ONE"
       },
       {
