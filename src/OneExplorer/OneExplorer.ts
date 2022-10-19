@@ -742,7 +742,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
         if (cfgObj) {
           const oldpath = node.path;
           return cfgObj.updateBaseModelField(oldpath, newpath).then(() => {
-            return Logger.info(
+            Logger.info(
                 'OneExplorer', `Replaced ${oldpath} with ${newpath} in ${child.path}`);
           });
         }
