@@ -1333,6 +1333,7 @@ view.Node = class extends grapher.Node {
         view.Node.counter = view.Node.counter || 0;
         this.id = 'node-' +
             (value.name ? 'name-' + value.name : 'id-' + (view.Node.counter++).toString());
+        this._visq(this.value);
         this._add(this.value);
     }
 
@@ -1350,6 +1351,26 @@ view.Node = class extends grapher.Node {
         return this.value.outputs;
     }
 
+    _visq(node) {
+        const host = this.context.view._host;
+        if (host._mode !== viewMode.visq) {
+            return;
+        }
+
+        if (node.outputs) {
+            // TODO revise this with multiple outputs
+            node.outputs.forEach((output) => {
+                output._arguments.forEach((arg) => {
+                    // NOTE name is tensor_name + tensor_index, in circle.js
+                    const mixed = arg._name.split(/\n/);
+                    const nodeName = mixed[0];
+                    node.visq_error = host.visqValue(nodeName);
+                    node.visq_index = host.visqIndex(nodeName);
+                });
+            });
+        }
+    }
+
     _add(node) {
         // NOTE this.context = view.Graph
         //      this.context.view = view
@@ -1365,6 +1386,7 @@ view.Node = class extends grapher.Node {
         }
         let visqSuffix = undefined;
         if (host._mode === viewMode.visq) {
+            /* TODO REMOVE
             if (node.outputs) {
                 node.outputs.forEach((output) => {
                     output._arguments.forEach((arg) => {
@@ -1381,6 +1403,14 @@ view.Node = class extends grapher.Node {
                         visqSuffix = ` (${value})`;
                     });
                 });
+            }
+            */
+            if (node.visq_index) {
+                let qstyle = `node-item-type-visq-${node.visq_index}`;
+                styles.push(qstyle);
+            }
+            if (node.visq_error) {
+                visqSuffix = ` (${node.visq_error})`;
             }
         }
         if (typeof type.name !== 'string' || !type.name.split) {  // #416
