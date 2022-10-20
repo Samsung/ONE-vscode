@@ -85,6 +85,7 @@ host.BrowserHost = class {
         this._backends = [];
 
         // visq
+        this._visqMetric = undefined;
         this._visqScheme = [];
         this._visqError = undefined;
 
@@ -111,6 +112,10 @@ host.BrowserHost = class {
 
     get type() {
         return this._type;
+    }
+
+    get visqMetric() {
+        return this._visqMetric;
     }
 
     get agent() {
@@ -581,6 +586,7 @@ host.BrowserHost = class {
     _msgVisq(message) {
         const visq = message.visq;
 
+        this._setVisqMetric(visq);
         this._setVisqStyle(visq);
         this._setVisqNodes(visq);
         this._addVisqLegends(visq);
@@ -613,6 +619,11 @@ host.BrowserHost = class {
         let lum = (0.299 * r + 0.587 * g + 0.114 * b);
         return Math.min(lum, 0xff);
     }
+
+    _setVisqMetric(visq) {
+        this._visqMetric = visq.meta.metric;
+    }
+
 
     _setVisqStyle(visq) {
         let styleElement = document.createElement('style');
@@ -653,10 +664,9 @@ host.BrowserHost = class {
                 const item = visq.meta.colorscheme[idx];
                 const lum = this._colorLuminance(item.c);
                 const color = lum > 0x80 ? '#000' : '#fff';
-                const metric = visq.meta.metric;
                 let tr = document.createElement('tr');
                 let td = document.createElement('td');
-                td.innerText = `${metric} ${item.b} ~ ${item.e}`;
+                td.innerText = `${this.visqMetric} ${item.b} ~ ${item.e}`;
                 td.style.background = item.c;
                 td.style.color = color;
                 tr.appendChild(td);
