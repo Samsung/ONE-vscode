@@ -1386,25 +1386,6 @@ view.Node = class extends grapher.Node {
         }
         let visqSuffix = undefined;
         if (host._mode === viewMode.visq) {
-            /* TODO REMOVE
-            if (node.outputs) {
-                node.outputs.forEach((output) => {
-                    output._arguments.forEach((arg) => {
-                        // NOTE name is tensor_name + tensor_index, in circle.js
-                        const mixed = arg._name.split(/\n/);
-                        const nodeName = mixed[0];
-                        // this.context is view.Graph
-                        let index = host.visqIndex(nodeName);
-                        if (index !== undefined) {
-                            let qstyle = 'node-item-type-visq-' + index;
-                            styles.push(qstyle);
-                        }
-                        let value = host.visqValue(nodeName);
-                        visqSuffix = ` (${value})`;
-                    });
-                });
-            }
-            */
             if (node.visq_index) {
                 let qstyle = `node-item-type-visq-${node.visq_index}`;
                 styles.push(qstyle);
