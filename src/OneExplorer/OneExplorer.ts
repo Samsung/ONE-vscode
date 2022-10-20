@@ -745,6 +745,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
             Logger.info('OneExplorer', `Replaced ${oldpath} with ${newpath} in ${child.path}`);
           });
         }
+        return undefined;
       }));
     };
 
