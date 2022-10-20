@@ -166,6 +166,11 @@
         "category": "ONE"
       },
       {
+        "command": "one.explorer.refactor",
+        "title": "Rename Model",
+        "category": "ONE"
+      },
+      {
         "command": "one.explorer.delete",
         "title": "Delete",
         "category": "ONE"
@@ -292,6 +297,11 @@
           "group": "7_modification"
         },
         {
+          "command": "one.explorer.refactor",
+          "when": "view == OneExplorerView && viewItem == baseModel",
+          "group": "7_modification"
+        },
+        {
           "command": "one.explorer.delete",
           "when": "view == OneExplorerView",
           "group": "7_modification@9"
@@ -362,6 +372,10 @@
         },
         {
           "command": "one.explorer.rename",
+          "when": "false"
+        },
+        {
+          "command": "one.explorer.refactor",
           "when": "false"
         },
         {
