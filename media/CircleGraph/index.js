@@ -626,7 +626,6 @@ host.BrowserHost = class {
 
 
     _setVisqStyle(visq) {
-        let styleElement = document.createElement('style');
         let styleHTML = '';
         let index = 0;
         for (const idx in visq.meta.colorscheme) {
@@ -648,8 +647,9 @@ host.BrowserHost = class {
                 index = index + 1;
             }
         }
-        styleElement.innerHTML = styleHTML;
-        document.getElementsByTagName('head')[0].appendChild(styleElement);
+        let style = this._document.createElement('style');
+        style.innerHTML = styleHTML;
+        this._document.head.appendChild(style);
     }
 
     _setVisqNodes(visq) {
