@@ -126,6 +126,10 @@ export class CircleGraphCtrl {
     this._viewMode = mode;
   }
 
+  public setModel(model: string) {
+    this._modelToLoad = model;
+  }
+
   /**
    * @brief set initial selection of nodes
    * @note  if called before loading, will be applied after load is finished
