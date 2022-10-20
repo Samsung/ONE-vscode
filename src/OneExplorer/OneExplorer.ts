@@ -468,6 +468,12 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
   private fileWatcher = vscode.workspace.createFileSystemWatcher(`**/*`);
 
   private _tree: DirectoryNode|undefined;
+
+  // NOTE
+  // _nodeMap only contains the nodes which have ever been shown in ONE Explorer view by revealing
+  // the parent nodes. To get the unseen node from _nodeMap, _nodeMap needs to be pre-builted. Mind
+  // that it will slow down the extension to gather data about unseen nodes.
+  // Currently, only the two depths from those shown nodes are built.
   private _nodeMap: Map<string, Node> = new Map<string, Node>();
 
   public static didHideExtra: boolean = false;
@@ -880,6 +886,8 @@ input_path=${modelName}.${extName}
   }
 
   getTreeItem(node: Node): OneNode {
+    this._nodeMap.set(node.path, node);
+
     if (node.type === NodeType.directory) {
       return new OneNode(node.name, vscode.TreeItemCollapsibleState.Expanded, node);
     } else if (node.type === NodeType.product) {
@@ -914,22 +922,6 @@ input_path=${modelName}.${extName}
     if (!this._tree) {
       this._tree = NodeFactory.create(NodeType.directory, this.workspaceRoot.fsPath, undefined) as
           DirectoryNode;
-
-      // NOTE That this change reverts the 'build children on demand' optimization.
-      //
-      // 'buildNodeMap' is required for revealing the corresponding TreeItem when a cfg file is
-      // opened in cfg editor, because it pre-builts all the nodes to find the Node from a given
-      // string path.
-      //
-      // TODO Let's try to build nodes on demand (only with string path)
-      const buildNodeMap = (node: Node) => {
-        node.getChildren().forEach(childNode => {
-          this._nodeMap.set(childNode.path, childNode);
-          buildNodeMap(childNode);
-        });
-      };
-
-      buildNodeMap(this._tree);
     }
 
     return this._tree;
