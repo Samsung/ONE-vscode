@@ -471,7 +471,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
 
   // NOTE
   // _nodeMap only contains the nodes which have ever been shown in ONE Explorer view by revealing
-  // the parent nodes. To get the unseen node from _nodeMap, _nodeMap needs to be pre-builted. Mind
+  // the parent nodes. To get the unseen node from _nodeMap, _nodeMap needs to be pre-built. Mind
   // that it will slow down the extension to gather data about unseen nodes.
   // Currently, only the two depths from those shown nodes are built.
   private _nodeMap: Map<string, Node> = new Map<string, Node>();
