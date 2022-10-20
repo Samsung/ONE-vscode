@@ -45,6 +45,8 @@ class CircleViewer extends CircleGraphCtrl {
 export class CircleViewerDocument implements vscode.CustomDocument {
   private readonly _uri: vscode.Uri;
   private _circleViewer: CircleViewer[];
+  private _fileWatcher: vscode.FileSystemWatcher|undefined;
+  private _reloadTimer: NodeJS.Timer|undefined;
 
   static async create(uri: vscode.Uri):
       Promise<CircleViewerDocument|PromiseLike<CircleViewerDocument>> {
@@ -54,6 +56,8 @@ export class CircleViewerDocument implements vscode.CustomDocument {
   private constructor(uri: vscode.Uri) {
     this._uri = uri;
     this._circleViewer = [];
+    this._fileWatcher = undefined;
+    this._reloadTimer = undefined;
   }
 
   public get uri() {
@@ -75,6 +79,10 @@ export class CircleViewerDocument implements vscode.CustomDocument {
     view.loadContent();
     this._circleViewer.push(view);
 
+    this._fileWatcher = vscode.workspace.createFileSystemWatcher(this._uri.path);
+    this._fileWatcher.onDidChange(() => this.reload(panel));
+    this._fileWatcher.onDidCreate(() => this.reload(panel));
+
     panel.onDidDispose(() => {
       // TODO make faster
       this._circleViewer.forEach((view, index) => {
@@ -83,9 +91,26 @@ export class CircleViewerDocument implements vscode.CustomDocument {
           this._circleViewer.splice(index, 1);
         }
       });
+      if (this._fileWatcher) {
+        this._fileWatcher.dispose();
+        this._fileWatcher = undefined;
+      }
     });
 
     return view;
+  }
+
+  public reload(panel: vscode.WebviewPanel) {
+    if (this._reloadTimer) {
+      clearTimeout(this._reloadTimer);
+    }
+    this._reloadTimer = setTimeout(() => {
+      this._circleViewer.forEach((view) => {
+        if (view.owner(panel)) {
+          view.loadContent();
+        }
+      });
+    }, 500);
   }
 }
 
@@ -126,7 +151,6 @@ export class CircleViewerProvider implements
     // NOTE as a readonly viewer, there is not much to do
 
     // TODO handle dispose
-    // TODO handle file change events
     // TODO handle backup
 
     return document;
