@@ -356,7 +356,7 @@ export class CircleGraphCtrl {
     // necessary files from netron to work
     html = this.updateUri(html, webview, '%view-grapher.css%', 'view-grapher.css');
     html = this.updateUri(html, webview, '%view-sidebar.css%', 'view-sidebar.css');
-    html = this.updateExternalUri(html, webview, '%view-sidebar.js%', 'view-sidebar.js');
+    html = this.updateUri(html, webview, '%view-sidebar.js%', 'view-sidebar.js');
     html = this.updateUri(html, webview, '%view-grapher.js%', 'view-grapher.js');
     html = this.updateExternalUri(html, webview, '%dagre.js%', 'dagre.js');
     html = this.updateExternalUri(html, webview, '%base.js%', 'base.js');
