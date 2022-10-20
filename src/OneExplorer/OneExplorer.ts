@@ -177,6 +177,10 @@ abstract class Node {
     return this._childNodes!;
   }
 
+  resetChildren(): void {
+    this._childNodes = undefined;
+  }
+
   get path(): string {
     return this.uri.fsPath;
   }
@@ -505,9 +509,48 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
         {treeDataProvider: provider, showCollapseAll: true, canSelectMany: true});
 
     let registrations = [
-      provider.fileWatcher.onDidCreate(() => provider.refresh()),
-      provider.fileWatcher.onDidChange(() => provider.refresh()),
-      provider.fileWatcher.onDidDelete(() => provider.refresh()),
+      provider.fileWatcher.onDidCreate((_uri: vscode.Uri) => {
+        provider.refresh();
+      }),
+      provider.fileWatcher.onDidChange((_uri: vscode.Uri) => {
+        // TODO Handle by each node types
+        provider.refresh();
+      }),
+      provider.fileWatcher.onDidDelete((uri: vscode.Uri) => {
+        const node = provider._nodeMap.get(uri.fsPath);
+
+        if (!node) {
+          return;
+        }
+
+        if (node.type === NodeType.directory || !node.parent) {
+          provider.refresh();
+          return;
+        }
+
+        const deleteRecursively = (node: Node) => {
+          if (node.getChildren().length > 0) {
+            node.getChildren().forEach(child => deleteRecursively(child));
+          }
+          provider._nodeMap.delete(node.path);
+
+          switch (node.type) {
+            case NodeType.baseModel:
+              OneStorage.resetBaseModel(node.path);
+              break;
+            case NodeType.config:
+              OneStorage.resetConfig(node.path);
+              break;
+            default:
+              break;
+          }
+        };
+
+        deleteRecursively(node);
+        node.parent.resetChildren();
+        node.parent.getChildren();
+        provider.refresh(node.parent);
+      }),
       _treeView,
       vscode.commands.registerCommand(
           'one.explorer.revealInOneExplorer',
@@ -618,9 +661,8 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
    *                If not given, the whole tree will be rebuilt.
    */
   refresh(node?: Node): void {
-    OneStorage.reset();
-
     if (!node) {
+      OneStorage.reset();
       // Reset the root in order to build from scratch (at OneTreeDataProvider.getTree)
       this._tree = undefined;
       this._nodeMap.clear();
@@ -696,7 +738,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
         const dirpath = path.dirname(node.uri.fsPath);
         const newpath = `${dirpath}/${newname}`;
         vscode.workspace.fs.rename(node.uri, vscode.Uri.file(newpath)).then(() => {
-          this.refresh();
+          this.refresh(node.parent);
         });
       }
     });
@@ -724,7 +766,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
     // If it has no child, simply rename it
     if (children.length === 0) {
       vscode.workspace.fs.rename(node.uri, vscode.Uri.file(newpath)).then(() => {
-        this.refresh();
+        this.refresh(node.parent);
       });
       return;
     }
@@ -757,7 +799,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
 
     refactorCfgs()
         .then(() => vscode.workspace.fs.rename(node.uri, vscode.Uri.file(newpath)).then(() => {
-          this.refresh();
+          this.refresh(node.parent);
         }))
         .catch(() => {
           Logger.error('OneExplorer', `Refactor`, `Failed to refactor ${node.path}`);
@@ -800,8 +842,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
         .then(ans => {
           if (ans === approval) {
             Logger.info('OneExplorer', `Delete '${node.name}'.`);
-            vscode.workspace.fs.delete(node.uri, {recursive: recursive, useTrash: useTrash})
-                .then(() => this.refresh());
+            vscode.workspace.fs.delete(node.uri, {recursive: recursive, useTrash: useTrash});
           }
         });
   }
@@ -887,6 +928,7 @@ input_path=${modelName}.${extName}
   }
 
   getTreeItem(node: Node): OneNode {
+    console.log(`getTreeItem, ${node.name}`);
     this._nodeMap.set(node.path, node);
 
     if (node.type === NodeType.directory) {
