@@ -101,6 +101,8 @@ export class CircleViewerDocument implements vscode.CustomDocument {
   }
 
   public reload(panel: vscode.WebviewPanel) {
+    // NOTE using timer here is to avoid rapid reloads and wait for a some
+    // short time. 500msec here can be adjusted for better user experience.
     if (this._reloadTimer) {
       clearTimeout(this._reloadTimer);
     }
