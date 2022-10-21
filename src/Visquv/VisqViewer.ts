@@ -19,6 +19,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import {CircleGraphCtrl, CircleGraphEvent, MessageDefs} from '../CircleGraph/CircleGraphCtrl';
+import {Balloon} from '../Utils/Balloon';
 
 
 /**
@@ -43,11 +44,35 @@ class VisqViewer extends CircleGraphCtrl implements CircleGraphEvent {
       case MessageDefs.visq:
         this.sendVisq(this._document.visq);
         break;
+      case MessageDefs.export:
+        this.exportToFile(message);
+        break;
     }
   }
 
   public owner(panel: vscode.WebviewPanel) {
     return this._panel === panel;
+  }
+
+  private exportToFile(message: any) {
+    if (!Object.prototype.hasOwnProperty.call(message, 'file')) {
+      return;
+    }
+    if (!Object.prototype.hasOwnProperty.call(message, 'data')) {
+      return;
+    }
+    // NOTE message.file is absolute path
+    let uri = vscode.Uri.file(message.file);
+    let content = Uint8Array.from(message.data);
+
+    vscode.workspace.fs.writeFile(uri, content)
+        .then(
+            () => {
+              Balloon.info('Export done: ' + path.basename(message.file));
+            },
+            (err) => {
+              Balloon.info('Export error: ' + err);
+            });
   }
 }
 
