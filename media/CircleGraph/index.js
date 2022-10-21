@@ -280,12 +280,12 @@ host.BrowserHost = class {
     }
 
     export(file, blob) {
-        const element = this.document.createElement('a');
-        element.download = file;
-        element.href = URL.createObjectURL(blob);
-        this.document.body.appendChild(element);
-        element.click();
-        this.document.body.removeChild(element);
+        var fileReader = new FileReader();
+        fileReader.onload = function() {
+            const data = new Uint8Array(this.result);
+            vscode.postMessage({command: 'export', file: file, type: blob.type, data: data});
+        };
+        fileReader.readAsArrayBuffer(blob);
     }
 
     request(file, encoding, base) {
