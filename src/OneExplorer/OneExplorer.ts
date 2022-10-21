@@ -928,7 +928,6 @@ input_path=${modelName}.${extName}
   }
 
   getTreeItem(node: Node): OneNode {
-    console.log(`getTreeItem, ${node.name}`);
     this._nodeMap.set(node.path, node);
 
     if (node.type === NodeType.directory) {
