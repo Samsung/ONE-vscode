@@ -648,6 +648,7 @@ host.BrowserHost = class {
             }
         }
         let style = this._document.createElement('style');
+        style.title = 'visq_style';
         style.innerHTML = styleHTML;
         this._document.head.appendChild(style);
     }
