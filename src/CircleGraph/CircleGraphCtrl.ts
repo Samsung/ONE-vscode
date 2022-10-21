@@ -35,6 +35,7 @@ class CtrlStatus {
  * 'loadmodel'   incremental bidirectional loading model to webView
  * 'pageloaded'  window.load event is called
  * 'finishload'  load is finished and graph is ready
+ * 'export'      export image from webView to storage
  * 'selection'   when selection is changed from webView
  *               where 'names': containing tensor names of selected nodes
  *                     'tensors': containing tensor index of selected nodes
@@ -49,6 +50,7 @@ export class MessageDefs {
   public static readonly loadmodel = 'loadmodel';
   public static readonly finishload = 'finishload';
   public static readonly reload = 'reload';
+  public static readonly export = 'export';
   public static readonly selection = 'selection';
   public static readonly backendColor = 'backendColor';
   public static readonly error = 'error';
