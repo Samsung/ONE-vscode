@@ -225,6 +225,19 @@ host.BrowserHost = class {
             accelerator: 'Shift+Backspace',
             click: () => this._view.resetZoom()
         });
+        if (this._mode === viewMode.visq) {
+            this._menu.add({});
+            this._menu.add({
+                label: 'Export as PNG',
+                accelerator: 'CmdOrCtrl+Shift+E',
+                click: () => this._view.export(this._modelPath + '.png')
+            });
+            this._menu.add({
+                label: 'Export as SVG',
+                accelerator: 'CmdOrCtrl+Alt+E',
+                click: () => this._view.export(this._modelPath + '.svg')
+            });
+        }
         this.document.getElementById('menu-button').addEventListener('click', (e) => {
             this._menu.toggle();
             e.preventDefault();
