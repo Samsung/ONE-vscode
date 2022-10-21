@@ -23,7 +23,7 @@ import {Logger} from '../Utils/Logger';
 
 import {ConfigObj} from './ConfigObject';
 
-interface StringMap {
+interface StringListMap {
   [key: string]: string[];
 }
 
@@ -50,24 +50,20 @@ interface ConfigObjMap {
  */
 export class OneStorage {
   /**
-   * A list of all cfg paths in the 'root' directory
-   */
-  private _cfgList: string[];
-  /**
    * A map of ConfigObj (key: cfg path)
    */
   private _cfgToCfgObjMap: ConfigObjMap;
   /**
    * A map of BaseModel path to Cfg path
    */
-  private _baseModelToCfgsMap: StringMap;
+  private _baseModelToCfgsMap: StringListMap;
 
   /**
    * Get the list of .cfg files within the workspace
    * @param root  the file or directory,
    *              which MUST exist in the file system
    */
-  private _getCfgList(root: string = obtainWorkspaceRoot()): string[] {
+  private _initCfgList(root: string = obtainWorkspaceRoot()): string[] {
     /**
      * Returns an array of all the file names inside the root directory
      * @todo Check soft link
@@ -94,7 +90,7 @@ export class OneStorage {
     }
   }
 
-  private _getCfgToCfgObjMap(cfgList: string[]): ConfigObjMap {
+  private _initCfgToCfgObjMap(cfgList: string[]): ConfigObjMap {
     let map: ConfigObjMap = {};
 
     cfgList.forEach(cfg => {
@@ -104,8 +100,8 @@ export class OneStorage {
     return map;
   }
 
-  private _getBaseModelToCfgsMap(cfgList: string[], cfgToCfgObjMap: ConfigObjMap): StringMap {
-    let map: StringMap = {};
+  private _initBaseModelToCfgsMap(cfgList: string[], cfgToCfgObjMap: ConfigObjMap): StringListMap {
+    let map: StringListMap = {};
 
     cfgList.forEach(cfg => {
       const cfgObj = cfgToCfgObjMap[cfg];
@@ -126,9 +122,9 @@ export class OneStorage {
   }
 
   private constructor() {
-    this._cfgList = this._getCfgList();
-    this._cfgToCfgObjMap = this._getCfgToCfgObjMap(this._cfgList);
-    this._baseModelToCfgsMap = this._getBaseModelToCfgsMap(this._cfgList, this._cfgToCfgObjMap);
+    const cfgList = this._initCfgList();
+    this._cfgToCfgObjMap = this._initCfgToCfgObjMap(cfgList);
+    this._baseModelToCfgsMap = this._initBaseModelToCfgsMap(cfgList, this._cfgToCfgObjMap);
   }
 
   private static _obj: OneStorage|undefined;
