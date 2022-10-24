@@ -75,6 +75,7 @@ export function obtainWorkspaceRoot(): string {
 
   if (!workspaceFolders || workspaceFolders.length === 0) {
     Logger.info(logTag, 'obtainWorkspaceRoot', 'No WorkspaceFolders');
+    // TODO revise message
     throw new Error('Need workspace');
   }
 
