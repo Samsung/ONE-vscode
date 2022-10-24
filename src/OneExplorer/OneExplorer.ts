@@ -21,8 +21,7 @@ import {TextEncoder} from 'util';
 import * as vscode from 'vscode';
 
 import {CfgEditorPanel} from '../CfgEditor/CfgEditorPanel';
-import {Balloon} from '../Utils/Balloon';
-import {obtainWorkspaceRoot} from '../Utils/Helpers';
+import {getErrorMessage, obtainWorkspaceRoot} from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
 import {ArtifactAttr} from './ArtifactLocator';
@@ -441,21 +440,12 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
   public static register(context: vscode.ExtensionContext) {
     let workspaceRoot: vscode.Uri|undefined = undefined;
 
-    // TODO: do error handling in one function (helper function or here)
     try {
       workspaceRoot = vscode.Uri.file(obtainWorkspaceRoot());
       Logger.info('OneExplorer', `workspace: ${workspaceRoot.fsPath}`);
     } catch (e: unknown) {
-      if (e instanceof Error) {
-        if (e.message === 'Need workspace') {
-          Logger.info('OneExplorer', e.message);
-        } else {
-          Logger.error('OneExplorer', e.message);
-          Balloon.error('Something goes wrong while setting workspace.', true);
-        }
-      } else {
-        Logger.error('OneExplorer', 'Unknown error has been thrown.');
-      }
+      Logger.info('OneExplorer', getErrorMessage(e));
+      return;
     }
 
     const provider = new OneTreeDataProvider(workspaceRoot, context.extension.extensionKind);
