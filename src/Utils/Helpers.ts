@@ -68,8 +68,7 @@ export class RealPath {
 /**
  * @brief Get Workspace root folder as string
  * @return Return only the first workspaceFolder if multiple root exists, with showing a notfication
- *     balloon.
- *         Throws if there is no workspace.
+ *         balloon. Throws if there is no workspace.
  */
 export function obtainWorkspaceRoot(): string {
   const workspaceFolders = vscode.workspace.workspaceFolders;
