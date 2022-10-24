@@ -129,6 +129,15 @@ export class VisqViewerDocument implements vscode.CustomDocument {
     return this._visqJson;
   }
 
+  private makeModelPath() {
+    this._modelPath = this._visqJson.meta.model;
+    if (!path.isAbsolute(this._modelPath)) {
+      // model is relative, make it relative to .visq.json file
+      let visqPath = path.parse(this.uri.fsPath);
+      this._modelPath = path.join(visqPath.dir, this._visqJson.meta.model);
+    }
+  }
+
   // CustomDocument implements
   dispose(): void {
     if (this._visqViewer) {
@@ -141,12 +150,7 @@ export class VisqViewerDocument implements vscode.CustomDocument {
     const fileData = fs.readFileSync(visqPath, {encoding: 'utf8', flag: 'r'});
     this._visqJson = JSON.parse(fileData);
 
-    this._modelPath = this._visqJson.meta.model;
-    if (!path.isAbsolute(this._modelPath)) {
-      // model is relative, make it relative to .visq.json file
-      let visqPath = path.parse(this.uri.fsPath);
-      this._modelPath = path.join(visqPath.dir, this._visqJson.meta.model);
-    }
+    this.makeModelPath();
   }
 
   private reloadVisqText(text: string) {
@@ -157,13 +161,7 @@ export class VisqViewerDocument implements vscode.CustomDocument {
     }
     this._visqJson = visqjson;
     // model path can be changed
-    // TODO extract common method with loadVisqFile
-    this._modelPath = this._visqJson.meta.model;
-    if (!path.isAbsolute(this._modelPath)) {
-      // model is relative, make it relative to .visq.json file
-      let visqPath = path.parse(this.uri.fsPath);
-      this._modelPath = path.join(visqPath.dir, this._visqJson.meta.model);
-    }
+    this.makeModelPath();
     return true;
   }
 
