@@ -67,27 +67,24 @@ export class RealPath {
 
 /**
  * @brief Get Workspace root folder as string
- * @note  will throw if not working in workspace mode.
+ * @return Return only the first workspaceFolder if multiple root exists, with showing a notfication
+ *     balloon.
+ *         Throws if there is no workspace.
  */
 export function obtainWorkspaceRoot(): string {
   const workspaceFolders = vscode.workspace.workspaceFolders;
-  if (!workspaceFolders) {
-    Logger.error(logTag, 'obtainWorkspaceRoot: NO workspaceFolders');
-    // TODO revise message
+
+  if (!workspaceFolders || workspaceFolders.length === 0) {
+    Logger.info(logTag, 'obtainWorkspaceRoot', 'No WorkspaceFolders');
     throw new Error('Need workspace');
   }
 
-  // TODO support active workspace among the multiple workspaceFolders
   // TODO support multi-root workspace
   if (workspaceFolders.length > 1) {
     Balloon.info('Warning: Only the first workspace directory is currently supported');
   }
+
   const workspaceRoot = workspaceFolders[0].uri.path;
-  if (!workspaceRoot) {
-    Logger.error(logTag, 'obtainWorkspaceRoot: NO workspaceRoot');
-    // TODO revise message
-    throw new Error('Need workspace');
-  }
   Logger.debug(logTag, 'obtainWorkspaceRoot:', workspaceRoot);
 
   return workspaceRoot;
