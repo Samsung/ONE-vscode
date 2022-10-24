@@ -85,7 +85,7 @@ export class OneStorage {
     try {
       return readdirSyncRecursive(root).filter(val => val.endsWith('.cfg'));
     } catch {
-      Logger.error('OneExplorer', 'getCfgList', 'called on not existing directory or file.');
+      Logger.error('OneExplorer', '_initCfgList', 'called on not existing directory or file.');
       return [];
     }
   }

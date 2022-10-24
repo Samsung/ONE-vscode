@@ -32,56 +32,12 @@ import {OneStorage} from './OneStorage';
 export {
   BaseModelNode as _unit_test_BaseModelNode,
   ConfigNode as _unit_test_ConfigNode,
-
   DirectoryNode as _unit_test_DirectoryNode,
-  getCfgList as _unit_test_getCfgList,
-
   NodeFactory as _unit_test_NodeFactory,
   NodeType as _unit_test_NodeType,
   OneNode as _unit_test_OneNode,
   ProductNode as _unit_test_ProductNode,
 };
-
-/**
- * TODO Remove
- *
- * Get the list of .cfg files wiithin the workspace
- * @param root  the file or directory,
- *              which MUST exist in the file system
- */
-function getCfgList(root: string = obtainWorkspaceRoot()): string[] {
-  /**
-   * Returns every file inside directory
-   * @todo Check soft link
-   * @param root
-   * @returns
-   */
-  const readdirSyncRecursive = (root: string): string[] => {
-    if (fs.statSync(root).isFile()) {
-      return [root];
-    }
-
-    let children: string[] = [];
-    if (fs.statSync(root).isDirectory()) {
-      fs.readdirSync(root).forEach(val => {
-        children = children.concat(readdirSyncRecursive(path.join(root, val)));
-      });
-    }
-    return children;
-  };
-
-  try {
-    fs.statSync(root);
-  } catch {
-    Logger.error('OneExplorer', 'getCfgList', 'called on not existing directory or file.');
-    return [];
-  }
-
-  // Get the list of all the cfg files inside workspace root
-  const cfgList = readdirSyncRecursive(root).filter(val => val.endsWith('.cfg'));
-
-  return cfgList;
-}
 
 /**
  * NOTE

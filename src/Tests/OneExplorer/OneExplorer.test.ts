@@ -17,7 +17,7 @@
 import {assert} from 'chai';
 import * as vscode from 'vscode';
 
-import {_unit_test_BaseModelNode as BaseModelNode, _unit_test_ConfigNode as ConfigNode, _unit_test_getCfgList as getCfgList, _unit_test_NodeFactory as NodeFactory, _unit_test_NodeType as NodeType, _unit_test_OneNode as OneNode, _unit_test_ProductNode as ProductNode} from '../../OneExplorer/OneExplorer';
+import {_unit_test_BaseModelNode as BaseModelNode, _unit_test_ConfigNode as ConfigNode, _unit_test_NodeFactory as NodeFactory, _unit_test_NodeType as NodeType, _unit_test_OneNode as OneNode, _unit_test_ProductNode as ProductNode} from '../../OneExplorer/OneExplorer';
 import {TestBuilder} from '../TestBuilder';
 
 suite('OneExplorer', function() {
@@ -32,59 +32,6 @@ suite('OneExplorer', function() {
       testBuilder.tearDown();
     });
 
-    suite('#getCfgList()', function() {
-      test('NEG: get empty cfg list', function() {
-        const cfgList = getCfgList(testBuilder.getPath(''));
-        { assert.strictEqual(cfgList.length, 0); }
-      });
-
-      test('NEG: get cfg list on not existing path', function() {
-        const cfgList = getCfgList(testBuilder.getPath(''));
-        { assert.strictEqual(cfgList.length, 0); }
-      });
-
-      test('get cfg list', function() {
-        const configName1 = 'test1.cfg';
-        const configName2 = 'test2.cfg';
-
-        // Write a file inside temp directory
-        testBuilder.writeFileSync(configName1, '');
-        testBuilder.writeFileSync(configName2, '');
-
-        // Get file paths inside the temp directory
-        const configPath1 = testBuilder.getPath(configName1);
-        const configPath2 = testBuilder.getPath(configName2);
-
-        const cfgList = getCfgList(testBuilder.getPath(''));
-        {
-          assert.isTrue(cfgList.includes(configPath1));
-          assert.isTrue(cfgList.includes(configPath2));
-        }
-      });
-
-      test('get cfg list recursively', function() {
-        const configName1 = 'test1/test1.cfg';
-        const configName21 = 'test2/test2.1.cfg';
-        const configName22 = 'test2/test2.2.cfg';
-
-        // Write a file inside temp directory
-        testBuilder.writeFileSync(configName1, '');
-        testBuilder.writeFileSync(configName21, '');
-        testBuilder.writeFileSync(configName22, '');
-
-        // Get file paths inside the temp directory
-        const configPath1 = testBuilder.getPath(configName1);
-        const configPath21 = testBuilder.getPath(configName21);
-        const configPath22 = testBuilder.getPath(configName22);
-
-        const cfgList = getCfgList(testBuilder.getPath(''));
-        {
-          assert.isTrue(cfgList.includes(configPath1));
-          assert.isTrue(cfgList.includes(configPath21));
-          assert.isTrue(cfgList.includes(configPath22));
-        }
-      });
-    });
 
     suite('#NodeFactory', function() {
       test('NEG: create a directory node with attributes', function() {
