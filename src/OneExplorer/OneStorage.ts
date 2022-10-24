@@ -162,4 +162,18 @@ export class OneStorage {
   public static reset(): void {
     OneStorage._obj = undefined;
   }
+
+  public static resetBaseModel(path: string): void {
+    delete OneStorage.get()._baseModelToCfgsMap[path];
+    Logger.debug('OneStorage', `Base Mode Path(${path}) is removed.`);
+  }
+
+  public static resetConfig(path: string): void {
+    delete OneStorage.get()._cfgToCfgObjMap[path];
+    Object.entries(OneStorage.get()._baseModelToCfgsMap).forEach(([modelpath]) => {
+      OneStorage.get()._baseModelToCfgsMap[modelpath] =
+          OneStorage.get()._baseModelToCfgsMap[modelpath].filter(cfg => cfg !== path);
+    });
+    Logger.debug('OneStorage', `Config Path(${path}) is removed.`);
+  }
 }
