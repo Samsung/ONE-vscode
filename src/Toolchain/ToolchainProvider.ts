@@ -218,7 +218,7 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
   }
 
   /* istanbul ignore next */
-  public uninstall(tnode: ToolchainNode): boolean|undefined {
+  public uninstall(tnode: ToolchainNode): boolean {
     const notifyUninstalled = () => {
       vscode.window.showInformationMessage(`Uninstallation was successful.`);
       if (DefaultToolchain.getInstance().isEqual(tnode.toolchain)) {
@@ -243,9 +243,10 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
     gToolchainEnvMap[backendName]
         .uninstall(tnode.toolchain)
         .then(() => notifyUninstalled(), () => notifyError());
+    return true;
   }
 
-  public _run(cfg: string): boolean|undefined {
+  public _run(cfg: string): boolean {
     /* istanbul ignore next */
     const notifySuccess = () => {
       vscode.window.showInformationMessage('Onecc has run successfully.');
@@ -279,17 +280,19 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
 
     Logger.info(this.tag, `Run onecc with ${cfg} cfg and ${activeToolchain.info.name}-${activeToolchain.info.version?.str()} toolchain.`);
     activeToolchainEnv.run(cfg, activeToolchain).then(() => notifySuccess(), () => notifyError());
+    return true;
   }
 
-  public async run(cfg: string): Promise<boolean|undefined> {
+  public async run(cfg: string): Promise<boolean> {
     const proceed: boolean = await saveDirtyDocuments(cfg);
 
     if (proceed) {
       return this._run(cfg);
     }
+    return false;
   }
 
-  public setDefaultToolchain(tnode: ToolchainNode): boolean|undefined {
+  public setDefaultToolchain(tnode: ToolchainNode): boolean {
     const backendName = tnode.backendName;
     if (!Object.keys(gToolchainEnvMap).includes(backendName)) {
       this.error('Invalid toolchain node.');
@@ -298,5 +301,6 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
 
     DefaultToolchain.getInstance().set(gToolchainEnvMap[tnode.backend], tnode.toolchain);
     this.refresh();
+    return true;
   }
 }
