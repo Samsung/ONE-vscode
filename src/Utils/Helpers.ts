@@ -65,6 +65,13 @@ export class RealPath {
   }
 }
 
+export function getErrorMessage(error: unknown) {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return JSON.stringify(error);
+}
+
 /**
  * @brief Get Workspace root folder as string
  * @return Return only the first workspaceFolder if multiple root exists, with showing a notfication
