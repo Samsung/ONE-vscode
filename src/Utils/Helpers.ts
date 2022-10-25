@@ -97,6 +97,23 @@ export function obtainWorkspaceRoot(): string {
   return workspaceRoot;
 }
 
+/**
+ * @brief Get a workspace root list as a string list
+ * @return Return an empty list when workspace is not set
+ * @note VSCode api says `vscode.workspace.workspaceFolders` is undefined when there is no
+ *       workspace. However, it's observed that an empty list is returned when workspace is not set.
+ *       Therefore, let's make it a uniform return here.
+ */
+export function obtainWorkspaceRoots(): string[] {
+  const workspaceFolders = vscode.workspace.workspaceFolders;
+  if (!workspaceFolders) {
+    Logger.error(logTag, 'obtainWorkspaceRoots', 'workspaceFolders is undefined');
+    return [];
+  }
+
+  return workspaceFolders.map(ws => ws.uri.path);
+}
+
 export interface FileSelector {
   onFileSelected(uri: vscode.Uri|undefined): void;
 }
