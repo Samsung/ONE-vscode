@@ -389,12 +389,13 @@ class ProductNode extends Node {
 
 export class OneNode extends vscode.TreeItem {
   constructor(
-      public readonly label: string,
       public readonly collapsibleState: vscode.TreeItemCollapsibleState,
       public readonly node: Node,
   ) {
-    super(label, collapsibleState);
+    super(node.name, collapsibleState);
 
+    this.resourceUri = node.uri;
+    this.description = true;
     this.tooltip = `${this.node.path}`;
 
     if (node.openViewType) {
@@ -872,12 +873,11 @@ input_path=${modelName}.${extName}
     this._nodeMap.set(node.path, node);
 
     if (node.type === NodeType.directory) {
-      return new OneNode(node.name, vscode.TreeItemCollapsibleState.Expanded, node);
+      return new OneNode(vscode.TreeItemCollapsibleState.Expanded, node);
     } else if (node.type === NodeType.product) {
-      return new OneNode(node.name, vscode.TreeItemCollapsibleState.None, node);
+      return new OneNode(vscode.TreeItemCollapsibleState.None, node);
     } else if (node.type === NodeType.baseModel || node.type === NodeType.config) {
       return new OneNode(
-          node.name,
           (node.getChildren().length > 0) ? vscode.TreeItemCollapsibleState.Collapsed :
                                             vscode.TreeItemCollapsibleState.None,
           node);

@@ -196,8 +196,7 @@ input_file=${baseModelPath}
       test('constructor', function() {
         const directoryPath = testBuilder.getPath('');
         const directoryNode = NodeFactory.create(NodeType.directory, directoryPath, undefined);
-        const oneNode =
-            new OneNode('label', vscode.TreeItemCollapsibleState.Collapsed, directoryNode!);
+        const oneNode = new OneNode(vscode.TreeItemCollapsibleState.Collapsed, directoryNode!);
         { assert.strictEqual(oneNode.contextValue, 'directory'); }
       });
     });
