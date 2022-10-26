@@ -21,7 +21,7 @@ import {TextEncoder} from 'util';
 import * as vscode from 'vscode';
 
 import {CfgEditorPanel} from '../CfgEditor/CfgEditorPanel';
-import {getErrorMessage, obtainWorkspaceRoot} from '../Utils/Helpers';
+import {obtainWorkspaceRoots} from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
 import {ArtifactAttr} from './ArtifactLocator';
@@ -426,7 +426,8 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
 
   private fileWatcher = vscode.workspace.createFileSystemWatcher(`**/*`);
 
-  private _tree: DirectoryNode|undefined;
+  private _tree: DirectoryNode[]|undefined;
+  private _workspaceRoots: vscode.Uri[] = [];
 
   // NOTE
   // _nodeMap only contains the nodes which have ever been shown in ONE Explorer view by revealing
@@ -438,17 +439,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
   public static didHideExtra: boolean = false;
 
   public static register(context: vscode.ExtensionContext) {
-    let workspaceRoot: vscode.Uri|undefined = undefined;
-
-    try {
-      workspaceRoot = vscode.Uri.file(obtainWorkspaceRoot());
-      Logger.info('OneExplorer', `workspace: ${workspaceRoot.fsPath}`);
-    } catch (e: unknown) {
-      Logger.info('OneExplorer', getErrorMessage(e));
-      return;
-    }
-
-    const provider = new OneTreeDataProvider(workspaceRoot, context.extension.extensionKind);
+    const provider = new OneTreeDataProvider(context.extension.extensionKind);
 
     const _treeView = vscode.window.createTreeView(
         'OneExplorerView',
@@ -496,6 +487,10 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
         node.parent.resetChildren();
         node.parent.getChildren();
         provider.refresh(node.parent);
+      }),
+      vscode.workspace.onDidChangeWorkspaceFolders(() => {
+        provider._workspaceRoots = obtainWorkspaceRoots().map(root => vscode.Uri.file(root));
+        provider.refresh();
       }),
       _treeView,
       vscode.commands.registerCommand(
@@ -546,8 +541,8 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
     registrations.forEach(disposable => context.subscriptions.push(disposable));
   }
 
-  constructor(
-      private workspaceRoot: vscode.Uri|undefined, private _extensionKind: vscode.ExtensionKind) {
+  constructor(private _extensionKind: vscode.ExtensionKind) {
+    this._workspaceRoots = obtainWorkspaceRoots().map(root => vscode.Uri.file(root));
     vscode.commands.executeCommand(
         'setContext', 'one.explorer:didHideExtra', OneTreeDataProvider.didHideExtra);
   }
@@ -893,23 +888,23 @@ input_path=${modelName}.${extName}
 
   getChildren(element?: Node): vscode.ProviderResult<Node[]> {
     if (!element) {
-      element = this.getTree();
+      return this.getTree();
     }
 
-    return element ?.getChildren();
+    return element.getChildren();
   }
 
   /**
    * Get the root of the tree
    */
-  private getTree(): Node|undefined {
-    if (!this.workspaceRoot) {
+  private getTree(): Node[]|undefined {
+    if (!this._workspaceRoots || this._workspaceRoots.length === 0) {
       return undefined;
     }
 
     if (!this._tree) {
-      this._tree = NodeFactory.create(NodeType.directory, this.workspaceRoot.fsPath, undefined) as
-          DirectoryNode;
+      this._tree = this._workspaceRoots.map(
+          root => NodeFactory.create(NodeType.directory, root.fsPath, undefined) as DirectoryNode);
     }
 
     return this._tree;

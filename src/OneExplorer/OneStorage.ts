@@ -18,7 +18,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-import {obtainWorkspaceRoot} from '../Utils/Helpers';
+import {obtainWorkspaceRoots} from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
 import {ConfigObj} from './ConfigObject';
@@ -63,7 +63,7 @@ export class OneStorage {
    * @param root  the file or directory,
    *              which MUST exist in the file system
    */
-  private _initCfgList(root: string = obtainWorkspaceRoot()): string[] {
+  private _initCfgList(roots: string[] = obtainWorkspaceRoots()): string[] {
     /**
      * Returns an array of all the file names inside the root directory
      * @todo Check soft link
@@ -83,7 +83,8 @@ export class OneStorage {
     };
 
     try {
-      return readdirSyncRecursive(root).filter(val => val.endsWith('.cfg'));
+      return roots.map(root => readdirSyncRecursive(root).filter(val => val.endsWith('.cfg')))
+          .reduce((prev, cur) => [...prev, ...cur]);
     } catch {
       Logger.error('OneExplorer', '_initCfgList', 'called on not existing directory or file.');
       return [];
