@@ -62,4 +62,8 @@ jobs:
 
       - run: npm install
       - run: npx ts-node infra/license/check-result-formatter.ts ubuntu-latest.json windows-latest.json macos-latest.json
-      - run: cat license_check_result.md
+
+      - if: ${{ hashFiles('license_check_result.fail') }}
+        run: |
+          cat license_check_result.md
+          exit 1
