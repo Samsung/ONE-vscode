@@ -530,10 +530,10 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
 
     if (provider.isLocal) {
       registrations = [
-        ...[vscode.commands.registerCommand(
-                'one.explorer.openContainingFolder',
-                (node: Node) => provider.openContainingFolder(node)),
-      ]
+        ...registrations,
+        vscode.commands.registerCommand(
+            'one.explorer.openContainingFolder',
+            (node: Node) => provider.openContainingFolder(node)),
       ];
     } else {
       vscode.commands.executeCommand('setContext', 'one:extensionKind', 'Workspace');
