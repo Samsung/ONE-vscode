@@ -1,7 +1,7 @@
 name: Check Copyright
 
 on:
-  pull_request_target:
+  pull_request:
     branches: [ main ]
 
 jobs:
@@ -22,17 +22,7 @@ jobs:
       - run: npm install
       - run: npx ts-node infra/copyright/copyright-checker.ts
 
-      - uses: actions/github-script@v6
-        if: ${{ hashFiles('copyright-checker.fail') }}
-        with:
-          script: |
-            var fs = require('fs');
-            var body_content = fs.readFileSync('copyright-checker.fail', 'utf-8');
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: body_content
-            })
-      - run: exit 1
-        if: ${{ hashFiles('copyright-checker.fail') }}
+      - if: ${{ hashFiles('copyright-checker.fail') }}
+        run: |
+          cat copyright-checker.fail
+          exit 1

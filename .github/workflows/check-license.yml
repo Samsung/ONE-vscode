@@ -1,7 +1,7 @@
 name: License Verification
 
 on:
-  pull_request_target:
+  pull_request:
     branches: [ main ]
     paths: [ 'package.json' ]
 
@@ -62,16 +62,4 @@ jobs:
 
       - run: npm install
       - run: npx ts-node infra/license/check-result-formatter.ts ubuntu-latest.json windows-latest.json macos-latest.json
-
-      - uses: actions/github-script@v6
-        with:
-          script: |
-            var fs = require('fs');
-            var body_content = fs.readFileSync('license_check_result.md', 'utf-8');
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: body_content
-            });
+      - run: cat license_check_result.md
