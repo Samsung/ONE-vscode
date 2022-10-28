@@ -582,7 +582,8 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
 
     vscode.commands.executeCommand(
         'setContext', 'one.explorer:didHideExtra', OneTreeDataProvider.didHideExtra);
-    this.refresh();
+
+    this.refresh(undefined, false);
   }
 
   /**
@@ -593,7 +594,8 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
 
     vscode.commands.executeCommand(
         'setContext', 'one.explorer:didHideExtra', OneTreeDataProvider.didHideExtra);
-    this.refresh();
+
+    this.refresh(undefined, false);
   }
 
   /**
@@ -601,13 +603,16 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
    * @command one.explorer.refresh
    * @param node A start node to rebuild. The sub-tree under the node will be rebuilt.
    *                If not given, the whole tree will be rebuilt.
+   * @param clear A flag whether to clear the stored node data or not.
    */
-  refresh(node?: Node): void {
+  refresh(node?: Node, clear: boolean = true): void {
     if (!node) {
-      OneStorage.reset();
-      // Reset the root in order to build from scratch (at OneTreeDataProvider.getTree)
-      this._tree = undefined;
-      this._nodeMap.clear();
+      if (clear) {
+        OneStorage.reset();
+        // Reset the root in order to build from scratch (at OneTreeDataProvider.getTree)
+        this._tree = undefined;
+        this._nodeMap.clear();
+      }
       this._onDidChangeTreeData.fire(undefined);
     } else {
       this._onDidChangeTreeData.fire(node);
@@ -876,12 +881,19 @@ input_path=${modelName}.${extName}
     }
   }
 
+  /**
+   * Note that vscode TreeDataProvider does build the tree by:
+   * (1) getting children nodes from getChildren() and
+   * (2) mapping the nodes to OneNode(Tree Item) using getTreeItem()
+   * Therefore, to decide whether to display node or not, getChildren() should make decision.
+   */
   getChildren(element?: Node): vscode.ProviderResult<Node[]> {
     if (!element) {
       return this.getTree();
     }
 
-    return element.getChildren();
+    return OneTreeDataProvider.didHideExtra ? element.getChildren().filter(node => !node.canHide) :
+                                              element.getChildren();
   }
 
   /**
