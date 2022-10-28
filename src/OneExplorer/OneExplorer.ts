@@ -679,9 +679,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
       if (newname) {
         const dirpath = path.dirname(node.uri.fsPath);
         const newpath = `${dirpath}/${newname}`;
-        vscode.workspace.fs.rename(node.uri, vscode.Uri.file(newpath)).then(() => {
-          this.refresh(node.parent);
-        });
+        vscode.workspace.fs.rename(node.uri, vscode.Uri.file(newpath));
       }
     });
   }
@@ -707,9 +705,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
 
     // If it has no child, simply rename it
     if (children.length === 0) {
-      vscode.workspace.fs.rename(node.uri, vscode.Uri.file(newpath)).then(() => {
-        this.refresh(node.parent);
-      });
+      vscode.workspace.fs.rename(node.uri, vscode.Uri.file(newpath));
       return;
     }
 
@@ -739,13 +735,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
       }));
     };
 
-    refactorCfgs()
-        .then(() => vscode.workspace.fs.rename(node.uri, vscode.Uri.file(newpath)).then(() => {
-          this.refresh(node.parent);
-        }))
-        .catch(() => {
-          Logger.error('OneExplorer', `Refactor`, `Failed to refactor ${node.path}`);
-        });
+    refactorCfgs().then(() => vscode.workspace.fs.rename(node.uri, vscode.Uri.file(newpath)));
   }
 
   /**
