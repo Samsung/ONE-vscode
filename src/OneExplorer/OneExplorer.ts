@@ -123,6 +123,11 @@ abstract class Node {
    */
   abstract _buildChildren: () => void;
 
+  /**
+   * Convert Node to OneNode
+   */
+  abstract toOneNode: ()=>OneNode;
+
   getChildren(): Node[] {
     if (this._childNodes) {
       return this._childNodes;
@@ -241,6 +246,10 @@ class DirectoryNode extends Node {
       }
     }
   };
+
+  toOneNode = (collapsibleState?:vscode.TreeItemCollapsibleState):OneNode => {
+    return new OneNode(collapsibleState ?? vscode.TreeItemCollapsibleState.Expanded, this);
+  };
 }
 
 class BaseModelNode extends Node {
@@ -294,6 +303,14 @@ class BaseModelNode extends Node {
         this._childNodes!.push(configNode);
       }
     });
+  };
+
+  toOneNode = (collapsibleState?:vscode.TreeItemCollapsibleState):OneNode => {
+    return new OneNode(
+      this.name,
+      collapsibleState ?? ((this.getChildren().length > 0) ? vscode.TreeItemCollapsibleState.Collapsed :
+                                        vscode.TreeItemCollapsibleState.None),
+      this);
   };
 }
 
@@ -352,6 +369,14 @@ class ConfigNode extends Node {
       }
     });
   };
+
+  toOneNode = (collapsibleState?:vscode.TreeItemCollapsibleState):OneNode => {
+    return new OneNode(
+      this.name,
+      collapsibleState ?? ((this.getChildren().length > 0) ? vscode.TreeItemCollapsibleState.Collapsed :
+                                        vscode.TreeItemCollapsibleState.None),
+      this);
+  };
 }
 
 class ProductNode extends Node {
@@ -385,6 +410,45 @@ class ProductNode extends Node {
   _buildChildren = (): void => {
     this._childNodes = [];
   };
+
+  toOneNode = (collapsibleState?:vscode.TreeItemCollapsibleState):OneNode => {
+    return new OneNode(collapsibleState ?? vscode.TreeItemCollapsibleState.None, this);
+  };
+}
+
+
+type ClassConstructor<T> = new (...args:any[]) => T;
+
+function CollapsibleStatedNode<C extends ClassConstructor<{
+  toOneNode(collapsibleState?: vscode.TreeItemCollapsibleState):OneNode
+}>>(Class: C){
+  return class extends Class {
+    //collapsibleState : vscode.TreeItemCollapsibleState = vscode.TreeItemCollapsibleState.None;
+
+    // Can be omitted
+    constructor(...args: any[]){
+      super(...args[args.length - 1]);
+
+    }
+
+    toOneNode(collapsibleState? : vscode.TreeItemCollapsibleState): OneNode{
+      const oneNode = super.toOneNode(collapsibleState);
+      return oneNode;
+    }
+  };
+};
+
+function applyMixins(derivedCtor: any, constructors: any[]) {
+  constructors.forEach((baseCtor) => {
+    Object.getOwnPropertyNames(baseCtor.prototype).forEach((name) => {
+      Object.defineProperty(
+        derivedCtor.prototype,
+        name,
+        Object.getOwnPropertyDescriptor(baseCtor.prototype, name) ||
+          Object.create(null)
+      );
+    });
+  });
 }
 
 export class OneNode extends vscode.TreeItem {
@@ -867,18 +931,7 @@ input_path=${modelName}.${extName}
   getTreeItem(node: Node): OneNode {
     this._nodeMap.set(node.path, node);
 
-    if (node.type === NodeType.directory) {
-      return new OneNode(vscode.TreeItemCollapsibleState.Expanded, node);
-    } else if (node.type === NodeType.product) {
-      return new OneNode(vscode.TreeItemCollapsibleState.None, node);
-    } else if (node.type === NodeType.baseModel || node.type === NodeType.config) {
-      return new OneNode(
-          (node.getChildren().length > 0) ? vscode.TreeItemCollapsibleState.Collapsed :
-                                            vscode.TreeItemCollapsibleState.None,
-          node);
-    } else {
-      throw Error('Undefined NodeType');
-    }
+    return node.toOneNode();
   }
 
   /**
