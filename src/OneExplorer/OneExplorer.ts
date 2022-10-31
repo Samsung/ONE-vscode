@@ -94,6 +94,7 @@ enum NodeType {
 
 abstract class Node {
   abstract readonly type: NodeType;
+  public readonly id: string;
   /**
    * @protected _childNodes
    * `undefined` when it's not build yet.
@@ -113,6 +114,7 @@ abstract class Node {
   abstract canHide: boolean;
 
   constructor(uri: vscode.Uri, parent: Node|undefined) {
+    this.id = Math.random().toString();
     this._childNodes = undefined;
     this.uri = uri;
     this._parent = parent;
@@ -394,6 +396,7 @@ export class OneNode extends vscode.TreeItem {
   ) {
     super(node.name, collapsibleState);
 
+    this.id = node.id;
     this.resourceUri = node.uri;
     this.description = true;
     this.tooltip = `${this.node.path}`;
