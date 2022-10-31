@@ -161,14 +161,6 @@ abstract class Node {
 class NodeFactory {
   static create(type: NodeType, fpath: string, parent: Node|undefined, attr?: ArtifactAttr): Node
       |undefined {
-    // WHY HIDDEN NODES ARE NOT TO BE CREATED?
-    //
-    // A 'TreeDataProvider<element>' expects every elements (Node) to be correspond to visible
-    // TreeItem, so let's not build hidden nodes.
-    if (attr && attr?.canHide && OneTreeDataProvider.didHideExtra) {
-      return undefined;
-    }
-
     const uri = vscode.Uri.file(fpath);
 
     let node: Node;
