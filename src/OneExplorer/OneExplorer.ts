@@ -159,23 +159,32 @@ abstract class Node {
 }
 
 class NodeFactory {
-  static create(type: NodeType, fpath: string, parent: Node|undefined, attr?: ArtifactAttr): Node
-      |undefined {
+  static create(type: NodeType, fpath: string, parent: Node|undefined, attr?: ArtifactAttr): Node {
     const uri = vscode.Uri.file(fpath);
 
     let node: Node;
-    if (type === NodeType.directory) {
-      assert.strictEqual(attr, undefined, 'Directory nodes cannot have attributes');
-      node = new DirectoryNode(uri, parent);
-    } else if (type === NodeType.baseModel) {
-      node = new BaseModelNode(uri, parent, attr?.openViewType, attr?.icon, attr?.canHide);
-    } else if (type === NodeType.config) {
-      assert.strictEqual(attr, undefined, 'Config nodes cannot have attributes');
-      node = new ConfigNode(uri, parent);
-    } else if (type === NodeType.product) {
-      node = new ProductNode(uri, parent, attr?.openViewType, attr?.icon, attr?.canHide);
-    } else {
-      throw Error('Undefined NodeType');
+    switch (type) {
+      case NodeType.directory: {
+        assert.strictEqual(attr, undefined, 'Directory nodes cannot have attributes');
+        node = new DirectoryNode(uri, parent);
+        break;
+      }
+      case NodeType.baseModel: {
+        node = new BaseModelNode(uri, parent, attr?.openViewType, attr?.icon, attr?.canHide);
+        break;
+      }
+      case NodeType.config: {
+        assert.strictEqual(attr, undefined, 'Config nodes cannot have attributes');
+        node = new ConfigNode(uri, parent);
+        break;
+      }
+      case NodeType.product: {
+        node = new ProductNode(uri, parent, attr?.openViewType, attr?.icon, attr?.canHide);
+        break;
+      }
+      default: {
+        throw Error('Undefined NodeType');
+      }
     }
 
     return node;
