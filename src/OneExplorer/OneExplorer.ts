@@ -17,7 +17,6 @@
 import * as assert from 'assert';
 import * as fs from 'fs';
 import * as path from 'path';
-import {TextEncoder} from 'util';
 import * as vscode from 'vscode';
 
 import {CfgEditorPanel} from '../CfgEditor/CfgEditorPanel';
@@ -684,7 +683,10 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
       if (newname) {
         const dirpath = path.dirname(node.uri.fsPath);
         const newpath = `${dirpath}/${newname}`;
-        vscode.workspace.fs.rename(node.uri, vscode.Uri.file(newpath));
+
+        const edit = new vscode.WorkspaceEdit();
+        edit.renameFile(node.uri, vscode.Uri.file(newpath));
+        vscode.workspace.applyEdit(edit);
       }
     });
   }
@@ -710,7 +712,9 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
 
     // If it has no child, simply rename it
     if (children.length === 0) {
-      vscode.workspace.fs.rename(node.uri, vscode.Uri.file(newpath));
+      const edit = new vscode.WorkspaceEdit();
+      edit.renameFile(node.uri, vscode.Uri.file(newpath));
+      vscode.workspace.applyEdit(edit);
       return;
     }
 
@@ -740,7 +744,11 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
       }));
     };
 
-    refactorCfgs().then(() => vscode.workspace.fs.rename(node.uri, vscode.Uri.file(newpath)));
+    refactorCfgs().then(() => {
+      const edit = new vscode.WorkspaceEdit();
+      edit.renameFile(node.uri, vscode.Uri.file(newpath));
+      vscode.workspace.applyEdit(edit);
+    });
   }
 
   /**
@@ -761,25 +769,23 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
 
     let detail: string|undefined;
     let approval: string;
-    let useTrash: boolean;
 
     if (this.isRemote) {
-      // NOTE(dayo)
-      // By experience, the file is not deleted with 'useTrash:true' option.
       approval = 'Delete';
       detail = 'The file will be deleted permanently.';
-      useTrash = false;
     } else {
       approval = 'Move to Trash';
       detail = `You can restore this file from the Trash.`;
-      useTrash = true;
     }
 
     vscode.window.showInformationMessage(title, {detail: detail, modal: true}, approval)
         .then(ans => {
           if (ans === approval) {
             Logger.info('OneExplorer', `Delete '${node.name}'.`);
-            vscode.workspace.fs.delete(node.uri, {recursive: recursive, useTrash: useTrash});
+
+            const edit = new vscode.WorkspaceEdit();
+            edit.deleteFile(node.uri, {recursive: recursive, ignoreIfNotExists: true});
+            vscode.workspace.applyEdit(edit);
           }
         });
   }
@@ -797,14 +803,12 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
     const modelName = path.parse(node.path).name;
     const extName = path.parse(node.path).ext.slice(1);
 
-    const encoder = new TextEncoder;
     // TODO(dayo) Auto-configure more fields
-    const content = encoder.encode(`
-[onecc]
+    const content = `[onecc]
 one-import-${extName}=True
 [one-import-${extName}]
 input_path=${modelName}.${extName}
-`);
+`;
 
     const validateInputPath = (cfgName: string): string|undefined => {
       const cfgPath: string = path.join(dirPath, cfgName);
@@ -833,25 +837,23 @@ input_path=${modelName}.${extName}
             return;
           }
 
+          // 'uri' path is not occupied, assured by validateInputPath
           const uri = vscode.Uri.file(`${dirPath}/${value}`);
 
-          // 'uri' path is not occupied, assured by validateInputPath
-          vscode.workspace.fs.writeFile(uri, content)
-              .then(() => {
-                return new Promise<vscode.Uri>(resolve => {
-                  this.refresh(node);
+          const edit = new vscode.WorkspaceEdit();
+          edit.createFile(uri);
+          edit.insert(uri, (new vscode.Position(0, 0)), content);
 
-                  // Wait until the refresh event listeners are handled
-                  // TODO: Add an event after revising refresh commmand
-                  setTimeout(() => resolve(uri), 200);
-                });
-              })
-              .then((uri) => {
-                return Promise.all([
-                  vscode.commands.executeCommand('list.expand', uri),
-                  vscode.commands.executeCommand('vscode.openWith', uri, CfgEditorPanel.viewType)
-                ]);
+          vscode.workspace.applyEdit(edit).then(isSuccess => {
+            if (isSuccess) {
+              vscode.workspace.openTextDocument(uri).then(document => {
+                document.save();
+                vscode.commands.executeCommand('vscode.openWith', uri, CfgEditorPanel.viewType);
               });
+            } else {
+              Logger.error('OneExplorer', 'CreateCfg', `Failed to create the file ${uri}`);
+            }
+          });
         });
   }
 
