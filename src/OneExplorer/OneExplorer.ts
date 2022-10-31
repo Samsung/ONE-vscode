@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as assert from 'assert';
+import {assert} from 'chai';
 import * as fs from 'fs';
 import * as path from 'path';
 import {TextEncoder} from 'util';
