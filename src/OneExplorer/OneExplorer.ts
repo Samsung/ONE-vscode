@@ -190,6 +190,8 @@ class NodeFactory {
 
     OneStorage.insert(node);
 
+    OneStorage.insert(node);
+
     return node;
   }
 }
@@ -237,7 +239,7 @@ class DirectoryNode extends Node {
       } else if (
           fstat.isFile() &&
           (fname.endsWith('.pb') || fname.endsWith('.tflite') || fname.endsWith('.onnx'))) {
-        const baseModelNode = NodeFactory.create(NodeType.baseModel, fpath, this);
+        const baseModelNode = OneStorage.getNode(fpath) ?? NodeFactory.create(NodeType.baseModel, fpath, this);
 
         if (baseModelNode) {
           this._childNodes!.push(baseModelNode);
@@ -292,7 +294,7 @@ class BaseModelNode extends Node {
       return;
     }
     configPaths.forEach(configPath => {
-      const configNode = NodeFactory.create(NodeType.config, configPath, this);
+      const configNode = OneStorage.getNode(configPath) ?? NodeFactory.create(NodeType.config, configPath, this);
 
       if (configNode) {
         this._childNodes!.push(configNode);
@@ -349,7 +351,7 @@ class ConfigNode extends Node {
     const products = cfgObj.getProductsExists;
 
     products.forEach(product => {
-      const productNode = NodeFactory.create(NodeType.product, product.path, this, product.attr);
+      const productNode = OneStorage.getNode(product.path) ?? NodeFactory.create(NodeType.product, product.path, this, product.attr);
 
       if (productNode) {
         this._childNodes!.push(productNode);
@@ -445,21 +447,27 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
         {treeDataProvider: provider, showCollapseAll: true, canSelectMany: true});
 
     let registrations = [
-      provider.fileWatcher.onDidCreate((_uri: vscode.Uri) => {
-        provider.refresh();
+      vscode.workspace.onDidRenameFiles(e => {
+        e.files.forEach(file => {
+          console.log(`onDidRenameFile: ${file.oldUri}=>${file.newUri}`);
+          const node = OneStorage.getNode(file.oldUri.fsPath);
+          if (!node) {
+            return;
+          }
+          node.uri = file.newUri;
+        });
       }),
-      provider.fileWatcher.onDidChange((_uri: vscode.Uri) => {
-        // TODO Handle by each node types
-        provider.refresh();
-      }),
-      provider.fileWatcher.onDidDelete((uri: vscode.Uri) => {
-        const node = OneStorage.getNode(uri.fsPath);
-        if (!node) {
-          return;
-        }
+      vscode.workspace.onDidDeleteFiles(e => {
+        e.files.forEach(file => {
+          console.log(`onDidDeleteFiles: ${file.fsPath}`);
+          const node = OneStorage.getNode(file.fsPath);
+          if (!node) {
+            return;
+          }
 
-        OneStorage.delete(node, true);
-        provider.refresh(node.parent);
+          OneStorage.delete(node, true);
+          provider.refresh(node.parent);
+        });
       }),
       vscode.workspace.onDidChangeWorkspaceFolders(() => {
         provider._workspaceRoots = obtainWorkspaceRoots().map(root => vscode.Uri.file(root));
@@ -819,8 +827,23 @@ input_path=${modelName}.${extName}
           vscode.workspace.applyEdit(edit).then(isSuccess => {
             if (isSuccess) {
               vscode.workspace.openTextDocument(uri).then(document => {
-                document.save();
-                vscode.commands.executeCommand('vscode.openWith', uri, CfgEditorPanel.viewType);
+                document.save().then((isOk)=>{
+                  if(!isOk){
+                    return;
+                  }
+                  //New CFG File
+                  OneStorage.addConfig(uri.fsPath);
+                  const cfgObj = OneStorage.getCfgObj(uri.fsPath);
+                  if (cfgObj) {
+                    cfgObj.getBaseModels.forEach(model => {
+                      const basemodelNode = OneStorage.getNode(model.path);
+                      if (basemodelNode) {
+                        basemodelNode.resetChildren();
+                        this.refresh(node);
+                      }
+                    });
+                  }
+                }).then(()=>vscode.commands.executeCommand('vscode.openWith', uri, CfgEditorPanel.viewType));
               });
             } else {
               Logger.error('OneExplorer', 'CreateCfg', `Failed to create the file ${uri}`);
