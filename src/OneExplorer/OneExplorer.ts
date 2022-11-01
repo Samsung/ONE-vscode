@@ -66,7 +66,7 @@ export {
  * the config file.
  *
  */
-enum NodeType {
+export enum NodeType {
   /**
    * A directory which contains one or more baseModel.
    */
@@ -92,7 +92,7 @@ enum NodeType {
   product,
 }
 
-abstract class Node {
+export abstract class Node {
   abstract readonly type: NodeType;
   public readonly id: string;
   /**
@@ -188,6 +188,8 @@ class NodeFactory {
         throw Error('Undefined NodeType');
       }
     }
+
+    OneStorage.insert(node);
 
     return node;
   }
@@ -431,15 +433,8 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
 
   private fileWatcher = vscode.workspace.createFileSystemWatcher(`**/*`);
 
-  private _tree: DirectoryNode[]|undefined;
+  private _tree: Node[]|undefined;
   private _workspaceRoots: vscode.Uri[] = [];
-
-  // NOTE
-  // _nodeMap only contains the nodes which have ever been shown in ONE Explorer view by revealing
-  // the parent nodes. To get the unseen node from _nodeMap, _nodeMap needs to be pre-built. Mind
-  // that it will slow down the extension to gather data about unseen nodes.
-  // Currently, only the two depths from those shown nodes are built.
-  private _nodeMap: Map<string, Node> = new Map<string, Node>();
 
   public static didHideExtra: boolean = false;
 
@@ -459,38 +454,12 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
         provider.refresh();
       }),
       provider.fileWatcher.onDidDelete((uri: vscode.Uri) => {
-        const node = provider._nodeMap.get(uri.fsPath);
-
+        const node = OneStorage.getNode(uri.fsPath);
         if (!node) {
           return;
         }
 
-        if (node.type === NodeType.directory || !node.parent) {
-          provider.refresh();
-          return;
-        }
-
-        const deleteRecursively = (node: Node) => {
-          if (node.getChildren().length > 0) {
-            node.getChildren().forEach(child => deleteRecursively(child));
-          }
-          provider._nodeMap.delete(node.path);
-
-          switch (node.type) {
-            case NodeType.baseModel:
-              OneStorage.resetBaseModel(node.path);
-              break;
-            case NodeType.config:
-              OneStorage.resetConfig(node.path);
-              break;
-            default:
-              break;
-          }
-        };
-
-        deleteRecursively(node);
-        node.parent.resetChildren();
-        node.parent.getChildren();
+        OneStorage.delete(node, true);
         provider.refresh(node.parent);
       }),
       vscode.workspace.onDidChangeWorkspaceFolders(() => {
@@ -501,7 +470,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
       vscode.commands.registerCommand(
           'one.explorer.revealInOneExplorer',
           (path: string) => {
-            const node = provider._nodeMap.get(path);
+            const node = OneStorage.getNode(path);
             if (node) {
               _treeView ?.reveal(node, {select: true, focus: true, expand: true});
             }
@@ -615,7 +584,6 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
         OneStorage.reset();
         // Reset the root in order to build from scratch (at OneTreeDataProvider.getTree)
         this._tree = undefined;
-        this._nodeMap.clear();
       }
       this._onDidChangeTreeData.fire(undefined);
     } else {
@@ -869,8 +837,6 @@ input_path=${modelName}.${extName}
   }
 
   getTreeItem(node: Node): OneNode {
-    this._nodeMap.set(node.path, node);
-
     if (node.type === NodeType.directory) {
       return new OneNode(vscode.TreeItemCollapsibleState.Expanded, node);
     } else if (node.type === NodeType.product) {

@@ -22,6 +22,7 @@ import {obtainWorkspaceRoots} from '../Utils/Helpers';
 import {Logger} from '../Utils/Logger';
 
 import {ConfigObj} from './ConfigObject';
+import {Node, NodeType} from './OneExplorer';
 
 interface StringListMap {
   [key: string]: string[];
@@ -50,11 +51,20 @@ interface ConfigObjMap {
  */
 export class OneStorage {
   /**
-   * A map of ConfigObj (key: cfg path)
+   * @brief A map of all the path to nodes
+   * @note _nodeMap only contains the nodes which have ever been shown in ONE Explorer view by
+   * revealing the parent nodes. To get the unseen node from _nodeMap, _nodeMap needs to be
+   * pre-built. Mind that it will slow down the extension to gather data about unseen nodes.
+   *       Currently, only the two depths from those shown nodes are built.
+   */
+  private _nodeMap: Map<string, Node> = new Map<string, Node>();
+
+  /**
+   * @brief A map of ConfigObj (key: cfg path)
    */
   private _cfgToCfgObjMap: ConfigObjMap;
   /**
-   * A map of BaseModel path to Cfg path
+   * @brief A map of BaseModel path to Cfg path
    */
   private _baseModelToCfgsMap: StringListMap;
 
@@ -122,6 +132,21 @@ export class OneStorage {
     return map;
   }
 
+  private static _delete(node: Node) {
+    OneStorage.get()._nodeMap.delete(node.path);
+
+    switch (node.type) {
+      case NodeType.baseModel:
+        OneStorage.resetBaseModel(node.path);
+        break;
+      case NodeType.config:
+        OneStorage.resetConfig(node.path);
+        break;
+      default:
+        break;
+    }
+  }
+
   private constructor() {
     const cfgList = this._initCfgList();
     this._cfgToCfgObjMap = this._initCfgToCfgObjMap(cfgList);
@@ -148,6 +173,41 @@ export class OneStorage {
    */
   public static getCfgObj(cfgPath: string): ConfigObj|null {
     return OneStorage.get()._cfgToCfgObjMap[cfgPath];
+  }
+
+  /**
+   * Get cfgObj from the map
+   */
+  public static getNode(fsPath: string): Node|undefined {
+    return OneStorage.get()._nodeMap.get(fsPath);
+  }
+
+  public static insert(node: Node) {
+    // NOTE
+    // Only _nodeMap is built by calling this function
+    // _baseModelToCfgsMap and _cfgToCfgObjMap are built at once by scanning the file system.
+    OneStorage.get()._nodeMap.set(node.path, node);
+  }
+
+  /**
+   * @brief Delete a node and its child recursively from OneStorage
+   * @param node A node to reset. Reset all if not given.
+   * @param recursive Reset the node and its children recursively
+   */
+  public static delete(node: Node, recursive?: boolean) {
+    const deleteRecursively = (node: Node) => {
+      if (node.getChildren().length > 0) {
+        node.getChildren().forEach(child => deleteRecursively(child));
+      }
+      this._delete(node);
+    };
+
+    recursive ? deleteRecursively(node) : this._delete(node);
+
+    if (node.parent) {
+      node.parent.resetChildren();
+      node.parent.getChildren();
+    }
   }
 
   /**
