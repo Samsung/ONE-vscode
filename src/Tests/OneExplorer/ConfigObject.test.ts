@@ -15,7 +15,6 @@
  */
 
 import {assert} from 'chai';
-import * as fs from 'fs';
 import * as vscode from 'vscode';
 import {ConfigObj} from '../../OneExplorer/ConfigObject';
 
