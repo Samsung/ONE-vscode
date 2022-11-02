@@ -15,71 +15,17 @@
  */
 
 import {assert} from 'chai';
-import * as fs from 'fs';
 import * as vscode from 'vscode';
 import {ConfigObj} from '../../OneExplorer/ConfigObject';
 
-class TestBuilder {
-  static testCount = 0;
-  static testDirRoot: string = '/tmp/one-vscode.test/ConfigObject';
-  testLabel: string|null = null;
-  testDir: string|null = null;
-  fileList: string[] = [];
-
-  constructor(suiteName: string) {
-    TestBuilder.testCount++;
-    this.testLabel = `${suiteName}/${TestBuilder.testCount}`;
-    this.testDir = `${TestBuilder.testDirRoot}/${suiteName}/${TestBuilder.testCount}`;
-  }
-
-  setUp() {
-    try {
-      if (fs.existsSync(this.testDir!)) {
-        fs.rmdirSync(this.testDir!, {recursive: true});
-      }
-
-      fs.mkdirSync(this.testDir!, {recursive: true});
-      console.log(`Test ${this.testLabel} - Start`);
-    } catch (e) {
-      console.error('Cannot create temporal directory for the test');
-      throw e;
-    }
-  }
-
-  getPath(fileName: string) {
-    return `${this.testDir}/${fileName}`;
-  }
-
-  writeFileSync(fileName: string, content: string) {
-    const filePath = `${this.testDir}/${fileName}`;
-
-    try {
-      fs.writeFileSync(filePath, content, 'utf-8');
-      console.log(`Test file is created (${filePath})`);
-    } catch (e) {
-      console.error('Cannot create temporal files for the test');
-      throw e;
-    }
-  }
-
-  tearDown() {
-    try {
-      fs.rmdirSync(this.testDir!, {recursive: true});
-      console.log(`Test directory is removed successfully. (${this.testDir})`);
-    } catch (e) {
-      // Do not throw to proceed the test
-      console.error('Cannot remove the test directory');
-    } finally {
-      console.log(`Test ${this.testLabel} - Done`);
-    }
-  }
-}
+import {TestBuilder} from '../TestBuilder';
 
 suite('OneExplorer', function() {
   suite('ConfigObject', function() {
     let testBuilder: TestBuilder;
+
     setup(() => {
-      testBuilder = new TestBuilder(`${this.title}`);
+      testBuilder = new TestBuilder(this);
       testBuilder.setUp();
     });
 
