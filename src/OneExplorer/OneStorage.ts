@@ -29,7 +29,7 @@ interface StringListMap {
 }
 
 interface ConfigObjMap {
-  [key: string]: ConfigObj|null;
+  [key: string]: ConfigObj;
 }
 
 /**
@@ -105,7 +105,10 @@ export class OneStorage {
     let map: ConfigObjMap = {};
 
     cfgList.forEach(cfg => {
-      map[cfg] = ConfigObj.createConfigObj(vscode.Uri.file(cfg));
+      const cfgObj = ConfigObj.createConfigObj(vscode.Uri.file(cfg));
+      if (cfgObj) {
+        map[cfg] = cfgObj;
+      }
     });
 
     return map;
@@ -171,7 +174,7 @@ export class OneStorage {
   /**
    * Get cfgObj from the map
    */
-  public static getCfgObj(cfgPath: string): ConfigObj|null {
+  public static getCfgObj(cfgPath: string): ConfigObj|undefined {
     return OneStorage.get()._cfgToCfgObjMap[cfgPath];
   }
 
