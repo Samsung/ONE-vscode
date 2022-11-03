@@ -32,104 +32,106 @@ suite('OneExplorer', function() {
       testBuilder.tearDown();
     });
 
-    suite('#getCfgs()', function() {
-      test('A tflite file with a cfg', function() {
-        const configName = 'model.cfg';
-        const modelName = 'model.tflite';
+    suite('OneStorage', function() {
+      suite('#getCfgs()', function() {
+        test('A tflite file with a cfg', function() {
+          const configName = 'model.cfg';
+          const modelName = 'model.tflite';
 
-        const content = `
+          const content = `
 [one-import-tflite]
 input_path=${modelName}
         `;
 
-        // Write a file inside temp directory
-        testBuilder.writeFileSync(configName, content, 'workspace');
-        testBuilder.writeFileSync(modelName, '', 'workspace');
+          // Write a file inside temp directory
+          testBuilder.writeFileSync(configName, content, 'workspace');
+          testBuilder.writeFileSync(modelName, '', 'workspace');
 
-        // Get file paths inside the temp directory
-        const configPath = testBuilder.getPath(configName, 'workspace');
-        const modelPath = testBuilder.getPath(modelName, 'workspace');
+          // Get file paths inside the temp directory
+          const configPath = testBuilder.getPath(configName, 'workspace');
+          const modelPath = testBuilder.getPath(modelName, 'workspace');
 
-        // Validation
-        {
-          assert.strictEqual(OneStorage.getCfgs(modelPath)?.length, 1);
-          assert.strictEqual(OneStorage.getCfgs(modelPath)![0], configPath);
-        }
+          // Validation
+          {
+            assert.strictEqual(OneStorage.getCfgs(modelPath)?.length, 1);
+            assert.strictEqual(OneStorage.getCfgs(modelPath)![0], configPath);
+          }
+        });
+
+        test('NEG: Returns undefined for not existing path', function() {
+          { assert.isUndefined(OneStorage.getCfgs('invalid/path')); }
+        });
+
+        test('NEG: Returns undefined for lonely base model file', function() {
+          const modelName = 'model.tflite';
+
+          testBuilder.writeFileSync(modelName, '', 'workspace');
+
+          { assert.isUndefined(OneStorage.getCfgs('invalid/path')); }
+        });
+
+        test('NEG: Returns undefined for non-base-model files', function() {
+          const modelName = 'model.circle';
+
+          testBuilder.writeFileSync(modelName, '', 'workspace');
+
+          const modelPath = testBuilder.getPath(modelName, 'workspace');
+          { assert.isUndefined(OneStorage.getCfgs(modelPath)); }
+        });
       });
 
-      test('NEG: Returns undefined for not existing path', function() {
-        { assert.isUndefined(OneStorage.getCfgs('invalid/path')); }
-      });
+      suite('#getCfgsObjs()', function() {
+        test('A tflite file with a cfg', function() {
+          const configName = 'model.cfg';
+          const modelName = 'model.tflite';
 
-      test('NEG: Returns undefined for lonely base model file', function() {
-        const modelName = 'model.tflite';
-
-        testBuilder.writeFileSync(modelName, '', 'workspace');
-
-        { assert.isUndefined(OneStorage.getCfgs('invalid/path')); }
-      });
-
-      test('NEG: Returns undefined for non-base-model files', function() {
-        const modelName = 'model.circle';
-
-        testBuilder.writeFileSync(modelName, '', 'workspace');
-
-        const modelPath = testBuilder.getPath(modelName, 'workspace');
-        { assert.isUndefined(OneStorage.getCfgs(modelPath)); }
-      });
-    });
-
-    suite('#getCfgsObjs()', function() {
-      test('A tflite file with a cfg', function() {
-        const configName = 'model.cfg';
-        const modelName = 'model.tflite';
-
-        const content = `
+          const content = `
 [one-import-tflite]
 input_path=${modelName}
         `;
 
-        // Write a file inside temp directory
-        testBuilder.writeFileSync(configName, content, 'workspace');
-        testBuilder.writeFileSync(modelName, '', 'workspace');
+          // Write a file inside temp directory
+          testBuilder.writeFileSync(configName, content, 'workspace');
+          testBuilder.writeFileSync(modelName, '', 'workspace');
 
-        // Get file paths inside the temp directory
-        const configPath = testBuilder.getPath(configName, 'workspace');
-        const modelPath = testBuilder.getPath(modelName, 'workspace');
+          // Get file paths inside the temp directory
+          const configPath = testBuilder.getPath(configName, 'workspace');
+          const modelPath = testBuilder.getPath(modelName, 'workspace');
 
-        // Validation
-        {
-          assert.isDefined(OneStorage.getCfgObj(configPath));
-          assert.strictEqual(OneStorage.getCfgObj(configPath)?.getBaseModelsExists[0].path, modelPath);
-        }
+          // Validation
+          {
+            assert.isDefined(OneStorage.getCfgObj(configPath));
+            assert.strictEqual(OneStorage.getCfgObj(configPath)?.getBaseModelsExists[0].path, modelPath);
+          }
+        });
+
+        test('NEG: Returns nothing for not existing path', function() {
+          { assert.notExists(OneStorage.getCfgObj('invalid/path')); }
+        });
+
+        test('NEG: Returns nothing for non-cfg files', function() {
+          const modelName = 'model.circle';
+
+          testBuilder.writeFileSync(modelName, '', 'workspace');
+
+          const modelPath = testBuilder.getPath(modelName, 'workspace');
+          { assert.notExists(OneStorage.getCfgObj(modelPath)); }
+        });
       });
 
-      test('NEG: Returns nothing for not existing path', function() {
-        { assert.notExists(OneStorage.getCfgObj('invalid/path')); }
-      });
+      suite('#reset()', function() {
+        test('Call reset after the file system change', function() {
+          const configName = 'model.cfg';
 
-      test('NEG: Returns nothing for non-cfg files', function() {
-        const modelName = 'model.circle';
+          const configPath = testBuilder.getPath(configName, 'workspace');
 
-        testBuilder.writeFileSync(modelName, '', 'workspace');
+          { assert.isUndefined(OneStorage.getCfgObj(configPath)); }
 
-        const modelPath = testBuilder.getPath(modelName, 'workspace');
-        { assert.notExists(OneStorage.getCfgObj(modelPath)); }
-      });
-    });
+          testBuilder.writeFileSync(configName, '', 'workspace');
+          OneStorage.reset();
 
-    suite('#reset()', function() {
-      test('Call reset after the file system change', function() {
-        const configName = 'model.cfg';
-
-        const configPath = testBuilder.getPath(configName, 'workspace');
-
-        { assert.isUndefined(OneStorage.getCfgObj(configPath)); }
-
-        testBuilder.writeFileSync(configName, '', 'workspace');
-        OneStorage.reset();
-
-        { assert.isDefined(OneStorage.getCfgObj(configPath)); }
+          { assert.isDefined(OneStorage.getCfgObj(configPath)); }
+        });
       });
     });
   });
