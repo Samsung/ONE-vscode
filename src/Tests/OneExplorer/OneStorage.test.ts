@@ -51,12 +51,13 @@ input_path=${modelName}
           const configPath = testBuilder.getPath(configName, 'workspace');
           const modelPath = testBuilder.getPath(modelName, 'workspace');
 
-          // Validation
-          {
-            assert.strictEqual(OneStorage.getCfgs(modelPath)?.length, 1);
-            assert.strictEqual(OneStorage.getCfgs(modelPath)![0], configPath);
-          }
-        });
+        // Validation
+        {
+          assert.isDefined(OneStorage.getCfgs(modelPath));
+          assert.strictEqual(OneStorage.getCfgs(modelPath)?.length, 1);
+          assert.strictEqual(OneStorage.getCfgs(modelPath)![0], configPath);
+        }
+      });
 
         test('NEG: Returns undefined for not existing path', function() {
           { assert.isUndefined(OneStorage.getCfgs('invalid/path')); }

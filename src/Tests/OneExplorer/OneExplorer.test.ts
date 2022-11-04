@@ -77,23 +77,22 @@ suite('OneExplorer', function() {
         });
       });
 
-      test('create a base model node with cfg', function() {
+      test('create a base model node outside workspace', function() {
         const baseModelName = 'test.tflite';
         const configName = `test.cfg`;
 
-        // Write a file inside temp directory
-        // and get file paths inside the temp directory
         testBuilder.writeFileSync(baseModelName, '');
-        const baseModelPath = testBuilder.getPath(baseModelName);
+        const baseModelPath = testBuilder.getPath(baseModelName);         // in /tmp
+        const configPath = testBuilder.getPath(configName, 'workspace');  // in workspace
 
+        // Find a base model outside workspace by locating its absolute path
         testBuilder.writeFileSync(
             configName, `
 [one-import-tflite]
-input_file=${baseModelPath}
+input_path=${baseModelPath}
         `,
             'workspace');
 
-        const configPath = testBuilder.getPath(configName, 'workspace');
 
         // Validation
         {
