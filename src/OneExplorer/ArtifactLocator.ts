@@ -122,13 +122,13 @@ export class Locator {
    * EXAMPLE - file
    *
    * [one-import-tflite]            <--- section: "one-import-tflite"
-   *   input_file = "model.tflite"  <--- key: input_file
-   *   output_file = "model.circle" <--- key: output_file
+   *   input_path = "model.tflite"  <--- key: input_path
+   *   output_path = "model.circle" <--- key: output_path
    *
    * EXAMPLE - imported object
    *
-   * iniObj[one-import-tflite]['input_file'] === "model.tflite"
-   * iniObj[one-import-tflite]['input_file'] === "model.circle"
+   * iniObj[one-import-tflite]['input_path'] === "model.tflite"
+   * iniObj[one-import-tflite]['input_path'] === "model.circle"
    */
   public locate(iniObj: object, dir: string): string[] {
     assert.strictEqual(
