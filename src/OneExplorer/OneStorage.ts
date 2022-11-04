@@ -73,7 +73,7 @@ export class OneStorage {
    * @param root  the file or directory,
    *              which MUST exist in the file system
    */
-  private _initCfgList(roots: string[] = obtainWorkspaceRoots()): string[] {
+  private _getCfgList(roots: string[] = obtainWorkspaceRoots()): string[] {
     /**
      * Returns an array of all the file names inside the root directory
      * @todo Check soft link
@@ -96,7 +96,7 @@ export class OneStorage {
       return roots.map(root => readdirSyncRecursive(root).filter(val => val.endsWith('.cfg')))
           .reduce((prev, cur) => [...prev, ...cur]);
     } catch {
-      Logger.error('OneExplorer', '_initCfgList', 'called on not existing directory or file.');
+      Logger.error('OneExplorer', '_getCfgList()', 'called on not existing directory or file.');
       return [];
     }
   }
@@ -151,7 +151,7 @@ export class OneStorage {
   }
 
   private constructor() {
-    const cfgList = this._initCfgList();
+    const cfgList = this._getCfgList();
     this._cfgToCfgObjMap = this._initCfgToCfgObjMap(cfgList);
     this._baseModelToCfgsMap = this._initBaseModelToCfgsMap(cfgList, this._cfgToCfgObjMap);
   }
