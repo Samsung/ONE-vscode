@@ -99,6 +99,7 @@ input_path=${modelName}
 
         // Validation
         {
+          assert.isDefined(configObj);
           assert.strictEqual(configObj?.getBaseModels.length, 1);
           assert.strictEqual(configObj?.getProducts.length, 0);
 
@@ -130,6 +131,7 @@ output_path=${productName}
 
         // Validation
         {
+          assert.isDefined(configObj);
           assert.strictEqual(configObj?.getBaseModels.length, 0);
           assert.strictEqual(configObj?.getProducts.length, 0);
         }
@@ -158,6 +160,7 @@ input_path=${modelName}
 
         // Validation
         {
+          assert.isDefined(configObj);
           assert.strictEqual(configObj?.getBaseModels.length, 1);
           assert.strictEqual(configObj?.getProducts.length, 0);
 
@@ -191,6 +194,7 @@ output_path=${productName2}
 
         // Validation
         {
+          assert.isDefined(configObj);
           assert.strictEqual(configObj?.getBaseModels.length, 0);
           assert.strictEqual(configObj?.getProducts.length, 0);
         }
@@ -226,6 +230,7 @@ output_path=${productName2}
 
         // Validation
         {
+          assert.isDefined(configObj);
           assert.strictEqual(configObj?.getBaseModels.length, 1);
           assert.notStrictEqual(configObj?.getProducts.length, 0);
 
@@ -260,6 +265,7 @@ output_path=${productName2}
 
         // Validation
         {
+          assert.isDefined(configObj);
           assert.strictEqual(configObj?.getBaseModels.length, 0);
           assert.strictEqual(configObj?.getProducts.length, 0);
         }
@@ -297,6 +303,7 @@ output_path=${productName2}
 
         // Validation
         {
+          assert.isDefined(configObj);
           assert.strictEqual(configObj?.getBaseModels.length, 1);
           assert.notStrictEqual(configObj?.getProducts.length, 0);
 
@@ -342,6 +349,7 @@ output_path=dummy/dummy/../..//${productName2}
 
         // Validation
         {
+          assert.isDefined(configObj);
           assert.strictEqual(configObj?.getBaseModels.length, 1);
           assert.notStrictEqual(configObj?.getProducts.length, 0);
 
@@ -384,6 +392,7 @@ output_path=/dummy/dummy/../..//${productName2}
 
         // Validation
         {
+          assert.isDefined(configObj);
           assert.strictEqual(configObj?.getBaseModels.length, 1);
           assert.notStrictEqual(configObj?.getProducts.length, 0);
 
@@ -424,6 +433,7 @@ output_path=/${productPath2}
 
         // Validation
         {
+          assert.isDefined(configObj);
           assert.strictEqual(configObj?.getBaseModels.length, 1);
           assert.notStrictEqual(configObj?.getProducts.length, 0);
 
@@ -468,6 +478,7 @@ output_path=/${productPath2}
 
         // Validation
         {
+          assert.isDefined(configObj);
           assert.strictEqual(configObj?.getBaseModels.length, 1);
           assert.notStrictEqual(configObj?.getProducts.length, 0);
 
@@ -509,6 +520,7 @@ output_path=/${productPath2}
 
         // Validation
         {
+          assert.isDefined(configObj);
           assert.strictEqual(configObj?.getBaseModels.length, 1);
           assert.strictEqual(configObj?.getBaseModelsExists.length, 0);
 
@@ -542,6 +554,7 @@ output_path=${productName2}
 
         // Validation
         {
+          assert.isDefined(configObj);
           assert.strictEqual(configObj?.getBaseModels.length, 0);
           assert.notStrictEqual(configObj?.getProducts.length, 0);
 
@@ -574,6 +587,7 @@ output_path=${productName2}
 
         // Validation
         {
+          assert.isDefined(configObj);
           assert.strictEqual(configObj?.getBaseModels.length, 0);
           assert.strictEqual(configObj?.getProducts.length, 0);
         }
@@ -602,6 +616,7 @@ command=${productName}
 
         // Validation
         {
+          assert.isDefined(configObj);
           assert.strictEqual(configObj?.getBaseModels.length, 0);
           assert.notStrictEqual(configObj?.getProducts.length, 0);
 
@@ -631,6 +646,7 @@ command=${productName}
 
         // Validation
         {
+          assert.isDefined(configObj);
           assert.strictEqual(configObj?.getBaseModels.length, 0);
           assert.strictEqual(configObj?.getProducts.length, 0);
         }
@@ -666,6 +682,7 @@ command=--save-temps --save-allocations ${productName}
 
         // Validation
         {
+          assert.isDefined(configObj);
           assert.strictEqual(configObj?.getBaseModels.length, 0);
           assert.notStrictEqual(configObj?.getProducts.length, 0);
 
@@ -704,6 +721,7 @@ command=--save-chrome-trace ${traceName}
 
         // Validation
         {
+          assert.isDefined(configObj);
           assert.strictEqual(configObj?.getBaseModels.length, 0);
           assert.notStrictEqual(configObj?.getProducts.length, 0);
 
@@ -730,6 +748,7 @@ command=--save-chrome-trace ${traceName}
 
         // Validation
         {
+          assert.isDefined(configObj);
           assert.strictEqual(configObj?.getBaseModels.length, 0);
           assert.strictEqual(configObj?.getProducts.length, 0);
         }
@@ -758,6 +777,7 @@ commands=--save-chrome-trace ${traceName}
 
         // Validation
         {
+          assert.isDefined(configObj);
           assert.strictEqual(configObj?.getBaseModels.length, 0);
           assert.strictEqual(configObj?.getProducts.length, 0);
         }
