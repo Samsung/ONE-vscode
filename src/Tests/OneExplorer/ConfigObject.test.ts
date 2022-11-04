@@ -65,7 +65,7 @@ suite('OneExplorer', function() {
           assert.isObject(configObj!.rawObj);
           assert.isObject(configObj!.obj);
           assert.isArray(configObj!.obj.baseModels);
-          assert.isArray(configObj?.getProducts);
+          assert.isArray(configObj!.getProducts);
           assert.isArray(configObj!.getBaseModels);
           assert.isArray(configObj!.getProducts);
           assert.isArray(configObj!.getBaseModelsExists);
@@ -100,14 +100,14 @@ input_path=${modelName}
         // Validation
         {
           assert.isDefined(configObj);
-          assert.strictEqual(configObj?.getBaseModels.length, 1);
-          assert.strictEqual(configObj?.getProducts.length, 0);
+          assert.strictEqual(configObj!.getBaseModels.length, 1);
+          assert.strictEqual(configObj!.getProducts.length, 0);
 
-          assert.isTrue(configObj?.isChildOf(modelPath));
+          assert.isTrue(configObj!.isChildOf(modelPath));
           assert.isTrue(
-            configObj?.getBaseModels.map(baseModel => baseModel.path).includes(modelPath));
+              configObj!.getBaseModels.map(baseModel => baseModel.path).includes(modelPath));
           assert.isTrue(
-            configObj?.getBaseModelsExists.map(baseModel => baseModel.path).includes(modelPath));
+              configObj!.getBaseModelsExists.map(baseModel => baseModel.path).includes(modelPath));
         }
       });
 
@@ -132,8 +132,8 @@ output_path=${productName}
         // Validation
         {
           assert.isDefined(configObj);
-          assert.strictEqual(configObj?.getBaseModels.length, 0);
-          assert.strictEqual(configObj?.getProducts.length, 0);
+          assert.strictEqual(configObj!.getBaseModels.length, 0);
+          assert.strictEqual(configObj!.getProducts.length, 0);
         }
       });
     });
@@ -161,14 +161,14 @@ input_path=${modelName}
         // Validation
         {
           assert.isDefined(configObj);
-          assert.strictEqual(configObj?.getBaseModels.length, 1);
-          assert.strictEqual(configObj?.getProducts.length, 0);
+          assert.strictEqual(configObj!.getBaseModels.length, 1);
+          assert.strictEqual(configObj!.getProducts.length, 0);
 
-          assert.isTrue(configObj?.isChildOf(modelPath));
+          assert.isTrue(configObj!.isChildOf(modelPath));
           assert.isTrue(
-            configObj?.getBaseModels.map(baseModel => baseModel.path).includes(modelPath));
+              configObj!.getBaseModels.map(baseModel => baseModel.path).includes(modelPath));
           assert.isTrue(
-            configObj?.getBaseModelsExists.map(baseModel => baseModel.path).includes(modelPath));
+              configObj!.getBaseModelsExists.map(baseModel => baseModel.path).includes(modelPath));
         }
       });
 
@@ -195,8 +195,8 @@ output_path=${productName2}
         // Validation
         {
           assert.isDefined(configObj);
-          assert.strictEqual(configObj?.getBaseModels.length, 0);
-          assert.strictEqual(configObj?.getProducts.length, 0);
+          assert.strictEqual(configObj!.getBaseModels.length, 0);
+          assert.strictEqual(configObj!.getProducts.length, 0);
         }
       });
     });
@@ -231,15 +231,13 @@ output_path=${productName2}
         // Validation
         {
           assert.isDefined(configObj);
-          assert.strictEqual(configObj?.getBaseModels.length, 1);
-          assert.notStrictEqual(configObj?.getProducts.length, 0);
+          assert.strictEqual(configObj!.getBaseModels.length, 1);
+          assert.notStrictEqual(configObj!.getProducts.length, 0);
 
           assert.isTrue(
-            configObj?.getBaseModels.map(baseModel => baseModel.path).includes(baseModelPath));
-          assert.isTrue(
-              configObj?.getProducts.map(product => product.path).includes(productPath1));
-          assert.isTrue(
-              configObj?.getProducts.map(product => product.path).includes(productPath2));
+              configObj!.getBaseModels.map(baseModel => baseModel.path).includes(baseModelPath));
+          assert.isTrue(configObj!.getProducts.map(product => product.path).includes(productPath1));
+          assert.isTrue(configObj!.getProducts.map(product => product.path).includes(productPath2));
         }
       });
 
@@ -266,8 +264,8 @@ output_path=${productName2}
         // Validation
         {
           assert.isDefined(configObj);
-          assert.strictEqual(configObj?.getBaseModels.length, 0);
-          assert.strictEqual(configObj?.getProducts.length, 0);
+          assert.strictEqual(configObj!.getBaseModels.length, 0);
+          assert.strictEqual(configObj!.getProducts.length, 0);
         }
       });
 
@@ -304,19 +302,15 @@ output_path=${productName2}
         // Validation
         {
           assert.isDefined(configObj);
-          assert.strictEqual(configObj?.getBaseModels.length, 1);
-          assert.notStrictEqual(configObj?.getProducts.length, 0);
+          assert.strictEqual(configObj!.getBaseModels.length, 1);
+          assert.notStrictEqual(configObj!.getProducts.length, 0);
 
           assert.isTrue(
-              configObj?.getBaseModels.map(baseModel => baseModel.path).includes(baseModelPath));
-          assert.isTrue(
-              configObj?.getProducts.map(product => product.path).includes(productPath1));
-          assert.isTrue(
-              configObj?.getProducts.map(product => product.path).includes(productPath2));
-          assert.isTrue(
-              configObj?.getProducts.map(product => product.path).includes(productPath3));
-          assert.isTrue(
-              configObj?.getProducts.map(product => product.path).includes(productPath4));
+              configObj!.getBaseModels.map(baseModel => baseModel.path).includes(baseModelPath));
+          assert.isTrue(configObj!.getProducts.map(product => product.path).includes(productPath1));
+          assert.isTrue(configObj!.getProducts.map(product => product.path).includes(productPath2));
+          assert.isTrue(configObj!.getProducts.map(product => product.path).includes(productPath3));
+          assert.isTrue(configObj!.getProducts.map(product => product.path).includes(productPath4));
         }
       });
 
@@ -350,15 +344,13 @@ output_path=dummy/dummy/../..//${productName2}
         // Validation
         {
           assert.isDefined(configObj);
-          assert.strictEqual(configObj?.getBaseModels.length, 1);
-          assert.notStrictEqual(configObj?.getProducts.length, 0);
+          assert.strictEqual(configObj!.getBaseModels.length, 1);
+          assert.notStrictEqual(configObj!.getProducts.length, 0);
 
           assert.isTrue(
-              configObj?.getBaseModels.map(baseModel => baseModel.path).includes(baseModelPath));
-          assert.isTrue(
-              configObj?.getProducts.map(product => product.path).includes(productPath1));
-          assert.isTrue(
-              configObj?.getProducts.map(product => product.path).includes(productPath2));
+              configObj!.getBaseModels.map(baseModel => baseModel.path).includes(baseModelPath));
+          assert.isTrue(configObj!.getProducts.map(product => product.path).includes(productPath1));
+          assert.isTrue(configObj!.getProducts.map(product => product.path).includes(productPath2));
         }
       });
 
@@ -393,14 +385,14 @@ output_path=/dummy/dummy/../..//${productName2}
         // Validation
         {
           assert.isDefined(configObj);
-          assert.strictEqual(configObj?.getBaseModels.length, 1);
-          assert.notStrictEqual(configObj?.getProducts.length, 0);
+          assert.strictEqual(configObj!.getBaseModels.length, 1);
+          assert.notStrictEqual(configObj!.getProducts.length, 0);
 
-          assert.notStrictEqual(configObj?.getBaseModels[0].path, baseModelPath);
+          assert.notStrictEqual(configObj!.getBaseModels[0].path, baseModelPath);
           assert.isFalse(
-              configObj?.getProducts.map(product => product.path).includes(productPath1));
+              configObj!.getProducts.map(product => product.path).includes(productPath1));
           assert.isFalse(
-              configObj?.getProducts.map(product => product.path).includes(productPath2));
+              configObj!.getProducts.map(product => product.path).includes(productPath2));
         }
       });
 
@@ -434,15 +426,12 @@ output_path=/${productPath2}
         // Validation
         {
           assert.isDefined(configObj);
-          assert.strictEqual(configObj?.getBaseModels.length, 1);
-          assert.notStrictEqual(configObj?.getProducts.length, 0);
+          assert.strictEqual(configObj!.getBaseModels.length, 1);
+          assert.notStrictEqual(configObj!.getProducts.length, 0);
 
-          assert.strictEqual(
-              configObj?.getBaseModels[0].path, baseModelPath);
-          assert.isTrue(
-              configObj?.getProducts.map(product => product.path).includes(productPath1));
-          assert.isTrue(
-              configObj?.getProducts.map(product => product.path).includes(productPath2));
+          assert.strictEqual(configObj!.getBaseModels[0].path, baseModelPath);
+          assert.isTrue(configObj!.getProducts.map(product => product.path).includes(productPath1));
+          assert.isTrue(configObj!.getProducts.map(product => product.path).includes(productPath2));
         }
       });
 
@@ -479,15 +468,15 @@ output_path=/${productPath2}
         // Validation
         {
           assert.isDefined(configObj);
-          assert.strictEqual(configObj?.getBaseModels.length, 1);
-          assert.notStrictEqual(configObj?.getProducts.length, 0);
+          assert.strictEqual(configObj!.getBaseModels.length, 1);
+          assert.notStrictEqual(configObj!.getProducts.length, 0);
 
           assert.isTrue(
-              configObj?.getBaseModels.map(baseModel => baseModel.path).includes(baseModelPath));
+              configObj!.getBaseModels.map(baseModel => baseModel.path).includes(baseModelPath));
           assert.isTrue(
-              configObj?.getProductsExists.map(product => product.path).includes(productPath1));
+              configObj!.getProductsExists.map(product => product.path).includes(productPath1));
           assert.isTrue(
-              configObj?.getProductsExists.map(product => product.path).includes(productPath2));
+              configObj!.getProductsExists.map(product => product.path).includes(productPath2));
         }
       });
 
@@ -521,11 +510,11 @@ output_path=/${productPath2}
         // Validation
         {
           assert.isDefined(configObj);
-          assert.strictEqual(configObj?.getBaseModels.length, 1);
-          assert.strictEqual(configObj?.getBaseModelsExists.length, 0);
+          assert.strictEqual(configObj!.getBaseModels.length, 1);
+          assert.strictEqual(configObj!.getBaseModelsExists.length, 0);
 
-          assert.notStrictEqual(configObj?.getProducts.length, 0);
-          assert.strictEqual(configObj?.getBaseModelsExists.length, 0);
+          assert.notStrictEqual(configObj!.getProducts.length, 0);
+          assert.strictEqual(configObj!.getBaseModelsExists.length, 0);
         }
       });
     });
@@ -555,13 +544,12 @@ output_path=${productName2}
         // Validation
         {
           assert.isDefined(configObj);
-          assert.strictEqual(configObj?.getBaseModels.length, 0);
-          assert.notStrictEqual(configObj?.getProducts.length, 0);
+          assert.strictEqual(configObj!.getBaseModels.length, 0);
+          assert.notStrictEqual(configObj!.getProducts.length, 0);
 
           assert.isTrue(
-              configObj?.getProducts.map(baseModel => baseModel.path).includes(productPath1));
-          assert.isTrue(
-              configObj?.getProducts.map(product => product.path).includes(productPath2));
+              configObj!.getProducts.map(baseModel => baseModel.path).includes(productPath1));
+          assert.isTrue(configObj!.getProducts.map(product => product.path).includes(productPath2));
         }
       });
 
@@ -588,8 +576,8 @@ output_path=${productName2}
         // Validation
         {
           assert.isDefined(configObj);
-          assert.strictEqual(configObj?.getBaseModels.length, 0);
-          assert.strictEqual(configObj?.getProducts.length, 0);
+          assert.strictEqual(configObj!.getBaseModels.length, 0);
+          assert.strictEqual(configObj!.getProducts.length, 0);
         }
       });
     });
@@ -617,11 +605,10 @@ command=${productName}
         // Validation
         {
           assert.isDefined(configObj);
-          assert.strictEqual(configObj?.getBaseModels.length, 0);
-          assert.notStrictEqual(configObj?.getProducts.length, 0);
+          assert.strictEqual(configObj!.getBaseModels.length, 0);
+          assert.notStrictEqual(configObj!.getProducts.length, 0);
 
-          assert.isTrue(
-              configObj?.getProducts.map(product => product.path).includes(productPath));
+          assert.isTrue(configObj!.getProducts.map(product => product.path).includes(productPath));
         }
       });
 
@@ -647,8 +634,8 @@ command=${productName}
         // Validation
         {
           assert.isDefined(configObj);
-          assert.strictEqual(configObj?.getBaseModels.length, 0);
-          assert.strictEqual(configObj?.getProducts.length, 0);
+          assert.strictEqual(configObj!.getBaseModels.length, 0);
+          assert.strictEqual(configObj!.getProducts.length, 0);
         }
       });
 
@@ -683,19 +670,14 @@ command=--save-temps --save-allocations ${productName}
         // Validation
         {
           assert.isDefined(configObj);
-          assert.strictEqual(configObj?.getBaseModels.length, 0);
-          assert.notStrictEqual(configObj?.getProducts.length, 0);
+          assert.strictEqual(configObj!.getBaseModels.length, 0);
+          assert.notStrictEqual(configObj!.getProducts.length, 0);
 
-          assert.isTrue(
-              configObj?.getProducts.map(product => product.path).includes(productPath));
-          assert.isTrue(
-              configObj?.getProducts.map(product => product.path).includes(extra1Path));
-          assert.isTrue(
-              configObj?.getProducts.map(product => product.path).includes(extra2Path));
-          assert.isTrue(
-              configObj?.getProducts.map(product => product.path).includes(extra3Path));
-          assert.isTrue(
-              configObj?.getProducts.map(product => product.path).includes(extra4Path));
+          assert.isTrue(configObj!.getProducts.map(product => product.path).includes(productPath));
+          assert.isTrue(configObj!.getProducts.map(product => product.path).includes(extra1Path));
+          assert.isTrue(configObj!.getProducts.map(product => product.path).includes(extra2Path));
+          assert.isTrue(configObj!.getProducts.map(product => product.path).includes(extra3Path));
+          assert.isTrue(configObj!.getProducts.map(product => product.path).includes(extra4Path));
         }
       });
     });
@@ -722,11 +704,10 @@ command=--save-chrome-trace ${traceName}
         // Validation
         {
           assert.isDefined(configObj);
-          assert.strictEqual(configObj?.getBaseModels.length, 0);
-          assert.notStrictEqual(configObj?.getProducts.length, 0);
+          assert.strictEqual(configObj!.getBaseModels.length, 0);
+          assert.notStrictEqual(configObj!.getProducts.length, 0);
 
-          assert.isTrue(
-              configObj?.getProducts.map(product => product.path).includes(tracePath));
+          assert.isTrue(configObj!.getProducts.map(product => product.path).includes(tracePath));
         }
       });
 
@@ -749,8 +730,8 @@ command=--save-chrome-trace ${traceName}
         // Validation
         {
           assert.isDefined(configObj);
-          assert.strictEqual(configObj?.getBaseModels.length, 0);
-          assert.strictEqual(configObj?.getProducts.length, 0);
+          assert.strictEqual(configObj!.getBaseModels.length, 0);
+          assert.strictEqual(configObj!.getProducts.length, 0);
         }
       });
 
@@ -778,8 +759,8 @@ commands=--save-chrome-trace ${traceName}
         // Validation
         {
           assert.isDefined(configObj);
-          assert.strictEqual(configObj?.getBaseModels.length, 0);
-          assert.strictEqual(configObj?.getProducts.length, 0);
+          assert.strictEqual(configObj!.getBaseModels.length, 0);
+          assert.strictEqual(configObj!.getProducts.length, 0);
         }
       });
     });

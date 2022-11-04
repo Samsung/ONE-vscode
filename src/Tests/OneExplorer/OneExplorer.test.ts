@@ -66,8 +66,8 @@ suite('OneExplorer', function() {
         // Validation
         {
           const dirNode = NodeFactory.create(NodeType.directory, dirPath, undefined);
-          assert.strictEqual(dirNode!.getChildren().length, 1);
-          assert.strictEqual(dirNode!.getChildren()[0].path, baseModelPath);
+          assert.strictEqual(dirNode.getChildren().length, 1);
+          assert.strictEqual(dirNode.getChildren()[0].path, baseModelPath);
         }
       });
 
@@ -98,13 +98,13 @@ input_path=${baseModelPath}
         {
           const baseModelNode = NodeFactory.create(NodeType.baseModel, baseModelPath, undefined);
 
-          assert.strictEqual(baseModelNode!.openViewType, BaseModelNode.defaultOpenViewType);
-          assert.strictEqual(baseModelNode!.icon, BaseModelNode.defaultIcon);
-          assert.strictEqual(baseModelNode!.canHide, BaseModelNode.defaultCanHide);
+          assert.strictEqual(baseModelNode.openViewType, BaseModelNode.defaultOpenViewType);
+          assert.strictEqual(baseModelNode.icon, BaseModelNode.defaultIcon);
+          assert.strictEqual(baseModelNode.canHide, BaseModelNode.defaultCanHide);
 
-          assert.strictEqual(baseModelNode!.getChildren().length, 1);
-          assert.strictEqual(baseModelNode!.getChildren()[0].type, NodeType.config);
-          assert.strictEqual(baseModelNode!.getChildren()[0].path, configPath);
+          assert.strictEqual(baseModelNode.getChildren().length, 1);
+          assert.strictEqual(baseModelNode.getChildren()[0].type, NodeType.config);
+          assert.strictEqual(baseModelNode.getChildren()[0].path, configPath);
         }
       });
 
@@ -126,10 +126,10 @@ input_path=${baseModelPath}
         // Validation
         {
           const configNode = NodeFactory.create(NodeType.config, configPath, undefined);
-          assert.strictEqual(configNode!.openViewType, ConfigNode.defaultOpenViewType);
-          assert.strictEqual(configNode!.icon, ConfigNode.defaultIcon);
-          assert.strictEqual(configNode!.canHide, ConfigNode.defaultCanHide);
-          assert.strictEqual(configNode!.getChildren().length, 0);
+          assert.strictEqual(configNode.openViewType, ConfigNode.defaultOpenViewType);
+          assert.strictEqual(configNode.icon, ConfigNode.defaultIcon);
+          assert.strictEqual(configNode.canHide, ConfigNode.defaultCanHide);
+          assert.strictEqual(configNode.getChildren().length, 0);
         }
       });
 
@@ -151,10 +151,10 @@ input_path=${baseModelPath}
         // Validation
         {
           const productNode = NodeFactory.create(NodeType.product, productPath, undefined);
-          assert.strictEqual(productNode!.openViewType, ProductNode.defaultOpenViewType);
-          assert.strictEqual(productNode!.icon, ProductNode.defaultIcon);
-          assert.strictEqual(productNode!.canHide, ProductNode.defaultCanHide);
-          assert.strictEqual(productNode!.getChildren().length, 0);
+          assert.strictEqual(productNode.openViewType, ProductNode.defaultOpenViewType);
+          assert.strictEqual(productNode.icon, ProductNode.defaultIcon);
+          assert.strictEqual(productNode.canHide, ProductNode.defaultCanHide);
+          assert.strictEqual(productNode.getChildren().length, 0);
         }
       });
 
@@ -173,7 +173,7 @@ input_path=${baseModelPath}
         const directoryNode = NodeFactory.create(NodeType.directory, directoryPath, undefined);
         const productNode = NodeFactory.create(NodeType.product, productPath, directoryNode);
 
-        assert.strictEqual(productNode?.parent, directoryNode);
+        assert.strictEqual(productNode.parent, directoryNode);
       });
 
       test('NEG: get an empty parent', function() {
@@ -187,7 +187,7 @@ input_path=${baseModelPath}
 
         const productNode = NodeFactory.create(NodeType.product, productPath, undefined);
 
-        assert.strictEqual(productNode?.parent, undefined);
+        assert.strictEqual(productNode.parent, undefined);
       });
     });
 
@@ -195,7 +195,7 @@ input_path=${baseModelPath}
       test('constructor', function() {
         const directoryPath = testBuilder.getPath('');
         const directoryNode = NodeFactory.create(NodeType.directory, directoryPath, undefined);
-        const oneNode = new OneNode(vscode.TreeItemCollapsibleState.Collapsed, directoryNode!);
+        const oneNode = new OneNode(vscode.TreeItemCollapsibleState.Collapsed, directoryNode);
         { assert.strictEqual(oneNode.contextValue, 'directory'); }
       });
     });
