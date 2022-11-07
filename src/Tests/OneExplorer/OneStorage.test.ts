@@ -321,8 +321,8 @@ input_path=${modelName}
           const model = testBuilder.getPath('model.tflite', 'workspace');
           const config = testBuilder.getPath('model.cfg', 'workspace');
           const content = `
-  [one-import-onnx]
-  input_path='model.tflite'
+[one-import-tflite]
+input_path='model.tflite'
           `;
 
           testBuilder.writeFileSync('model.cfg', content, 'workspace');
@@ -346,8 +346,8 @@ input_path=${modelName}
           const model = testBuilder.getPath('model.tflite', 'workspace');
           const config = testBuilder.getPath('model.cfg', 'workspace');
           const content = `
-  [one-import-onnx]
-  input_path='model.tflite'
+[one-import-tflite]
+input_path='model.tflite'
           `;
 
           testBuilder.writeFileSync('model.cfg', content, 'workspace');
@@ -390,8 +390,8 @@ input_path=${modelName}
           const config = testBuilder.getPath('model.cfg', 'workspace');
 
           const content = `
-  [one-import-onnx]
-  input_path='model.tflite'
+[one-import-tflite]
+input_path='model.tflite'
           `;
 
           testBuilder.writeFileSync('model.cfg', content, 'workspace');
@@ -421,8 +421,8 @@ input_path=${modelName}
 
         test('model and config names', function() {
           const content = `
-  [one-import-onnx]
-  input_path='model.tflite'
+[one-import-tflite]
+input_path='model.tflite'
           `;
 
           const oldModel = testBuilder.getPath('model.tflite', 'workspace');
@@ -443,7 +443,7 @@ input_path=${modelName}
 
           const newModel = testBuilder.getPath('model.new.tflite', 'workspace');
           const newContent = `
-  [one-import-onnx]
+  [one-import-tflite]
   input_path='model.new.tflite'
           `;
 
@@ -461,8 +461,8 @@ input_path=${modelName}
 
         test('NEG: not existing path', function() {
           const content = `
-  [one-import-onnx]
-  input_path='model.tflite'
+[one-import-tflite]
+input_path='model.tflite'
           `;
 
           const model = testBuilder.getPath('model.tflite', 'workspace');
