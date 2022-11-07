@@ -150,6 +150,22 @@ export class OneStorage {
     }
   }
 
+  private static _replace(node: Node, newPath: string) {
+    OneStorage.get()._nodeMap.delete(node.path);
+    OneStorage.get()._nodeMap.set(newPath, node);
+
+    switch (node.type) {
+      case NodeType.baseModel:
+        OneStorage.resetBaseModel(node.path);
+        break;
+      case NodeType.config:
+        OneStorage.resetConfig(node.path);
+        break;
+      default:
+        break;
+    }
+  }
+
   private constructor() {
     const cfgList = this._getCfgList();
     this._cfgToCfgObjMap = this._initCfgToCfgObjMap(cfgList);
@@ -227,9 +243,32 @@ export class OneStorage {
     OneStorage._obj = undefined;
   }
 
+  public static addBaseModel(path: string): void {
+    // TODO
+
+    Logger.debug('OneStorage', `Config Path(${path}) is removed.`);
+  }
+
   public static resetBaseModel(path: string): void {
     delete OneStorage.get()._baseModelToCfgsMap[path];
     Logger.debug('OneStorage', `Base Mode Path(${path}) is removed.`);
+  }
+
+  public static addConfig(path: string): void {
+    const cfgobj = ConfigObj.createConfigObj(vscode.Uri.file(path));
+    OneStorage.get()._cfgToCfgObjMap[path] = cfgobj;
+
+    if(!cfgobj){
+      return;
+    }
+
+    cfgobj?.getBaseModelsExists.map(v=>
+      v.path
+    ).forEach(model=>{
+      OneStorage.get()._baseModelToCfgsMap[model].push(path);
+    });
+
+    Logger.debug('OneStorage', `Config Path(${path}) is added.`);
   }
 
   public static resetConfig(path: string): void {
