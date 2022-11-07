@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import {assert} from 'chai';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
@@ -24,12 +25,155 @@ import {Logger} from '../Utils/Logger';
 import {ConfigObj} from './ConfigObject';
 import {Node, NodeType} from './OneExplorer';
 
-interface StringListMap {
-  [key: string]: string[];
+export {
+  BaseModelToCfgMap as _unit_test_BaseModelToCfgMap,
+  CfgToCfgObjMap as _unit_test_CfgToCfgObjMap,
+};
+
+class CfgToCfgObjMap {
+  private _map: Map<string, ConfigObj>;
+
+  constructor() {
+    this._map = new Map<string, ConfigObj>();
+  }
+
+  public init(cfgList: string[]) {
+    cfgList.forEach(cfg => {
+      const cfgObj = ConfigObj.createConfigObj(vscode.Uri.file(cfg));
+      if (cfgObj) {
+        this._map.set(cfg, cfgObj);
+      }
+    });
+  }
+
+  get size() {
+    return this._map.size;
+  }
+
+  public get(path: string) {
+    return this._map.get(path);
+  }
+
+  public reset(type: NodeType, path: string) {
+    switch (type) {
+      case NodeType.config:
+        this._map.delete(path);
+        break;
+      case NodeType.baseModel:
+      case NodeType.product:
+      case NodeType.directory:
+      default:
+        assert.isOk(false, `Cannot reach here`);
+        break;
+    }
+  }
+
+  /**
+   * Update the data when cfg file's path is changed or the content is changed.
+   * @param type NodeType
+   * @param path config path to update
+   * @param newpath (optional) if exists, change the file path
+   */
+  public update(type: NodeType, path: string, newpath?: string) {
+    switch (type) {
+      case NodeType.config: {
+        this._map.delete(path);
+
+        path = newpath ? ? path;
+        const cfgObj = ConfigObj.createConfigObj(vscode.Uri.file(path));
+        if (cfgObj) {
+          this._map.set(path, cfgObj);
+        }
+
+        break;
+      }
+      case NodeType.baseModel:
+      case NodeType.product:
+      case NodeType.directory:
+      default:
+        assert.isOk(false, `Cannot reach here`);
+        break;
+    }
+  }
 }
 
-interface ConfigObjMap {
-  [key: string]: ConfigObj;
+class BaseModelToCfgMap {
+  private _map: Map<string, string[]>;
+
+  constructor() {
+    this._map = new Map<string, string[]>();
+  }
+
+  public init(cfgList: string[], cfgToCfgObjMap: CfgToCfgObjMap) {
+    cfgList.forEach(cfg => {
+      const cfgObj = cfgToCfgObjMap.get(cfg);
+
+      (cfgObj ? cfgObj.getBaseModelsExists : []).forEach(artifact => {
+        this._map.get(artifact.path) ?
+            this._map.set(artifact.path, this._map.get(artifact.path)!.concat([cfg])) :
+            this._map.set(artifact.path, [cfg]);
+      });
+    });
+  }
+
+  get size() {
+    return this._map.size;
+  }
+
+  public get(path: string) {
+    return this._map.get(path);
+  }
+
+  public reset(type: NodeType, path: string) {
+    switch (type) {
+      case NodeType.baseModel:
+        this._map.delete(path);
+        break;
+      case NodeType.config:
+        this._map.forEach((cfgs, key, map) => {
+          if (cfgs.includes(path)) {
+            cfgs = cfgs.filter(cfg => cfg !== path);
+            map.set(key, cfgs);
+          }
+        });
+        break;
+      case NodeType.product:
+      case NodeType.directory:
+      default:
+        assert.isOk(false, `Cannot reach here`);
+        break;
+    }
+  }
+
+  public update(type: NodeType, oldpath: string, newpath: string) {
+    switch (type) {
+      case NodeType.baseModel: {
+        const value = this._map.get(oldpath);
+
+        if (!value) {
+          return;
+        }
+
+        this._map.delete(oldpath);
+        this._map.set(newpath, value);
+
+        break;
+      }
+      case NodeType.config:
+        this._map.forEach((cfgs, key, map) => {
+          if (cfgs.includes(oldpath)) {
+            cfgs = cfgs.map(cfg => (cfg === oldpath) ? newpath : cfg);
+            map.set(key, cfgs);
+          }
+        });
+        break;
+      case NodeType.product:
+      case NodeType.directory:
+      default:
+        assert.isOk(false, `Cannot reach here`);
+        break;
+    }
+  }
 }
 
 /**
@@ -62,11 +206,11 @@ export class OneStorage {
   /**
    * @brief A map of ConfigObj (key: cfg path)
    */
-  private _cfgToCfgObjMap: ConfigObjMap;
+  private _cfgToCfgObjMap: CfgToCfgObjMap;
   /**
    * @brief A map of BaseModel path to Cfg path
    */
-  private _baseModelToCfgsMap: StringListMap;
+  private _baseModelToCfgsMap: BaseModelToCfgMap;
 
   /**
    * Get the list of .cfg files within the workspace
@@ -101,49 +245,17 @@ export class OneStorage {
     }
   }
 
-  private _initCfgToCfgObjMap(cfgList: string[]): ConfigObjMap {
-    let map: ConfigObjMap = {};
-
-    cfgList.forEach(cfg => {
-      const cfgObj = ConfigObj.createConfigObj(vscode.Uri.file(cfg));
-      if (cfgObj) {
-        map[cfg] = cfgObj;
-      }
-    });
-
-    return map;
-  }
-
-  private _initBaseModelToCfgsMap(cfgList: string[], cfgToCfgObjMap: ConfigObjMap): StringListMap {
-    let map: StringListMap = {};
-
-    cfgList.forEach(cfg => {
-      const cfgObj = cfgToCfgObjMap[cfg];
-      if (cfgObj) {
-        cfgObj.getBaseModelsExists.forEach(baseModelArtifact => {
-          if (!map[baseModelArtifact.path]) {
-            map[baseModelArtifact.path] = [];
-          }
-
-          if (!map[baseModelArtifact.path].includes(cfg)) {
-            map[baseModelArtifact.path].push(cfg);
-          }
-        });
-      }
-    });
-
-    return map;
-  }
-
   private static _delete(node: Node) {
-    OneStorage.get()._nodeMap.delete(node.path);
+    const instance = OneStorage.get();
+    instance._nodeMap.delete(node.path);
 
     switch (node.type) {
       case NodeType.baseModel:
-        OneStorage.resetBaseModel(node.path);
+        instance._baseModelToCfgsMap.reset(node.type, node.path);
         break;
       case NodeType.config:
-        OneStorage.resetConfig(node.path);
+        instance._baseModelToCfgsMap.reset(node.type, node.path);
+        instance._cfgToCfgObjMap.reset(node.type, node.path);
         break;
       default:
         break;
@@ -152,8 +264,12 @@ export class OneStorage {
 
   private constructor() {
     const cfgList = this._getCfgList();
-    this._cfgToCfgObjMap = this._initCfgToCfgObjMap(cfgList);
-    this._baseModelToCfgsMap = this._initBaseModelToCfgsMap(cfgList, this._cfgToCfgObjMap);
+
+    this._cfgToCfgObjMap = new CfgToCfgObjMap();
+    this._cfgToCfgObjMap.init(cfgList);
+
+    this._baseModelToCfgsMap = new BaseModelToCfgMap();
+    this._baseModelToCfgsMap.init(cfgList, this._cfgToCfgObjMap);
   }
 
   private static _obj: OneStorage|undefined;
@@ -162,20 +278,20 @@ export class OneStorage {
    * Get cfg lists which refers the base model path
    * @param baseModelPath
    * @return a list of cfg path or undefined
-   *         'undefined' is returned when
+   *         An empty array is returned when
    *          (1) the path not exists
    *          (2) the path is not a base model file
    *          (3) the path is a lonely base model file
    */
   public static getCfgs(baseModelPath: string): string[]|undefined {
-    return OneStorage.get()._baseModelToCfgsMap[baseModelPath];
+    return OneStorage.get()._baseModelToCfgsMap.get(baseModelPath);
   }
 
   /**
    * Get cfgObj from the map
    */
   public static getCfgObj(cfgPath: string): ConfigObj|undefined {
-    return OneStorage.get()._cfgToCfgObjMap[cfgPath];
+    return OneStorage.get()._cfgToCfgObjMap.get(cfgPath);
   }
 
   /**
@@ -188,7 +304,7 @@ export class OneStorage {
   public static insert(node: Node) {
     // NOTE
     // Only _nodeMap is built by calling this function
-    // _baseModelToCfgsMap and _cfgToCfgObjMap are built at once by scanning the file system.
+    // _baseModelToCfgsMap and _cfgToCfgObjMap are built at constuctors
     OneStorage.get()._nodeMap.set(node.path, node);
   }
 
@@ -225,19 +341,5 @@ export class OneStorage {
 
   public static reset(): void {
     OneStorage._obj = undefined;
-  }
-
-  public static resetBaseModel(path: string): void {
-    delete OneStorage.get()._baseModelToCfgsMap[path];
-    Logger.debug('OneStorage', `Base Mode Path(${path}) is removed.`);
-  }
-
-  public static resetConfig(path: string): void {
-    delete OneStorage.get()._cfgToCfgObjMap[path];
-    Object.entries(OneStorage.get()._baseModelToCfgsMap).forEach(([modelpath]) => {
-      OneStorage.get()._baseModelToCfgsMap[modelpath] =
-          OneStorage.get()._baseModelToCfgsMap[modelpath].filter(cfg => cfg !== path);
-    });
-    Logger.debug('OneStorage', `Config Path(${path}) is removed.`);
   }
 }
