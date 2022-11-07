@@ -53,7 +53,8 @@ input_path=${modelName}
 
           // Validation
           {
-            assert.strictEqual(OneStorage.getCfgs(modelPath)?.length, 1);
+            assert.isDefined(OneStorage.getCfgs(modelPath));
+            assert.strictEqual(OneStorage.getCfgs(modelPath)!.length, 1);
             assert.strictEqual(OneStorage.getCfgs(modelPath)![0], configPath);
           }
         });
@@ -101,7 +102,8 @@ input_path=${modelName}
           // Validation
           {
             assert.isDefined(OneStorage.getCfgObj(configPath));
-            assert.strictEqual(OneStorage.getCfgObj(configPath)?.getBaseModelsExists[0].path, modelPath);
+            assert.strictEqual(
+                OneStorage.getCfgObj(configPath)!.getBaseModelsExists[0].path, modelPath);
           }
         });
 
