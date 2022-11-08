@@ -25,38 +25,6 @@ import {getUri} from '../Utils/external/Uri';
 import {CircleEditorDocument} from './CircleEditorDocument';
 
 /**
- * Message commands for communicating with webviews
- */
-export enum MessageDefs {
-  // message command
-  alert = 'alert',
-  request = 'request',
-  response = 'response',
-  pageloaded = 'pageloaded',
-  loadmodel = 'loadmodel',
-  finishload = 'finishload',
-  reload = 'reload',
-  selection = 'selection',
-  backendColor = 'backendColor',
-  error = 'error',
-  colorTheme = 'colorTheme',
-  // loadmodel type
-  modelpath = 'modelpath',
-  uint8array = 'uint8array',
-  // selection
-  names = 'names',
-  tensors = 'tensors',
-  // partiton of backends
-  partition = 'partition',
-  // commands for custom editor features
-  edit = 'edit',
-  loadJson = 'loadJson',
-  updateJson = 'updateJson',
-  getCustomOpAttrT = 'getCustomOpAttrT',
-  requestEncodingData = 'requestEncodingData'
-}
-
-/**
  * Custom Editor Provider necessary for vscode extension API
  */
 export class CircleEditorProvider implements vscode.CustomEditorProvider<CircleEditorDocument> {
@@ -112,34 +80,34 @@ export class CircleEditorProvider implements vscode.CustomEditorProvider<CircleE
     return document;
   }
 
-  resolveCustomEditor(
+  public async resolveCustomEditor(
       document: CircleEditorDocument, webviewPanel: vscode.WebviewPanel,
-      _token: vscode.CancellationToken): void|Thenable<void> {
+      _token: vscode.CancellationToken): Promise<void> {
     this.webviews.add(document.uri, webviewPanel);
 
     // Setup initial content for the webview
     webviewPanel.webview.options = {
       enableScripts: true,
     };
-    webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview);
+    webviewPanel.webview.html = await this.getHtmlForWebview(webviewPanel.webview);
 
     webviewPanel.webview.onDidReceiveMessage((e) => this.onMessage(document, e));
   }
 
-  saveCustomDocument(document: CircleEditorDocument, cancellation: vscode.CancellationToken):
+  public saveCustomDocument(document: CircleEditorDocument, cancellation: vscode.CancellationToken):
       Thenable<void> {
     return document.save(cancellation);
   }
-  saveCustomDocumentAs(
+  public saveCustomDocumentAs(
       document: CircleEditorDocument, destination: vscode.Uri,
       cancellation: vscode.CancellationToken): Thenable<void> {
     return document.saveAs(destination, cancellation);
   }
-  revertCustomDocument(document: CircleEditorDocument, cancellation: vscode.CancellationToken):
+  public revertCustomDocument(document: CircleEditorDocument, cancellation: vscode.CancellationToken):
       Thenable<void> {
     return document.revert(cancellation);
   }
-  backupCustomDocument(
+  public backupCustomDocument(
       document: CircleEditorDocument, context: vscode.CustomDocumentBackupContext,
       cancellation: vscode.CancellationToken): Thenable<vscode.CustomDocumentBackup> {
     return document.backup(context.destination, cancellation);
@@ -151,39 +119,32 @@ export class CircleEditorProvider implements vscode.CustomEditorProvider<CircleE
 
   private onMessage(document: CircleEditorDocument, message: any) {
     switch (message.command) {
-      case MessageDefs.alert:
+      case 'alert':
         Balloon.error(message.text, false);
-        return;
-      case MessageDefs.request:
+        break;
+      case 'request':
         this.handleRequest(document, message.url, message.encoding);
-        return;
-      case MessageDefs.pageloaded:
-        return;
-      case MessageDefs.loadmodel:
+        break;
+      case 'loadmodel':
         document.sendModel(parseInt(message.offset));
-        return;
-      case MessageDefs.finishload:
-        return;
-      case MessageDefs.selection:
-        return;
-      case MessageDefs.edit:
+        break;
+      case 'edit':
         document.makeEdit(message);
-        return;
-      case MessageDefs.loadJson:
+        break;
+      case 'loadJson':
         document.loadJson();
-        return;
-      case MessageDefs.updateJson:
+        break;
+      case 'updateJson':
         document.editJsonModel(message.data);
-        return;
-      case MessageDefs.getCustomOpAttrT:
+        break;
+      case 'getCustomOpAttrT':
         document.setCustomOpAttrT(message);
-        return;
-      case MessageDefs.requestEncodingData:
+        break;
+      case 'requestEncodingData':
         document.sendEncodingData(message);
-        return;
+        break;
       default:
-        // TODO: add MessageDefs and appropriate function to handle this request
-        return;
+        break;
     }
   }
 
@@ -205,15 +166,15 @@ export class CircleEditorProvider implements vscode.CustomEditorProvider<CircleE
     }
   }
 
-  private getHtmlForWebview(webview: vscode.Webview): string {
-    const htmlUrl = webview.asWebviewUri(vscode.Uri.joinPath(
-        this._context.extensionUri, this.folderMediaCircleEditor, 'index.html'));
+  private async getHtmlForWebview(webview: vscode.Webview): Promise<string> {
     const codiconUri = getUri(
         webview, this._context.extensionUri,
         ['node_modules', '@vscode', 'codicons', 'dist', 'codicon.css']);
-    let html = fs.readFileSync(htmlUrl.fsPath, {encoding: 'utf-8'});
 
     const nonce = getNonce();
+
+    const htmlUri = vscode.Uri.joinPath(this._context.extensionUri, 'media', 'CircleEditor', 'index.html');
+    let html = Buffer.from(await vscode.workspace.fs.readFile(htmlUri)).toString();
     html = html.replace(/%nonce%/gi, nonce);
     html = html.replace('%webview.cspSource%', webview.cspSource);
     html = html.replace(/\${codiconUri}/g, `${codiconUri}`);
@@ -222,9 +183,10 @@ export class CircleEditorProvider implements vscode.CustomEditorProvider<CircleE
     html = this.updateUri(html, webview, '%view-sidebar.css%', 'view-sidebar.css');
     html = this.updateUri(html, webview, '%view-json-editor.css%', 'view-json-editor.css');
     html = this.updateUri(html, webview, '%type.js%', 'type.js');
-    html = this.updateUri(html, webview, '%view-sidebar.js%', 'view-sidebar.js');
-    html = this.updateUri(html, webview, '%view-grapher.js%', 'view-grapher.js');
+    html = this.updateExternalUri(html, webview, '%view-sidebar.js%', 'view-sidebar.js');
+    html = this.updateExternalUri(html, webview, '%view-grapher.js%', 'view-grapher.js');
     html = this.updateUri(html, webview, '%view-json-editor.js%', 'view-json-editor.js');
+    html = this.updateExternalUri(html, webview, '%index.js%', 'index.js');
     html = this.updateExternalUri(html, webview, '%dagre.js%', 'dagre.js');
     html = this.updateExternalUri(html, webview, '%base.js%', 'base.js');
     html = this.updateExternalUri(html, webview, '%text.js%', 'text.js');
@@ -237,37 +199,27 @@ export class CircleEditorProvider implements vscode.CustomEditorProvider<CircleE
     html = this.updateExternalUri(html, webview, '%zip.js%', 'zip.js');
     html = this.updateExternalUri(html, webview, '%gzip.js%', 'gzip.js');
     html = this.updateExternalUri(html, webview, '%tar.js%', 'tar.js');
+    html = this.updateExternalUri(html, webview, '%view.js%', 'view.js');
     // for circle format
     html = this.updateExternalUri(html, webview, '%circle.js%', 'circle.js');
     html = this.updateExternalUri(html, webview, '%circle-schema.js%', 'circle-schema.js');
     // modified for one-vscode
-    html = this.updateUri(html, webview, '%index.js%', 'index.js');
-    html = this.updateUri(html, webview, '%view.js%', 'view.js');
-    // viewMode: this is replaced as a comment as we do not provide selection mode
-    // html = html.replace('%viewMode%', this._viewMode);
+    html = this.updateUri(html, webview, '%modified.index.js%', 'index.js');
+    html = this.updateUri(html, webview, '%modified.view.js%', 'view.js');
+    html = this.updateUri(html, webview, '%modified.view-sidebar.js%', 'view-sidebar.js');
 
     return html;
   }
 
-  private getMediaPath(file: string) {
-    return vscode.Uri.joinPath(this._context.extensionUri, this.folderMediaCircleEditor, file);
-  }
-
   private updateExternalUri(
       html: string, webview: vscode.Webview, search: string, replace: string) {
-    const replaceUri = this.getUriFromPath(webview, 'external/' + replace);
+    const replaceUri = getUri(webview, this._context.extensionUri, ['media', 'external', 'netron', replace]);
     return html.replace(search, `${replaceUri}`);
   }
 
   private updateUri(html: string, webview: vscode.Webview, search: string, replace: string) {
-    const replaceUri = this.getUriFromPath(webview, replace);
+    const replaceUri = getUri(webview, this._context.extensionUri, ['media', 'CircleEditor', replace]);
     return html.replace(search, `${replaceUri}`);
-  }
-
-  private getUriFromPath(webview: vscode.Webview, file: string) {
-    const mediaPath = this.getMediaPath(file);
-    const uriView = webview.asWebviewUri(mediaPath);
-    return uriView;
   }
 }
 
