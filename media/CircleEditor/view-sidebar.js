@@ -607,8 +607,24 @@ NodeAttributeView = class {
         this._attributeName = '';
         this._index = index;
         this._node = node;
-        this._line;
+        this._valueLine;
         this._select;
+        this._save = this._host.document.createElement('div');
+        this._cancel = this._host.document.createElement('div');
+        this._remove = this._host.document.createElement('div');
+        this._save.className = 'sidebar-view-item-value-save codicon codicon-save';
+        this._cancel.className = 'sidebar-view-item-value-cancel codicon codicon-discard';
+        this._remove.className = 'sidebar-view-item-value-remove codicon codicon-trash';
+        this._save.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.save();
+        });
+        this._cancel.addEventListener('click', () => {
+            this.cancel();
+        });
+        this._remove.addEventListener('click', () => {
+            this.remove();
+        });
 
         this._editObject = {
             name: '',
@@ -713,36 +729,17 @@ NodeAttributeView = class {
         while (this._element.childElementCount) {
             this._element.removeChild(this._element.lastChild);
         }
-        const type = this._attribute.type;
 
         if (this._isCustom === true) {
             const input = this._host.document.getElementById('attribute' + this._index);
             input.disabled = false;
             this._attributeName = input.value;
-        }
-
-        this._save = this._host.document.createElement('div');
-        this._cancel = this._host.document.createElement('div');
-        this._remove = this._host.document.createElement('div');
-        this._save.className = 'sidebar-view-item-value-save codicon codicon-save';
-        this._cancel.className = 'sidebar-view-item-value-cancel codicon codicon-discard';
-        this._remove.className = 'sidebar-view-item-value-remove codicon codicon-trash';
-        this._save.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.save();
-        });
-        this._cancel.addEventListener('click', () => {
-            this.cancel();
-        });
-        this._remove.addEventListener('click', () => {
-            this.remove();
-        });
-        if (this._isCustom === true) {
             this._element.appendChild(this._remove);
         }
         this._element.appendChild(this._cancel);
         this._element.appendChild(this._save);
 
+        const type = this._attribute.type;
         const value = this._attribute.value;
 
         let content = new sidebar.Formatter(value, type).toString();
@@ -750,9 +747,9 @@ NodeAttributeView = class {
             content = content.length > 1000 ? content.substring(0, 1000) + '\u2026' : content;
             content = content.split('<').join('&lt;').split('>').join('&gt;');
         }
-        let line;
+
         if (optionValues[type]) {
-            line = this._host.document.createElement('select');
+            this._valueLine = this._host.document.createElement('select');
             for (const options of optionValues[type]) {
                 const option = this._host.document.createElement('option');
                 option.setAttribute('value', options);
@@ -760,72 +757,43 @@ NodeAttributeView = class {
                 if (options.toLowerCase() === content.toLowerCase()) {
                     option.setAttribute('selected', 'selected');
                 }
-                line.appendChild(option);
+                this._valueLine.appendChild(option);
             }
-            line.setAttribute('name', type);
-            line.className = 'sidebar-view-item-value-line-select';
+            this._valueLine.setAttribute('name', type);
+            this._valueLine.className = 'sidebar-view-item-value-line-select';
         } else {
-            line = this._host.document.createElement('input');
-            line.setAttribute('type', 'text');
-            line.className = 'sidebar-view-item-value-line-input';
-            line.setAttribute('value', content ? content : '&nbsp;');
+            this._valueLine = this._host.document.createElement('input');
+            this._valueLine.setAttribute('type', 'text');
+            this._valueLine.className = 'sidebar-view-item-value-line-input';
+            this._valueLine.setAttribute('value', content ? content : '&nbsp;');
         }
-        this._line = line;
-        this._element.appendChild(line);
+        this._element.appendChild(this._valueLine);
 
-        if (type) {
-            const typeLine = this._host.document.createElement('div');
-            typeLine.className = 'sidebar-view-item-value-line-border';
-            if (!this._isCustom) {
-                if (type === 'tensor' && value && value.type) {
-                    typeLine.innerHTML = 'type: ' +
-                        '<code><b>' + value.type.toString() + '</b></code>';
-                    this._element.appendChild(typeLine);
-                } else {
-                    typeLine.innerHTML = 'type: ' +
-                        '<code><b>' + type + '</b></code>';
-                    this._element.appendChild(typeLine);
+        const typeLine = this._host.document.createElement('div');
+        typeLine.className = 'sidebar-view-item-value-line-border';
+        if (!this._isCustom) {
+            typeLine.innerHTML = 'type: ' + '<code><b>' + type + '</b></code>';
+        } else {
+            typeLine.innerHTML = 'type: ';
+            this._select = this._host.document.createElement('select');
+            this._select.className = 'sidebar-view-item-value-line-type-select';
+            for (const ctype of customType) {
+                const option = this._host.document.createElement('option');
+                option.setAttribute('value', ctype);
+                option.innerText = ctype.toLowerCase();
+                if (ctype.toLowerCase() === type) {
+                    option.setAttribute('selected', 'selected');
                 }
-            } else {
-                typeLine.innerHTML = 'type: ';
-                this._select = this._host.document.createElement('select');
-                this._select.className = 'sidebar-view-item-value-line-type-select';
-                for (const type of customType) {
-                    const option = this._host.document.createElement('option');
-                    option.setAttribute('value', type);
-                    option.innerText = type.toLowerCase();
-                    if (type.toLowerCase() === type) {
-                        option.setAttribute('selected', 'selected');
-                    }
-                    this._select.appendChild(option);
-                }
-                typeLine.appendChild(this._select);
-                this._element.appendChild(typeLine);
+                this._select.appendChild(option);
             }
-
-            const description = this._attribute.description;
-            if (description) {
-                const descriptionLine = this._host.document.createElement('div');
-                descriptionLine.className = 'sidebar-view-item-value-line-border';
-                descriptionLine.innerHTML = description;
-                this._element.appendChild(descriptionLine);
-            }
+            typeLine.appendChild(this._select);
         }
-
-        if (type === 'tensor' && value) {
-            const state = value.state;
-            const valueLine = this._host.document.createElement('div');
-            valueLine.className = 'sidebar-view-item-value-line-border';
-            const contentLine = this._host.document.createElement('pre');
-            contentLine.innerHTML = state || value.toString();
-            valueLine.appendChild(contentLine);
-            this._element.appendChild(valueLine);
-        }
+        this._element.appendChild(typeLine);
     }
 
     save() {
         if (this._attribute._type === 'int32') {
-            if (this._line.value - 0 > 2147483648) {
+            if (this._valueLine.value - 0 > 2147483648) {
                 vscode.postMessage({command: 'alert', text: 'Can\'t exceed 2,147,483,648'});
                 return;
             }
@@ -834,7 +802,7 @@ NodeAttributeView = class {
         if (this._isCustom === true) {
             const input = this._host.document.getElementById('attribute' + this._index);
             if (this._select.value === 'int') {
-                if (this._line.value - 0 > 2147483648) {
+                if (this._valueLine.value - 0 > 2147483648) {
                     vscode.postMessage({command: 'alert', text: 'Can\'t exceed 2,147,483,648'});
                     return;
                 }
@@ -842,7 +810,7 @@ NodeAttributeView = class {
             input.disabled = true;
             this._attribute._name = input.value;
             this._attribute._type = this._select.value;
-            this._attribute._value = this._line.value;
+            this._attribute._value = this._valueLine.value;
         }
 
         while (this._element.childElementCount) {
@@ -851,7 +819,7 @@ NodeAttributeView = class {
 
         if (!this._isCustom) {
             this._editObject._attribute.name = this._attribute.name;
-            this._editObject._attribute._value = this._line.value;
+            this._editObject._attribute._value = this._valueLine.value;
             this._editObject._attribute._type = this._attribute.type;
         } else {
             this._editObject._attribute.name = this._node.type.name;
