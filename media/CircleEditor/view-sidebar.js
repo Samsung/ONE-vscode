@@ -274,10 +274,8 @@ sidebar.EditAttributesView = class {
             return (au < bu) ? -1 : (au > bu) ? 1 : 0;
         });
         this._addHeader('Attributes');
-        let index = 0;
-        for (const attribute of sortedAttributes) {
-            this._addAttribute(attribute.name, attribute, index);
-            index++;
+        for (let idx = 0; idx < sortedAttributes.length; idx++) {
+            this._addAttribute(sortedAttributes[idx].name, sortedAttributes[idx], idx);
         }
         if (isCustom === true) {
             const addAttribute = this._host.document.createElement('div');
@@ -321,10 +319,18 @@ sidebar.EditAttributesView = class {
             this._editObject._attribute[key.name] = key.value;
             this._editObject._attribute[key.name + '_type'] = key.type;
         }
-        keys.push('attribute');
-        this._editObject._attribute['attribute'] = 'value';
-        this._editObject._attribute['attribute_type'] = 'string';
-        this._editObject._attribute.keys = keys;
+
+        for (let i = 1; true; i++) {
+            if (!keys.includes('NewAttribute' + i.toString())) {
+                const key = 'NewAttribute' + i.toString();
+                keys.push(key);
+
+                this._editObject._attribute[key] = 'Write a new value for this attribute';
+                this._editObject._attribute[key + '_type'] = 'string';
+                this._editObject._attribute.keys = keys;
+                break;
+            }
+        }
 
         vscode.postMessage({
             command: 'edit',
