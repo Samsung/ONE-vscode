@@ -601,121 +601,112 @@ NodeAttributeView = class {
     constructor(host, attribute, isCustom, index, node) {
         this._host = host;
         this._attribute = attribute;
-        this._element = this._host.document.createElement('div');
-        this._element.className = 'sidebar-view-item-value';
         this._isCustom = isCustom;
-        this._attributeName = '';
         this._index = index;
         this._node = node;
-        this._valueLine;
-        this._select;
+
+        this._element = this._host.document.createElement('div');
+        this._element.className = 'sidebar-view-item-value';
+
         this._save = this._host.document.createElement('div');
-        this._cancel = this._host.document.createElement('div');
-        this._remove = this._host.document.createElement('div');
         this._save.className = 'sidebar-view-item-value-save codicon codicon-save';
-        this._cancel.className = 'sidebar-view-item-value-cancel codicon codicon-discard';
-        this._remove.className = 'sidebar-view-item-value-remove codicon codicon-trash';
         this._save.addEventListener('click', (e) => {
             e.preventDefault();
             this.save();
         });
+
+        this._cancel = this._host.document.createElement('div');
+        this._cancel.className = 'sidebar-view-item-value-cancel codicon codicon-discard';
         this._cancel.addEventListener('click', () => {
             this.cancel();
         });
+
+        this._remove = this._host.document.createElement('div');
+        this._remove.className = 'sidebar-view-item-value-remove codicon codicon-trash';
         this._remove.addEventListener('click', () => {
             this.remove();
         });
 
+        this._expander = this._host.document.createElement('div');
+        this._expander.className =
+            'sidebar-view-item-value-expander codicon codicon-chevron-down';
+        this._expander.addEventListener('click', () => {
+            this.toggle();
+        });
+
+        this._edit = this._host.document.createElement('div');
+        this._edit.className = 'sidebar-view-item-value-expander codicon codicon-edit';
+        this._edit.addEventListener('click', () => {
+            this.edit();
+        });
+
+        this._typeLine = this._host.document.createElement('div');
+        this._typeLine.className = 'sidebar-view-item-value-line-border';
+
+        this._valueLine = this._host.document.createElement('div');
+        this._valueLine.className = 'sidebar-view-item-value-line';
+
+        this._valueEditLine = null;
+        if (optionValues[this._attribute.type]) {
+            this._valueEditLine = this._host.document.createElement('select');
+            for (const optionValue of optionValues[this._attribute.type]) {
+                const elemValue = this._host.document.createElement('option');
+                elemValue.setAttribute('value', optionValue);
+                elemValue.innerText = optionValue;
+                this._valueEditLine.appendChild(elemValue);
+            }
+            this._valueEditLine.className = 'sidebar-view-item-value-line-select';
+        } else {
+            this._valueEditLine = this._host.document.createElement('input');
+            this._valueEditLine.setAttribute('type', 'text');
+            this._valueEditLine.className = 'sidebar-view-item-value-line-input';
+        }
+
+        this._typeEditLine = this._host.document.createElement('div');
+        this._typeEditLine.className = 'sidebar-view-item-value-line-border';
+        this._typeEditLine.innerHTML = 'type: ';
+        const elemTypes = this._host.document.createElement('select');
+        elemTypes.className = 'sidebar-view-item-value-line-type-select';
+        for (const ctype of customType) {
+            const elemType = this._host.document.createElement('option');
+            elemType.setAttribute('value', ctype);
+            elemType.innerText = ctype.toLowerCase();
+            elemTypes.appendChild(elemType);
+        }
+        this._typeEditLine.appendChild(elemTypes);
+
         this._editObject = {
-            name: '',
+            name: isCustom ? 'custom' : node.type.name,
             _attribute: {},
             _nodeIdx: parseInt(this._node.location),
             _subgraphIdx: this._node._subgraphIdx
         };
 
-        if (isCustom) {
-            this._editObject.name = 'custom';
-        } else {
-            this._editObject.name = node.type.name;
-        }
-
         this.show();
     }
 
     show() {
-        const type = this._attribute.type;
-        const value = this._attribute._value;
-        if (type) {
-            this._expander = this._host.document.createElement('div');
-            this._edit = this._host.document.createElement('div');
-            this._expander.className =
-                'sidebar-view-item-value-expander codicon codicon-chevron-down';
-            this._edit.className = 'sidebar-view-item-value-expander codicon codicon-edit';
-            this._expander.addEventListener('click', () => {
-                this.toggle();
-            });
-            this._edit.addEventListener('click', () => {
-                this.edit();
-            });
-            this._element.appendChild(this._expander);
-            this._element.appendChild(this._edit);
-        } else {
-            this._edit = this._host.document.createElement('div');
-            this._edit.className = 'sidebar-view-item-value-edit codicon codicon-edit';
-            this._edit.addEventListener('click', () => {
-                this.edit();
-            });
-            this._element.appendChild(this._edit);
+        this._loadAttrToElem();
+
+        while (this._element.childElementCount > 0) {
+            this._element.removeChild(this._element.lastChild);
         }
 
-        let content = new sidebar.Formatter(value, type).toString();
-        if (content) {
-            content = content.length > 1000 ? content.substring(0, 1000) + '\u2026' : content;
-            content = content.split('<').join('&lt;').split('>').join('&gt;');
-        }
-        const line = this._host.document.createElement('div');
-        line.className = 'sidebar-view-item-value-line';
-        line.innerHTML = content ? content : '&nbsp;';
-        this._element.appendChild(line);
+        this._expander.className =
+        'sidebar-view-item-value-expander codicon codicon-chevron-down';
+        this._element.appendChild(this._expander);
+        this._element.appendChild(this._edit);
+        this._element.appendChild(this._valueLine);
     }
 
     toggle() {
+        this._loadAttrToElem();
+
         if (this._expander.className ===
             'sidebar-view-item-value-expander codicon codicon-chevron-down') {
             this._expander.className =
                 'sidebar-view-item-value-expander codicon codicon-chevron-up';
-
-            const typeLine = this._host.document.createElement('div');
-            typeLine.className = 'sidebar-view-item-value-line-border';
-            const type = this._attribute.type;
-            const value = this._attribute.value;
-            if (type === 'tensor' && value && value.type) {
-                typeLine.innerHTML = 'type: ' +
-                    '<code><b>' + value.type.toString() + '</b></code>';
-                this._element.appendChild(typeLine);
-            } else {
-                typeLine.innerHTML = 'type: ' +
-                    '<code><b>' + this._attribute.type + '</b></code>';
-                this._element.appendChild(typeLine);
-            }
-
-            const description = this._attribute.description;
-            if (description) {
-                const descriptionLine = this._host.document.createElement('div');
-                descriptionLine.className = 'sidebar-view-item-value-line-border';
-                descriptionLine.innerHTML = description;
-                this._element.appendChild(descriptionLine);
-            }
-
-            if (this._attribute.type === 'tensor' && value) {
-                const state = value.state;
-                const valueLine = this._host.document.createElement('div');
-                valueLine.className = 'sidebar-view-item-value-line-border';
-                const contentLine = this._host.document.createElement('pre');
-                contentLine.innerHTML = state || value.toString();
-                valueLine.appendChild(contentLine);
-                this._element.appendChild(valueLine);
-            }
+            this._element.appendChild(this._typeLine);
         } else {
             this._expander.className =
                 'sidebar-view-item-value-expander codicon codicon-chevron-down';
@@ -726,102 +717,47 @@ NodeAttributeView = class {
     }
 
     edit() {
-        while (this._element.childElementCount) {
+        while (this._element.childElementCount > 0) {
             this._element.removeChild(this._element.lastChild);
         }
 
-        if (this._isCustom === true) {
-            const input = this._host.document.getElementById('attribute' + this._index);
-            input.disabled = false;
-            this._attributeName = input.value;
+        if (this._isCustom) {
+            const elemAttrName = this._host.document.getElementById('attribute' + this._index);
+            elemAttrName.disabled = false;
             this._element.appendChild(this._remove);
-        }
-        this._element.appendChild(this._cancel);
-        this._element.appendChild(this._save);
-
-        const type = this._attribute.type;
-        const value = this._attribute.value;
-
-        let content = new sidebar.Formatter(value, type).toString();
-        if (content) {
-            content = content.length > 1000 ? content.substring(0, 1000) + '\u2026' : content;
-            content = content.split('<').join('&lt;').split('>').join('&gt;');
-        }
-
-        if (optionValues[type]) {
-            this._valueLine = this._host.document.createElement('select');
-            for (const options of optionValues[type]) {
-                const option = this._host.document.createElement('option');
-                option.setAttribute('value', options);
-                option.innerText = options;
-                if (options.toLowerCase() === content.toLowerCase()) {
-                    option.setAttribute('selected', 'selected');
+            this._element.appendChild(this._cancel);
+            this._element.appendChild(this._save);
+            this._element.appendChild(this._valueEditLine);
+            const types = this._typeEditLine.children[0];
+            for (let i = 0; i < types.length; i++) {
+                if (types[i].value.toLowerCase() === this._attribute.type) {
+                    types[i].setAttribute('selected', 'selected');
+                } else {
+                    types[i].removeAttribute('selected');
                 }
-                this._valueLine.appendChild(option);
             }
-            this._valueLine.setAttribute('name', type);
-            this._valueLine.className = 'sidebar-view-item-value-line-select';
+            this._element.appendChild(this._typeEditLine);
         } else {
-            this._valueLine = this._host.document.createElement('input');
-            this._valueLine.setAttribute('type', 'text');
-            this._valueLine.className = 'sidebar-view-item-value-line-input';
-            this._valueLine.setAttribute('value', content ? content : '&nbsp;');
+            this._element.appendChild(this._cancel);
+            this._element.appendChild(this._save);
+            this._element.appendChild(this._valueEditLine);
+            this._element.appendChild(this._typeLine);
         }
-        this._element.appendChild(this._valueLine);
-
-        const typeLine = this._host.document.createElement('div');
-        typeLine.className = 'sidebar-view-item-value-line-border';
-        if (!this._isCustom) {
-            typeLine.innerHTML = 'type: ' + '<code><b>' + type + '</b></code>';
-        } else {
-            typeLine.innerHTML = 'type: ';
-            this._select = this._host.document.createElement('select');
-            this._select.className = 'sidebar-view-item-value-line-type-select';
-            for (const ctype of customType) {
-                const option = this._host.document.createElement('option');
-                option.setAttribute('value', ctype);
-                option.innerText = ctype.toLowerCase();
-                if (ctype.toLowerCase() === type) {
-                    option.setAttribute('selected', 'selected');
-                }
-                this._select.appendChild(option);
-            }
-            typeLine.appendChild(this._select);
-        }
-        this._element.appendChild(typeLine);
     }
 
     save() {
-        if (this._attribute._type === 'int32') {
-            if (this._valueLine.value - 0 > 2147483648) {
-                vscode.postMessage({command: 'alert', text: 'Can\'t exceed 2,147,483,648'});
-                return;
-            }
+        const verifyResult = this._verifyAttr();
+        if (verifyResult !== '') {
+            vscode.postMessage({command: 'alert', text: verifyResult});
+            return;
         }
 
         if (this._isCustom === true) {
-            const input = this._host.document.getElementById('attribute' + this._index);
-            if (this._select.value === 'int') {
-                if (this._valueLine.value - 0 > 2147483648) {
-                    vscode.postMessage({command: 'alert', text: 'Can\'t exceed 2,147,483,648'});
-                    return;
-                }
-            }
-            input.disabled = true;
-            this._attribute._name = input.value;
-            this._attribute._type = this._select.value;
-            this._attribute._value = this._valueLine.value;
-        }
-
-        while (this._element.childElementCount) {
-            this._element.removeChild(this._element.lastChild);
-        }
-
-        if (!this._isCustom) {
-            this._editObject._attribute.name = this._attribute.name;
-            this._editObject._attribute._value = this._valueLine.value;
-            this._editObject._attribute._type = this._attribute.type;
-        } else {
+            const elemAttrName = this._host.document.getElementById('attribute' + this._index);
+            elemAttrName.disabled = true;
+            this._attribute._name = elemAttrName.value;
+            this._attribute._type = this._typeEditLine.children[0].value;
+            this._attribute._value = this._valueEditLine.value;
             this._editObject._attribute.name = this._node.type.name;
             const keys = [];
             for (const key of this._node.attributes) {
@@ -830,7 +766,13 @@ NodeAttributeView = class {
                 this._editObject._attribute[key.name + '_type'] = key.type;
             }
             this._editObject._attribute.keys = keys;
+        } else {
+            this._editObject._attribute.name = this._attribute.name;
+            this._editObject._attribute._value = this._valueEditLine.value;
+            this._editObject._attribute._type = this._attribute.type;
         }
+
+        this._loadAttrToElem();
 
         vscode.postMessage({
             command: 'edit',
@@ -840,23 +782,22 @@ NodeAttributeView = class {
     }
 
     cancel() {
-        if (this._isCustom === true) {
-            const input = this._host.document.getElementById('attribute' + this._index);
-            input.disabled = true;
-            input.value = this._attributeName;
-        }
-        while (this._element.childElementCount) {
+        while (this._element.childElementCount > 0) {
             this._element.removeChild(this._element.lastChild);
         }
+
+        const elemAttrName = this._host.document.getElementById('attribute' + this._index);
+        elemAttrName.disabled = true;
+        elemAttrName.value = this._attribute.name;
 
         this.show();
     }
 
     remove() {
-        const input = this._host.document.getElementById('attribute' + this._index);
-        const box = input.parentElement.parentElement.parentElement;
-        const element = input.parentElement.parentElement;
-        box.removeChild(element);
+        const elemAttrName = this._host.document.getElementById('attribute' + this._index);
+        const elemAttribute = elemAttrName.parentElement.parentElement;
+        const elemAttributes = elemAttribute.parentElement;
+        elemAttributes.removeChild(elemAttribute);
         for (const i in this._node._attributes) {
             if (this._node._attributes[i].name === this._attribute.name) {
                 this._node._attributes.splice(i, 1);
@@ -896,6 +837,76 @@ NodeAttributeView = class {
                 callback(this, data);
             }
         }
+    }
+
+    _loadAttrToElem() {
+        this._typeLine.innerHTML = 'type: ' + '<code><b>' + this._attribute.type + '</b></code>';
+
+        const types = this._typeEditLine.children[0];
+        for (let i = 0; i < types.length; i++) {
+                types[i].removeAttribute('selected');
+        }
+        for (let i = 0; i < types.length; i++) {
+            if (types[i].value.toLowerCase() === this._attribute.type) {
+                types[i].setAttribute('selected', 'selected');
+            }
+        }
+
+        let content = new sidebar.Formatter(this._attribute.value, this._attribute.type).toString();
+        if (content) {
+            content = content.length > 1000 ? content.substring(0, 1000) + '\u2026' : content;
+            content = content.split('<').join('&lt;').split('>').join('&gt;');
+        }
+
+        this._valueLine.innerHTML = content ? content : '&nbsp;';
+        if (optionValues[this._attribute.type]) {
+            const values = this._valueEditLine.children;
+            for (let i = 0; i < values.length; i++) {
+                values[i].removeAttribute('selected');
+            }
+            for (let i = 0; i < values.length; i++) {
+                if (content.toLowerCase() === values[i].value.toLowerCase()) {
+                    values[i].setAttribute('selected', 'selected');
+                }
+            }
+            this._valueEditLine.setAttribute('name', this._attribute.type);
+        } else {
+            this._valueEditLine.setAttribute('value', content ? content : '&nbsp;');
+        }
+    }
+
+    _verifyAttr() {
+        const type = this._isCustom ? this._typeEditLine.children[0].value : this._attribute._type;
+        const value = this._valueEditLine.value;
+
+        switch (type) {
+            case 'int32':
+                if (isNaN(value - 0)) {
+                    return value + ' is not a number';
+                }
+                if (value > 2147483648) {
+                    return 'Can\'t exceed 2,147,483,648';
+                }
+                break;
+            case 'int':
+            case 'int64':
+                if (isNaN(value - 0)) {
+                    return value + ' is not a number';
+                }
+                if (value > 9223372036854775807n) {
+                    return 'Can\'t exceed 9,223,372,036,854,775,807';
+                }
+                break;
+            case 'boolean':
+                if(value !== 'true' && value !== 'false') {
+                    return value + ' is not true/false';
+                }
+                break;
+            default:
+                break;
+        }
+
+        return '';
     }
 }
 
@@ -1128,7 +1139,7 @@ sidebar.ArgumentView = class {
     }
 
     edit() {
-        while (this._element.childElementCount) {
+        while (this._element.childElementCount > 0) {
             this._element.removeChild(this._element.lastChild);
         }
 
@@ -1362,7 +1373,7 @@ sidebar.ArgumentView = class {
             input.disabled = true;
         }
 
-        while (this._element.childElementCount) {
+        while (this._element.childElementCount > 0) {
             this._element.removeChild(this._element.lastChild);
         }
         const initializer = this._argument.initializer;
