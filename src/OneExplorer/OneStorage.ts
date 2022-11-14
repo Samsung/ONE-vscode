@@ -315,7 +315,7 @@ export class OneStorage {
    * @param node A node to reset. Reset all if not given.
    * @param recursive Reset the node and its children recursively
    */
-  public static delete(node: Node, recursive?: boolean) {
+  public static delete(node: Node, recursive: boolean = false) {
     const deleteRecursively = (node: Node) => {
       if (node.getChildren().length > 0) {
         node.getChildren().forEach(child => deleteRecursively(child));
