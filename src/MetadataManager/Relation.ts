@@ -46,7 +46,6 @@ interface NodeData {
  * Relation is a class which controls relation data of the base models and production files.
  */
 export class Relation {
-  constructor() {}
   /**
    * A map to save relation bewteen a child path and a parent path
    */
@@ -75,6 +74,7 @@ export class Relation {
     const pathToHash = await PathToHash.getInstance();
     const hash = await pathToHash.getHash(uri);
     if (hash === undefined || hash === '') {
+      await saveJson('relation', relation);
       return;
     }
 
@@ -141,67 +141,75 @@ export class Relation {
     if (vscode.workspace.workspaceFolders === undefined) {
       return;
     }
-
-    const relUri =
-        vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, '.meta/relation.json');
-    const relJSON: any =
-        JSON.parse(Buffer.from(await vscode.workspace.fs.readFile(relUri)).toString());
+    if (!nowHash) {
+      return;
+    }
 
     // Return Object generation
     const relationInfos: RelationInfo = {'selected': '', 'relation-data': []};
 
     // load metadata of target node
     const nowMetadata: any = await Metadata.getObj(nowHash);
+    let nowIdx = 0;
 
+    const relJSON: any = await readJson('relation');
+
+    let keys = Object.keys(nowMetadata);
+    for (let i = 0; i < keys.length; i++) {
+      if (keys[i] === vscode.workspace.asRelativePath(uri)) {
+        nowIdx = i;
+      }
+    }
     relationInfos.selected = nowHash;
+    if (relJSON[nowHash] === undefined) {
+      relationInfos['relation-data'].push({
+        'id': nowHash,
+        'parent': '',
+        'represent-idx': nowIdx,
+        'data-list': Relation._getNodeDataList(nowMetadata)
+      });
+      return relationInfos;
+    }
 
     relationInfos['relation-data'].push({
       'id': nowHash,
       'parent': relJSON[nowHash].parent,
-      'represent-idx': 0,
+      'represent-idx': nowIdx,
       'data-list': Relation._getNodeDataList(nowMetadata)
     });
 
-
     // find parents node
     let parentHash: string = relJSON[nowHash].parent;
-    while (true) {
-      if (!parentHash) {
-        break;
-      } else {
-        const parentMetadata: any = await Metadata.getObj(parentHash);
+    while (parentHash) {
+      const parentMetadata: any = await Metadata.getObj(parentHash);
 
-        relationInfos['relation-data'].push({
-          'id': parentHash,
-          'parent': relJSON[parentHash].parent,
-          'represent-idx': 0,
-          'data-list': Relation._getNodeDataList(parentMetadata)
-        });
-        parentHash = relJSON[parentHash].parent;
-      }
+      relationInfos['relation-data'].push({
+        'id': parentHash,
+        'parent': relJSON[parentHash].parent,
+        'represent-idx': 0,
+        'data-list': Relation._getNodeDataList(parentMetadata)
+      });
+      parentHash = relJSON[parentHash].parent;
     }
 
     // find child node
     let childrenHash: string[] = relJSON[nowHash].children;
-    while (true) {
+    while (childrenHash.length !== 0) {
       let hashs: string[] = [];
-      if (childrenHash.length === 0) {
-        break;
-      } else {
-        for (let i = 0; i < childrenHash.length; i++) {
-          const childMetadata: any = await Metadata.getObj(childrenHash[i]);
 
-          relationInfos['relation-data'].push({
-            'id': childrenHash[i],
-            'parent': relJSON[childrenHash[i]].parent,
-            'represent-idx': 0,
-            'data-list': Relation._getNodeDataList(childMetadata)
-          });
-          hashs = [...relJSON[childrenHash[i]].children];
-        }
+      for (let i = 0; i < childrenHash.length; i++) {
+        const childMetadata: any = await Metadata.getObj(childrenHash[i]);
 
-        childrenHash = hashs;
+        relationInfos['relation-data'].push({
+          'id': childrenHash[i],
+          'parent': relJSON[childrenHash[i]].parent,
+          'represent-idx': 0,
+          'data-list': Relation._getNodeDataList(childMetadata)
+        });
+        hashs = [...relJSON[childrenHash[i]].children];
       }
+
+      childrenHash = hashs;
     }
 
     return relationInfos;
@@ -210,7 +218,7 @@ export class Relation {
   /**
    * Get a list of the entire data from metadata
    * @param metadata A map containing data to be listed
-   * @returns
+   * @returns A list of `NodeData` of the metadata
    */
   private static _getNodeDataList(metadata: any) {
     const dataList: NodeData[] = [];
@@ -232,23 +240,29 @@ export class Relation {
   }
 }
 
+/**
+ * Save the `data` into the `./.one-vscode/info/<name>.json` file
+ */
 async function saveJson(name: string, data: any) {
   if (vscode.workspace.workspaceFolders === undefined) {
     return;
   }
 
-  const uri =
-      vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, '.meta', name + '.json');
+  const uri = vscode.Uri.joinPath(
+      vscode.workspace.workspaceFolders[0].uri, '.one-vscode/info/', name + '.json');
   await vscode.workspace.fs.writeFile(uri, Buffer.from(JSON.stringify(data, null, 4), 'utf8'));
 }
 
+/**
+ * Read from the `./.one-vscode/info/<name>.json` file
+ */
 async function readJson(name: string) {
   if (vscode.workspace.workspaceFolders === undefined) {
     return;
   }
 
-  const uri =
-      vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, '.meta', name + '.json');
+  const uri = vscode.Uri.joinPath(
+      vscode.workspace.workspaceFolders[0].uri, '.one-vscode/info/', name + '.json');
   if (!fs.existsSync(uri.fsPath)) {
     await vscode.workspace.fs.writeFile(uri, Buffer.from(JSON.stringify({}, null, 4), 'utf8'));
     return {};
