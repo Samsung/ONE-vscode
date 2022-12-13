@@ -1,0 +1,9 @@
+This file is for notifying about origin of source codes.
+
+All of source codes(not in exception list at the end) in this directory are copied from below git.
+- repo: https://github.com/lutzroeder/netron.git
+- commit: ae449ff55642636e6a1eef092eda34ffcba1c684
+- tag: v5.7.4
+
+However, following files are not copied.
+- .FORMATDENY : for clang-format not to check format in this directory.

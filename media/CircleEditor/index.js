@@ -40,18 +40,9 @@
 // This file referenced
 // https://github.com/lutzroeder/netron/blob/ae449ff55642636e6a1eef092eda34ffcba1c684/source/index.js
 
-/* eslint "no-global-assign": ["error", {"exceptions": [ "TextDecoder", "TextEncoder",
- * "URLSearchParams" ] } ] */
-/* global view */
-
-var host = {};
-
 const vscode = acquireVsCodeApi();
 
-const viewMode = {
-    viewer: 0,
-    selector: 1,
-};
+var originalHost = JSON.parse(JSON.stringify(host));
 
 host.BrowserHost = class {
     constructor() {
@@ -78,15 +69,6 @@ host.BrowserHost = class {
         // model
         this._modelData = [];
         this._modelPath = '';
-
-        // backends
-        this._backends = [];
-
-        // default mode of viewer
-        this._mode = viewMode.viewer;
-        if (__viewMode === 'selector') {
-            this._mode = viewMode.selector;
-        }
 
         this._viewingSubgraph = 0;
         this._viewingNode = null;
@@ -134,21 +116,6 @@ host.BrowserHost = class {
                 case 'loadmodel':
                     this._msgLoadModel(message);
                     break;
-                case 'selection':
-                    this._msgSelection(message);
-                    break;
-                case 'colorTheme':
-                    this._msgColorTheme(message);
-                    break;
-                case 'partition':
-                    this._msgPartition(message);
-                    break;
-                case 'backendColor':
-                    this._msgBackendColor(message);
-                    break;
-                case 'reload':
-                    this._msgReload(message);
-                    break;
                 case 'setCustomOpAttrT':
                     this._msgSetCustomOpAttrT(message);
                     break;
@@ -160,17 +127,15 @@ host.BrowserHost = class {
             'zoom', params.has('zoom') ? params.get('zoom') : this._environment.get('zoom'));
 
         this._menu = new host.Dropdown(this, 'menu-button', 'menu-dropdown');
-        if (this._mode === viewMode.viewer) {
-            this._menu.add({
-                label: 'Properties...',
-                accelerator: 'CmdOrCtrl+Enter',
-                click: () => this._view.showModelProperties()
-            });
-            this._menu.add({});
-            this._menu.add(
-                {label: 'Find...', accelerator: 'CmdOrCtrl+F', click: () => this._view.find()});
-            this._menu.add({});
-        }
+        this._menu.add({
+            label: 'Properties...',
+            accelerator: 'CmdOrCtrl+Enter',
+            click: () => this._view.showModelProperties()
+        });
+        this._menu.add({});
+        this._menu.add(
+            {label: 'Find...', accelerator: 'CmdOrCtrl+F', click: () => this._view.find()});
+        this._menu.add({});
         this._menu.add({
             label: () => this._view.options.attributes ? 'Hide Attributes' : 'Show Attributes',
             accelerator: 'CmdOrCtrl+D',
@@ -325,17 +290,6 @@ host.BrowserHost = class {
         }
     }
 
-    /**
-     * @brief called from view.js for handle view events
-     */
-    onView(event) {
-        if (event === 'selection') {
-            // there was a selection change and view requested to apply this
-            let v = this._view.getSelection();
-            vscode.postMessage({command: 'selection', names: v.names, tensors: v.tensors});
-        }
-    }
-
     _request(url, headers, encoding, timeout) {
         return new Promise((resolve, reject) => {
             if (url.startsWith('vscode-webview://')) {
@@ -453,9 +407,6 @@ host.BrowserHost = class {
                 return this._view.open(context).then((model) => {
                     this._view.show(null);
                     this.document.title = files[0].name;
-
-                    // notify owner that load has finished
-                    vscode.postMessage({command: 'finishload'});
                     return model;
                 });
             })
@@ -494,55 +445,6 @@ host.BrowserHost = class {
         }
     }
 
-    _msgSelection(message) {
-        this._view.setSelection(message);
-    }
-
-    _msgColorTheme(_message) {
-        this._view.updateThemeColor();
-        this._view.applyThemeColor();
-    }
-
-    _msgPartition(message) {
-        this._view.setPartition(message);
-    }
-
-    _msgBackendColor(message) {
-        const backends = message.backends;
-
-        // build name of backends
-        backends.forEach((item) => {
-            if (!item.theme || item.theme === '') {
-                this._backends.push(item.name);
-            }
-        });
-
-        // build style for graph nodes
-        let styleBackend = '';
-        backends.forEach((item) => {
-            const name = item.name.toLowerCase();
-            const styleNode = `.node-item-backend-${name} path { fill: ${item.color}; }\n`;
-
-            if (item.theme && item.theme !== '') {
-                const styleBody = `.${item.theme} `;
-                styleBackend = styleBackend + styleBody + styleNode;
-            } else {
-                styleBackend = styleBackend + styleNode;
-            }
-        });
-        let style = this._document.createElement('style');
-        style.innerHTML = styleBackend;
-        this._document.head.appendChild(style);
-    }
-
-    _msgReload(_message) {
-        this._modelData = [];
-
-        this._view.reset();
-        this._view.show('welcome spinner');
-        vscode.postMessage({command: 'loadmodel', offset: '0'});
-    }
-
     _msgSetCustomOpAttrT(message) {
         const data = message.data;
         const graphs = this._view._model._graphs;
@@ -558,158 +460,7 @@ host.BrowserHost = class {
     }
 };
 
-host.Dropdown = class {
-    constructor(host, button, dropdown) {
-        this._host = host;
-        this._dropdown = this._host.document.getElementById(dropdown);
-        this._button = this._host.document.getElementById(button);
-        this._items = [];
-        this._apple = /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform);
-        this._acceleratorMap = {};
-        this._host.window.addEventListener('keydown', (e) => {
-            let code = e.keyCode;
-            code |= ((e.ctrlKey && !this._apple) || (e.metaKey && this._apple)) ? 0x0400 : 0;
-            code |= e.altKey ? 0x0200 : 0;
-            code |= e.shiftKey ? 0x0100 : 0;
-            if (code === 0x001b) {  // Escape
-                this.close();
-                return;
-            }
-            const item = this._acceleratorMap[code.toString()];
-            if (item) {
-                item.click();
-                e.preventDefault();
-            }
-        });
-        this._host.document.body.addEventListener('click', (e) => {
-            if (!this._button.contains(e.target)) {
-                this.close();
-            }
-        });
-    }
-
-    add(item) {
-        const accelerator = item.accelerator;
-        if (accelerator) {
-            let cmdOrCtrl = false;
-            let alt = false;
-            let shift = false;
-            let key = '';
-            for (const part of item.accelerator.split('+')) {
-                switch (part) {
-                    case 'CmdOrCtrl':
-                        cmdOrCtrl = true;
-                        break;
-                    case 'Alt':
-                        alt = true;
-                        break;
-                    case 'Shift':
-                        shift = true;
-                        break;
-                    default:
-                        key = part;
-                        break;
-                }
-            }
-            if (key !== '') {
-                item.accelerator = {};
-                item.accelerator.text = '';
-                if (this._apple) {
-                    item.accelerator.text += alt ? '&#x2325;' : '';
-                    item.accelerator.text += shift ? '&#x21e7;' : '';
-                    item.accelerator.text += cmdOrCtrl ? '&#x2318;' : '';
-                    /* eslint-disable */
-                    const keyTable = {
-                        'Enter': '&#x23ce;',
-                        'Up': '&#x2191;',
-                        'Down': '&#x2193;',
-                        'Backspace': '&#x232B;'
-                    };
-                    /* eslint-enable */
-                    item.accelerator.text += keyTable[key] ? keyTable[key] : key;
-                } else {
-                    const list = [];
-                    if (cmdOrCtrl) {
-                        list.push('Ctrl');
-                    }
-                    if (alt) {
-                        list.push('Alt');
-                    }
-                    if (shift) {
-                        list.push('Shift');
-                    }
-                    list.push(key);
-                    item.accelerator.text = list.join('+');
-                }
-                let code = 0;
-                switch (key) {
-                    case 'Backspace':
-                        code = 0x08;
-                        break;
-                    case 'Enter':
-                        code = 0x0D;
-                        break;
-                    case 'Up':
-                        code = 0x26;
-                        break;
-                    case 'Down':
-                        code = 0x28;
-                        break;
-                    default:
-                        code = key.charCodeAt(0);
-                        break;
-                }
-                code |= cmdOrCtrl ? 0x0400 : 0;
-                code |= alt ? 0x0200 : 0;
-                code |= shift ? 0x0100 : 0;
-                this._acceleratorMap[code.toString()] = item;
-            }
-        }
-        this._items.push(item);
-    }
-
-    toggle() {
-        if (this._dropdown.style.display === 'block') {
-            this.close();
-            return;
-        }
-
-        while (this._dropdown.lastChild) {
-            this._dropdown.removeChild(this._dropdown.lastChild);
-        }
-
-        for (const item of this._items) {
-            if (Object.keys(item).length > 0) {
-                const button = this._host.document.createElement('button');
-                button.innerText = (typeof item.label === 'function') ? item.label() : item.label;
-                button.addEventListener('click', () => {
-                    this.close();
-                    setTimeout(() => {
-                        item.click();
-                    }, 10);
-                });
-                this._dropdown.appendChild(button);
-                if (item.accelerator) {
-                    const accelerator = this._host.document.createElement('span');
-                    accelerator.style.float = 'right';
-                    accelerator.innerHTML = item.accelerator.text;
-                    button.appendChild(accelerator);
-                }
-            } else {
-                const separator = this._host.document.createElement('div');
-                separator.setAttribute('class', 'separator');
-                this._dropdown.appendChild(separator);
-            }
-        }
-
-        this._dropdown.style.display = 'block';
-    }
-
-    close() {
-        this._dropdown.style.display = 'none';
-    }
-};
-
+// NOTE : Not changed but needed because it is removed by modified BrowserHost
 host.BrowserHost.BinaryStream = class {
     constructor(buffer) {
         this._buffer = buffer;
@@ -766,6 +517,7 @@ host.BrowserHost.BinaryStream = class {
     }
 };
 
+// NOTE : Not changed but needed because it is removed by modified BrowserHost
 host.BrowserHost.BrowserFileContext = class {
     constructor(host, file, blobs) {
         this._host = host;
@@ -844,6 +596,7 @@ host.BrowserHost.BrowserFileContext = class {
     }
 };
 
+// NOTE : Not changed but needed because it is removed by modified BrowserHost
 host.BrowserHost.BrowserContext = class {
     constructor(host, url, identifier, stream) {
         this._host = host;
@@ -882,239 +635,7 @@ host.BrowserHost.BrowserContext = class {
     }
 };
 
-if (typeof TextDecoder === 'undefined') {
-    // eslint-disable-next-line
-    TextDecoder = function TextDecoder(encoding) {
-        this._encoding = encoding;
-    };
-    TextDecoder.prototype.decode = function decode(buffer) {
-        let result = '';
-        const length = buffer.length;
-        let i = 0;
-        switch (this._encoding) {
-            case 'utf-8':
-                while (i < length) {
-                    const c = buffer[i++];
-                    switch (c >> 4) {
-                        case 0:
-                        case 1:
-                        case 2:
-                        case 3:
-                        case 4:
-                        case 5:
-                        case 6:
-                        case 7: {
-                            result += String.fromCharCode(c);
-                            break;
-                        }
-                        case 12:
-                        case 13: {
-                            const c2 = buffer[i++];
-                            result += String.fromCharCode(((c & 0x1F) << 6) | (c2 & 0x3F));
-                            break;
-                        }
-                        case 14: {
-                            const c2 = buffer[i++];
-                            const c3 = buffer[i++];
-                            result += String.fromCharCode(
-                                ((c & 0x0F) << 12) | ((c2 & 0x3F) << 6) | ((c3 & 0x3F) << 0));
-                            break;
-                        }
-                        case 15: {
-                            const c2 = buffer[i++];
-                            const c3 = buffer[i++];
-                            const c4 = buffer[i++];
-                            result += String.fromCodePoint(
-                                ((c & 0x07) << 18) | ((c2 & 0x3F) << 12) | ((c3 & 0x3F) << 6) |
-                                (c4 & 0x3F));
-                            break;
-                        }
-                        default: {
-                            break;
-                        }
-                    }
-                }
-                break;
-            case 'ascii':
-                while (i < length) {
-                    result += String.fromCharCode(buffer[i++]);
-                }
-                break;
-            default:
-                break;
-        }
-        return result;
-    };
-}
-
-if (typeof TextEncoder === 'undefined') {
-    // eslint-disable-next-line
-    TextEncoder = function TextEncoder() {};
-    TextEncoder.prototype.encode = function encode(str) {
-        'use strict';
-        const length = str.length;
-        let resPos = -1;
-        const resArr =
-            typeof Uint8Array === 'undefined' ? new Array(length * 2) : new Uint8Array(length * 3);
-        for (let point = 0, nextcode = 0, i = 0; i !== length;) {
-            point = str.charCodeAt(i);
-            i += 1;
-            if (point >= 0xD800 && point <= 0xDBFF) {
-                if (i === length) {
-                    resArr[resPos += 1] = 0xef;
-                    resArr[resPos += 1] = 0xbf;
-                    resArr[resPos += 1] = 0xbd;
-                    break;
-                }
-                nextcode = str.charCodeAt(i);
-                if (nextcode >= 0xDC00 && nextcode <= 0xDFFF) {
-                    point = (point - 0xD800) * 0x400 + nextcode - 0xDC00 + 0x10000;
-                    i += 1;
-                    if (point > 0xffff) {
-                        resArr[resPos += 1] = (0x1e << 3) | (point >>> 18);
-                        resArr[resPos += 1] = (0x2 << 6) | ((point >>> 12) & 0x3f);
-                        resArr[resPos += 1] = (0x2 << 6) | ((point >>> 6) & 0x3f);
-                        resArr[resPos += 1] = (0x2 << 6) | (point & 0x3f);
-                        continue;
-                    }
-                } else {
-                    resArr[resPos += 1] = 0xef;
-                    resArr[resPos += 1] = 0xbf;
-                    resArr[resPos += 1] = 0xbd;
-                    continue;
-                }
-            }
-            if (point <= 0x007f) {
-                resArr[resPos += 1] = (0x0 << 7) | point;
-            } else if (point <= 0x07ff) {
-                resArr[resPos += 1] = (0x6 << 5) | (point >>> 6);
-                resArr[resPos += 1] = (0x2 << 6) | (point & 0x3f);
-            } else {
-                resArr[resPos += 1] = (0xe << 4) | (point >>> 12);
-                resArr[resPos += 1] = (0x2 << 6) | ((point >>> 6) & 0x3f);
-                resArr[resPos += 1] = (0x2 << 6) | (point & 0x3f);
-            }
-        }
-        if (typeof Uint8Array !== 'undefined') {
-            return new Uint8Array(resArr.buffer.slice(0, resPos + 1));
-        } else {
-            return resArr.length === resPos + 1 ? resArr : resArr.slice(0, resPos + 1);
-        }
-    };
-    TextEncoder.prototype.toString = function() {
-        return '[object TextEncoder]';
-    };
-    try {
-        Object.defineProperty(TextEncoder.prototype, 'encoding', {
-            get: function() {
-                if (Object.prototype.isPrototypeOf.call(TextEncoder.prototype, this)) {
-                    return 'utf-8';
-                } else {
-                    throw new TypeError('Illegal invocation');
-                }
-            }
-        });
-    } catch (e) {
-        TextEncoder.prototype.encoding = 'utf-8';
-    }
-    if (typeof Symbol !== 'undefined') {
-        TextEncoder.prototype[Symbol.toStringTag] = 'TextEncoder';
-    }
-}
-
-if (typeof URLSearchParams === 'undefined') {
-    // eslint-disable-next-line
-    URLSearchParams = function URLSearchParams(search) {
-        const decode = (str) => {
-            return str.replace(/[ +]/g, '%20').replace(/(%[a-f0-9]{2})+/ig, (match) => {
-                return decodeURIComponent(match);
-            });
-        };
-        this._dict = {};
-        if (typeof search === 'string') {
-            search = search.indexOf('?') === 0 ? search.substring(1) : search;
-            const properties = search.split('&');
-            for (const property of properties) {
-                const index = property.indexOf('=');
-                const name = (index > -1) ? decode(property.substring(0, index)) : decode(property);
-                const value = (index > -1) ? decode(property.substring(index + 1)) : '';
-                if (!Object.prototype.hasOwnProperty.call(this._dict, name)) {
-                    this._dict[name] = [];
-                }
-                this._dict[name].push(value);
-            }
-        }
-    };
-    URLSearchParams.prototype.get = function(name) {
-        return Object.prototype.hasOwnProperty.call(this._dict, name) ? this._dict[name][0] : null;
-    };
-}
-
-if (!HTMLCanvasElement.prototype.toBlob) {
-    HTMLCanvasElement.prototype.toBlob = function(callback, type, quality) {
-        const canvas = this;
-        setTimeout(function() {
-            const data = atob(canvas.toDataURL(type, quality).split(',')[1]);
-            const length = data.length;
-            const buffer = new Uint8Array(length);
-            for (let i = 0; i < length; i++) {
-                buffer[i] = data.charCodeAt(i);
-            }
-            callback(new Blob([buffer], {type: type || 'image/png'}));
-        });
-    };
-}
-
-if (!('scrollBehavior' in window.document.documentElement.style)) {
-    // eslint-disable-next-line
-    const __scrollTo__ = Element.prototype.scrollTo;
-    Element.prototype.scrollTo = function(options) {
-        if (options === undefined) {
-            return;
-        }
-        if (options === null || typeof options !== 'object' || options.behavior === undefined ||
-            arguments[0].behavior === 'auto' || options.behavior === 'instant') {
-            if (__scrollTo__) {
-                __scrollTo__.apply(this, arguments);
-            }
-            return;
-        }
-        const now = () => {
-            return window.performance && window.performance.now ? window.performance.now() :
-                                                                  Date.now();
-        };
-        const ease = (k) => {
-            return 0.5 * (1 - Math.cos(Math.PI * k));
-        };
-        const step = (context) => {
-            const value = ease(Math.min((now() - context.startTime) / 468, 1));
-            const x = context.startX + (context.x - context.startX) * value;
-            const y = context.startY + (context.y - context.startY) * value;
-            context.element.scrollLeft = x;
-            context.element.scrollTop = y;
-            if (x !== context.x || y !== context.y) {
-                window.requestAnimationFrame(step.bind(window, context));
-            }
-        };
-        const context = {
-            element: this,
-            x: typeof options.left === 'undefined' ? this.scrollLeft : ~~options.left,
-            y: typeof options.top === 'undefined' ? this.scrollTop : ~~options.top,
-            startX: this.scrollLeft,
-            startY: this.scrollTop,
-            startTime: now()
-        };
-        step(context);
-    };
-}
-
-window.addEventListener('load', () => {
-    window.__view__ = new view.View(new host.BrowserHost());
-    vscode.postMessage({command: 'pageloaded'});
-});
-
 // disable context menu
-// TODO set backend with context menu?
 window.addEventListener('contextmenu', (e) => {
     e.stopImmediatePropagation();
 }, true);
