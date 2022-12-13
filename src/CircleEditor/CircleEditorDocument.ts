@@ -23,6 +23,7 @@ import {Disposable} from '../Utils/external/Dispose';
 
 import * as Circle from './circle_schema_generated';
 import * as Types from './CircleType';
+import {AttributeEditor, TensorEditor} from './Editor';
 
 /**
  * Custom Editor Document necessary for vscode extension API
@@ -90,12 +91,19 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
   makeEdit(message: any) {
     const oldModelData = this.modelData;
     switch (message.type) {
-      case 'attribute':
-        this.editAttribute(message.data);
+      case 'attribute': {
+        let attrEditor = new AttributeEditor(this._model);
+        attrEditor.subgraphIndex = message.data._subgraphIdx;
+        attrEditor.operatorIndex = message.data._nodeIdx;
+        attrEditor.edit(message.data.name, message.data._attribute);
         break;
-      case 'tensor':
-        this.editTensor(message.data);
+      }
+      case 'tensor': {
+        let tensorEditor = new TensorEditor(this._model);
+        tensorEditor.subgraphIndex = message.data._subgraphIdx;
+        tensorEditor.edit(message.data?._name, message.data._arguments);
         break;
+      }
       default:
         return;
     }
