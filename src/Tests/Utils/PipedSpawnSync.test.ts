@@ -13,47 +13,71 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {assert} from 'chai';
-import {spawnSync} from 'child_process';
+import { assert } from "chai";
+import { spawnSync } from "child_process";
 
-import {pipedSpawnSync, pipedSpawnSyncStdout} from '../../Utils/PipedSpawnSync';
+import {
+  pipedSpawnSync,
+  pipedSpawnSyncStdout,
+} from "../../Utils/PipedSpawnSync";
 
-suite('Utils', function() {
-  suite('#pipedSpawnSync', function() {
-    test('basic pipedSpawnSync', function() {
+suite("Utils", function () {
+  suite("#pipedSpawnSync", function () {
+    test("basic pipedSpawnSync", function () {
       try {
-        let wc = pipedSpawnSync('echo', ['123'], {cwd: '.'}, 'grep', ['123'], {cwd: '.'});
-        assert.isTrue(wc.stdout.toString().startsWith('123'));
+        let wc = pipedSpawnSync(
+          "echo",
+          ["123"],
+          { cwd: "." },
+          "grep",
+          ["123"],
+          { cwd: "." }
+        );
+        assert.isTrue(wc.stdout.toString().startsWith("123"));
       } catch (err) {
-        assert.fail('Should not reach here');
+        assert.fail("Should not reach here");
       }
     });
 
-    test('NEG: first cmd fails in pipedSpawnSync', function() {
+    test("NEG: first cmd fails in pipedSpawnSync", function () {
       try {
-        pipedSpawnSync('invalid_cmd', ['123'], {}, 'grep', ['not_exist'], {});
-        assert.fail('should not reach here');
+        pipedSpawnSync("invalid_cmd", ["123"], {}, "grep", ["not_exist"], {});
+        assert.fail("should not reach here");
       } catch (err) {
-        assert.ok(true, 'Should be thrown');
+        assert.ok(true, "Should be thrown");
       }
     });
 
-    test('NEG: second cmd fails in pipedSpawnSync', function() {
+    test("NEG: second cmd fails in pipedSpawnSync", function () {
       try {
-        let grep = pipedSpawnSync('echo', ['123'], {}, 'grep', ['not_exist'], {});
+        let grep = pipedSpawnSync(
+          "echo",
+          ["123"],
+          {},
+          "grep",
+          ["not_exist"],
+          {}
+        );
         assert.notEqual(grep.status, 0);
       } catch (err) {
-        assert.fail('Should not reach here');
+        assert.fail("Should not reach here");
       }
     });
 
-    test('NEG: do not use sudo -S in pipedSpawnSync', function() {
+    test("NEG: do not use sudo -S in pipedSpawnSync", function () {
       // make sure that sudo pw is not cached
-      spawnSync('sudo', ['-k']);
+      spawnSync("sudo", ["-k"]);
 
       try {
-        pipedSpawnSync('echo', ['incorrect_pw'], {}, 'sudo', ['-S', 'true'], {});
-        assert.fail('should not reach here');
+        pipedSpawnSync(
+          "echo",
+          ["incorrect_pw"],
+          {},
+          "sudo",
+          ["-S", "true"],
+          {}
+        );
+        assert.fail("should not reach here");
       } catch (err) {
         // success
         assert.isTrue(true);
@@ -61,41 +85,62 @@ suite('Utils', function() {
     });
   });
 
-  suite('#pipedSpawnSyncStdout', function() {
-    test('basic pipedSpawnSyncStdout', function() {
+  suite("#pipedSpawnSyncStdout", function () {
+    test("basic pipedSpawnSyncStdout", function () {
       try {
-        let grep = pipedSpawnSyncStdout('echo', ['123'], {cwd: '.'}, 'grep', ['123'], {cwd: '.'});
-        assert.isTrue(grep.startsWith('123'));
+        let grep = pipedSpawnSyncStdout(
+          "echo",
+          ["123"],
+          { cwd: "." },
+          "grep",
+          ["123"],
+          { cwd: "." }
+        );
+        assert.isTrue(grep.startsWith("123"));
       } catch (err) {
-        assert.fail('Should not reach here');
+        assert.fail("Should not reach here");
       }
     });
 
-    test('NEG: first cmd fails in pipedSpawnSyncStdout', function() {
+    test("NEG: first cmd fails in pipedSpawnSyncStdout", function () {
       try {
-        pipedSpawnSyncStdout('invalid_cmd', ['123'], {}, 'grep', ['not_exist'], {});
-        assert.fail('should not reach here');
+        pipedSpawnSyncStdout(
+          "invalid_cmd",
+          ["123"],
+          {},
+          "grep",
+          ["not_exist"],
+          {}
+        );
+        assert.fail("should not reach here");
       } catch (err) {
-        assert.ok(true, 'Should be thrown');
+        assert.ok(true, "Should be thrown");
       }
     });
 
-    test('NEG: second cmd fails in pipedSpawnSyncStdout', function() {
+    test("NEG: second cmd fails in pipedSpawnSyncStdout", function () {
       try {
-        pipedSpawnSyncStdout('echo', ['123'], {}, 'grep', ['not_exist'], {});
-        assert.fail('should not reach here');
+        pipedSpawnSyncStdout("echo", ["123"], {}, "grep", ["not_exist"], {});
+        assert.fail("should not reach here");
       } catch (err) {
-        assert.ok(true, 'Should be thrown');
+        assert.ok(true, "Should be thrown");
       }
     });
 
-    test('NEG: do not use sudo -S in pipedSpawnSyncStdout', function() {
+    test("NEG: do not use sudo -S in pipedSpawnSyncStdout", function () {
       // make sure that sudo pw is not cached
-      spawnSync('sudo', ['-k']);
+      spawnSync("sudo", ["-k"]);
 
       try {
-        pipedSpawnSyncStdout('echo', ['incorrect_pw'], {}, 'sudo', ['-S', 'true'], {});
-        assert.fail('should not reach here');
+        pipedSpawnSyncStdout(
+          "echo",
+          ["incorrect_pw"],
+          {},
+          "sudo",
+          ["-S", "true"],
+          {}
+        );
+        assert.fail("should not reach here");
       } catch (err) {
         // success
         assert.isTrue(true);

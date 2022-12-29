@@ -14,55 +14,84 @@
  * limitations under the License.
  */
 
-import oneOptimizationList from './one-optimizations.json' assert {type : 'json'};
-import {postMessageToVsCode} from './vscodeapi.js';
+import oneOptimizationList from "./one-optimizations.json" assert { type: "json" };
+import { postMessageToVsCode } from "./vscodeapi.js";
 
 function iniKeyValueString(iniKey, iniValue, noEffectValue = undefined) {
   if (iniValue === null || iniValue === undefined) {
-    return '';
+    return "";
   }
 
   if (iniValue === false) {
-    return '';
+    return "";
   } else if (iniValue === true) {
-    return iniKey + '=True\n';
+    return iniKey + "=True\n";
   }
 
   const trimmedValue = iniValue.trim();
-  if (trimmedValue === '' || trimmedValue === noEffectValue) {
-    return '';
+  if (trimmedValue === "" || trimmedValue === noEffectValue) {
+    return "";
   }
 
-  return iniKey + '=' + trimmedValue + '\n';
+  return iniKey + "=" + trimmedValue + "\n";
 }
 
 export function applyUpdates() {
-  postMessageToVsCode({type: 'updateDocument'});
+  postMessageToVsCode({ type: "updateDocument" });
 }
 
 export function updateSteps() {
-  postMessageToVsCode({type: 'setParam', section: 'onecc', param: 'one-import-tf', value: 'False'});
-  postMessageToVsCode(
-      {type: 'setParam', section: 'onecc', param: 'one-import-tflite', value: 'False'});
-  postMessageToVsCode(
-      {type: 'setParam', section: 'onecc', param: 'one-import-bcq', value: 'False'});
-  postMessageToVsCode(
-      {type: 'setParam', section: 'onecc', param: 'one-import-onnx', value: 'False'});
-  if (document.getElementById('checkboxImport').checked) {
-    switch (document.getElementById('importInputModelType').value) {
-      case 'pb':
-      case 'saved':
-      case 'keras':
-        postMessageToVsCode(
-            {type: 'setParam', section: 'onecc', param: 'one-import-tf', value: 'True'});
+  postMessageToVsCode({
+    type: "setParam",
+    section: "onecc",
+    param: "one-import-tf",
+    value: "False",
+  });
+  postMessageToVsCode({
+    type: "setParam",
+    section: "onecc",
+    param: "one-import-tflite",
+    value: "False",
+  });
+  postMessageToVsCode({
+    type: "setParam",
+    section: "onecc",
+    param: "one-import-bcq",
+    value: "False",
+  });
+  postMessageToVsCode({
+    type: "setParam",
+    section: "onecc",
+    param: "one-import-onnx",
+    value: "False",
+  });
+  if (document.getElementById("checkboxImport").checked) {
+    switch (document.getElementById("importInputModelType").value) {
+      case "pb":
+      case "saved":
+      case "keras":
+        postMessageToVsCode({
+          type: "setParam",
+          section: "onecc",
+          param: "one-import-tf",
+          value: "True",
+        });
         break;
-      case 'tflite':
-        postMessageToVsCode(
-            {type: 'setParam', section: 'onecc', param: 'one-import-tflite', value: 'True'});
+      case "tflite":
+        postMessageToVsCode({
+          type: "setParam",
+          section: "onecc",
+          param: "one-import-tflite",
+          value: "True",
+        });
         break;
-      case 'onnx':
-        postMessageToVsCode(
-            {type: 'setParam', section: 'onecc', param: 'one-import-onnx', value: 'True'});
+      case "onnx":
+        postMessageToVsCode({
+          type: "setParam",
+          section: "onecc",
+          param: "one-import-onnx",
+          value: "True",
+        });
         break;
       default:
         break;
@@ -70,46 +99,54 @@ export function updateSteps() {
   }
 
   postMessageToVsCode({
-    type: 'setParam',
-    section: 'onecc',
-    param: 'one-optimize',
-    value: document.getElementById('checkboxOptimize').checked ? 'True' : 'False'
+    type: "setParam",
+    section: "onecc",
+    param: "one-optimize",
+    value: document.getElementById("checkboxOptimize").checked
+      ? "True"
+      : "False",
   });
   postMessageToVsCode({
-    type: 'setParam',
-    section: 'onecc',
-    param: 'one-quantize',
-    value: document.getElementById('checkboxQuantize').checked ? 'True' : 'False'
+    type: "setParam",
+    section: "onecc",
+    param: "one-quantize",
+    value: document.getElementById("checkboxQuantize").checked
+      ? "True"
+      : "False",
   });
   postMessageToVsCode({
-    type: 'setParam',
-    section: 'onecc',
-    param: 'one-codegen',
-    value: document.getElementById('checkboxCodegen').checked ? 'True' : 'False'
+    type: "setParam",
+    section: "onecc",
+    param: "one-codegen",
+    value: document.getElementById("checkboxCodegen").checked
+      ? "True"
+      : "False",
   });
   postMessageToVsCode({
-    type: 'setParam',
-    section: 'onecc',
-    param: 'one-profile',
-    value: document.getElementById('checkboxProfile').checked ? 'True' : 'False'
+    type: "setParam",
+    section: "onecc",
+    param: "one-profile",
+    value: document.getElementById("checkboxProfile").checked
+      ? "True"
+      : "False",
   });
 }
 
 export function updateImportInputModelType() {
-  switch (document.getElementById('importInputModelType').value) {
-    case 'pb':
+  switch (document.getElementById("importInputModelType").value) {
+    case "pb":
       updateImportPB();
       break;
-    case 'saved':
+    case "saved":
       updateImportSAVED();
       break;
-    case 'keras':
+    case "keras":
       updateImportKERAS();
       break;
-    case 'tflite':
+    case "tflite":
       updateImportTFLITE();
       break;
-    case 'onnx':
+    case "onnx":
       updateImportONNX();
       break;
     default:
@@ -118,78 +155,159 @@ export function updateImportInputModelType() {
 }
 
 export function updateImportPB() {
-  let content = '';
-  content += iniKeyValueString('input_path', document.getElementById('PBInputPath').value);
-  content += iniKeyValueString('output_path', document.getElementById('PBOutputPath').value);
-  content +=
-      iniKeyValueString('converter_version', document.getElementById('PBConverterVersion').value);
-  content += iniKeyValueString('input_arrays', document.getElementById('PBInputArrays').value);
-  content += iniKeyValueString('output_arrays', document.getElementById('PBOutputArrays').value);
-  content += iniKeyValueString('input_shapes', document.getElementById('PBInputShapes').value);
+  let content = "";
+  content += iniKeyValueString(
+    "input_path",
+    document.getElementById("PBInputPath").value
+  );
+  content += iniKeyValueString(
+    "output_path",
+    document.getElementById("PBOutputPath").value
+  );
+  content += iniKeyValueString(
+    "converter_version",
+    document.getElementById("PBConverterVersion").value
+  );
+  content += iniKeyValueString(
+    "input_arrays",
+    document.getElementById("PBInputArrays").value
+  );
+  content += iniKeyValueString(
+    "output_arrays",
+    document.getElementById("PBOutputArrays").value
+  );
+  content += iniKeyValueString(
+    "input_shapes",
+    document.getElementById("PBInputShapes").value
+  );
 
-  postMessageToVsCode({type: 'setSection', section: 'one-import-tf', param: content});
+  postMessageToVsCode({
+    type: "setSection",
+    section: "one-import-tf",
+    param: content,
+  });
 }
 
 export function updateImportSAVED() {
-  let content = '';
-  content += iniKeyValueString('input_path', document.getElementById('SAVEDInputPath').value);
-  content += iniKeyValueString('output_path', document.getElementById('SAVEDOutputPath').value);
-  content += iniKeyValueString('model_format', 'saved_model');
+  let content = "";
+  content += iniKeyValueString(
+    "input_path",
+    document.getElementById("SAVEDInputPath").value
+  );
+  content += iniKeyValueString(
+    "output_path",
+    document.getElementById("SAVEDOutputPath").value
+  );
+  content += iniKeyValueString("model_format", "saved_model");
 
-  postMessageToVsCode({type: 'setSection', section: 'one-import-tf', param: content});
+  postMessageToVsCode({
+    type: "setSection",
+    section: "one-import-tf",
+    param: content,
+  });
 }
 
 export function updateImportKERAS() {
-  let content = '';
-  content += iniKeyValueString('input_path', document.getElementById('KERASInputPath').value);
-  content += iniKeyValueString('output_path', document.getElementById('KERASOutputPath').value);
-  content += iniKeyValueString('model_format', 'keras_model');
+  let content = "";
+  content += iniKeyValueString(
+    "input_path",
+    document.getElementById("KERASInputPath").value
+  );
+  content += iniKeyValueString(
+    "output_path",
+    document.getElementById("KERASOutputPath").value
+  );
+  content += iniKeyValueString("model_format", "keras_model");
 
-  postMessageToVsCode({type: 'setSection', section: 'one-import-tf', param: content});
+  postMessageToVsCode({
+    type: "setSection",
+    section: "one-import-tf",
+    param: content,
+  });
 }
 
 export function updateImportTFLITE() {
-  let content = '';
-  content += iniKeyValueString('input_path', document.getElementById('TFLITEInputPath').value);
-  content += iniKeyValueString('output_path', document.getElementById('TFLITEOutputPath').value);
+  let content = "";
+  content += iniKeyValueString(
+    "input_path",
+    document.getElementById("TFLITEInputPath").value
+  );
+  content += iniKeyValueString(
+    "output_path",
+    document.getElementById("TFLITEOutputPath").value
+  );
 
-  postMessageToVsCode({type: 'setSection', section: 'one-import-tflite', param: content});
+  postMessageToVsCode({
+    type: "setSection",
+    section: "one-import-tflite",
+    param: content,
+  });
 }
 
 export function updateImportONNX() {
-  let content = '';
-  content += iniKeyValueString('input_path', document.getElementById('ONNXInputPath').value);
-  content += iniKeyValueString('output_path', document.getElementById('ONNXOutputPath').value);
+  let content = "";
   content += iniKeyValueString(
-      'save_intermediate', document.getElementById('ONNXSaveIntermediate').checked);
-  content += iniKeyValueString('unroll_rnn', document.getElementById('ONNXUnrollRNN').checked);
-  content += iniKeyValueString('unroll_lstm', document.getElementById('ONNXUnrollLSTM').checked);
+    "input_path",
+    document.getElementById("ONNXInputPath").value
+  );
+  content += iniKeyValueString(
+    "output_path",
+    document.getElementById("ONNXOutputPath").value
+  );
+  content += iniKeyValueString(
+    "save_intermediate",
+    document.getElementById("ONNXSaveIntermediate").checked
+  );
+  content += iniKeyValueString(
+    "unroll_rnn",
+    document.getElementById("ONNXUnrollRNN").checked
+  );
+  content += iniKeyValueString(
+    "unroll_lstm",
+    document.getElementById("ONNXUnrollLSTM").checked
+  );
 
-  postMessageToVsCode({type: 'setSection', section: 'one-import-onnx', param: content});
+  postMessageToVsCode({
+    type: "setSection",
+    section: "one-import-onnx",
+    param: content,
+  });
 }
 
 export function updateOptimize() {
-  let content = '';
-  content += iniKeyValueString('input_path', document.getElementById('optimizeInputPath').value);
-  content += iniKeyValueString('output_path', document.getElementById('optimizeOutputPath').value);
+  let content = "";
+  content += iniKeyValueString(
+    "input_path",
+    document.getElementById("optimizeInputPath").value
+  );
+  content += iniKeyValueString(
+    "output_path",
+    document.getElementById("optimizeOutputPath").value
+  );
 
   for (const optName in oneOptimizationList) {
-    content +=
-        iniKeyValueString(optName, document.getElementById('checkboxOptimize' + optName).checked);
+    content += iniKeyValueString(
+      optName,
+      document.getElementById("checkboxOptimize" + optName).checked
+    );
   }
 
-  postMessageToVsCode({type: 'setSection', section: 'one-optimize', param: content});
+  postMessageToVsCode({
+    type: "setSection",
+    section: "one-optimize",
+    param: content,
+  });
 }
 
 export function updateQuantizeActionType() {
-  switch (document.getElementById('quantizeActionType').value) {
-    case 'defaultQuant':
+  switch (document.getElementById("quantizeActionType").value) {
+    case "defaultQuant":
       updateQuantizeDefault();
       break;
-    case 'forceQuant':
+    case "forceQuant":
       updateQuantizeForce();
       break;
-    case 'copyQuant':
+    case "copyQuant":
       updateQuantizeCopy();
       break;
     default:
@@ -198,92 +316,195 @@ export function updateQuantizeActionType() {
 }
 
 export function updateQuantizeDefault() {
-  let content = '';
-  content +=
-      iniKeyValueString('input_path', document.getElementById('DefaultQuantInputPath').value);
-  content +=
-      iniKeyValueString('output_path', document.getElementById('DefaultQuantOutputPath').value);
+  let content = "";
   content += iniKeyValueString(
-      'input_model_dtype', document.getElementById('DefaultQuantInputModelDtype').value, 'float32');
+    "input_path",
+    document.getElementById("DefaultQuantInputPath").value
+  );
   content += iniKeyValueString(
-      'quantized_dtype', document.getElementById('DefaultQuantQuantizedDtype').value, 'uint8');
+    "output_path",
+    document.getElementById("DefaultQuantOutputPath").value
+  );
   content += iniKeyValueString(
-      'granularity', document.getElementById('DefaultQuantGranularity').value, 'layer');
-  content +=
-      iniKeyValueString('quant_config', document.getElementById('DefaultQuantQuantConfig').value);
-  content +=
-      iniKeyValueString('input_data', document.getElementById('DefaultQuantInputData').value);
+    "input_model_dtype",
+    document.getElementById("DefaultQuantInputModelDtype").value,
+    "float32"
+  );
   content += iniKeyValueString(
-      'input_data_format', document.getElementById('DefaultQuantInputDataFormat').value, 'h5');
+    "quantized_dtype",
+    document.getElementById("DefaultQuantQuantizedDtype").value,
+    "uint8"
+  );
   content += iniKeyValueString(
-      'min_percentile', document.getElementById('DefaultQuantMinPercentile').value, '1.0');
+    "granularity",
+    document.getElementById("DefaultQuantGranularity").value,
+    "layer"
+  );
   content += iniKeyValueString(
-      'max_percentile', document.getElementById('DefaultQuantMaxPercentile').value, '99.0');
-  content +=
-      iniKeyValueString('mode', document.getElementById('DefaultQuantMode').value, 'percentile');
+    "quant_config",
+    document.getElementById("DefaultQuantQuantConfig").value
+  );
+  content += iniKeyValueString(
+    "input_data",
+    document.getElementById("DefaultQuantInputData").value
+  );
+  content += iniKeyValueString(
+    "input_data_format",
+    document.getElementById("DefaultQuantInputDataFormat").value,
+    "h5"
+  );
+  content += iniKeyValueString(
+    "min_percentile",
+    document.getElementById("DefaultQuantMinPercentile").value,
+    "1.0"
+  );
+  content += iniKeyValueString(
+    "max_percentile",
+    document.getElementById("DefaultQuantMaxPercentile").value,
+    "99.0"
+  );
+  content += iniKeyValueString(
+    "mode",
+    document.getElementById("DefaultQuantMode").value,
+    "percentile"
+  );
 
-  if (document.getElementById('DefaultQuantInputType').value !== 'default') {
-    content +=
-        iniKeyValueString('input_type', document.getElementById('DefaultQuantInputType').value);
+  if (document.getElementById("DefaultQuantInputType").value !== "default") {
+    content += iniKeyValueString(
+      "input_type",
+      document.getElementById("DefaultQuantInputType").value
+    );
   }
 
-  if (document.getElementById('DefaultQuantOutputType').value !== 'default') {
-    content +=
-        iniKeyValueString('output_type', document.getElementById('DefaultQuantOutputType').value);
+  if (document.getElementById("DefaultQuantOutputType").value !== "default") {
+    content += iniKeyValueString(
+      "output_type",
+      document.getElementById("DefaultQuantOutputType").value
+    );
   }
 
-  content += iniKeyValueString('verbose', document.getElementById('DefaultQuantVerbose').checked);
   content += iniKeyValueString(
-      'save_intermediate', document.getElementById('DefaultQuantSaveIntermediate').checked);
+    "verbose",
+    document.getElementById("DefaultQuantVerbose").checked
+  );
   content += iniKeyValueString(
-      'generate_profile_data', document.getElementById('DefaultQuantGenerateProfileData').checked);
+    "save_intermediate",
+    document.getElementById("DefaultQuantSaveIntermediate").checked
+  );
   content += iniKeyValueString(
-      'TF-style_maxpool', document.getElementById('DefaultQuantTFStyleMaxpool').checked);
+    "generate_profile_data",
+    document.getElementById("DefaultQuantGenerateProfileData").checked
+  );
+  content += iniKeyValueString(
+    "TF-style_maxpool",
+    document.getElementById("DefaultQuantTFStyleMaxpool").checked
+  );
 
-  postMessageToVsCode({type: 'setSection', section: 'one-quantize', param: content});
+  postMessageToVsCode({
+    type: "setSection",
+    section: "one-quantize",
+    param: content,
+  });
 }
 
 export function updateQuantizeForce() {
-  let content = '';
-  content += iniKeyValueString('force_quantparam', true);
-  content += iniKeyValueString('input_path', document.getElementById('ForceQuantInputPath').value);
-  content +=
-      iniKeyValueString('output_path', document.getElementById('ForceQuantOutputPath').value);
-  content +=
-      iniKeyValueString('tensor_name', document.getElementById('ForceQuantTensorName').value);
-  content += iniKeyValueString('scale', document.getElementById('ForceQuantScale').value);
-  content += iniKeyValueString('zero_point', document.getElementById('ForceQuantZeroPoint').value);
-  content += iniKeyValueString('verbose', document.getElementById('ForceQuantVerbose').checked);
+  let content = "";
+  content += iniKeyValueString("force_quantparam", true);
+  content += iniKeyValueString(
+    "input_path",
+    document.getElementById("ForceQuantInputPath").value
+  );
+  content += iniKeyValueString(
+    "output_path",
+    document.getElementById("ForceQuantOutputPath").value
+  );
+  content += iniKeyValueString(
+    "tensor_name",
+    document.getElementById("ForceQuantTensorName").value
+  );
+  content += iniKeyValueString(
+    "scale",
+    document.getElementById("ForceQuantScale").value
+  );
+  content += iniKeyValueString(
+    "zero_point",
+    document.getElementById("ForceQuantZeroPoint").value
+  );
+  content += iniKeyValueString(
+    "verbose",
+    document.getElementById("ForceQuantVerbose").checked
+  );
 
-  postMessageToVsCode({type: 'setSection', section: 'one-quantize', param: content});
+  postMessageToVsCode({
+    type: "setSection",
+    section: "one-quantize",
+    param: content,
+  });
 }
 
 export function updateQuantizeCopy() {
-  let content = '';
-  content += iniKeyValueString('copy_quantparam', true);
-  content += iniKeyValueString('input_path', document.getElementById('CopyQuantInputPath').value);
-  content += iniKeyValueString('output_path', document.getElementById('CopyQuantOutputPath').value);
-  content +=
-      iniKeyValueString('src_tensor_name', document.getElementById('CopyQuantSrcTensorName').value);
-  content +=
-      iniKeyValueString('dst_tensor_name', document.getElementById('CopyQuantDstTensorName').value);
-  content += iniKeyValueString('verbose', document.getElementById('CopyQuantVerbose').checked);
+  let content = "";
+  content += iniKeyValueString("copy_quantparam", true);
+  content += iniKeyValueString(
+    "input_path",
+    document.getElementById("CopyQuantInputPath").value
+  );
+  content += iniKeyValueString(
+    "output_path",
+    document.getElementById("CopyQuantOutputPath").value
+  );
+  content += iniKeyValueString(
+    "src_tensor_name",
+    document.getElementById("CopyQuantSrcTensorName").value
+  );
+  content += iniKeyValueString(
+    "dst_tensor_name",
+    document.getElementById("CopyQuantDstTensorName").value
+  );
+  content += iniKeyValueString(
+    "verbose",
+    document.getElementById("CopyQuantVerbose").checked
+  );
 
-  postMessageToVsCode({type: 'setSection', section: 'one-quantize', param: content});
+  postMessageToVsCode({
+    type: "setSection",
+    section: "one-quantize",
+    param: content,
+  });
 }
 
 export function updateCodegen() {
-  let content = '';
-  content += iniKeyValueString('backend', document.getElementById('codegenBackend').value);
-  content += iniKeyValueString('command', document.getElementById('codegenCommand').value);
+  let content = "";
+  content += iniKeyValueString(
+    "backend",
+    document.getElementById("codegenBackend").value
+  );
+  content += iniKeyValueString(
+    "command",
+    document.getElementById("codegenCommand").value
+  );
 
-  postMessageToVsCode({type: 'setSection', section: 'one-codegen', param: content});
+  postMessageToVsCode({
+    type: "setSection",
+    section: "one-codegen",
+    param: content,
+  });
 }
 
 export function updateProfile() {
-  let content = '';
-  content += iniKeyValueString('backend', document.getElementById('profileBackend').value);
-  content += iniKeyValueString('command', document.getElementById('profileCommand').value);
+  let content = "";
+  content += iniKeyValueString(
+    "backend",
+    document.getElementById("profileBackend").value
+  );
+  content += iniKeyValueString(
+    "command",
+    document.getElementById("profileCommand").value
+  );
 
-  postMessageToVsCode({type: 'setSection', section: 'one-profile', param: content});
+  postMessageToVsCode({
+    type: "setSection",
+    section: "one-profile",
+    param: content,
+  });
 }

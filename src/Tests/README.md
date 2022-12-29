@@ -1,6 +1,7 @@
 # Tests
 
 ONE-vscode's unittests are based on [mocha](https://mochajs.org/) and [@vscode/test-electron](https://github.com/microsoft/vscode-docs/blob/main/api/working-with-extensions/testing-extension.md).
+
 - use @vscode/test-electron because ONE-vscode uses vscode api
   - use Extension Development Host which supports full access to the VS Code API
 - interface of mocha: TDD (BDD to test UX will be introduced in the future)
@@ -11,6 +12,7 @@ ONE-vscode's unittests are based on [mocha](https://mochajs.org/) and [@vscode/t
 Tests are placed in `src/Tests`. The structure under `src/Tests` follows `src/`.
 
 For example, there is `src/`.
+
 ```
 src/
   ...
@@ -24,6 +26,7 @@ src/
 ```
 
 `src/Tests` should be structed following `src/` with each test file.
+
 ```
 src/
   ...
@@ -50,7 +53,7 @@ src/
 Some names are used to filter specific tests.
 
 ```ts
-suite('@Use-onecc', function() {
+suite("@Use-onecc", function () {
   // ...
 });
 ```
@@ -60,6 +63,7 @@ Like `@Use-onecc` is expressing that these tests use `onecc` commands.
 ## scripts
 
 There are three scripts for tests.
+
 - runTest.ts: the test script
   - uses the `@vscode/test-electron` API to simplify the process of downloading, unzipping, and launching VS Code with extension test parameters
   - `--extensionTestsPath` points to the test runner script
@@ -91,6 +95,7 @@ According to [the official doc](https://github.com/microsoft/vscode-docs/blob/ma
 ### Solution 1
 
 If you are a user on remote-env, reference [this](https://unix.stackexchange.com/questions/681398/how-to-run-an-x-app-vscode-as-another-user).
+
 - Set the [`$DISPLAY`](https://askubuntu.com/questions/432255/what-is-the-display-environment-variable) variable correctly,
 - give access to the [`~/.Xauthority file`](https://askubuntu.com/questions/300682/what-is-the-xauthority-file)
 - share the socket within the [`/tmp/.X11-unix directory`](https://unix.stackexchange.com/questions/196677/what-is-tmp-x11-unix)
@@ -120,6 +125,7 @@ $ xvfb-run --server-num 44 npm test
 ```
 
 # Reference
+
 - https://mochajs.org/
 - https://www.chaijs.com/api/assert/
 - https://github.com/microsoft/vscode-docs/blob/main/api/working-with-extensions/testing-extension.md

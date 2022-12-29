@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-import {assert} from 'chai';
+import { assert } from "chai";
 
-import {Command} from '../../Backend/Command';
-import {JobType} from '../../Job/Job';
-import {JobInstall} from '../../Toolchain/JobInstall';
+import { Command } from "../../Backend/Command";
+import { JobType } from "../../Job/Job";
+import { JobInstall } from "../../Toolchain/JobInstall";
 
-suite('Toolchain', function() {
-  suite('JobInstall', function() {
-    suite('#constructor()', function() {
-      test('is contructed with command', function() {
-        let cmd = new Command('apt-get');
-        cmd.push('install');
-        cmd.push('pkgname');
+suite("Toolchain", function () {
+  suite("JobInstall", function () {
+    suite("#constructor()", function () {
+      test("is contructed with command", function () {
+        let cmd = new Command("apt-get");
+        cmd.push("install");
+        cmd.push("pkgname");
 
         let job = new JobInstall(cmd);
         assert.deepStrictEqual(job.tool, cmd[0]);
         assert.deepStrictEqual(job.toolArgs[0], cmd[1]);
         assert.deepStrictEqual(job.toolArgs[1], cmd[2]);
-        assert.deepStrictEqual(job.name, 'install');
+        assert.deepStrictEqual(job.name, "install");
         assert.equal(job.jobType, JobType.tInstall);
         assert.isTrue(job.valid);
       });

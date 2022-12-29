@@ -20,7 +20,7 @@ class Command extends Array<string> {
     super();
     this.push(cmd);
     if (options !== undefined) {
-      options.forEach(option => {
+      options.forEach((option) => {
         this.push(option);
       });
     }
@@ -37,8 +37,8 @@ class Command extends Array<string> {
   }
 
   str(): string {
-    return (this.root ? 'sudo ' : '') + this.strs().join(' ');
+    return (this.root ? "sudo " : "") + this.strs().join(" ");
   }
 }
 
-export {Command};
+export { Command };

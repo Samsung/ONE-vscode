@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import {Command} from './Command';
-import {Version} from './Version';
+import { Command } from "./Command";
+import { Version } from "./Version";
 
 class PackageInfo {
   name: string;
@@ -31,9 +31,14 @@ class PackageInfo {
 class ToolchainInfo {
   name: string;
   description: string;
-  version?: Version;        // specific version
-  depends?: PackageInfo[];  // NOTE: too much dependens on deb
-  constructor(name: string, description: string, version?: Version, depends?: PackageInfo[]) {
+  version?: Version; // specific version
+  depends?: PackageInfo[]; // NOTE: too much dependens on deb
+  constructor(
+    name: string,
+    description: string,
+    version?: Version,
+    depends?: PackageInfo[]
+  ) {
     this.name = name;
     this.description = description;
     this.version = version;
@@ -50,16 +55,16 @@ class Toolchain {
     this.info = info;
   }
   install(): Command {
-    throw Error('Invalid install call');
+    throw Error("Invalid install call");
   }
   uninstall(): Command {
-    throw Error('Invalid uninstall call');
+    throw Error("Invalid uninstall call");
   }
   installed(): Command {
-    throw Error('Invalid installed call');
+    throw Error("Invalid installed call");
   }
   run(_cfg: string): Command {
-    throw Error('Invalid run call');
+    throw Error("Invalid run call");
   }
 }
 
@@ -72,4 +77,4 @@ class Toolchain {
 // TODO: Support filter(), where(), filter(regex) or orderBy()
 class Toolchains extends Array<Toolchain> {}
 
-export {PackageInfo, ToolchainInfo, Toolchain, Toolchains};
+export { PackageInfo, ToolchainInfo, Toolchain, Toolchains };

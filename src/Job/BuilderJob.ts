@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Job} from './Job';
+import { Job } from "./Job";
 
 export interface BuilderJob {
   addJob(job: Job): void;

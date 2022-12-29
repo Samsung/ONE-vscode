@@ -14,52 +14,83 @@
  * limitations under the License.
  */
 
-import {assert} from 'chai';
-import {Executor, ExecutorBase} from '../../Backend/Executor';
-import {DeviceSpec} from '../../Backend/Spec';
-import {Device} from '../../Execute/Device';
-import {DeviceManager} from '../../Execute/DeviceManager';
+import { assert } from "chai";
+import { Executor, ExecutorBase } from "../../Backend/Executor";
+import { DeviceSpec } from "../../Backend/Spec";
+import { Device } from "../../Execute/Device";
+import { DeviceManager } from "../../Execute/DeviceManager";
 
 const dummyDeviceList: Device[] = [
-  new Device('dummyDevice1', new DeviceSpec('dummySpecHW1', 'dummySpecSW1', undefined)),
-  new Device('dummyDevice2', new DeviceSpec('dummySpecHW1', 'dummySpecSW2', undefined)),
-  new Device('dummyDevice3', new DeviceSpec('dummySpecHW2', 'dummySpecSW2', undefined))
+  new Device(
+    "dummyDevice1",
+    new DeviceSpec("dummySpecHW1", "dummySpecSW1", undefined)
+  ),
+  new Device(
+    "dummyDevice2",
+    new DeviceSpec("dummySpecHW1", "dummySpecSW2", undefined)
+  ),
+  new Device(
+    "dummyDevice3",
+    new DeviceSpec("dummySpecHW2", "dummySpecSW2", undefined)
+  ),
 ];
 
 class DummyExecutor1 extends ExecutorBase {
   name(): string {
-    return 'dummyExecutor1';
+    return "dummyExecutor1";
   }
   require(): DeviceSpec {
-    return new DeviceSpec('dummySpecHW1', 'dummySpecSW1', undefined);
+    return new DeviceSpec("dummySpecHW1", "dummySpecSW1", undefined);
   }
 }
 
 class DummyExecutor2 extends ExecutorBase {
   name(): string {
-    return 'dummyExecutor2';
+    return "dummyExecutor2";
   }
   require(): DeviceSpec {
-    return new DeviceSpec('dummySpecHW2', 'dummySpecSW2', undefined);
+    return new DeviceSpec("dummySpecHW2", "dummySpecSW2", undefined);
   }
 }
 
-const dummyExecutorList: Executor[] = [new DummyExecutor1(), new DummyExecutor2()];
+const dummyExecutorList: Executor[] = [
+  new DummyExecutor1(),
+  new DummyExecutor2(),
+];
 
-suite('DeviceManager', function() {
-  suite('DeviceManager', function() {
-    suite('#construtor()', function() {
-      const deviceManager = new DeviceManager(dummyDeviceList, dummyExecutorList);
+suite("DeviceManager", function () {
+  suite("DeviceManager", function () {
+    suite("#construtor()", function () {
+      const deviceManager = new DeviceManager(
+        dummyDeviceList,
+        dummyExecutorList
+      );
       assert.isObject<DeviceManager>(deviceManager);
       assert.strictEqual(dummyDeviceList, deviceManager.allDevices);
-      assert.isTrue(deviceManager.allDevices[0].availableExecutors.has(dummyExecutorList[0]));
-      assert.isTrue(deviceManager.allDevices[2].availableExecutors.has(dummyExecutorList[1]));
+      assert.isTrue(
+        deviceManager.allDevices[0].availableExecutors.has(dummyExecutorList[0])
+      );
+      assert.isTrue(
+        deviceManager.allDevices[2].availableExecutors.has(dummyExecutorList[1])
+      );
     });
-    suite('#findDevice()', function() {
-      const deviceManager = new DeviceManager(dummyDeviceList, dummyExecutorList);
-      assert.strictEqual(deviceManager.findDevice('dummyDevice1'), dummyDeviceList[0]);
-      assert.strictEqual(deviceManager.findDevice('dummyDevice2'), dummyDeviceList[1]);
-      assert.strictEqual(deviceManager.findDevice('dummyDevice3'), dummyDeviceList[2]);
+    suite("#findDevice()", function () {
+      const deviceManager = new DeviceManager(
+        dummyDeviceList,
+        dummyExecutorList
+      );
+      assert.strictEqual(
+        deviceManager.findDevice("dummyDevice1"),
+        dummyDeviceList[0]
+      );
+      assert.strictEqual(
+        deviceManager.findDevice("dummyDevice2"),
+        dummyDeviceList[1]
+      );
+      assert.strictEqual(
+        deviceManager.findDevice("dummyDevice3"),
+        dummyDeviceList[2]
+      );
     });
   });
 });

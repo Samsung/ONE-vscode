@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-import {assert} from 'chai';
-import {WorkFlow} from '../../Job/WorkFlow';
-import {MockJob} from '../MockJob';
+import { assert } from "chai";
+import { WorkFlow } from "../../Job/WorkFlow";
+import { MockJob } from "../MockJob";
 
-suite('Job', function() {
-  suite('WorkFlow', function() {
+suite("Job", function () {
+  suite("WorkFlow", function () {
     // jobs for WorkFlow
-    const name0 = 'job0';
-    const name1 = 'job1';
+    const name0 = "job0";
+    const name1 = "job1";
     const job0 = new MockJob(name0);
     const job1 = new MockJob(name1);
-    suite('#constructor()', function() {
-      test('is constructed as WorkFlow', function() {
+    suite("#constructor()", function () {
+      test("is constructed as WorkFlow", function () {
         let workFlow = new WorkFlow();
         assert.isNotNull(workFlow);
         assert.isNotNull(workFlow.jobs);
         assert.isNotNull(workFlow.jobRunner);
       });
     });
-    suite('#addJob()', function() {
-      test('adds jobs', function() {
+    suite("#addJob()", function () {
+      test("adds jobs", function () {
         let workFlow = new WorkFlow();
         workFlow.addJob(job0);
         workFlow.addJob(job1);
@@ -43,8 +43,8 @@ suite('Job', function() {
         assert.strictEqual(workFlow.jobs[1].name, name1);
       });
     });
-    suite('#clearJobs()', function() {
-      test('clears jobs', function() {
+    suite("#clearJobs()", function () {
+      test("clears jobs", function () {
         let workFlow = new WorkFlow();
         workFlow.addJob(job0);
         workFlow.addJob(job1);
@@ -52,13 +52,13 @@ suite('Job', function() {
         assert.strictEqual(workFlow.jobs.length, 0);
       });
     });
-    suite('#start()', function() {
-      test('start jobs', function(done) {
+    suite("#start()", function () {
+      test("start jobs", function (done) {
         let workFlow = new WorkFlow();
         workFlow.addJob(job0);
         workFlow.addJob(job1);
         assert.strictEqual(workFlow.jobs.length, 2);
-        workFlow.jobRunner.on('cleanup', function() {
+        workFlow.jobRunner.on("cleanup", function () {
           // As all job executed on, no job in workflow jobRunner.
           assert.strictEqual(workFlow.jobRunner.jobs.length, 0);
           done();

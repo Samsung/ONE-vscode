@@ -14,37 +14,47 @@
  * limitations under the License.
  */
 
-import {assert} from 'chai';
-import * as vscode from 'vscode';
+import { assert } from "chai";
+import * as vscode from "vscode";
 
-import {PackageInfo, ToolchainInfo} from '../../Backend/Toolchain';
-import {DebianToolchain} from '../../Backend/ToolchainImpl/DebianToolchain';
-import {Version} from '../../Backend/Version';
-import {DefaultToolchain} from '../../Toolchain/DefaultToolchain';
-import {gToolchainEnvMap, ToolchainEnv} from '../../Toolchain/ToolchainEnv';
-import {BackendNode, BaseNode, NodeBuilder, ToolchainNode, ToolchainProvider} from '../../Toolchain/ToolchainProvider';
-import {MockCompiler, MockCompilerWithMultipleInstalledToolchains, MockCompilerWithNoInstalledToolchain} from '../MockCompiler';
+import { PackageInfo, ToolchainInfo } from "../../Backend/Toolchain";
+import { DebianToolchain } from "../../Backend/ToolchainImpl/DebianToolchain";
+import { Version } from "../../Backend/Version";
+import { DefaultToolchain } from "../../Toolchain/DefaultToolchain";
+import { gToolchainEnvMap, ToolchainEnv } from "../../Toolchain/ToolchainEnv";
+import {
+  BackendNode,
+  BaseNode,
+  NodeBuilder,
+  ToolchainNode,
+  ToolchainProvider,
+} from "../../Toolchain/ToolchainProvider";
+import {
+  MockCompiler,
+  MockCompilerWithMultipleInstalledToolchains,
+  MockCompilerWithNoInstalledToolchain,
+} from "../MockCompiler";
 
-suite('Toolchain', function() {
-  const oneBackendName = 'ONE';
+suite("Toolchain", function () {
+  const oneBackendName = "ONE";
   const compiler = new MockCompiler();
   const toolchainEnv = new ToolchainEnv(compiler);
-  const backendName = 'dummy_backend';
+  const backendName = "dummy_backend";
 
-  setup(function() {
+  setup(function () {
     gToolchainEnvMap[backendName] = toolchainEnv;
   });
 
-  teardown(function() {
+  teardown(function () {
     if (gToolchainEnvMap[backendName] !== undefined) {
       delete gToolchainEnvMap[backendName];
     }
   });
 
-  suite('BaseNode', function() {
-    suite('#constructor()', function() {
-      test('is constructed with params using base_node', function() {
-        const label = 'base_node';
+  suite("BaseNode", function () {
+    suite("#constructor()", function () {
+      test("is constructed with params using base_node", function () {
+        const label = "base_node";
         const collapsibleState = vscode.TreeItemCollapsibleState.None;
         let node = new BaseNode(label, collapsibleState);
         assert.strictEqual(node.label, label);
@@ -53,10 +63,10 @@ suite('Toolchain', function() {
     });
   });
 
-  suite('BackendNode', function() {
-    suite('#constructor()', function() {
-      test('is constructed with params using backend_node', function() {
-        const label = 'backend_node';
+  suite("BackendNode", function () {
+    suite("#constructor()", function () {
+      test("is constructed with params using backend_node", function () {
+        const label = "backend_node";
         const collapsibleState = vscode.TreeItemCollapsibleState.Expanded;
         let node = new BackendNode(label);
         assert.strictEqual(node.label, label);
@@ -65,24 +75,33 @@ suite('Toolchain', function() {
     });
   });
 
-  suite('ToolchainNode', function() {
-    suite('#constructor()', function() {
-      test('is constructed with params using toolchian_node', function() {
-        const label = 'backend_node';
-        const toolchain =
-            new DebianToolchain(new ToolchainInfo('npm', 'package manager for Node.js'));
+  suite("ToolchainNode", function () {
+    suite("#constructor()", function () {
+      test("is constructed with params using toolchian_node", function () {
+        const label = "backend_node";
+        const toolchain = new DebianToolchain(
+          new ToolchainInfo("npm", "package manager for Node.js")
+        );
         const collapsibleState = vscode.TreeItemCollapsibleState.None;
         let node = new ToolchainNode(label, backendName, toolchain);
         assert.strictEqual(node.label, label);
         assert.strictEqual(node.collapsibleState, collapsibleState);
         assert.strictEqual(node.backendName, backendName);
       });
-      test('is constructed with params using toolchian_node with dependencies', function() {
-        const label = 'backend_node';
-        const dependencyInfo = new PackageInfo('nodejs', new Version(8, 10, 0, '~dfsg-2'));
-        const toolchain = new DebianToolchain(new ToolchainInfo(
-            'npm', 'package manager for Node.js', new Version(3, 5, 2, '-0ubuntu4'),
-            [dependencyInfo]));
+      test("is constructed with params using toolchian_node with dependencies", function () {
+        const label = "backend_node";
+        const dependencyInfo = new PackageInfo(
+          "nodejs",
+          new Version(8, 10, 0, "~dfsg-2")
+        );
+        const toolchain = new DebianToolchain(
+          new ToolchainInfo(
+            "npm",
+            "package manager for Node.js",
+            new Version(3, 5, 2, "-0ubuntu4"),
+            [dependencyInfo]
+          )
+        );
         const collapsibleState = vscode.TreeItemCollapsibleState.None;
         let node = new ToolchainNode(label, backendName, toolchain);
         assert.strictEqual(node.label, label);
@@ -92,17 +111,17 @@ suite('Toolchain', function() {
     });
   });
 
-  suite('NodeBuilder', function() {
-    suite('#createBackendNodes()', function() {
-      test('creates BackendNode list', function() {
+  suite("NodeBuilder", function () {
+    suite("#createBackendNodes()", function () {
+      test("creates BackendNode list", function () {
         let bnodes: BackendNode[] = NodeBuilder.createBackendNodes();
         assert.strictEqual(bnodes.length, 2);
         assert.strictEqual(bnodes[0].label, oneBackendName);
         assert.strictEqual(bnodes[1].label, backendName);
       });
     });
-    suite('#createToolchainNodes()', function() {
-      test('creates ToolchainNode list', function() {
+    suite("#createToolchainNodes()", function () {
+      test("creates ToolchainNode list", function () {
         let bnodes: BackendNode[] = NodeBuilder.createBackendNodes();
         assert.strictEqual(bnodes.length, 2);
         assert.strictEqual(bnodes[0].label, oneBackendName);
@@ -117,8 +136,8 @@ suite('Toolchain', function() {
         });
       });
     });
-    suite('#createToolchainNodes()', function() {
-      test('NEG: creates ToolchainNode list using invalid backend node', function() {
+    suite("#createToolchainNodes()", function () {
+      test("NEG: creates ToolchainNode list using invalid backend node", function () {
         const bnodes: BackendNode[] = NodeBuilder.createBackendNodes();
         assert.strictEqual(bnodes.length, 2);
         assert.strictEqual(bnodes[0].label, oneBackendName);
@@ -132,9 +151,9 @@ suite('Toolchain', function() {
         assert.strictEqual(tnodes2.length, 0);
       });
     });
-    suite('#createToolchainNodes()', function() {
-      test('NEG: creates ToolchainNode list using invalid backend', function() {
-        const invalidBackendName = 'abcde';
+    suite("#createToolchainNodes()", function () {
+      test("NEG: creates ToolchainNode list using invalid backend", function () {
+        const invalidBackendName = "abcde";
         const bnode = new BackendNode(invalidBackendName);
         const tnodes = NodeBuilder.createToolchainNodes(bnode);
         assert.strictEqual(tnodes.length, 0);
@@ -142,28 +161,29 @@ suite('Toolchain', function() {
     });
   });
 
-  suite('ToolchainProvider', function() {
-    suite('#constructor()', function() {
-      test('is constructed', function() {
+  suite("ToolchainProvider", function () {
+    suite("#constructor()", function () {
+      test("is constructed", function () {
         let provider = new ToolchainProvider();
         assert.instanceOf(provider, ToolchainProvider);
       });
     });
 
-    suite('#getTreeItem()', function() {
-      test('gets TreeItem with BackendNode', function() {
-        const label = 'backend_node';
+    suite("#getTreeItem()", function () {
+      test("gets TreeItem with BackendNode", function () {
+        const label = "backend_node";
         const collapsibleState = vscode.TreeItemCollapsibleState.Expanded;
         let node = new BackendNode(label);
         let provider = new ToolchainProvider();
         let treeItem = provider.getTreeItem(node);
         assert.strictEqual(treeItem.collapsibleState, collapsibleState);
       });
-      test('gets TreeItem with ToolchainNode', function() {
-        const label = 'backend_node';
-        const backend = 'dummy_backend';
-        const toolchain =
-            new DebianToolchain(new ToolchainInfo('npm', 'package manager for Node.js'));
+      test("gets TreeItem with ToolchainNode", function () {
+        const label = "backend_node";
+        const backend = "dummy_backend";
+        const toolchain = new DebianToolchain(
+          new ToolchainInfo("npm", "package manager for Node.js")
+        );
         const collapsibleState = vscode.TreeItemCollapsibleState.None;
         let node = new ToolchainNode(label, backend, toolchain);
         let provider = new ToolchainProvider();
@@ -172,8 +192,8 @@ suite('Toolchain', function() {
       });
     });
 
-    suite('#getChildren', function() {
-      test('gets Children with undefined', function(done) {
+    suite("#getChildren", function () {
+      test("gets Children with undefined", function (done) {
         let provider = new ToolchainProvider();
         provider.getChildren(undefined).then((bnodes) => {
           assert.strictEqual(bnodes.length, 2);
@@ -182,7 +202,7 @@ suite('Toolchain', function() {
           done();
         });
       });
-      test('gets Children with BackendNode', function(done) {
+      test("gets Children with BackendNode", function (done) {
         let provider = new ToolchainProvider();
         let bnodes: BackendNode[] = NodeBuilder.createBackendNodes();
         assert.strictEqual(bnodes.length, 2);
@@ -200,8 +220,8 @@ suite('Toolchain', function() {
       });
     });
 
-    suite('#_install', function() {
-      test('requests _install', function() {
+    suite("#_install", function () {
+      test("requests _install", function () {
         const provider = new ToolchainProvider();
         const types = toolchainEnv.getToolchainTypes();
         const toolchains = toolchainEnv.listAvailable(types[0], 0, 1);
@@ -209,7 +229,7 @@ suite('Toolchain', function() {
         provider._install(toolchainEnv, toolchains[0]);
         assert.isTrue(true);
       });
-      test('requests _install with no installed toolchain', function() {
+      test("requests _install with no installed toolchain", function () {
         const provider = new ToolchainProvider();
         const tcompiler = new MockCompilerWithNoInstalledToolchain();
         const invalidToolchainEnv = new ToolchainEnv(tcompiler);
@@ -219,7 +239,7 @@ suite('Toolchain', function() {
         provider._install(invalidToolchainEnv, toolchains[0]);
         assert.isTrue(true);
       });
-      test('NEG: requests _install with multiple installed toolchains', function() {
+      test("NEG: requests _install with multiple installed toolchains", function () {
         const provider = new ToolchainProvider();
         const tcompiler = new MockCompilerWithMultipleInstalledToolchains();
         const invalidToolchainEnv = new ToolchainEnv(tcompiler);
@@ -231,8 +251,8 @@ suite('Toolchain', function() {
       });
     });
 
-    suite('#uninstall', function() {
-      test('requests uninstall', function() {
+    suite("#uninstall", function () {
+      test("requests uninstall", function () {
         const provider = new ToolchainProvider();
         const bnodes = NodeBuilder.createBackendNodes();
         assert.strictEqual(bnodes.length, 2);
@@ -244,13 +264,17 @@ suite('Toolchain', function() {
         provider.uninstall(tnodes[0]);
         assert.isTrue(true);
       });
-      test('NEG: requests uninstall with invalid toolchain node', function() {
+      test("NEG: requests uninstall with invalid toolchain node", function () {
         const provider = new ToolchainProvider();
-        const invalidToolchainNode = 'invalid toolchain node';
-        const invalidBackendName = 'abcde';
+        const invalidToolchainNode = "invalid toolchain node";
+        const invalidBackendName = "abcde";
         const toolchains = toolchainEnv.listInstalled();
         assert.isAbove(toolchains.length, 0);
-        const tnode = new ToolchainNode(invalidToolchainNode, invalidBackendName, toolchains[0]);
+        const tnode = new ToolchainNode(
+          invalidToolchainNode,
+          invalidBackendName,
+          toolchains[0]
+        );
         assert.strictEqual(tnode.label, invalidToolchainNode);
         assert.strictEqual(tnode.backendName, invalidBackendName);
         assert.strictEqual(tnode.toolchain, toolchains[0]);
@@ -259,27 +283,27 @@ suite('Toolchain', function() {
       });
     });
 
-    suite('#run', function() {
-      test('requests run', function() {
+    suite("#run", function () {
+      test("requests run", function () {
         const provider = new ToolchainProvider();
-        const modelCfg = 'model.cfg';
+        const modelCfg = "model.cfg";
         const toolchains = toolchainEnv.listInstalled();
         assert.isAbove(toolchains.length, 0);
         DefaultToolchain.getInstance().set(toolchainEnv, toolchains[0]);
         provider._run(modelCfg);
         assert.isTrue(true);
       });
-      test('NEG: requests run with uninitialized default toolchain', function() {
+      test("NEG: requests run with uninitialized default toolchain", function () {
         const provider = new ToolchainProvider();
-        const modelCfg = 'model.cfg';
+        const modelCfg = "model.cfg";
         DefaultToolchain.getInstance().unset();
         const ret = provider._run(modelCfg);
         assert.isFalse(ret);
       });
     });
 
-    suite('#setDefaultToolchain', function() {
-      test('request setDefaultToolchain', function() {
+    suite("#setDefaultToolchain", function () {
+      test("request setDefaultToolchain", function () {
         const provider = new ToolchainProvider();
         const bnodes = NodeBuilder.createBackendNodes();
         assert.strictEqual(bnodes.length, 2);
@@ -289,15 +313,21 @@ suite('Toolchain', function() {
         const tnodes = NodeBuilder.createToolchainNodes(bnodes[1]);
         assert.isAbove(tnodes.length, 0);
         provider.setDefaultToolchain(tnodes[0]);
-        assert.isTrue(DefaultToolchain.getInstance().isEqual(tnodes[0].toolchain));
+        assert.isTrue(
+          DefaultToolchain.getInstance().isEqual(tnodes[0].toolchain)
+        );
       });
-      test('NEG: requests setDefaultToolchain with invalid node', function() {
+      test("NEG: requests setDefaultToolchain with invalid node", function () {
         const provider = new ToolchainProvider();
-        const invalidToolchainNode = 'invalid toolchain node';
-        const invalidBackendName = 'abcde';
+        const invalidToolchainNode = "invalid toolchain node";
+        const invalidBackendName = "abcde";
         const toolchains = toolchainEnv.listInstalled();
         assert.isAbove(toolchains.length, 0);
-        const tnode = new ToolchainNode(invalidToolchainNode, invalidBackendName, toolchains[0]);
+        const tnode = new ToolchainNode(
+          invalidToolchainNode,
+          invalidBackendName,
+          toolchains[0]
+        );
         assert.strictEqual(tnode.label, invalidToolchainNode);
         assert.strictEqual(tnode.backendName, invalidBackendName);
         assert.strictEqual(tnode.toolchain, toolchains[0]);

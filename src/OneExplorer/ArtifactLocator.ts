@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import * as assert from 'assert';
-import * as path from 'path';
-import * as vscode from 'vscode';
+import * as assert from "assert";
+import * as path from "path";
+import * as vscode from "vscode";
 
 /**
  * 'Artifact'
@@ -106,7 +106,11 @@ export class Locator {
    * @param section (optional) if not given, locator searches the whole section
    * @param key (optional) if not given, locator searches the whole key
    */
-  constructor(mapper: (value: string) => string[], section?: string, key?: string) {
+  constructor(
+    mapper: (value: string) => string[],
+    section?: string,
+    key?: string
+  ) {
     this.section = section;
     this.key = key;
     this.mapper = mapper;
@@ -132,7 +136,10 @@ export class Locator {
    */
   public locate(iniObj: object, dir: string): string[] {
     assert.strictEqual(
-        path.isAbsolute(dir), true, 'FIX CALLER: dir argument must be an absolute path');
+      path.isAbsolute(dir),
+      true,
+      "FIX CALLER: dir argument must be an absolute path"
+    );
 
     // Get file names from iniObj
     const getFileNames = (): string[] => {
@@ -142,25 +149,29 @@ export class Locator {
       const sections = this.section ? [this.section] : Object.keys(iniObj);
 
       // Find valid iniObj[section] as object
-      const sectionObjs: object[] = sections.filter(section => (section in iniObj))
-                                        .map(section => iniObj[section as keyof typeof iniObj]);
+      const sectionObjs: object[] = sections
+        .filter((section) => section in iniObj)
+        .map((section) => iniObj[section as keyof typeof iniObj]);
 
-      sectionObjs.forEach(sectionObj => {
+      sectionObjs.forEach((sectionObj) => {
         // If a key not given, search all keys
         const keys: string[] = this.key ? [this.key] : Object.keys(sectionObj);
 
         // Find valid sectionObj[key] as string
-        const keyStrs = keys.filter(key => (key in sectionObj))
-                            .map(key => sectionObj[key as keyof typeof iniObj])
-                            // NOTE keyObj may be a type of object.
-                            // Currently one config file doesn't define a ini file level more deeper
-                            // Let's filter them out.
-                            .filter(keyObj => typeof keyObj === 'string');
+        const keyStrs = keys
+          .filter((key) => key in sectionObj)
+          .map((key) => sectionObj[key as keyof typeof iniObj])
+          // NOTE keyObj may be a type of object.
+          // Currently one config file doesn't define a ini file level more deeper
+          // Let's filter them out.
+          .filter((keyObj) => typeof keyObj === "string");
 
         // Get filename
-        keyStrs.map(value => this.mapper(value)).forEach((fileName: string[]) => {
-          fileNames = fileNames.concat(fileName);
-        });
+        keyStrs
+          .map((value) => this.mapper(value))
+          .forEach((fileName: string[]) => {
+            fileNames = fileNames.concat(fileName);
+          });
       });
 
       return fileNames;
@@ -192,22 +203,26 @@ export class Locator {
   }
 }
 
-
 // TODO Move to backend side with some modification
 export class LocatorRunner {
-  private artifactLocators: {artifactAttr: ArtifactAttr, locator: Locator}[] = [];
+  private artifactLocators: { artifactAttr: ArtifactAttr; locator: Locator }[] =
+    [];
 
   /**
    * @brief A helper function to grep a filename ends with 'ext' within the given 'content' string.
    */
   public static searchWithExt = (ext: string, content: string): string[] => {
-    assert.notStrictEqual(ext.length, 0, 'FIX CALLER: ext must not be an empty string');
+    assert.notStrictEqual(
+      ext.length,
+      0,
+      "FIX CALLER: ext must not be an empty string"
+    );
 
     // Don't remove this. It's to prevent 'content.split is not a function' error.
     // TODO Find more straightforward way to resolve an error
-    content = content + '';
+    content = content + "";
 
-    const fileNames = content.split(' ').filter(val => val.endsWith(ext));
+    const fileNames = content.split(" ").filter((val) => val.endsWith(ext));
     return fileNames;
   };
 
@@ -216,27 +231,39 @@ export class LocatorRunner {
    * within the given 'content' string.
    * @return string[] But practically the array size is only one or none
    */
-  public static searchWithCommandOption =
-      (content: string, option: string, ext?: string): string[] => {
-        assert.notStrictEqual(option.length, 0, 'FIX CALLER: option must not be an empty string');
+  public static searchWithCommandOption = (
+    content: string,
+    option: string,
+    ext?: string
+  ): string[] => {
+    assert.notStrictEqual(
+      option.length,
+      0,
+      "FIX CALLER: option must not be an empty string"
+    );
 
-        // Don't remove this. It's to prevent 'content.split is not a function' error.
-        // TODO Find more straightforward way to resolve an error
-        content = content + '';
+    // Don't remove this. It's to prevent 'content.split is not a function' error.
+    // TODO Find more straightforward way to resolve an error
+    content = content + "";
 
-        let fileName: string|undefined = content.split(' ').find((value, index, obj) => {
-          return index > 0 && obj[index - 1] === option;
-        });
+    let fileName: string | undefined = content
+      .split(" ")
+      .find((value, index, obj) => {
+        return index > 0 && obj[index - 1] === option;
+      });
 
-        // Check if the searched filename has the given ext
-        if (fileName && ext) {
-          fileName = fileName.endsWith(ext) ? fileName : undefined;
-        }
+    // Check if the searched filename has the given ext
+    if (fileName && ext) {
+      fileName = fileName.endsWith(ext) ? fileName : undefined;
+    }
 
-        return fileName ? [fileName] : [];
-      };
+    return fileName ? [fileName] : [];
+  };
 
-  public register(artifactLocator: {artifactAttr: ArtifactAttr, locator: Locator}) {
+  public register(artifactLocator: {
+    artifactAttr: ArtifactAttr;
+    locator: Locator;
+  }) {
     this.artifactLocators.push(artifactLocator);
   }
 
@@ -247,15 +274,18 @@ export class LocatorRunner {
    */
   public run(iniObj: object, dir: string): Artifact[] {
     assert.strictEqual(
-        path.isAbsolute(dir), true, 'FIX CALLER: dir argument must be an absolute path');
+      path.isAbsolute(dir),
+      true,
+      "FIX CALLER: dir argument must be an absolute path"
+    );
 
     let artifacts: Artifact[] = [];
 
     // Get Artifacts with {type, ext, path}
-    this.artifactLocators.forEach(({artifactAttr, locator}) => {
+    this.artifactLocators.forEach(({ artifactAttr, locator }) => {
       let filePaths: string[] = locator.locate(iniObj, dir);
-      filePaths.forEach(filePath => {
-        let artifact: Artifact = {attr: artifactAttr, path: filePath};
+      filePaths.forEach((filePath) => {
+        let artifact: Artifact = { attr: artifactAttr, path: filePath };
         artifacts.push(artifact);
       });
     });

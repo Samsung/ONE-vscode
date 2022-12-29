@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import * as cp from 'child_process';
-import * as vscode from 'vscode';
+import * as cp from "child_process";
+import * as vscode from "vscode";
 
-import {globalBackendMap} from '../Backend/API';
-import {Command} from '../Backend/Command';
-import {Executor} from '../Backend/Executor';
-import {DeviceSpec, supportedSpecs} from '../Backend/Spec';
-import {Logger} from '../Utils/Logger';
+import { globalBackendMap } from "../Backend/API";
+import { Command } from "../Backend/Command";
+import { Executor } from "../Backend/Executor";
+import { DeviceSpec, supportedSpecs } from "../Backend/Spec";
+import { Logger } from "../Utils/Logger";
 
-import {Device} from './Device';
-import {DeviceManager} from './DeviceManager';
+import { Device } from "./Device";
+import { DeviceManager } from "./DeviceManager";
 
-type DeviceTreeView = DeviceViewNode|undefined|void;
+type DeviceTreeView = DeviceViewNode | undefined | void;
 
 interface DevicesManagerMap {
   [key: string]: DeviceManager;
@@ -34,7 +34,7 @@ interface DevicesManagerMap {
 
 // TODO: Make this as a config.
 // This variable will save host type
-export const deviceManagerList = ['local'];
+export const deviceManagerList = ["local"];
 
 export enum NodeType {
   /**
@@ -59,25 +59,26 @@ export class DeviceViewNode extends vscode.TreeItem {
   type: NodeType;
   managerName: string;
   constructor(
-      public readonly label: string,
-      public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-      public readonly nodetype: NodeType, public readonly manager: string) {
+    public readonly label: string,
+    public readonly collapsibleState: vscode.TreeItemCollapsibleState,
+    public readonly nodetype: NodeType,
+    public readonly manager: string
+  ) {
     super(label, collapsibleState);
     this.type = nodetype;
     this.managerName = manager;
     switch (this.type) {
       case NodeType.deviceManager:
-        this.iconPath = new vscode.ThemeIcon('list-tree');  // select best icon for this
-        this.contextValue = 'deviceManager';
+        this.iconPath = new vscode.ThemeIcon("list-tree"); // select best icon for this
+        this.contextValue = "deviceManager";
         break;
       case NodeType.device:
-        this.iconPath = new vscode.ThemeIcon('device-desktop');  // select best icon for this
-        this.contextValue = 'device';
+        this.iconPath = new vscode.ThemeIcon("device-desktop"); // select best icon for this
+        this.contextValue = "device";
         break;
       case NodeType.executor:
-        this.iconPath =
-            new vscode.ThemeIcon('debug-stackframe-focused');  // select best icon for this
-        this.contextValue = 'executor';
+        this.iconPath = new vscode.ThemeIcon("debug-stackframe-focused"); // select best icon for this
+        this.contextValue = "executor";
         break;
       default:
         break;
@@ -85,102 +86,135 @@ export class DeviceViewNode extends vscode.TreeItem {
   }
 }
 
-export class DeviceViewProvider implements vscode.TreeDataProvider<DeviceViewNode> {
+export class DeviceViewProvider
+  implements vscode.TreeDataProvider<DeviceViewNode>
+{
   deviceManagerMap: DevicesManagerMap = {};
 
   private _onDidChangeTreeData: vscode.EventEmitter<DeviceTreeView> =
-      new vscode.EventEmitter<DeviceViewNode>();
-  readonly onDidChangeTreeData: vscode.Event<DeviceTreeView> = this._onDidChangeTreeData.event;
+    new vscode.EventEmitter<DeviceViewNode>();
+  readonly onDidChangeTreeData: vscode.Event<DeviceTreeView> =
+    this._onDidChangeTreeData.event;
 
   public static register(context: vscode.ExtensionContext): void {
     const provider = new DeviceViewProvider();
 
     const registrations = [
-      vscode.window.registerTreeDataProvider('TargetDeviceView', provider),
-      vscode.commands.registerCommand(
-          'one.device.refresh',
-          () => {
-            provider.refresh();
-          })
+      vscode.window.registerTreeDataProvider("TargetDeviceView", provider),
+      vscode.commands.registerCommand("one.device.refresh", () => {
+        provider.refresh();
+      }),
     ];
 
-    registrations.forEach(disposable => context.subscriptions.push(disposable));
+    registrations.forEach((disposable) =>
+      context.subscriptions.push(disposable)
+    );
   }
 
   getTreeItem(element: DeviceViewNode): vscode.TreeItem {
     return element;
   }
-  getChildren(element?: DeviceViewNode|undefined): DeviceViewNode[] {
+  getChildren(element?: DeviceViewNode | undefined): DeviceViewNode[] {
     return this.getNodes(element);
   }
 
-  private getNodes(element: DeviceViewNode|undefined): DeviceViewNode[] {
+  private getNodes(element: DeviceViewNode | undefined): DeviceViewNode[] {
     const rtnList: DeviceViewNode[] = [];
     if (!element) {
       for (const managerName of deviceManagerList) {
-        rtnList.push(new DeviceViewNode(
-            managerName, vscode.TreeItemCollapsibleState.Expanded, NodeType.deviceManager,
-            managerName));
+        rtnList.push(
+          new DeviceViewNode(
+            managerName,
+            vscode.TreeItemCollapsibleState.Expanded,
+            NodeType.deviceManager,
+            managerName
+          )
+        );
       }
     } else if (element.type === NodeType.deviceManager) {
       const deviceList = this.deviceManagerMap[element.managerName].allDevices;
       for (const device of deviceList) {
-        rtnList.push(new DeviceViewNode(
-            device.name, vscode.TreeItemCollapsibleState.Collapsed, NodeType.device,
-            element.managerName));
+        rtnList.push(
+          new DeviceViewNode(
+            device.name,
+            vscode.TreeItemCollapsibleState.Collapsed,
+            NodeType.device,
+            element.managerName
+          )
+        );
       }
     } else if (element.type === NodeType.device) {
-      const device = this.deviceManagerMap[element.managerName].findDevice(element.label);
-      const executorList = device ?.availableExecutors;
+      const device = this.deviceManagerMap[element.managerName].findDevice(
+        element.label
+      );
+      const executorList = device?.availableExecutors;
       if (executorList) {
         for (const executor of executorList) {
           // Currently, No Executor name for this, so need to update Executor name first.
-          rtnList.push(new DeviceViewNode(
-              executor.name(), vscode.TreeItemCollapsibleState.None, NodeType.executor,
-              element.managerName));
+          rtnList.push(
+            new DeviceViewNode(
+              executor.name(),
+              vscode.TreeItemCollapsibleState.None,
+              NodeType.executor,
+              element.managerName
+            )
+          );
         }
       }
     }
     if (rtnList.length === 0) {
-      rtnList.push(new DeviceViewNode(
-          'No subtree available', vscode.TreeItemCollapsibleState.None, NodeType.none, ''));
+      rtnList.push(
+        new DeviceViewNode(
+          "No subtree available",
+          vscode.TreeItemCollapsibleState.None,
+          NodeType.none,
+          ""
+        )
+      );
     }
     return rtnList;
   }
 
-  private getDevicesPromise(cmd: Command, deviceSpec: DeviceSpec): Promise<Device[]> {
+  private getDevicesPromise(
+    cmd: Command,
+    deviceSpec: DeviceSpec
+  ): Promise<Device[]> {
     return new Promise<Device[]>((resolve) => {
-      let result: string = '';
-      let error: string = '';
-      let cmdSpawn = cp.spawn(cmd.str(), {shell: false});
-      cmdSpawn.stdout.on('data', (data: any) => {
+      let result: string = "";
+      let error: string = "";
+      let cmdSpawn = cp.spawn(cmd.str(), { shell: false });
+      cmdSpawn.stdout.on("data", (data: any) => {
         let str = data.toString();
         if (str.length > 0) {
           result = result + str;
         }
       });
-      cmdSpawn.stderr.on('data', (data: any) => {
+      cmdSpawn.stderr.on("data", (data: any) => {
         error = result + data.toString();
-        Logger.warn('DeviceList', error);
+        Logger.warn("DeviceList", error);
       });
-      cmdSpawn.on('exit', (code: any) => {
+      cmdSpawn.on("exit", (code: any) => {
         let codestr = code.toString();
-        if (codestr === '0') {
+        if (codestr === "0") {
           const devices: Device[] = [];
-          const deviceNames = String(result).split('\n').filter(element => element);
+          const deviceNames = String(result)
+            .split("\n")
+            .filter((element) => element);
           for (const deviceName of deviceNames) {
             devices.push(new Device(deviceName, deviceSpec));
           }
           resolve(devices);
         } else {
-          Logger.warn('DeviceList', result);
+          Logger.warn("DeviceList", result);
           resolve([]);
         }
       });
-      cmdSpawn.on('error', (err: any) => {
+      cmdSpawn.on("error", (err: any) => {
         Logger.warn(
-            'DeviceList',
-            'Device List Get script make some error. please check below error: ' + err);
+          "DeviceList",
+          "Device List Get script make some error. please check below error: " +
+            err
+        );
         resolve([]);
       });
     });
@@ -194,7 +228,7 @@ export class DeviceViewProvider implements vscode.TreeDataProvider<DeviceViewNod
         const deviceGetCmd = deviceSpec.bridge.deviceListCmd;
         listCmds.push(this.getDevicesPromise(deviceGetCmd, deviceSpec));
       } else {
-        deviceList.push(new Device('HostPC', deviceSpec));
+        deviceList.push(new Device("HostPC", deviceSpec));
       }
     }
     Promise.all(listCmds).then((results) => {
@@ -214,16 +248,22 @@ export class DeviceViewProvider implements vscode.TreeDataProvider<DeviceViewNod
           }
         }
       }
-      this.deviceManagerMap[deviceMan] = new DeviceManager(deviceList, executorList);
+      this.deviceManagerMap[deviceMan] = new DeviceManager(
+        deviceList,
+        executorList
+      );
       callback(this);
     });
   }
 
   constructor() {
     for (const deviceMan of deviceManagerList) {
-      this.loadDeviceManager(deviceMan, function(provider: DeviceViewProvider) {
-        provider._onDidChangeTreeData.fire();
-      });
+      this.loadDeviceManager(
+        deviceMan,
+        function (provider: DeviceViewProvider) {
+          provider._onDidChangeTreeData.fire();
+        }
+      );
     }
   }
 
@@ -232,9 +272,12 @@ export class DeviceViewProvider implements vscode.TreeDataProvider<DeviceViewNod
     // This for cluse should become method that get Connected Device unique name form
     // `supportedSpecs`
     for (const deviceMan of deviceManagerList) {
-      this.loadDeviceManager(deviceMan, function(provider: DeviceViewProvider) {
-        provider._onDidChangeTreeData.fire();
-      });
+      this.loadDeviceManager(
+        deviceMan,
+        function (provider: DeviceViewProvider) {
+          provider._onDidChangeTreeData.fire();
+        }
+      );
     }
   }
 }

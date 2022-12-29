@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
-import {Command} from './Command';
+import { Command } from "./Command";
 
-const extensionId = 'Samsung.one-vscode';
-const ext = vscode.extensions.getExtension(extensionId) as vscode.Extension<any>;
+const extensionId = "Samsung.one-vscode";
+const ext = vscode.extensions.getExtension(
+  extensionId
+) as vscode.Extension<any>;
 /**
  * Spec is a bundle of information that could be used for checking whether something to require is
  * satisfied with a certain objective.
@@ -37,9 +39,9 @@ class DeviceSpec {
   hw: string;
   // Currently `sw` comes from 'cat /etc/os-release' with $(NAME), but this could be updated
   sw: string;
-  bridge: BridgeSpec|undefined;  // this will be used to access on this spec.
+  bridge: BridgeSpec | undefined; // this will be used to access on this spec.
 
-  constructor(hw: string, sw: string, bridge: BridgeSpec|undefined) {
+  constructor(hw: string, sw: string, bridge: BridgeSpec | undefined) {
     this.hw = hw;
     this.sw = sw;
     this.bridge = bridge;
@@ -75,7 +77,10 @@ class BridgeSpec {
 
 // TODO add more BridgeSpec like docker or ADB......
 const sdbSpec = new BridgeSpec(
-    'sdb', vscode.Uri.joinPath(ext!.extensionUri, 'script', 'sdbSpecList.sh').fsPath, 'sdb shell');
+  "sdb",
+  vscode.Uri.joinPath(ext!.extensionUri, "script", "sdbSpecList.sh").fsPath,
+  "sdb shell"
+);
 
 class HostPCSpec extends DeviceSpec {
   constructor(hw: string, sw: string) {
@@ -90,7 +95,15 @@ class TizenDeviceSpec extends DeviceSpec {
 }
 
 const supportedSpecs = new Array<DeviceSpec>(
-    new HostPCSpec('x86_64', 'Ubuntu 18.04') /* spec where simulator can run */,
-    new TizenDeviceSpec('armv7l', 'Tizen 7.0.0') /* spec for Tizen TV */);
+  new HostPCSpec("x86_64", "Ubuntu 18.04") /* spec where simulator can run */,
+  new TizenDeviceSpec("armv7l", "Tizen 7.0.0") /* spec for Tizen TV */
+);
 
-export {DeviceSpec, BridgeSpec, HostPCSpec, TizenDeviceSpec, sdbSpec, supportedSpecs};
+export {
+  DeviceSpec,
+  BridgeSpec,
+  HostPCSpec,
+  TizenDeviceSpec,
+  sdbSpec,
+  supportedSpecs,
+};

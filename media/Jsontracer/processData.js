@@ -45,10 +45,10 @@
 // This file referenced the result of
 // https://github.com/catapult-project/catapult/tree/444aba89e1c30edf348c611a9df79e2376178ba8/tracing
 
-import getColorList from './colorList.js';
-import renderDashboard from './dashboard.js';
+import getColorList from "./colorList.js";
+import renderDashboard from "./dashboard.js";
 
-const setData = document.querySelector('.set-data');
+const setData = document.querySelector(".set-data");
 
 export function processData(data, displayTimeUnit) {
   const processedData = {};
@@ -82,13 +82,13 @@ export function processData(data, displayTimeUnit) {
     endTime = Math.max(endTime, ele.ts + ele.dur);
     utility[ele.pid] = utility[ele.pid] ? utility[ele.pid] + ele.dur : ele.dur;
 
-    ele['pk'] = idx;
-    ele['backgroundColor'] = backgroundColor[ele.name];
+    ele["pk"] = idx;
+    ele["backgroundColor"] = backgroundColor[ele.name];
 
     processedData[ele.pid][ele.tid].push(ele);
   });
 
-  Object.keys(utility).forEach(key => {
+  Object.keys(utility).forEach((key) => {
     utility[key] = Math.round((utility[key] * 100) / endTime) / 100;
   });
 
@@ -96,9 +96,9 @@ export function processData(data, displayTimeUnit) {
   const timeLimit = Math.ceil(endTime / 10 ** (digit - 1)) * 10 ** (digit - 1);
 
   // set data to DOM
-  setData.dataset['digit'] = digit;
-  setData.dataset['timeLimit'] = timeLimit;
-  setData.dataset['displayTimeUnit'] = displayTimeUnit;
+  setData.dataset["digit"] = digit;
+  setData.dataset["timeLimit"] = timeLimit;
+  setData.dataset["displayTimeUnit"] = displayTimeUnit;
 
   // render dashboard
   renderDashboard(utility, timeLimit, digit, processedData);

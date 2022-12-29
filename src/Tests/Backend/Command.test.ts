@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import {assert} from 'chai';
-import {Command} from '../../Backend/Command';
+import { assert } from "chai";
+import { Command } from "../../Backend/Command";
 
-suite('Backend', function() {
-  suite('Command', function() {
-    suite('#constructor()', function() {
-      test('is contructed with values', function() {
-        const cmdStr: string = 'ls';
-        const optionStrs: string[] = ['-lh', '~'];
+suite("Backend", function () {
+  suite("Command", function () {
+    suite("#constructor()", function () {
+      test("is contructed with values", function () {
+        const cmdStr: string = "ls";
+        const optionStrs: string[] = ["-lh", "~"];
         let cmd = new Command(cmdStr, optionStrs);
         assert.deepStrictEqual(cmd[0], cmdStr);
         assert.deepStrictEqual(cmd[1], optionStrs[0]);
@@ -30,10 +30,10 @@ suite('Backend', function() {
       });
     });
 
-    suite('#strs()', function() {
-      test('returns strings with values', function() {
-        const cmdStr: string = 'ls';
-        const optionStrs: string[] = ['-lh', '~'];
+    suite("#strs()", function () {
+      test("returns strings with values", function () {
+        const cmdStr: string = "ls";
+        const optionStrs: string[] = ["-lh", "~"];
         const cmd = new Command(cmdStr, optionStrs);
         const actualStrs = cmd.strs();
         console.log(actualStrs);
@@ -44,14 +44,14 @@ suite('Backend', function() {
       });
     });
 
-    suite('#str()', function() {
-      test('returns a string with values', function() {
-        const cmdStr: string = 'ls';
-        const optionStrs: string[] = ['-lh', '~'];
+    suite("#str()", function () {
+      test("returns a string with values", function () {
+        const cmdStr: string = "ls";
+        const optionStrs: string[] = ["-lh", "~"];
         const cmd = new Command(cmdStr, optionStrs);
         let expectedStr = cmdStr;
-        optionStrs.forEach(optionStr => {
-          expectedStr += ' ' + optionStr;
+        optionStrs.forEach((optionStr) => {
+          expectedStr += " " + optionStr;
         });
         assert.deepStrictEqual(cmd.str(), expectedStr);
       });

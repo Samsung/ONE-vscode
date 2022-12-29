@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import * as crypto from 'crypto';
-import vscode from 'vscode';
+import * as crypto from "crypto";
+import vscode from "vscode";
 
 export async function generateHash(uri: vscode.Uri) {
   // TODO: Error handling
-  return crypto.createHash('sha256')
-      .update(Buffer.from(await vscode.workspace.fs.readFile(uri)).toString())
-      .digest('hex');
+  return crypto
+    .createHash("sha256")
+    .update(Buffer.from(await vscode.workspace.fs.readFile(uri)).toString())
+    .digest("hex");
 }

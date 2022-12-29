@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import * as fs from 'fs';
-import * as os from 'os';
-import * as path from 'path';
+import * as fs from "fs";
+import * as os from "os";
+import * as path from "path";
 
-import {obtainWorkspaceRoot} from '../Utils/Helpers';
+import { obtainWorkspaceRoot } from "../Utils/Helpers";
 
 export class TestBuilder {
   static testCount = 0;
@@ -34,7 +34,7 @@ export class TestBuilder {
   constructor(suite: Mocha.Suite) {
     TestBuilder.testCount++;
 
-    const suiteName = suite.fullTitle().replace(' ', '/');
+    const suiteName = suite.fullTitle().replace(" ", "/");
     this.testLabel = `${suiteName}/${TestBuilder.testCount}`;
     this.dirInTemp = `${TestBuilder.tempDir}/${suiteName}/${TestBuilder.testCount}`;
     this.dirInWorkspace = `${TestBuilder.workspaceDir}/${suiteName}/${TestBuilder.testCount}`;
@@ -43,43 +43,47 @@ export class TestBuilder {
   setUp() {
     try {
       if (fs.existsSync(this.dirInTemp)) {
-        fs.rmdirSync(this.dirInTemp, {recursive: true});
+        fs.rmdirSync(this.dirInTemp, { recursive: true });
       }
 
       if (fs.existsSync(this.dirInWorkspace)) {
-        fs.rmdirSync(this.dirInWorkspace, {recursive: true});
+        fs.rmdirSync(this.dirInWorkspace, { recursive: true });
       }
 
-      fs.mkdirSync(this.dirInTemp, {recursive: true});
-      fs.mkdirSync(this.dirInWorkspace, {recursive: true});
+      fs.mkdirSync(this.dirInTemp, { recursive: true });
+      fs.mkdirSync(this.dirInWorkspace, { recursive: true });
       console.log(`Test ${this.testLabel} - Start`);
     } catch (e) {
-      console.error('Cannot create temporal directory for the test');
+      console.error("Cannot create temporal directory for the test");
       throw e;
     }
   }
 
-  getPath(fileName: string, tempOrWorkspace: string = 'temp') {
-    if (tempOrWorkspace === 'temp') {
+  getPath(fileName: string, tempOrWorkspace: string = "temp") {
+    if (tempOrWorkspace === "temp") {
       return `${this.dirInTemp}/${fileName}`;
-    } else if (tempOrWorkspace === 'workspace') {
+    } else if (tempOrWorkspace === "workspace") {
       return `${this.dirInWorkspace}/${fileName}`;
     } else {
-      throw Error('Invalid parameter');
+      throw Error("Invalid parameter");
     }
   }
 
-  writeFileSync(fileName: string, content: string, tempOrWorkspace: string = 'temp') {
+  writeFileSync(
+    fileName: string,
+    content: string,
+    tempOrWorkspace: string = "temp"
+  ) {
     const filePath = this.getPath(fileName, tempOrWorkspace);
 
     try {
       if (!fs.existsSync(path.dirname(filePath))) {
         fs.mkdirSync(path.dirname(filePath));
       }
-      fs.writeFileSync(filePath, content, 'utf-8');
+      fs.writeFileSync(filePath, content, "utf-8");
       console.log(`Test file is created (${filePath})`);
     } catch (e) {
-      console.error('Cannot create temporal files for the test');
+      console.error("Cannot create temporal files for the test");
       throw e;
     }
   }
@@ -87,15 +91,14 @@ export class TestBuilder {
   tearDown() {
     try {
       if (fs.existsSync(this.dirInTemp)) {
-        fs.rmdirSync(this.dirInTemp, {recursive: true});
+        fs.rmdirSync(this.dirInTemp, { recursive: true });
       }
       if (fs.existsSync(this.dirInTemp)) {
-        fs.rmdirSync(this.dirInWorkspace, {recursive: true});
+        fs.rmdirSync(this.dirInWorkspace, { recursive: true });
       }
-
     } catch (e) {
       // Do not throw to proceed the test
-      console.error('Cannot remove the test directory');
+      console.error("Cannot remove the test directory");
     } finally {
       console.log(`Test ${this.testLabel} - Done`);
     }
@@ -104,30 +107,33 @@ export class TestBuilder {
   static setUp() {
     try {
       if (fs.existsSync(TestBuilder.tempDir)) {
-        fs.rmdirSync(TestBuilder.tempDir, {recursive: true});
+        fs.rmdirSync(TestBuilder.tempDir, { recursive: true });
       }
       if (fs.existsSync(TestBuilder.workspaceDir)) {
-        fs.rmdirSync(TestBuilder.workspaceDir, {recursive: true});
+        fs.rmdirSync(TestBuilder.workspaceDir, { recursive: true });
       }
 
-      fs.mkdirSync(TestBuilder.tempDir, {recursive: true});
-      fs.mkdirSync(TestBuilder.workspaceDir, {recursive: true});
+      fs.mkdirSync(TestBuilder.tempDir, { recursive: true });
+      fs.mkdirSync(TestBuilder.workspaceDir, { recursive: true });
     } catch (e) {
       // Do not throw to proceed the test
-      console.error('Cannot create temporal directory for the test');
+      console.error("Cannot create temporal directory for the test");
     }
   }
 
   static tearDown() {
     try {
-      fs.rmdirSync(TestBuilder.tempDir, {recursive: true});
-      console.log(`Test directory is removed successfully. (${TestBuilder.tempDir})`);
-      fs.rmdirSync(TestBuilder.workspaceDir, {recursive: true});
+      fs.rmdirSync(TestBuilder.tempDir, { recursive: true });
       console.log(
-          `Test directory in worksp is removed successfully. (${TestBuilder.workspaceDir})`);
+        `Test directory is removed successfully. (${TestBuilder.tempDir})`
+      );
+      fs.rmdirSync(TestBuilder.workspaceDir, { recursive: true });
+      console.log(
+        `Test directory in worksp is removed successfully. (${TestBuilder.workspaceDir})`
+      );
     } catch (e) {
       // Do not throw to proceed the test
-      console.error('Cannot remove the test directory');
+      console.error("Cannot remove the test directory");
     }
   }
 }

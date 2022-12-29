@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import {assert} from 'chai';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as vscode from 'vscode';
+import { assert } from "chai";
+import * as fs from "fs";
+import * as path from "path";
+import * as vscode from "vscode";
 
-import {obtainWorkspaceRoots} from '../Utils/Helpers';
-import {Logger} from '../Utils/Logger';
+import { obtainWorkspaceRoots } from "../Utils/Helpers";
+import { Logger } from "../Utils/Logger";
 
-import {ConfigObj} from './ConfigObject';
-import {Node, NodeType} from './OneExplorer';
+import { ConfigObj } from "./ConfigObject";
+import { Node, NodeType } from "./OneExplorer";
 
 export {
   BaseModelToCfgMap as _unit_test_BaseModelToCfgMap,
@@ -38,7 +38,7 @@ class CfgToCfgObjMap {
   }
 
   public init(cfgList: string[]) {
-    cfgList.forEach(cfg => {
+    cfgList.forEach((cfg) => {
       const cfgObj = ConfigObj.createConfigObj(vscode.Uri.file(cfg));
       if (cfgObj) {
         this._map.set(cfg, cfgObj);
@@ -107,13 +107,16 @@ class BaseModelToCfgMap {
   }
 
   public init(cfgList: string[], cfgToCfgObjMap: CfgToCfgObjMap) {
-    cfgList.forEach(cfg => {
+    cfgList.forEach((cfg) => {
       const cfgObj = cfgToCfgObjMap.get(cfg);
 
-      (cfgObj ? cfgObj.getBaseModelsExists : []).forEach(artifact => {
-        this._map.get(artifact.path) ?
-            this._map.set(artifact.path, this._map.get(artifact.path)!.concat([cfg])) :
-            this._map.set(artifact.path, [cfg]);
+      (cfgObj ? cfgObj.getBaseModelsExists : []).forEach((artifact) => {
+        this._map.get(artifact.path)
+          ? this._map.set(
+              artifact.path,
+              this._map.get(artifact.path)!.concat([cfg])
+            )
+          : this._map.set(artifact.path, [cfg]);
       });
     });
   }
@@ -134,7 +137,7 @@ class BaseModelToCfgMap {
       case NodeType.config:
         this._map.forEach((cfgs, key, map) => {
           if (cfgs.includes(path)) {
-            cfgs = cfgs.filter(cfg => cfg !== path);
+            cfgs = cfgs.filter((cfg) => cfg !== path);
             map.set(key, cfgs);
           }
         });
@@ -164,7 +167,7 @@ class BaseModelToCfgMap {
       case NodeType.config:
         this._map.forEach((cfgs, key, map) => {
           if (cfgs.includes(oldpath)) {
-            cfgs = cfgs.map(cfg => (cfg === oldpath) ? newpath : cfg);
+            cfgs = cfgs.map((cfg) => (cfg === oldpath ? newpath : cfg));
             map.set(key, cfgs);
           }
         });
@@ -231,18 +234,27 @@ export class OneStorage {
 
       let children: string[] = [];
       if (fs.statSync(root).isDirectory()) {
-        fs.readdirSync(root).forEach(val => {
-          children = children.concat(readdirSyncRecursive(path.join(root, val)));
+        fs.readdirSync(root).forEach((val) => {
+          children = children.concat(
+            readdirSyncRecursive(path.join(root, val))
+          );
         });
       }
       return children;
     };
 
     try {
-      return roots.map(root => readdirSyncRecursive(root).filter(val => val.endsWith('.cfg')))
-          .reduce((prev, cur) => [...prev, ...cur]);
+      return roots
+        .map((root) =>
+          readdirSyncRecursive(root).filter((val) => val.endsWith(".cfg"))
+        )
+        .reduce((prev, cur) => [...prev, ...cur]);
     } catch {
-      Logger.error('OneExplorer', '_getCfgList()', 'called on not existing directory or file.');
+      Logger.error(
+        "OneExplorer",
+        "_getCfgList()",
+        "called on not existing directory or file."
+      );
       return [];
     }
   }
@@ -274,7 +286,7 @@ export class OneStorage {
     this._baseModelToCfgsMap.init(cfgList, this._cfgToCfgObjMap);
   }
 
-  private static _obj: OneStorage|undefined;
+  private static _obj: OneStorage | undefined;
 
   /**
    * Get cfg lists which refers the base model path
@@ -285,21 +297,21 @@ export class OneStorage {
    *          (2) the path is not a base model file
    *          (3) the path is a lonely base model file
    */
-  public static getCfgs(baseModelPath: string): string[]|undefined {
+  public static getCfgs(baseModelPath: string): string[] | undefined {
     return OneStorage.get()._baseModelToCfgsMap.get(baseModelPath);
   }
 
   /**
    * Get cfgObj from the map
    */
-  public static getCfgObj(cfgPath: string): ConfigObj|undefined {
+  public static getCfgObj(cfgPath: string): ConfigObj | undefined {
     return OneStorage.get()._cfgToCfgObjMap.get(cfgPath);
   }
 
   /**
    * Get cfgObj from the map
    */
-  public static getNode(fsPath: string): Node|undefined {
+  public static getNode(fsPath: string): Node | undefined {
     return OneStorage.get()._nodeMap.get(fsPath);
   }
 
@@ -318,7 +330,7 @@ export class OneStorage {
   public static delete(node: Node, recursive: boolean = false) {
     const deleteRecursively = (node: Node) => {
       if (node.getChildren().length > 0) {
-        node.getChildren().forEach(child => deleteRecursively(child));
+        node.getChildren().forEach((child) => deleteRecursively(child));
       }
       this._delete(node);
     };
@@ -336,7 +348,7 @@ export class OneStorage {
    */
   private static get(): OneStorage {
     if (!OneStorage._obj) {
-      OneStorage._obj = new OneStorage;
+      OneStorage._obj = new OneStorage();
     }
     return OneStorage._obj;
   }

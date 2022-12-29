@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import {Job, JobType} from '../Job/Job';
-import {ToolArgs} from '../Job/ToolArgs';
+import { Job, JobType } from "../Job/Job";
+import { ToolArgs } from "../Job/ToolArgs";
 
 class MockJob implements Job {
   jobType: JobType = JobType.tUndefined;
   name: string;
   root: boolean = false;
-  workDir: string = require('os').homedir();
+  workDir: string = require("os").homedir();
   isCancelable: boolean = false;
 
   constructor(name: string) {
@@ -33,12 +33,12 @@ class MockJob implements Job {
   }
 
   public get tool(): string {
-    return 'ls';
+    return "ls";
   }
 
   public get toolArgs(): ToolArgs {
     let args = new ToolArgs();
-    args.push('-al');
+    args.push("-al");
     return args;
   }
 }
@@ -47,7 +47,7 @@ class MockFailedJob implements Job {
   jobType: JobType = JobType.tUndefined;
   name: string;
   root: boolean = false;
-  workDir: string = require('os').homedir();
+  workDir: string = require("os").homedir();
   isCancelable: boolean = false;
 
   constructor(name: string) {
@@ -59,14 +59,14 @@ class MockFailedJob implements Job {
   }
 
   public get tool(): string {
-    return 'lss';
+    return "lss";
   }
 
   public get toolArgs(): ToolArgs {
     let args = new ToolArgs();
-    args.push('-h');
+    args.push("-h");
     return args;
   }
 }
 
-export {MockJob, MockFailedJob};
+export { MockJob, MockFailedJob };

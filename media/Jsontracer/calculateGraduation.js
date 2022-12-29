@@ -47,14 +47,14 @@
 
 export default function calculateGraduation(graduation) {
   if (graduation >= 1000) {
-    return Math.round((graduation / 1000) * 10) / 10 + 'ms';
+    return Math.round((graduation / 1000) * 10) / 10 + "ms";
   } else if (graduation >= 1) {
-    return Math.round(graduation) + 'us';
+    return Math.round(graduation) + "us";
   } else if (graduation > 0) {
-    return Math.round(graduation * 1000 * 10) / 10 + 'ns';
+    return Math.round(graduation * 1000 * 10) / 10 + "ns";
   } else if (graduation === 0) {
-    return '0';
+    return "0";
   } else {
-    return 'graduation error';
+    return "graduation error";
   }
 }

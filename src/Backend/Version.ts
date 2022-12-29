@@ -16,12 +16,16 @@
 
 class Version {
   major: number;
-  minor: number|undefined;
-  patch: number|undefined;
+  minor: number | undefined;
+  patch: number | undefined;
   option: string;
 
   constructor(
-      major: number, minor: number|undefined, patch: number|undefined, option: string = '') {
+    major: number,
+    minor: number | undefined,
+    patch: number | undefined,
+    option: string = ""
+  ) {
     this.major = major;
     this.minor = minor;
     this.patch = patch;
@@ -42,11 +46,14 @@ class Version {
 
   equals(ver: Version): boolean {
     return (
-        this.major === ver.major && this.minor === ver.minor && this.patch === ver.patch &&
-        this.option === ver.option);
+      this.major === ver.major &&
+      this.minor === ver.minor &&
+      this.patch === ver.patch &&
+      this.option === ver.option
+    );
   }
 
   // TODO: Add operator <, <=, >, >=
 }
 
-export {Version};
+export { Version };

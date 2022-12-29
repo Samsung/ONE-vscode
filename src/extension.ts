@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
-import {backendRegistrationApi} from './Backend/API';
-import {CfgEditorPanel} from './CfgEditor/CfgEditorPanel';
-import {CircleEditorProvider} from './CircleEditor/CircleEditorProvider';
-import {CircleViewerProvider} from './CircleGraph/CircleViewer';
-import {DeviceViewProvider} from './Execute/DeviceViewProvider';
-import {JsonTracerViewerPanel} from './Jsontracer/JsonTracerViewerPanel';
-import {MetadataViewerProvider} from './MetadataViewer/MetadataViewerProvider';
-import {MondrianEditorProvider} from './Mondrian/MondrianEditor';
-import {OneTreeDataProvider} from './OneExplorer/OneExplorer';
-import {PartEditorProvider} from './PartEditor/PartEditor';
-import {PartGraphSelPanel} from './PartEditor/PartGraphSelector';
-import {ToolchainProvider} from './Toolchain/ToolchainProvider';
-import {Logger} from './Utils/Logger';
-import {VisqViewerProvider} from './Visquv/VisqViewer';
+import { backendRegistrationApi } from "./Backend/API";
+import { CfgEditorPanel } from "./CfgEditor/CfgEditorPanel";
+import { CircleEditorProvider } from "./CircleEditor/CircleEditorProvider";
+import { CircleViewerProvider } from "./CircleGraph/CircleViewer";
+import { DeviceViewProvider } from "./Execute/DeviceViewProvider";
+import { JsonTracerViewerPanel } from "./Jsontracer/JsonTracerViewerPanel";
+import { MetadataViewerProvider } from "./MetadataViewer/MetadataViewerProvider";
+import { MondrianEditorProvider } from "./Mondrian/MondrianEditor";
+import { OneTreeDataProvider } from "./OneExplorer/OneExplorer";
+import { PartEditorProvider } from "./PartEditor/PartEditor";
+import { PartGraphSelPanel } from "./PartEditor/PartGraphSelector";
+import { ToolchainProvider } from "./Toolchain/ToolchainProvider";
+import { Logger } from "./Utils/Logger";
+import { VisqViewerProvider } from "./Visquv/VisqViewer";
 
 /* istanbul ignore next */
 export function activate(context: vscode.ExtensionContext) {
-  const tag = 'activate';
+  const tag = "activate";
 
-  Logger.info(tag, 'one-vscode activate OK');
+  Logger.info(tag, "one-vscode activate OK");
 
   /**
    * Set runtime extensionKind in setContext to use in package.json 'when' clause.
@@ -45,9 +45,13 @@ export function activate(context: vscode.ExtensionContext) {
    *      'one:extensionKind' is a context value equivalent to context.extension.extensionKind.
    */
   if (context.extension.extensionKind === vscode.ExtensionKind.UI) {
-    vscode.commands.executeCommand('setContext', 'one:extensionKind', 'UI');
+    vscode.commands.executeCommand("setContext", "one:extensionKind", "UI");
   } else {
-    vscode.commands.executeCommand('setContext', 'one:extensionKind', 'Workspace');
+    vscode.commands.executeCommand(
+      "setContext",
+      "one:extensionKind",
+      "Workspace"
+    );
   }
 
   OneTreeDataProvider.register(context);

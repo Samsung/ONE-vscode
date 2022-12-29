@@ -14,30 +14,34 @@
  * limitations under the License.
  */
 
-import {EventEmitter} from 'events';
-import * as vscode from 'vscode';
+import { EventEmitter } from "events";
+import * as vscode from "vscode";
 
-import {Logger} from '../Utils/Logger';
+import { Logger } from "../Utils/Logger";
 
-import {Job} from './Job';
-import {ToolArgs} from './ToolArgs';
-import {ToolRunner} from './ToolRunner';
-import {WorkJobs} from './WorkJobs';
+import { Job } from "./Job";
+import { ToolArgs } from "./ToolArgs";
+import { ToolRunner } from "./ToolRunner";
+import { WorkJobs } from "./WorkJobs";
 
-const K_INVOKE: string = 'invoke';
-const K_CLEANUP: string = 'cleanup';
+const K_INVOKE: string = "invoke";
+const K_CLEANUP: string = "cleanup";
 
 export class JobRunner extends EventEmitter {
-  tag = this.constructor.name;  // logging tag
+  tag = this.constructor.name; // logging tag
   jobs: WorkJobs = [];
   running: boolean = false;
   toolRunner: ToolRunner;
   private progressTimer?: NodeJS.Timeout;
-  private progress?: vscode.Progress<{message?: string, increment?: number}>;
+  private progress?: vscode.Progress<{ message?: string; increment?: number }>;
 
   constructor() {
     super();
-    vscode.commands.executeCommand('setContext', 'one.job:running', this.running);
+    vscode.commands.executeCommand(
+      "setContext",
+      "one.job:running",
+      this.running
+    );
     this.toolRunner = new ToolRunner();
 
     this.on(K_INVOKE, this.onInvoke);
@@ -56,39 +60,55 @@ export class JobRunner extends EventEmitter {
       if (job.notiTitle) {
         message = job.notiTitle;
       }
-      this.progress.report({message: message});
+      this.progress.report({ message: message });
     }
 
-    Logger.info(this.tag, 'Run tool:', tool, 'args:', toolArgs, 'cwd:', workDir, 'root:', job.root);
-    const runner = this.toolRunner.getRunner(job.name, tool, toolArgs, workDir, job.root);
+    Logger.info(
+      this.tag,
+      "Run tool:",
+      tool,
+      "args:",
+      toolArgs,
+      "cwd:",
+      workDir,
+      "root:",
+      job.root
+    );
+    const runner = this.toolRunner.getRunner(
+      job.name,
+      tool,
+      toolArgs,
+      workDir,
+      job.root
+    );
 
     runner
-        .then((value) => {
-          if (value.intentionallyKilled) {
-            Logger.info(this.tag, 'The job was cancelled.');
-            this.emit(K_CLEANUP);
-            return;
-          }
-
-          if (success !== undefined) {
-            success();
-          }
-          // Move on to next job
-          this.emit(K_INVOKE);
-        })
-        .catch(() => {
-          if (failure !== undefined) {
-            failure();
-          }
-          Logger.error(this.tag, 'The job was failed.');
+      .then((value) => {
+        if (value.intentionallyKilled) {
+          Logger.info(this.tag, "The job was cancelled.");
           this.emit(K_CLEANUP);
-        });
+          return;
+        }
+
+        if (success !== undefined) {
+          success();
+        }
+        // Move on to next job
+        this.emit(K_INVOKE);
+      })
+      .catch(() => {
+        if (failure !== undefined) {
+          failure();
+        }
+        Logger.error(this.tag, "The job was failed.");
+        this.emit(K_CLEANUP);
+      });
   }
 
   private onInvoke() {
     let job = this.jobs.shift();
     if (job === undefined) {
-      Logger.info(this.tag, 'All jobs have been completed.');
+      Logger.info(this.tag, "All jobs have been completed.");
       this.emit(K_CLEANUP);
       return;
     }
@@ -97,14 +117,18 @@ export class JobRunner extends EventEmitter {
 
   private onCleanup() {
     this.running = false;
-    vscode.commands.executeCommand('setContext', 'one.job:running', this.running);
-    process.env.userp = '';
+    vscode.commands.executeCommand(
+      "setContext",
+      "one.job:running",
+      this.running
+    );
+    process.env.userp = "";
   }
 
   public start(jobs: WorkJobs) {
     // TODO maybe there is better way to handle already running jobs
     if (this.running) {
-      Logger.error(this.tag, 'The job is in progress.');
+      Logger.error(this.tag, "The job is in progress.");
       return;
     }
 
@@ -117,28 +141,36 @@ export class JobRunner extends EventEmitter {
 
     Logger.show();
     vscode.window.withProgress(
-        {location: vscode.ProgressLocation.Notification, cancellable: isCancellable},
-        (progress, token) => {
-          // TODO(jyoung): Implement to request cancel job.
-          token.onCancellationRequested(() => {
-            this.toolRunner.kill();
-          });
-
-          return new Promise<void>(resolve => {
-            this.progress = progress;
-            this.progressTimer = setInterval(() => {
-              if (!this.running) {
-                if (this.progressTimer) {
-                  clearInterval(this.progressTimer);
-                  resolve(undefined);
-                }
-              }
-            }, 1000);
-          });
+      {
+        location: vscode.ProgressLocation.Notification,
+        cancellable: isCancellable,
+      },
+      (progress, token) => {
+        // TODO(jyoung): Implement to request cancel job.
+        token.onCancellationRequested(() => {
+          this.toolRunner.kill();
         });
 
+        return new Promise<void>((resolve) => {
+          this.progress = progress;
+          this.progressTimer = setInterval(() => {
+            if (!this.running) {
+              if (this.progressTimer) {
+                clearInterval(this.progressTimer);
+                resolve(undefined);
+              }
+            }
+          }, 1000);
+        });
+      }
+    );
+
     this.running = true;
-    vscode.commands.executeCommand('setContext', 'one.job:running', this.running);
+    vscode.commands.executeCommand(
+      "setContext",
+      "one.job:running",
+      this.running
+    );
     this.jobs = jobs;
     this.emit(K_INVOKE);
   }

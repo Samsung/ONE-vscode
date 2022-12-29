@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-import {assert} from 'chai';
+import { assert } from "chai";
 
-import {Command} from '../../Backend/Command';
-import {JobType} from '../../Job/Job';
-import {JobUninstall} from '../../Toolchain/JobUninstall';
+import { Command } from "../../Backend/Command";
+import { JobType } from "../../Job/Job";
+import { JobUninstall } from "../../Toolchain/JobUninstall";
 
-suite('Toolchain', function() {
-  suite('JobUninstall', function() {
-    suite('#constructor()', function() {
-      test('is contructed with command', function() {
-        let cmd = new Command('apt-get');
-        cmd.push('purge');
-        cmd.push('pkgname');
+suite("Toolchain", function () {
+  suite("JobUninstall", function () {
+    suite("#constructor()", function () {
+      test("is contructed with command", function () {
+        let cmd = new Command("apt-get");
+        cmd.push("purge");
+        cmd.push("pkgname");
 
         let job = new JobUninstall(cmd);
         assert.deepStrictEqual(job.tool, cmd[0]);
         assert.deepStrictEqual(job.toolArgs[0], cmd[1]);
         assert.deepStrictEqual(job.toolArgs[1], cmd[2]);
-        assert.deepStrictEqual(job.name, 'uninstall');
+        assert.deepStrictEqual(job.name, "uninstall");
         assert.equal(job.jobType, JobType.tUninstall);
         assert.isTrue(job.valid);
       });

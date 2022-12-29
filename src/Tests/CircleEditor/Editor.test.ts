@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import {assert} from 'chai';
+import { assert } from "chai";
 
-import * as Circle from '../../CircleEditor/circle_schema_generated';
-import {AttributeEditor, TensorEditor} from '../../CircleEditor/Editor';
+import * as Circle from "../../CircleEditor/circle_schema_generated";
+import { AttributeEditor, TensorEditor } from "../../CircleEditor/Editor";
 
-suite('CircleEditor', function() {
-  suite('Editor', function() {
-    suite('#constructor()', function() {
-      test('is contructed with Circle.ModelT', function() {
-        let model = new Circle.ModelT;
+suite("CircleEditor", function () {
+  suite("Editor", function () {
+    suite("#constructor()", function () {
+      test("is contructed with Circle.ModelT", function () {
+        let model = new Circle.ModelT();
         let attrEditor = new AttributeEditor(model);
         assert.equal(attrEditor.operatorIndex, -1);
         assert.equal(attrEditor.subgraphIndex, -1);
@@ -35,18 +35,18 @@ suite('CircleEditor', function() {
   });
 });
 
-suite('CircleEditor', function() {
-  suite('Editor', function() {
-    suite('#edit()', function() {
-      test('edits attributes of given Circle.ModelT', function() {
+suite("CircleEditor", function () {
+  suite("Editor", function () {
+    suite("#edit()", function () {
+      test("edits attributes of given Circle.ModelT", function () {
         let operator = new Circle.OperatorT();
-        operator.builtinOptions = new Circle.AddOptionsT;
+        operator.builtinOptions = new Circle.AddOptionsT();
         operator.builtinOptionsType = Circle.BuiltinOptions.AddOptions;
 
-        let subgraph = new Circle.SubGraphT;
+        let subgraph = new Circle.SubGraphT();
         subgraph.operators.push(operator);
 
-        let model = new Circle.ModelT;
+        let model = new Circle.ModelT();
         model.subgraphs.push(subgraph);
         let attrEditor = new AttributeEditor(model);
 
@@ -56,15 +56,17 @@ suite('CircleEditor', function() {
         assert.equal(attrEditor.subgraphIndex, 0);
 
         let attr = {
-          name: 'fused_activation_function',
-          _type: 'ActivationFunctionType',
-          _value: 'RELU_N1_TO_1'
+          name: "fused_activation_function",
+          _type: "ActivationFunctionType",
+          _value: "RELU_N1_TO_1",
         };
 
-        attrEditor.edit('ADD', attr);
+        attrEditor.edit("ADD", attr);
         let builtin: any = model.subgraphs[0].operators[0].builtinOptions;
         assert.equal(
-            builtin['fusedActivationFunction'], Circle.ActivationFunctionType.RELU_N1_TO_1);
+          builtin["fusedActivationFunction"],
+          Circle.ActivationFunctionType.RELU_N1_TO_1
+        );
       });
     });
   });

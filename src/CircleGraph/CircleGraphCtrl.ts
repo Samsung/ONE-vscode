@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import * as fs from 'fs';
-import * as vscode from 'vscode';
+import * as fs from "fs";
+import * as vscode from "vscode";
 
-import {Balloon} from '../Utils/Balloon';
-import {getNonce} from '../Utils/external/Nonce';
-import {BackendColor} from './BackendColor';
+import { Balloon } from "../Utils/Balloon";
+import { getNonce } from "../Utils/external/Nonce";
+import { BackendColor } from "./BackendColor";
 
 class CtrlStatus {
   public static readonly init = 0;
@@ -43,25 +43,25 @@ class CtrlStatus {
  */
 export class MessageDefs {
   // message command
-  public static readonly alert = 'alert';
-  public static readonly request = 'request';
-  public static readonly response = 'response';
-  public static readonly pageloaded = 'pageloaded';
-  public static readonly loadmodel = 'loadmodel';
-  public static readonly finishload = 'finishload';
-  public static readonly reload = 'reload';
-  public static readonly export = 'export';
-  public static readonly selection = 'selection';
-  public static readonly backendColor = 'backendColor';
-  public static readonly error = 'error';
-  public static readonly colorTheme = 'colorTheme';
+  public static readonly alert = "alert";
+  public static readonly request = "request";
+  public static readonly response = "response";
+  public static readonly pageloaded = "pageloaded";
+  public static readonly loadmodel = "loadmodel";
+  public static readonly finishload = "finishload";
+  public static readonly reload = "reload";
+  public static readonly export = "export";
+  public static readonly selection = "selection";
+  public static readonly backendColor = "backendColor";
+  public static readonly error = "error";
+  public static readonly colorTheme = "colorTheme";
   // loadmodel type
-  public static readonly modelpath = 'modelpath';
-  public static readonly uint8array = 'uint8array';
+  public static readonly modelpath = "modelpath";
+  public static readonly uint8array = "uint8array";
   // partiton of backends
-  public static readonly partition = 'partition';
+  public static readonly partition = "partition";
   // visq data
-  public static readonly visq = 'visq';
+  public static readonly visq = "visq";
 }
 
 export interface CircleGraphEvent {
@@ -70,16 +70,17 @@ export interface CircleGraphEvent {
 
 /* istanbul ignore next */
 export class CircleGraphCtrl {
-  protected static readonly folderMediaCircleGraph = 'media/CircleGraph';
-  protected static readonly folderMediaCircleGraphExt = 'media/CircleGraph/external';
-  protected static readonly folderExternal = 'external/';
+  protected static readonly folderMediaCircleGraph = "media/CircleGraph";
+  protected static readonly folderMediaCircleGraphExt =
+    "media/CircleGraph/external";
+  protected static readonly folderExternal = "external/";
 
   protected readonly _extensionUri: vscode.Uri;
   protected readonly _webview: vscode.Webview;
   protected _modelToLoad: string;
   protected _modelLength: number;
-  protected _eventHandler: CircleGraphEvent|undefined;
-  protected _selectionNames: string[]|undefined;
+  protected _eventHandler: CircleGraphEvent | undefined;
+  protected _selectionNames: string[] | undefined;
   protected _state: CtrlStatus;
   protected _viewMode: string;
 
@@ -88,14 +89,17 @@ export class CircleGraphCtrl {
   public constructor(extensionUri: vscode.Uri, webView: vscode.Webview) {
     this._extensionUri = extensionUri;
     this._webview = webView;
-    this._modelToLoad = '';
+    this._modelToLoad = "";
     this._modelLength = 0;
     this._eventHandler = undefined;
     this._state = CtrlStatus.init;
-    this._viewMode = 'viewer';
+    this._viewMode = "viewer";
   }
 
-  public initGraphCtrl(modelToLoad: string, notify: CircleGraphEvent|undefined) {
+  public initGraphCtrl(
+    modelToLoad: string,
+    notify: CircleGraphEvent | undefined
+  ) {
     this._webview.options = this.getWebviewOptions(this._extensionUri);
     this._modelToLoad = modelToLoad;
     this._modelLength = 0;
@@ -105,7 +109,7 @@ export class CircleGraphCtrl {
     this.registerEventHandlers();
 
     const thiz = this;
-    vscode.workspace.onDidChangeConfiguration(e => {
+    vscode.workspace.onDidChangeConfiguration((e) => {
       thiz.handleChangeConfiguration(e);
     });
   }
@@ -145,50 +149,60 @@ export class CircleGraphCtrl {
   }
 
   public setPartition(partition: any) {
-    this._webview.postMessage({command: MessageDefs.partition, partition: partition});
+    this._webview.postMessage({
+      command: MessageDefs.partition,
+      partition: partition,
+    });
   }
 
   public sendBackendColor(backends: BackendColor[]) {
-    this._webview.postMessage({command: MessageDefs.backendColor, backends: backends});
+    this._webview.postMessage({
+      command: MessageDefs.backendColor,
+      backends: backends,
+    });
   }
 
   public sendVisq(visq: any) {
-    this._webview.postMessage({command: MessageDefs.visq, visq: visq});
+    this._webview.postMessage({ command: MessageDefs.visq, visq: visq });
   }
 
   public reloadModel() {
-    this._webview.postMessage({command: MessageDefs.reload});
+    this._webview.postMessage({ command: MessageDefs.reload });
   }
 
   private registerEventHandlers() {
     // Handle messages from the webview
-    this._webview.onDidReceiveMessage(message => {
-      switch (message.command) {
-        case MessageDefs.alert:
-          Balloon.error(message.text);
-          return;
-        case MessageDefs.request:
-          this.handleRequest(message.url, message.encoding);
-          return;
-        case MessageDefs.loadmodel:
-          this.handleLoadModel(parseInt(message.offset));  // to number
-          return;
-        case MessageDefs.finishload:
-          this.handleFinishLoad(message);
-          return;
-        default:
-          break;
-      }
-      if (this._eventHandler) {
-        this._eventHandler.onViewMessage(message);
-      }
-    }, null, this._ctrlDisposables);
+    this._webview.onDidReceiveMessage(
+      (message) => {
+        switch (message.command) {
+          case MessageDefs.alert:
+            Balloon.error(message.text);
+            return;
+          case MessageDefs.request:
+            this.handleRequest(message.url, message.encoding);
+            return;
+          case MessageDefs.loadmodel:
+            this.handleLoadModel(parseInt(message.offset)); // to number
+            return;
+          case MessageDefs.finishload:
+            this.handleFinishLoad(message);
+            return;
+          default:
+            break;
+        }
+        if (this._eventHandler) {
+          this._eventHandler.onViewMessage(message);
+        }
+      },
+      null,
+      this._ctrlDisposables
+    );
   }
 
   protected handleChangeConfiguration(e: vscode.ConfigurationChangeEvent) {
-    if (e.affectsConfiguration('workbench.colorTheme')) {
+    if (e.affectsConfiguration("workbench.colorTheme")) {
       if (this.isReady()) {
-        this._webview.postMessage({command: MessageDefs.colorTheme});
+        this._webview.postMessage({ command: MessageDefs.colorTheme });
       }
     }
   }
@@ -203,17 +217,29 @@ export class CircleGraphCtrl {
     // TODO check scheme
     const reqUrl = new URL(url);
     let filePath = vscode.Uri.joinPath(
-        this._extensionUri, CircleGraphCtrl.folderMediaCircleGraph, reqUrl.pathname);
+      this._extensionUri,
+      CircleGraphCtrl.folderMediaCircleGraph,
+      reqUrl.pathname
+    );
     if (!fs.existsSync(filePath.fsPath)) {
       filePath = vscode.Uri.joinPath(
-          this._extensionUri, CircleGraphCtrl.folderMediaCircleGraphExt, reqUrl.pathname);
+        this._extensionUri,
+        CircleGraphCtrl.folderMediaCircleGraphExt,
+        reqUrl.pathname
+      );
     }
 
     try {
-      const fileData = fs.readFileSync(filePath.fsPath, {encoding: encoding, flag: 'r'});
-      this._webview.postMessage({command: MessageDefs.response, response: fileData});
+      const fileData = fs.readFileSync(filePath.fsPath, {
+        encoding: encoding,
+        flag: "r",
+      });
+      this._webview.postMessage({
+        command: MessageDefs.response,
+        response: fileData,
+      });
     } catch (err) {
-      this._webview.postMessage({command: MessageDefs.error, response: ''});
+      this._webview.postMessage({ command: MessageDefs.error, response: "" });
     }
   }
 
@@ -224,7 +250,7 @@ export class CircleGraphCtrl {
    */
   protected handleLoadModel(offset: number) {
     // TODO make this faster
-    const sendPacketSize = 1024 * 1024 * 10;  // 10MB
+    const sendPacketSize = 1024 * 1024 * 10; // 10MB
 
     if (offset === 0) {
       this._state = CtrlStatus.loading;
@@ -246,7 +272,10 @@ export class CircleGraphCtrl {
         this.handleLoadError(err);
       }
     } else {
-      const nextPacketSize = Math.min(this._modelLength - offset, sendPacketSize);
+      const nextPacketSize = Math.min(
+        this._modelLength - offset,
+        sendPacketSize
+      );
       try {
         this.sendModelMulti(nextPacketSize, offset);
       } catch (err: unknown) {
@@ -279,16 +308,22 @@ export class CircleGraphCtrl {
       return;
     }
 
-    this._webview.postMessage(
-        {command: MessageDefs.selection, type: 'names', names: this._selectionNames});
+    this._webview.postMessage({
+      command: MessageDefs.selection,
+      type: "names",
+      names: this._selectionNames,
+    });
 
     // cleanup
     this._selectionNames = undefined;
   }
 
   private sendModelPath() {
-    this._webview.postMessage(
-        {command: MessageDefs.loadmodel, type: MessageDefs.modelpath, value: this._modelToLoad});
+    this._webview.postMessage({
+      command: MessageDefs.loadmodel,
+      type: MessageDefs.modelpath,
+      value: this._modelToLoad,
+    });
   }
 
   /**
@@ -303,7 +338,7 @@ export class CircleGraphCtrl {
       offset: 0,
       length: this._modelLength,
       total: this._modelLength,
-      responseArray: modelData
+      responseArray: modelData,
     });
   }
 
@@ -313,10 +348,13 @@ export class CircleGraphCtrl {
    * @param offset     position of the file where to begin with
    */
   private sendModelMulti(packetSize: number, offset: number) {
-    fs.open(this._modelToLoad, 'r', (err, fd) => {
+    fs.open(this._modelToLoad, "r", (err, fd) => {
       if (err) {
-        this._webview.postMessage(
-            {command: MessageDefs.loadmodel, type: MessageDefs.error, responseErr: err.message});
+        this._webview.postMessage({
+          command: MessageDefs.loadmodel,
+          type: MessageDefs.error,
+          responseErr: err.message,
+        });
         Balloon.error(err.message);
         return;
       }
@@ -330,7 +368,7 @@ export class CircleGraphCtrl {
         offset: offset,
         length: packetSize,
         total: this._modelLength,
-        responseArray: modelData
+        responseArray: modelData,
       });
       fs.close(fd, () => {});
     });
@@ -344,7 +382,7 @@ export class CircleGraphCtrl {
     if (err instanceof Error) {
       Balloon.error(err.message);
     } else {
-      Balloon.error('Failed to load model');
+      Balloon.error("Failed to load model");
     }
   }
 
@@ -353,52 +391,108 @@ export class CircleGraphCtrl {
   }
 
   public getHtmlForWebview(webview: vscode.Webview) {
-    const htmlPath = this.getMediaPath('index.html');
-    let html = fs.readFileSync(htmlPath.fsPath, {encoding: 'utf-8'});
+    const htmlPath = this.getMediaPath("index.html");
+    let html = fs.readFileSync(htmlPath.fsPath, { encoding: "utf-8" });
 
     const nonce = getNonce();
     html = html.replace(/%nonce%/gi, nonce);
-    html = html.replace('%webview.cspSource%', webview.cspSource);
+    html = html.replace("%webview.cspSource%", webview.cspSource);
     // necessary files from netron to work
-    html = this.updateUri(html, webview, '%view-grapher.css%', 'view-grapher.css');
-    html = this.updateUri(html, webview, '%view-sidebar.css%', 'view-sidebar.css');
-    html = this.updateUri(html, webview, '%view-sidebar.js%', 'view-sidebar.js');
-    html = this.updateUri(html, webview, '%view-grapher.js%', 'view-grapher.js');
-    html = this.updateExternalUri(html, webview, '%dagre.js%', 'dagre.js');
-    html = this.updateExternalUri(html, webview, '%base.js%', 'base.js');
-    html = this.updateExternalUri(html, webview, '%text.js%', 'text.js');
-    html = this.updateExternalUri(html, webview, '%json.js%', 'json.js');
-    html = this.updateExternalUri(html, webview, '%xml.js%', 'xml.js');
-    html = this.updateExternalUri(html, webview, '%python.js%', 'python.js');
-    html = this.updateExternalUri(html, webview, '%protobuf.js%', 'protobuf.js');
-    html = this.updateExternalUri(html, webview, '%flatbuffers.js%', 'flatbuffers.js');
-    html = this.updateExternalUri(html, webview, '%flexbuffers.js%', 'flexbuffers.js');
-    html = this.updateExternalUri(html, webview, '%zip.js%', 'zip.js');
-    html = this.updateExternalUri(html, webview, '%gzip.js%', 'gzip.js');
-    html = this.updateExternalUri(html, webview, '%tar.js%', 'tar.js');
+    html = this.updateUri(
+      html,
+      webview,
+      "%view-grapher.css%",
+      "view-grapher.css"
+    );
+    html = this.updateUri(
+      html,
+      webview,
+      "%view-sidebar.css%",
+      "view-sidebar.css"
+    );
+    html = this.updateUri(
+      html,
+      webview,
+      "%view-sidebar.js%",
+      "view-sidebar.js"
+    );
+    html = this.updateUri(
+      html,
+      webview,
+      "%view-grapher.js%",
+      "view-grapher.js"
+    );
+    html = this.updateExternalUri(html, webview, "%dagre.js%", "dagre.js");
+    html = this.updateExternalUri(html, webview, "%base.js%", "base.js");
+    html = this.updateExternalUri(html, webview, "%text.js%", "text.js");
+    html = this.updateExternalUri(html, webview, "%json.js%", "json.js");
+    html = this.updateExternalUri(html, webview, "%xml.js%", "xml.js");
+    html = this.updateExternalUri(html, webview, "%python.js%", "python.js");
+    html = this.updateExternalUri(
+      html,
+      webview,
+      "%protobuf.js%",
+      "protobuf.js"
+    );
+    html = this.updateExternalUri(
+      html,
+      webview,
+      "%flatbuffers.js%",
+      "flatbuffers.js"
+    );
+    html = this.updateExternalUri(
+      html,
+      webview,
+      "%flexbuffers.js%",
+      "flexbuffers.js"
+    );
+    html = this.updateExternalUri(html, webview, "%zip.js%", "zip.js");
+    html = this.updateExternalUri(html, webview, "%gzip.js%", "gzip.js");
+    html = this.updateExternalUri(html, webview, "%tar.js%", "tar.js");
     // for circle format
-    html = this.updateExternalUri(html, webview, '%circle.js%', 'circle.js');
-    html = this.updateExternalUri(html, webview, '%circle-schema.js%', 'circle-schema.js');
+    html = this.updateExternalUri(html, webview, "%circle.js%", "circle.js");
+    html = this.updateExternalUri(
+      html,
+      webview,
+      "%circle-schema.js%",
+      "circle-schema.js"
+    );
     // modified for one-vscode
-    html = this.updateUri(html, webview, '%index.js%', 'index.js');
-    html = this.updateUri(html, webview, '%view.js%', 'view.js');
+    html = this.updateUri(html, webview, "%index.js%", "index.js");
+    html = this.updateUri(html, webview, "%view.js%", "view.js");
     // viewMode
-    html = html.replace('%viewMode%', this._viewMode);
+    html = html.replace("%viewMode%", this._viewMode);
 
     return html;
   }
 
   private getMediaPath(file: string) {
-    return vscode.Uri.joinPath(this._extensionUri, CircleGraphCtrl.folderMediaCircleGraph, file);
+    return vscode.Uri.joinPath(
+      this._extensionUri,
+      CircleGraphCtrl.folderMediaCircleGraph,
+      file
+    );
   }
 
   private updateExternalUri(
-      html: string, webview: vscode.Webview, search: string, replace: string) {
-    const replaceUri = this.getUriFromPath(webview, CircleGraphCtrl.folderExternal + replace);
+    html: string,
+    webview: vscode.Webview,
+    search: string,
+    replace: string
+  ) {
+    const replaceUri = this.getUriFromPath(
+      webview,
+      CircleGraphCtrl.folderExternal + replace
+    );
     return html.replace(search, `${replaceUri}`);
   }
 
-  private updateUri(html: string, webview: vscode.Webview, search: string, replace: string) {
+  private updateUri(
+    html: string,
+    webview: vscode.Webview,
+    search: string,
+    replace: string
+  ) {
     const replaceUri = this.getUriFromPath(webview, replace);
     return html.replace(search, `${replaceUri}`);
   }
@@ -409,18 +503,23 @@ export class CircleGraphCtrl {
     return uriView;
   }
 
-  private getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions
-      &vscode.WebviewPanelOptions {
+  private getWebviewOptions(
+    extensionUri: vscode.Uri
+  ): vscode.WebviewOptions & vscode.WebviewPanelOptions {
     return {
       // Enable javascript in the webview
       enableScripts: true,
       // And restrict the webview to only loading content from our extension's
       // 'media/CircleGraph' directory.
-      localResourceRoots:
-          [vscode.Uri.joinPath(extensionUri, CircleGraphCtrl.folderMediaCircleGraph)],
+      localResourceRoots: [
+        vscode.Uri.joinPath(
+          extensionUri,
+          CircleGraphCtrl.folderMediaCircleGraph
+        ),
+      ],
 
       // to prevent view to reload after loosing focus
-      retainContextWhenHidden: true
+      retainContextWhenHidden: true,
     };
   }
 }

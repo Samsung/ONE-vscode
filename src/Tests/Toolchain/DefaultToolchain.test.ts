@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-import {assert} from 'chai';
-import {DefaultToolchain} from '../../Toolchain/DefaultToolchain';
-import {ToolchainEnv} from '../../Toolchain/ToolchainEnv';
-import {MockCompiler} from '../MockCompiler';
+import { assert } from "chai";
+import { DefaultToolchain } from "../../Toolchain/DefaultToolchain";
+import { ToolchainEnv } from "../../Toolchain/ToolchainEnv";
+import { MockCompiler } from "../MockCompiler";
 
-suite('Toolchain', function() {
-  suite('DefaultToolchain', function() {
+suite("Toolchain", function () {
+  suite("DefaultToolchain", function () {
     const compiler = new MockCompiler();
     const env = new ToolchainEnv(compiler);
 
-    suite('#getInstance()', function() {
-      test('gets instance', function() {
+    suite("#getInstance()", function () {
+      test("gets instance", function () {
         const defaultToolchain = DefaultToolchain.getInstance();
         assert.isDefined(defaultToolchain);
       });
     });
 
-    suite('#set()', function() {
-      test('sets toolchainEnv and toolchain', function() {
+    suite("#set()", function () {
+      test("sets toolchainEnv and toolchain", function () {
         const defaultToolchain = DefaultToolchain.getInstance();
         const toolchains = env.listInstalled();
         assert.isAbove(toolchains.length, 0);
@@ -42,8 +42,8 @@ suite('Toolchain', function() {
       });
     });
 
-    suite('#unset()', function() {
-      test('unsets toolchainEnv and toolchain', function() {
+    suite("#unset()", function () {
+      test("unsets toolchainEnv and toolchain", function () {
         const defaultToolchain = DefaultToolchain.getInstance();
         const toolchains = env.listInstalled();
         assert.isAbove(toolchains.length, 0);

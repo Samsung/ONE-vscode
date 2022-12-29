@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import {assert} from 'chai';
-import {Version} from '../../Backend/Version';
+import { assert } from "chai";
+import { Version } from "../../Backend/Version";
 
-suite('Backend', function() {
-  suite('Version', function() {
-    suite('#constructor()', function() {
-      test('is contructed with values', function() {
+suite("Backend", function () {
+  suite("Version", function () {
+    suite("#constructor()", function () {
+      test("is contructed with values", function () {
         const major: number = 1;
         const minor: number = 0;
         const patch: number = 2;
-        const option: string = '~220424nightly';
+        const option: string = "~220424nightly";
         const version = new Version(major, minor, patch, option);
         assert.isObject<Version>(version);
         assert.strictEqual(version.major, major);
@@ -34,39 +34,39 @@ suite('Backend', function() {
       });
     });
 
-    suite('#str()', function() {
-      test('returns a string with values', function() {
+    suite("#str()", function () {
+      test("returns a string with values", function () {
         const major: number = 1;
         const minor: number = 0;
         const patch: number = 2;
-        const option: string = '~220424nightly';
+        const option: string = "~220424nightly";
         const version = new Version(major, minor, patch, option);
         const expectedStr = `${major}.${minor}.${patch}${option}`;
         assert.deepStrictEqual(version.str(), expectedStr);
       });
     });
 
-    suite('#equals()', function() {
-      test('true', function() {
-        const version1 = new Version(1, 0, 2, 'option');
-        const version2 = new Version(1, 0, 2, 'option');
+    suite("#equals()", function () {
+      test("true", function () {
+        const version1 = new Version(1, 0, 2, "option");
+        const version2 = new Version(1, 0, 2, "option");
         assert.isTrue(version1.equals(version2));
         assert.isTrue(version2.equals(version1));
       });
-      test('NEG: compare version without option', function() {
-        const version1 = new Version(1, 0, 2, 'option');
+      test("NEG: compare version without option", function () {
+        const version1 = new Version(1, 0, 2, "option");
         const version2 = new Version(1, 0, 2);
         assert.isFalse(version1.equals(version2));
         assert.isFalse(version2.equals(version1));
       });
-      test('NEG: compare version without patch and option', function() {
-        const version1 = new Version(1, 0, 2, 'option');
+      test("NEG: compare version without patch and option", function () {
+        const version1 = new Version(1, 0, 2, "option");
         const version2 = new Version(1, 0, undefined);
         assert.isFalse(version1.equals(version2));
         assert.isFalse(version2.equals(version1));
       });
-      test('NEG: compare version only with major', function() {
-        const version1 = new Version(1, 0, 2, 'option');
+      test("NEG: compare version only with major", function () {
+        const version1 = new Version(1, 0, 2, "option");
         const version2 = new Version(1, undefined, undefined);
         assert.isFalse(version1.equals(version2));
         assert.isFalse(version2.equals(version1));

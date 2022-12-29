@@ -16,19 +16,39 @@
 
 /* eslint-disable */
 const optionValues = {
-    'ActivationFunctionType': ['NONE', 'RELU', 'RELU_N1_TO_1', 'RELU6', 'TANH', 'SIGN_BIT'],
-    'Padding': ['SAME', 'VALID'],
-    'LSHProjectionType': ['UNKNOWN', 'SPARSE', 'DENSE'],
-    'DimensionType': ['DENSE', 'SPARSE_CSR'],
-    'FullyConnectedOptionsWeightsFormat': ['DEFAULT', 'SHUFFLED4x16INT8', 'SHUFFLED16x1FLOAT32'],
-    'LSTMKernelType': ['FULL', 'BASIC'],
-    'CombinerType': ['SUM', 'MEAN', 'SQRTN'],
-    'MirrorPadMode': ['REFLECT', 'SYMMETRIC'],
-    'CustomOptionsFormat': ['FLEXBUFFERS'],
-    'DataFormat': ['CHANNELS_LAST', 'CHANNELS_FIRST'],
+  ActivationFunctionType: [
+    "NONE",
+    "RELU",
+    "RELU_N1_TO_1",
+    "RELU6",
+    "TANH",
+    "SIGN_BIT",
+  ],
+  Padding: ["SAME", "VALID"],
+  LSHProjectionType: ["UNKNOWN", "SPARSE", "DENSE"],
+  DimensionType: ["DENSE", "SPARSE_CSR"],
+  FullyConnectedOptionsWeightsFormat: [
+    "DEFAULT",
+    "SHUFFLED4x16INT8",
+    "SHUFFLED16x1FLOAT32",
+  ],
+  LSTMKernelType: ["FULL", "BASIC"],
+  CombinerType: ["SUM", "MEAN", "SQRTN"],
+  MirrorPadMode: ["REFLECT", "SYMMETRIC"],
+  CustomOptionsFormat: ["FLEXBUFFERS"],
+  DataFormat: ["CHANNELS_LAST", "CHANNELS_FIRST"],
 };
 
-const tensorType =
-    ['FLOAT32', 'FLOAT16', 'INT32', 'UINT8', 'INT64', 'BOOLEAN', 'INT16', 'INT8', 'FLOAT64'];
+const tensorType = [
+  "FLOAT32",
+  "FLOAT16",
+  "INT32",
+  "UINT8",
+  "INT64",
+  "BOOLEAN",
+  "INT16",
+  "INT8",
+  "FLOAT64",
+];
 
-const customType = ['int', 'boolean', 'string'];
+const customType = ["int", "boolean", "string"];

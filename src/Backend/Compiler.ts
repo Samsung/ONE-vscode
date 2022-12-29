@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import {Command} from './Command';
-import {Toolchains} from './Toolchain';
+import { Command } from "./Command";
+import { Toolchains } from "./Toolchain";
 
 // This Backend API assumes that backend supporter's backend has ONE-compiler as default.
 //
@@ -50,7 +50,11 @@ interface Compiler {
    *
    * @throw Error when toolchainTypes are not supported
    */
-  getToolchains(toolchainType: string, start: number, count: number): Toolchains;
+  getToolchains(
+    toolchainType: string,
+    start: number,
+    count: number
+  ): Toolchains;
 
   /**
    * @brief Function to return the list of already-installed toolchains
@@ -74,20 +78,24 @@ interface Compiler {
 // General compiler uses onecc so default jobs can be used
 class CompilerBase implements Compiler {
   getToolchainTypes(): string[] {
-    throw Error('Invalid getToolchainTypes call');
+    throw Error("Invalid getToolchainTypes call");
   }
 
-  getToolchains(_toolchainType: string, _start: number, _count: number): Toolchains {
-    throw Error('Invalid getToolchains call');
+  getToolchains(
+    _toolchainType: string,
+    _start: number,
+    _count: number
+  ): Toolchains {
+    throw Error("Invalid getToolchains call");
   }
 
   getInstalledToolchains(_toolchainType: string): Toolchains {
-    throw Error('Invalid getInstalledToolchains call');
+    throw Error("Invalid getInstalledToolchains call");
   }
 
   prerequisitesForGetToolchains(): Command {
-    throw Error('Invalid prerequisitesForGetToolchains call');
+    throw Error("Invalid prerequisitesForGetToolchains call");
   }
 }
 
-export {Compiler, CompilerBase};
+export { Compiler, CompilerBase };

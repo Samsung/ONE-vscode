@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
-import * as vscode from 'vscode';
+import * as fs from "fs";
+import * as path from "path";
+import * as vscode from "vscode";
 
-import {CircleGraphCtrl, CircleGraphEvent, MessageDefs} from '../CircleGraph/CircleGraphCtrl';
-import {Balloon} from '../Utils/Balloon';
-
+import {
+  CircleGraphCtrl,
+  CircleGraphEvent,
+  MessageDefs,
+} from "../CircleGraph/CircleGraphCtrl";
+import { Balloon } from "../Utils/Balloon";
 
 /**
  * @brief VisqViewer with CircleGraphCtrl
@@ -30,7 +33,11 @@ class VisqViewer extends CircleGraphCtrl implements CircleGraphEvent {
   private readonly _panel: vscode.WebviewPanel;
   private readonly _document: VisqViewerDocument;
 
-  constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, document: VisqViewerDocument) {
+  constructor(
+    panel: vscode.WebviewPanel,
+    extensionUri: vscode.Uri,
+    document: VisqViewerDocument
+  ) {
     super(extensionUri, panel.webview);
     this._panel = panel;
     this._document = document;
@@ -55,24 +62,24 @@ class VisqViewer extends CircleGraphCtrl implements CircleGraphEvent {
   }
 
   private exportToFile(message: any) {
-    if (!Object.prototype.hasOwnProperty.call(message, 'file')) {
+    if (!Object.prototype.hasOwnProperty.call(message, "file")) {
       return;
     }
-    if (!Object.prototype.hasOwnProperty.call(message, 'data')) {
+    if (!Object.prototype.hasOwnProperty.call(message, "data")) {
       return;
     }
     // NOTE message.file is absolute path
     let uri = vscode.Uri.file(message.file);
     let content = Uint8Array.from(message.data);
 
-    vscode.workspace.fs.writeFile(uri, content)
-        .then(
-            () => {
-              Balloon.info('Export done: ' + path.basename(message.file));
-            },
-            (err) => {
-              Balloon.info('Export error: ' + err);
-            });
+    vscode.workspace.fs.writeFile(uri, content).then(
+      () => {
+        Balloon.info("Export done: " + path.basename(message.file));
+      },
+      (err) => {
+        Balloon.info("Export error: " + err);
+      }
+    );
   }
 }
 
@@ -105,13 +112,14 @@ class VisqViewer extends CircleGraphCtrl implements CircleGraphEvent {
 /* istanbul ignore next */
 export class VisqViewerDocument implements vscode.CustomDocument {
   private readonly _uri: vscode.Uri;
-  private _visqViewer: VisqViewer|undefined;
+  private _visqViewer: VisqViewer | undefined;
   private _visqJson: any = undefined;
-  private _modelPath = '';
-  private _reloadTimer: NodeJS.Timer|undefined;
+  private _modelPath = "";
+  private _reloadTimer: NodeJS.Timer | undefined;
 
-  static async create(uri: vscode.Uri):
-      Promise<VisqViewerDocument|PromiseLike<VisqViewerDocument>> {
+  static async create(
+    uri: vscode.Uri
+  ): Promise<VisqViewerDocument | PromiseLike<VisqViewerDocument>> {
     return new VisqViewerDocument(uri);
   }
 
@@ -147,7 +155,7 @@ export class VisqViewerDocument implements vscode.CustomDocument {
   }
 
   private loadVisqFile(visqPath: string) {
-    const fileData = fs.readFileSync(visqPath, {encoding: 'utf8', flag: 'r'});
+    const fileData = fs.readFileSync(visqPath, { encoding: "utf8", flag: "r" });
     this._visqJson = JSON.parse(fileData);
 
     this.makeModelPath();
@@ -156,7 +164,10 @@ export class VisqViewerDocument implements vscode.CustomDocument {
   private reloadVisqText(text: string) {
     let visqjson = JSON.parse(text);
     // TODO find better compare for updated file and current data
-    if (this._visqJson && JSON.stringify(this._visqJson) === JSON.stringify(visqjson)) {
+    if (
+      this._visqJson &&
+      JSON.stringify(this._visqJson) === JSON.stringify(visqjson)
+    ) {
       return false;
     }
     this._visqJson = visqjson;
@@ -170,7 +181,7 @@ export class VisqViewerDocument implements vscode.CustomDocument {
 
     let view = new VisqViewer(panel, extensionUri, this);
     view.initGraphCtrl(this._modelPath, view);
-    view.setMode('visq');
+    view.setMode("visq");
     view.loadContent();
 
     this._visqViewer = view;
@@ -208,8 +219,10 @@ export class VisqViewerDocument implements vscode.CustomDocument {
  * @brief Visq viewer readonly Provider
  */
 /* istanbul ignore next */
-export class VisqViewerProvider implements vscode.CustomReadonlyEditorProvider<VisqViewerDocument> {
-  public static readonly viewType = 'one.viewer.visq';
+export class VisqViewerProvider
+  implements vscode.CustomReadonlyEditorProvider<VisqViewerDocument>
+{
+  public static readonly viewType = "one.viewer.visq";
 
   private _context: vscode.ExtensionContext;
 
@@ -217,14 +230,20 @@ export class VisqViewerProvider implements vscode.CustomReadonlyEditorProvider<V
     const provider = new VisqViewerProvider(context);
 
     const registrations = [
-      vscode.window.registerCustomEditorProvider(VisqViewerProvider.viewType, provider, {
-        webviewOptions: {
-          retainContextWhenHidden: true,
-        },
-      })
+      vscode.window.registerCustomEditorProvider(
+        VisqViewerProvider.viewType,
+        provider,
+        {
+          webviewOptions: {
+            retainContextWhenHidden: true,
+          },
+        }
+      ),
       // Add command registration here
     ];
-    registrations.forEach(disposable => context.subscriptions.push(disposable));
+    registrations.forEach((disposable) =>
+      context.subscriptions.push(disposable)
+    );
   }
 
   constructor(private readonly context: vscode.ExtensionContext) {
@@ -233,8 +252,10 @@ export class VisqViewerProvider implements vscode.CustomReadonlyEditorProvider<V
 
   // CustomReadonlyEditorProvider implements
   async openCustomDocument(
-      uri: vscode.Uri, _openContext: {backupId?: string},
-      _token: vscode.CancellationToken): Promise<VisqViewerDocument> {
+    uri: vscode.Uri,
+    _openContext: { backupId?: string },
+    _token: vscode.CancellationToken
+  ): Promise<VisqViewerDocument> {
     const document: VisqViewerDocument = await VisqViewerDocument.create(uri);
     // NOTE as a readonly viewer, there is not much to do
 
@@ -245,8 +266,10 @@ export class VisqViewerProvider implements vscode.CustomReadonlyEditorProvider<V
 
   // CustomReadonlyEditorProvider implements
   async resolveCustomEditor(
-      document: VisqViewerDocument, webviewPanel: vscode.WebviewPanel,
-      _token: vscode.CancellationToken): Promise<void> {
+    document: VisqViewerDocument,
+    webviewPanel: vscode.WebviewPanel,
+    _token: vscode.CancellationToken
+  ): Promise<void> {
     document.openView(webviewPanel, this._context.extensionUri);
 
     const onChangeTextDoc = vscode.workspace.onDidChangeTextDocument((e) => {

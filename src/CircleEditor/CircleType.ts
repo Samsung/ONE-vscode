@@ -15,7 +15,7 @@
  */
 
 /* eslint-disable @typescript-eslint/naming-convention*/
-import * as Circle from './circle_schema_generated';
+import * as Circle from "./circle_schema_generated";
 
 /**
  * BuiltinOptionsType with uppercase to resolve naming convention conflict.
@@ -34,14 +34,16 @@ export enum BuiltinOptionsType {
   CONCATENATIONOPTIONS = Circle.BuiltinOptions.ConcatenationOptions,
   ADDOPTIONS = Circle.BuiltinOptions.AddOptions,
   L2NORMOPTIONS = Circle.BuiltinOptions.L2NormOptions,
-  LOCALRESPONSENORMALIZATIONOPTIONS = Circle.BuiltinOptions.LocalResponseNormalizationOptions,
+  LOCALRESPONSENORMALIZATIONOPTIONS = Circle.BuiltinOptions
+    .LocalResponseNormalizationOptions,
   LSTMOPTIONS = Circle.BuiltinOptions.LSTMOptions,
   RESIZEBILINEAROPTIONS = Circle.BuiltinOptions.ResizeBilinearOptions,
   CALLOPTIONS = Circle.BuiltinOptions.CallOptions,
   RESHAPEOPTIONS = Circle.BuiltinOptions.ReshapeOptions,
   SKIPGRAMOPTIONS = Circle.BuiltinOptions.SkipGramOptions,
   SPACETODEPTHOPTIONS = Circle.BuiltinOptions.SpaceToDepthOptions,
-  EMBEDDINGLOOKUPSPARSEOPTIONS = Circle.BuiltinOptions.EmbeddingLookupSparseOptions,
+  EMBEDDINGLOOKUPSPARSEOPTIONS = Circle.BuiltinOptions
+    .EmbeddingLookupSparseOptions,
   MULOPTIONS = Circle.BuiltinOptions.MulOptions,
   PADOPTIONS = Circle.BuiltinOptions.PadOptions,
   GATHEROPTIONS = Circle.BuiltinOptions.GatherOptions,
@@ -90,12 +92,16 @@ export enum BuiltinOptionsType {
   SQUAREOPTIONS = Circle.BuiltinOptions.SquareOptions,
   ZEROSLIKEOPTIONS = Circle.BuiltinOptions.ZerosLikeOptions,
   FILLOPTIONS = Circle.BuiltinOptions.FillOptions,
-  BIDIRECTIONALSEQUENCELSTMOPTIONS = Circle.BuiltinOptions.BidirectionalSequenceLSTMOptions,
-  BIDIRECTIONALSEQUENCERNNOPTIONS = Circle.BuiltinOptions.BidirectionalSequenceRNNOptions,
-  UNIDIRECTIONALSEQUENCELSTMOPTIONS = Circle.BuiltinOptions.UnidirectionalSequenceLSTMOptions,
+  BIDIRECTIONALSEQUENCELSTMOPTIONS = Circle.BuiltinOptions
+    .BidirectionalSequenceLSTMOptions,
+  BIDIRECTIONALSEQUENCERNNOPTIONS = Circle.BuiltinOptions
+    .BidirectionalSequenceRNNOptions,
+  UNIDIRECTIONALSEQUENCELSTMOPTIONS = Circle.BuiltinOptions
+    .UnidirectionalSequenceLSTMOptions,
   FLOORMODOPTIONS = Circle.BuiltinOptions.FloorModOptions,
   RANGEOPTIONS = Circle.BuiltinOptions.RangeOptions,
-  RESIZENEARESTNEIGHBOROPTIONS = Circle.BuiltinOptions.ResizeNearestNeighborOptions,
+  RESIZENEARESTNEIGHBOROPTIONS = Circle.BuiltinOptions
+    .ResizeNearestNeighborOptions,
   LEAKYRELUOPTIONS = Circle.BuiltinOptions.LeakyReluOptions,
   SQUAREDDIFFERENCEOPTIONS = Circle.BuiltinOptions.SquaredDifferenceOptions,
   MIRRORPADOPTIONS = Circle.BuiltinOptions.MirrorPadOptions,
@@ -145,39 +151,39 @@ export enum BuiltinOptionsType {
  * map CircleType string to CircleType class.
  */
 export const CircleType: any = {
-  'TensorType': Circle.TensorType,
-  'DimensionType': Circle.DimensionType,
-  'Padding': Circle.Padding,
-  'ActivationFunctionType': Circle.ActivationFunctionType,
-  'LSHProjectionType': Circle.LSHProjectionType,
-  'FullyConnectedOptionsWeightsFormat': Circle.FullyConnectedOptionsWeightsFormat,
-  'LSTMKernelType': Circle.LSTMKernelType,
-  'CombinerType': Circle.CombinerType,
-  'MirrorPadMode': Circle.MirrorPadMode,
-  'CustomOptionsFormat': Circle.CustomOptionsFormat,
-  'DataFormat': Circle.DataFormat,
+  TensorType: Circle.TensorType,
+  DimensionType: Circle.DimensionType,
+  Padding: Circle.Padding,
+  ActivationFunctionType: Circle.ActivationFunctionType,
+  LSHProjectionType: Circle.LSHProjectionType,
+  FullyConnectedOptionsWeightsFormat: Circle.FullyConnectedOptionsWeightsFormat,
+  LSTMKernelType: Circle.LSTMKernelType,
+  CombinerType: Circle.CombinerType,
+  MirrorPadMode: Circle.MirrorPadMode,
+  CustomOptionsFormat: Circle.CustomOptionsFormat,
+  DataFormat: Circle.DataFormat,
 };
 
 /**
  * map normal type to typescript type.
  */
 export const NormalType: any = {
-  'int': Number,
-  'int32': Number,
-  'byte': Number,
-  'ubyte': Number,
-  'uint': Number,
-  'int64': Number,
-  'int16': Number,
-  'uint16': Number,
-  'uint32': Number,
-  'uint64': Number,
-  'int32[]': Int32Array,
-  'int16[]': Int16Array,
-  'uint32[]': Uint32Array,
-  'uint16[]': Uint16Array,
-  'float32[]': Float32Array,
-  'float64[]': Float64Array,
+  int: Number,
+  int32: Number,
+  byte: Number,
+  ubyte: Number,
+  uint: Number,
+  int64: Number,
+  int16: Number,
+  uint16: Number,
+  uint32: Number,
+  uint64: Number,
+  "int32[]": Int32Array,
+  "int16[]": Int16Array,
+  "uint32[]": Uint32Array,
+  "uint16[]": Uint16Array,
+  "float32[]": Float32Array,
+  "float64[]": Float64Array,
 };
 
 /**

@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-import {assert} from 'chai';
+import { assert } from "chai";
 
-import {Command} from '../../Backend/Command';
-import {JobType} from '../../Job/Job';
-import {JobConfig} from '../../Toolchain/JobConfig';
+import { Command } from "../../Backend/Command";
+import { JobType } from "../../Job/Job";
+import { JobConfig } from "../../Toolchain/JobConfig";
 
-suite('Toolchain', function() {
-  suite('JobConfig', function() {
-    suite('#constructor()', function() {
-      test('is contructed with command', function() {
-        let cmd = new Command('onecc');
-        cmd.push('--config');
-        cmd.push('file.cfg');
+suite("Toolchain", function () {
+  suite("JobConfig", function () {
+    suite("#constructor()", function () {
+      test("is contructed with command", function () {
+        let cmd = new Command("onecc");
+        cmd.push("--config");
+        cmd.push("file.cfg");
 
         let job = new JobConfig(cmd);
         assert.deepStrictEqual(job.tool, cmd[0]);
         assert.deepStrictEqual(job.toolArgs[0], cmd[1]);
         assert.deepStrictEqual(job.toolArgs[1], cmd[2]);
-        assert.deepStrictEqual(job.name, 'config');
+        assert.deepStrictEqual(job.name, "config");
         assert.equal(job.jobType, JobType.tConfig);
         assert.isTrue(job.valid);
         assert.isTrue(job.isCancelable);

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
-import {Toolchain} from '../Backend/Toolchain';
-import {ToolchainEnv} from './ToolchainEnv';
+import { Toolchain } from "../Backend/Toolchain";
+import { ToolchainEnv } from "./ToolchainEnv";
 
 class DefaultToolchain {
   private static _instance: DefaultToolchain;
@@ -33,19 +33,26 @@ class DefaultToolchain {
   }
 
   /* istanbul ignore next */
-  public async ask(toolchainEnv: ToolchainEnv, toolchain: Toolchain): Promise<boolean> {
+  public async ask(
+    toolchainEnv: ToolchainEnv,
+    toolchain: Toolchain
+  ): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
-      const name = `${toolchain.info.name}-${toolchain.info.version ?.str()}`;
+      const name = `${toolchain.info.name}-${toolchain.info.version?.str()}`;
       vscode.window
-          .showInformationMessage(`Do you want to use ${name} as a default toolchain?`, 'Yes', 'No')
-          .then((answer) => {
-            if (answer === 'Yes') {
-              this.set(toolchainEnv, toolchain);
-              return resolve(true);
-            } else {
-              return reject(null);
-            }
-          });
+        .showInformationMessage(
+          `Do you want to use ${name} as a default toolchain?`,
+          "Yes",
+          "No"
+        )
+        .then((answer) => {
+          if (answer === "Yes") {
+            this.set(toolchainEnv, toolchain);
+            return resolve(true);
+          } else {
+            return reject(null);
+          }
+        });
     });
   }
 
@@ -55,15 +62,19 @@ class DefaultToolchain {
     }
     this._toolchainEnv = toolchainEnv;
     this._toolchain = toolchain;
-    const name = `${toolchain.info.name}-${toolchain.info.version ?.str()}`;
+    const name = `${toolchain.info.name}-${toolchain.info.version?.str()}`;
     /* istanbul ignore next */
     vscode.window
-        .showInformationMessage(`${name} was set as a default toolchain.`, 'OK', `See Instructions`)
-        .then((value) => {
-          if (value === 'See Instructions') {
-            this.openDocument();
-          }
-        });
+      .showInformationMessage(
+        `${name} was set as a default toolchain.`,
+        "OK",
+        `See Instructions`
+      )
+      .then((value) => {
+        if (value === "See Instructions") {
+          this.openDocument();
+        }
+      });
   }
 
   public unset() {
@@ -74,25 +85,27 @@ class DefaultToolchain {
   /* istanbul ignore next */
   public openDocument() {
     const doc =
-        'https://github.com/Samsung/ONE-vscode/blob/main/docs/Tutorial.md#set-default-toolchain';
+      "https://github.com/Samsung/ONE-vscode/blob/main/docs/Tutorial.md#set-default-toolchain";
     vscode.env.openExternal(vscode.Uri.parse(doc));
   }
 
-  public getToolchain(): Toolchain|undefined {
+  public getToolchain(): Toolchain | undefined {
     return this._toolchain;
   }
 
-  public getToolchainEnv(): ToolchainEnv|undefined {
+  public getToolchainEnv(): ToolchainEnv | undefined {
     return this._toolchainEnv;
   }
 
   public isEqual(toolchain: Toolchain) {
-    if (this._toolchain &&
-        JSON.stringify(this._toolchain.info) === JSON.stringify(toolchain.info)) {
+    if (
+      this._toolchain &&
+      JSON.stringify(this._toolchain.info) === JSON.stringify(toolchain.info)
+    ) {
       return true;
     }
     return false;
   }
 }
 
-export {DefaultToolchain};
+export { DefaultToolchain };

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {ToolArgs} from './ToolArgs';
+import { ToolArgs } from "./ToolArgs";
 
 export type JobCallback = {
   (): void;
@@ -43,7 +43,7 @@ export interface Job {
 // - toolArgs: install pkg_name
 
 export const enum JobType {
-  tUndefined = 0,  // TODO maybe use Job.jobType = undefined?
+  tUndefined = 0, // TODO maybe use Job.jobType = undefined?
   tConfig,
   tPrerequisites,
   tInstall,

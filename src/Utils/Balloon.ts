@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
-import {Logger} from './Logger';
+import { Logger } from "./Logger";
 
 /* istanbul ignore next */
 export class Balloon {
-  static seeLogBtn = 'See log';
+  static seeLogBtn = "See log";
 
-  static handleBtn(selection: string|undefined) {
+  static handleBtn(selection: string | undefined) {
     if (selection === Balloon.seeLogBtn) {
       Logger.show();
     }
@@ -33,9 +33,9 @@ export class Balloon {
   static error(msg: string, showSeeLogBtn: boolean = true) {
     let func = vscode.window.showErrorMessage;
     if (showSeeLogBtn) {
-      func(msg, 'OK', Balloon.seeLogBtn).then(Balloon.handleBtn);
+      func(msg, "OK", Balloon.seeLogBtn).then(Balloon.handleBtn);
     } else {
-      func(msg, 'OK');
+      func(msg, "OK");
     }
   }
 
@@ -43,9 +43,9 @@ export class Balloon {
   static info(msg: string, showSeeLogBtn: boolean = false) {
     let func = vscode.window.showInformationMessage;
     if (showSeeLogBtn) {
-      func(msg, 'OK', Balloon.seeLogBtn).then(Balloon.handleBtn);
+      func(msg, "OK", Balloon.seeLogBtn).then(Balloon.handleBtn);
     } else {
-      func(msg, 'OK');
+      func(msg, "OK");
     }
   }
 
@@ -53,9 +53,9 @@ export class Balloon {
   static warning(msg: string, showSeeLogBtn: boolean = true) {
     let func = vscode.window.showWarningMessage;
     if (showSeeLogBtn) {
-      func(msg, 'OK', Balloon.seeLogBtn).then(Balloon.handleBtn);
+      func(msg, "OK", Balloon.seeLogBtn).then(Balloon.handleBtn);
     } else {
-      func(msg, 'OK');
+      func(msg, "OK");
     }
   }
 }

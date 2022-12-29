@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 
-import * as ini from 'ini';
+import * as ini from "ini";
 
 const sections = [
-  'onecc', 'one-import-tf', 'one-import-tflite', 'one-import-bcq', 'one-import-onnx',
-  'one-optimize', 'one-quantize', 'one-codegen', 'one-profile'
+  "onecc",
+  "one-import-tf",
+  "one-import-tflite",
+  "one-import-bcq",
+  "one-import-onnx",
+  "one-optimize",
+  "one-quantize",
+  "one-codegen",
+  "one-profile",
 ];
 
 // NOTE: Why is not function overloadding used? Its maintain costs expensive.
@@ -64,21 +71,23 @@ export class CfgData {
   private resolveDeprecated(): void {
     // NOTE 'one-build' will be deprecated.
     //      Therefore, when only 'one-build' is used, it will be replaced to 'onecc'.
-    if (this._oneConfig['one-build'] !== undefined) {
-      if (this._oneConfig['onecc'] === undefined) {
-        this._oneConfig['onecc'] = ini.parse(ini.stringify(this._oneConfig['one-build']));
+    if (this._oneConfig["one-build"] !== undefined) {
+      if (this._oneConfig["onecc"] === undefined) {
+        this._oneConfig["onecc"] = ini.parse(
+          ini.stringify(this._oneConfig["one-build"])
+        );
       }
-      delete this._oneConfig['one-build'];
+      delete this._oneConfig["one-build"];
     }
 
     // NOTE 'input_dtype' is deprecated.
     //      Therefore, when only 'input_dtype' is used, it will be replaced to 'onecc'.
-    if (this._oneConfig['one-quantize']?.['input_dtype'] !== undefined) {
-      if (this._oneConfig['one-quantize']['input_model_dtype'] === undefined) {
-        this._oneConfig['one-quantize']['input_model_dtype'] =
-            this._oneConfig['one-quantize']['input_dtype'];
+    if (this._oneConfig["one-quantize"]?.["input_dtype"] !== undefined) {
+      if (this._oneConfig["one-quantize"]["input_model_dtype"] === undefined) {
+        this._oneConfig["one-quantize"]["input_model_dtype"] =
+          this._oneConfig["one-quantize"]["input_dtype"];
       }
-      delete this._oneConfig['one-quantize']['input_dtype'];
+      delete this._oneConfig["one-quantize"]["input_dtype"];
     }
   }
 
@@ -87,7 +96,7 @@ export class CfgData {
       this._oneConfig[section] = {};
     }
     if (this._oneConfig[section][key] === undefined) {
-      this._oneConfig[section][key] = '';
+      this._oneConfig[section][key] = "";
     }
     this._oneConfig[section][key] = value;
     this.resolveDeprecated();
@@ -103,8 +112,10 @@ export class CfgData {
     const iniDocument = ini.parse(textStringified);
     for (const [sectionName, section] of Object.entries(this._oneConfig)) {
       for (const [paramName, param] of Object.entries(section as any)) {
-        if (iniDocument[sectionName] !== undefined &&
-            iniDocument[sectionName][paramName] === param) {
+        if (
+          iniDocument[sectionName] !== undefined &&
+          iniDocument[sectionName][paramName] === param
+        ) {
           continue;
         }
         return false;
@@ -112,8 +123,10 @@ export class CfgData {
     }
     for (const [sectionName, section] of Object.entries(iniDocument)) {
       for (const [paramName, param] of Object.entries(section as any)) {
-        if (this._oneConfig[sectionName] !== undefined &&
-            this._oneConfig[sectionName][paramName] === param) {
+        if (
+          this._oneConfig[sectionName] !== undefined &&
+          this._oneConfig[sectionName][paramName] === param
+        ) {
           continue;
         }
         return false;

@@ -13,22 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
-import {Balloon} from '../Utils/Balloon';
-import {obtainWorkspaceRoot} from '../Utils/Helpers';
-import {Logger} from '../Utils/Logger';
+import { Balloon } from "../Utils/Balloon";
+import { obtainWorkspaceRoot } from "../Utils/Helpers";
+import { Logger } from "../Utils/Logger";
 
 class MetadataEventQueue {
   private inProgress: boolean = false;
-  private queue: {method: Function, input: {[key: string]: any}}[] = [];
+  private queue: { method: Function; input: { [key: string]: any } }[] = [];
 
   constructor() {
     this.queue = [];
   }
 
-  enqueue(method: any, input: {[key: string]: any}): void {
-    this.queue.push({method: method, input: input});
+  enqueue(method: any, input: { [key: string]: any }): void {
+    this.queue.push({ method: method, input: input });
     this.autoAction();
   }
 
@@ -72,9 +72,9 @@ class MetadataEventQueue {
 class MetadataEventBuffer {
   private _queue = new MetadataEventQueue();
   constructor() {}
-  public setEvent(request: any, input: {[key: string]: any}) {
+  public setEvent(request: any, input: { [key: string]: any }) {
     this._queue.enqueue(() => {
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         if (Object.keys(input).length === 0) {
           request().then((res: any) => resolve(res));
         } else {
@@ -85,56 +85,52 @@ class MetadataEventBuffer {
   }
 }
 
-
 /* istanbul ignore next */
 export class MetadataEventManager {
-  private fileWatcher = vscode.workspace.createFileSystemWatcher(`**/*`);  // glob pattern
+  private fileWatcher = vscode.workspace.createFileSystemWatcher(`**/*`); // glob pattern
   public static eventBuffer = new MetadataEventBuffer();
   // Used to communicate between events when file is renamed or moved
-  public static didCreateUri: vscode.Uri|undefined = undefined;
-
+  public static didCreateUri: vscode.Uri | undefined = undefined;
 
   public static register(context: vscode.ExtensionContext) {
-    let workspaceRoot: vscode.Uri|undefined = undefined;
+    let workspaceRoot: vscode.Uri | undefined = undefined;
 
     try {
       workspaceRoot = vscode.Uri.file(obtainWorkspaceRoot());
-      Logger.info('OneExplorer', `workspace: ${workspaceRoot.fsPath}`);
+      Logger.info("OneExplorer", `workspace: ${workspaceRoot.fsPath}`);
     } catch (e: unknown) {
       if (e instanceof Error) {
-        if (e.message === 'Need workspace') {
-          Logger.info('OneExplorer', e.message);
+        if (e.message === "Need workspace") {
+          Logger.info("OneExplorer", e.message);
         } else {
-          Logger.error('OneExplorer', e.message);
-          Balloon.error('Something goes wrong while setting workspace.', true);
+          Logger.error("OneExplorer", e.message);
+          Balloon.error("Something goes wrong while setting workspace.", true);
         }
       } else {
-        Logger.error('OneExplorer', 'Unknown error has been thrown.');
+        Logger.error("OneExplorer", "Unknown error has been thrown.");
       }
     }
 
     const manager = new MetadataEventManager();
 
     let registrations = [
-      manager.fileWatcher.onDidChange(
-          async () => {
-              // TO BE IMPLEMENTED.
-          }),
-      vscode.workspace.onDidDeleteFiles(
-          async () => {
-              // TO BE IMPLEMENTED.
-          }),
-      manager.fileWatcher.onDidDelete(
-          async () => {
-              // TO BE IMPLEMENTED.
-          }),
-      manager.fileWatcher.onDidCreate(
-          async () => {
-              // TO BE IMPLEMENTED.
-          }),
+      manager.fileWatcher.onDidChange(async () => {
+        // TO BE IMPLEMENTED.
+      }),
+      vscode.workspace.onDidDeleteFiles(async () => {
+        // TO BE IMPLEMENTED.
+      }),
+      manager.fileWatcher.onDidDelete(async () => {
+        // TO BE IMPLEMENTED.
+      }),
+      manager.fileWatcher.onDidCreate(async () => {
+        // TO BE IMPLEMENTED.
+      }),
     ];
 
-    registrations.forEach(disposable => context.subscriptions.push(disposable));
+    registrations.forEach((disposable) =>
+      context.subscriptions.push(disposable)
+    );
     // TO BE DONE.
   }
 
@@ -142,29 +138,29 @@ export class MetadataEventManager {
     MetadataEventManager.didCreateUri = undefined;
   }
 
-  async changeFileEvent(_input: {[key: string]: any}): Promise<void> {
+  async changeFileEvent(_input: { [key: string]: any }): Promise<void> {
     // TO BE IMPLEMENTED
   }
 
-  async createDirEvent(_input: {[key: string]: any}) {
+  async createDirEvent(_input: { [key: string]: any }) {
     // TO BE IMPLEMENTED
   }
 
-  public static async createFileEvent(_input: {[key: string]: any}) {
+  public static async createFileEvent(_input: { [key: string]: any }) {
     // TO BE IMPLEMENTED
   }
 
-  async deleteDirEvent(_input: {[key: string]: any}) {
+  async deleteDirEvent(_input: { [key: string]: any }) {
     // TO BE IMPLEMENTED
   }
 
-  public static async deleteFileEvent(_input: {[key: string]: any}) {
+  public static async deleteFileEvent(_input: { [key: string]: any }) {
     // TO BE IMPLEMENTED
   }
-  async moveDirEvent(_input: {[key: string]: any}) {
+  async moveDirEvent(_input: { [key: string]: any }) {
     // TO BE IMPLEMENTED
   }
-  public static async moveFileEvent(_input: {[key: string]: any}) {
+  public static async moveFileEvent(_input: { [key: string]: any }) {
     // TO BE IMPLEMENTED
   }
 }

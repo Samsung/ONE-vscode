@@ -45,16 +45,16 @@
 // This file referenced the result of
 // https://github.com/catapult-project/catapult/tree/444aba89e1c30edf348c611a9df79e2376178ba8/tracing
 
-import dynamicGraduation from './dynamicGraduation.js';
-import {processData} from './processData.js';
+import dynamicGraduation from "./dynamicGraduation.js";
+import { processData } from "./processData.js";
 
 const vscode = acquireVsCodeApi();
 
 // event from vscode extension
-window.addEventListener('message', event => {
+window.addEventListener("message", (event) => {
   const message = event.data;
   switch (message.type) {
-    case 'load':
+    case "load":
       initData();
       processData(message.content, message.displayTimeUnit);
       break;
@@ -63,21 +63,21 @@ window.addEventListener('message', event => {
   }
 });
 
-const graph = document.querySelector('.graph');
+const graph = document.querySelector(".graph");
 const sliderMaxLimit = 6400;
 const sliderMinLimit = 100;
 
 let ratio = 100;
-const slider = document.querySelector('input');
-slider.addEventListener('input', event => {
+const slider = document.querySelector("input");
+slider.addEventListener("input", (event) => {
   ratio = event.target.value * 1;
   graph.style.width = `${ratio}%`;
   changeSlider(event.target.value, event.target.max, event.target.min);
   dynamicGraduation();
 });
 
-const zoomInBtn = document.querySelector('.zoom-in-btn');
-zoomInBtn.addEventListener('click', () => {
+const zoomInBtn = document.querySelector(".zoom-in-btn");
+zoomInBtn.addEventListener("click", () => {
   if (ratio >= 5000) {
     return;
   }
@@ -97,8 +97,8 @@ zoomInBtn.addEventListener('click', () => {
   setTimeout(() => (zoomInBtn.disabled = false), 300);
 });
 
-const zoomOutBtn = document.querySelector('.zoom-out-btn');
-zoomOutBtn.addEventListener('click', () => {
+const zoomOutBtn = document.querySelector(".zoom-out-btn");
+zoomOutBtn.addEventListener("click", () => {
   if (ratio <= 100) {
     return;
   }
@@ -142,9 +142,9 @@ function initData() {
   graph.style.width = `${ratio}%`;
 
   // init slider
-  slider.max = '200';
-  slider.min = '100';
-  slider.value = '100';
+  slider.max = "200";
+  slider.min = "100";
+  slider.value = "100";
 
   // init graph
   while (graph.hasChildNodes()) {
@@ -152,16 +152,16 @@ function initData() {
   }
 
   // init selected bar
-  const selected = document.querySelector('.selected');
+  const selected = document.querySelector(".selected");
   while (selected.hasChildNodes()) {
     selected.removeChild(selected.firstChild);
   }
 
   // init detail
-  const detail = document.querySelector('.detail');
+  const detail = document.querySelector(".detail");
   if (detail) {
     detail.remove();
   }
 }
 
-vscode.postMessage({type: 'requestDisplayJson'});
+vscode.postMessage({ type: "requestDisplayJson" });

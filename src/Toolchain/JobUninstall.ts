@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import {Command} from '../Backend/Command';
-import {JobType} from '../Job/Job';
-import {JobCommand} from '../Job/JobCommand';
+import { Command } from "../Backend/Command";
+import { JobType } from "../Job/Job";
+import { JobCommand } from "../Job/JobCommand";
 
 class JobUninstall extends JobCommand {
   jobType: JobType;
@@ -26,10 +26,10 @@ class JobUninstall extends JobCommand {
   constructor(cmd: Command) {
     super(cmd);
     this.jobType = JobType.tUninstall;
-    this.name = 'uninstall';
-    this.notiTitle = 'Uninstalling the toolchain...';
+    this.name = "uninstall";
+    this.notiTitle = "Uninstalling the toolchain...";
     this.valid = true;
   }
 }
 
-export {JobUninstall};
+export { JobUninstall };

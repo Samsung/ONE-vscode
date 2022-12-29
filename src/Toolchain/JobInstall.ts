@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import {Command} from '../Backend/Command';
-import {JobType} from '../Job/Job';
-import {JobCommand} from '../Job/JobCommand';
+import { Command } from "../Backend/Command";
+import { JobType } from "../Job/Job";
+import { JobCommand } from "../Job/JobCommand";
 
 class JobInstall extends JobCommand {
   jobType: JobType;
@@ -26,10 +26,10 @@ class JobInstall extends JobCommand {
   constructor(cmd: Command) {
     super(cmd);
     this.jobType = JobType.tInstall;
-    this.name = 'install';
-    this.notiTitle = 'Installing the toolchain...';
+    this.name = "install";
+    this.notiTitle = "Installing the toolchain...";
     this.valid = true;
   }
 }
 
-export {JobInstall};
+export { JobInstall };

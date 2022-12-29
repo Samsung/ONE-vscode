@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import * as vscode from 'vscode';
-import {getNonce} from '../Utils/external/Nonce';
+import * as vscode from "vscode";
+import { getNonce } from "../Utils/external/Nonce";
 
 /* istanbul ignore next */
 export class MetadataViewer {
@@ -38,36 +38,55 @@ export class MetadataViewer {
     this.registerEventHandlers();
   }
 
-  private getWebviewOptions(): vscode.WebviewOptions&vscode.WebviewPanelOptions {
+  private getWebviewOptions(): vscode.WebviewOptions &
+    vscode.WebviewPanelOptions {
     return {
       // Enable javascript in the webview
       enableScripts: true,
       // to prevent view to reload after loosing focus
-      retainContextWhenHidden: true
+      retainContextWhenHidden: true,
     };
   }
-
 
   public loadContent() {
     this._getHtmlForWebview(this._extensionUri, this._panel);
   }
 
-  private async _getHtmlForWebview(extensionUri: vscode.Uri, panel: vscode.WebviewPanel) {
+  private async _getHtmlForWebview(
+    extensionUri: vscode.Uri,
+    panel: vscode.WebviewPanel
+  ) {
     panel.webview.options = {
       enableScripts: true,
     };
 
     const nonce = getNonce();
     const jsIndex = panel.webview.asWebviewUri(
-        vscode.Uri.joinPath(extensionUri, 'media', 'MetadataViewer', 'index.js'));
+      vscode.Uri.joinPath(extensionUri, "media", "MetadataViewer", "index.js")
+    );
     const cssIndex = panel.webview.asWebviewUri(
-        vscode.Uri.joinPath(extensionUri, 'media', 'MetadataViewer', 'style.css'));
-    const codiconsUri = panel.webview.asWebviewUri(vscode.Uri.joinPath(
-        extensionUri, 'node_modules', '@vscode/codicons', 'dist', 'codicon.css'));
+      vscode.Uri.joinPath(extensionUri, "media", "MetadataViewer", "style.css")
+    );
+    const codiconsUri = panel.webview.asWebviewUri(
+      vscode.Uri.joinPath(
+        extensionUri,
+        "node_modules",
+        "@vscode/codicons",
+        "dist",
+        "codicon.css"
+      )
+    );
 
-    const htmlUri = vscode.Uri.joinPath(extensionUri, 'media', 'MetadataViewer', 'index.html');
+    const htmlUri = vscode.Uri.joinPath(
+      extensionUri,
+      "media",
+      "MetadataViewer",
+      "index.html"
+    );
 
-    let html = Buffer.from(await vscode.workspace.fs.readFile(htmlUri)).toString();
+    let html = Buffer.from(
+      await vscode.workspace.fs.readFile(htmlUri)
+    ).toString();
     html = html.replace(/\${nonce}/g, `${nonce}`);
     html = html.replace(/\${webview.cspSource}/g, `${panel.webview.cspSource}`);
     html = html.replace(/\${index.css}/g, `${cssIndex}`);
@@ -82,11 +101,7 @@ export class MetadataViewer {
 
   private registerEventHandlers() {
     // Handle messages from the webview
-    this._webview.onDidReceiveMessage(
-        _message => {
-
-        },
-        null, this._disposable);
+    this._webview.onDidReceiveMessage((_message) => {}, null, this._disposable);
   }
 
   public disposeMetadataView() {

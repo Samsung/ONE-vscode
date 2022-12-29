@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import {Balloon as _Balloon} from './Utils/Balloon';
-import {Logger as _Logger} from './Utils/Logger';
+import { Balloon as _Balloon } from "./Utils/Balloon";
+import { Logger as _Logger } from "./Utils/Logger";
 
 export namespace Utils {
-
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export const Balloon = _Balloon;
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export const Logger = _Logger;
-
-}  // namespace Utils
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  export const Balloon = _Balloon;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  export const Logger = _Logger;
+} // namespace Utils

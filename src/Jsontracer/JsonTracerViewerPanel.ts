@@ -40,53 +40,74 @@ Some part of this code refers to
 https://github.com/microsoft/vscode-extension-samples/blob/2556c82cb333cf65d372bd01ac30c35ea1898a0e/custom-editor-sample/src/catScratchEditor.ts
 */
 
-import * as vscode from 'vscode';
-import {getNonce} from '../Utils/external/Nonce';
-import {getUri} from '../Utils/external/Uri';
-
+import * as vscode from "vscode";
+import { getNonce } from "../Utils/external/Nonce";
+import { getUri } from "../Utils/external/Uri";
 
 /* istanbul ignore next */
 export class JsonTracerViewerPanel implements vscode.CustomTextEditorProvider {
   private _disposables: vscode.Disposable[] = [];
 
-  public static readonly viewType = 'one.editor.jsonTracer';
+  public static readonly viewType = "one.editor.jsonTracer";
 
   public static register(context: vscode.ExtensionContext): void {
     const provider = new JsonTracerViewerPanel(context);
     const registrations = [
-      vscode.window.registerCustomEditorProvider(JsonTracerViewerPanel.viewType, provider, {
-        webviewOptions: {
-          retainContextWhenHidden: true,
-        },
-      })
+      vscode.window.registerCustomEditorProvider(
+        JsonTracerViewerPanel.viewType,
+        provider,
+        {
+          webviewOptions: {
+            retainContextWhenHidden: true,
+          },
+        }
+      ),
       // Add command registration here
     ];
 
-    registrations.forEach(disposable => context.subscriptions.push(disposable));
+    registrations.forEach((disposable) =>
+      context.subscriptions.push(disposable)
+    );
   }
 
   constructor(private readonly context: vscode.ExtensionContext) {}
 
   public async resolveCustomTextEditor(
-      document: vscode.TextDocument, webviewPanel: vscode.WebviewPanel,
-      _token: vscode.CancellationToken): Promise<void> {
+    document: vscode.TextDocument,
+    webviewPanel: vscode.WebviewPanel,
+    _token: vscode.CancellationToken
+  ): Promise<void> {
     await this.initWebview(document, webviewPanel.webview);
     this.initWebviewPanel(document, webviewPanel);
     this.updateWebview(document, webviewPanel.webview);
   }
 
-  private async initWebview(document: vscode.TextDocument, webview: vscode.Webview): Promise<void> {
+  private async initWebview(
+    document: vscode.TextDocument,
+    webview: vscode.Webview
+  ): Promise<void> {
     webview.options = {
       enableScripts: true,
     };
 
     const nonce = getNonce();
-    const scriptUri =
-        getUri(webview, this.context.extensionUri, ['media', 'Jsontracer', 'index.js']);
-    const styleUri =
-        getUri(webview, this.context.extensionUri, ['media', 'Jsontracer', 'style.css']);
-    const htmlUri = vscode.Uri.joinPath(this.context.extensionUri, 'media/Jsontracer/index.html');
-    let html = Buffer.from(await vscode.workspace.fs.readFile(htmlUri)).toString();
+    const scriptUri = getUri(webview, this.context.extensionUri, [
+      "media",
+      "Jsontracer",
+      "index.js",
+    ]);
+    const styleUri = getUri(webview, this.context.extensionUri, [
+      "media",
+      "Jsontracer",
+      "style.css",
+    ]);
+    const htmlUri = vscode.Uri.joinPath(
+      this.context.extensionUri,
+      "media/Jsontracer/index.html"
+    );
+    let html = Buffer.from(
+      await vscode.workspace.fs.readFile(htmlUri)
+    ).toString();
     html = html.replace(/\${nonce}/g, `${nonce}`);
     html = html.replace(/\${webview.cspSource}/g, `${webview.cspSource}`);
     html = html.replace(/\${scriptUri}/g, `${scriptUri}`);
@@ -94,9 +115,9 @@ export class JsonTracerViewerPanel implements vscode.CustomTextEditorProvider {
     webview.html = html;
 
     // Receive message from the webview.
-    webview.onDidReceiveMessage(e => {
+    webview.onDidReceiveMessage((e) => {
       switch (e.type) {
-        case 'requestDisplayJson':
+        case "requestDisplayJson":
           this.updateWebview(document, webview);
           break;
         default:
@@ -105,19 +126,38 @@ export class JsonTracerViewerPanel implements vscode.CustomTextEditorProvider {
     });
   }
 
-  private initWebviewPanel(document: vscode.TextDocument, webviewPanel: vscode.WebviewPanel): void {
-    vscode.commands.executeCommand('setContext', JsonTracerViewerPanel.viewType, true);
+  private initWebviewPanel(
+    document: vscode.TextDocument,
+    webviewPanel: vscode.WebviewPanel
+  ): void {
+    vscode.commands.executeCommand(
+      "setContext",
+      JsonTracerViewerPanel.viewType,
+      true
+    );
 
-    const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(e => {
-      if (e.contentChanges.length > 0 && e.document.uri.toString() === document.uri.toString()) {
-        this.updateWebview(document, webviewPanel.webview);
+    const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(
+      (e) => {
+        if (
+          e.contentChanges.length > 0 &&
+          e.document.uri.toString() === document.uri.toString()
+        ) {
+          this.updateWebview(document, webviewPanel.webview);
+        }
       }
-    });
+    );
 
-    webviewPanel.onDidChangeViewState(() => {
-      vscode.commands.executeCommand(
-          'setContext', JsonTracerViewerPanel.viewType, webviewPanel.visible);
-    }, null, this._disposables);
+    webviewPanel.onDidChangeViewState(
+      () => {
+        vscode.commands.executeCommand(
+          "setContext",
+          JsonTracerViewerPanel.viewType,
+          webviewPanel.visible
+        );
+      },
+      null,
+      this._disposables
+    );
 
     webviewPanel.onDidDispose(() => {
       changeDocumentSubscription.dispose();
@@ -127,15 +167,26 @@ export class JsonTracerViewerPanel implements vscode.CustomTextEditorProvider {
           x.dispose();
         }
       }
-      vscode.commands.executeCommand('setContext', JsonTracerViewerPanel.viewType, false);
+      vscode.commands.executeCommand(
+        "setContext",
+        JsonTracerViewerPanel.viewType,
+        false
+      );
     });
   }
 
-  private updateWebview(document: vscode.TextDocument, webview: vscode.Webview): void {
+  private updateWebview(
+    document: vscode.TextDocument,
+    webview: vscode.Webview
+  ): void {
     const content = JSON.parse(document.getText()).traceEvents;
     const displayTimeUnit = JSON.parse(document.getText()).displayTimeUnit;
     if (content !== undefined) {
-      webview.postMessage({type: 'load', content: content, displayTimeUnit: displayTimeUnit});
+      webview.postMessage({
+        type: "load",
+        content: content,
+        displayTimeUnit: displayTimeUnit,
+      });
     }
   }
 }

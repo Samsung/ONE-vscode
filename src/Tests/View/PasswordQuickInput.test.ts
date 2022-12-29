@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-import {assert} from 'chai';
+import { assert } from "chai";
 
-import {containsNonAscii} from '../../View/PasswordQuickInput';
+import { containsNonAscii } from "../../View/PasswordQuickInput";
 
-
-suite('View', function() {
-  suite('PasswordQuickInput', function() {
-    suite('#containsNonAscii()', function() {
-      test('basics', function() {
-        const strWithAlphabets = 'abcdefghijkABCDEFGHIJK';
+suite("View", function () {
+  suite("PasswordQuickInput", function () {
+    suite("#containsNonAscii()", function () {
+      test("basics", function () {
+        const strWithAlphabets = "abcdefghijkABCDEFGHIJK";
         assert.isNotTrue(containsNonAscii(strWithAlphabets));
 
-        const strWithNum = '0123456789';
+        const strWithNum = "0123456789";
         assert.isNotTrue(containsNonAscii(strWithNum));
 
-        const strWithSpecialChar = '\n\t\r!@#$%^&*(){}[]\\';
+        const strWithSpecialChar = "\n\t\r!@#$%^&*(){}[]\\";
         assert.isNotTrue(containsNonAscii(strWithSpecialChar));
 
-        const strWithHan = '헬로';
+        const strWithHan = "헬로";
         assert.isTrue(containsNonAscii(strWithHan));
       });
     });

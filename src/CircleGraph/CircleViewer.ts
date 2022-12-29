@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
-import {CircleGraphCtrl} from './CircleGraphCtrl';
-
+import { CircleGraphCtrl } from "./CircleGraphCtrl";
 
 /**
  * @brief Viewer control with CircleGraphCtrl
@@ -45,11 +44,12 @@ class CircleViewer extends CircleGraphCtrl {
 export class CircleViewerDocument implements vscode.CustomDocument {
   private readonly _uri: vscode.Uri;
   private _circleViewer: CircleViewer[];
-  private _fileWatcher: vscode.FileSystemWatcher|undefined;
-  private _reloadTimer: NodeJS.Timer|undefined;
+  private _fileWatcher: vscode.FileSystemWatcher | undefined;
+  private _reloadTimer: NodeJS.Timer | undefined;
 
-  static async create(uri: vscode.Uri):
-      Promise<CircleViewerDocument|PromiseLike<CircleViewerDocument>> {
+  static async create(
+    uri: vscode.Uri
+  ): Promise<CircleViewerDocument | PromiseLike<CircleViewerDocument>> {
     return new CircleViewerDocument(uri);
   }
 
@@ -79,7 +79,9 @@ export class CircleViewerDocument implements vscode.CustomDocument {
     view.loadContent();
     this._circleViewer.push(view);
 
-    this._fileWatcher = vscode.workspace.createFileSystemWatcher(this._uri.path);
+    this._fileWatcher = vscode.workspace.createFileSystemWatcher(
+      this._uri.path
+    );
     this._fileWatcher.onDidChange(() => this.reload(panel));
     this._fileWatcher.onDidCreate(() => this.reload(panel));
 
@@ -120,9 +122,10 @@ export class CircleViewerDocument implements vscode.CustomDocument {
  * @brief Circle model viewer readonly Provider
  */
 /* istanbul ignore next */
-export class CircleViewerProvider implements
-    vscode.CustomReadonlyEditorProvider<CircleViewerDocument> {
-  public static readonly viewType = 'one.viewer.circle';
+export class CircleViewerProvider
+  implements vscode.CustomReadonlyEditorProvider<CircleViewerDocument>
+{
+  public static readonly viewType = "one.viewer.circle";
 
   private _context: vscode.ExtensionContext;
 
@@ -130,15 +133,21 @@ export class CircleViewerProvider implements
     const provider = new CircleViewerProvider(context);
 
     const registrations = [
-      vscode.window.registerCustomEditorProvider(CircleViewerProvider.viewType, provider, {
-        webviewOptions: {
-          retainContextWhenHidden: true,
-        },
-        supportsMultipleEditorsPerDocument: true,
-      })
+      vscode.window.registerCustomEditorProvider(
+        CircleViewerProvider.viewType,
+        provider,
+        {
+          webviewOptions: {
+            retainContextWhenHidden: true,
+          },
+          supportsMultipleEditorsPerDocument: true,
+        }
+      ),
       // Add command registration here
     ];
-    registrations.forEach(disposable => context.subscriptions.push(disposable));
+    registrations.forEach((disposable) =>
+      context.subscriptions.push(disposable)
+    );
   }
 
   constructor(private readonly context: vscode.ExtensionContext) {
@@ -147,9 +156,13 @@ export class CircleViewerProvider implements
 
   // CustomReadonlyEditorProvider implements
   async openCustomDocument(
-      uri: vscode.Uri, _openContext: {backupId?: string},
-      _token: vscode.CancellationToken): Promise<CircleViewerDocument> {
-    const document: CircleViewerDocument = await CircleViewerDocument.create(uri);
+    uri: vscode.Uri,
+    _openContext: { backupId?: string },
+    _token: vscode.CancellationToken
+  ): Promise<CircleViewerDocument> {
+    const document: CircleViewerDocument = await CircleViewerDocument.create(
+      uri
+    );
     // NOTE as a readonly viewer, there is not much to do
 
     // TODO handle dispose
@@ -160,8 +173,10 @@ export class CircleViewerProvider implements
 
   // CustomReadonlyEditorProvider implements
   async resolveCustomEditor(
-      document: CircleViewerDocument, webviewPanel: vscode.WebviewPanel,
-      _token: vscode.CancellationToken): Promise<void> {
+    document: CircleViewerDocument,
+    webviewPanel: vscode.WebviewPanel,
+    _token: vscode.CancellationToken
+  ): Promise<void> {
     document.openView(webviewPanel, this._context.extensionUri);
   }
 }
