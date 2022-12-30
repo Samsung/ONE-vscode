@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
-type MsgList = (number|boolean|string|object)[];
+type MsgList = (number | boolean | string | object)[];
 
-const isDebugMode = process.env.VSCODE_DEBUG_MODE === 'true';
+const isDebugMode = process.env.VSCODE_DEBUG_MODE === "true";
 
 /**
  * @Examples:
@@ -37,31 +37,33 @@ function _logStr(severity: string, tag: string, ...msgs: MsgList) {
 
   if (msgs.length === 0) {
     // Do not print
-    return '';
+    return "";
   }
 
   for (let m of msgs) {
     if (m instanceof Error) {
       const err = m as Error;
-      logStrList.push(`\nError was thrown:\n- name: ${err.name}\n- message: ${err.message}`);
-    } else if (typeof (m) === 'object') {
+      logStrList.push(
+        `\nError was thrown:\n- name: ${err.name}\n- message: ${err.message}`
+      );
+    } else if (typeof m === "object") {
       logStrList.push(`\n${m.constructor.name}: ${JSON.stringify(m)}`);
     } else {
       logStrList.push(`${m}`);
     }
   }
-  const msg = logStrList.join(' ');
+  const msg = logStrList.join(" ");
   const time = new Date().toLocaleString();
 
   return `[${time}][${tag}][${severity}] ${msg}`;
 }
 
 // Import this only for unit test
-export {_logStr as _unit_test_logStr};
+export { _logStr as _unit_test_logStr };
 
 /* istanbul ignore next */
 export class Logger {
-  static outputChannel = vscode.window.createOutputChannel('ONE-VSCode');
+  static outputChannel = vscode.window.createOutputChannel("ONE-VSCode");
   static firstFocus: boolean;
 
   private static checkShow() {
@@ -80,7 +82,7 @@ export class Logger {
    * @brief Print log with prefix '[time][tag][severity]' where severity = 'err'
    */
   public static error(tag: string, ...msgs: MsgList) {
-    const severity = 'err';
+    const severity = "err";
     Logger.log(severity, tag, ...msgs);
   }
 
@@ -88,7 +90,7 @@ export class Logger {
    * @brief Print log with prefix '[time][tag][severity]' where severity = 'warn'
    */
   public static warn(tag: string, ...msgs: MsgList) {
-    const severity = 'warn';
+    const severity = "warn";
     Logger.log(severity, tag, ...msgs);
   }
 
@@ -96,7 +98,7 @@ export class Logger {
    * @brief Print log with prefix '[time][tag][severity]' where severity = 'info'
    */
   public static info(tag: string, ...msgs: MsgList) {
-    const severity = 'info';
+    const severity = "info";
     Logger.log(severity, tag, ...msgs);
   }
 
@@ -105,7 +107,7 @@ export class Logger {
    */
   public static debug(tag: string, ...msgs: MsgList) {
     if (isDebugMode) {
-      const severity = 'debug';
+      const severity = "debug";
       Logger.log(severity, tag, ...msgs);
     }
   }

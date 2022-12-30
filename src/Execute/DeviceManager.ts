@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Executor} from '../Backend/Executor';
-import {Device} from './Device';
+import { Executor } from "../Backend/Executor";
+import { Device } from "./Device";
 
 class DeviceManager {
   allDevices: Device[];
@@ -26,11 +26,11 @@ class DeviceManager {
     }
   }
 
-  findDevice(name: string): Device|undefined {
-    return this.allDevices.find(device => {
+  findDevice(name: string): Device | undefined {
+    return this.allDevices.find((device) => {
       return device.name === name;
     });
   }
 }
 
-export {DeviceManager};
+export { DeviceManager };

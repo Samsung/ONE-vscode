@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-import * as flatbuffers from 'flatbuffers';
-import * as fs from 'fs';
-import * as vscode from 'vscode';
+import * as flatbuffers from "flatbuffers";
+import * as fs from "fs";
+import * as vscode from "vscode";
 
-import {ToolchainInfo} from '../Backend/Toolchain';
-import * as Circle from '../CircleEditor/circle_schema_generated';
-import {obtainWorkspaceRoot} from '../Utils/Helpers';
+import { ToolchainInfo } from "../Backend/Toolchain";
+import * as Circle from "../CircleEditor/circle_schema_generated";
+import { obtainWorkspaceRoot } from "../Utils/Helpers";
 
-import {isOneExplorerTargetFile} from '../Utils/Helpers';
+import { isOneExplorerTargetFile } from "../Utils/Helpers";
 
-type BuildInfoKeys = 'onecc'|'toolchain'|'cfg';
+type BuildInfoKeys = "onecc" | "toolchain" | "cfg";
 
 interface BuildInfoObj {
-  'onecc': string, 'toolchain': ToolchainInfo|undefined, 'cfg': any
+  onecc: string;
+  toolchain: ToolchainInfo | undefined;
+  cfg: any;
 }
 
 export class BuildInfo {
@@ -37,7 +39,7 @@ export class BuildInfo {
     const relPath = vscode.workspace.asRelativePath(path);
     let info = BuildInfo._map.get(relPath);
     if (info === undefined) {
-      info = {onecc: '', toolchain: undefined, cfg: undefined};
+      info = { onecc: "", toolchain: undefined, cfg: undefined };
       BuildInfo._map.set(relPath, info);
     }
     info[key] = value;
@@ -47,9 +49,9 @@ export class BuildInfo {
     const path = vscode.workspace.asRelativePath(uri);
     const info = BuildInfo._map.get(path);
     if (info) {
-      metaEntry['onecc-version'] = info['onecc'];
-      metaEntry['toolchain-version'] = info['toolchain'] ?.version ?.str();
-      metaEntry['cfg-settings'] = info['cfg'];
+      metaEntry["onecc-version"] = info["onecc"];
+      metaEntry["toolchain-version"] = info["toolchain"]?.version?.str();
+      metaEntry["cfg-settings"] = info["cfg"];
     }
     BuildInfo._map.delete(path);
   }
@@ -59,7 +61,7 @@ export class Operator {
   private static _maxSize = 1000000;
 
   public static async get(uri: vscode.Uri) {
-    if (!uri.fsPath.endsWith('.circle')) {
+    if (!uri.fsPath.endsWith(".circle")) {
       return [];
     }
     const bytes = new Uint8Array(await vscode.workspace.fs.readFile(uri));
@@ -73,7 +75,7 @@ export class Operator {
 
   // TODO: change to run when users click 'View Metadata'
   public static async save(metaEntry: any, uri: vscode.Uri) {
-    if (!uri.fsPath.endsWith('.circle')) {
+    if (!uri.fsPath.endsWith(".circle")) {
       return;
     }
 
@@ -82,13 +84,13 @@ export class Operator {
 
     // Note maximum size is limited to 1MB at present in order not to affect the running time.
     if (stat.size > Operator._maxSize) {
-      operations['error-message'] = 'File size is too large';
+      operations["error-message"] = "File size is too large";
     } else {
       const opInfo = await Operator.get(uri);
-      operations['op-total'] = opInfo.length;
-      operations['ops'] = opInfo;
+      operations["op-total"] = opInfo.length;
+      operations["ops"] = opInfo;
     }
-    metaEntry['operations'] = operations;
+    metaEntry["operations"] = operations;
   }
 }
 
@@ -102,11 +104,16 @@ export class Metadata {
     }
 
     const jsonUri = vscode.Uri.joinPath(
-        vscode.workspace.workspaceFolders[0].uri,
-        `.one-vscode/info/hash_objects/${hash.substring(0, 2)}/${hash.substring(2)}.json`);
+      vscode.workspace.workspaceFolders[0].uri,
+      `.one-vscode/info/hash_objects/${hash.substring(0, 2)}/${hash.substring(
+        2
+      )}.json`
+    );
 
     if (fs.existsSync(jsonUri.fsPath)) {
-      return JSON.parse(Buffer.from(await vscode.workspace.fs.readFile(jsonUri)).toString());
+      return JSON.parse(
+        Buffer.from(await vscode.workspace.fs.readFile(jsonUri)).toString()
+      );
     }
     // TODO: Error Handling
     return undefined;
@@ -115,15 +122,25 @@ export class Metadata {
   public static async setObj(hash: string, obj: object) {
     const workspaceroot = obtainWorkspaceRoot();
     const jsonUri = vscode.Uri.joinPath(
-        vscode.Uri.file(workspaceroot),
-        `.one-vscode/info/hash_objects/${hash.substring(0, 2)}/${hash.substring(2)}.json`);
-    await vscode.workspace.fs.writeFile(jsonUri, Buffer.from(JSON.stringify(obj, null, 4), 'utf8'));
+      vscode.Uri.file(workspaceroot),
+      `.one-vscode/info/hash_objects/${hash.substring(0, 2)}/${hash.substring(
+        2
+      )}.json`
+    );
+    await vscode.workspace.fs.writeFile(
+      jsonUri,
+      Buffer.from(JSON.stringify(obj, null, 4), "utf8")
+    );
   }
 
   public static async getEntry(uri: vscode.Uri, hash: string) {
     const metaObj = await Metadata.getObj(hash);
     const relPath = vscode.workspace.asRelativePath(uri);
-    if (metaObj && metaObj[relPath] && Object.keys(metaObj[relPath]).length !== 0) {
+    if (
+      metaObj &&
+      metaObj[relPath] &&
+      Object.keys(metaObj[relPath]).length !== 0
+    ) {
       return metaObj[relPath];
     }
     // TODO: Error Handling
@@ -133,8 +150,11 @@ export class Metadata {
   public static async setEntry(uri: vscode.Uri, hash: string, entry: any) {
     const workspaceroot = obtainWorkspaceRoot();
     const jsonUri = vscode.Uri.joinPath(
-        vscode.Uri.file(workspaceroot),
-        `.one-vscode/info/hash_objects/${hash.substring(0, 2)}/${hash.substring(2)}.json`);
+      vscode.Uri.file(workspaceroot),
+      `.one-vscode/info/hash_objects/${hash.substring(0, 2)}/${hash.substring(
+        2
+      )}.json`
+    );
 
     const relPath = vscode.workspace.asRelativePath(uri);
     const metaObj = await Metadata.getObj(hash);
@@ -145,7 +165,9 @@ export class Metadata {
       metaObj[relPath][key] = entry[key];
     }
     await vscode.workspace.fs.writeFile(
-        jsonUri, Buffer.from(JSON.stringify(metaObj, null, 4), 'utf8'));
+      jsonUri,
+      Buffer.from(JSON.stringify(metaObj, null, 4), "utf8")
+    );
   }
 
   public static async createDefault(uri: vscode.Uri, hash: string) {
@@ -164,14 +186,14 @@ export class Metadata {
       metaObj[relPath] = {};
     }
 
-    const filename: any = relPath.split('/').pop();
+    const filename: any = relPath.split("/").pop();
     const stats: any = fs.statSync(uri.fsPath);
 
-    metaObj[relPath]['name'] = filename;
-    metaObj[relPath]['file-extension'] = filename.split('.').pop();
-    metaObj[relPath]['create-time'] = stats.birthtime;
-    metaObj[relPath]['modified-time'] = stats.mtime;
-    metaObj[relPath]['is-deleted'] = false;
+    metaObj[relPath]["name"] = filename;
+    metaObj[relPath]["file-extension"] = filename.split(".").pop();
+    metaObj[relPath]["create-time"] = stats.birthtime;
+    metaObj[relPath]["modified-time"] = stats.mtime;
+    metaObj[relPath]["is-deleted"] = false;
     await Metadata.setObj(hash, metaObj);
   }
 
@@ -186,13 +208,16 @@ export class Metadata {
 
     // step 2. Check if the hash object has the deleted uri
     const relPath = vscode.workspace.asRelativePath(uri);
-    if (metaObj === undefined || metaObj[relPath] === undefined ||
-        Object.keys(metaObj[relPath]).length === 0) {
+    if (
+      metaObj === undefined ||
+      metaObj[relPath] === undefined ||
+      Object.keys(metaObj[relPath]).length === 0
+    ) {
       return;
     }
 
     // step 3. deactivate (set 'is_deleted') that path.
-    metaObj[relPath]['is-deleted'] = true;
+    metaObj[relPath]["is-deleted"] = true;
     await Metadata.setObj(hash, metaObj);
   }
 
@@ -206,7 +231,7 @@ export class Metadata {
   public static async getInfo(uri: vscode.Uri, hash: string) {
     const metaEntry = await Metadata.getEntry(uri, hash);
     const info: any = {};
-    info[metaEntry['name']] = metaEntry;
+    info[metaEntry["name"]] = metaEntry;
     return info;
   }
 }

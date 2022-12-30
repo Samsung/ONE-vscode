@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import {Command} from './Command';
-import {DeviceSpec} from './Spec';
-import {Toolchains} from './Toolchain';
+import { Command } from "./Command";
+import { DeviceSpec } from "./Spec";
+import { Toolchains } from "./Toolchain";
 
 interface Executor {
   // Executor unique name
@@ -38,25 +38,25 @@ interface Executor {
 // General excutor uses onecc so default jobs can be used
 class ExecutorBase implements Executor {
   name(): string {
-    throw new Error('Name is not determined.');
+    throw new Error("Name is not determined.");
   }
 
   // exetensions of executable files
   getExecutableExt(): string[] {
-    throw Error('Invalid toolchains call');
+    throw Error("Invalid toolchains call");
   }
 
   toolchains(): Toolchains {
-    throw Error('Invalid toolchains call');
+    throw Error("Invalid toolchains call");
   }
 
   runInference(_modelPath: string, _options?: string[]): Command {
-    throw Error('Invalid inference call');
+    throw Error("Invalid inference call");
   }
 
   require(): DeviceSpec {
-    throw new Error('NYI: need to define DeviceSpec for Executor.');
+    throw new Error("NYI: need to define DeviceSpec for Executor.");
   }
 }
 
-export {Executor, ExecutorBase};
+export { Executor, ExecutorBase };

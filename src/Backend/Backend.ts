@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import {Compiler} from './Compiler';
-import {Executor} from './Executor';
+import { Compiler } from "./Compiler";
+import { Executor } from "./Executor";
 
 /**
  * This file defines common API exposed by backend extension.
@@ -34,10 +34,10 @@ export interface Backend {
   name(): string;
 
   // compiler specs by being filled by impl
-  compiler(): Compiler|undefined;
+  compiler(): Compiler | undefined;
 
   // executor specs by being filled by impl
-  executor(): Executor|undefined;
+  executor(): Executor | undefined;
 
   // TODO: This API will replace `executor()` and update Comment.
   // this will return array only contains executor() result.

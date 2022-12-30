@@ -101,7 +101,7 @@ function check_ts_files() {
   done
 
   if [[ ${#FILES_TO_CHECK_TS} -ne 0 ]]; then
-    ${CLANG_FORMAT} -i ${FILES_TO_CHECK_TS[@]}
+    npx prettier -w ${FILES_TO_CHECK_TS[@]}
     EXIT_CODE=$?
     if [[ ${EXIT_CODE} -ne 0 ]]; then
       INVALID_EXIT=${EXIT_CODE}

@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import {assert} from 'chai';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as vscode from 'vscode';
+import { assert } from "chai";
+import * as fs from "fs";
+import * as path from "path";
+import * as vscode from "vscode";
 
-import {CfgEditorPanel} from '../CfgEditor/CfgEditorPanel';
-import {obtainWorkspaceRoots} from '../Utils/Helpers';
-import {Logger} from '../Utils/Logger';
+import { CfgEditorPanel } from "../CfgEditor/CfgEditorPanel";
+import { obtainWorkspaceRoots } from "../Utils/Helpers";
+import { Logger } from "../Utils/Logger";
 
-import {ArtifactAttr} from './ArtifactLocator';
-import {OneStorage} from './OneStorage';
+import { ArtifactAttr } from "./ArtifactLocator";
+import { OneStorage } from "./OneStorage";
 
 // Exported for unit testing only
 export {
@@ -99,20 +99,20 @@ export abstract class Node {
    * `undefined` when it's not build yet.
    * If it has no child, it is an empty array.
    */
-  protected _childNodes: Node[]|undefined;
+  protected _childNodes: Node[] | undefined;
 
   /**
    * @protected _parent
    * `undefined` only if it has no parent (tree root)
    */
-  protected _parent: Node|undefined;
+  protected _parent: Node | undefined;
   uri: vscode.Uri;
 
   abstract icon: vscode.ThemeIcon;
-  abstract openViewType: string|undefined;
+  abstract openViewType: string | undefined;
   abstract canHide: boolean;
 
-  constructor(uri: vscode.Uri, parent: Node|undefined) {
+  constructor(uri: vscode.Uri, parent: Node | undefined) {
     this.id = Math.random().toString();
     this._childNodes = undefined;
     this.uri = uri;
@@ -141,7 +141,7 @@ export abstract class Node {
     return this.uri.fsPath;
   }
 
-  get parent(): Node|undefined {
+  get parent(): Node | undefined {
     return this._parent;
   }
 
@@ -160,31 +160,56 @@ export abstract class Node {
 }
 
 class NodeFactory {
-  static create(type: NodeType, fpath: string, parent: Node|undefined, attr?: ArtifactAttr): Node {
+  static create(
+    type: NodeType,
+    fpath: string,
+    parent: Node | undefined,
+    attr?: ArtifactAttr
+  ): Node {
     const uri = vscode.Uri.file(fpath);
 
     let node: Node;
     switch (type) {
       case NodeType.directory: {
-        assert.strictEqual(attr, undefined, 'Directory nodes cannot have attributes');
+        assert.strictEqual(
+          attr,
+          undefined,
+          "Directory nodes cannot have attributes"
+        );
         node = new DirectoryNode(uri, parent);
         break;
       }
       case NodeType.baseModel: {
-        node = new BaseModelNode(uri, parent, attr?.openViewType, attr?.icon, attr?.canHide);
+        node = new BaseModelNode(
+          uri,
+          parent,
+          attr?.openViewType,
+          attr?.icon,
+          attr?.canHide
+        );
         break;
       }
       case NodeType.config: {
-        assert.strictEqual(attr, undefined, 'Config nodes cannot have attributes');
+        assert.strictEqual(
+          attr,
+          undefined,
+          "Config nodes cannot have attributes"
+        );
         node = new ConfigNode(uri, parent);
         break;
       }
       case NodeType.product: {
-        node = new ProductNode(uri, parent, attr?.openViewType, attr?.icon, attr?.canHide);
+        node = new ProductNode(
+          uri,
+          parent,
+          attr?.openViewType,
+          attr?.icon,
+          attr?.canHide
+        );
         break;
       }
       default: {
-        throw Error('Undefined NodeType');
+        throw Error("Undefined NodeType");
       }
     }
 
@@ -204,7 +229,7 @@ class DirectoryNode extends Node {
   // DO NOT HIDE DIRECTORY NODE AS ALWAYS
   readonly canHide = false;
 
-  constructor(uri: vscode.Uri, parent: Node|undefined) {
+  constructor(uri: vscode.Uri, parent: Node | undefined) {
     assert.ok(fs.statSync(uri.fsPath));
     assert.strictEqual(fs.statSync(uri.fsPath).isDirectory(), true);
 
@@ -235,9 +260,16 @@ class DirectoryNode extends Node {
           this._childNodes!.push(dirNode);
         }
       } else if (
-          fstat.isFile() &&
-          (fname.endsWith('.pb') || fname.endsWith('.tflite') || fname.endsWith('.onnx'))) {
-        const baseModelNode = NodeFactory.create(NodeType.baseModel, fpath, this);
+        fstat.isFile() &&
+        (fname.endsWith(".pb") ||
+          fname.endsWith(".tflite") ||
+          fname.endsWith(".onnx"))
+      ) {
+        const baseModelNode = NodeFactory.create(
+          NodeType.baseModel,
+          fpath,
+          this
+        );
 
         if (baseModelNode) {
           this._childNodes!.push(baseModelNode);
@@ -253,19 +285,21 @@ class BaseModelNode extends Node {
   // Do not open file as default
   static defaultOpenViewType = undefined;
   // Display 'symbol-variable' icon to represent model file as default
-  static defaultIcon = new vscode.ThemeIcon('symbol-variable');
+  static defaultIcon = new vscode.ThemeIcon("symbol-variable");
   // Show file always as default
   static defaultCanHide = false;
 
-  openViewType: string|undefined = BaseModelNode.defaultOpenViewType;
+  openViewType: string | undefined = BaseModelNode.defaultOpenViewType;
   icon = BaseModelNode.defaultIcon;
   canHide = BaseModelNode.defaultCanHide;
 
   constructor(
-      uri: vscode.Uri, parent: Node|undefined,
-      openViewType: string|undefined = BaseModelNode.defaultOpenViewType,
-      icon: vscode.ThemeIcon = BaseModelNode.defaultIcon,
-      canHide: boolean = BaseModelNode.defaultCanHide) {
+    uri: vscode.Uri,
+    parent: Node | undefined,
+    openViewType: string | undefined = BaseModelNode.defaultOpenViewType,
+    icon: vscode.ThemeIcon = BaseModelNode.defaultIcon,
+    canHide: boolean = BaseModelNode.defaultCanHide
+  ) {
     assert.ok(fs.statSync(uri.fsPath));
     assert.strictEqual(fs.statSync(uri.fsPath).isFile(), true);
 
@@ -291,7 +325,7 @@ class BaseModelNode extends Node {
     if (!configPaths) {
       return;
     }
-    configPaths.forEach(configPath => {
+    configPaths.forEach((configPath) => {
       const configNode = NodeFactory.create(NodeType.config, configPath, this);
 
       if (configNode) {
@@ -305,9 +339,9 @@ class ConfigNode extends Node {
   readonly type = NodeType.config;
 
   // Open file with one.editor.cfg as default
-  static defaultOpenViewType = 'one.editor.cfg';
+  static defaultOpenViewType = "one.editor.cfg";
   // Display gear icon as default
-  static defaultIcon = new vscode.ThemeIcon('gear');
+  static defaultIcon = new vscode.ThemeIcon("gear");
   // Show file always as default
   static defaultCanHide = false;
 
@@ -316,10 +350,12 @@ class ConfigNode extends Node {
   canHide = ConfigNode.defaultCanHide;
 
   constructor(
-      uri: vscode.Uri, parent: Node|undefined,
-      openViewType: string = ConfigNode.defaultOpenViewType,
-      icon: vscode.ThemeIcon = ConfigNode.defaultIcon,
-      canHide: boolean = ConfigNode.defaultCanHide) {
+    uri: vscode.Uri,
+    parent: Node | undefined,
+    openViewType: string = ConfigNode.defaultOpenViewType,
+    icon: vscode.ThemeIcon = ConfigNode.defaultIcon,
+    canHide: boolean = ConfigNode.defaultCanHide
+  ) {
     assert.ok(fs.statSync(uri.fsPath));
     assert.strictEqual(fs.statSync(uri.fsPath).isFile(), true);
 
@@ -348,8 +384,13 @@ class ConfigNode extends Node {
 
     const products = cfgObj.getProductsExists;
 
-    products.forEach(product => {
-      const productNode = NodeFactory.create(NodeType.product, product.path, this, product.attr);
+    products.forEach((product) => {
+      const productNode = NodeFactory.create(
+        NodeType.product,
+        product.path,
+        this,
+        product.attr
+      );
 
       if (productNode) {
         this._childNodes!.push(productNode);
@@ -368,15 +409,17 @@ class ProductNode extends Node {
   // Show file always as default
   static defaultCanHide = false;
 
-  openViewType: string|undefined = ProductNode.defaultOpenViewType;
+  openViewType: string | undefined = ProductNode.defaultOpenViewType;
   icon = ProductNode.defaultIcon;
   canHide = ProductNode.defaultCanHide;
 
   constructor(
-      uri: vscode.Uri, parent: Node|undefined,
-      openViewType: string|undefined = ProductNode.defaultOpenViewType,
-      icon: vscode.ThemeIcon = ProductNode.defaultIcon,
-      canHide: boolean = ProductNode.defaultCanHide) {
+    uri: vscode.Uri,
+    parent: Node | undefined,
+    openViewType: string | undefined = ProductNode.defaultOpenViewType,
+    icon: vscode.ThemeIcon = ProductNode.defaultIcon,
+    canHide: boolean = ProductNode.defaultCanHide
+  ) {
     assert.ok(fs.statSync(uri.fsPath));
     assert.strictEqual(fs.statSync(uri.fsPath).isFile(), true);
 
@@ -393,8 +436,8 @@ class ProductNode extends Node {
 
 export class OneNode extends vscode.TreeItem {
   constructor(
-      public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-      public readonly node: Node,
+    public readonly collapsibleState: vscode.TreeItemCollapsibleState,
+    public readonly node: Node
   ) {
     super(node.name, collapsibleState);
 
@@ -405,9 +448,9 @@ export class OneNode extends vscode.TreeItem {
 
     if (node.openViewType) {
       this.command = {
-        command: 'vscode.openWith',
-        title: 'Open with Custom Viewer',
-        arguments: [node.uri, node.openViewType]
+        command: "vscode.openWith",
+        title: "Open with Custom Viewer",
+        arguments: [node.uri, node.openViewType],
       };
     }
 
@@ -426,13 +469,14 @@ export class OneNode extends vscode.TreeItem {
 
 /* istanbul ignore next */
 export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
-  private _onDidChangeTreeData: vscode.EventEmitter<Node|undefined|void> =
-      new vscode.EventEmitter<Node|undefined|void>();
-  readonly onDidChangeTreeData: vscode.Event<Node|undefined|void> = this._onDidChangeTreeData.event;
+  private _onDidChangeTreeData: vscode.EventEmitter<Node | undefined | void> =
+    new vscode.EventEmitter<Node | undefined | void>();
+  readonly onDidChangeTreeData: vscode.Event<Node | undefined | void> =
+    this._onDidChangeTreeData.event;
 
   private fileWatcher = vscode.workspace.createFileSystemWatcher(`**/*`);
 
-  private _tree: Node[]|undefined;
+  private _tree: Node[] | undefined;
   private _workspaceRoots: vscode.Uri[] = [];
 
   public static didHideExtra: boolean = false;
@@ -440,9 +484,11 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
   public static register(context: vscode.ExtensionContext) {
     const provider = new OneTreeDataProvider(context.extension.extensionKind);
 
-    const _treeView = vscode.window.createTreeView(
-        'OneExplorerView',
-        {treeDataProvider: provider, showCollapseAll: true, canSelectMany: true});
+    const _treeView = vscode.window.createTreeView("OneExplorerView", {
+      treeDataProvider: provider,
+      showCollapseAll: true,
+      canSelectMany: true,
+    });
 
     let registrations = [
       provider.fileWatcher.onDidCreate((_uri: vscode.Uri) => {
@@ -462,62 +508,97 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
         provider.refresh(node.parent);
       }),
       vscode.workspace.onDidChangeWorkspaceFolders(() => {
-        provider._workspaceRoots = obtainWorkspaceRoots().map(root => vscode.Uri.file(root));
+        provider._workspaceRoots = obtainWorkspaceRoots().map((root) =>
+          vscode.Uri.file(root)
+        );
         provider.refresh();
       }),
       _treeView,
       vscode.commands.registerCommand(
-          'one.explorer.revealInOneExplorer',
-          (path: string) => {
-            const node = OneStorage.getNode(path);
-            if (node) {
-              _treeView ?.reveal(node, {select: true, focus: true, expand: true});
-            }
-          }),
+        "one.explorer.revealInOneExplorer",
+        (path: string) => {
+          const node = OneStorage.getNode(path);
+          if (node) {
+            _treeView?.reveal(node, {
+              select: true,
+              focus: true,
+              expand: true,
+            });
+          }
+        }
+      ),
       vscode.commands.registerCommand(
-          'one.explorer.openAsText',
-          (node: Node) => {
-            vscode.commands.executeCommand('vscode.openWith', node.uri, 'default');
-          }),
+        "one.explorer.openAsText",
+        (node: Node) => {
+          vscode.commands.executeCommand(
+            "vscode.openWith",
+            node.uri,
+            "default"
+          );
+        }
+      ),
       vscode.commands.registerCommand(
-          'one.explorer.revealInDefaultExplorer',
-          (node: Node) => {
-            vscode.commands.executeCommand('revealInExplorer', node.uri);
-          }),
-      vscode.commands.registerCommand('one.explorer.refresh', () => provider.refresh()),
-      vscode.commands.registerCommand('one.explorer.hideExtra', () => provider.hideExtra()),
-      vscode.commands.registerCommand('one.explorer.showExtra', () => provider.showExtra()),
-      vscode.commands.registerCommand(
-          'one.explorer.createCfg', (node: Node) => provider.createCfg(node)),
-      vscode.commands.registerCommand(
-          'one.explorer.runCfg',
-          (node: Node) => {
-            vscode.commands.executeCommand('one.toolchain.runCfg', node.uri.fsPath);
-          }),
-      vscode.commands.registerCommand('one.explorer.delete', (node: Node) => provider.delete(node)),
-      vscode.commands.registerCommand('one.explorer.rename', (node: Node) => provider.rename(node)),
-      vscode.commands.registerCommand(
-          'one.explorer.refactor', (node: Node) => provider.refactor(node)),
+        "one.explorer.revealInDefaultExplorer",
+        (node: Node) => {
+          vscode.commands.executeCommand("revealInExplorer", node.uri);
+        }
+      ),
+      vscode.commands.registerCommand("one.explorer.refresh", () =>
+        provider.refresh()
+      ),
+      vscode.commands.registerCommand("one.explorer.hideExtra", () =>
+        provider.hideExtra()
+      ),
+      vscode.commands.registerCommand("one.explorer.showExtra", () =>
+        provider.showExtra()
+      ),
+      vscode.commands.registerCommand("one.explorer.createCfg", (node: Node) =>
+        provider.createCfg(node)
+      ),
+      vscode.commands.registerCommand("one.explorer.runCfg", (node: Node) => {
+        vscode.commands.executeCommand("one.toolchain.runCfg", node.uri.fsPath);
+      }),
+      vscode.commands.registerCommand("one.explorer.delete", (node: Node) =>
+        provider.delete(node)
+      ),
+      vscode.commands.registerCommand("one.explorer.rename", (node: Node) =>
+        provider.rename(node)
+      ),
+      vscode.commands.registerCommand("one.explorer.refactor", (node: Node) =>
+        provider.refactor(node)
+      ),
     ];
 
     if (provider.isLocal) {
       registrations = [
         ...registrations,
         vscode.commands.registerCommand(
-            'one.explorer.openContainingFolder',
-            (node: Node) => provider.openContainingFolder(node)),
+          "one.explorer.openContainingFolder",
+          (node: Node) => provider.openContainingFolder(node)
+        ),
       ];
     } else {
-      vscode.commands.executeCommand('setContext', 'one:extensionKind', 'Workspace');
+      vscode.commands.executeCommand(
+        "setContext",
+        "one:extensionKind",
+        "Workspace"
+      );
     }
 
-    registrations.forEach(disposable => context.subscriptions.push(disposable));
+    registrations.forEach((disposable) =>
+      context.subscriptions.push(disposable)
+    );
   }
 
   constructor(private _extensionKind: vscode.ExtensionKind) {
-    this._workspaceRoots = obtainWorkspaceRoots().map(root => vscode.Uri.file(root));
+    this._workspaceRoots = obtainWorkspaceRoots().map((root) =>
+      vscode.Uri.file(root)
+    );
     vscode.commands.executeCommand(
-        'setContext', 'one.explorer:didHideExtra', OneTreeDataProvider.didHideExtra);
+      "setContext",
+      "one.explorer:didHideExtra",
+      OneTreeDataProvider.didHideExtra
+    );
   }
 
   /**
@@ -530,7 +611,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
    * @ref https://github.com/Samsung/ONE-vscode/issues/1209
    */
   get isRemote(): boolean {
-    return (this._extensionKind === vscode.ExtensionKind.Workspace);
+    return this._extensionKind === vscode.ExtensionKind.Workspace;
   }
 
   /**
@@ -543,7 +624,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
    * @ref https://github.com/Samsung/ONE-vscode/issues/1209
    */
   get isLocal(): boolean {
-    return (this._extensionKind === vscode.ExtensionKind.UI);
+    return this._extensionKind === vscode.ExtensionKind.UI;
   }
 
   /**
@@ -553,7 +634,10 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
     OneTreeDataProvider.didHideExtra = true;
 
     vscode.commands.executeCommand(
-        'setContext', 'one.explorer:didHideExtra', OneTreeDataProvider.didHideExtra);
+      "setContext",
+      "one.explorer:didHideExtra",
+      OneTreeDataProvider.didHideExtra
+    );
 
     this.refresh(undefined, false);
   }
@@ -565,7 +649,10 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
     OneTreeDataProvider.didHideExtra = false;
 
     vscode.commands.executeCommand(
-        'setContext', 'one.explorer:didHideExtra', OneTreeDataProvider.didHideExtra);
+      "setContext",
+      "one.explorer:didHideExtra",
+      OneTreeDataProvider.didHideExtra
+    );
 
     this.refresh(undefined, false);
   }
@@ -596,7 +683,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
    * @command one.explorer.openContainingFolder
    */
   openContainingFolder(node: Node): void {
-    vscode.commands.executeCommand('revealFileInOS', node.uri);
+    vscode.commands.executeCommand("revealFileInOS", node.uri);
   }
 
   /**
@@ -604,12 +691,15 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
    */
   private askNewName = (node: Node) => {
     return vscode.window.showInputBox({
-      title: 'Enter a file name:',
+      title: "Enter a file name:",
       value: `${path.basename(node.uri.fsPath)}`,
-      valueSelection:
-          [0, path.basename(node.uri.fsPath).length - path.parse(node.uri.fsPath).ext.length],
+      valueSelection: [
+        0,
+        path.basename(node.uri.fsPath).length -
+          path.parse(node.uri.fsPath).ext.length,
+      ],
       placeHolder: `Enter a new name for ${path.basename(node.uri.fsPath)}`,
-      validateInput: this.validateNewPath(node)
+      validateInput: this.validateNewPath(node),
     });
   };
 
@@ -619,8 +709,10 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
    * (1) the new path has the same ext
    * (2) the new path already exists
    */
-  private validateNewPath = (node: Node): (newname: string) => string | undefined => {
-    return (newname: string): string|undefined => {
+  private validateNewPath = (
+    node: Node
+  ): ((newname: string) => string | undefined) => {
+    return (newname: string): string | undefined => {
       const oldpath = node.path;
       const dirpath = path.dirname(node.uri.fsPath);
       const newpath: string = path.join(dirpath, newname);
@@ -632,8 +724,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
         return `A file extension must be (${path.extname(oldpath)})`;
       }
       if (newpath !== oldpath && fs.existsSync(newpath)) {
-        return `A file or folder ${
-            newname} already exists at this location. Please choose a different name.`;
+        return `A file or folder ${newname} already exists at this location. Please choose a different name.`;
       }
     };
   };
@@ -651,7 +742,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
       return;
     }
 
-    this.askNewName(node).then(newname => {
+    this.askNewName(node).then((newname) => {
       if (newname) {
         const dirpath = path.dirname(node.uri.fsPath);
         const newpath = `${dirpath}/${newname}`;
@@ -691,29 +782,39 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
     }
 
     // Ask whether the user want to change the config files
-    const askChangingCfgs = () => vscode.window.showInformationMessage(
-        `Change corresponding fields in these following files?`, {
-          detail: `${children.length} file(s): ${children.map(node => ' ' + node.name).toString()}`,
-          modal: true
+    const askChangingCfgs = () =>
+      vscode.window.showInformationMessage(
+        `Change corresponding fields in these following files?`,
+        {
+          detail: `${children.length} file(s): ${children
+            .map((node) => " " + node.name)
+            .toString()}`,
+          modal: true,
         },
-        'Yes');
+        "Yes"
+      );
 
-    if (!await askChangingCfgs()) {
+    if (!(await askChangingCfgs())) {
       return;
     }
 
     // Refactor config files
     const refactorCfgs = () => {
-      return Promise.all(children.map(child => {
-        const cfgObj = OneStorage.getCfgObj(child.path);
-        if (cfgObj) {
-          const oldpath = node.path;
-          return cfgObj.updateBaseModelField(oldpath, newpath).then(() => {
-            Logger.info('OneExplorer', `Replaced ${oldpath} with ${newpath} in ${child.path}`);
-          });
-        }
-        return undefined;
-      }));
+      return Promise.all(
+        children.map((child) => {
+          const cfgObj = OneStorage.getCfgObj(child.path);
+          if (cfgObj) {
+            const oldpath = node.path;
+            return cfgObj.updateBaseModelField(oldpath, newpath).then(() => {
+              Logger.info(
+                "OneExplorer",
+                `Replaced ${oldpath} with ${newpath} in ${child.path}`
+              );
+            });
+          }
+          return undefined;
+        })
+      );
     };
 
     refactorCfgs().then(() => {
@@ -727,7 +828,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
    * @command one.explorer.delete
    */
   delete(node: Node): void {
-    const isDirectory = (node.type === NodeType.directory);
+    const isDirectory = node.type === NodeType.directory;
 
     let recursive: boolean;
     let title = `Are you sure you want to delete '${node.name}'`;
@@ -739,27 +840,31 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
       recursive = false;
     }
 
-    let detail: string|undefined;
+    let detail: string | undefined;
     let approval: string;
 
     if (this.isRemote) {
-      approval = 'Delete';
-      detail = 'The file will be deleted permanently.';
+      approval = "Delete";
+      detail = "The file will be deleted permanently.";
     } else {
-      approval = 'Move to Trash';
+      approval = "Move to Trash";
       detail = `You can restore this file from the Trash.`;
     }
 
-    vscode.window.showInformationMessage(title, {detail: detail, modal: true}, approval)
-        .then(ans => {
-          if (ans === approval) {
-            Logger.info('OneExplorer', `Delete '${node.name}'.`);
+    vscode.window
+      .showInformationMessage(title, { detail: detail, modal: true }, approval)
+      .then((ans) => {
+        if (ans === approval) {
+          Logger.info("OneExplorer", `Delete '${node.name}'.`);
 
-            const edit = new vscode.WorkspaceEdit();
-            edit.deleteFile(node.uri, {recursive: recursive, ignoreIfNotExists: true});
-            vscode.workspace.applyEdit(edit);
-          }
-        });
+          const edit = new vscode.WorkspaceEdit();
+          edit.deleteFile(node.uri, {
+            recursive: recursive,
+            ignoreIfNotExists: true,
+          });
+          vscode.workspace.applyEdit(edit);
+        }
+      });
   }
 
   /**
@@ -782,51 +887,58 @@ one-import-${extName}=True
 input_path=${modelName}.${extName}
 `;
 
-    const validateInputPath = (cfgName: string): string|undefined => {
+    const validateInputPath = (cfgName: string): string | undefined => {
       const cfgPath: string = path.join(dirPath, cfgName);
 
-      if (!cfgName.endsWith('.cfg')) {
+      if (!cfgName.endsWith(".cfg")) {
         return `A file extension must be .cfg`;
       }
 
       if (fs.existsSync(cfgPath)) {
-        return `A file or folder ${
-            cfgName} already exists at this location. Please choose a different name.`;
+        return `A file or folder ${cfgName} already exists at this location. Please choose a different name.`;
       }
     };
 
     vscode.window
-        .showInputBox({
-          title: `Create ONE configuration of '${modelName}.${extName}' :`,
-          placeHolder: `Enter a file name`,
-          value: `${modelName}.cfg`,
-          valueSelection: [0, `${modelName}.cfg`.length - `.cfg`.length],
-          validateInput: validateInputPath
-        })
-        .then(value => {
-          if (!value) {
-            Logger.debug('OneExplorer', 'User hit the excape key!');
-            return;
+      .showInputBox({
+        title: `Create ONE configuration of '${modelName}.${extName}' :`,
+        placeHolder: `Enter a file name`,
+        value: `${modelName}.cfg`,
+        valueSelection: [0, `${modelName}.cfg`.length - `.cfg`.length],
+        validateInput: validateInputPath,
+      })
+      .then((value) => {
+        if (!value) {
+          Logger.debug("OneExplorer", "User hit the excape key!");
+          return;
+        }
+
+        // 'uri' path is not occupied, assured by validateInputPath
+        const uri = vscode.Uri.file(`${dirPath}/${value}`);
+
+        const edit = new vscode.WorkspaceEdit();
+        edit.createFile(uri);
+        edit.insert(uri, new vscode.Position(0, 0), content);
+
+        vscode.workspace.applyEdit(edit).then((isSuccess) => {
+          if (isSuccess) {
+            vscode.workspace.openTextDocument(uri).then((document) => {
+              document.save();
+              vscode.commands.executeCommand(
+                "vscode.openWith",
+                uri,
+                CfgEditorPanel.viewType
+              );
+            });
+          } else {
+            Logger.error(
+              "OneExplorer",
+              "CreateCfg",
+              `Failed to create the file ${uri}`
+            );
           }
-
-          // 'uri' path is not occupied, assured by validateInputPath
-          const uri = vscode.Uri.file(`${dirPath}/${value}`);
-
-          const edit = new vscode.WorkspaceEdit();
-          edit.createFile(uri);
-          edit.insert(uri, (new vscode.Position(0, 0)), content);
-
-          vscode.workspace.applyEdit(edit).then(isSuccess => {
-            if (isSuccess) {
-              vscode.workspace.openTextDocument(uri).then(document => {
-                document.save();
-                vscode.commands.executeCommand('vscode.openWith', uri, CfgEditorPanel.viewType);
-              });
-            } else {
-              Logger.error('OneExplorer', 'CreateCfg', `Failed to create the file ${uri}`);
-            }
-          });
         });
+      });
   }
 
   /**
@@ -834,7 +946,7 @@ input_path=${modelName}.${extName}
    * @param element Node
    * @returns element's parent
    */
-  getParent(element: Node): Node|undefined {
+  getParent(element: Node): Node | undefined {
     return element.parent;
   }
 
@@ -843,13 +955,18 @@ input_path=${modelName}.${extName}
       return new OneNode(vscode.TreeItemCollapsibleState.Expanded, node);
     } else if (node.type === NodeType.product) {
       return new OneNode(vscode.TreeItemCollapsibleState.None, node);
-    } else if (node.type === NodeType.baseModel || node.type === NodeType.config) {
+    } else if (
+      node.type === NodeType.baseModel ||
+      node.type === NodeType.config
+    ) {
       return new OneNode(
-          (node.getChildren().length > 0) ? vscode.TreeItemCollapsibleState.Collapsed :
-                                            vscode.TreeItemCollapsibleState.None,
-          node);
+        node.getChildren().length > 0
+          ? vscode.TreeItemCollapsibleState.Collapsed
+          : vscode.TreeItemCollapsibleState.None,
+        node
+      );
     } else {
-      throw Error('Undefined NodeType');
+      throw Error("Undefined NodeType");
     }
   }
 
@@ -864,21 +981,28 @@ input_path=${modelName}.${extName}
       return this.getTree();
     }
 
-    return OneTreeDataProvider.didHideExtra ? element.getChildren().filter(node => !node.canHide) :
-                                              element.getChildren();
+    return OneTreeDataProvider.didHideExtra
+      ? element.getChildren().filter((node) => !node.canHide)
+      : element.getChildren();
   }
 
   /**
    * Get the root of the tree
    */
-  private getTree(): Node[]|undefined {
+  private getTree(): Node[] | undefined {
     if (!this._workspaceRoots || this._workspaceRoots.length === 0) {
       return undefined;
     }
 
     if (!this._tree) {
       this._tree = this._workspaceRoots.map(
-          root => NodeFactory.create(NodeType.directory, root.fsPath, undefined) as DirectoryNode);
+        (root) =>
+          NodeFactory.create(
+            NodeType.directory,
+            root.fsPath,
+            undefined
+          ) as DirectoryNode
+      );
     }
 
     return this._tree;

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import {assert} from 'chai';
-import * as vscode from 'vscode';
+import { assert } from "chai";
+import * as vscode from "vscode";
 
-import {generateHash} from '../../Utils/Hash';
-import {TestBuilder} from '../TestBuilder';
+import { generateHash } from "../../Utils/Hash";
+import { TestBuilder } from "../TestBuilder";
 
-suite('Utils', function() {
-  suite('Hash', function() {
+suite("Utils", function () {
+  suite("Hash", function () {
     let testBuilder: TestBuilder;
     setup(() => {
       testBuilder = new TestBuilder(this);
@@ -32,20 +32,22 @@ suite('Utils', function() {
       testBuilder.tearDown();
     });
 
-    suite('#generateHash()', function() {
-      test('generate a file hash', async function() {
-        const exampleName = 'example.txt';
+    suite("#generateHash()", function () {
+      test("generate a file hash", async function () {
+        const exampleName = "example.txt";
         const examplePath = testBuilder.getPath(exampleName);
-        testBuilder.writeFileSync(exampleName, 'This is an example text file.');
+        testBuilder.writeFileSync(exampleName, "This is an example text file.");
 
         const hash = await generateHash(vscode.Uri.file(examplePath));
         assert.isString(hash);
         assert.strictEqual(
-            hash, 'f95fa5b0700b1a7cf6551a87b777faae0fdf3b824ee1a2def87e7631940e006c');
+          hash,
+          "f95fa5b0700b1a7cf6551a87b777faae0fdf3b824ee1a2def87e7631940e006c"
+        );
       });
 
-      test('NEG: generate non-existing file hash', function(pass) {
-        const notExistingPath = testBuilder.getPath('non-existing');
+      test("NEG: generate non-existing file hash", function (pass) {
+        const notExistingPath = testBuilder.getPath("non-existing");
         generateHash(vscode.Uri.file(notExistingPath)).catch(() => {
           pass();
           assert.ok(true);

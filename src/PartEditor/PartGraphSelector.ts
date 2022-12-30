@@ -14,94 +14,122 @@
  * limitations under the License.
  */
 
-import * as ini from 'ini';
-import * as path from 'path';
-import * as vscode from 'vscode';
+import * as ini from "ini";
+import * as path from "path";
+import * as vscode from "vscode";
 
-import {BackendColor} from '../CircleGraph/BackendColor';
-import {CircleGraphCtrl, CircleGraphEvent, MessageDefs} from '../CircleGraph/CircleGraphCtrl';
+import { BackendColor } from "../CircleGraph/BackendColor";
+import {
+  CircleGraphCtrl,
+  CircleGraphEvent,
+  MessageDefs,
+} from "../CircleGraph/CircleGraphCtrl";
 
 export interface PartGraphEvent {
   onSelection(names: string[], tensors: string[]): void;
 }
 
 export type PartGraphCmdOpenArgs = {
-  docPath: string; id: number; docText: string; names: string; backends: BackendColor[];
+  docPath: string;
+  id: number;
+  docText: string;
+  names: string;
+  backends: BackendColor[];
   viewColumn: vscode.ViewColumn | undefined;
 };
 
 export type PartGraphCmdUpdateArgs = {
-  docPath: string, id: number, docText: string;
+  docPath: string;
+  id: number;
+  docText: string;
 };
 
 export type PartGraphCmdReloadArgs = {
-  docPath: string, id: number, docText: string;
+  docPath: string;
+  id: number;
+  docText: string;
 };
 
 export type PartGraphCmdFwdSelArgs = {
-  docPath: string, id: number, selection: string;
+  docPath: string;
+  id: number;
+  selection: string;
 };
 
 export type PartGraphCmdCloseArgs = {
-  docPath: string, id: number;
+  docPath: string;
+  id: number;
 };
 
 /* istanbul ignore next */
-export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEvent {
-  public static readonly viewType = 'PartGraphSelector';
-  public static readonly cmdOpen = 'one.part.openGraphSelector';
-  public static readonly cmdUpdate = 'one.part.updateGraphSelector';
-  public static readonly cmdReload = 'one.part.reloadGraphSelector';
-  public static readonly cmdClose = 'one.part.closeGraphSelector';
-  public static readonly cmdFwdSelection = 'one.part.fwdSelection';
-  public static readonly folderMediaCircleGraph = 'media/CircleGraph';
+export class PartGraphSelPanel
+  extends CircleGraphCtrl
+  implements CircleGraphEvent
+{
+  public static readonly viewType = "PartGraphSelector";
+  public static readonly cmdOpen = "one.part.openGraphSelector";
+  public static readonly cmdUpdate = "one.part.updateGraphSelector";
+  public static readonly cmdReload = "one.part.reloadGraphSelector";
+  public static readonly cmdClose = "one.part.closeGraphSelector";
+  public static readonly cmdFwdSelection = "one.part.fwdSelection";
+  public static readonly folderMediaCircleGraph = "media/CircleGraph";
 
   public static panels: PartGraphSelPanel[] = [];
 
   private _panel: vscode.WebviewPanel;
   private _disposables: vscode.Disposable[] = [];
-  private _documentPath: string;  // part file path
-  private _ownerId: number;       // id of owner
-  private _documentText: string;  // part document
-  private _modelPath: string;     // circle file path
+  private _documentPath: string; // part file path
+  private _ownerId: number; // id of owner
+  private _documentText: string; // part document
+  private _modelPath: string; // circle file path
   private _backendColors: BackendColor[];
-  private _partEventHandler: PartGraphEvent|undefined;
+  private _partEventHandler: PartGraphEvent | undefined;
 
   public static register(context: vscode.ExtensionContext): void {
     const registrations = [
       vscode.commands.registerCommand(
-          PartGraphSelPanel.cmdReload,
-          (args: PartGraphCmdReloadArgs) => {
-            PartGraphSelPanel.reloadByOwner(context.extensionUri, args);
-          }),
+        PartGraphSelPanel.cmdReload,
+        (args: PartGraphCmdReloadArgs) => {
+          PartGraphSelPanel.reloadByOwner(context.extensionUri, args);
+        }
+      ),
       vscode.commands.registerCommand(
-          PartGraphSelPanel.cmdUpdate,
-          (args: PartGraphCmdUpdateArgs) => {
-            PartGraphSelPanel.updateByOwner(context.extensionUri, args);
-          }),
+        PartGraphSelPanel.cmdUpdate,
+        (args: PartGraphCmdUpdateArgs) => {
+          PartGraphSelPanel.updateByOwner(context.extensionUri, args);
+        }
+      ),
       vscode.commands.registerCommand(
-          PartGraphSelPanel.cmdClose,
-          (args: PartGraphCmdCloseArgs) => {
-            PartGraphSelPanel.closeByOwner(context.extensionUri, args);
-          }),
+        PartGraphSelPanel.cmdClose,
+        (args: PartGraphCmdCloseArgs) => {
+          PartGraphSelPanel.closeByOwner(context.extensionUri, args);
+        }
+      ),
       vscode.commands.registerCommand(
-          PartGraphSelPanel.cmdFwdSelection,
-          (args: PartGraphCmdFwdSelArgs) => {
-            PartGraphSelPanel.forwardSelectionByOwner(context.extensionUri, args);
-          }),
+        PartGraphSelPanel.cmdFwdSelection,
+        (args: PartGraphCmdFwdSelArgs) => {
+          PartGraphSelPanel.forwardSelectionByOwner(context.extensionUri, args);
+        }
+      ),
       vscode.commands.registerCommand(
-          PartGraphSelPanel.cmdOpen,
-          (args: PartGraphCmdOpenArgs, handler: PartGraphEvent) => {
-            PartGraphSelPanel.createOrShow(context.extensionUri, args, handler);
-          })
+        PartGraphSelPanel.cmdOpen,
+        (args: PartGraphCmdOpenArgs, handler: PartGraphEvent) => {
+          PartGraphSelPanel.createOrShow(context.extensionUri, args, handler);
+        }
+      ),
       // TODO add more commands
     ];
 
-    registrations.forEach(disposable => context.subscriptions.push(disposable));
+    registrations.forEach((disposable) =>
+      context.subscriptions.push(disposable)
+    );
   }
 
   public static createOrShow(
-      extensionUri: vscode.Uri, args: PartGraphCmdOpenArgs, handler: PartGraphEvent|undefined) {
+    extensionUri: vscode.Uri,
+    args: PartGraphCmdOpenArgs,
+    handler: PartGraphEvent | undefined
+  ) {
     let column = args.viewColumn;
     if (column) {
       if (column >= vscode.ViewColumn.One) {
@@ -120,17 +148,28 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
     const lastSlash = args.docPath.lastIndexOf(path.sep) + 1;
     const fileNameExt = args.docPath.substring(lastSlash);
     const panel = vscode.window.createWebviewPanel(
-        PartGraphSelPanel.viewType, fileNameExt, column || vscode.ViewColumn.Two,
-        {retainContextWhenHidden: true});
+      PartGraphSelPanel.viewType,
+      fileNameExt,
+      column || vscode.ViewColumn.Two,
+      { retainContextWhenHidden: true }
+    );
 
-    const graphSelPanel = new PartGraphSelPanel(panel, extensionUri, args, handler);
+    const graphSelPanel = new PartGraphSelPanel(
+      panel,
+      extensionUri,
+      args,
+      handler
+    );
 
     PartGraphSelPanel.panels.push(graphSelPanel);
     graphSelPanel.loadContent();
     graphSelPanel.onForwardSelection(args.names);
   }
 
-  private static findSelPanel(docPath: string, id: number): PartGraphSelPanel|undefined {
+  private static findSelPanel(
+    docPath: string,
+    id: number
+  ): PartGraphSelPanel | undefined {
     let result = undefined;
     PartGraphSelPanel.panels.forEach((selpan) => {
       if (docPath === selpan._documentPath && id === selpan._ownerId) {
@@ -143,7 +182,10 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
   /**
    * @brief called when owner has changed the document or received document has changed
    */
-  public static updateByOwner(extensionUri: vscode.Uri, args: PartGraphCmdUpdateArgs) {
+  public static updateByOwner(
+    extensionUri: vscode.Uri,
+    args: PartGraphCmdUpdateArgs
+  ) {
     let selPanel = PartGraphSelPanel.findSelPanel(args.docPath, args.id);
     if (selPanel) {
       selPanel._documentText = args.docText;
@@ -156,7 +198,10 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
   /**
    * @brief called when circle file has changed
    */
-  public static reloadByOwner(extensionUri: vscode.Uri, args: PartGraphCmdReloadArgs) {
+  public static reloadByOwner(
+    extensionUri: vscode.Uri,
+    args: PartGraphCmdReloadArgs
+  ) {
     let selPanel = PartGraphSelPanel.findSelPanel(args.docPath, args.id);
     if (selPanel) {
       selPanel._documentText = args.docText;
@@ -167,7 +212,10 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
   /**
    * @brief called when owner is closing
    */
-  public static closeByOwner(extensionUri: vscode.Uri, args: PartGraphCmdCloseArgs) {
+  public static closeByOwner(
+    extensionUri: vscode.Uri,
+    args: PartGraphCmdCloseArgs
+  ) {
     let selPanel = PartGraphSelPanel.findSelPanel(args.docPath, args.id);
     if (selPanel) {
       selPanel.dispose();
@@ -177,7 +225,10 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
   /**
    * @brief called when owner selection state of nodes has changed
    */
-  public static forwardSelectionByOwner(extensionUri: vscode.Uri, args: PartGraphCmdFwdSelArgs) {
+  public static forwardSelectionByOwner(
+    extensionUri: vscode.Uri,
+    args: PartGraphCmdFwdSelArgs
+  ) {
     let selPanel = PartGraphSelPanel.findSelPanel(args.docPath, args.id);
     if (selPanel) {
       selPanel.onForwardSelection(args.selection);
@@ -185,8 +236,11 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
   }
 
   private constructor(
-      panel: vscode.WebviewPanel, extensionUri: vscode.Uri, args: PartGraphCmdOpenArgs,
-      handler: PartGraphEvent|undefined) {
+    panel: vscode.WebviewPanel,
+    extensionUri: vscode.Uri,
+    args: PartGraphCmdOpenArgs,
+    handler: PartGraphEvent | undefined
+  ) {
     super(extensionUri, panel.webview);
 
     let parsedPath = path.parse(args.docPath);
@@ -196,7 +250,7 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
     this._documentPath = args.docPath;
     this._ownerId = args.id;
     this._documentText = args.docText;
-    this._modelPath = fileBase + '.circle';
+    this._modelPath = fileBase + ".circle";
     this._backendColors = args.backends;
     this._partEventHandler = handler;
 
@@ -205,23 +259,30 @@ export class PartGraphSelPanel extends CircleGraphCtrl implements CircleGraphEve
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
     // Update the content based on view changes
-    this._panel.onDidChangeViewState(() => {
-      if (this._panel.visible) {
-        // NOTE if we call this.update(), it'll reload the model which may take time.
-        // TODO call conditional this.update() when necessary.
-        // this.update();
-      }
-    }, null, this._disposables);
+    this._panel.onDidChangeViewState(
+      () => {
+        if (this._panel.visible) {
+          // NOTE if we call this.update(), it'll reload the model which may take time.
+          // TODO call conditional this.update() when necessary.
+          // this.update();
+        }
+      },
+      null,
+      this._disposables
+    );
 
     this.initGraphCtrl(this._modelPath, this);
-    this.setMode('selector');
+    this.setMode("selector");
   }
 
   public dispose() {
     this.disposeGraphCtrl();
 
     PartGraphSelPanel.panels.forEach((selPan, index) => {
-      if (this._documentPath === selPan._documentPath && this._ownerId === selPan._ownerId) {
+      if (
+        this._documentPath === selPan._documentPath &&
+        this._ownerId === selPan._ownerId
+      ) {
         PartGraphSelPanel.panels.splice(index, 1);
       }
     });

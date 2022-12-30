@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import {Command} from '../Backend/Command';
-import {JobType} from '../Job/Job';
-import {JobCommand} from '../Job/JobCommand';
+import { Command } from "../Backend/Command";
+import { JobType } from "../Job/Job";
+import { JobCommand } from "../Job/JobCommand";
 
 class JobPrerequisites extends JobCommand {
   jobType: JobType;
@@ -26,9 +26,9 @@ class JobPrerequisites extends JobCommand {
   constructor(cmd: Command) {
     super(cmd);
     this.jobType = JobType.tPrerequisites;
-    this.name = 'prerequisites';
+    this.name = "prerequisites";
     this.valid = true;
   }
 }
 
-export {JobPrerequisites};
+export { JobPrerequisites };

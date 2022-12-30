@@ -41,26 +41,32 @@
  * https://github.com/microsoft/vscode-extension-samples/blob/af8c35e1fdea41feb11cd5d5e9782a97346be9c8/helloworld-test-sample/src/test/runTest.ts
  */
 
-import {runTests} from '@vscode/test-electron';
-import * as path from 'path';
-import {argv} from 'process';
+import { runTests } from "@vscode/test-electron";
+import * as path from "path";
+import { argv } from "process";
 
 async function main() {
-  const args: string[] = (argv.length > 2 && argv.slice(2)) || new Array<string>();
-  const isCoverage: string = args.includes('coverage') ? 'true' : 'false';
-  const isCiTest: string = args.includes('ci') ? 'true' : 'false';
+  const args: string[] =
+    (argv.length > 2 && argv.slice(2)) || new Array<string>();
+  const isCoverage: string = args.includes("coverage") ? "true" : "false";
+  const isCiTest: string = args.includes("ci") ? "true" : "false";
 
   try {
-    const extensionDevelopmentPath = path.resolve(__dirname, '../../');
-    const extensionTestsPath = path.resolve(extensionDevelopmentPath, 'out', 'Tests', 'index');
+    const extensionDevelopmentPath = path.resolve(__dirname, "../../");
+    const extensionTestsPath = path.resolve(
+      extensionDevelopmentPath,
+      "out",
+      "Tests",
+      "index"
+    );
     await runTests({
       extensionDevelopmentPath,
       extensionTestsPath: extensionTestsPath,
       launchArgs: [extensionDevelopmentPath],
-      extensionTestsEnv: {isCoverage: isCoverage, isCiTest: isCiTest}
+      extensionTestsEnv: { isCoverage: isCoverage, isCiTest: isCiTest },
     });
   } catch (err) {
-    console.error('Failed to run tests: ');
+    console.error("Failed to run tests: ");
     process.exit(1);
   }
 }

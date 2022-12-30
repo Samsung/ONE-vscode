@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import {assert} from 'chai';
-import {Toolchain, ToolchainInfo} from '../../Backend/Toolchain';
+import { assert } from "chai";
+import { Toolchain, ToolchainInfo } from "../../Backend/Toolchain";
 
-suite('Backend', function() {
-  suite('Toolchain', function() {
-    const toolchainInfo = new ToolchainInfo('dummy', 'dummy toolchain');
+suite("Backend", function () {
+  suite("Toolchain", function () {
+    const toolchainInfo = new ToolchainInfo("dummy", "dummy toolchain");
 
-    suite('#constructor()', function() {
-      test('Create dummy toolchain', function(pass) {
+    suite("#constructor()", function () {
+      test("Create dummy toolchain", function (pass) {
         assert.doesNotThrow(() => new Toolchain(toolchainInfo));
 
         pass();
@@ -30,39 +30,41 @@ suite('Backend', function() {
       });
     });
 
-    suite('#info', function() {
-      test('Check dummy toolchain info', function() {
+    suite("#info", function () {
+      test("Check dummy toolchain info", function () {
         const toolchain = new Toolchain(toolchainInfo);
 
         assert.strictEqual(toolchain.info.name, toolchainInfo.name);
-        assert.strictEqual(toolchain.info.description, toolchainInfo.description);
+        assert.strictEqual(
+          toolchain.info.description,
+          toolchainInfo.description
+        );
       });
     });
 
-    suite('#install()', function() {
-      test('NEG: throws by dummy toolchain by install', function() {
+    suite("#install()", function () {
+      test("NEG: throws by dummy toolchain by install", function () {
         const toolchain = new Toolchain(toolchainInfo);
         assert.throw(() => toolchain.install());
       });
     });
 
-
-    suite('#installed()', function() {
-      test('NEG: throws in dummy toolchain by installed', function() {
+    suite("#installed()", function () {
+      test("NEG: throws in dummy toolchain by installed", function () {
         const toolchain = new Toolchain(toolchainInfo);
         assert.throw(() => toolchain.installed());
       });
     });
 
-    suite('#run()', function() {
-      test('NEG: throws in dummy toolchain by run', function() {
+    suite("#run()", function () {
+      test("NEG: throws in dummy toolchain by run", function () {
         const toolchain = new Toolchain(toolchainInfo);
-        assert.throw(() => toolchain.run(''));
+        assert.throw(() => toolchain.run(""));
       });
     });
 
-    suite('#uninstall()', function() {
-      test('NEG: throws in dummy toolchain by uninstall', function() {
+    suite("#uninstall()", function () {
+      test("NEG: throws in dummy toolchain by uninstall", function () {
         const toolchain = new Toolchain(toolchainInfo);
         assert.throw(() => toolchain.uninstall());
       });

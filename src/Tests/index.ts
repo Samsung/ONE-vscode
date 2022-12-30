@@ -39,38 +39,26 @@
 // This file referenced
 // https://github.com/microsoft/vscode-js-debug/blob/95d772b31e87ed4069e0d9242f424925792e96e9/src/test/testRunner.ts
 
-import * as glob from 'glob';
-import Mocha from 'mocha';
-import {join} from 'path';
+import * as glob from "glob";
+import Mocha from "mocha";
+import { join } from "path";
 // NOTE: env[key] causes some error. Use env.key
-import {env} from 'process';
+import { env } from "process";
 
 function setupCoverage() {
-  const NYC = require('nyc');
+  const NYC = require("nyc");
   const nyc = new NYC({
-    extends: '@istanbuljs/nyc-config-typescript',
-    cwd: join(__dirname, '..', '..'),
-    exclude: [
-      '**/Tests/**',
-      '**/external/**'
-    ],
-    include: [
-      'src/**/*.ts',
-      'out/**/*.js'
-    ],
-    reporter: [
-      'cobertura',
-      'lcov',
-      'html',
-      'text',
-      'text-summary'
-    ],
+    extends: "@istanbuljs/nyc-config-typescript",
+    cwd: join(__dirname, "..", ".."),
+    exclude: ["**/Tests/**", "**/external/**"],
+    include: ["src/**/*.ts", "out/**/*.js"],
+    reporter: ["cobertura", "lcov", "html", "text", "text-summary"],
     all: true,
     instrument: true,
     hookRequire: true,
     hookRunInContext: true,
     hookRunInThisContext: true,
-    cache: false
+    cache: false,
   });
 
   nyc.reset();
@@ -100,35 +88,40 @@ export async function run(): Promise<void> {
   // const testFilter = "Returns parsed object";
   //
   // TODO: Enable to get string to filter from package.json
-  const testFilter = '';
-  const mochaOpts: Mocha.MochaOptions = {ui: 'tdd', color: true, fgrep: testFilter};
+  const testFilter = "";
+  const mochaOpts: Mocha.MochaOptions = {
+    ui: "tdd",
+    color: true,
+    fgrep: testFilter,
+  };
 
   const runner = new Mocha(mochaOpts);
 
-  if (env.isCoverage === 'true') {
-    runner.reporter('mocha-xunit-reporter', {output: 'mocha_result.xml'});
+  if (env.isCoverage === "true") {
+    runner.reporter("mocha-xunit-reporter", { output: "mocha_result.xml" });
   }
 
-  if (env.isCiTest === 'true') {
-    runner.fgrep('@Use-onecc').invert();
+  if (env.isCiTest === "true") {
+    runner.fgrep("@Use-onecc").invert();
   }
 
-  const options = {cwd: __dirname};
-  const files = glob.sync('**/**.test.js', options);
+  const options = { cwd: __dirname };
+  const files = glob.sync("**/**.test.js", options);
 
   for (const file of files) {
     runner.addFile(join(__dirname, file));
   }
 
   try {
-    await new Promise(
-        (resolve, reject) => runner.run(
-            failures =>
-                failures ? reject(new Error(`${failures} tests failed`)) : resolve(undefined),
-            ),
+    await new Promise((resolve, reject) =>
+      runner.run((failures) =>
+        failures
+          ? reject(new Error(`${failures} tests failed`))
+          : resolve(undefined)
+      )
     );
   } finally {
-    if (env.isCoverage === 'true') {
+    if (env.isCoverage === "true") {
       nyc.writeCoverageFile();
       await nyc.report();
     }

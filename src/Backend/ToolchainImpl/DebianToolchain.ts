@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import assert from 'assert';
+import assert from "assert";
 
-import {Command} from '../Command';
-import {Toolchain, ToolchainInfo} from '../Toolchain';
+import { Command } from "../Command";
+import { Toolchain, ToolchainInfo } from "../Toolchain";
 
 class DebianRepo {
   uri: string;
-  distribute: string;  // like "foscal"
-  component: string;   // like "universe"
+  distribute: string; // like "foscal"
+  component: string; // like "universe"
   constructor(uri: string, distribute: string, component: string) {
     this.uri = uri;
     this.distribute = distribute;
@@ -31,8 +31,8 @@ class DebianRepo {
 }
 
 enum DebianArch {
-  amd64 = 'amd64',
-  undefined = 'undefined'
+  amd64 = "amd64",
+  undefined = "undefined",
 }
 
 class DebianToolchain implements Toolchain {
@@ -75,17 +75,19 @@ class DebianToolchain implements Toolchain {
     //        : Describes how to determine the cost of a solution.
     //          ref: https://tools.ietf.org/doc/aptitude/html/en/ch02s03s04.html
     this.prepare();
-    let cmd = new Command('aptitude');
-    cmd.push('install');
-    cmd.push('-o');
-    cmd.push('Aptitude::ProblemResolver::SolutionCost=100*canceled-actions,200*removals');
+    let cmd = new Command("aptitude");
+    cmd.push("install");
+    cmd.push("-o");
+    cmd.push(
+      "Aptitude::ProblemResolver::SolutionCost=100*canceled-actions,200*removals"
+    );
     let pkg: string = this.info.name;
     if (this.info.version !== undefined) {
       pkg = `${pkg}=${this.info.version.str()}`;
     }
     cmd.push(pkg);
-    cmd.push('-q');
-    cmd.push('-y');
+    cmd.push("-q");
+    cmd.push("-y");
     cmd.setRoot();
     return cmd;
   }
@@ -101,34 +103,34 @@ class DebianToolchain implements Toolchain {
     // -q: Quiet; produces output suitable for logging, omitting progress indicators.
     // -y: Automatic yes to prompts
     this.prepare();
-    let cmd = new Command('aptitude');
-    cmd.push('purge');
+    let cmd = new Command("aptitude");
+    cmd.push("purge");
     cmd.push(this.info.name);
-    cmd.push('-q');
-    cmd.push('-y');
+    cmd.push("-q");
+    cmd.push("-y");
     cmd.setRoot();
     return cmd;
   }
   installed(): Command {
     this.prepare();
-    let cmd = new Command('dpkg-query');
-    cmd.push('--show');
+    let cmd = new Command("dpkg-query");
+    cmd.push("--show");
     let pkg: string = this.info.name;
     if (this.info.version !== undefined) {
       pkg = `${pkg}=${this.info.version.str()}`;
     }
     cmd.push(pkg);
-    cmd.push('&&');
-    cmd.push('echo $?');
+    cmd.push("&&");
+    cmd.push("echo $?");
     return cmd;
   }
   run(cfg: string): Command {
     this.prepare();
-    let cmd = new Command('onecc');
-    cmd.push('--config');
+    let cmd = new Command("onecc");
+    cmd.push("--config");
     cmd.push(cfg);
     return cmd;
   }
 }
 
-export {DebianRepo, DebianArch, DebianToolchain};
+export { DebianRepo, DebianArch, DebianToolchain };

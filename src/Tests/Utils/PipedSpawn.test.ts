@@ -13,41 +13,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {assert} from 'chai';
-import {spawnSync} from 'child_process';
+import { assert } from "chai";
+import { spawnSync } from "child_process";
 
-import {pipedSpawn} from '../../Utils/PipedSpawn';
+import { pipedSpawn } from "../../Utils/PipedSpawn";
 
-suite('Utils', function() {
-  suite('#pipedSpawn', function() {
-    test('basic', function() {
-      const ENABLE_BACKSLASH = '-e';
-      let wc = pipedSpawn('echo', [ENABLE_BACKSLASH, '1\n2'], {cwd: '.'}, 'wc', ['-l'], {cwd: '.'});
-      wc.stdout!.on('data', (data) => {
+suite("Utils", function () {
+  suite("#pipedSpawn", function () {
+    test("basic", function () {
+      const ENABLE_BACKSLASH = "-e";
+      let wc = pipedSpawn(
+        "echo",
+        [ENABLE_BACKSLASH, "1\n2"],
+        { cwd: "." },
+        "wc",
+        ["-l"],
+        { cwd: "." }
+      );
+      wc.stdout!.on("data", (data) => {
         // data.toString() is '2\n'
-        assert.equal(data.toString()[0], '2');
+        assert.equal(data.toString()[0], "2");
       });
-      wc.stderr!.on('data', (data) => {
+      wc.stderr!.on("data", (data) => {
         assert.fail(`should not fail. ${data}`);
       });
-      wc.on('exit', (exitcode) => {
+      wc.on("exit", (exitcode) => {
         if (exitcode !== 0) {
           assert.fail(`exitcode === ${exitcode}`);
         }
       });
     });
 
-    test('NEG: first cmd fails', function() {
+    test("NEG: first cmd fails", function () {
       try {
-        pipedSpawn('cat', ['invalid_file'], {}, 'wc', ['-l'], {});
+        pipedSpawn("cat", ["invalid_file"], {}, "wc", ["-l"], {});
       } catch (err) {
-        assert.ok(true, 'Should be thrown');
+        assert.ok(true, "Should be thrown");
       }
     });
 
-    test('NEG: second cmd fails', function() {
-      let wc = pipedSpawn('echo', ['123'], {}, 'grep', ['not_exist'], {});
-      wc.on('exit', (exitcode) => {
+    test("NEG: second cmd fails", function () {
+      let wc = pipedSpawn("echo", ["123"], {}, "grep", ["not_exist"], {});
+      wc.on("exit", (exitcode) => {
         if (exitcode === 0) {
           assert.fail(`exitcode === ${exitcode}`);
         }
@@ -55,20 +62,27 @@ suite('Utils', function() {
     });
 
     // Why is the test below skipped? This sometimes fail in CI. Check the reason.
-    test.skip('NEG: sudo failed', function() {
+    test.skip("NEG: sudo failed", function () {
       // make sure that sudo pw is not cached
-      spawnSync('sudo', ['-k']);
+      spawnSync("sudo", ["-k"]);
 
-      let sudo = pipedSpawn('echo', ['incorrect_pw'], {}, 'sudo', ['-S', 'date'], {});
+      let sudo = pipedSpawn(
+        "echo",
+        ["incorrect_pw"],
+        {},
+        "sudo",
+        ["-S", "date"],
+        {}
+      );
 
-      sudo.stdout!.on('data', (data) => {
+      sudo.stdout!.on("data", (data) => {
         assert.fail(`should not fail. ${data}`);
       });
-      sudo.on('exit', (exitcode: number|null) => {
+      sudo.on("exit", (exitcode: number | null) => {
         if (exitcode === 0) {
           assert.fail(`exitcode === 0`);
         } else {
-          assert.isTrue(exitcode !== 0);  // success
+          assert.isTrue(exitcode !== 0); // success
         }
       });
     });

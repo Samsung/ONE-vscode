@@ -14,90 +14,102 @@
  * limitations under the License.
  */
 
-import {assert} from 'chai';
+import { assert } from "chai";
 
-import {ToolArgs} from '../../Job/ToolArgs';
-import {SuccessResult, ToolRunner} from '../../Job/ToolRunner';
-import {obtainWorkspaceRoot} from '../../Utils/Helpers';
-import {MockJob} from '../MockJob';
+import { ToolArgs } from "../../Job/ToolArgs";
+import { SuccessResult, ToolRunner } from "../../Job/ToolRunner";
+import { obtainWorkspaceRoot } from "../../Utils/Helpers";
+import { MockJob } from "../MockJob";
 
-suite('Job', function() {
-  suite('ToolRunner', function() {
-    suite('@Use-onecc', function() {
-      suite('#getOneccPath()', function() {
-        test('returns onecc path as string', function() {
+suite("Job", function () {
+  suite("ToolRunner", function () {
+    suite("@Use-onecc", function () {
+      suite("#getOneccPath()", function () {
+        test("returns onecc path as string", function () {
           let toolRunner = new ToolRunner();
-          let actual = toolRunner.getOneccPath();  // string or undefined
+          let actual = toolRunner.getOneccPath(); // string or undefined
           // Note. `onecc` path could be changed by user
-        assert.isTrue((actual === '/usr/share/one/bin/onecc') ||
-                      (actual?.endsWith('onecc')));
+          assert.isTrue(
+            actual === "/usr/share/one/bin/onecc" || actual?.endsWith("onecc")
+          );
         });
       });
-    });  // @use-onecc
+    }); // @use-onecc
 
-    const wait = async function(sec: number) {
-      await new Promise(resolve => setTimeout(resolve, sec * 1000));
+    const wait = async function (sec: number) {
+      await new Promise((resolve) => setTimeout(resolve, sec * 1000));
     };
 
-    suite(`#getRunner()`, function() {
-      test('returns runner as Promise<string>', function(done) {
-        let job = new MockJob('mockup');
+    suite(`#getRunner()`, function () {
+      test("returns runner as Promise<string>", function (done) {
+        let job = new MockJob("mockup");
         let toolRunner = new ToolRunner();
-        const runner = toolRunner.getRunner(job.name, job.tool, job.toolArgs, job.workDir);
+        const runner = toolRunner.getRunner(
+          job.name,
+          job.tool,
+          job.toolArgs,
+          job.workDir
+        );
         assert.isNotNull(runner);
         runner
-            .then(function(res: SuccessResult) {
-              assert.ok(res.exitCode === 0);
-              done();
-            })
-            .catch(done);
+          .then(function (res: SuccessResult) {
+            assert.ok(res.exitCode === 0);
+            done();
+          })
+          .catch(done);
       });
 
-      test('NEG: calling sequence', async function() {
+      test("NEG: calling sequence", async function () {
         let toolRunner = new ToolRunner();
         {
           let args = new ToolArgs();
-          args.push('0.3');
-          assert.doesNotThrow(() => toolRunner.getRunner('sleep', 'sleep', args, '.'));
+          args.push("0.3");
+          assert.doesNotThrow(() =>
+            toolRunner.getRunner("sleep", "sleep", args, ".")
+          );
         }
         // runner1 is still running finished. calling getRunner() throws an error
         {
           let args = new ToolArgs();
-          args.push('0.3');
-          assert.throw(() => toolRunner.getRunner('sleep', 'sleep', args, '.'));
+          args.push("0.3");
+          assert.throw(() => toolRunner.getRunner("sleep", "sleep", args, "."));
         }
       });
 
-      test('calling sequence', async function() {
+      test("calling sequence", async function () {
         let toolRunner = new ToolRunner();
         {
           let args = new ToolArgs();
-          args.push('0.1');
-          assert.doesNotThrow(() => toolRunner.getRunner('sleep', 'sleep', args, '.'));
+          args.push("0.1");
+          assert.doesNotThrow(() =>
+            toolRunner.getRunner("sleep", "sleep", args, ".")
+          );
         }
         await wait(0.3);
         // now runner1 was finished
         {
           let args = new ToolArgs();
-          args.push('0.1');
-          assert.doesNotThrow(() => toolRunner.getRunner('sleep', 'sleep', args, '.'));
+          args.push("0.1");
+          assert.doesNotThrow(() =>
+            toolRunner.getRunner("sleep", "sleep", args, ".")
+          );
           // finished without Error
         }
       });
 
-      test('lots of simultaneous calls', async function() {
+      test("lots of simultaneous calls", async function () {
         let toolRunner = new ToolRunner();
 
-        const simultaneousTrials = 32;  // some reasonably big number
+        const simultaneousTrials = 32; // some reasonably big number
         const errorAmongTrials = simultaneousTrials - 1;
 
         let errCount = 0;
 
         for (let i = 0; i < simultaneousTrials; i++) {
           let args = new ToolArgs();
-          args.push('1');  // 1 sec
+          args.push("1"); // 1 sec
           try {
-            toolRunner.getRunner('sleep', 'sleep', args, '.');
+            toolRunner.getRunner("sleep", "sleep", args, ".");
           } catch (err) {
             // cannot make process
             errCount++;
@@ -113,52 +125,62 @@ suite('Job', function() {
       });
     });
 
-    suite(`#kill()`, function() {
-      test('basic case', async function() {
+    suite(`#kill()`, function () {
+      test("basic case", async function () {
         let toolRunner = new ToolRunner();
 
         let args = new ToolArgs();
-        args.push('10');  // sec
+        args.push("10"); // sec
 
-        const runner = toolRunner.getRunner('long process', 'sleep', args, obtainWorkspaceRoot());
+        const runner = toolRunner.getRunner(
+          "long process",
+          "sleep",
+          args,
+          obtainWorkspaceRoot()
+        );
         runner
-            .then((val: SuccessResult) => {
-              assert.equal(val.intentionallyKilled, true);
-            })
-            .catch(() => {
-              assert.fail();
-            });
+          .then((val: SuccessResult) => {
+            assert.equal(val.intentionallyKilled, true);
+          })
+          .catch(() => {
+            assert.fail();
+          });
 
         // Let's kill the process!!
         // This will eventually call runner.then(...)
         assert.isTrue(toolRunner.kill());
       });
 
-      test('NEG: too early kill', function() {
+      test("NEG: too early kill", function () {
         let toolRunner = new ToolRunner();
         assert.throw(() => toolRunner.kill());
       });
 
-      test('NEG: too late kill', async function() {
+      test("NEG: too late kill", async function () {
         let finished = false;
 
         let toolRunner = new ToolRunner();
         let args = new ToolArgs();
-        args.push('0.01');  // 0.01 sec
+        args.push("0.01"); // 0.01 sec
 
-        const runner = toolRunner.getRunner('long process', 'sleep', args, obtainWorkspaceRoot());
+        const runner = toolRunner.getRunner(
+          "long process",
+          "sleep",
+          args,
+          obtainWorkspaceRoot()
+        );
         runner
-            .then((val: SuccessResult) => {
-              assert.equal(val.exitCode, 0);
-              finished = true;
-            })
-            .catch(() => {
-              assert.fail();
-            });
+          .then((val: SuccessResult) => {
+            assert.equal(val.exitCode, 0);
+            finished = true;
+          })
+          .catch(() => {
+            assert.fail();
+          });
 
         // wait some long time. sleep process will exit during this sleep.
         await wait(0.2);
-        assert.isTrue(finished);  // sanity check
+        assert.isTrue(finished); // sanity check
 
         assert.throw(() => toolRunner.kill());
       });

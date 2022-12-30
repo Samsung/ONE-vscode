@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import * as fs from 'fs';
-import * as ini from 'ini';
-import * as path from 'path';
-import {TextEncoder} from 'util';
-import * as vscode from 'vscode';
+import * as fs from "fs";
+import * as ini from "ini";
+import * as path from "path";
+import { TextEncoder } from "util";
+import * as vscode from "vscode";
 
-import {RealPath} from '../Utils/Helpers';
-import {Logger} from '../Utils/Logger';
+import { RealPath } from "../Utils/Helpers";
+import { Logger } from "../Utils/Logger";
 
-import {Artifact, Locator, LocatorRunner} from './ArtifactLocator';
+import { Artifact, Locator, LocatorRunner } from "./ArtifactLocator";
 
 type Cfg = {
-  'one-import-tflite': CfgOneImportTflite,
-  'one-import-onnx': CfgOneImportOnnx,
-  'one-import-tf': CfgOneImportTf,
+  "one-import-tflite": CfgOneImportTflite;
+  "one-import-onnx": CfgOneImportOnnx;
+  "one-import-tf": CfgOneImportTf;
 };
 type CfgKeys = keyof Cfg;
 
@@ -64,10 +64,7 @@ export class ConfigObj {
   /**
    * a parsed config object
    */
-  obj: {
-    baseModels: Artifact[],
-    products: Artifact[],
-  };
+  obj: { baseModels: Artifact[]; products: Artifact[] };
 
   get getBaseModels() {
     return this.obj.baseModels;
@@ -81,14 +78,18 @@ export class ConfigObj {
    * @brief Returns only the baseModels which exists in file system
    */
   get getBaseModelsExists() {
-    return this.obj.baseModels.filter(artifact => RealPath.exists(artifact.path));
+    return this.obj.baseModels.filter((artifact) =>
+      RealPath.exists(artifact.path)
+    );
   }
 
   /**
    * @brief Returns only the products which exists in file system
    */
   get getProductsExists() {
-    return this.obj.products.filter(artifact => RealPath.exists(artifact.path));
+    return this.obj.products.filter((artifact) =>
+      RealPath.exists(artifact.path)
+    );
   }
 
   /**
@@ -104,8 +105,9 @@ export class ConfigObj {
    * @brief Return true if the `baseModelPath` is included in `baseModels`
    */
   public isChildOf(baseModelPath: string): boolean {
-    const found = this.obj.baseModels.map(artifact => artifact.path)
-                      .find(path => RealPath.areEqual(baseModelPath, path));
+    const found = this.obj.baseModels
+      .map((artifact) => artifact.path)
+      .find((path) => RealPath.areEqual(baseModelPath, path));
 
     return found ? true : false;
   }
@@ -115,17 +117,20 @@ export class ConfigObj {
     this.rawObj = rawObj;
     this.obj = {
       baseModels: ConfigObj.parseBaseModels(uri.fsPath, rawObj),
-      products: ConfigObj.parseProducts(uri.fsPath, rawObj)
+      products: ConfigObj.parseProducts(uri.fsPath, rawObj),
     };
   }
 
-  public updateBaseModelField(oldpath: string, newpath: string): Thenable<void> {
+  public updateBaseModelField(
+    oldpath: string,
+    newpath: string
+  ): Thenable<void> {
     const getSection = (name: string) => {
       const ext = path.extname(name);
       const sections = {
-        '.pb': 'one-import-tf',
-        '.tflite': 'one-import-tflite',
-        '.onnx': 'one-import-onnx'
+        ".pb": "one-import-tf",
+        ".tflite": "one-import-tflite",
+        ".onnx": "one-import-onnx",
       };
 
       return sections[ext as keyof typeof sections];
@@ -134,15 +139,22 @@ export class ConfigObj {
     const section: string = getSection(oldpath);
     const kSection: CfgKeys = section as keyof Cfg;
 
-    if (this.rawObj[kSection].input_path &&
-        this.getFullPath(this.rawObj[kSection].input_path) === oldpath) {
+    if (
+      this.rawObj[kSection].input_path &&
+      this.getFullPath(this.rawObj[kSection].input_path) === oldpath
+    ) {
       this.rawObj[kSection].input_path = newpath;
     } else {
-      Logger.warn('ConfigObject', `Cannot update base model field: ${oldpath} not found`);
+      Logger.warn(
+        "ConfigObject",
+        `Cannot update base model field: ${oldpath} not found`
+      );
     }
 
     return vscode.workspace.fs.writeFile(
-        this.uri, (new TextEncoder).encode(ini.stringify(this.rawObj)));
+      this.uri,
+      new TextEncoder().encode(ini.stringify(this.rawObj))
+    );
   }
 
   /**
@@ -170,10 +182,10 @@ export class ConfigObj {
    * @returns `object` if file read is successful, or `null` if file open has failed
    *
    */
-  private static importIni(filePath: string): object|null {
+  private static importIni(filePath: string): object | null {
     let configRaw: string;
     try {
-      configRaw = fs.readFileSync(filePath, 'utf-8');
+      configRaw = fs.readFileSync(filePath, "utf-8");
     } catch (e) {
       console.error(e);
       return null;
@@ -196,24 +208,42 @@ export class ConfigObj {
    *
    * TODO Move to backend
    */
-  private static parseBaseModels = (filePath: string, iniObj: object): Artifact[] => {
+  private static parseBaseModels = (
+    filePath: string,
+    iniObj: object
+  ): Artifact[] => {
     const dir = path.dirname(filePath);
 
     let locatorRunner = new LocatorRunner();
 
     locatorRunner.register({
-      artifactAttr: {ext: '.tflite', icon: new vscode.ThemeIcon('symbol-variable')},
-      locator: new Locator((value: string) => LocatorRunner.searchWithExt('.tflite', value))
+      artifactAttr: {
+        ext: ".tflite",
+        icon: new vscode.ThemeIcon("symbol-variable"),
+      },
+      locator: new Locator((value: string) =>
+        LocatorRunner.searchWithExt(".tflite", value)
+      ),
     });
 
     locatorRunner.register({
-      artifactAttr: {ext: '.pb', icon: new vscode.ThemeIcon('symbol-variable')},
-      locator: new Locator((value: string) => LocatorRunner.searchWithExt('.pb', value))
+      artifactAttr: {
+        ext: ".pb",
+        icon: new vscode.ThemeIcon("symbol-variable"),
+      },
+      locator: new Locator((value: string) =>
+        LocatorRunner.searchWithExt(".pb", value)
+      ),
     });
 
     locatorRunner.register({
-      artifactAttr: {ext: '.onnx', icon: new vscode.ThemeIcon('symbol-variable')},
-      locator: new Locator((value: string) => LocatorRunner.searchWithExt('.onnx', value))
+      artifactAttr: {
+        ext: ".onnx",
+        icon: new vscode.ThemeIcon("symbol-variable"),
+      },
+      locator: new Locator((value: string) =>
+        LocatorRunner.searchWithExt(".onnx", value)
+      ),
     });
 
     let artifacts: Artifact[] = locatorRunner.run(iniObj, dir);
@@ -222,12 +252,17 @@ export class ConfigObj {
       // TODO Notify the error with a better UX
       // EX. put question mark next to the config icon
       Logger.debug(
-          'OneExplorer', `There are multiple input models in the configuration(${filePath}).`);
+        "OneExplorer",
+        `There are multiple input models in the configuration(${filePath}).`
+      );
     }
     if (artifacts.length === 0) {
       // TODO Notify the error with a better UX
       // EX. showing orphan nodes somewhere
-      Logger.debug('OneExplorer', `There is no input model in the configuration(${filePath}).`);
+      Logger.debug(
+        "OneExplorer",
+        `There is no input model in the configuration(${filePath}).`
+      );
     }
 
     // Return as list of uri
@@ -241,7 +276,10 @@ export class ConfigObj {
    *
    * TODO Move to backend
    */
-  private static parseProducts = (filePath: string, iniObj: object): Artifact[] => {
+  private static parseProducts = (
+    filePath: string,
+    iniObj: object
+  ): Artifact[] => {
     const dir = path.dirname(filePath);
 
     let locatorRunner = new LocatorRunner();
@@ -254,77 +292,111 @@ export class ConfigObj {
 
     locatorRunner.register({
       artifactAttr: {
-        ext: '.circle',
-        icon: new vscode.ThemeIcon('symbol-variable'),
-        openViewType: 'one.viewer.circle'
+        ext: ".circle",
+        icon: new vscode.ThemeIcon("symbol-variable"),
+        openViewType: "one.viewer.circle",
       },
-      locator: new Locator((value: string) => LocatorRunner.searchWithExt('.circle', value))
-    });
-
-    locatorRunner.register({
-      artifactAttr: {ext: '.tvn', icon: new vscode.ThemeIcon('symbol-variable')},
-      locator: new Locator((value: string) => LocatorRunner.searchWithExt('.tvn', value))
+      locator: new Locator((value: string) =>
+        LocatorRunner.searchWithExt(".circle", value)
+      ),
     });
 
     locatorRunner.register({
       artifactAttr: {
-        ext: '.tracealloc.json',
-        icon: new vscode.ThemeIcon('graph'),
-        openViewType: 'one.viewer.mondrian',
-        canHide: true
+        ext: ".tvn",
+        icon: new vscode.ThemeIcon("symbol-variable"),
+      },
+      locator: new Locator((value: string) =>
+        LocatorRunner.searchWithExt(".tvn", value)
+      ),
+    });
+
+    locatorRunner.register({
+      artifactAttr: {
+        ext: ".tracealloc.json",
+        icon: new vscode.ThemeIcon("graph"),
+        openViewType: "one.viewer.mondrian",
+        canHide: true,
       },
       locator: new Locator((value: string) => {
-        return LocatorRunner.searchWithExt('.tvn', value)
-            .map(filepath => filepath.replace('.tvn', '.tracealloc.json'));
-      })
+        return LocatorRunner.searchWithExt(".tvn", value).map((filepath) =>
+          filepath.replace(".tvn", ".tracealloc.json")
+        );
+      }),
     });
 
     locatorRunner.register({
       artifactAttr: {
-        ext: '.json',
-        icon: new vscode.ThemeIcon('graph'),
-        openViewType: 'one.editor.jsonTracer',
-        canHide: true
+        ext: ".json",
+        icon: new vscode.ThemeIcon("graph"),
+        openViewType: "one.editor.jsonTracer",
+        canHide: true,
       },
       locator: new Locator(
-          (value: string) => {
-            return LocatorRunner.searchWithCommandOption(value, '--save-chrome-trace', '.json');
-          },
-          'one-profile', 'command')
+        (value: string) => {
+          return LocatorRunner.searchWithCommandOption(
+            value,
+            "--save-chrome-trace",
+            ".json"
+          );
+        },
+        "one-profile",
+        "command"
+      ),
     });
 
     locatorRunner.register({
-      artifactAttr: {ext: '.tv2m', icon: new vscode.ThemeIcon('symbol-method'), canHide: true},
+      artifactAttr: {
+        ext: ".tv2m",
+        icon: new vscode.ThemeIcon("symbol-method"),
+        canHide: true,
+      },
       locator: new Locator((value: string) => {
-        return LocatorRunner.searchWithExt('.tvn', value)
-            .map(filepath => filepath.replace('.tvn', '.tv2m'));
-      })
+        return LocatorRunner.searchWithExt(".tvn", value).map((filepath) =>
+          filepath.replace(".tvn", ".tv2m")
+        );
+      }),
     });
 
     locatorRunner.register({
-      artifactAttr: {ext: '.tv2o', icon: new vscode.ThemeIcon('symbol-method'), canHide: true},
+      artifactAttr: {
+        ext: ".tv2o",
+        icon: new vscode.ThemeIcon("symbol-method"),
+        canHide: true,
+      },
       locator: new Locator((value: string) => {
-        return LocatorRunner.searchWithExt('.tvn', value)
-            .map(filepath => filepath.replace('.tvn', '.tv2o'));
-      })
+        return LocatorRunner.searchWithExt(".tvn", value).map((filepath) =>
+          filepath.replace(".tvn", ".tv2o")
+        );
+      }),
     });
 
     locatorRunner.register({
-      artifactAttr: {ext: '.tv2w', icon: new vscode.ThemeIcon('symbol-method'), canHide: true},
+      artifactAttr: {
+        ext: ".tv2w",
+        icon: new vscode.ThemeIcon("symbol-method"),
+        canHide: true,
+      },
       locator: new Locator((value: string) => {
-        return LocatorRunner.searchWithExt('.tvn', value)
-            .map(filepath => filepath.replace('.tvn', '.tv2w'));
-      })
+        return LocatorRunner.searchWithExt(".tvn", value).map((filepath) =>
+          filepath.replace(".tvn", ".tv2w")
+        );
+      }),
     });
 
     locatorRunner.register({
       // 'default' view type is 'text editor' (vscode.openWith)
-      artifactAttr:
-          {ext: '.circle.log', openViewType: 'default', icon: vscode.ThemeIcon.File, canHide: true},
+      artifactAttr: {
+        ext: ".circle.log",
+        openViewType: "default",
+        icon: vscode.ThemeIcon.File,
+        canHide: true,
+      },
       locator: new Locator((value: string) => {
-        return LocatorRunner.searchWithExt('.circle', value)
-            .map(filepath => filepath.replace('.circle', '.circle.log'));
-      })
+        return LocatorRunner.searchWithExt(".circle", value).map((filepath) =>
+          filepath.replace(".circle", ".circle.log")
+        );
+      }),
     });
 
     /**

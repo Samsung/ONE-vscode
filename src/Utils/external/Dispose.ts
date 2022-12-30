@@ -24,7 +24,7 @@
 // This file is from
 // https://github.com/microsoft/vscode-extension-samples/blob/fdd3bb95ce8e38ffe58fc9158797239fdf5017f1/custom-editor-sample/src/dispose.ts
 
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
 export function disposeAll(disposables: vscode.Disposable[]): void {
   while (disposables.length) {

@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-import {assert} from 'chai';
+import { assert } from "chai";
 
-import {Command} from '../../Backend/Command';
-import {JobType} from '../../Job/Job';
-import {JobPrerequisites} from '../../Toolchain/JobPrerequisites';
+import { Command } from "../../Backend/Command";
+import { JobType } from "../../Job/Job";
+import { JobPrerequisites } from "../../Toolchain/JobPrerequisites";
 
-suite('Toolchain', function() {
-  suite('JobPrerequisites', function() {
-    suite('#constructor()', function() {
-      test('is contructed with command', function() {
-        let cmd = new Command('/bin/bash');
-        cmd.push('scriptpath');
+suite("Toolchain", function () {
+  suite("JobPrerequisites", function () {
+    suite("#constructor()", function () {
+      test("is contructed with command", function () {
+        let cmd = new Command("/bin/bash");
+        cmd.push("scriptpath");
 
         let job = new JobPrerequisites(cmd);
         assert.deepStrictEqual(job.tool, cmd[0]);
         assert.deepStrictEqual(job.toolArgs[0], cmd[1]);
-        assert.deepStrictEqual(job.name, 'prerequisites');
+        assert.deepStrictEqual(job.name, "prerequisites");
         assert.equal(job.jobType, JobType.tPrerequisites);
         assert.isTrue(job.valid);
       });

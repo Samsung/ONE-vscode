@@ -7,14 +7,16 @@ This extension stores and manages metadata information of files used in ONE-vsco
 Metadata is hidden information for managing files. This information is used to identify uniqueness of each file. In this extension, the metadata in the file are managed externally and stored at the directory (.meta) in working directory of VScode. The metadata is divided into two categories: Common data types and ONE-related types.
 
 Common type metadata include information such as:
-* `file-extension`: type of file 
-* `created-time`: time of creation
-* `modified-time`: time of modification
+
+- `file-extension`: type of file
+- `created-time`: time of creation
+- `modified-time`: time of modification
 
 ONE-related type metadata exists only for target files when the target is generated from model and config file using ONE-vscode extension. The metadata includes information such as:
-* `onecc-version`: onecc version
-* `toolchain-version`: toolchain version 
-* `cfg-settings`: config file information that is used to file generation step.
+
+- `onecc-version`: onecc version
+- `toolchain-version`: toolchain version
+- `cfg-settings`: config file information that is used to file generation step.
 
 ### Relationship between Files
 
@@ -22,11 +24,12 @@ We define the relationship between the files for ONE-vscode as a tree like a dir
 For example, when you open a directory including some deep learning model files (.tflite, .pb, .onnx, etc) and config files (.cfg) in the the ONE-vscode extension, you can see the config file is under the model files. If you execute the 'run cfg' command or button, also you can see some production files (.circle, .log) are created and they are under the config file. At this point, we call the deep learning model file parents of production files and call the production file the child of model.
 
 In our relationship, There are some restrictions.
-* The files that include only certain extensions are accepted as a target. The target extensions are '.pb', '.onnx', '.tflite', '.circle', '.cfg', and '.log'.
-* Each file has only one parent.
-* Model file is a root of relation tree.
-* Config file is not considered as a member of relationship.
-* Log file is always child of circle file.
+
+- The files that include only certain extensions are accepted as a target. The target extensions are '.pb', '.onnx', '.tflite', '.circle', '.cfg', and '.log'.
+- Each file has only one parent.
+- Model file is a root of relation tree.
+- Config file is not considered as a member of relationship.
+- Log file is always child of circle file.
 
 ### How Does Metadata Manager Work?
 

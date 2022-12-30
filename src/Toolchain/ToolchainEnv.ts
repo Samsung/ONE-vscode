@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
-import {strict as assert} from 'assert';
-import * as path from 'path';
+import { strict as assert } from "assert";
+import * as path from "path";
 
-import {Compiler} from '../Backend/Compiler';
-import {Toolchain} from '../Backend/Toolchain';
-import {BuilderJob} from '../Job/BuilderJob';
-import {Job} from '../Job/Job';
-import {WorkFlow} from '../Job/WorkFlow';
-import {Logger} from '../Utils/Logger';
-import {showPasswordQuickInput} from '../View/PasswordQuickInput';
+import { Compiler } from "../Backend/Compiler";
+import { Toolchain } from "../Backend/Toolchain";
+import { BuilderJob } from "../Job/BuilderJob";
+import { Job } from "../Job/Job";
+import { WorkFlow } from "../Job/WorkFlow";
+import { Logger } from "../Utils/Logger";
+import { showPasswordQuickInput } from "../View/PasswordQuickInput";
 
-import {JobConfig} from './JobConfig';
-import {JobInstall} from './JobInstall';
-import {JobPrerequisites} from './JobPrerequisites';
-import {JobUninstall} from './JobUninstall';
+import { JobConfig } from "./JobConfig";
+import { JobInstall } from "./JobInstall";
+import { JobPrerequisites } from "./JobPrerequisites";
+import { JobUninstall } from "./JobUninstall";
 
 class Env implements BuilderJob {
-  logTag = 'Env';
-  workFlow: WorkFlow;  // our build WorkFlow
-  currentWorkspace: string = '';
+  logTag = "Env";
+  workFlow: WorkFlow; // our build WorkFlow
+  currentWorkspace: string = "";
   isPrepared: boolean = false;
 
   constructor() {
@@ -55,25 +55,29 @@ class Env implements BuilderJob {
   }
 
   public finishAdd(): void {
-    Logger.info(this.logTag, 'Done building WorkFlow on Env:', this.workFlow.jobs);
+    Logger.info(
+      this.logTag,
+      "Done building WorkFlow on Env:",
+      this.workFlow.jobs
+    );
     this.isPrepared = true;
   }
 
   public build() {
     if (this.isPrepared !== true) {
-      throw Error('Env is not yet prepared');
+      throw Error("Env is not yet prepared");
     }
 
-    const rootJobs = this.workFlow.jobs.filter(j => j.root === true);
+    const rootJobs = this.workFlow.jobs.filter((j) => j.root === true);
     if (rootJobs.length > 0) {
-      Logger.info(this.logTag, 'Showing password prompt');
+      Logger.info(this.logTag, "Showing password prompt");
       /* istanbul ignore next */
-      showPasswordQuickInput().then(password => {
+      showPasswordQuickInput().then((password) => {
         if (password === undefined) {
-          Logger.info(this.logTag, 'Password dialog canceled');
+          Logger.info(this.logTag, "Password dialog canceled");
           return;
         }
-        Logger.info(this.logTag, 'Got password response');
+        Logger.info(this.logTag, "Got password response");
         process.env.userp = password;
         this.workFlow.start();
       });
@@ -97,16 +101,21 @@ class ToolchainEnv extends Env {
     return this.compiler.getToolchainTypes();
   }
 
-  public listAvailable(type: string, start: number, count: number): Toolchain[] {
+  public listAvailable(
+    type: string,
+    start: number,
+    count: number
+  ): Toolchain[] {
     return this.compiler.getToolchains(type, start, count);
   }
 
   public listInstalled(): Toolchain[] {
-    return this.compiler.getToolchainTypes()
-        .map((type) => this.compiler.getInstalledToolchains(type))
-        .reduce((r, a) => {
-          return r.concat(a);
-        });
+    return this.compiler
+      .getToolchainTypes()
+      .map((type) => this.compiler.getInstalledToolchains(type))
+      .reduce((r, a) => {
+        return r.concat(a);
+      });
   }
 
   private executeEnv(jobs: Array<Job>) {
@@ -131,7 +140,9 @@ class ToolchainEnv extends Env {
   public prerequisites(): Promise<boolean> {
     return new Promise<boolean>((resolve) => {
       const jobs: Array<Job> = [];
-      const job = new JobPrerequisites(this.compiler.prerequisitesForGetToolchains());
+      const job = new JobPrerequisites(
+        this.compiler.prerequisitesForGetToolchains()
+      );
       job.successCallback = () => resolve(true);
       // NOTE(jyoung)
       // Even though this job is failed, it still shows the version quick input.
@@ -190,4 +201,4 @@ interface ToolchainEnvMap {
 // List of compile environments
 let gToolchainEnvMap: ToolchainEnvMap = {};
 
-export {Env, ToolchainEnv, gToolchainEnvMap};
+export { Env, ToolchainEnv, gToolchainEnvMap };

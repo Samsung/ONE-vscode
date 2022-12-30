@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import {assert} from 'chai';
-import {Command} from '../Backend/Command';
+import { assert } from "chai";
+import { Command } from "../Backend/Command";
 
-import {CompilerBase} from '../Backend/Compiler';
-import {ToolchainInfo, Toolchains} from '../Backend/Toolchain';
-import {DebianToolchain} from '../Backend/ToolchainImpl/DebianToolchain';
-import {Version} from '../Backend/Version';
+import { CompilerBase } from "../Backend/Compiler";
+import { ToolchainInfo, Toolchains } from "../Backend/Toolchain";
+import { DebianToolchain } from "../Backend/ToolchainImpl/DebianToolchain";
+import { Version } from "../Backend/Version";
 
-const mockCompilerType1: string = 'test';
-const mockCompilerType2: string = 'test2';
+const mockCompilerType1: string = "test";
+const mockCompilerType2: string = "test2";
 
 class MockCompiler extends CompilerBase {
   // TODO: What toolchain is necessary as tests?
@@ -33,15 +33,31 @@ class MockCompiler extends CompilerBase {
   constructor() {
     super();
     this.installedToolchain = new DebianToolchain(
-        new ToolchainInfo('npm', 'package manager for Node.js', new Version(1, 0, 0)));
+      new ToolchainInfo(
+        "npm",
+        "package manager for Node.js",
+        new Version(1, 0, 0)
+      )
+    );
     this.availableToolchain = new DebianToolchain(
-        new ToolchainInfo('nodejs', 'Node.js event-based server-side javascript engine'));
+      new ToolchainInfo(
+        "nodejs",
+        "Node.js event-based server-side javascript engine"
+      )
+    );
   }
   getToolchainTypes(): string[] {
     return [mockCompilerType1, mockCompilerType2];
   }
-  getToolchains(toolchainType: string, start: number, count: number): Toolchains {
-    if (toolchainType !== mockCompilerType1 && toolchainType !== mockCompilerType2) {
+  getToolchains(
+    toolchainType: string,
+    start: number,
+    count: number
+  ): Toolchains {
+    if (
+      toolchainType !== mockCompilerType1 &&
+      toolchainType !== mockCompilerType2
+    ) {
       throw Error(`Unknown toolchain type: ${toolchainType}`);
     }
     if (start < 0) {
@@ -53,14 +69,17 @@ class MockCompiler extends CompilerBase {
     if (count === 0) {
       return [];
     }
-    assert(count === 1, 'Count must be 1');
+    assert(count === 1, "Count must be 1");
     if (toolchainType === mockCompilerType1) {
       return [this.availableToolchain];
     }
     return [];
   }
   getInstalledToolchains(toolchainType: string): Toolchains {
-    if (toolchainType !== mockCompilerType1 && toolchainType !== mockCompilerType2) {
+    if (
+      toolchainType !== mockCompilerType1 &&
+      toolchainType !== mockCompilerType2
+    ) {
       throw Error(`Unknown toolchain type: ${toolchainType}`);
     }
     if (toolchainType === mockCompilerType1) {
@@ -69,7 +88,7 @@ class MockCompiler extends CompilerBase {
     return [];
   }
   prerequisitesForGetToolchains(): Command {
-    return new Command('/bin/bash', ['echo', 'prerequisites']);
+    return new Command("/bin/bash", ["echo", "prerequisites"]);
   }
 }
 
@@ -79,7 +98,10 @@ class MockCompiler extends CompilerBase {
 // are installed.
 class MockCompilerWithMultipleInstalledToolchains extends MockCompiler {
   getInstalledToolchains(toolchainType: string): Toolchains {
-    if (toolchainType !== mockCompilerType1 && toolchainType !== mockCompilerType2) {
+    if (
+      toolchainType !== mockCompilerType1 &&
+      toolchainType !== mockCompilerType2
+    ) {
       throw Error(`Unknown toolchain type: ${toolchainType}`);
     }
     if (toolchainType === mockCompilerType1) {
@@ -96,7 +118,10 @@ class MockCompilerWithMultipleInstalledToolchains extends MockCompiler {
 // This compiler configures an environment without any installed toolchains.
 class MockCompilerWithNoInstalledToolchain extends MockCompiler {
   getInstalledToolchains(toolchainType: string): Toolchains {
-    if (toolchainType !== mockCompilerType1 && toolchainType !== mockCompilerType2) {
+    if (
+      toolchainType !== mockCompilerType1 &&
+      toolchainType !== mockCompilerType2
+    ) {
       throw Error(`Unknown toolchain type: ${toolchainType}`);
     }
     return [];
@@ -106,5 +131,5 @@ class MockCompilerWithNoInstalledToolchain extends MockCompiler {
 export {
   MockCompiler,
   MockCompilerWithMultipleInstalledToolchains,
-  MockCompilerWithNoInstalledToolchain
+  MockCompilerWithNoInstalledToolchain,
 };

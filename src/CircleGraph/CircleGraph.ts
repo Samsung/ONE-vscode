@@ -14,30 +14,36 @@
  * limitations under the License.
  */
 
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
-import {CircleGraphCtrl} from './CircleGraphCtrl';
+import { CircleGraphCtrl } from "./CircleGraphCtrl";
 
 /* istanbul ignore next */
 export class CircleGraphPanel extends CircleGraphCtrl {
-  public static currentPanel: CircleGraphPanel|undefined;
-  public static readonly viewType = 'CircleGraphPanel';
+  public static currentPanel: CircleGraphPanel | undefined;
+  public static readonly viewType = "CircleGraphPanel";
 
   private readonly _panel: vscode.WebviewPanel;
 
   private _disposables: vscode.Disposable[] = [];
 
-  public static createOrShow(extensionUri: vscode.Uri, modelPath: string|undefined) {
+  public static createOrShow(
+    extensionUri: vscode.Uri,
+    modelPath: string | undefined
+  ) {
     // if modelPath is undefined, let's show file open dialog and get the model path from the user
     if (modelPath === undefined) {
       const options: vscode.OpenDialogOptions = {
         canSelectMany: false,
-        openLabel: 'Open',
-        filters: {'circle files': ['circle']}
+        openLabel: "Open",
+        filters: { "circle files": ["circle"] },
       };
-      vscode.window.showOpenDialog(options).then(fileUri => {
+      vscode.window.showOpenDialog(options).then((fileUri) => {
         if (fileUri && fileUri[0]) {
-          return CircleGraphPanel.createOrShowContinue(extensionUri, fileUri[0].fsPath);
+          return CircleGraphPanel.createOrShowContinue(
+            extensionUri,
+            fileUri[0].fsPath
+          );
         }
         return undefined;
       });
@@ -47,9 +53,13 @@ export class CircleGraphPanel extends CircleGraphCtrl {
     }
   }
 
-  private static createOrShowContinue(extensionUri: vscode.Uri, modelToLoad: string) {
-    const column =
-        vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
+  private static createOrShowContinue(
+    extensionUri: vscode.Uri,
+    modelToLoad: string
+  ) {
+    const column = vscode.window.activeTextEditor
+      ? vscode.window.activeTextEditor.viewColumn
+      : undefined;
 
     // TODO we may have show two or more graphs at the same time depending
     //      on the usage if this control.
@@ -63,18 +73,25 @@ export class CircleGraphPanel extends CircleGraphCtrl {
 
     // Otherwise, create a new panel.
     const panel = vscode.window.createWebviewPanel(
-        CircleGraphPanel.viewType, 'CircleGraphPanel', column || vscode.ViewColumn.One,
-        {retainContextWhenHidden: true});
+      CircleGraphPanel.viewType,
+      "CircleGraphPanel",
+      column || vscode.ViewColumn.One,
+      { retainContextWhenHidden: true }
+    );
 
     const circleGraph = new CircleGraphPanel(panel, extensionUri, modelToLoad);
-    circleGraph.setTitle('circle graph');
+    circleGraph.setTitle("circle graph");
     circleGraph.loadContent();
     CircleGraphPanel.currentPanel = circleGraph;
 
     return circleGraph;
   }
 
-  private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, modelToLoad: string) {
+  private constructor(
+    panel: vscode.WebviewPanel,
+    extensionUri: vscode.Uri,
+    modelToLoad: string
+  ) {
     super(extensionUri, panel.webview);
 
     this._panel = panel;
@@ -84,13 +101,17 @@ export class CircleGraphPanel extends CircleGraphCtrl {
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
     // Update the content based on view changes
-    this._panel.onDidChangeViewState(() => {
-      if (this._panel.visible) {
-        // NOTE if we call this.update(), it'll reload the model which may take time.
-        // TODO call conditional this.update() when necessary.
-        // this.update();
-      }
-    }, null, this._disposables);
+    this._panel.onDidChangeViewState(
+      () => {
+        if (this._panel.visible) {
+          // NOTE if we call this.update(), it'll reload the model which may take time.
+          // TODO call conditional this.update() when necessary.
+          // this.update();
+        }
+      },
+      null,
+      this._disposables
+    );
 
     this.initGraphCtrl(modelToLoad, undefined);
   }

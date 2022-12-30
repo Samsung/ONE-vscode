@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import {Command} from '../Backend/Command';
-import {JobType} from '../Job/Job';
-import {JobCommand} from '../Job/JobCommand';
+import { Command } from "../Backend/Command";
+import { JobType } from "../Job/Job";
+import { JobCommand } from "../Job/JobCommand";
 
 class JobConfig extends JobCommand {
   jobType: JobType;
@@ -26,11 +26,11 @@ class JobConfig extends JobCommand {
   constructor(cmd: Command) {
     super(cmd);
     this.jobType = JobType.tConfig;
-    this.name = 'config';
-    this.notiTitle = 'Running onecc...';
+    this.name = "config";
+    this.notiTitle = "Running onecc...";
     this.valid = true;
     this.isCancelable = true;
   }
 }
 
-export {JobConfig};
+export { JobConfig };

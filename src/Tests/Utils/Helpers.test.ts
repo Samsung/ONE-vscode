@@ -14,85 +14,89 @@
  * limitations under the License.
  */
 
-import {assert} from 'chai';
-import vscode from 'vscode';
+import { assert } from "chai";
+import vscode from "vscode";
 
-import {isOneExplorerTargetFile, obtainWorkspaceRoot, RealPath} from '../../Utils/Helpers';
+import {
+  isOneExplorerTargetFile,
+  obtainWorkspaceRoot,
+  RealPath,
+} from "../../Utils/Helpers";
 
-suite('Utils', function() {
-  suite('Helpers', function() {
-    suite('#obtainWorkspaceRoot()', function() {
-      test('returns workspaceRoot as string', function() {
+suite("Utils", function () {
+  suite("Helpers", function () {
+    suite("#obtainWorkspaceRoot()", function () {
+      test("returns workspaceRoot as string", function () {
         const workspaceRoot: string = obtainWorkspaceRoot();
         assert.isNotNull(workspaceRoot);
         assert.isString(workspaceRoot);
       });
     });
 
-    suite('#createRealPath()', function() {
-      test('create RealPath of system root directory', function() {
-        let realPath = RealPath.createRealPath('/');
+    suite("#createRealPath()", function () {
+      test("create RealPath of system root directory", function () {
+        let realPath = RealPath.createRealPath("/");
         assert.isObject<RealPath>(realPath!);
       });
 
-      test('NEG: return null when path not exists', function() {
-        let realPath = RealPath.createRealPath('/dummy/not/exists/here');
+      test("NEG: return null when path not exists", function () {
+        let realPath = RealPath.createRealPath("/dummy/not/exists/here");
         assert.isNull(realPath);
       });
 
-      test('NEG: cannot create when rawpath includes invalid path from root - 1', function() {
-        let realPath = RealPath.createRealPath('/../dummy/');
+      test("NEG: cannot create when rawpath includes invalid path from root - 1", function () {
+        let realPath = RealPath.createRealPath("/../dummy/");
         assert.isNull(realPath);
       });
 
-      test('NEG: cannot create when rawpath includes invalid path from root - 2', function() {
-        let realPath = RealPath.createRealPath('/../dummy/../dummy');
+      test("NEG: cannot create when rawpath includes invalid path from root - 2", function () {
+        let realPath = RealPath.createRealPath("/../dummy/../dummy");
         assert.isNull(realPath);
       });
 
-      test('NEG: cannot create when rawpath includes invalid path from root - 3', function() {
-        let realPath = RealPath.createRealPath('/../dummy/.');
+      test("NEG: cannot create when rawpath includes invalid path from root - 3", function () {
+        let realPath = RealPath.createRealPath("/../dummy/.");
         assert.isNull(realPath);
       });
 
-      test('NEG: cannot create when rawpath includes invalid path from root - 4', function() {
-        let realPath = RealPath.createRealPath('/../../dummy/.');
+      test("NEG: cannot create when rawpath includes invalid path from root - 4", function () {
+        let realPath = RealPath.createRealPath("/../../dummy/.");
         assert.isNull(realPath);
       });
 
-      test('NEG: cannot create when rawpath includes invalid path from root - 5', function() {
-        let realPath = RealPath.createRealPath('/../dummy/./.');
+      test("NEG: cannot create when rawpath includes invalid path from root - 5", function () {
+        let realPath = RealPath.createRealPath("/../dummy/./.");
         assert.isNull(realPath);
       });
 
-      test('NEG: cannot create when rawpath includes invalid path from home - 1', function() {
-        let realPath = RealPath.createRealPath('~/../dummy/');
+      test("NEG: cannot create when rawpath includes invalid path from home - 1", function () {
+        let realPath = RealPath.createRealPath("~/../dummy/");
         assert.isNull(realPath);
       });
 
-      test('NEG: cannot create when rawpath includes invalid path from home - 2', function() {
-        let realPath = RealPath.createRealPath('~/../dummy/../dummy');
+      test("NEG: cannot create when rawpath includes invalid path from home - 2", function () {
+        let realPath = RealPath.createRealPath("~/../dummy/../dummy");
         assert.isNull(realPath);
       });
 
-      test('NEG: cannot create when rawpath includes invalid path from home - 3', function() {
-        let realPath = RealPath.createRealPath('~/../dummy/.');
+      test("NEG: cannot create when rawpath includes invalid path from home - 3", function () {
+        let realPath = RealPath.createRealPath("~/../dummy/.");
         assert.isNull(realPath);
       });
 
-      test('NEG: cannot create when rawpath includes invalid path from home - 4', function() {
-        let realPath = RealPath.createRealPath('~/../../dummy/.');
+      test("NEG: cannot create when rawpath includes invalid path from home - 4", function () {
+        let realPath = RealPath.createRealPath("~/../../dummy/.");
         assert.isNull(realPath);
       });
 
-      test('NEG: cannot create when rawpath includes invalid path from home - 5', function() {
-        let realPath = RealPath.createRealPath('~/../dummy/./.');
+      test("NEG: cannot create when rawpath includes invalid path from home - 5", function () {
+        let realPath = RealPath.createRealPath("~/../dummy/./.");
         assert.isNull(realPath);
       });
     });
 
-    suite('#equal()', function() {
-      test('compare practically the same paths', function() {
+    suite("#equal()", function () {
+      test("compare practically the same paths", function () {
         const workspaceRoot = obtainWorkspaceRoot();
         let realPath0 = RealPath.createRealPath(`${workspaceRoot}`);
         let realPath1 = RealPath.createRealPath(`${workspaceRoot}/dummy/..`);
@@ -103,79 +107,79 @@ suite('Utils', function() {
       });
     });
 
-    suite('#areEqual()', function() {
-      test('compare same paths', function() {
-        assert.isTrue(RealPath.areEqual('/', '/'));
-        assert.isTrue(RealPath.areEqual('/', '/dummy/..'));
+    suite("#areEqual()", function () {
+      test("compare same paths", function () {
+        assert.isTrue(RealPath.areEqual("/", "/"));
+        assert.isTrue(RealPath.areEqual("/", "/dummy/.."));
       });
 
-      test('NEG: compare not creatable paths from root - 1', function() {
-        assert.isFalse(RealPath.areEqual('/dummy', '/dummy'));
+      test("NEG: compare not creatable paths from root - 1", function () {
+        assert.isFalse(RealPath.areEqual("/dummy", "/dummy"));
       });
 
-      test('NEG: compare not creatable paths from root - 2', function() {
-        assert.isFalse(RealPath.areEqual('/dummy', '/dummy/../dummy'));
+      test("NEG: compare not creatable paths from root - 2", function () {
+        assert.isFalse(RealPath.areEqual("/dummy", "/dummy/../dummy"));
       });
 
-      test('NEG: compare not creatable paths from root - 3', function() {
-        assert.isFalse(RealPath.areEqual('/dummy', '/../dummy'));
+      test("NEG: compare not creatable paths from root - 3", function () {
+        assert.isFalse(RealPath.areEqual("/dummy", "/../dummy"));
       });
 
-      test('NEG: compare not creatable paths from root - 4', function() {
-        assert.isFalse(RealPath.areEqual('/dummy', '/./../dummy'));
+      test("NEG: compare not creatable paths from root - 4", function () {
+        assert.isFalse(RealPath.areEqual("/dummy", "/./../dummy"));
       });
 
-      test('NEG: compare not creatable paths from root - 5', function() {
-        assert.isFalse(RealPath.areEqual('/dummy', '/./../dummy/./'));
+      test("NEG: compare not creatable paths from root - 5", function () {
+        assert.isFalse(RealPath.areEqual("/dummy", "/./../dummy/./"));
       });
 
-      test('NEG: compare not creatable paths from home - 1', function() {
-        assert.isFalse(RealPath.areEqual('~/dummy', '~/dummy'));
+      test("NEG: compare not creatable paths from home - 1", function () {
+        assert.isFalse(RealPath.areEqual("~/dummy", "~/dummy"));
       });
 
-      test('NEG: compare not creatable paths from home - 2', function() {
-        assert.isFalse(RealPath.areEqual('~/dummy', '~/dummy/../dummy'));
+      test("NEG: compare not creatable paths from home - 2", function () {
+        assert.isFalse(RealPath.areEqual("~/dummy", "~/dummy/../dummy"));
       });
 
-      test('NEG: compare not creatable paths from home - 3', function() {
-        assert.isFalse(RealPath.areEqual('~/dummy', '~/../dummy'));
+      test("NEG: compare not creatable paths from home - 3", function () {
+        assert.isFalse(RealPath.areEqual("~/dummy", "~/../dummy"));
       });
 
-      test('NEG: compare not creatable paths from home - 4', function() {
-        assert.isFalse(RealPath.areEqual('~/dummy', '~/./../dummy'));
+      test("NEG: compare not creatable paths from home - 4", function () {
+        assert.isFalse(RealPath.areEqual("~/dummy", "~/./../dummy"));
       });
 
-      test('NEG: compare not creatable paths from home - 5', function() {
-        assert.isFalse(RealPath.areEqual('~/dummy', '~/./../dummy/./'));
+      test("NEG: compare not creatable paths from home - 5", function () {
+        assert.isFalse(RealPath.areEqual("~/dummy", "~/./../dummy/./"));
       });
     });
 
-    suite('#exists()', function() {
-      test('check if the path exists', function() {
+    suite("#exists()", function () {
+      test("check if the path exists", function () {
         assert.isFalse(RealPath.exists(undefined));
-        assert.isFalse(RealPath.exists('/dummy/not/exist'));
-        assert.isTrue(RealPath.exists('/'));
+        assert.isFalse(RealPath.exists("/dummy/not/exist"));
+        assert.isTrue(RealPath.exists("/"));
       });
     });
 
-    suite('#isOneExplorerTargetFile()', function() {
-      test('check if it is target file of OneExplorer', function() {
-        assert.isTrue(isOneExplorerTargetFile(vscode.Uri.file('test.pb')));
-        assert.isTrue(isOneExplorerTargetFile(vscode.Uri.file('test.onnx')));
-        assert.isTrue(isOneExplorerTargetFile(vscode.Uri.file('test.tflite')));
-        assert.isTrue(isOneExplorerTargetFile(vscode.Uri.file('test.circle')));
-        assert.isTrue(isOneExplorerTargetFile(vscode.Uri.file('test.cfg')));
-        assert.isTrue(isOneExplorerTargetFile(vscode.Uri.file('test.log')));
-        assert.isFalse(isOneExplorerTargetFile(vscode.Uri.file('test.any')));
+    suite("#isOneExplorerTargetFile()", function () {
+      test("check if it is target file of OneExplorer", function () {
+        assert.isTrue(isOneExplorerTargetFile(vscode.Uri.file("test.pb")));
+        assert.isTrue(isOneExplorerTargetFile(vscode.Uri.file("test.onnx")));
+        assert.isTrue(isOneExplorerTargetFile(vscode.Uri.file("test.tflite")));
+        assert.isTrue(isOneExplorerTargetFile(vscode.Uri.file("test.circle")));
+        assert.isTrue(isOneExplorerTargetFile(vscode.Uri.file("test.cfg")));
+        assert.isTrue(isOneExplorerTargetFile(vscode.Uri.file("test.log")));
+        assert.isFalse(isOneExplorerTargetFile(vscode.Uri.file("test.any")));
       });
-      test('NEG: check empty path', function() {
-        assert.isFalse(isOneExplorerTargetFile(vscode.Uri.file('')));
+      test("NEG: check empty path", function () {
+        assert.isFalse(isOneExplorerTargetFile(vscode.Uri.file("")));
       });
-      test('NEG: check directory', function() {
-        assert.isFalse(isOneExplorerTargetFile(vscode.Uri.file('.onnx/')));
+      test("NEG: check directory", function () {
+        assert.isFalse(isOneExplorerTargetFile(vscode.Uri.file(".onnx/")));
       });
-      test('NEG: check a file without ext', function() {
-        assert.isFalse(isOneExplorerTargetFile(vscode.Uri.file('onnx')));
+      test("NEG: check a file without ext", function () {
+        assert.isFalse(isOneExplorerTargetFile(vscode.Uri.file("onnx")));
       });
     });
   });

@@ -33,9 +33,9 @@ editor.Backend = class {
  */
 editor.Operator = class {
   constructor(name, opcode, becode) {
-    this.name = name;      // name of operator
-    this.opcode = opcode;  // name of opcode, e.g. 'CONV_2D'
-    this.becode = becode;  // backend code of operator
+    this.name = name; // name of operator
+    this.opcode = opcode; // name of opcode, e.g. 'CONV_2D'
+    this.becode = becode; // backend code of operator
   }
 };
 
@@ -43,12 +43,12 @@ editor.Editor = class {
   constructor() {
     this.window = window;
     this.document = window.document;
-    this.backends = [];   // array of editor.Backend
-    this.operators = [];  // array of editor.Operator
-    this.partition = {};  // current partition from document
-    this.beToCode = {};   // backend string to code, for search performance
+    this.backends = []; // array of editor.Backend
+    this.operators = []; // array of editor.Operator
+    this.partition = {}; // current partition from document
+    this.beToCode = {}; // backend string to code, for search performance
     this.findTimer = undefined;
-    this.findText = '';
+    this.findText = "";
   }
 
   initialize() {
@@ -61,115 +61,125 @@ editor.Editor = class {
   }
 
   register() {
-    this.window.addEventListener('message', (event) => {
+    this.window.addEventListener("message", (event) => {
       const message = event.data;
       switch (message.command) {
-        case 'resultBackends':
+        case "resultBackends":
           this.handleResultBackends(message);
           break;
 
-        case 'resultOpNames':
+        case "resultOpNames":
           this.handleResultOpNames(message);
           break;
 
-        case 'resultPartition':
+        case "resultPartition":
           this.handleResultPartition(message);
           break;
 
-        case 'updatePartition':
+        case "updatePartition":
           // when .part file was edited through text editor
           this.handleUpdatePartition(message);
           break;
 
-        case 'selectWithNames':
+        case "selectWithNames":
           // when selection has changed from graph view
           this.handleSelectWithNames(message);
           break;
       }
     });
 
-    this.document.getElementById('circle-nodes').addEventListener('change', () => {
-      this.fowardSelection();
-    });
+    this.document
+      .getElementById("circle-nodes")
+      .addEventListener("change", () => {
+        this.fowardSelection();
+      });
 
     // backend combobox change
-    this.document.getElementById('circle-be').addEventListener('change', () => {
+    this.document.getElementById("circle-be").addEventListener("change", () => {
       this.updateDefaultCheckbox();
       this.updateBeComboColor();
     });
 
     // change 'default' backend to current backend of combobox
-    this.document.getElementById('circle-be-def').addEventListener('click', () => {
-      this.updateDefaultBackend();
-      this.updateDocument();
-    });
+    this.document
+      .getElementById("circle-be-def")
+      .addEventListener("click", () => {
+        this.updateDefaultBackend();
+        this.updateDocument();
+      });
 
     // set backend by clicking 'Set' button
-    this.document.getElementById('set-be').addEventListener('click', () => {
+    this.document.getElementById("set-be").addEventListener("click", () => {
       this.updateSelectedBackend();
       this.updateDocument();
     });
 
     // clear backend by clicking 'Clear' button
-    this.document.getElementById('clear-be').addEventListener('click', () => {
+    this.document.getElementById("clear-be").addEventListener("click", () => {
       this.updateSelectedBackendCode(0);
       this.updateDocument();
     });
 
     // show graph view with identical node selection
-    this.document.getElementById('circle-graph').addEventListener('click', () => {
-      let names = this.getSelectionNames();
-      vscode.postMessage({command: 'selectByGraph', selection: names});
-    });
+    this.document
+      .getElementById("circle-graph")
+      .addEventListener("click", () => {
+        let names = this.getSelectionNames();
+        vscode.postMessage({ command: "selectByGraph", selection: names });
+      });
 
     // find operators with text
-    this.document.getElementById('find-node').addEventListener('input', () => {
+    this.document.getElementById("find-node").addEventListener("input", () => {
       this.findNodes();
     });
   }
 
   currentBackendName() {
-    let belistbox = this.document.getElementById('circle-be');
+    let belistbox = this.document.getElementById("circle-be");
     let idx = belistbox.selectedIndex;
     let beCode = belistbox.options[idx].value;
     return this.backends[beCode].name;
   }
 
   requestBackends() {
-    vscode.postMessage({command: 'requestBackends'});
+    vscode.postMessage({ command: "requestBackends" });
   }
 
   requestOpNames() {
-    vscode.postMessage({command: 'requestOpNames'});
+    vscode.postMessage({ command: "requestOpNames" });
   }
 
   requestPartition() {
-    vscode.postMessage({command: 'requestPartition'});
+    vscode.postMessage({ command: "requestPartition" });
   }
 
   updateDocument() {
     let partition = this.makePartitionSection();
     let opname = this.makeOpNameSection();
 
-    vscode.postMessage({command: 'updateDocument', partition: partition, opname: opname});
+    vscode.postMessage({
+      command: "updateDocument",
+      partition: partition,
+      opname: opname,
+    });
   }
 
   updateBeComboColor() {
-    let becombobox = this.document.getElementById('circle-be');
+    let becombobox = this.document.getElementById("circle-be");
     let idx = becombobox.selectedIndex;
     let beCode = becombobox.options[idx].value;
     let color = this.backends[beCode].color;
-    becombobox.style = 'color:' + color;
+    becombobox.style = "color:" + color;
   }
 
   findNodes() {
-    const findEdit = this.document.getElementById('find-node');
+    const findEdit = this.document.getElementById("find-node");
     if (this.findTimer) {
       this.window.clearTimeout(this.findTimer);
       this.findTimer = undefined;
     }
     this.findTimer = this.window.setTimeout(() => {
-      console.log('Search:', findEdit.value);
+      console.log("Search:", findEdit.value);
       this.findText = findEdit.value;
       this.refillOpListbox();
       this.fowardSelection();
@@ -187,16 +197,16 @@ editor.Editor = class {
     this.backends.push(new editor.Backend(backends[0].name, backends[0].color));
 
     // initial fill op backend listbox
-    const listbox = this.document.getElementById('circle-be');
+    const listbox = this.document.getElementById("circle-be");
     for (let idx = 1; idx < backends.length; idx++) {
       const backend = backends[idx].name;
       const becolor = backends[idx].color;
       // filter out empty string
       if (backend.length > 0) {
-        let opt = this.document.createElement('option');
+        let opt = this.document.createElement("option");
         opt.text = `(${idx}) ${backend}`;
         opt.value = idx;
-        opt.style = 'color:' + becolor;
+        opt.style = "color:" + becolor;
         listbox.add(opt);
 
         this.backends.push(new editor.Backend(backend, becolor));
@@ -217,15 +227,15 @@ editor.Editor = class {
     const itemOpNames = message.names.split(/\r?\n/);
 
     // initial fill operators listbox with name and becode as 0
-    const listbox = this.document.getElementById('circle-nodes');
+    const listbox = this.document.getElementById("circle-nodes");
 
     listbox.options.length = 0;
     for (let idx = 0; idx < itemOpNames.length; idx++) {
       if (itemOpNames[idx].length > 0) {
-        const codename = itemOpNames[idx].split(',');
+        const codename = itemOpNames[idx].split(",");
         const opcode = codename[0];
         const name = codename[1];
-        let opt = this.document.createElement('option');
+        let opt = this.document.createElement("option");
         opt.text = `(0) [${opcode}] ${name}`;
         opt.value = idx;
         listbox.add(opt);
@@ -265,22 +275,22 @@ editor.Editor = class {
     const selection = message.selection;
 
     // initial fill operators listbox with name and becode as 0
-    const listbox = this.document.getElementById('circle-nodes');
+    const listbox = this.document.getElementById("circle-nodes");
     for (let i = 0; i < listbox.options.length; i++) {
       let opt = listbox.options[i];
       let idx = opt.value;
-      opt.selected = (selection.includes(this.operators[idx].name));
+      opt.selected = selection.includes(this.operators[idx].name);
     }
   }
 
   getSelectionNames() {
-    let listbox = this.document.getElementById('circle-nodes');
-    let names = '';
+    let listbox = this.document.getElementById("circle-nodes");
+    let names = "";
     let selectedOptions = listbox.selectedOptions;
     for (let i = 0; i < selectedOptions.length; i++) {
       let idx = selectedOptions[i].value;
-      if (names !== '') {
-        names = names + '\n';
+      if (names !== "") {
+        names = names + "\n";
       }
       names = names + this.operators[idx].name;
     }
@@ -289,25 +299,25 @@ editor.Editor = class {
 
   fowardSelection() {
     let names = this.getSelectionNames();
-    vscode.postMessage({command: 'forwardSelection', selection: names});
+    vscode.postMessage({ command: "forwardSelection", selection: names });
   }
 
   updateDefaultCheckbox() {
     // get the backend code
-    let belistbox = this.document.getElementById('circle-be');
+    let belistbox = this.document.getElementById("circle-be");
     let idx = belistbox.selectedIndex;
     let beCode = belistbox.options[idx].value;
     let beName = this.backends[beCode].name;
-    let checkbox = this.document.getElementById('circle-be-def');
+    let checkbox = this.document.getElementById("circle-be-def");
 
-    checkbox.checked = (beName === this.partition.partition.default);
+    checkbox.checked = beName === this.partition.partition.default;
     // we cannot turn off default when CPU to something else
-    checkbox.disabled = (checkbox.checked && idx === 0);
+    checkbox.disabled = checkbox.checked && idx === 0;
   }
 
   updateSelectedBackend() {
     // get the backend code
-    let belistbox = this.document.getElementById('circle-be');
+    let belistbox = this.document.getElementById("circle-be");
     let idx = belistbox.selectedIndex;
     let beCode = belistbox.options[idx].value;
 
@@ -315,7 +325,7 @@ editor.Editor = class {
   }
 
   updateSelectedBackendCode(beCode) {
-    let listbox = this.document.getElementById('circle-nodes');
+    let listbox = this.document.getElementById("circle-nodes");
     let selectedOptions = listbox.selectedOptions;
     for (let i = 0; i < selectedOptions.length; i++) {
       let selected = selectedOptions[i];
@@ -325,7 +335,7 @@ editor.Editor = class {
 
       selected.text = `(${beCode}) [${opcode}] ${name}`;
       this.operators[idx].becode = beCode;
-      selected.style = 'color:' + this.backends[beCode].color;
+      selected.style = "color:" + this.backends[beCode].color;
     }
   }
 
@@ -334,16 +344,16 @@ editor.Editor = class {
    * @note  we cannot uncheck for first item(CPU)
    */
   updateDefaultBackend() {
-    let checkbox = this.document.getElementById('circle-be-def');
+    let checkbox = this.document.getElementById("circle-be-def");
     if (checkbox.checked) {
       // checkbox is checked so change to current combobox items
-      let belistbox = this.document.getElementById('circle-be');
+      let belistbox = this.document.getElementById("circle-be");
       let idx = belistbox.selectedIndex;
       let beCode = belistbox.options[idx].value;
       let beName = this.backends[beCode].name;
       this.partition.partition.default = beName;
       // we cannot turn off default when CPU to something else
-      checkbox.disabled = (idx === 0);
+      checkbox.disabled = idx === 0;
     } else {
       // set to first backend
       let beName = this.backends[0].name;
@@ -375,7 +385,7 @@ editor.Editor = class {
    * @brief update listbox item text with backend code as prefix
    */
   refershOpListbox() {
-    let listbox = this.document.getElementById('circle-nodes');
+    let listbox = this.document.getElementById("circle-nodes");
     for (let i = 0; i < listbox.options.length; i++) {
       let opt = listbox.options[i];
 
@@ -384,7 +394,7 @@ editor.Editor = class {
       let opcode = this.operators[idx].opcode;
       let name = this.operators[idx].name;
       opt.text = `(${beCode}) [${opcode}] ${name}`;
-      opt.style = 'color:' + this.backends[beCode].color;
+      opt.style = "color:" + this.backends[beCode].color;
     }
   }
 
@@ -392,7 +402,7 @@ editor.Editor = class {
    * @brief refill listbox item text findText
    */
   refillOpListbox() {
-    let listbox = this.document.getElementById('circle-nodes');
+    let listbox = this.document.getElementById("circle-nodes");
     // clear all options
     listbox.options.length = 0;
     // fill with matching find
@@ -404,11 +414,15 @@ editor.Editor = class {
       // TODO what about beCode search like '(0)' ?
       // https://github.com/Samsung/ONE-vscode/issues/962#issuecomment-1175661118
 
-      if (this.findText === '' || name.includes(this.findText) || bopcode.includes(this.findText)) {
-        let opt = this.document.createElement('option');
+      if (
+        this.findText === "" ||
+        name.includes(this.findText) ||
+        bopcode.includes(this.findText)
+      ) {
+        let opt = this.document.createElement("option");
         opt.text = `(${beCode}) [${opcode}] ${name}`;
         opt.value = idx;
-        opt.style = 'color:' + this.backends[beCode].color;
+        opt.style = "color:" + this.backends[beCode].color;
         listbox.add(opt);
       }
     }
@@ -428,7 +442,7 @@ editor.Editor = class {
    * @return -1 if not found
    */
   backendCode(value) {
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       value = value.toUpperCase();
       if (Object.prototype.hasOwnProperty.call(this.beToCode, value)) {
         return this.beToCode[value];
@@ -477,12 +491,16 @@ editor.Editor = class {
   }
 };
 
-window.addEventListener('load', () => {
+window.addEventListener("load", () => {
   window.__editor__ = new editor.Editor();
   window.__editor__.initialize();
 });
 
 // disable context menu
-window.addEventListener('contextmenu', (e) => {
-  e.stopImmediatePropagation();
-}, true);
+window.addEventListener(
+  "contextmenu",
+  (e) => {
+    e.stopImmediatePropagation();
+  },
+  true
+);

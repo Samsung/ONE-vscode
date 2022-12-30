@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import {assert} from 'chai';
-import {Locator, LocatorRunner} from '../../OneExplorer/ArtifactLocator';
+import { assert } from "chai";
+import { Locator, LocatorRunner } from "../../OneExplorer/ArtifactLocator";
 
-suite('OneExplorer', function() {
-  suite('ArtifactLocator', function() {
-    suite('#Empty LocatorRunner', function() {
-      test('NEG: Run an empty LocatorRunner', function() {
+suite("OneExplorer", function () {
+  suite("ArtifactLocator", function () {
+    suite("#Empty LocatorRunner", function () {
+      test("NEG: Run an empty LocatorRunner", function () {
         let locatorRunner = new LocatorRunner();
-        const locatedArtifacts = locatorRunner.run({}, '/');
+        const locatedArtifacts = locatorRunner.run({}, "/");
 
         // Validation
         {
@@ -31,10 +31,12 @@ suite('OneExplorer', function() {
         }
       });
 
-      test('NEG: Run an empty LocatorRunner on non-empty object', function() {
+      test("NEG: Run an empty LocatorRunner on non-empty object", function () {
         let locatorRunner = new LocatorRunner();
-        const locatedArtifacts =
-            locatorRunner.run({'mySection': {'myKey': 'no.txt no.txt yes.test'}}, '/');
+        const locatedArtifacts = locatorRunner.run(
+          { mySection: { myKey: "no.txt no.txt yes.test" } },
+          "/"
+        );
 
         // Validation
         {
@@ -44,150 +46,187 @@ suite('OneExplorer', function() {
       });
     });
 
-    suite('#Run LocatorRunner with searchWithExt', function() {
-      test(`Run a simple locator`, function() {
+    suite("#Run LocatorRunner with searchWithExt", function () {
+      test(`Run a simple locator`, function () {
         let locatorRunner = new LocatorRunner();
 
         // A simple locator to search '*.test' in any section/key
         locatorRunner.register({
-          artifactAttr: {ext: '.test'},
-          locator: new Locator(value => LocatorRunner.searchWithExt('.test', value))
-        });
-
-        const artifacts =
-            locatorRunner.run({'mySection': {'myKey': 'no.txt no.txt yes.test'}}, '/');
-
-        // Validation
-        {
-          assert.equal(artifacts[0].attr.ext, '.test');
-          assert.equal(artifacts[0].path, '/yes.test');
-        }
-      });
-
-      test(`NEG: Run with an empty directory path`, function() {
-        let locatorRunner = new LocatorRunner();
-        // A simple locator to search '*.test' in any section/key
-        locatorRunner.register({
-          artifactAttr: {ext: '.test'},
-          locator: new Locator(value => LocatorRunner.searchWithExt('.test', value))
-        });
-
-        // Validation
-        {
-          assert.throw(
-              () => locatorRunner.run({'mySection': {'myKey': 'no.txt no.txt yes.test'}}, ''));
-        }
-      });
-
-      test(`NEG: Run with a non-absolute directory path`, function() {
-        let locatorRunner = new LocatorRunner();
-        // A simple locator to search '*.test' in any section/key
-        locatorRunner.register({
-          artifactAttr: {ext: '.test'},
-          locator: new Locator(value => LocatorRunner.searchWithExt('.test', value))
-        });
-
-        // Validation
-        {
-          assert.throw(
-              () => locatorRunner.run({'mySection': {'myKey': 'no.txt no.txt yes.test'}}, '.'));
-        }
-      });
-
-      test(`Check file path joining`, function() {
-        let locatorRunner = new LocatorRunner();
-        // A simple locator to search '*.test' in any section/key
-        locatorRunner.register({
-          artifactAttr: {ext: '.test'},
-          locator: new Locator(value => LocatorRunner.searchWithExt('.test', value))
-        });
-
-        const artifacts =
-            locatorRunner.run({'mySection': {'myKey': 'no.txt no.txtt ../yes.test'}}, '/a/b/c');
-
-        // Validation
-        {
-          assert.equal(artifacts[0].attr.ext, '.test');
-          assert.notEqual(artifacts[0].path, '/a/b/c/../yes.test');
-          assert.equal(artifacts[0].path, '/a/b/yes.test');
-        }
-      });
-
-      test(`Search with extended ext`, function() {
-        let locatorRunner = new LocatorRunner();
-        // A simple locator to search '*.test' in any section/key
-        locatorRunner.register({
-          artifactAttr: {ext: '.test.log'},
-          locator: new Locator(value => LocatorRunner.searchWithExt('.test.log', value))
-        });
-
-        const artifacts =
-            locatorRunner.run({'mySection': {'myKey': 'no.txt no.txtt ../yes.test.log'}}, '/a/b/c');
-
-        // Validation
-        {
-          assert.equal(artifacts[0].attr.ext, '.test.log');
-          assert.notEqual(artifacts[0].path, '/a/b/c/../yes.test.log');
-          assert.equal(artifacts[0].path, '/a/b/yes.test.log');
-        }
-      });
-    });
-
-    suite('#Run LocatorRunner with searchWithCommandOption', function() {
-      test(`Search by command option`, function() {
-        let locatorRunner = new LocatorRunner();
-        // A simple locator to search '*.test' in any section/key
-        locatorRunner.register({
-          artifactAttr: {ext: '.test'},
-          locator: new Locator(value => LocatorRunner.searchWithCommandOption(value, '--test'))
+          artifactAttr: { ext: ".test" },
+          locator: new Locator((value) =>
+            LocatorRunner.searchWithExt(".test", value)
+          ),
         });
 
         const artifacts = locatorRunner.run(
-            {'mySection': {'myKey': 'no.txt no.txtt --test ../yes.test'}}, '/a/b/c');
+          { mySection: { myKey: "no.txt no.txt yes.test" } },
+          "/"
+        );
 
         // Validation
         {
-          assert.equal(artifacts[0].attr.ext, '.test');
-          assert.notEqual(artifacts[0].path, '/a/b/c/../yes.test');
-          assert.equal(artifacts[0].path, '/a/b/yes.test');
+          assert.equal(artifacts[0].attr.ext, ".test");
+          assert.equal(artifacts[0].path, "/yes.test");
         }
       });
 
-      test(`NEG: Search by an empty command option`, function() {
+      test(`NEG: Run with an empty directory path`, function () {
         let locatorRunner = new LocatorRunner();
         // A simple locator to search '*.test' in any section/key
         locatorRunner.register({
-          artifactAttr: {ext: '.test'},
-          locator: new Locator(value => LocatorRunner.searchWithCommandOption(value, ''))
+          artifactAttr: { ext: ".test" },
+          locator: new Locator((value) =>
+            LocatorRunner.searchWithExt(".test", value)
+          ),
         });
 
         // Validation
         {
-          assert.throw(
-              () => locatorRunner.run(
-                  {'mySection': {'myKey': 'no.txt no.txtt --test yes.test'}}, '/a/b/c'));
+          assert.throw(() =>
+            locatorRunner.run(
+              { mySection: { myKey: "no.txt no.txt yes.test" } },
+              ""
+            )
+          );
+        }
+      });
+
+      test(`NEG: Run with a non-absolute directory path`, function () {
+        let locatorRunner = new LocatorRunner();
+        // A simple locator to search '*.test' in any section/key
+        locatorRunner.register({
+          artifactAttr: { ext: ".test" },
+          locator: new Locator((value) =>
+            LocatorRunner.searchWithExt(".test", value)
+          ),
+        });
+
+        // Validation
+        {
+          assert.throw(() =>
+            locatorRunner.run(
+              { mySection: { myKey: "no.txt no.txt yes.test" } },
+              "."
+            )
+          );
+        }
+      });
+
+      test(`Check file path joining`, function () {
+        let locatorRunner = new LocatorRunner();
+        // A simple locator to search '*.test' in any section/key
+        locatorRunner.register({
+          artifactAttr: { ext: ".test" },
+          locator: new Locator((value) =>
+            LocatorRunner.searchWithExt(".test", value)
+          ),
+        });
+
+        const artifacts = locatorRunner.run(
+          { mySection: { myKey: "no.txt no.txtt ../yes.test" } },
+          "/a/b/c"
+        );
+
+        // Validation
+        {
+          assert.equal(artifacts[0].attr.ext, ".test");
+          assert.notEqual(artifacts[0].path, "/a/b/c/../yes.test");
+          assert.equal(artifacts[0].path, "/a/b/yes.test");
+        }
+      });
+
+      test(`Search with extended ext`, function () {
+        let locatorRunner = new LocatorRunner();
+        // A simple locator to search '*.test' in any section/key
+        locatorRunner.register({
+          artifactAttr: { ext: ".test.log" },
+          locator: new Locator((value) =>
+            LocatorRunner.searchWithExt(".test.log", value)
+          ),
+        });
+
+        const artifacts = locatorRunner.run(
+          { mySection: { myKey: "no.txt no.txtt ../yes.test.log" } },
+          "/a/b/c"
+        );
+
+        // Validation
+        {
+          assert.equal(artifacts[0].attr.ext, ".test.log");
+          assert.notEqual(artifacts[0].path, "/a/b/c/../yes.test.log");
+          assert.equal(artifacts[0].path, "/a/b/yes.test.log");
         }
       });
     });
 
-    suite('#LocatorRunner with custom function', function() {
-      test(`NEG: Run with a function throwing exception`, function() {
+    suite("#Run LocatorRunner with searchWithCommandOption", function () {
+      test(`Search by command option`, function () {
+        let locatorRunner = new LocatorRunner();
+        // A simple locator to search '*.test' in any section/key
+        locatorRunner.register({
+          artifactAttr: { ext: ".test" },
+          locator: new Locator((value) =>
+            LocatorRunner.searchWithCommandOption(value, "--test")
+          ),
+        });
+
+        const artifacts = locatorRunner.run(
+          { mySection: { myKey: "no.txt no.txtt --test ../yes.test" } },
+          "/a/b/c"
+        );
+
+        // Validation
+        {
+          assert.equal(artifacts[0].attr.ext, ".test");
+          assert.notEqual(artifacts[0].path, "/a/b/c/../yes.test");
+          assert.equal(artifacts[0].path, "/a/b/yes.test");
+        }
+      });
+
+      test(`NEG: Search by an empty command option`, function () {
+        let locatorRunner = new LocatorRunner();
+        // A simple locator to search '*.test' in any section/key
+        locatorRunner.register({
+          artifactAttr: { ext: ".test" },
+          locator: new Locator((value) =>
+            LocatorRunner.searchWithCommandOption(value, "")
+          ),
+        });
+
+        // Validation
+        {
+          assert.throw(() =>
+            locatorRunner.run(
+              { mySection: { myKey: "no.txt no.txtt --test yes.test" } },
+              "/a/b/c"
+            )
+          );
+        }
+      });
+    });
+
+    suite("#LocatorRunner with custom function", function () {
+      test(`NEG: Run with a function throwing exception`, function () {
         let locatorRunner = new LocatorRunner();
         // Register a locator which always throws
         locatorRunner.register({
-          artifactAttr: {ext: '.test'},
+          artifactAttr: { ext: ".test" },
           locator: new Locator(() => {
-            throw Error('Test');
-          })
+            throw Error("Test");
+          }),
         });
 
         // Validation
         {
           // Check if the locator actually throws
           assert.throw(
-              () => locatorRunner.run(
-                  {'mySection': {'myKey': 'no.txt no.txtt ../yes.test'}}, '/a/b/c'),
-              'Test');
+            () =>
+              locatorRunner.run(
+                { mySection: { myKey: "no.txt no.txtt ../yes.test" } },
+                "/a/b/c"
+              ),
+            "Test"
+          );
         }
       });
     });

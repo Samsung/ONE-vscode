@@ -14,16 +14,32 @@
  * limitations under the License.
  */
 
-import {displayCfgToEditor} from './displaycfg.js';
-import oneOptimizationList from './one-optimizations.json' assert {type : 'json'};
-import {applyUpdates, updateCodegen, updateImportInputModelType, updateImportKERAS, updateImportONNX, updateImportPB, updateImportSAVED, updateImportTFLITE, updateOptimize, updateProfile, updateQuantizeActionType, updateQuantizeCopy, updateQuantizeDefault, updateQuantizeForce, updateSteps} from './updateContent.js';
-import {updateImportUI, updateQuantizeUI, updateStepUI} from './updateUI.js';
-import {postMessageToVsCode} from './vscodeapi.js';
+import { displayCfgToEditor } from "./displaycfg.js";
+import oneOptimizationList from "./one-optimizations.json" assert { type: "json" };
+import {
+  applyUpdates,
+  updateCodegen,
+  updateImportInputModelType,
+  updateImportKERAS,
+  updateImportONNX,
+  updateImportPB,
+  updateImportSAVED,
+  updateImportTFLITE,
+  updateOptimize,
+  updateProfile,
+  updateQuantizeActionType,
+  updateQuantizeCopy,
+  updateQuantizeDefault,
+  updateQuantizeForce,
+  updateSteps,
+} from "./updateContent.js";
+import { updateImportUI, updateQuantizeUI, updateStepUI } from "./updateUI.js";
+import { postMessageToVsCode } from "./vscodeapi.js";
 
 // Just like a regular webpage we need to wait for the webview
 // DOM to load before we can reference any of the HTML elements
 // or toolkit components
-window.addEventListener('load', main);
+window.addEventListener("load", main);
 
 // Main function that gets executed once the webview DOM loads
 function main() {
@@ -36,40 +52,40 @@ function main() {
   registerCodiconEvents();
 
   // event from vscode extension
-  window.addEventListener('message', event => {
+  window.addEventListener("message", (event) => {
     const message = event.data;
     switch (message.type) {
-      case 'displayCfgToEditor':
+      case "displayCfgToEditor":
         displayCfgToEditor(message.text);
         break;
-      case 'applyDialogPath':
+      case "applyDialogPath":
         document.getElementById(message.elemID).value = message.path;
         switch (message.step) {
-          case 'ImportPB':
+          case "ImportPB":
             updateImportPB();
             break;
-          case 'ImportSAVED':
+          case "ImportSAVED":
             updateImportSAVED();
             break;
-          case 'ImportKERAS':
+          case "ImportKERAS":
             updateImportKERAS();
             break;
-          case 'ImportTFLITE':
+          case "ImportTFLITE":
             updateImportTFLITE();
             break;
-          case 'ImportONNX':
+          case "ImportONNX":
             updateImportONNX();
             break;
-          case 'Optimize':
+          case "Optimize":
             updateOptimize();
             break;
-          case 'QuantizeDefault':
+          case "QuantizeDefault":
             updateQuantizeDefault();
             break;
-          case 'QuantizeForce':
+          case "QuantizeForce":
             updateQuantizeForce();
             break;
-          case 'QuantizeCopy':
+          case "QuantizeCopy":
             updateQuantizeCopy();
             break;
           default:
@@ -82,67 +98,67 @@ function main() {
     }
   });
 
-  postMessageToVsCode({type: 'requestDisplayCfg'});
+  postMessageToVsCode({ type: "requestDisplayCfg" });
 }
 
 function registerSteps() {
-  const checkboxImport = document.getElementById('checkboxImport');
-  const checkboxOptimize = document.getElementById('checkboxOptimize');
-  const checkboxQuantize = document.getElementById('checkboxQuantize');
-  const checkboxCodegen = document.getElementById('checkboxCodegen');
-  const checkboxProfile = document.getElementById('checkboxProfile');
-  const stepImport = document.getElementById('stepImport');
-  const stepOptimize = document.getElementById('stepOptimize');
-  const stepQuantize = document.getElementById('stepQuantize');
-  const stepCodegen = document.getElementById('stepCodegen');
-  const stepProfile = document.getElementById('stepProfile');
+  const checkboxImport = document.getElementById("checkboxImport");
+  const checkboxOptimize = document.getElementById("checkboxOptimize");
+  const checkboxQuantize = document.getElementById("checkboxQuantize");
+  const checkboxCodegen = document.getElementById("checkboxCodegen");
+  const checkboxProfile = document.getElementById("checkboxProfile");
+  const stepImport = document.getElementById("stepImport");
+  const stepOptimize = document.getElementById("stepOptimize");
+  const stepQuantize = document.getElementById("stepQuantize");
+  const stepCodegen = document.getElementById("stepCodegen");
+  const stepProfile = document.getElementById("stepProfile");
 
-  checkboxImport.addEventListener('click', function() {
+  checkboxImport.addEventListener("click", function () {
     updateSteps();
     updateImportInputModelType();
     applyUpdates();
   });
-  checkboxOptimize.addEventListener('click', function() {
+  checkboxOptimize.addEventListener("click", function () {
     updateSteps();
     updateOptimize();
     applyUpdates();
   });
-  checkboxQuantize.addEventListener('click', function() {
+  checkboxQuantize.addEventListener("click", function () {
     updateSteps();
     updateQuantizeActionType();
     applyUpdates();
   });
-  checkboxCodegen.addEventListener('click', function() {
+  checkboxCodegen.addEventListener("click", function () {
     updateSteps();
     updateCodegen();
     applyUpdates();
   });
-  checkboxProfile.addEventListener('click', function() {
+  checkboxProfile.addEventListener("click", function () {
     updateSteps();
     updateProfile();
     applyUpdates();
   });
 
-  stepImport.addEventListener('click', function() {
-    updateStepUI('Import');
+  stepImport.addEventListener("click", function () {
+    updateStepUI("Import");
   });
-  stepOptimize.addEventListener('click', function() {
-    updateStepUI('Optimize');
+  stepOptimize.addEventListener("click", function () {
+    updateStepUI("Optimize");
   });
-  stepQuantize.addEventListener('click', function() {
-    updateStepUI('Quantize');
+  stepQuantize.addEventListener("click", function () {
+    updateStepUI("Quantize");
   });
-  stepCodegen.addEventListener('click', function() {
-    updateStepUI('Codegen');
+  stepCodegen.addEventListener("click", function () {
+    updateStepUI("Codegen");
   });
-  stepProfile.addEventListener('click', function() {
-    updateStepUI('Profile');
+  stepProfile.addEventListener("click", function () {
+    updateStepUI("Profile");
   });
 }
 
 function registerImportOptions() {
-  const importInputModelType = document.getElementById('importInputModelType');
-  importInputModelType.addEventListener('click', function() {
+  const importInputModelType = document.getElementById("importInputModelType");
+  importInputModelType.addEventListener("click", function () {
     updateImportUI();
     updateImportInputModelType();
     updateSteps();
@@ -157,161 +173,163 @@ function registerImportOptions() {
 }
 
 function registerPBOptions() {
-  const pbInputPath = document.getElementById('PBInputPath');
-  const pbOutputPath = document.getElementById('PBOutputPath');
-  const pbConverterVersion = document.getElementById('PBConverterVersion');
-  const pbInputArrays = document.getElementById('PBInputArrays');
-  const pbOutputArrays = document.getElementById('PBOutputArrays');
-  const pbInputShapes = document.getElementById('PBInputShapes');
+  const pbInputPath = document.getElementById("PBInputPath");
+  const pbOutputPath = document.getElementById("PBOutputPath");
+  const pbConverterVersion = document.getElementById("PBConverterVersion");
+  const pbInputArrays = document.getElementById("PBInputArrays");
+  const pbOutputArrays = document.getElementById("PBOutputArrays");
+  const pbInputShapes = document.getElementById("PBInputShapes");
 
   // NOTE For radio button, 'change' event is applied from beginning.
   //      So 'click' event should be used to avoid the problem.
-  pbConverterVersion.addEventListener('click', function() {
+  pbConverterVersion.addEventListener("click", function () {
     updateImportPB();
     applyUpdates();
   });
-  pbInputPath.addEventListener('input', function() {
+  pbInputPath.addEventListener("input", function () {
     updateImportPB();
     applyUpdates();
   });
-  pbOutputPath.addEventListener('input', function() {
+  pbOutputPath.addEventListener("input", function () {
     updateImportPB();
     applyUpdates();
   });
-  pbInputArrays.addEventListener('input', function() {
+  pbInputArrays.addEventListener("input", function () {
     updateImportPB();
     applyUpdates();
   });
-  pbOutputArrays.addEventListener('input', function() {
+  pbOutputArrays.addEventListener("input", function () {
     updateImportPB();
     applyUpdates();
   });
-  pbInputShapes.addEventListener('input', function() {
+  pbInputShapes.addEventListener("input", function () {
     updateImportPB();
     applyUpdates();
   });
 }
 
 function registerSAVEDOptions() {
-  const savedInputPath = document.getElementById('SAVEDInputPath');
-  const savedOutputPath = document.getElementById('SAVEDOutputPath');
+  const savedInputPath = document.getElementById("SAVEDInputPath");
+  const savedOutputPath = document.getElementById("SAVEDOutputPath");
 
-  savedInputPath.addEventListener('input', function() {
+  savedInputPath.addEventListener("input", function () {
     updateImportSAVED();
     applyUpdates();
   });
-  savedOutputPath.addEventListener('input', function() {
+  savedOutputPath.addEventListener("input", function () {
     updateImportSAVED();
     applyUpdates();
   });
 }
 
 function registerKERASOptions() {
-  const kerasInputPath = document.getElementById('KERASInputPath');
-  const kerasOutputPath = document.getElementById('KERASOutputPath');
+  const kerasInputPath = document.getElementById("KERASInputPath");
+  const kerasOutputPath = document.getElementById("KERASOutputPath");
 
-  kerasInputPath.addEventListener('input', function() {
+  kerasInputPath.addEventListener("input", function () {
     updateImportKERAS();
     applyUpdates();
   });
-  kerasOutputPath.addEventListener('input', function() {
+  kerasOutputPath.addEventListener("input", function () {
     updateImportKERAS();
     applyUpdates();
   });
 }
 
 function registerTFLITEOptions() {
-  const tfliteInputPath = document.getElementById('TFLITEInputPath');
-  const tfliteOutputPath = document.getElementById('TFLITEOutputPath');
+  const tfliteInputPath = document.getElementById("TFLITEInputPath");
+  const tfliteOutputPath = document.getElementById("TFLITEOutputPath");
 
-  tfliteInputPath.addEventListener('input', function() {
+  tfliteInputPath.addEventListener("input", function () {
     updateImportTFLITE();
     applyUpdates();
   });
-  tfliteOutputPath.addEventListener('input', function() {
+  tfliteOutputPath.addEventListener("input", function () {
     updateImportTFLITE();
     applyUpdates();
   });
 }
 
 function registerONNXOptions() {
-  const onnxInputPath = document.getElementById('ONNXInputPath');
-  const onnxOutputPath = document.getElementById('ONNXOutputPath');
-  const onnxSaveIntermediate = document.getElementById('ONNXSaveIntermediate');
-  const onnxUnrollRNN = document.getElementById('ONNXUnrollRNN');
-  const onnxUnrollLSTM = document.getElementById('ONNXUnrollLSTM');
+  const onnxInputPath = document.getElementById("ONNXInputPath");
+  const onnxOutputPath = document.getElementById("ONNXOutputPath");
+  const onnxSaveIntermediate = document.getElementById("ONNXSaveIntermediate");
+  const onnxUnrollRNN = document.getElementById("ONNXUnrollRNN");
+  const onnxUnrollLSTM = document.getElementById("ONNXUnrollLSTM");
 
-  onnxInputPath.addEventListener('input', function() {
+  onnxInputPath.addEventListener("input", function () {
     updateImportONNX();
     applyUpdates();
   });
-  onnxOutputPath.addEventListener('input', function() {
+  onnxOutputPath.addEventListener("input", function () {
     updateImportONNX();
     applyUpdates();
   });
-  onnxSaveIntermediate.addEventListener('click', function() {
+  onnxSaveIntermediate.addEventListener("click", function () {
     updateImportONNX();
     applyUpdates();
   });
-  onnxUnrollRNN.addEventListener('click', function() {
+  onnxUnrollRNN.addEventListener("click", function () {
     updateImportONNX();
     applyUpdates();
   });
-  onnxUnrollLSTM.addEventListener('click', function() {
+  onnxUnrollLSTM.addEventListener("click", function () {
     updateImportONNX();
     applyUpdates();
   });
 }
 
 function registerOptimizeOptions() {
-  const optimizeInputPath = document.getElementById('optimizeInputPath');
-  const optimizeOutputPath = document.getElementById('optimizeOutputPath');
-  const basicOptimizeTable = document.getElementById('basicOptimizeTable');
+  const optimizeInputPath = document.getElementById("optimizeInputPath");
+  const optimizeOutputPath = document.getElementById("optimizeOutputPath");
+  const basicOptimizeTable = document.getElementById("basicOptimizeTable");
 
-  optimizeInputPath.addEventListener('input', function() {
+  optimizeInputPath.addEventListener("input", function () {
     updateOptimize();
     applyUpdates();
   });
 
-  optimizeOutputPath.addEventListener('input', function() {
+  optimizeOutputPath.addEventListener("input", function () {
     updateOptimize();
     applyUpdates();
   });
 
   for (const optName in oneOptimizationList) {
-    let row = document.createElement('vscode-data-grid-row');
+    let row = document.createElement("vscode-data-grid-row");
 
-    let cellSwitch = document.createElement('vscode-data-grid-cell');
-    let checkbox = document.createElement('vscode-checkbox');
-    checkbox.setAttribute('id', 'checkboxOptimize' + optName);
+    let cellSwitch = document.createElement("vscode-data-grid-cell");
+    let checkbox = document.createElement("vscode-checkbox");
+    checkbox.setAttribute("id", "checkboxOptimize" + optName);
     cellSwitch.appendChild(checkbox);
-    cellSwitch.setAttribute('grid-column', '1');
+    cellSwitch.setAttribute("grid-column", "1");
     row.appendChild(cellSwitch);
 
-    let cellName = document.createElement('vscode-data-grid-cell');
+    let cellName = document.createElement("vscode-data-grid-cell");
     cellName.textContent = optName;
-    cellName.setAttribute('grid-column', '2');
+    cellName.setAttribute("grid-column", "2");
     row.appendChild(cellName);
 
-    let cellDescription = document.createElement('vscode-data-grid-cell');
+    let cellDescription = document.createElement("vscode-data-grid-cell");
     cellDescription.textContent = oneOptimizationList[optName].description;
-    cellDescription.setAttribute('grid-column', '3');
+    cellDescription.setAttribute("grid-column", "3");
     row.appendChild(cellDescription);
 
     basicOptimizeTable.appendChild(row);
   }
 
   for (const optName in oneOptimizationList) {
-    document.getElementById('checkboxOptimize' + optName).addEventListener('click', function() {
-      updateOptimize();
-      applyUpdates();
-    });
+    document
+      .getElementById("checkboxOptimize" + optName)
+      .addEventListener("click", function () {
+        updateOptimize();
+        applyUpdates();
+      });
   }
 }
 
 function registerQuantizeOptions() {
-  const quantActionType = document.getElementById('quantizeActionType');
-  quantActionType.addEventListener('click', function() {
+  const quantActionType = document.getElementById("quantizeActionType");
+  quantActionType.addEventListener("click", function () {
     updateQuantizeUI();
     updateQuantizeActionType();
     applyUpdates();
@@ -324,37 +342,43 @@ function registerQuantizeOptions() {
 
 function registerDefaultQuantOptions() {
   const defaultQuantRadioButtonList = [
-    'DefaultQuantInputModelDtype', 'DefaultQuantQuantizedDtype', 'DefaultQuantGranularity',
-    'DefaultQuantInputDataFormat', 'DefaultQuantMode', 'DefaultQuantInputType',
-    'DefaultQuantOutputType'
+    "DefaultQuantInputModelDtype",
+    "DefaultQuantQuantizedDtype",
+    "DefaultQuantGranularity",
+    "DefaultQuantInputDataFormat",
+    "DefaultQuantMode",
+    "DefaultQuantInputType",
+    "DefaultQuantOutputType",
   ];
   const defaultQuantCheckboxList = [
-    'DefaultQuantVerbose', 'DefaultQuantSaveIntermediate', 'DefaultQuantGenerateProfileData',
-    'DefaultQuantTFStyleMaxpool'
+    "DefaultQuantVerbose",
+    "DefaultQuantSaveIntermediate",
+    "DefaultQuantGenerateProfileData",
+    "DefaultQuantTFStyleMaxpool",
   ];
   const defaultQuantTextFieldList = [
-    'DefaultQuantInputPath',
-    'DefaultQuantOutputPath',
-    'DefaultQuantQuantConfig',
-    'DefaultQuantInputData',
-    'DefaultQuantMinPercentile',
-    'DefaultQuantMaxPercentile',
+    "DefaultQuantInputPath",
+    "DefaultQuantOutputPath",
+    "DefaultQuantQuantConfig",
+    "DefaultQuantInputData",
+    "DefaultQuantMinPercentile",
+    "DefaultQuantMaxPercentile",
   ];
 
   defaultQuantRadioButtonList.forEach((id) => {
-    document.getElementById(id).addEventListener('click', function() {
+    document.getElementById(id).addEventListener("click", function () {
       updateQuantizeDefault();
       applyUpdates();
     });
   });
   defaultQuantCheckboxList.forEach((id) => {
-    document.getElementById(id).addEventListener('click', function() {
+    document.getElementById(id).addEventListener("click", function () {
       updateQuantizeDefault();
       applyUpdates();
     });
   });
   defaultQuantTextFieldList.forEach((id) => {
-    document.getElementById(id).addEventListener('input', function() {
+    document.getElementById(id).addEventListener("input", function () {
       updateQuantizeDefault();
       applyUpdates();
     });
@@ -362,20 +386,23 @@ function registerDefaultQuantOptions() {
 }
 
 function registerForceQuantOptions() {
-  const forceQuantCheckboxList = ['ForceQuantVerbose'];
+  const forceQuantCheckboxList = ["ForceQuantVerbose"];
   const forceQuantTextFieldList = [
-    'ForceQuantInputPath', 'ForceQuantOutputPath', 'ForceQuantTensorName', 'ForceQuantScale',
-    'ForceQuantZeroPoint'
+    "ForceQuantInputPath",
+    "ForceQuantOutputPath",
+    "ForceQuantTensorName",
+    "ForceQuantScale",
+    "ForceQuantZeroPoint",
   ];
 
   forceQuantCheckboxList.forEach((id) => {
-    document.getElementById(id).addEventListener('click', function() {
+    document.getElementById(id).addEventListener("click", function () {
       updateQuantizeDefault();
       applyUpdates();
     });
   });
   forceQuantTextFieldList.forEach((id) => {
-    document.getElementById(id).addEventListener('input', function() {
+    document.getElementById(id).addEventListener("input", function () {
       updateQuantizeDefault();
       applyUpdates();
     });
@@ -383,19 +410,22 @@ function registerForceQuantOptions() {
 }
 
 function registerCopyQuantOptions() {
-  const copyQuantCheckboxList = ['CopyQuantVerbose'];
+  const copyQuantCheckboxList = ["CopyQuantVerbose"];
   const copyQuantTextFieldList = [
-    'CopyQuantInputPath', 'CopyQuantOutputPath', 'CopyQuantSrcTensorName', 'CopyQuantDstTensorName'
+    "CopyQuantInputPath",
+    "CopyQuantOutputPath",
+    "CopyQuantSrcTensorName",
+    "CopyQuantDstTensorName",
   ];
 
   copyQuantCheckboxList.forEach((id) => {
-    document.getElementById(id).addEventListener('click', function() {
+    document.getElementById(id).addEventListener("click", function () {
       updateQuantizeDefault();
       applyUpdates();
     });
   });
   copyQuantTextFieldList.forEach((id) => {
-    document.getElementById(id).addEventListener('input', function() {
+    document.getElementById(id).addEventListener("input", function () {
       updateQuantizeDefault();
       applyUpdates();
     });
@@ -403,232 +433,274 @@ function registerCopyQuantOptions() {
 }
 
 function registerCodegenOptions() {
-  const codegenBackend = document.getElementById('codegenBackend');
-  const codegenCommand = document.getElementById('codegenCommand');
+  const codegenBackend = document.getElementById("codegenBackend");
+  const codegenCommand = document.getElementById("codegenCommand");
 
-  codegenBackend.addEventListener('input', function() {
+  codegenBackend.addEventListener("input", function () {
     updateCodegen();
     applyUpdates();
   });
-  codegenCommand.addEventListener('input', function() {
+  codegenCommand.addEventListener("input", function () {
     updateCodegen();
     applyUpdates();
   });
 }
 
 function registerProfileOptions() {
-  const profileBackend = document.getElementById('profileBackend');
-  const profileCommand = document.getElementById('profileCommand');
+  const profileBackend = document.getElementById("profileBackend");
+  const profileCommand = document.getElementById("profileCommand");
 
-  profileBackend.addEventListener('input', function() {
+  profileBackend.addEventListener("input", function () {
     updateProfile();
     applyUpdates();
   });
-  profileCommand.addEventListener('input', function() {
+  profileCommand.addEventListener("input", function () {
     updateProfile();
     applyUpdates();
   });
 }
 
 function registerCodiconEvents() {
-  document.getElementById('PBInputPathSearch').addEventListener('click', function() {
-    postMessageToVsCode({
-      type: 'getPathByDialog',
-      isFolder: false,
-      ext: ['pb'],
-      oldPath: document.getElementById('PBInputPath').value,
-      postStep: 'ImportPB',
-      postElemID: 'PBInputPath'
+  document
+    .getElementById("PBInputPathSearch")
+    .addEventListener("click", function () {
+      postMessageToVsCode({
+        type: "getPathByDialog",
+        isFolder: false,
+        ext: ["pb"],
+        oldPath: document.getElementById("PBInputPath").value,
+        postStep: "ImportPB",
+        postElemID: "PBInputPath",
+      });
     });
-  });
-  document.getElementById('PBOutputPathSearch').addEventListener('click', function() {
-    postMessageToVsCode({
-      type: 'getPathByDialog',
-      isFolder: false,
-      ext: ['circle'],
-      oldPath: document.getElementById('PBOutputPath').value,
-      postStep: 'ImportPB',
-      postElemID: 'PBOutputPath'
+  document
+    .getElementById("PBOutputPathSearch")
+    .addEventListener("click", function () {
+      postMessageToVsCode({
+        type: "getPathByDialog",
+        isFolder: false,
+        ext: ["circle"],
+        oldPath: document.getElementById("PBOutputPath").value,
+        postStep: "ImportPB",
+        postElemID: "PBOutputPath",
+      });
     });
-  });
-  document.getElementById('SAVEDInputPathSearch').addEventListener('click', function() {
-    postMessageToVsCode({
-      type: 'getPathByDialog',
-      isFolder: true,
-      ext: [],
-      oldPath: document.getElementById('SAVEDInputPath').value,
-      postStep: 'ImportSAVED',
-      postElemID: 'SAVEDInputPath'
+  document
+    .getElementById("SAVEDInputPathSearch")
+    .addEventListener("click", function () {
+      postMessageToVsCode({
+        type: "getPathByDialog",
+        isFolder: true,
+        ext: [],
+        oldPath: document.getElementById("SAVEDInputPath").value,
+        postStep: "ImportSAVED",
+        postElemID: "SAVEDInputPath",
+      });
     });
-  });
-  document.getElementById('SAVEDOutputPathSearch').addEventListener('click', function() {
-    postMessageToVsCode({
-      type: 'getPathByDialog',
-      isFolder: false,
-      ext: ['circle'],
-      oldPath: document.getElementById('SAVEDOutputPath').value,
-      postStep: 'ImportSAVED',
-      postElemID: 'SAVEDOutputPath'
+  document
+    .getElementById("SAVEDOutputPathSearch")
+    .addEventListener("click", function () {
+      postMessageToVsCode({
+        type: "getPathByDialog",
+        isFolder: false,
+        ext: ["circle"],
+        oldPath: document.getElementById("SAVEDOutputPath").value,
+        postStep: "ImportSAVED",
+        postElemID: "SAVEDOutputPath",
+      });
     });
-  });
-  document.getElementById('KERASInputPathSearch').addEventListener('click', function() {
-    postMessageToVsCode({
-      type: 'getPathByDialog',
-      isFolder: false,
-      ext: ['h5'],
-      oldPath: document.getElementById('KERASInputPath').value,
-      postStep: 'ImportKERAS',
-      postElemID: 'KERASInputPath'
+  document
+    .getElementById("KERASInputPathSearch")
+    .addEventListener("click", function () {
+      postMessageToVsCode({
+        type: "getPathByDialog",
+        isFolder: false,
+        ext: ["h5"],
+        oldPath: document.getElementById("KERASInputPath").value,
+        postStep: "ImportKERAS",
+        postElemID: "KERASInputPath",
+      });
     });
-  });
-  document.getElementById('KERASOutputPathSearch').addEventListener('click', function() {
-    postMessageToVsCode({
-      type: 'getPathByDialog',
-      isFolder: false,
-      ext: ['circle'],
-      oldPath: document.getElementById('KERASOutputPath').value,
-      postStep: 'ImportKERAS',
-      postElemID: 'KERASOutputPath'
+  document
+    .getElementById("KERASOutputPathSearch")
+    .addEventListener("click", function () {
+      postMessageToVsCode({
+        type: "getPathByDialog",
+        isFolder: false,
+        ext: ["circle"],
+        oldPath: document.getElementById("KERASOutputPath").value,
+        postStep: "ImportKERAS",
+        postElemID: "KERASOutputPath",
+      });
     });
-  });
-  document.getElementById('TFLITEInputPathSearch').addEventListener('click', function() {
-    postMessageToVsCode({
-      type: 'getPathByDialog',
-      isFolder: false,
-      ext: ['tflite'],
-      oldPath: document.getElementById('TFLITEInputPath').value,
-      postStep: 'ImportTFLITE',
-      postElemID: 'TFLITEInputPath'
+  document
+    .getElementById("TFLITEInputPathSearch")
+    .addEventListener("click", function () {
+      postMessageToVsCode({
+        type: "getPathByDialog",
+        isFolder: false,
+        ext: ["tflite"],
+        oldPath: document.getElementById("TFLITEInputPath").value,
+        postStep: "ImportTFLITE",
+        postElemID: "TFLITEInputPath",
+      });
     });
-  });
-  document.getElementById('TFLITEOutputPathSearch').addEventListener('click', function() {
-    postMessageToVsCode({
-      type: 'getPathByDialog',
-      isFolder: false,
-      ext: ['circle'],
-      oldPath: document.getElementById('TFLITEOutputPath').value,
-      postStep: 'ImportTFLITE',
-      postElemID: 'TFLITEOutputPath'
+  document
+    .getElementById("TFLITEOutputPathSearch")
+    .addEventListener("click", function () {
+      postMessageToVsCode({
+        type: "getPathByDialog",
+        isFolder: false,
+        ext: ["circle"],
+        oldPath: document.getElementById("TFLITEOutputPath").value,
+        postStep: "ImportTFLITE",
+        postElemID: "TFLITEOutputPath",
+      });
     });
-  });
-  document.getElementById('ONNXInputPathSearch').addEventListener('click', function() {
-    postMessageToVsCode({
-      type: 'getPathByDialog',
-      isFolder: false,
-      ext: ['onnx'],
-      oldPath: document.getElementById('ONNXInputPath').value,
-      postStep: 'ImportONNX',
-      postElemID: 'ONNXInputPath'
+  document
+    .getElementById("ONNXInputPathSearch")
+    .addEventListener("click", function () {
+      postMessageToVsCode({
+        type: "getPathByDialog",
+        isFolder: false,
+        ext: ["onnx"],
+        oldPath: document.getElementById("ONNXInputPath").value,
+        postStep: "ImportONNX",
+        postElemID: "ONNXInputPath",
+      });
     });
-  });
-  document.getElementById('ONNXOutputPathSearch').addEventListener('click', function() {
-    postMessageToVsCode({
-      type: 'getPathByDialog',
-      isFolder: false,
-      ext: ['circle'],
-      oldPath: document.getElementById('ONNXOutputPath').value,
-      postStep: 'ImportONNX',
-      postElemID: 'ONNXOutputPath'
+  document
+    .getElementById("ONNXOutputPathSearch")
+    .addEventListener("click", function () {
+      postMessageToVsCode({
+        type: "getPathByDialog",
+        isFolder: false,
+        ext: ["circle"],
+        oldPath: document.getElementById("ONNXOutputPath").value,
+        postStep: "ImportONNX",
+        postElemID: "ONNXOutputPath",
+      });
     });
-  });
-  document.getElementById('optimizeInputPathSearch').addEventListener('click', function() {
-    postMessageToVsCode({
-      type: 'getPathByDialog',
-      isFolder: false,
-      ext: ['circle'],
-      oldPath: document.getElementById('optimizeInputPath').value,
-      postStep: 'Optimize',
-      postElemID: 'optimizeInputPath'
+  document
+    .getElementById("optimizeInputPathSearch")
+    .addEventListener("click", function () {
+      postMessageToVsCode({
+        type: "getPathByDialog",
+        isFolder: false,
+        ext: ["circle"],
+        oldPath: document.getElementById("optimizeInputPath").value,
+        postStep: "Optimize",
+        postElemID: "optimizeInputPath",
+      });
     });
-  });
-  document.getElementById('optimizeOutputPathSearch').addEventListener('click', function() {
-    postMessageToVsCode({
-      type: 'getPathByDialog',
-      isFolder: false,
-      ext: ['circle'],
-      oldPath: document.getElementById('optimizeOutputPath').value,
-      postStep: 'Optimize',
-      postElemID: 'optimizeOutputPath'
+  document
+    .getElementById("optimizeOutputPathSearch")
+    .addEventListener("click", function () {
+      postMessageToVsCode({
+        type: "getPathByDialog",
+        isFolder: false,
+        ext: ["circle"],
+        oldPath: document.getElementById("optimizeOutputPath").value,
+        postStep: "Optimize",
+        postElemID: "optimizeOutputPath",
+      });
     });
-  });
-  document.getElementById('DefaultQuantInputPathSearch').addEventListener('click', function() {
-    postMessageToVsCode({
-      type: 'getPathByDialog',
-      isFolder: false,
-      ext: ['circle'],
-      oldPath: document.getElementById('DefaultQuantInputPath').value,
-      postStep: 'QuantizeDefault',
-      postElemID: 'DefaultQuantInputPath'
+  document
+    .getElementById("DefaultQuantInputPathSearch")
+    .addEventListener("click", function () {
+      postMessageToVsCode({
+        type: "getPathByDialog",
+        isFolder: false,
+        ext: ["circle"],
+        oldPath: document.getElementById("DefaultQuantInputPath").value,
+        postStep: "QuantizeDefault",
+        postElemID: "DefaultQuantInputPath",
+      });
     });
-  });
-  document.getElementById('DefaultQuantOutputPathSearch').addEventListener('click', function() {
-    postMessageToVsCode({
-      type: 'getPathByDialog',
-      isFolder: false,
-      ext: ['circle'],
-      oldPath: document.getElementById('DefaultQuantOutputPath').value,
-      postStep: 'QuantizeDefault',
-      postElemID: 'DefaultQuantOutputPath'
+  document
+    .getElementById("DefaultQuantOutputPathSearch")
+    .addEventListener("click", function () {
+      postMessageToVsCode({
+        type: "getPathByDialog",
+        isFolder: false,
+        ext: ["circle"],
+        oldPath: document.getElementById("DefaultQuantOutputPath").value,
+        postStep: "QuantizeDefault",
+        postElemID: "DefaultQuantOutputPath",
+      });
     });
-  });
-  document.getElementById('DefaultQuantQuantConfigSearch').addEventListener('click', function() {
-    postMessageToVsCode({
-      type: 'getPathByDialog',
-      isFolder: false,
-      ext: ['json'],
-      oldPath: document.getElementById('DefaultQuantQuantConfig').value,
-      postStep: 'QuantizeDefault',
-      postElemID: 'DefaultQuantQuantConfig'
+  document
+    .getElementById("DefaultQuantQuantConfigSearch")
+    .addEventListener("click", function () {
+      postMessageToVsCode({
+        type: "getPathByDialog",
+        isFolder: false,
+        ext: ["json"],
+        oldPath: document.getElementById("DefaultQuantQuantConfig").value,
+        postStep: "QuantizeDefault",
+        postElemID: "DefaultQuantQuantConfig",
+      });
     });
-  });
-  document.getElementById('DefaultQuantInputDataSearch').addEventListener('click', function() {
-    postMessageToVsCode({
-      type: 'getPathByDialog',
-      isFolder: document.getElementById('DefaultQuantInputDataFormat').value === 'dir',
-      ext: ['h5'],
-      oldPath: document.getElementById('DefaultQuantInputData').value,
-      postStep: 'QuantizeDefault',
-      postElemID: 'DefaultQuantInputData'
+  document
+    .getElementById("DefaultQuantInputDataSearch")
+    .addEventListener("click", function () {
+      postMessageToVsCode({
+        type: "getPathByDialog",
+        isFolder:
+          document.getElementById("DefaultQuantInputDataFormat").value ===
+          "dir",
+        ext: ["h5"],
+        oldPath: document.getElementById("DefaultQuantInputData").value,
+        postStep: "QuantizeDefault",
+        postElemID: "DefaultQuantInputData",
+      });
     });
-  });
-  document.getElementById('ForceQuantInputPathSearch').addEventListener('click', function() {
-    postMessageToVsCode({
-      type: 'getPathByDialog',
-      isFolder: false,
-      ext: ['circle'],
-      oldPath: document.getElementById('ForceQuantInputPath').value,
-      postStep: 'QuantizeForce',
-      postElemID: 'ForceQuantInputPath'
+  document
+    .getElementById("ForceQuantInputPathSearch")
+    .addEventListener("click", function () {
+      postMessageToVsCode({
+        type: "getPathByDialog",
+        isFolder: false,
+        ext: ["circle"],
+        oldPath: document.getElementById("ForceQuantInputPath").value,
+        postStep: "QuantizeForce",
+        postElemID: "ForceQuantInputPath",
+      });
     });
-  });
-  document.getElementById('ForceQuantOutputPathSearch').addEventListener('click', function() {
-    postMessageToVsCode({
-      type: 'getPathByDialog',
-      isFolder: false,
-      ext: ['circle'],
-      oldPath: document.getElementById('ForceQuantOutputPath').value,
-      postStep: 'QuantizeForce',
-      postElemID: 'ForceQuantOutputPath'
+  document
+    .getElementById("ForceQuantOutputPathSearch")
+    .addEventListener("click", function () {
+      postMessageToVsCode({
+        type: "getPathByDialog",
+        isFolder: false,
+        ext: ["circle"],
+        oldPath: document.getElementById("ForceQuantOutputPath").value,
+        postStep: "QuantizeForce",
+        postElemID: "ForceQuantOutputPath",
+      });
     });
-  });
-  document.getElementById('CopyQuantInputPathSearch').addEventListener('click', function() {
-    postMessageToVsCode({
-      type: 'getPathByDialog',
-      isFolder: false,
-      ext: ['circle'],
-      oldPath: document.getElementById('CopyQuantInputPath').value,
-      postStep: 'QuantizeCopy',
-      postElemID: 'CopyQuantInputPath'
+  document
+    .getElementById("CopyQuantInputPathSearch")
+    .addEventListener("click", function () {
+      postMessageToVsCode({
+        type: "getPathByDialog",
+        isFolder: false,
+        ext: ["circle"],
+        oldPath: document.getElementById("CopyQuantInputPath").value,
+        postStep: "QuantizeCopy",
+        postElemID: "CopyQuantInputPath",
+      });
     });
-  });
-  document.getElementById('CopyQuantOutputPathSearch').addEventListener('click', function() {
-    postMessageToVsCode({
-      type: 'getPathByDialog',
-      isFolder: false,
-      ext: ['circle'],
-      oldPath: document.getElementById('CopyQuantOutputPath').value,
-      postStep: 'QuantizeCopy',
-      postElemID: 'CopyQuantOutputPath'
+  document
+    .getElementById("CopyQuantOutputPathSearch")
+    .addEventListener("click", function () {
+      postMessageToVsCode({
+        type: "getPathByDialog",
+        isFolder: false,
+        ext: ["circle"],
+        oldPath: document.getElementById("CopyQuantOutputPath").value,
+        postStep: "QuantizeCopy",
+        postElemID: "CopyQuantOutputPath",
+      });
     });
-  });
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
 // NOTE
 //
@@ -34,17 +34,21 @@ function containsNonAscii(str: string): boolean {
 }
 
 /* istanbul ignore next */
-async function showPasswordQuickInput(): Promise<string|undefined> {
+async function showPasswordQuickInput(): Promise<string | undefined> {
   return await vscode.window.showInputBox({
-    title: 'Enter password',
+    title: "Enter password",
     password: true,
     validateInput: validateInputIsAscii,
   });
 
-  async function validateInputIsAscii(input: string): Promise<string|undefined> {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    return containsNonAscii(input) ? 'Password contains non-ASCII characters' : undefined;
+  async function validateInputIsAscii(
+    input: string
+  ): Promise<string | undefined> {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    return containsNonAscii(input)
+      ? "Password contains non-ASCII characters"
+      : undefined;
   }
 }
 
-export {showPasswordQuickInput, containsNonAscii};
+export { showPasswordQuickInput, containsNonAscii };

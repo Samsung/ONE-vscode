@@ -15,7 +15,7 @@
  */
 
 export class ToolArgs extends Array<string> {
-  public add(option: string, value: string|undefined) {
+  public add(option: string, value: string | undefined) {
     if (value !== undefined) {
       this.push(option);
       this.push(value);

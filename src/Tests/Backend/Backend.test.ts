@@ -14,28 +14,32 @@
  * limitations under the License.
  */
 
-import {assert} from 'chai';
+import { assert } from "chai";
 
-import {backendRegistrationApi, globalBackendMap, globalExecutorArray} from '../../Backend/API';
-import {Backend} from '../../Backend/Backend';
-import {Compiler, CompilerBase} from '../../Backend/Compiler';
-import {Executor, ExecutorBase} from '../../Backend/Executor';
-import {OneToolchain} from '../../Backend/One/OneToolchain';
-import {gToolchainEnvMap} from '../../Toolchain/ToolchainEnv';
+import {
+  backendRegistrationApi,
+  globalBackendMap,
+  globalExecutorArray,
+} from "../../Backend/API";
+import { Backend } from "../../Backend/Backend";
+import { Compiler, CompilerBase } from "../../Backend/Compiler";
+import { Executor, ExecutorBase } from "../../Backend/Executor";
+import { OneToolchain } from "../../Backend/One/OneToolchain";
+import { gToolchainEnvMap } from "../../Toolchain/ToolchainEnv";
 
-const oneBackendName = 'ONE';
+const oneBackendName = "ONE";
 
 // TODO: Move it to Mockup
-const backendName = 'Mockup';
+const backendName = "Mockup";
 class BackendMockup implements Backend {
   name(): string {
     return backendName;
   }
-  compiler(): Compiler|undefined {
+  compiler(): Compiler | undefined {
     return new CompilerBase();
   }
 
-  executor(): Executor|undefined {
+  executor(): Executor | undefined {
     return new ExecutorBase();
   }
   executors(): Executor[] {
@@ -47,16 +51,16 @@ class BackendMockup implements Backend {
   }
 }
 
-const executorName = 'Mockup';
+const executorName = "Mockup";
 class ExecutorMockup extends ExecutorBase {
   name(): string {
     return executorName;
   }
 }
 
-suite('Backend', function() {
-  suite('backendRegistrationApi', function() {
-    test('registers a OneToolchain', function() {
+suite("Backend", function () {
+  suite("backendRegistrationApi", function () {
+    test("registers a OneToolchain", function () {
       backendRegistrationApi();
       let oneBackend = new OneToolchain();
       assert.strictEqual(Object.entries(globalBackendMap).length, 1);
@@ -70,7 +74,7 @@ suite('Backend', function() {
         assert.deepStrictEqual(value, oneBackend);
       }
     });
-    test('registers a backend', function() {
+    test("registers a backend", function () {
       let registrationAPI = backendRegistrationApi();
 
       assert.strictEqual(Object.entries(globalBackendMap).length, 1);
@@ -96,7 +100,7 @@ suite('Backend', function() {
       }
       assert.deepStrictEqual(backend.executors(), globalExecutorArray);
     });
-    test('registers a executor', function() {
+    test("registers a executor", function () {
       let registrationAPI = backendRegistrationApi();
 
       assert.strictEqual(globalExecutorArray.length, 0);
@@ -111,7 +115,7 @@ suite('Backend', function() {
     });
   });
 
-  teardown(function() {
+  teardown(function () {
     if (globalBackendMap[backendName] !== undefined) {
       delete globalBackendMap[backendName];
     }

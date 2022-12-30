@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-import {assert} from 'chai';
+import { assert } from "chai";
 
-import {JobRunner} from '../../Job/JobRunner';
-import {WorkJobs} from '../../Job/WorkJobs';
-import {MockJob} from '../MockJob';
+import { JobRunner } from "../../Job/JobRunner";
+import { WorkJobs } from "../../Job/WorkJobs";
+import { MockJob } from "../MockJob";
 
-suite('Job', function() {
-  suite('JobRunner', function() {
-    suite('@Use-onecc', function() {
-      suite('#start()', function() {
-        test('jobs are done', function(done) {
+suite("Job", function () {
+  suite("JobRunner", function () {
+    suite("@Use-onecc", function () {
+      suite("#start()", function () {
+        test("jobs are done", function (done) {
           let jobRunner = new JobRunner();
           let workJobs = new WorkJobs();
-          workJobs.push(new MockJob('mockup'));
-          workJobs.push(new MockJob('mockup'));
+          workJobs.push(new MockJob("mockup"));
+          workJobs.push(new MockJob("mockup"));
           assert.strictEqual(workJobs.length, 2);
 
           // overwrite events so that multiple events will be emitted
-          jobRunner.on('cleanup', function() {
+          jobRunner.on("cleanup", function () {
             assert.strictEqual(workJobs.length, 0);
             done();
           });

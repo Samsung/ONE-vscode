@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import {assert} from 'chai';
-import {CompilerBase} from '../../Backend/Compiler';
+import { assert } from "chai";
+import { CompilerBase } from "../../Backend/Compiler";
 
-suite('Backend', function() {
-  suite('CompilerBase', function() {
-    suite('#constructor()', function() {
-      test('Create dummy compiler', function(pass) {
+suite("Backend", function () {
+  suite("CompilerBase", function () {
+    suite("#constructor()", function () {
+      test("Create dummy compiler", function (pass) {
         assert.doesNotThrow(() => new CompilerBase());
 
         pass();
@@ -28,29 +28,29 @@ suite('Backend', function() {
       });
     });
 
-    suite('#getInstalledToolchains()', function() {
-      test('NEG: throw in dummy compiler base by getInstalledToolchains', function() {
+    suite("#getInstalledToolchains()", function () {
+      test("NEG: throw in dummy compiler base by getInstalledToolchains", function () {
         const compiler = new CompilerBase();
-        assert.throw(() => compiler.getInstalledToolchains(''));
+        assert.throw(() => compiler.getInstalledToolchains(""));
       });
     });
 
-    suite('#getToolchainTypes()', function() {
-      test('NEG: throw in dummy compiler base by getToolchainTypes', function() {
+    suite("#getToolchainTypes()", function () {
+      test("NEG: throw in dummy compiler base by getToolchainTypes", function () {
         const compiler = new CompilerBase();
         assert.throw(() => compiler.getToolchainTypes());
       });
     });
 
-    suite('#getToolchains()', function() {
-      test('NEG: throw in dummy compiler base by getToolchains', function() {
+    suite("#getToolchains()", function () {
+      test("NEG: throw in dummy compiler base by getToolchains", function () {
         const compiler = new CompilerBase();
-        assert.throw(() => compiler.getToolchains('', 0, 0));
+        assert.throw(() => compiler.getToolchains("", 0, 0));
       });
     });
 
-    suite('#prerequisitesForGetToolchains()', function() {
-      test('NEG: throw in dummy compiler base by prerequisitesForGetToolchains', function() {
+    suite("#prerequisitesForGetToolchains()", function () {
+      test("NEG: throw in dummy compiler base by prerequisitesForGetToolchains", function () {
         const compiler = new CompilerBase();
         assert.throw(() => compiler.prerequisitesForGetToolchains());
       });

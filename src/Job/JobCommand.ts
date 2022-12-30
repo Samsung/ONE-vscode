@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import assert from 'assert';
+import assert from "assert";
 
-import {Command} from '../Backend/Command';
+import { Command } from "../Backend/Command";
 
-import {Job, JobCallback, JobType} from './Job';
-import {ToolArgs} from './ToolArgs';
+import { Job, JobCallback, JobType } from "./Job";
+import { ToolArgs } from "./ToolArgs";
 
 // NOTE: JobBase will be replaced by this
 class JobCommand implements Job {
@@ -38,9 +38,9 @@ class JobCommand implements Job {
   constructor(cmd: Command) {
     // should be implemented by child classes
     this.jobType = JobType.tUndefined;
-    this.name = '';
+    this.name = "";
     this.valid = false;
-    this.workDir = require('os').homedir();
+    this.workDir = require("os").homedir();
     this.isCancelable = false;
 
     // init by cmd
@@ -54,4 +54,4 @@ class JobCommand implements Job {
   }
 }
 
-export {JobCommand};
+export { JobCommand };

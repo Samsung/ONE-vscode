@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
-import * as vscode from 'vscode';
+import * as fs from "fs";
+import * as path from "path";
+import * as vscode from "vscode";
 
-import {Balloon} from './Balloon';
-import {Logger} from './Logger';
+import { Balloon } from "./Balloon";
+import { Logger } from "./Logger";
 
-const logTag = 'Helpers';
+const logTag = "Helpers";
 
 /**
  * @brief This class represents a normalized absolute path
@@ -49,13 +49,13 @@ export class RealPath {
     return this.absPath === lhs.absPath;
   }
 
-  public static createRealPath(rawPath: string): RealPath|null {
+  public static createRealPath(rawPath: string): RealPath | null {
     const absPath = path.resolve(path.normalize(rawPath));
 
     return fs.existsSync(absPath) ? new RealPath(absPath) : null;
   }
 
-  public static exists(rawPath: string|undefined): boolean {
+  public static exists(rawPath: string | undefined): boolean {
     if (!rawPath) {
       return false;
     }
@@ -81,18 +81,20 @@ export function obtainWorkspaceRoot(): string {
   const workspaceFolders = vscode.workspace.workspaceFolders;
 
   if (!workspaceFolders || workspaceFolders.length === 0) {
-    Logger.info(logTag, 'obtainWorkspaceRoot', 'No WorkspaceFolders');
+    Logger.info(logTag, "obtainWorkspaceRoot", "No WorkspaceFolders");
     // TODO revise message
-    throw new Error('Need workspace');
+    throw new Error("Need workspace");
   }
 
   // TODO support multi-root workspace
   if (workspaceFolders.length > 1) {
-    Balloon.info('Warning: Only the first workspace directory is currently supported');
+    Balloon.info(
+      "Warning: Only the first workspace directory is currently supported"
+    );
   }
 
   const workspaceRoot = workspaceFolders[0].uri.path;
-  Logger.debug(logTag, 'obtainWorkspaceRoot:', workspaceRoot);
+  Logger.debug(logTag, "obtainWorkspaceRoot:", workspaceRoot);
 
   return workspaceRoot;
 }
@@ -107,15 +109,19 @@ export function obtainWorkspaceRoot(): string {
 export function obtainWorkspaceRoots(): string[] {
   const workspaceFolders = vscode.workspace.workspaceFolders;
   if (!workspaceFolders) {
-    Logger.error(logTag, 'obtainWorkspaceRoots', 'workspaceFolders is undefined');
+    Logger.error(
+      logTag,
+      "obtainWorkspaceRoots",
+      "workspaceFolders is undefined"
+    );
     return [];
   }
 
-  return workspaceFolders.map(ws => ws.uri.path);
+  return workspaceFolders.map((ws) => ws.uri.path);
 }
 
 export interface FileSelector {
-  onFileSelected(uri: vscode.Uri|undefined): void;
+  onFileSelected(uri: vscode.Uri | undefined): void;
 }
 
 /**
@@ -127,8 +133,8 @@ export interface FileSelector {
  *          to save documents.
  */
 export async function saveDirtyDocuments(filepath: string): Promise<boolean> {
-  const unsavedDocuments = vscode.workspace.textDocuments.filter(td => {
-    if ((td.fileName === filepath) && td.isDirty) {
+  const unsavedDocuments = vscode.workspace.textDocuments.filter((td) => {
+    if (td.fileName === filepath && td.isDirty) {
       return true;
     }
     return false;
@@ -138,21 +144,28 @@ export async function saveDirtyDocuments(filepath: string): Promise<boolean> {
     return true;
   }
 
-  const title = `Do you want to save the changes you made to ${path.parse(filepath).name}?`;
+  const title = `Do you want to save the changes you made to ${
+    path.parse(filepath).name
+  }?`;
   const detail = undefined;
-  const ansSave = 'Save';
-  const ans =
-      await vscode.window.showInformationMessage(title, {detail: detail, modal: true}, ansSave);
+  const ansSave = "Save";
+  const ans = await vscode.window.showInformationMessage(
+    title,
+    { detail: detail, modal: true },
+    ansSave
+  );
 
   if (ans === ansSave) {
-    return Promise.all(unsavedDocuments.map(doc => doc.save())).then(res => {
-      if (res.includes(false)) {
-        Logger.error('Failed to save document');
-        return false;
-      } else {
-        return true;
+    return Promise.all(unsavedDocuments.map((doc) => doc.save())).then(
+      (res) => {
+        if (res.includes(false)) {
+          Logger.error("Failed to save document");
+          return false;
+        } else {
+          return true;
+        }
       }
-    });
+    );
   } else {
     return false;
   }
@@ -161,6 +174,6 @@ export async function saveDirtyDocuments(filepath: string): Promise<boolean> {
 // TODO Manage target file ext in ONE Explorer
 export function isOneExplorerTargetFile(uri: vscode.Uri): boolean {
   const path = uri.fsPath;
-  const ends = ['.pb', '.onnx', '.tflite', '.circle', '.cfg', '.log'];
+  const ends = [".pb", ".onnx", ".tflite", ".circle", ".cfg", ".log"];
   return ends.some((x) => path.endsWith(x));
 }

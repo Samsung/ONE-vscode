@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import {assert} from 'chai';
+import { assert } from "chai";
 
-import {_unit_test_logStr} from '../../Utils/Logger';
+import { _unit_test_logStr } from "../../Utils/Logger";
 
-suite('Utils', function() {
-  suite('Logger', function() {
-    suite('#__logStr', function() {
-      test('normal', function() {
+suite("Utils", function () {
+  suite("Logger", function () {
+    suite("#__logStr", function () {
+      test("normal", function () {
         // One message
         {
-          const severity = 'info';
-          const tag = 'unit_test';
-          const msg = 'one_message';
+          const severity = "info";
+          const tag = "unit_test";
+          const msg = "one_message";
           const actual = _unit_test_logStr(severity, tag, msg);
           assert.isTrue(actual.includes(`[${severity}]`));
           assert.isTrue(actual.includes(`[${tag}]`));
@@ -34,10 +34,10 @@ suite('Utils', function() {
         }
         {
           // two msgs
-          const severity = 'info';
-          const tag = 'unit_test';
-          const msg1 = 'one_message';
-          const msg2 = 'two_message';
+          const severity = "info";
+          const tag = "unit_test";
+          const msg1 = "one_message";
+          const msg2 = "two_message";
           const actual = _unit_test_logStr(severity, tag, msg1, msg2);
           assert.isTrue(actual.includes(`[${severity}]`));
           assert.isTrue(actual.includes(`[${tag}]`));
@@ -46,16 +46,24 @@ suite('Utils', function() {
         {
           // multiple msgs with number
           class Foo {
-            constructor(public bar: number) { /* empty */
+            constructor(public bar: number) {
+              /* empty */
             }
           }
-          const severity = 'info';
-          const tag = 'unit_test';
-          const msg1 = 'one_message';
+          const severity = "info";
+          const tag = "unit_test";
+          const msg1 = "one_message";
           const msg2 = 1234;
           const msg3 = new Foo(10);
-          const msg4 = new RangeError('exceed!');
-          const actual = _unit_test_logStr(severity, tag, msg1, msg2, msg3, msg4);
+          const msg4 = new RangeError("exceed!");
+          const actual = _unit_test_logStr(
+            severity,
+            tag,
+            msg1,
+            msg2,
+            msg3,
+            msg4
+          );
           /*
           [8/3/2022, 12:29:23 PM][unit_test][info] one_message 1234
           Foo: {"bar":10}
@@ -74,11 +82,11 @@ suite('Utils', function() {
         }
       });
 
-      test('NEG: no msg', function() {
-        const severity = 'info';
-        const tag = 'unit_test';
+      test("NEG: no msg", function () {
+        const severity = "info";
+        const tag = "unit_test";
         const actual = _unit_test_logStr(severity, tag);
-        assert.equal(actual, '');
+        assert.equal(actual, "");
       });
     });
   });

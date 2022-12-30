@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import {Balloon} from '../Utils/Balloon';
-import {Job} from './Job';
-import {JobRunner} from './JobRunner';
-import {WorkJobs} from './WorkJobs';
+import { Balloon } from "../Utils/Balloon";
+import { Job } from "./Job";
+import { JobRunner } from "./JobRunner";
+import { WorkJobs } from "./WorkJobs";
 
 export class WorkFlow {
   jobs: WorkJobs;
@@ -32,7 +32,7 @@ export class WorkFlow {
     let isValid = true;
     this.jobs.forEach((job) => {
       if (!job.valid) {
-        Balloon.error('Job ' + job.name + ' is not valid');
+        Balloon.error("Job " + job.name + " is not valid");
         isValid = false;
       }
     });

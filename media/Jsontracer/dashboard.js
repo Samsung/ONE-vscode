@@ -45,12 +45,12 @@
 // This file referenced the result of
 // https://github.com/catapult-project/catapult/tree/444aba89e1c30edf348c611a9df79e2376178ba8/tracing
 
-import renderLevel from './level.js';
-import renderRuler from './ruler.js';
+import renderLevel from "./level.js";
+import renderRuler from "./ruler.js";
 
 export default function renderDashboard(utility, timeLimit, digit, data) {
   renderRuler(timeLimit, digit);
-  Object.keys(data).forEach(key => {
+  Object.keys(data).forEach((key) => {
     renderLevel(timeLimit, key, utility[key], data[key]);
   });
 }

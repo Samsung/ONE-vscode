@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import {assert} from 'chai';
-import {ExecutorBase} from '../../Backend/Executor';
+import { assert } from "chai";
+import { ExecutorBase } from "../../Backend/Executor";
 
-suite('Backend', function() {
-  suite('ExecutorBase', function() {
-    suite('#constructor()', function() {
-      test('Create dummy executor', function(pass) {
+suite("Backend", function () {
+  suite("ExecutorBase", function () {
+    suite("#constructor()", function () {
+      test("Create dummy executor", function (pass) {
         assert.doesNotThrow(() => new ExecutorBase());
 
         pass();
@@ -28,36 +28,36 @@ suite('Backend', function() {
       });
     });
 
-    suite('#name()', function() {
-      test('NEG: throws by dummy executor base by name', function() {
+    suite("#name()", function () {
+      test("NEG: throws by dummy executor base by name", function () {
         const executor = new ExecutorBase();
         assert.throw(() => executor.name());
       });
     });
 
-    suite('#getExecutableExt()', function() {
-      test('NEG: throws in dummy executor base by getExecutableExt', function() {
+    suite("#getExecutableExt()", function () {
+      test("NEG: throws in dummy executor base by getExecutableExt", function () {
         const executor = new ExecutorBase();
         assert.throw(() => executor.getExecutableExt());
       });
     });
 
-    suite('#require()', function() {
-      test('NEG: throws in dummy executor base by require', function() {
+    suite("#require()", function () {
+      test("NEG: throws in dummy executor base by require", function () {
         const executor = new ExecutorBase();
         assert.throw(() => executor.require());
       });
     });
 
-    suite('#runInference()', function() {
-      test('NEG: throws in dummy executor base by runInference', function() {
+    suite("#runInference()", function () {
+      test("NEG: throws in dummy executor base by runInference", function () {
         const executor = new ExecutorBase();
-        assert.throw(() => executor.runInference(''));
+        assert.throw(() => executor.runInference(""));
       });
     });
 
-    suite('#toolchains()', function() {
-      test('NEG: throws in dummy executor base by toolchains', function() {
+    suite("#toolchains()", function () {
+      test("NEG: throws in dummy executor base by toolchains", function () {
         const executor = new ExecutorBase();
         assert.throw(() => executor.toolchains());
       });

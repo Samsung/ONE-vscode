@@ -52,31 +52,32 @@ const timeUnit = {
 };
 
 export function renderSingleDetail(data) {
-  const detailSection = document.querySelector('.detail-container section');
-  const ul = document.createElement('ul');
-  ul.className = 'detail';
+  const detailSection = document.querySelector(".detail-container section");
+  const ul = document.createElement("ul");
+  ul.className = "detail";
 
   Object.keys(data).forEach((key) => {
     // invisible backgroundColor and pk
-    if (key === 'backgroundColor' || key === 'pk') {
+    if (key === "backgroundColor" || key === "pk") {
       return;
     }
-    const li = document.createElement('li');
+    const li = document.createElement("li");
 
-    if (key === 'args') {
+    if (key === "args") {
       // show args in list
-      li.innerText = 'args';
-      li.className = 'args';
-      li.addEventListener('click', () => {
-        li.classList.toggle('fold');
+      li.innerText = "args";
+      li.className = "args";
+      li.addEventListener("click", () => {
+        li.classList.toggle("fold");
       });
       li.append(renderArgs(data[key]));
-    } else if (key === 'ts' || key === 'dur') {
+    } else if (key === "ts" || key === "dur") {
       // show time with displayTimeUnit
-      const setData = document.querySelector('.set-data');
-      const displayTimeUnit = setData.dataset['displayTimeUnit'];
-      li.innerText = `${key} : ${parseInt(data[key] * timeUnit[displayTimeUnit] * 1000) / 1000} ${
-          displayTimeUnit}`;
+      const setData = document.querySelector(".set-data");
+      const displayTimeUnit = setData.dataset["displayTimeUnit"];
+      li.innerText = `${key} : ${
+        parseInt(data[key] * timeUnit[displayTimeUnit] * 1000) / 1000
+      } ${displayTimeUnit}`;
     } else {
       // show others
       li.innerText = `${key} : ${data[key]}`;
@@ -89,9 +90,9 @@ export function renderSingleDetail(data) {
 }
 
 function renderArgs(args) {
-  const ul = document.createElement('ul');
-  args.split('.#/#.').forEach(element => {
-    const li = document.createElement('li');
+  const ul = document.createElement("ul");
+  args.split(".#/#.").forEach((element) => {
+    const li = document.createElement("li");
     li.innerText = element;
     ul.append(li);
   });
@@ -104,24 +105,24 @@ export function renderMultipleDetail() {
 }
 
 function makeTable() {
-  const detailSection = document.querySelector('.detail-container section');
-  const table = document.createElement('table');
-  table.className = 'detail';
+  const detailSection = document.querySelector(".detail-container section");
+  const table = document.createElement("table");
+  table.className = "detail";
 
-  const thead = document.createElement('thead');
-  const tr = document.createElement('tr');
+  const thead = document.createElement("thead");
+  const tr = document.createElement("tr");
 
-  const thName = document.createElement('th');
-  thName.innerText = 'name';
+  const thName = document.createElement("th");
+  thName.innerText = "name";
 
-  const thWall = document.createElement('th');
-  thWall.innerText = 'Wall Duration';
+  const thWall = document.createElement("th");
+  thWall.innerText = "Wall Duration";
 
-  const thAverage = document.createElement('th');
-  thAverage.innerText = 'Average Wall Duration';
+  const thAverage = document.createElement("th");
+  thAverage.innerText = "Average Wall Duration";
 
-  const thOccurrences = document.createElement('th');
-  thOccurrences.innerText = 'Occurrences';
+  const thOccurrences = document.createElement("th");
+  thOccurrences.innerText = "Occurrences";
 
   tr.append(thName, thWall, thAverage, thOccurrences);
   thead.append(tr);
@@ -130,12 +131,12 @@ function makeTable() {
 }
 
 function refinedSelectedOp() {
-  const selectedOpList = document.querySelectorAll('.selected-op');
+  const selectedOpList = document.querySelectorAll(".selected-op");
   const refinedOP = [];
   const refinedOPDict = {};
   let idx = 0;
 
-  selectedOpList.forEach(element => {
+  selectedOpList.forEach((element) => {
     const name = element.dataset.name;
     const ts = Number(element.dataset.ts);
     const dur = Number(element.dataset.dur);
@@ -163,43 +164,46 @@ function refinedSelectedOp() {
 
 function renderTds(value) {
   const totals = {
-    name: 'totals',
+    name: "totals",
     dur: 0,
     occurrences: 0,
   };
 
-  value.forEach(op => {
+  value.forEach((op) => {
     totals.dur += op.dur;
     totals.occurrences += op.occurrences;
   });
 
   value.push(totals);
 
-  const setData = document.querySelector('.set-data');
-  const displayTimeUnit = setData.dataset['displayTimeUnit'];
-  const detail = document.querySelector('.detail');
+  const setData = document.querySelector(".set-data");
+  const displayTimeUnit = setData.dataset["displayTimeUnit"];
+  const detail = document.querySelector(".detail");
 
-  value.forEach(ele => {
-    const tr = document.createElement('tr');
+  value.forEach((ele) => {
+    const tr = document.createElement("tr");
 
-    if (ele['name'] === 'totals') {
-      tr.className = 'totals';
+    if (ele["name"] === "totals") {
+      tr.className = "totals";
     }
 
-    const name = document.createElement('td');
-    name.innerText = ele['name'];
+    const name = document.createElement("td");
+    name.innerText = ele["name"];
 
-    const dur = document.createElement('td');
-    dur.innerText =
-        `${Math.round(ele['dur'] * timeUnit[displayTimeUnit] * 1000) / 1000} ${displayTimeUnit}`;
+    const dur = document.createElement("td");
+    dur.innerText = `${
+      Math.round(ele["dur"] * timeUnit[displayTimeUnit] * 1000) / 1000
+    } ${displayTimeUnit}`;
 
-    const durAvg = document.createElement('td');
-    durAvg.innerText =
-        `${Math.round(ele['dur'] * timeUnit[displayTimeUnit] * 1000) / 1000 / ele['occurrences']} ${
-            displayTimeUnit}`;
+    const durAvg = document.createElement("td");
+    durAvg.innerText = `${
+      Math.round(ele["dur"] * timeUnit[displayTimeUnit] * 1000) /
+      1000 /
+      ele["occurrences"]
+    } ${displayTimeUnit}`;
 
-    const occurrences = document.createElement('td');
-    occurrences.innerText = ele['occurrences'];
+    const occurrences = document.createElement("td");
+    occurrences.innerText = ele["occurrences"];
 
     tr.append(name, dur, durAvg, occurrences);
     detail.append(tr);

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import * as vscode from 'vscode';
-const assert = require('assert');
-import {Backend} from './Backend';
-import {gToolchainEnvMap, ToolchainEnv} from '../Toolchain/ToolchainEnv';
-import {Logger} from '../Utils/Logger';
-import {Executor} from './Executor';
-import {OneToolchain} from './One/OneToolchain';
+import * as vscode from "vscode";
+const assert = require("assert");
+import { Backend } from "./Backend";
+import { gToolchainEnvMap, ToolchainEnv } from "../Toolchain/ToolchainEnv";
+import { Logger } from "../Utils/Logger";
+import { Executor } from "./Executor";
+import { OneToolchain } from "./One/OneToolchain";
 
 /**
  * Interface of backend map
@@ -36,7 +36,7 @@ let globalBackendMap: BackendMap = {};
 let globalExecutorArray: Executor[] = [];
 
 function backendRegistrationApi() {
-  const logTag = 'backendRegistrationApi';
+  const logTag = "backendRegistrationApi";
   let registrationAPI = {
     registerBackend(backend: Backend) {
       const backendName = backend.name();
@@ -50,17 +50,27 @@ function backendRegistrationApi() {
       if (executor) {
         globalExecutorArray.push(executor);
       }
-      Logger.info(logTag, 'Backend', backendName, 'was registered into ONE-vscode.');
+      Logger.info(
+        logTag,
+        "Backend",
+        backendName,
+        "was registered into ONE-vscode."
+      );
       // NOTE: This might not 100% guaratee the activating extension has been done.
       //   - link: https://github.com/Samsung/ONE-vscode/pull/1101#issuecomment-1195099002
       // TODO: Consider better way to refresh toolchainView after backend's registration.
-      vscode.commands.executeCommand('one.toolchain.refresh');
-      vscode.commands.executeCommand('one.device.refresh');
+      vscode.commands.executeCommand("one.toolchain.refresh");
+      vscode.commands.executeCommand("one.device.refresh");
     },
     registerExecutor(executor: Executor) {
       globalExecutorArray.push(executor);
-      Logger.info(logTag, 'Executor', executor.name(), 'was registered into ONE-vscode.');
-    }
+      Logger.info(
+        logTag,
+        "Executor",
+        executor.name(),
+        "was registered into ONE-vscode."
+      );
+    },
   };
 
   registrationAPI.registerBackend(new OneToolchain());
@@ -68,4 +78,4 @@ function backendRegistrationApi() {
   return registrationAPI;
 }
 
-export {globalBackendMap, globalExecutorArray, backendRegistrationApi};
+export { globalBackendMap, globalExecutorArray, backendRegistrationApi };
