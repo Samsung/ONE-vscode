@@ -86,7 +86,7 @@ export class ToolRunner {
       Logger.append(err.message);
     });
 
-    this.child!.on(
+    this.child!.  on(
       K_EXIT,
       (code: number | null, signal: NodeJS.Signals | null) => {
         this.child = undefined;
