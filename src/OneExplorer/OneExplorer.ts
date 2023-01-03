@@ -79,7 +79,7 @@ export enum NodeType {
 
   /**
    * An ONE configuration file for onecc.
-   * Which imports a targetted 'baseModel' (NOTE baseModel:config has 1:N relationship)
+   * Which imports a targeted 'baseModel' (NOTE baseModel:config has 1:N relationship)
    */
   config,
 
@@ -605,7 +605,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
    * 'context.extension.extensionKind' indicates which side the extension is running.
    *
    * NOTE 'extensionKind' property in 'package.json' is different from
-   * 'context.extension.extensionKind'. extenionKind(package.json) is a field to manifest the
+   * 'context.extension.extensionKind'. extensionKind(package.json) is a field to manifest the
    * extension's preference. extension.extensionKind is an eventual runtime property.
    *
    * @ref https://github.com/Samsung/ONE-vscode/issues/1209
@@ -618,7 +618,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
    * 'context.extension.extensionKind' indicates which side the extension is running.
    *
    * NOTE 'extensionKind' property in 'package.json' is different from
-   * 'context.extension.extensionKind'. extenionKind(package.json) is a field to manifest the
+   * 'context.extension.extensionKind'. extensionKind(package.json) is a field to manifest the
    * extension's preference. extension.extensionKind is an eventual runtime property.
    *
    * @ref https://github.com/Samsung/ONE-vscode/issues/1209
@@ -909,7 +909,7 @@ input_path=${modelName}.${extName}
       })
       .then((value) => {
         if (!value) {
-          Logger.debug("OneExplorer", "User hit the excape key!");
+          Logger.debug("OneExplorer", "User hit the escape key!");
           return;
         }
 

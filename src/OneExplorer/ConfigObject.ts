@@ -93,7 +93,7 @@ export class ConfigObj {
   }
 
   /**
-   * @breif Get absolute path
+   * @brief Get absolute path
    * @param path Relative path of cfg file
    */
   getFullPath(relpath: string) {
