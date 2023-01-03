@@ -83,13 +83,13 @@ export interface ArtifactAttr {
  */
 export class Locator {
   /**
-   * The section of ini to find the targetted file
+   * The section of ini to find the targeted file
    * If not given, locator searches the whole section
    */
   section?: string;
 
   /**
-   * The key inside section to find the targetted file
+   * The key inside section to find the targeted file
    * If not given, locator searches the whole key
    */
   key?: string;

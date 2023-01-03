@@ -187,7 +187,7 @@ class BaseModelToCfgMap {
  * PURPOSE
  *
  * To build each 'Node' of OneTreeDataProvider,
- * it is neccessary to access the file system, read the files and build objects(ConfigObj, ...).
+ * it is necessary to access the file system, read the files and build objects(ConfigObj, ...).
  * By keeping some file system information as data structure (list, map),
  * some duplicated works can be reduced.
  *
@@ -318,7 +318,7 @@ export class OneStorage {
   public static insert(node: Node) {
     // NOTE
     // Only _nodeMap is built by calling this function
-    // _baseModelToCfgsMap and _cfgToCfgObjMap are built at constuctors
+    // _baseModelToCfgsMap and _cfgToCfgObjMap are built at constructors
     OneStorage.get()._nodeMap.set(node.path, node);
   }
 
