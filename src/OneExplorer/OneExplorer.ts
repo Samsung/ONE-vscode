@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { assert } from "chai";
+import * as assert from "assert";
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";

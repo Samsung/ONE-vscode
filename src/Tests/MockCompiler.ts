@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { assert } from "chai";
+import * as assert from "assert";
 import { Command } from "../Backend/Command";
 
 import { CompilerBase } from "../Backend/Compiler";
@@ -69,7 +69,7 @@ class MockCompiler extends CompilerBase {
     if (count === 0) {
       return [];
     }
-    assert(count === 1, "Count must be 1");
+    assert.strictEqual(count, 1, "Count must be 1");
     if (toolchainType === mockCompilerType1) {
       return [this.availableToolchain];
     }
