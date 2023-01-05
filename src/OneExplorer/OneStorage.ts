@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { assert } from "chai";
+import * as assert from "assert";
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
@@ -63,7 +63,7 @@ class CfgToCfgObjMap {
       case NodeType.product:
       case NodeType.directory:
       default:
-        assert.isOk(false, `Cannot reach here`);
+        assert.fail(`Cannot reach here`);
         break;
     }
   }
@@ -93,7 +93,7 @@ class CfgToCfgObjMap {
       case NodeType.product:
       case NodeType.directory:
       default:
-        assert.isOk(false, `Cannot reach here`);
+        assert.fail(`Cannot reach here`);
         break;
     }
   }
@@ -145,7 +145,7 @@ class BaseModelToCfgMap {
       case NodeType.product:
       case NodeType.directory:
       default:
-        assert.isOk(false, `Cannot reach here`);
+        assert.fail(`Cannot reach here`);
         break;
     }
   }
@@ -175,7 +175,7 @@ class BaseModelToCfgMap {
       case NodeType.product:
       case NodeType.directory:
       default:
-        assert.isOk(false, `Cannot reach here`);
+        assert.fail(`Cannot reach here`);
         break;
     }
   }
