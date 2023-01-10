@@ -477,6 +477,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
   private fileWatcher = vscode.workspace.createFileSystemWatcher(`**/*`);
 
   private _tree: Node[] | undefined;
+  private _treeView: vscode.TreeView<Node> | undefined;
   private _workspaceRoots: vscode.Uri[] = [];
 
   public static didHideExtra: boolean = false;
@@ -484,7 +485,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
   public static register(context: vscode.ExtensionContext) {
     const provider = new OneTreeDataProvider(context.extension.extensionKind);
 
-    const _treeView = vscode.window.createTreeView("OneExplorerView", {
+    provider._treeView = vscode.window.createTreeView("OneExplorerView", {
       treeDataProvider: provider,
       showCollapseAll: true,
       canSelectMany: true,
@@ -513,13 +514,13 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
         );
         provider.refresh();
       }),
-      _treeView,
+      provider._treeView,
       vscode.commands.registerCommand(
         "one.explorer.revealInOneExplorer",
         (path: string) => {
           const node = OneStorage.getNode(path);
           if (node) {
-            _treeView?.reveal(node, {
+            provider._treeView?.reveal(node, {
               select: true,
               focus: true,
               expand: true,
@@ -686,6 +687,13 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
     vscode.commands.executeCommand("revealFileInOS", node.uri);
   }
 
+  reveal(node: Node): void {
+    this._treeView?.reveal(node, {
+      select: true,
+      focus: true,
+      expand: true,
+    });
+  }
   /**
    * @brief A helper function to show input box to ask a new file name
    */
