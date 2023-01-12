@@ -141,6 +141,10 @@ export class Locator {
       "FIX CALLER: dir argument must be an absolute path"
     );
 
+    if (typeof iniObj !== "object") {
+      return [];
+    }
+
     // Get file names from iniObj
     const getFileNames = (): string[] => {
       let fileNames: string[] = [];
@@ -151,7 +155,8 @@ export class Locator {
       // Find valid iniObj[section] as object
       const sectionObjs: object[] = sections
         .filter((section) => section in iniObj)
-        .map((section) => iniObj[section as keyof typeof iniObj]);
+        .map((section) => iniObj[section as keyof typeof iniObj])
+        .filter((sectionObj) => typeof sectionObj === "object");
 
       sectionObjs.forEach((sectionObj) => {
         // If a key not given, search all keys

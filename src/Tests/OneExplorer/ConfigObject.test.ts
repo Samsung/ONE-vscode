@@ -195,6 +195,32 @@ input_path=${modelName}
         }
       });
 
+      test("NEG: Parse wrong format ini file", function () {
+        const configName = "model.cfg";
+        const modelName = "model.tflite";
+
+        const content = `
+  [one-import-tflite]
+  input_path=${modelName}
+        `;
+
+        // Write a file inside temp directory
+        testBuilder.writeFileSync(configName, content);
+
+        // Get file paths inside the temp directory
+        const configPath = testBuilder.getPath(configName);
+        const configObj = ConfigObj.createConfigObj(
+          vscode.Uri.file(configPath)
+        );
+
+        // Validation
+        {
+          assert.isDefined(configObj);
+          assert.strictEqual(configObj!.getBaseModels.length, 0);
+          assert.strictEqual(configObj!.getProducts.length, 0);
+        }
+      });
+
       test("NEG: Parse config with invalid ext with one-import-tflite", function () {
         const configName = "model.cfg";
         // ERROR INJECTION
