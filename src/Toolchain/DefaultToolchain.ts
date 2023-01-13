@@ -17,6 +17,7 @@
 import * as vscode from "vscode";
 
 import { Toolchain } from "../Backend/Toolchain";
+import { Logger } from "../Utils/Logger";
 import { ToolchainEnv } from "./ToolchainEnv";
 
 class DefaultToolchain {
@@ -32,49 +33,15 @@ class DefaultToolchain {
     return this._instance || (this._instance = new this());
   }
 
-  /* istanbul ignore next */
-  public async ask(
-    toolchainEnv: ToolchainEnv,
-    toolchain: Toolchain
-  ): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
-      const name = `${toolchain.info.name}-${toolchain.info.version?.str()}`;
-      vscode.window
-        .showInformationMessage(
-          `Do you want to use ${name} as a default toolchain?`,
-          "Yes",
-          "No"
-        )
-        .then((answer) => {
-          if (answer === "Yes") {
-            this.set(toolchainEnv, toolchain);
-            return resolve(true);
-          } else {
-            return reject(null);
-          }
-        });
-    });
-  }
-
   public set(toolchainEnv: ToolchainEnv, toolchain: Toolchain) {
     if (this.isEqual(toolchain)) {
       return;
     }
     this._toolchainEnv = toolchainEnv;
     this._toolchain = toolchain;
+
     const name = `${toolchain.info.name}-${toolchain.info.version?.str()}`;
-    /* istanbul ignore next */
-    vscode.window
-      .showInformationMessage(
-        `${name} was set as a default toolchain.`,
-        "OK",
-        `See Instructions`
-      )
-      .then((value) => {
-        if (value === "See Instructions") {
-          this.openDocument();
-        }
-      });
+    Logger.debug("DefaultToolchain", `${name} was set as a default toolchain.`);
   }
 
   public unset() {
