@@ -470,8 +470,8 @@ input_path='model.tflite'
 
           const newModel = testBuilder.getPath("model.new.tflite", "workspace");
           const newContent = `
-  [one-import-tflite]
-  input_path='model.new.tflite'
+[one-import-tflite]
+input_path='model.new.tflite'
           `;
 
           testBuilder.writeFileSync("model.cfg", newContent, "workspace");
