@@ -135,7 +135,7 @@ class OneCompiler implements Compiler {
         ["madison", `${this.toolchainName}`],
         { encoding: "utf8" },
         "awk",
-        ['{printf $1" "$3}'],
+        ['{printf $3" "}'],
         { encoding: "utf8" }
       );
     } catch (error) {
