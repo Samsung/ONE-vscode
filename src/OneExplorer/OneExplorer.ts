@@ -137,6 +137,16 @@ export abstract class Node {
     this._childNodes = undefined;
   }
 
+  updateUri(uri: vscode.Uri): void {
+    this.uri = uri;
+  }
+
+  addChild(node: Node) {
+    if (this._childNodes) {
+      this._childNodes.push(node);
+    }
+  }
+
   get path(): string {
     return this.uri.fsPath;
   }
@@ -474,8 +484,6 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
   readonly onDidChangeTreeData: vscode.Event<Node | undefined | void> =
     this._onDidChangeTreeData.event;
 
-  private fileWatcher = vscode.workspace.createFileSystemWatcher(`**/*`);
-
   private _tree: Node[] | undefined;
   private _treeView: vscode.TreeView<Node> | undefined;
   private _workspaceRoots: vscode.Uri[] = [];
@@ -492,22 +500,6 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
     });
 
     let registrations = [
-      provider.fileWatcher.onDidCreate((_uri: vscode.Uri) => {
-        provider.refresh();
-      }),
-      provider.fileWatcher.onDidChange((_uri: vscode.Uri) => {
-        // TODO Handle by each node types
-        provider.refresh();
-      }),
-      provider.fileWatcher.onDidDelete((uri: vscode.Uri) => {
-        const node = OneStorage.getNode(uri.fsPath);
-        if (!node) {
-          return;
-        }
-
-        OneStorage.delete(node, true);
-        provider.refresh(node.parent);
-      }),
       vscode.workspace.onDidChangeWorkspaceFolders(() => {
         provider._workspaceRoots = obtainWorkspaceRoots().map((root) =>
           vscode.Uri.file(root)
@@ -757,7 +749,14 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
 
         const edit = new vscode.WorkspaceEdit();
         edit.renameFile(node.uri, vscode.Uri.file(newpath));
-        vscode.workspace.applyEdit(edit);
+        vscode.workspace.applyEdit(edit).then((onfulfilled) => {
+          if (onfulfilled) {
+            node.updateUri(vscode.Uri.file(newpath));
+            this.refresh(node);
+          } else {
+            Logger.error("OneExplorer", "Failed to rename a cfg file");
+          }
+        });
       }
     });
   }
@@ -785,7 +784,17 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
     if (children.length === 0) {
       const edit = new vscode.WorkspaceEdit();
       edit.renameFile(node.uri, vscode.Uri.file(newpath));
-      vscode.workspace.applyEdit(edit);
+      vscode.workspace.applyEdit(edit).then((onfulfilled) => {
+        if (onfulfilled) {
+          node.updateUri(vscode.Uri.file(newpath));
+          this.refresh(node);
+        } else {
+          Logger.error(
+            "OneExplorer",
+            `Failed to rename a file ${node.uri.fsPath}`
+          );
+        }
+      });
       return;
     }
 
@@ -828,7 +837,17 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
     refactorCfgs().then(() => {
       const edit = new vscode.WorkspaceEdit();
       edit.renameFile(node.uri, vscode.Uri.file(newpath));
-      vscode.workspace.applyEdit(edit);
+      vscode.workspace.applyEdit(edit).then((onfulfilled) => {
+        if (onfulfilled) {
+          node.updateUri(vscode.Uri.file(newpath));
+          this.refresh(node);
+        } else {
+          Logger.error(
+            "OneExplorer",
+            `Failed to rename a file ${node.uri.fsPath}`
+          );
+        }
+      });
     });
   }
 
@@ -870,7 +889,19 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
             recursive: recursive,
             ignoreIfNotExists: true,
           });
-          vscode.workspace.applyEdit(edit);
+          vscode.workspace.applyEdit(edit).then((onfulfilled) => {
+            if (onfulfilled) {
+              OneStorage.delete(node, recursive);
+              this.refresh(node.parent, false);
+
+              // TODO Remove parent directory nodes if it is empty, recursively if needed
+            } else {
+              Logger.error(
+                "OneExplorer",
+                `Failed to delete a file ${node.uri.fsPath}`
+              );
+            }
+          });
         }
       });
   }
@@ -930,6 +961,18 @@ input_path=${modelName}.${extName}
 
         vscode.workspace.applyEdit(edit).then((isSuccess) => {
           if (isSuccess) {
+            const cfgNode = NodeFactory.create(
+              NodeType.config,
+              uri.fsPath,
+              node
+            );
+            cfgNode.getChildren();
+
+            OneStorage.insert(cfgNode);
+            node.addChild(cfgNode);
+            this.refresh(node);
+            this.reveal(cfgNode);
+
             vscode.workspace.openTextDocument(uri).then((document) => {
               document.save();
               vscode.commands.executeCommand(
