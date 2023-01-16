@@ -175,14 +175,6 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
   public _notifyInstalled(toolchainEnv: ToolchainEnv, toolchain: Toolchain) {
     const name = `${toolchain.info.name}-${toolchain.info.version?.str()}`;
     vscode.window.showInformationMessage(`Installed ${name} successfully.`);
-    if (
-      Object.keys(gToolchainEnvMap).length > 1 ||
-      toolchainEnv.listInstalled().length > 1
-    ) {
-      DefaultToolchain.getInstance()
-        .ask(toolchainEnv, toolchain)
-        .then(() => this.refresh());
-    }
     this.refresh();
     vscode.commands.executeCommand("one.device.refresh");
   }
