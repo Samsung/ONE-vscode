@@ -12,12 +12,3 @@
 
 - Support ONE toolchain
 
-### Target Device View
-
-### Cfg Editor
-
-### Circle Viewer
-
-### Mondrian Viewer
-
-### JSON Tracer
