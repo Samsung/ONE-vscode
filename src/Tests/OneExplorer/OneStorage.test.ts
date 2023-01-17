@@ -48,11 +48,9 @@ suite("OneExplorer", function () {
 input_path=${modelName}
         `;
 
-          // Write a file inside temp directory
           testBuilder.writeFileSync(configName, content, "workspace");
           testBuilder.writeFileSync(modelName, "", "workspace");
 
-          // Get file paths inside the temp directory
           const configPath = testBuilder.getPath(configName, "workspace");
           const modelPath = testBuilder.getPath(modelName, "workspace");
 
