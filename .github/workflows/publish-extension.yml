@@ -7,10 +7,17 @@ on:
         description: 'Identify the release as a prerelease (default: false)'
         type: string
         default: false
+      publish:
+        description: 'Publish extension to marketplace'
+        type: boolean
+        default: false
     outputs:
       package_name:
         description: 'Package name'
         value: ${{ jobs.publish-extension.outputs.package_name }}
+    secrets:
+      VSCE_PAT:
+        required: true
 
 jobs:
   publish-extension:
@@ -40,6 +47,12 @@ jobs:
         run: |
           fname=$(find . -name "*.vsix" | xargs -I {} basename {})
           echo "package_name=${fname}" >> $GITHUB_OUTPUT
+      - name: Publish vsix package
+        if: ${{ inputs.publish }}
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: |
+          vsce publish -i ${{ steps.search_package.outputs.package_name }}
       - name: Upload vsix package
         uses: actions/upload-artifact@v3
         with:
