@@ -1,36 +1,47 @@
 name: Publish extension
 
 on:
-  repository_dispatch:
-    types: [ publish-extension ]
-  schedule:
-    # 05:00 AM (KST) Mon-Fri
-    - cron: '00 20 * * 0-4'
+  workflow_call:
+    inputs:
+      prerelease:
+        description: 'Identify the release as a prerelease (default: false)'
+        type: string
+        default: false
+    outputs:
+      package_name:
+        description: 'Package name'
+        value: ${{ jobs.publish-extension.outputs.package_name }}
 
 jobs:
   publish-extension:
     runs-on: ubuntu-latest
+    outputs:
+      package_name: ${{ steps.search_package.outputs.package_name }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: 16
       - name: Install node packages
         run: |
           npm install
       - name: Install vsce tool
         run: |
           npm install -g vsce
-      - name: Build vsix package
+      - name: Create vsix package (pre-release)
+        if: ${{ inputs.prerelease == 'true' }}
+        run: |
+          vsce package --pre-release
+      - name: Create vsix package
+        if: ${{ inputs.prerelease == 'false' }}
         run: |
           vsce package
-      # TODO Enable publish job
-      - name: Publish vsix package
-        if: ${{ false }}
+      - id: search_package
         run: |
-          vsce publish
+          fname=$(find . -name "*.vsix" | xargs -I {} basename {})
+          echo "package_name=${fname}" >> $GITHUB_OUTPUT
       - name: Upload vsix package
         uses: actions/upload-artifact@v3
         with:
-          name: one-vscode-extension
-          path: ./*.vsix
+          name: ${{ steps.search_package.outputs.package_name }}
+          path: ./${{ steps.search_package.outputs.package_name }}

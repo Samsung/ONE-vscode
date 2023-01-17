@@ -1,0 +1,12 @@
+name: Nightly release
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 05:00 AM (KST) Mon-Fri
+    - cron: '00 20 * * 0-4'
+
+jobs:
+  publish-extension:
+    uses: ./.github/workflows/publish-extension.yml
+    secrets: inherit
