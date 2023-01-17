@@ -50,6 +50,7 @@ input_path=${modelName}
 
           testBuilder.writeFileSync(configName, content, "workspace");
           testBuilder.writeFileSync(modelName, "", "workspace");
+          OneStorage.reset();
 
           const configPath = testBuilder.getPath(configName, "workspace");
           const modelPath = testBuilder.getPath(modelName, "workspace");
@@ -72,6 +73,7 @@ input_path=${modelName}
           const modelName = "model.tflite";
 
           testBuilder.writeFileSync(modelName, "", "workspace");
+          OneStorage.reset();
 
           {
             assert.isUndefined(OneStorage.getCfgs("invalid/path"));
@@ -82,6 +84,7 @@ input_path=${modelName}
           const modelName = "model.circle";
 
           testBuilder.writeFileSync(modelName, "", "workspace");
+          OneStorage.reset();
 
           const modelPath = testBuilder.getPath(modelName, "workspace");
           {
@@ -103,6 +106,7 @@ input_path=${modelName}
           // Write a file inside temp directory
           testBuilder.writeFileSync(configName, content, "workspace");
           testBuilder.writeFileSync(modelName, "", "workspace");
+          OneStorage.reset();
 
           // Get file paths inside the temp directory
           const configPath = testBuilder.getPath(configName, "workspace");
@@ -128,6 +132,7 @@ input_path=${modelName}
           const modelName = "model.circle";
 
           testBuilder.writeFileSync(modelName, "", "workspace");
+          OneStorage.reset();
 
           const modelPath = testBuilder.getPath(modelName, "workspace");
           {
