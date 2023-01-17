@@ -23,7 +23,7 @@ jobs:
           npm install -g vsce
       - name: Build vsix package
         run: |
-          vsce package
+          npm run createpkg-nightly
       # TODO Enable publish job
       - name: Publish vsix package
         if: ${{ false }}

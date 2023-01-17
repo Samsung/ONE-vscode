@@ -457,7 +457,9 @@
     "test": "npm run unittest",
     "test-no-screen": "DISPLAY=:44 xvfb-run --server-num 44 npm run test",
     "coverage": "npm run test coverage",
-    "clean": "rm -rf out"
+    "clean": "rm -rf out",
+    "createpkg-local": "vsce package -o one-vscode-local-$(git rev-parse --short HEAD)-$(date '+%Y%m%d%H%M%S').vsix",
+    "createpkg-nightly": "VER=$(npm version --no-git-tag-version --no-commit-hooks minor | cut -c2-) && vsce package  --no-git-tag-version ${VER}-$(git rev-parse --short HEAD)"
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
