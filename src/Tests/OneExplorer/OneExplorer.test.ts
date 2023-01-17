@@ -89,23 +89,11 @@ suite("OneExplorer", function () {
         });
       });
 
-      test("create a base model node outside workspace", function () {
+      test("NEG: create a base model node outside workspace", function () {
         const baseModelName = "test.tflite";
-        const configName = `test.cfg`;
 
-        testBuilder.writeFileSync(baseModelName, "");
-        const baseModelPath = testBuilder.getPath(baseModelName); // in /tmp
-        const configPath = testBuilder.getPath(configName, "workspace"); // in workspace
-
-        // Find a base model outside workspace by locating its absolute path
-        testBuilder.writeFileSync(
-          configName,
-          `
-[one-import-tflite]
-input_path=${baseModelPath}
-        `,
-          "workspace"
-        );
+        const baseModelPath = testBuilder.getPath(baseModelName, "temp"); // in /tmp
+        testBuilder.writeFileSync(baseModelName, "", "temp");
 
         // Validation
         {
@@ -125,12 +113,8 @@ input_path=${baseModelPath}
             BaseModelNode.defaultCanHide
           );
 
-          assert.strictEqual(baseModelNode.getChildren().length, 1);
-          assert.strictEqual(
-            baseModelNode.getChildren()[0].type,
-            NodeType.config
-          );
-          assert.strictEqual(baseModelNode.getChildren()[0].path, configPath);
+          // As the model is outside workspace, it's not parsed or lined to corresponding cfg file.
+          assert.strictEqual(baseModelNode.getChildren().length, 0);
         }
       });
 
