@@ -181,53 +181,25 @@ jobs:
               body: `:heavy_check_mark: Unit test passed`
             })
 
-  # Same job with publish-extension.yml
-  create-vsce-package:
+  publish-extension:
     needs:
       - post-license-result
       - check-copyright
       - check-compile
       - check-test
-    runs-on: ubuntu-latest
-    outputs:
-      package_name: ${{ steps.search_package.outputs.package_name }}
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-      - name: Install node packages
-        run: |
-          npm install
-      - name: Install vsce tool
-        run: |
-          npm install -g vsce
-      - name: Build vsix package
-        run: |
-          vsce package ${{ github.event.inputs.tag }}
-      # TODO Enable publish job
-      - name: Publish vsix package
-        if: ${{ false }}
-        run: |
-          vsce publish
-      - id: search_package
-        run: |
-          fname=$(find . -name "*.vsix" | xargs -I {} basename {})
-          echo "::set-output name=package_name::$fname"
-      - name: Upload vsix package
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ steps.search_package.outputs.package_name }}
-          path: ./${{ steps.search_package.outputs.package_name }}
+    uses: ./.github/workflows/publish-extension.yml
+    with:
+      prerelease: ${{ github.event.inputs.prerelease }}
+    secrets: inherit
 
   release:
-    needs: create-vsce-package
+    needs: publish-extension
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
         with:
-          name: ${{ needs.create-vsce-package.outputs.package_name }}
+          name: ${{ needs.publish-extension.outputs.package_name }}
       - name: Release
         id: create_release
         uses: actions/create-release@v1
@@ -245,6 +217,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./${{ needs.create-vsce-package.outputs.package_name }}
-          asset_name: ${{ needs.create-vsce-package.outputs.package_name }}
+          asset_path: ./${{ needs.publish-extension.outputs.package_name }}
+          asset_name: ${{ needs.publish-extension.outputs.package_name }}
           asset_content_type: application/vsix
