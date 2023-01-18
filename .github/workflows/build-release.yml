@@ -190,6 +190,7 @@ jobs:
     uses: ./.github/workflows/publish-extension.yml
     with:
       prerelease: ${{ github.event.inputs.prerelease }}
+      publish: ${{ !inputs.draft && !inputs.prerelease }}
     secrets: inherit
 
   release:
