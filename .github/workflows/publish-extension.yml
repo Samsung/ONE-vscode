@@ -7,6 +7,10 @@ on:
         description: 'Identify the release as a prerelease (default: false)'
         type: string
         default: false
+      build_type:
+        description: 'Build type (default: nightly)'
+        type: string
+        default: nightly
     outputs:
       package_name:
         description: 'Package name'
@@ -28,14 +32,21 @@ jobs:
       - name: Install vsce tool
         run: |
           npm install -g vsce
+      - name: Set package version (nightly build)
+        id: set_package_version
+        if: ${{ inputs.build_type == 'nightly' }}
+        run: |
+          VER=$(npm version --no-git-tag-version --no-commit-hooks minor | cut -c2-)
+          option="--no-git-tag-version ${VER}-$(git rev-parse --short HEAD)"
+          echo "option=${option}" >> $GITHUB_OUTPUT
       - name: Create vsix package (pre-release)
         if: ${{ inputs.prerelease == 'true' }}
         run: |
-          vsce package --pre-release
+          vsce package --pre-release ${{ steps.set_package_version.outputs.option }}
       - name: Create vsix package
         if: ${{ inputs.prerelease == 'false' }}
         run: |
-          vsce package
+          vsce package ${{ steps.set_package_version.outputs.option }}
       - id: search_package
         run: |
           fname=$(find . -name "*.vsix" | xargs -I {} basename {})
