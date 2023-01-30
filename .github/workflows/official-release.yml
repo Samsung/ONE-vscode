@@ -1,4 +1,4 @@
-name: Build release
+name: Official release
 
 on:
   workflow_dispatch:    # Allow manual triggers
