@@ -625,6 +625,96 @@ sidebar.ParameterView = class {
   }
 };
 
+function getTensorShape(array) {
+  let shape = [];
+  let curArray = array;
+  while (Array.isArray(curArray)) {
+    shape.push(curArray.length);
+    curArray = curArray[0];
+  }
+  return shape;
+}
+
+function getTensorValue(tensor, index) {
+  let value = tensor;
+  for (const i of index)
+    {value = value[i];}
+  return value;
+}
+
+function normalizeTensor(tensor, axis1, axis2, values = {}) {
+  let shape = getTensorShape(tensor);
+  let height = shape[axis1];
+  let width = shape[axis2];
+  let imageData = [];
+
+  let index = Array(shape.length);
+  index.fill(0);
+
+  // find min and max values in the tensor
+  let minValue = Infinity;
+  let maxValue = -Infinity;
+  for (let i = 0; i < height; i++) {
+    for (let j = 0; j < width; j++) {
+      index[axis1] = i;
+      index[axis2] = j;
+      let value = getTensorValue(tensor, index);
+      minValue = Math.min(minValue, value);
+      maxValue = Math.max(maxValue, value);
+    }
+  }
+
+  // normalize values and create imageData
+  for (let i = 0; i < height; i++) {
+    let row = [];
+    for (let j = 0; j < width; j++) {
+      index[axis1] = i;
+      index[axis2] = j;
+      let value = getTensorValue(tensor, index);
+      row.push((value - minValue) / (maxValue - minValue));
+    }
+    imageData.push(row);
+  }
+  return imageData;
+}
+
+function tensorToImage(tensor, axis1, axis2, document, values = {}) {
+  let scale = 12;
+  let imageData = normalizeTensor(tensor, axis1, axis2, values);
+  let height = imageData.length;
+  let width = imageData[0].length;
+  let canvas = document.createElement('canvas');
+  canvas.width = width * scale;
+  canvas.height = height * scale;
+  let ctx = canvas.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+  let imageDataArray = new Uint8ClampedArray(height * width * 4);
+  for (let i = 0; i < height; i++) {
+    for (let j = 0; j < width; j++) {
+      let value = imageData[i][j];
+      let index = (i * width + j) * 4;
+
+      value *= 2;
+      let blue = Math.round(Math.max(0, 255 * (1.0 - value)));
+      let red = Math.round(Math.max(0, 255 * (value - 1.0)));
+      let green = 255 - blue - red;
+
+      imageDataArray[index] = red;
+      imageDataArray[index + 1] = green;
+      imageDataArray[index + 2] = blue;
+      imageDataArray[index + 3] = 255;
+    }
+  }
+  let imageDataImage = new ImageData(imageDataArray, width, height);
+  ctx.putImageData(imageDataImage, 0, 0);
+
+  //scale
+  ctx.scale(scale, scale);
+  ctx.drawImage(canvas, 0, 0);
+
+  return canvas;
+}
+
 sidebar.ArgumentView = class {
   constructor(host, argument) {
     this._host = host;
@@ -782,6 +872,16 @@ sidebar.ArgumentView = class {
 
             valueLine.className = "sidebar-view-item-value-line-border";
             contentLine.innerHTML = state || initializer.toString();
+            if (!state) {
+              try {
+                const imageLine = this._host.document.createElement("div");
+                imageLine.className = "sidebar-view-item-value-line-border";
+                imageLine.appendChild(tensorToImage(JSON.parse(initializer.toString()), 2, 3, this._host.document));
+                this._element.appendChild(imageLine);
+              } catch (err) {
+                // do nothing
+              }
+            }
           } catch (err) {
             contentLine.innerHTML = err.toString();
             this._raise("error", err);
