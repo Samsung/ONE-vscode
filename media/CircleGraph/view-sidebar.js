@@ -643,14 +643,13 @@ function getTensorValue(tensor, index) {
   return value;
 }
 
-function normalizeTensor(tensor, axis1, axis2, values = {}) {
+function normalizeTensor(tensor, axis1, axis2, values) {
   let shape = getTensorShape(tensor);
   let height = shape[axis1];
   let width = shape[axis2];
   let imageData = [];
 
-  let index = Array(shape.length);
-  index.fill(0);
+  let index = values.slice();
 
   // find min and max values in the tensor
   let minValue = Infinity;
@@ -679,7 +678,7 @@ function normalizeTensor(tensor, axis1, axis2, values = {}) {
   return imageData;
 }
 
-function tensorToImage(tensor, axis1, axis2, document, values = {}) {
+function tensorToImage(tensor, axis1, axis2, values, document) {
   let scale = 12;
   let imageData = normalizeTensor(tensor, axis1, axis2, values);
   let height = imageData.length;
@@ -722,18 +721,35 @@ sidebar.VisualTensorView = class {
     this._tensor = tensor;
 
     this._element = this._host.document.createElement("div");
-    this._element.class = "sidebar-view-item-value-line-border";
-
     this._tensorShape = getTensorShape(this._tensor);
     if (this._tensorShape.length < 2) {
       return this;
     }
+    this._element.className = "sidebar-view-item-value-line-border";
+
     this._axes = [this._tensorShape.length - 2, this._tensorShape.length - 1];
-    // add axes selection checkboxes
+    this._values = Array(this._tensorShape.length);
+    this._values.fill(0);
     if (this._tensorShape.length > 2) {
       this._checkboxes = [];
+      this._valueTexts = [];
+      this._infoTexts = [];
       for (let i = 0; i < this._tensorShape.length; ++i) {
+        let infoText = this._host.document.createElement("div");
+        infoText.setAttribute('style', 'float: left;');
+        infoText.setText = () => {
+          infoText.innerHTML = "/ " + (this._tensorShape[i] - 1);
+          if (this._axes[0] === i) {
+            infoText.innerHTML += " <b>(x)</b>";
+          }
+          else if (this._axes[1] === i) {
+            infoText.innerHTML += " <b>(y)</b>";
+          }
+        };
+        this._infoTexts.push(infoText);
+
         let checkbox = this._host.document.createElement("input");
+        checkbox.setAttribute('style', 'float: left;');
         checkbox.type = "checkbox";
         checkbox.checked = this._axes.includes(i);
         checkbox.addEventListener("change", () => {
@@ -747,15 +763,85 @@ sidebar.VisualTensorView = class {
             this._axes.splice(this._axes.indexOf(i), 1);
           }
           this.updateImage();
+          this.updateUI();
         });
         this._checkboxes.push(checkbox);
+
+        let valueText = this._host.document.createElement("input");
+        valueText.className = "sidebar-view-item-value-number";
+        valueText.type = "number";
+        valueText.min = 0;
+        valueText.max = this._tensorShape[i] - 1;
+        valueText.value = 0;
+        valueText.setValue = (value) => {
+          if (valueText.disabled) {
+            return;
+          }
+          valueText.value = value;
+          if (valueText.value === "") {
+            valueText.value = 0;
+          }
+          if (parseInt(valueText.value) < parseInt(valueText.min)) {
+            valueText.value = valueText.min;
+          }
+          if (parseInt(valueText.value) > parseInt(valueText.max)) {
+            valueText.value = valueText.max;
+          }
+          this._values[i] = parseInt(valueText.value);
+          this.updateImage();
+        };
+        valueText.decrease = () => {
+          if (valueText.value === valueText.min) {
+            valueText.setValue(valueText.max);
+          } else {
+            valueText.setValue(parseInt(valueText.value) - 1);
+          }
+        };
+        valueText.increase = () => {
+          if (valueText.value === valueText.max) {
+            valueText.setValue(valueText.min);
+          } else {
+            valueText.setValue(parseInt(valueText.value) + 1);
+          }
+        };
+        valueText.addEventListener("change", () => {
+          valueText.setValue(valueText.value);
+        });
+        this._valueTexts.push(valueText);
+
+        let leftButton = this._host.document.createElement("div");
+        leftButton.className = "sidebar-view-item-value-expander";
+        leftButton.setAttribute('style', 'float: left; padding: 1px 4px 0px 4px;');
+        leftButton.innerHTML = "&#x140A";
+        leftButton.addEventListener("click", valueText.decrease);
+
+        let rightButton = this._host.document.createElement("div");
+        rightButton.className = "sidebar-view-item-value-expander";
+        rightButton.setAttribute('style', 'float: left; padding: 1px 4px 0px 4px;');
+        rightButton.innerHTML = "&#x1405";
+        rightButton.addEventListener("click", valueText.increase);
+
         this._element.appendChild(checkbox);
+        this._element.appendChild(leftButton);
+        this._element.appendChild(valueText);
+        this._element.appendChild(rightButton);
+        this._element.appendChild(infoText);
+
+        this._element.appendChild(this._host.document.createElement("br"));
+        this._element.appendChild(this._host.document.createElement("br"));
       }
     }
-    this._element.appendChild(this._host.document.createElement("br"));
 
     this._image = null;
     this.updateImage();
+    this.updateUI();
+  }
+
+  updateUI() {
+    for (let i = 0; i < this._valueTexts.length; ++i) {
+      this._infoTexts[i].setText();
+      this._valueTexts[i].disabled = this._axes.includes(i);
+    }
   }
 
   updateImage() {
@@ -767,7 +853,7 @@ sidebar.VisualTensorView = class {
       return;
     }
     try {
-      this._image = tensorToImage(this._tensor, this._axes[0], this._axes[1], this._host.document);
+      this._image = tensorToImage(this._tensor, this._axes[1], this._axes[0], this._values, this._host.document);
       this._element.appendChild(this._image);
     } catch (err) {
       // do nothing
@@ -912,6 +998,9 @@ sidebar.ArgumentView = class {
           const valueLine = this._host.document.createElement("div");
           try {
             const state = initializer.state;
+            if (!state) {
+              this._element.appendChild(new sidebar.VisualTensorView(this._host, JSON.parse(initializer.toString()))._element);
+            }
             if (
               state === null &&
               this._host.save &&
@@ -932,9 +1021,6 @@ sidebar.ArgumentView = class {
 
             valueLine.className = "sidebar-view-item-value-line-border";
             contentLine.innerHTML = state || initializer.toString();
-            if (!state) {
-              this._element.appendChild(new sidebar.VisualTensorView(this._host, JSON.parse(initializer.toString()))._element);
-            }
           } catch (err) {
             contentLine.innerHTML = err.toString();
             this._raise("error", err);
