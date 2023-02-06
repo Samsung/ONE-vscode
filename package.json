@@ -157,9 +157,14 @@
       },
       {
         "command": "one.explorer.runCfg",
-        "title": "Run with the toolchain",
+        "title": "Run with the toolchain (Ctrl+F7)",
         "category": "ONE",
         "icon": "$(play)"
+      },
+      {
+        "command": "one.explorer.runSingleSelectedCfg",
+        "title": "Run selected with the toolchain",
+        "category": "ONE"
       },
       {
         "command": "one.explorer.rename",
@@ -246,6 +251,13 @@
         "command": "one.viewer.metadata.showFromOneExplorer",
         "title": "ONE: Show Metadata",
         "category": "ONE"
+      }
+    ],
+    "keybindings": [
+      {
+          "command": "one.explorer.runSingleSelectedCfg",
+          "key": "ctrl+f7",
+          "when": "OneExplorerView.active && one.explorer:hasSelectedCfg"
       }
     ],
     "menus": {

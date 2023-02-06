@@ -482,6 +482,8 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
 
   public static didHideExtra: boolean = false;
 
+  public static hasSelectedCfg: boolean = false;
+
   public static register(context: vscode.ExtensionContext) {
     const provider = new OneTreeDataProvider(context.extension.extensionKind);
 
@@ -489,6 +491,9 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
       treeDataProvider: provider,
       showCollapseAll: true,
       canSelectMany: true,
+    });
+    provider._treeView.onDidChangeSelection(() => {
+      provider.refreshCfgSelection();
     });
 
     let registrations = [
@@ -559,6 +564,26 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
       vscode.commands.registerCommand("one.explorer.runCfg", (node: Node) => {
         vscode.commands.executeCommand("one.toolchain.runCfg", node.uri.fsPath);
       }),
+      vscode.commands.registerCommand(
+        "one.explorer.runSingleSelectedCfg",
+        () => {
+          let selectedCfg = provider.getSelectedCfg();
+          if (selectedCfg && selectedCfg.length === 1) {
+            vscode.commands.executeCommand(
+              "one.toolchain.runCfg",
+              selectedCfg[0].uri.fsPath
+            );
+          } else if (!selectedCfg || selectedCfg.length === 0) {
+            // TODO: handle for none selection
+            vscode.window.showErrorMessage("No selected cfg file to run.");
+          } else if (selectedCfg.length > 1) {
+            // TODO: handle for multiple selection
+            vscode.window.showErrorMessage(
+              "Cannot run multiple cfg files. Please select a single cfg file."
+            );
+          }
+        }
+      ),
       vscode.commands.registerCommand("one.explorer.delete", (node: Node) =>
         provider.delete(node)
       ),
@@ -599,6 +624,11 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
       "setContext",
       "one.explorer:didHideExtra",
       OneTreeDataProvider.didHideExtra
+    );
+    vscode.commands.executeCommand(
+      "setContext",
+      "one.explorer:hasSelectedCfg",
+      OneTreeDataProvider.hasSelectedCfg
     );
   }
 
@@ -671,10 +701,29 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
         OneStorage.reset();
         // Reset the root in order to build from scratch (at OneTreeDataProvider.getTree)
         this._tree = undefined;
+        // Update selection info
+        this.refreshCfgSelection();
       }
       this._onDidChangeTreeData.fire(undefined);
     } else {
       this._onDidChangeTreeData.fire(node);
+    }
+  }
+
+  /**
+   * Refresh hasSelectedCfg parameter
+   */
+  refreshCfgSelection(): void {
+    const selectedCfg = this.getSelectedCfg();
+    const newValue: boolean =
+      selectedCfg !== undefined && selectedCfg!.length > 0;
+    if (OneTreeDataProvider.hasSelectedCfg !== newValue) {
+      OneTreeDataProvider.hasSelectedCfg = newValue;
+      vscode.commands.executeCommand(
+        "setContext",
+        "one.explorer:hasSelectedCfg",
+        OneTreeDataProvider.hasSelectedCfg
+      );
     }
   }
 
@@ -947,6 +996,25 @@ input_path=${modelName}.${extName}
           }
         });
       });
+  }
+
+  /**
+   * This function returns selected config items
+   * @returns selected config items
+   */
+  private getSelectedCfg(): Node[] | undefined {
+    if (this._treeView?.selection === undefined) {
+      return undefined;
+    }
+
+    const configs: Node[] = [];
+    for (var node of this._treeView!.selection) {
+      if (node.type === NodeType.config) {
+        configs.push(node);
+      }
+    }
+
+    return configs;
   }
 
   /**
