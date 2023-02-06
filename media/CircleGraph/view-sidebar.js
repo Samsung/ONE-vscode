@@ -679,16 +679,25 @@ function normalizeTensor(tensor, axis1, axis2, values) {
 }
 
 function tensorToImage(tensor, axis1, axis2, values, document) {
-  let scale = 12;
+  const scale = 12;
   let imageData = normalizeTensor(tensor, axis1, axis2, values);
   let height = imageData.length;
   let width = imageData[0].length;
   let canvas = document.createElement('canvas');
+  canvas.imageData = imageData;
   canvas.width = width * scale;
   canvas.height = height * scale;
   let ctx = canvas.getContext('2d');
   ctx.imageSmoothingEnabled = false;
   let imageDataArray = new Uint8ClampedArray(height * width * 4);
+  canvas.getValue = (clientX, clientY) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = Math.floor(Math.min(Math.max(clientX - rect.left, 0), canvas.width - 0.1) / scale);
+    const y = Math.floor(Math.min(Math.max(clientY - rect.top, 0), canvas.height - 0.1) / scale);
+    // for now the function returns normalized values
+    // TODO: return original values
+    return canvas.imageData[y][x];
+  };
   for (let i = 0; i < height; i++) {
     for (let j = 0; j < width; j++) {
       let value = imageData[i][j];
@@ -832,7 +841,7 @@ sidebar.VisualTensorView = class {
       }
     }
 
-    this._image = null;
+    this._imageContainer = null;
     this.updateImage();
     this.updateUI();
   }
@@ -845,16 +854,21 @@ sidebar.VisualTensorView = class {
   }
 
   updateImage() {
-    if (this._image) {
-      this._element.removeChild(this._image);
+    if (this._imageContainer) {
+      this._element.removeChild(this._imageContainer);
     }
-    this._image = null;
+    this._imageContainer = null;
     if (this._axes.length < 2) {
       return;
     }
     try {
+      this._imageContainer = this._host.document.createElement("div");
       this._image = tensorToImage(this._tensor, this._axes[1], this._axes[0], this._values, this._host.document);
-      this._element.appendChild(this._image);
+      this._image.addEventListener("mousemove", (e) => {
+        this._imageContainer.title = this._image.getValue(e.clientX, e.clientY);
+      }, false);
+      this._imageContainer.appendChild(this._image);
+      this._element.appendChild(this._imageContainer);
     } catch (err) {
       // do nothing
     }
