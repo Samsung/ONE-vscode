@@ -637,8 +637,9 @@ function getTensorShape(array) {
 
 function getTensorValue(tensor, index) {
   let value = tensor;
-  for (const i of index)
-    {value = value[i];}
+  for (const i of index) {
+    value = value[i];
+  }
   return value;
 }
 
@@ -708,12 +709,71 @@ function tensorToImage(tensor, axis1, axis2, document, values = {}) {
   let imageDataImage = new ImageData(imageDataArray, width, height);
   ctx.putImageData(imageDataImage, 0, 0);
 
-  //scale
+  // scale
   ctx.scale(scale, scale);
   ctx.drawImage(canvas, 0, 0);
 
   return canvas;
 }
+
+sidebar.VisualTensorView = class {
+  constructor(host, tensor) {
+    this._host = host;
+    this._tensor = tensor;
+
+    this._element = this._host.document.createElement("div");
+    this._element.class = "sidebar-view-item-value-line-border";
+
+    this._tensorShape = getTensorShape(this._tensor);
+    if (this._tensorShape.length < 2) {
+      return this;
+    }
+    this._axes = [this._tensorShape.length - 2, this._tensorShape.length - 1];
+    // add axes selection checkboxes
+    if (this._tensorShape.length > 2) {
+      this._checkboxes = [];
+      for (let i = 0; i < this._tensorShape.length; ++i) {
+        let checkbox = this._host.document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = this._axes.includes(i);
+        checkbox.addEventListener("change", () => {
+          if (checkbox.checked) {
+            if (this._axes.length >= 2) {
+              this._checkboxes[this._axes[0]].checked = false;
+              this._axes.shift();
+            }
+            this._axes.push(i);
+          } else {
+            this._axes.splice(this._axes.indexOf(i), 1);
+          }
+          this.updateImage();
+        });
+        this._checkboxes.push(checkbox);
+        this._element.appendChild(checkbox);
+      }
+    }
+    this._element.appendChild(this._host.document.createElement("br"));
+
+    this._image = null;
+    this.updateImage();
+  }
+
+  updateImage() {
+    if (this._image) {
+      this._element.removeChild(this._image);
+    }
+    this._image = null;
+    if (this._axes.length < 2) {
+      return;
+    }
+    try {
+      this._image = tensorToImage(this._tensor, this._axes[0], this._axes[1], this._host.document);
+      this._element.appendChild(this._image);
+    } catch (err) {
+      // do nothing
+    }
+  }
+};
 
 sidebar.ArgumentView = class {
   constructor(host, argument) {
@@ -873,14 +933,7 @@ sidebar.ArgumentView = class {
             valueLine.className = "sidebar-view-item-value-line-border";
             contentLine.innerHTML = state || initializer.toString();
             if (!state) {
-              try {
-                const imageLine = this._host.document.createElement("div");
-                imageLine.className = "sidebar-view-item-value-line-border";
-                imageLine.appendChild(tensorToImage(JSON.parse(initializer.toString()), 2, 3, this._host.document));
-                this._element.appendChild(imageLine);
-              } catch (err) {
-                // do nothing
-              }
+              this._element.appendChild(new sidebar.VisualTensorView(this._host, JSON.parse(initializer.toString()))._element);
             }
           } catch (err) {
             contentLine.innerHTML = err.toString();
