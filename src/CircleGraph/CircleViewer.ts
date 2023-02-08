@@ -28,6 +28,7 @@ class CircleViewer extends CircleGraphCtrl {
   constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
     super(extensionUri, panel.webview);
     this._panel = panel;
+    this.enableVisualTensorView();
   }
 
   public owner(panel: vscode.WebviewPanel) {

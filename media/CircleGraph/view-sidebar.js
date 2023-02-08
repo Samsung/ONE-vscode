@@ -1012,7 +1012,7 @@ sidebar.ArgumentView = class {
           const valueLine = this._host.document.createElement("div");
           try {
             const state = initializer.state;
-            if (!state) {
+            if (!state && __enableVisualTensorView === "true") {
               this._element.appendChild(new sidebar.VisualTensorView(this._host, JSON.parse(initializer.toString()))._element);
             }
             if (
