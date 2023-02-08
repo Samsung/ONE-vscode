@@ -693,8 +693,7 @@ function normalizeTensor(tensor, axis1, axis2, values) {
 // 'axis2' of a tensor corresponds to heatmap x
 // 'values' fix all other axes values for the tensor
 // values[axis1] and values[axis2] are ignored
-function tensorToImage(tensor, axis1, axis2, values, document) {
-  const scale = 12;
+function tensorToImage(tensor, axis1, axis2, values, scale, document) {
   let imageData = normalizeTensor(tensor, axis1, axis2, values);
   let height = imageData.length;
   let width = imageData[0].length;
@@ -767,6 +766,64 @@ sidebar.VisualTensorView = class {
     // values of all other axes
     this._values = Array(this._tensorShape.length);
     this._values.fill(0);
+
+    this._scale = 12;
+
+    // scale label
+    let scaleText = this._host.document.createElement("div");
+    scaleText.setAttribute('style', 'float: left;');
+    scaleText.innerHTML = "scale:";
+
+    // scale value text
+    let scaleValue = this._host.document.createElement("div");
+    scaleValue.setAttribute('style', 'float: left;');
+    scaleValue.innerHTML = this._scale;
+
+    // scale down button
+    let scaleDownButton = this._host.document.createElement("div");
+    scaleDownButton.className = "sidebar-view-item-value-expander";
+    scaleDownButton.setAttribute('style', 'float: left; padding: 1px 4px 0px 4px;');
+    // left arrow symbol
+    scaleDownButton.innerHTML = "&#x140A";
+    scaleDownButton.addEventListener("click", () => {
+      this._scale = Math.max(this._scale - 1, 1);
+      scaleValue.innerHTML = this._scale;
+      this.updateImage();
+    });
+
+    // scale up button
+    let scaleUpButton = this._host.document.createElement("div");
+    scaleUpButton.className = "sidebar-view-item-value-expander";
+    scaleUpButton.setAttribute('style', 'float: left; padding: 1px 4px 0px 4px;');
+    // right arrow symbol
+    scaleUpButton.innerHTML = "&#x1405";
+    scaleUpButton.addEventListener("click", () => {
+      this._scale = Math.max(this._scale + 1, 1);
+      scaleValue.innerHTML = this._scale;
+      this.updateImage();
+    });
+
+    // swap axes button
+    let swapAxesButton = this._host.document.createElement("div");
+    swapAxesButton.className = "sidebar-view-item-value-expander";
+    swapAxesButton.setAttribute('style', 'float: left; padding: 1px 4px 0px 4px;');
+    swapAxesButton.innerHTML = "swap axes";
+    swapAxesButton.addEventListener("click", () => {
+      [this._axes[0], this._axes[1]] = [this._axes[1], this._axes[0]];
+      this.updateImage();
+      this.updateUI();
+    });
+
+    // append the UI elements to root
+    this._element.appendChild(scaleText);
+    this._element.appendChild(scaleDownButton);
+    this._element.appendChild(scaleValue);
+    this._element.appendChild(scaleUpButton);
+    this._element.appendChild(swapAxesButton);
+
+    // new line
+    this._element.appendChild(this._host.document.createElement("br"));
+    this._element.appendChild(this._host.document.createElement("br"));
 
     this._checkboxes = [];
     this._valueTexts = [];
@@ -907,7 +964,7 @@ sidebar.VisualTensorView = class {
     }
     try {
       this._imageContainer = this._host.document.createElement("div");
-      this._image = tensorToImage(this._tensor, this._axes[1], this._axes[0], this._values, this._host.document);
+      this._image = tensorToImage(this._tensor, this._axes[1], this._axes[0], this._values, this._scale, this._host.document);
       // add event listener to update tooltip on mouse move
       this._image.addEventListener("mousemove", (e) => {
         this._imageContainer.title = this._image.getValue(e.clientX, e.clientY);
