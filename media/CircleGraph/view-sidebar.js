@@ -684,7 +684,6 @@ function tensorToImage(tensor, axis1, axis2, values, document) {
   let height = imageData.length;
   let width = imageData[0].length;
   let canvas = document.createElement('canvas');
-  canvas.imageData = imageData;
   canvas.width = width * scale;
   canvas.height = height * scale;
   let ctx = canvas.getContext('2d');
@@ -694,9 +693,10 @@ function tensorToImage(tensor, axis1, axis2, values, document) {
     const rect = canvas.getBoundingClientRect();
     const x = Math.floor(Math.min(Math.max(clientX - rect.left, 0), canvas.width - 0.1) / scale);
     const y = Math.floor(Math.min(Math.max(clientY - rect.top, 0), canvas.height - 0.1) / scale);
-    // for now the function returns normalized values
-    // TODO: return original values
-    return canvas.imageData[y][x];
+    let index = values.slice();
+    index[axis1] = y;
+    index[axis2] = x;
+    return getTensorValue(tensor, index);
   };
   for (let i = 0; i < height; i++) {
     for (let j = 0; j < width; j++) {
