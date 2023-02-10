@@ -251,6 +251,11 @@
         "command": "one.viewer.metadata.showFromOneExplorer",
         "title": "ONE: Show Metadata",
         "category": "ONE"
+      },
+      {
+        "command": "one.editor.cfg.setDefaultValues",
+        "title": "ONE: Set Default Values",
+        "category": "ONE"
       }
     ],
     "keybindings": [
@@ -258,6 +263,11 @@
           "command": "one.explorer.runSingleSelectedCfg",
           "key": "ctrl+f7",
           "when": "OneExplorerView.active && one.explorer:hasSelectedCfg"
+      },
+      {
+        "command": "one.cfgEditor.setDefaultValues",
+        "key": "ctrl+shift+/",
+        "when": "activeCustomEditorId == one.editor.cfg"
       }
     ],
     "menus": {
