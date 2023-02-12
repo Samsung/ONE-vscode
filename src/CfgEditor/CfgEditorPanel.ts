@@ -40,6 +40,7 @@ Some part of this code refers to
 https://github.com/microsoft/vscode-extension-samples/blob/2556c82cb333cf65d372bd01ac30c35ea1898a0e/custom-editor-sample/src/catScratchEditor.ts
 */
 
+import * as path from "path";
 import * as vscode from "vscode";
 
 import { getNonce } from "../Utils/external/Nonce";
@@ -51,6 +52,8 @@ import { CfgData } from "./CfgData";
 export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
   private _disposables: vscode.Disposable[] = [];
   private _oneConfigMap: any = {};
+  private _activeDocument: vscode.TextDocument | undefined;
+  private _activeWebviewPanel: vscode.WebviewPanel | undefined;
 
   public static readonly viewType = "one.editor.cfg";
 
@@ -68,6 +71,18 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
         }
       ),
       // Add command registration here
+      vscode.commands.registerCommand("one.cfgEditor.setDefaultValues", () => {
+        if (!provider._activeWebviewPanel || !provider._activeDocument) {
+          return;
+        }
+
+        const cfgName = path.parse(provider._activeDocument!.fileName).name;
+
+        provider._activeWebviewPanel!.webview.postMessage({
+          type: "setDefaultValues",
+          name: cfgName,
+        });
+      }),
     ];
 
     registrations.forEach((disposable) =>
@@ -82,6 +97,8 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
     webviewPanel: vscode.WebviewPanel,
     _token: vscode.CancellationToken
   ): Promise<void> {
+    this._activeWebviewPanel = webviewPanel;
+    this._activeDocument = document;
     this._oneConfigMap[document.uri.toString()] = new CfgData();
     await this.initWebview(document, webviewPanel.webview);
     this.initWebviewPanel(document, webviewPanel);
@@ -223,6 +240,8 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
     webviewPanel.onDidChangeViewState(
       () => {
         if (webviewPanel.visible) {
+          this._activeWebviewPanel = webviewPanel;
+          this._activeDocument = document;
           vscode.commands.executeCommand(
             "one.explorer.revealInOneExplorer",
             document.fileName

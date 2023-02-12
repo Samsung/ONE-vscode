@@ -58,6 +58,9 @@ function main() {
       case "displayCfgToEditor":
         displayCfgToEditor(message.text);
         break;
+      case "setDefaultValues":
+        setDefaultValues(message.name);
+        break;
       case "applyDialogPath":
         document.getElementById(message.elemID).value = message.path;
         switch (message.step) {
@@ -99,6 +102,55 @@ function main() {
   });
 
   postMessageToVsCode({ type: "requestDisplayCfg" });
+}
+
+function setDefaultValues(name) {
+  // import step
+  let importedName = name;
+  let importedExt = name + ".circle";
+  const importTypeInfo = {
+    pb: ["PBOutputPath", updateImportPB],
+    saved: ["SAVEDOutputPath", updateImportSAVED],
+    keras: ["KERASOutputPath", updateImportKERAS],
+    tflite: ["TFLITEOutputPath", updateImportTFLITE],
+    onnx: ["ONNXOutputPath", updateImportONNX],
+  };
+  const curInputType = document.getElementById("importInputModelType").value;
+  if (curInputType in importTypeInfo) {
+    const fieldId = importTypeInfo[curInputType][0];
+    const updateFunc = importTypeInfo[curInputType][1];
+
+    document.getElementById(fieldId).value = importedExt;
+    updateFunc();
+  } else {
+    return;
+  }
+
+  // optimization step parameters
+  let optimizedName = importedName + ".opt";
+  let optimizedExt = optimizedName + ".circle";
+  document.getElementById("optimizeInputPath").value = importedExt;
+  document.getElementById("optimizeOutputPath").value = optimizedExt;
+  updateOptimize();
+
+  // quantization step parameters
+  const qType = document.getElementById("DefaultQuantQuantizedDtype").value;
+  const qSuffix = qType === "uint8" ? ".q8" : ".q16";
+  const optimizationUsed = document.getElementById("checkboxOptimize").checked;
+  let quantizedName = optimizationUsed
+    ? optimizedName + qSuffix
+    : importedName + qSuffix;
+  let quantizedExt = quantizedName + ".circle";
+  // input
+  document.getElementById("DefaultQuantInputPath").value = optimizationUsed
+    ? optimizedExt
+    : importedExt;
+  // output
+  document.getElementById("DefaultQuantOutputPath").value = quantizedExt;
+  updateQuantizeDefault();
+
+  // apply
+  applyUpdates();
 }
 
 function registerSteps() {
