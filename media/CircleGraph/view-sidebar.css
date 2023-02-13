@@ -70,6 +70,9 @@ https://github.com/lutzroeder/netron/blob/ae449ff55642636e6a1eef092eda34ffcba1c6
 .sidebar-view-item-value-line-content { white-space: pre; word-wrap: normal; overflow: auto; display: block; }
 .sidebar-view-item-value-expander { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; float: right; color: #aaa; cursor: pointer; user-select: none; -webkit-user-select: none; -moz-user-select: none; padding: 4px 6px 4px 6px; }
 .sidebar-view-item-value-expander:hover { color: #000; }
+.sidebar-view-item-value-number { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; text-align: center; float: left; font-size: 11px !important; width: 14px !important; height: 11px !important; }
+.sidebar-view-item-value-number::-webkit-outer-spin-button,
+.sidebar-view-item-value-number::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .sidebar-view-item-select {
     font-family: inherit; font-size: 12px;
     background-color: #fcfcfc; border: #fcfcfc; color: #333;
