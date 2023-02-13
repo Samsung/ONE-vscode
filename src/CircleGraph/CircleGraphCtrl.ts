@@ -83,6 +83,7 @@ export class CircleGraphCtrl {
   protected _selectionNames: string[] | undefined;
   protected _state: CtrlStatus;
   protected _viewMode: string;
+  protected _enableVisualTensorView: boolean;
 
   private _ctrlDisposables: vscode.Disposable[] = [];
 
@@ -94,6 +95,7 @@ export class CircleGraphCtrl {
     this._eventHandler = undefined;
     this._state = CtrlStatus.init;
     this._viewMode = "viewer";
+    this._enableVisualTensorView = false;
   }
 
   public initGraphCtrl(
@@ -134,6 +136,10 @@ export class CircleGraphCtrl {
 
   public setModel(model: string) {
     this._modelToLoad = model;
+  }
+
+  public enableVisualTensorView() {
+    this._enableVisualTensorView = true;
   }
 
   /**
@@ -462,6 +468,8 @@ export class CircleGraphCtrl {
     html = this.updateUri(html, webview, "%view.js%", "view.js");
     // viewMode
     html = html.replace("%viewMode%", this._viewMode);
+    // VisualTensorView
+    html = html.replace("%enableVisualTensorView%", this._enableVisualTensorView ? "true" : "false");
 
     return html;
   }
