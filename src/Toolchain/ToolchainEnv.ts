@@ -17,6 +17,7 @@
 import { strict as assert } from "assert";
 import * as path from "path";
 
+import * as vscode from 'vscode';
 import { Compiler } from "../Backend/Compiler";
 import { Toolchain } from "../Backend/Toolchain";
 import { BuilderJob } from "../Job/BuilderJob";
@@ -182,8 +183,14 @@ class ToolchainEnv extends Env {
       const jobs: Array<Job> = [];
       const job = new JobConfig(toolchain.run(cfg));
       job.workDir = path.dirname(cfg);
-      job.successCallback = () => resolve(true);
-      job.failureCallback = () => reject();
+      job.successCallback = () => {
+        vscode.commands.executeCommand("one.explorer.rebuild", cfg);
+        resolve(true);
+      };
+      job.failureCallback = () => {
+        vscode.commands.executeCommand("one.explorer.rebuild", cfg);
+        reject();
+      };
       jobs.push(job);
       this.executeEnv(jobs);
     });
