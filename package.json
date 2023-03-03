@@ -128,6 +128,16 @@
           }
         ],
         "priority": "default"
+      },
+      {
+        "viewType": "one.editor.mpq",
+        "displayName": "MPQ Editor",
+        "selector": [
+          {
+            "filenamePattern": "*.mpq.json"
+          }
+        ],
+        "priority": "default"
       }
     ],
     "commands": [
@@ -256,6 +266,11 @@
         "command": "one.editor.cfg.setDefaultValues",
         "title": "ONE: Set Default Values",
         "category": "ONE"
+      },
+      {
+        "command": "one.editor.mpq.showFromDefaultExplorer",
+        "title": "Create MPQ json",
+        "category": "ONE"
       }
     ],
     "keybindings": [
@@ -370,6 +385,10 @@
           "command": "one.viewer.metadata.showFromDefaultExplorer",
           "when": "resourceExtname in one.metadata.supportedFiles && !explorerResourceIsFolder",
           "group": "7_metadata@1"
+        },
+        {
+          "command": "one.editor.mpq.showFromDefaultExplorer",
+          "group": "7_metadata@2"
         }
       ],
       "commandPalette": [
