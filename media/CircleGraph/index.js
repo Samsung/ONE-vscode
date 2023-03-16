@@ -52,6 +52,7 @@ const viewMode = {
   viewer: 0, // default circle viewer
   selector: 1, // circle partition editor node selector
   visq: 2, // quantization error viewer
+  visqselector: 3, //quantization error viewer which is able to select nodes
   // refer https://github.com/Samsung/ONE-vscode/issues/1350
 };
 
@@ -97,6 +98,8 @@ host.BrowserHost = class {
       this._mode = viewMode.selector;
     } else if (__viewMode === "visq") {
       this._mode = viewMode.visq;
+    } else if (__viewMode === "visqselector") {
+      this._mode = viewMode.visqselector;
     }
   }
 
@@ -166,6 +169,9 @@ host.BrowserHost = class {
           break;
         case "visq":
           this._msgVisq(message);
+          break;
+        case "scrollToSelected":
+          this._view.setScrollToSelected(message.value);
           break;
       }
     });
@@ -263,7 +269,7 @@ host.BrowserHost = class {
       });
 
     this._view.show("welcome spinner");
-    if (this._mode === viewMode.visq) {
+    if (this._mode === viewMode.visq || this._mode === viewMode.visqselector) {
       // request visq data prior to model
       // model is inside visq data
       vscode.postMessage({ command: "visq" });
