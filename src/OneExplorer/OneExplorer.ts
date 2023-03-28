@@ -1027,22 +1027,21 @@ input_path=${modelName}.${extName}
   }
 
   getTreeItem(node: Node): OneNode {
-    if (node.type === NodeType.directory) {
-      return new OneNode(vscode.TreeItemCollapsibleState.Expanded, node);
-    } else if (node.type === NodeType.product) {
-      return new OneNode(vscode.TreeItemCollapsibleState.None, node);
-    } else if (
-      node.type === NodeType.baseModel ||
-      node.type === NodeType.config
-    ) {
-      return new OneNode(
-        node.getChildren().length > 0
-          ? vscode.TreeItemCollapsibleState.Collapsed
-          : vscode.TreeItemCollapsibleState.None,
-        node
-      );
-    } else {
-      throw Error("Undefined NodeType");
+    switch (node.type) {
+      case NodeType.directory:
+        return new OneNode(vscode.TreeItemCollapsibleState.Expanded, node);
+      case NodeType.product:
+        return new OneNode(vscode.TreeItemCollapsibleState.None, node);
+      case NodeType.baseModel:
+      case NodeType.config:
+        return new OneNode(
+          node.getChildren().length > 0
+            ? vscode.TreeItemCollapsibleState.Collapsed
+            : vscode.TreeItemCollapsibleState.None,
+          node
+        );
+      default:
+        throw Error("Undefined NodeType");
     }
   }
 
