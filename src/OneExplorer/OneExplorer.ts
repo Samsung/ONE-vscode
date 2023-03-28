@@ -887,40 +887,31 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
   delete(node: Node): void {
     const isDirectory = node.type === NodeType.directory;
 
-    let recursive: boolean;
-    let title = `Are you sure you want to delete '${node.name}'`;
-    if (isDirectory) {
-      title += ` and its contents?`;
-      recursive = true;
-    } else {
-      title += `?`;
-      recursive = false;
-    }
-
-    let detail: string | undefined;
-    let approval: string;
-
-    if (this.isRemote) {
-      approval = "Delete";
-      detail = "The file will be deleted permanently.";
-    } else {
-      approval = "Move to Trash";
-      detail = `You can restore this file from the Trash.`;
-    }
+    const title = isDirectory
+      ? `Are you sure you want to delete '${node.name}' and its contents?`
+      : `Are you sure you want to delete '${node.name}?`;
+    const recursive = isDirectory ? true : false;
+    const approval = this.isRemote ? "Delete" : "Move to Trash";
+    const detail = this.isRemote
+      ? "The file will be deleted permanently."
+      : `You can restore this file from the Trash.`;
 
     vscode.window
       .showInformationMessage(title, { detail: detail, modal: true }, approval)
       .then((ans) => {
-        if (ans === approval) {
-          Logger.info("OneExplorer", `Delete '${node.name}'.`);
-
-          const edit = new vscode.WorkspaceEdit();
-          edit.deleteFile(node.uri, {
-            recursive: recursive,
-            ignoreIfNotExists: true,
-          });
-          vscode.workspace.applyEdit(edit);
+        if (ans !== approval) {
+          return;
         }
+
+        Logger.info("OneExplorer", `Delete '${node.name}'.`);
+
+        const edit = new vscode.WorkspaceEdit();
+        edit.deleteFile(node.uri, {
+          recursive: recursive,
+          ignoreIfNotExists: true,
+        });
+
+        vscode.workspace.applyEdit(edit);
       });
   }
 
