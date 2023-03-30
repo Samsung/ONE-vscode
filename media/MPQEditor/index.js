@@ -38,6 +38,7 @@ function main() {
     }
   });
 
+  vscode.postMessage({ type: "requestDisplayMPQ" });
   vscode.postMessage({ type: "requestModelNodes" });
 }
 
