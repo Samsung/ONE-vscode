@@ -69,7 +69,7 @@ export class MPQEditorProvider implements vscode.CustomTextEditorProvider {
     document: vscode.TextDocument,
     webviewPanel: vscode.WebviewPanel
   ): Promise<void> {
-    let webview: vscode.Webview = webviewPanel.webview;
+    const webview: vscode.Webview = webviewPanel.webview;
 
     webview.options = {
       enableScripts: true,
