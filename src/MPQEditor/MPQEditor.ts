@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import * as fs from "fs";
+import * as path from "path";
 import * as vscode from "vscode";
 
 import { getNonce } from "../Utils/external/Nonce";
@@ -46,6 +48,30 @@ export class MPQEditorProvider implements vscode.CustomTextEditorProvider {
     registrations.forEach((disposable) =>
       context.subscriptions.push(disposable)
     );
+  }
+
+  /**
+   * @brief A helper function to validate mpqName
+   * @note It checks whether
+   * (1) 'mpqName' already exists in 'dirPath' directory
+   * (2) 'mpqName' has valid extension
+   * @returns 'undefined' on success or the cause of failure otherwise
+   */
+  public static validateMPQName(
+    dirPath: string,
+    mpqName: string
+  ): string | undefined {
+    const mpqPath: string = path.join(dirPath, mpqName);
+
+    if (!mpqPath.endsWith(MPQEditorProvider.fileExtension)) {
+      return "A file extension must be " + MPQEditorProvider.fileExtension;
+    }
+
+    if (fs.existsSync(mpqPath)) {
+      return `A file or folder ${mpqPath} already exists at this location. Please choose a different name.`;
+    }
+
+    return undefined;
   }
 
   constructor(private readonly context: vscode.ExtensionContext) {}
