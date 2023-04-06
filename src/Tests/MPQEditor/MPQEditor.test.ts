@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import * as fs from "fs";
+import * as path from "path";
+
 import { assert } from "chai";
 import { MPQEditorProvider } from "../../MPQEditor/MPQEditor";
 import { TestBuilder } from "../TestBuilder";
@@ -90,6 +93,42 @@ suite("MPQEditor", function () {
       test("NEG: findMPQName throws on empty string", function () {
         const dirPath: string = testBuilder.dirInTemp;
         assert.throws(() => MPQEditorProvider.findMPQName("", dirPath));
+      });
+    });
+
+    suite("#createDefaultMPQ", function () {
+      test("test createDefaultMPQ", function () {
+        // create dummy mpq.json file
+        const dirPath: string = testBuilder.dirInTemp;
+        const mpqName: string = "model-test-createMPQ.mpq.json";
+        const circleName: string = "model-test-createMPQ.circle";
+        MPQEditorProvider.createDefaultMPQ(mpqName, dirPath, circleName).then(
+          (uri) => {
+            assert.isTrue(uri !== undefined);
+            const mpqPath: string = path.join(dirPath, mpqName);
+            assert.isTrue(fs.existsSync(mpqPath));
+            const contents: string = fs.readFileSync(mpqPath, "utf-8");
+            const cont: any = JSON.parse(contents);
+            assert.strictEqual(cont["default_quantization_dtype"], "uint8");
+            assert.strictEqual(cont["default_granularity"], "channel");
+            assert.strictEqual(cont["model_path"], circleName);
+          }
+        );
+      });
+      test("NEG: test createDefaultMPQ on exsisting file", function () {
+        // create dummy mpq.json file
+        const dirPath: string = testBuilder.dirInTemp;
+        const mpqName: string = "model-test-createMPQ_NEG.mpq.json";
+        const circleName: string = "model-test-createMPQ_NEG.circle";
+
+        const content = `empty content`;
+        testBuilder.writeFileSync(mpqName, content);
+
+        MPQEditorProvider.createDefaultMPQ(mpqName, dirPath, circleName).then(
+          (uri) => {
+            assert.isTrue(uri === undefined);
+          }
+        );
       });
     });
   });

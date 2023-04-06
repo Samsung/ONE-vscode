@@ -52,6 +52,38 @@ export class MPQEditorProvider implements vscode.CustomTextEditorProvider {
   }
 
   /**
+   * @brief create file with default mpq configuration
+   * @returns valid uri of file on success or undefined on failure
+   */
+  public static async createDefaultMPQ(
+    mpqName: string,
+    dirPath: string,
+    circleName: string
+  ): Promise<vscode.Uri | undefined> {
+    const content = `{"default_quantization_dtype": "uint8",
+      "default_granularity": "channel",
+      "layers": [],
+      "model_path": "${circleName}"}`;
+
+    // 'uri' path is not occupied, assured by validateInputPath
+    const uri = vscode.Uri.file(`${dirPath}/${mpqName}`);
+
+    const edit = new vscode.WorkspaceEdit();
+    edit.createFile(uri);
+    edit.insert(uri, new vscode.Position(0, 0), content);
+
+    try {
+      await vscode.workspace.applyEdit(edit);
+      let document = await vscode.workspace.openTextDocument(uri);
+      document.save();
+    } catch (error) {
+      return undefined;
+    }
+
+    return uri;
+  }
+
+  /**
    * @brief A helper function to validate mpqName
    * @note It checks whether
    * (1) 'mpqName' already exists in 'dirPath' directory
