@@ -59,5 +59,38 @@ suite("MPQEditor", function () {
         assert.isDefined(retValue);
       });
     });
+
+    suite("#findMPQName", function () {
+      test("test findMPQName", function () {
+        const baseMPQName: string = "model";
+        const dirPath: string = testBuilder.dirInTemp;
+
+        const content = `
+            empty content
+            `;
+
+        let targetNames: string[] = [
+          "model.mpq.json",
+          "model(1).mpq.json",
+          "model(2).mpq.json",
+          "model(3).mpq.json",
+        ];
+
+        for (let i = 0; i < targetNames.length; i++) {
+          // Get file paths inside the temp directory
+          const mpqName = MPQEditorProvider.findMPQName(baseMPQName, dirPath);
+          assert.isDefined(mpqName);
+          assert.strictEqual(mpqName, targetNames[i]);
+
+          // create dummy mpq.json file
+          testBuilder.writeFileSync(mpqName!, content);
+        }
+      });
+
+      test("NEG: findMPQName throws on empty string", function () {
+        const dirPath: string = testBuilder.dirInTemp;
+        assert.throws(() => MPQEditorProvider.findMPQName("", dirPath));
+      });
+    });
   });
 });

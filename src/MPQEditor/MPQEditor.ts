@@ -15,6 +15,7 @@
  */
 
 import * as fs from "fs";
+import * as glob from "glob";
 import * as path from "path";
 import * as vscode from "vscode";
 
@@ -72,6 +73,40 @@ export class MPQEditorProvider implements vscode.CustomTextEditorProvider {
     }
 
     return undefined;
+  }
+
+  /**
+   * @brief A helper function to find unoccupied mpq file-name
+   * @returns valid file name for mpq configuration or undefined on failure
+   * @throw Error, when input is invalid (e.g. baseMPQName is empty)
+   */
+  public static findMPQName(
+    baseMPQName: string,
+    dirPath: string
+  ): string | undefined {
+    if (baseMPQName.length === 0) {
+      throw new Error("Invalid mixed precision quantization file name");
+    }
+
+    const baseName = baseMPQName;
+    let mpqName: string | undefined = undefined;
+
+    const options = { cwd: dirPath };
+    // set maximal trials as maximal quantity of files + 1
+    const files = glob.sync("*" + MPQEditorProvider.fileExtension, options);
+    const maxMPQIndex = files.length + 1;
+
+    for (let i = 0; i < maxMPQIndex; i++) {
+      mpqName = baseMPQName + MPQEditorProvider.fileExtension;
+      const mpqPath: string = path.join(dirPath, mpqName);
+      if (!fs.existsSync(mpqPath)) {
+        break;
+      }
+      baseMPQName = baseName + `(${i + 1})`;
+      mpqName = undefined;
+    }
+
+    return mpqName;
   }
 
   constructor(private readonly context: vscode.ExtensionContext) {}
