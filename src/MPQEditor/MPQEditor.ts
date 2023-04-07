@@ -210,4 +210,20 @@ export class MPQEditorProvider implements vscode.CustomTextEditorProvider {
 
     //TODO process messages
   }
+
+  /**
+   * @brief Update document by text
+   */
+  public static async updateDocumentBy(
+    document: vscode.TextDocument,
+    text: string
+  ) {
+    const edit = new vscode.WorkspaceEdit();
+    edit.replace(
+      document.uri,
+      new vscode.Range(0, 0, document.lineCount, 0),
+      text
+    );
+    await vscode.workspace.applyEdit(edit);
+  }
 }
