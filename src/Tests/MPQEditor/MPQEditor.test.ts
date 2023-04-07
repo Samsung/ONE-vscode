@@ -16,6 +16,7 @@
 
 import * as fs from "fs";
 import * as path from "path";
+import * as vscode from "vscode";
 
 import { assert } from "chai";
 import { MPQEditorProvider } from "../../MPQEditor/MPQEditor";
@@ -129,6 +130,37 @@ suite("MPQEditor", function () {
             assert.isTrue(uri === undefined);
           }
         );
+      });
+    });
+
+    suite("#updateDocumentBy", function () {
+      test("update document by", async function () {
+        const dirPath: string = testBuilder.dirInTemp;
+        const mpqName: string = "model-test-updateDocumentBy.mpq.json";
+        const circleName: string = "model-test-updateDocumentBy.circle";
+
+        const uri = await MPQEditorProvider.createDefaultMPQ(
+          mpqName,
+          dirPath,
+          circleName
+        );
+        assert.isTrue(uri !== undefined);
+
+        let document = await vscode.workspace.openTextDocument(uri!);
+
+        const newJson = `{"default_quantization_dtype": "int16",
+          "default_granularity": "layer",
+          "layers": [],
+          "model_path": "sample_1.circle"}`;
+
+        await MPQEditorProvider.updateDocumentBy(document, newJson);
+
+        document.save();
+        const newJsonText: string = document.getText();
+        const newCont = JSON.parse(newJsonText);
+        assert.strictEqual(newCont["default_quantization_dtype"], "int16");
+        assert.strictEqual(newCont["default_granularity"], "layer");
+        assert.strictEqual(newCont["model_path"], "sample_1.circle");
       });
     });
   });
