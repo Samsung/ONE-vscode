@@ -19,6 +19,7 @@ import * as glob from "glob";
 import * as path from "path";
 import * as vscode from "vscode";
 
+import { Logger } from "../Utils/Logger";
 import { getNonce } from "../Utils/external/Nonce";
 import { getUri } from "../Utils/external/Uri";
 import { MPQData } from "./MPQData";
@@ -81,6 +82,61 @@ export class MPQEditorProvider implements vscode.CustomTextEditorProvider {
     }
 
     return uri;
+  }
+
+  /**
+   * @brief Create and open for edit default mpq file
+   */
+  public static createMPQJson(uri: vscode.Uri): void {
+    const dirPath = path.parse(uri.path).dir;
+    const modelName = path.parse(uri.path).name;
+    const extName = path.parse(uri.path).ext.slice(1);
+    const circleName = path.parse(uri.path).base;
+
+    // try to guess unoccupied name for mpq.json
+    let mpqName = MPQEditorProvider.findMPQName(modelName, dirPath);
+    if (mpqName === undefined) {
+      // failed to find valid name, just revert to initial version
+      mpqName = modelName + MPQEditorProvider.fileExtension;
+    }
+
+    vscode.window
+      .showInputBox({
+        title: `Create mixed precision quantization configuration for '${modelName}.${extName}' :`,
+        placeHolder: `Enter a file name`,
+        value: mpqName,
+        valueSelection: [
+          0,
+          mpqName.length - `${MPQEditorProvider.fileExtension}`.length,
+        ],
+        validateInput: (mpqName: string): string | undefined => {
+          return MPQEditorProvider.validateMPQName(dirPath, mpqName);
+        },
+      })
+      .then((value) => {
+        if (!value) {
+          Logger.debug("MPQEditor", "User hit the escape key!");
+          return;
+        }
+
+        MPQEditorProvider.createDefaultMPQ(value!, dirPath, circleName).then(
+          (uri) => {
+            if (uri) {
+              vscode.commands.executeCommand(
+                "vscode.openWith",
+                uri,
+                MPQEditorProvider.viewType
+              );
+            } else {
+              Logger.error(
+                "MPQEditor",
+                "createMPQJson",
+                `Failed to create mpq file for the ${value}!`
+              );
+            }
+          }
+        );
+      });
   }
 
   /**
