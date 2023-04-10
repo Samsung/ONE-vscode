@@ -121,7 +121,7 @@ export class MPQEditorProvider implements vscode.CustomTextEditorProvider {
 
         MPQEditorProvider.createDefaultMPQ(value!, dirPath, circleName).then(
           (uri) => {
-            if (uri !== undefined) {
+            if (uri) {
               vscode.commands.executeCommand(
                 "vscode.openWith",
                 uri,
@@ -131,7 +131,7 @@ export class MPQEditorProvider implements vscode.CustomTextEditorProvider {
               Logger.error(
                 "MPQEditor",
                 "createMPQJson",
-                `Failed to create mpq file for the ${value!}`
+                `Failed to create mpq file for the ${value}!`
               );
             }
           }
