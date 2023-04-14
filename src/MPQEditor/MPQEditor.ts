@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import * as cp from "child_process";
 import * as fs from "fs";
 import * as glob from "glob";
 import * as path from "path";
 import * as vscode from "vscode";
 
+import { Balloon } from "../Utils/Balloon";
 import { Logger } from "../Utils/Logger";
 import { getNonce } from "../Utils/external/Nonce";
 import { getUri } from "../Utils/external/Uri";
@@ -265,6 +267,89 @@ export class MPQEditorProvider implements vscode.CustomTextEditorProvider {
     webview.html = html;
 
     //TODO process messages
+  }
+
+  /**
+   * @brief Get path of the parent .circle file
+   */
+  private getModelFilePath(document: vscode.TextDocument): string {
+    const dirPath = path.parse(document.uri.path).dir;
+    let fileName =
+      this._mpqDataMap[document.uri.toString()].getSection("model_path");
+    return path.join(dirPath, fileName);
+  }
+
+  /**
+   * @brief Get all model nodes
+   */
+  private handleRequestModelNodes(
+    document: vscode.TextDocument,
+    webview: vscode.Webview
+  ): void {
+    const K_DATA: string = "data";
+    const K_EXIT: string = "exit";
+    const K_ERROR: string = "error";
+    let modelFilePath = this.getModelFilePath(document);
+
+    // TODO integrate with Toolchain
+    const tool = "/usr/share/one/bin/circle-operator";
+    if (!fs.existsSync(tool)) {
+      // check whether it is installed
+      Balloon.info("To add more layers for editing please install Toolchain");
+      return;
+    }
+
+    const toolargs = ["--name", modelFilePath];
+    let result: string = "";
+    let error: string = "";
+
+    let runPromise = new Promise<string>((resolve, reject) => {
+      let cmd = cp.spawn(tool, toolargs, { shell: false });
+
+      cmd.stdout.on(K_DATA, (data: any) => {
+        let str = data.toString();
+        if (str.length > 0) {
+          result = result + str;
+        }
+      });
+
+      cmd.stderr.on(K_DATA, (data: any) => {
+        error = result + data.toString();
+        Logger.error("MPQEditor", error);
+      });
+
+      cmd.on(K_EXIT, (code: any) => {
+        let codestr = code.toString();
+        if (codestr === "0") {
+          resolve(result);
+        } else {
+          let msg = "Failed to load model: " + modelFilePath;
+          Balloon.error(msg);
+          reject(msg);
+        }
+      });
+
+      cmd.on(K_ERROR, () => {
+        let msg = "Failed to run circle-operator: " + modelFilePath;
+        Balloon.error(msg);
+        reject(msg);
+      });
+    });
+
+    runPromise
+      .then((names) => {
+        const layersNames = names.split(/\r?\n/);
+        this._mpqDataMap[document.uri.toString()].setAllModelLayers(
+          layersNames
+        );
+        webview.postMessage({
+          type: "modelNodesChanged",
+          names: layersNames,
+        });
+      })
+      .catch((error) => {
+        Logger.error("MPQEditor", error);
+      });
   }
 
   /**
