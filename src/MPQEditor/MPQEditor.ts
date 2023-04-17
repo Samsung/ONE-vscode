@@ -211,6 +211,8 @@ export class MPQEditorProvider implements vscode.CustomTextEditorProvider {
   ): Promise<void> {
     this._mpqDataMap[document.uri.toString()] = new MPQData();
     await this.initWebview(document, webviewPanel);
+    this.initWebviewPanel(document, webviewPanel);
+    this.updateWebview(document, webviewPanel.webview);
   }
 
   /**
@@ -267,6 +269,72 @@ export class MPQEditorProvider implements vscode.CustomTextEditorProvider {
     webview.html = html;
 
     //TODO process messages
+  }
+
+  private initWebviewPanel(
+    document: vscode.TextDocument,
+    webviewPanel: vscode.WebviewPanel
+  ): void {
+    vscode.commands.executeCommand(
+      "setContext",
+      MPQEditorProvider.viewType,
+      true
+    );
+
+    const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(
+      (e) => {
+        if (
+          e.contentChanges.length > 0 &&
+          e.document.uri.toString() === document.uri.toString()
+        ) {
+          this.updateWebview(document, webviewPanel.webview);
+        }
+      }
+    );
+
+    webviewPanel.onDidChangeViewState(
+      () => {
+        vscode.commands.executeCommand(
+          "setContext",
+          MPQEditorProvider.viewType,
+          webviewPanel.visible
+        );
+      },
+      null,
+      this._disposables
+    );
+
+    webviewPanel.onDidDispose(() => {
+      changeDocumentSubscription.dispose();
+      while (this._disposables.length) {
+        const x = this._disposables.pop();
+        if (x) {
+          x.dispose();
+        }
+      }
+      vscode.commands.executeCommand(
+        "setContext",
+        MPQEditorProvider.viewType,
+        false
+      );
+    });
+  }
+
+  /**
+   * @brief Update webview with document
+   */
+  private updateWebview(
+    document: vscode.TextDocument,
+    webview: vscode.Webview
+  ): void {
+    this._mpqDataMap[document.uri.toString()].setWithString(document.getText());
+    const content = JSON.parse(document.getText());
+    if (content !== undefined) {
+      webview.postMessage({
+        type: "displayMPQ",
+        content: content,
+      });
+    }
   }
 
   /**
