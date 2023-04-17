@@ -268,7 +268,110 @@ export class MPQEditorProvider implements vscode.CustomTextEditorProvider {
     html = html.replace(/\${codiconUri}/g, `${codiconUri}`);
     webview.html = html;
 
-    //TODO process messages
+    // Receive message from the webview.
+    webview.onDidReceiveMessage((e) => {
+      switch (e.type) {
+        case "requestDisplayMPQ":
+          this.updateWebview(document, webview);
+          break;
+        case "addSpecificLayerFromDialog":
+          this.hadleAddSpecificLayerFromDialog(document);
+          break;
+        case "updateLayers":
+          this._mpqDataMap[document.uri.toString()].setLayersSections(
+            e.names,
+            e.quantization,
+            e.granularity
+          );
+          break;
+        case "updateSpecificQuantization":
+          this._mpqDataMap[document.uri.toString()].updateSectionOfLayer(
+            e.name,
+            "dtype",
+            e.value
+          );
+          break;
+        case "updateSpecificGranularity":
+          this._mpqDataMap[document.uri.toString()].updateSectionOfLayer(
+            e.name,
+            "granularity",
+            e.value
+          );
+          break;
+        case "requestModelNodes":
+          this.handleRequestModelNodes(document, webview);
+          break;
+        case "updateSection":
+          this._mpqDataMap[document.uri.toString()].setSection(
+            e.section,
+            e.value
+          );
+          break;
+        case "updateDocument":
+          this.updateDocument(document);
+          break;
+        case "removeLayer":
+          this.handleRemoveLayerFromLayers(e.name, document);
+          break;
+        default:
+          break;
+      }
+    });
+  }
+
+  /**
+   * @brief Update document
+   */
+  private async updateDocument(document: vscode.TextDocument) {
+    if (
+      this._mpqDataMap[document.uri.toString()].getAsString() !==
+      document.getText()
+    ) {
+      MPQEditorProvider.updateDocumentBy(
+        document,
+        this._mpqDataMap[document.uri.toString()].getAsString()
+      );
+    }
+  }
+
+  /**
+   * @brief Add layers to edit their quantization parameters
+   */
+  private hadleAddSpecificLayerFromDialog(document: vscode.TextDocument) {
+    const nodes =
+      this._mpqDataMap[document.uri.toString()].getDefaultModelLayers();
+    const pickOptions = {
+      title: "Add specific layers to edit their quantization parameters",
+      matchOnDescription: true,
+      matchOnDetail: true,
+      placeHolder: "Select layers",
+      ignoreFocusOut: true,
+      canPickMany: true,
+    };
+
+    vscode.window
+      .showQuickPick(nodes, pickOptions)
+      .then((values: string | undefined) => {
+        if (!values) {
+          return;
+        }
+
+        this._mpqDataMap[document.uri.toString()].addLayers(values);
+        this.updateDocument(document);
+      });
+  }
+
+  /**
+   * @brief Remove layer from specif layers (add it to 'default' layers)
+   */
+  private handleRemoveLayerFromLayers(
+    name: string,
+    document: vscode.TextDocument
+  ) {
+    let curConf = this._mpqDataMap[document.uri.toString()];
+    curConf.setLayersToDefault([name]);
+
+    this.updateDocument(document);
   }
 
   private initWebviewPanel(
