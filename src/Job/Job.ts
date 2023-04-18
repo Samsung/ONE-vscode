@@ -48,5 +48,6 @@ export const enum JobType {
   tPrerequisites,
   tInstall,
   tUninstall,
+  tVisq,
   // TODO add more
 }

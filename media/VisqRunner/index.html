@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 
+Copyright (c) 2023 Samsung Electronics Co., Ltd. All Rights Reserved
+ 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+ 
+   http://www.apache.org/licenses/LICENSE-2.0
+ 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Security-Policy" content="img-src vscode;
+                style-src 'unsafe-inline' ${webview.cspSource};
+                script-src 'nonce-${nonce}';">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VISQ configuration runner</title>
+    <link rel="stylesheet" href="${cssUri}">
+    <link rel="stylesheet" href="${codiconUri}">
+    <script nonce="${nonce}" type="module" src="${toolkitUri}"></script>
+    <script nonce="${nonce}" type="module" src="${scriptUri}"></script>
+</head>
+<body>
+    <div class="maintitle">
+        <span class="text">Run visq on the following configuration</span>
+        <vscode-button id="RunCfg" appearance="icon" >
+            <span slot="start" class="codicon codicon-play">
+                <span class="help">
+                    Run configuration
+                </span>
+            </span>
+        </vscode-button>
+    </div>
+    <vscode-divider></vscode-divider>
+    <div>
+        <div class="title">
+            Input
+        </div>
+        <div class="sections">
+            <div>
+                <vscode-text-field id="FloatModelInputPath" startIcon="true" size="50" readonly="true" placeholder="float model path" class="input">
+                    Float model
+                    <span slot="start" class="codicon codicon-question" style="cursor: pointer">
+                        <span class="help">
+                            Path to the fp32 circle model.
+                        </span>
+                    </span>
+                    <span id="float-file" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                </vscode-text-field>
+                <vscode-text-field id="QuantizedModelInputPath" startIcon="true" size="50" readonly="true" placeholder="quantized model path" class="input">
+                    Quantized model
+                    <span slot="start" class="codicon codicon-question" style="cursor: pointer">
+                        <span class="help">
+                            Path to the quantized circle model.
+                        </span>
+                    </span>
+                    <span id="quantized-file" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                </vscode-text-field>
+                <vscode-text-field id="DataInputPath" startIcon="true" readonly="true" placeholder="h5 data path" size="50" class="input">
+                    h5 data file
+                    <span slot="start" class="codicon codicon-question" style="cursor: pointer">
+                        <span class="help">
+                            Path to the data used for inference. Random data will be used if this option is not given.
+                        </span>
+                    </span>
+                    <span id="h5-file" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                </vscode-text-field>
+            </div>
+        </div>
+        <vscode-divider></vscode-divider>
+        <div>
+            <div class="title">
+                Output
+            </div>
+            <div class="output_grid" size=50>
+                <vscode-checkbox id="MPEIR-on">MPEIR</vscode-checkbox>
+                <vscode-text-field id="MPEIROutputPath" startIcon="true" placeholder="MPEIR path" size="40">
+                    <span slot="start" class="codicon codicon-question" style="cursor: pointer">
+                        <span class="help">
+                            Path to the output json file (qerror metric = MPEIR).
+                        </span>
+                    </span>
+                    <span id="mpeir-file" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                </vscode-text-field>
+                <vscode-checkbox id="MSE-on">MSE</vscode-checkbox>
+                <vscode-text-field id="MSEOutputPath" startIcon="true" placeholder="MSE path" size="40">
+                    <span slot="start" class="codicon codicon-question" style="cursor: pointer">
+                        <span class="help">
+                            Path to the output json file (qerror metric = MSE).
+                        </span>
+                    </span>
+                    <span id="mse-file" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                </vscode-text-field>
+                <vscode-checkbox id="TAE-on">TAE</vscode-checkbox>
+                <vscode-text-field id="TAEOutputPath" startIcon="true" placeholder="TAE path" size="40">
+                    <span slot="start" class="codicon codicon-question" style="cursor: pointer">
+                        <span class="help">
+                            Path to the output json file (qerror metric = TAE).
+                        </span>
+                    </span>
+                    <span id="tae-file" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                </vscode-text-field>
+                <vscode-checkbox id="SRMSE-on">SRMSE</vscode-checkbox>
+                <vscode-text-field id="SRMSEOutputPath" startIcon="true" placeholder="SRMSE path" size="40">
+                    <span slot="start" class="codicon codicon-question" style="cursor: pointer">
+                        <span class="help">
+                            Path to the output json file (qerror metric = SRMSE).
+                        </span>
+                    </span>
+                    <span id="srmse-file" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                </vscode-text-field>
+            </div>
+        </div>
+        <vscode-divider></vscode-divider>
+        <div>
+            <div class="title">
+                Options
+            </div>
+            <div class="section">
+                <vscode-checkbox id="DumpDot">Dump dot graph</vscode-checkbox>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
