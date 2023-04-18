@@ -47,6 +47,12 @@ export class MPQEditorProvider implements vscode.CustomTextEditorProvider {
         }
       ),
       // Add command registration here
+      vscode.commands.registerCommand(
+        "one.editor.mpq.showFromDefaultExplorer",
+        (uri) => {
+          MPQEditorProvider.createMPQJson(uri);
+        }
+      ),
     ];
 
     registrations.forEach((disposable) =>
