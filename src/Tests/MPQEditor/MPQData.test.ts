@@ -166,5 +166,78 @@ suite("MPQEditor", function () {
         assert.throws(() => data.setLayersToDefault(["layer_2"]));
       });
     });
+
+    suite("#getLayers", function () {
+      test("get layers", function () {
+        let data = new MPQData();
+        data.setWithString(defaultMPQText);
+        let allLayers = ["layer_1", "layer_2"];
+        data.setAllModelLayers(allLayers);
+        // add specific layer
+        data.addLayers(["layer_1"]);
+
+        const layers = data.getLayers();
+        let index = layers?.findIndex((name) => name === "layer_1");
+
+        assert.isTrue(layers.length === 1);
+        assert.isTrue(index === 0);
+      });
+
+      test("NEG: get empty layers", function () {
+        let data = new MPQData();
+        data.setWithString(defaultMPQText);
+        const layers = data.getLayers();
+        assert(layers.length === 0);
+      });
+    });
+
+    suite("#getLayers", function () {
+      test("get layers", function () {
+        let data = new MPQData();
+        data.setWithString(defaultMPQText);
+        let allLayers = ["layer_1", "layer_2"];
+        data.setAllModelLayers(allLayers);
+        // add specific layer
+        data.addLayers(["layer_1"]);
+
+        const layers = data.getLayers();
+        let index = layers?.findIndex((name) => name === "layer_1");
+
+        assert.isTrue(layers.length === 1);
+        assert.isTrue(index === 0);
+      });
+
+      test("NEG: get empty layers", function () {
+        let data = new MPQData();
+        data.setWithString(defaultMPQText);
+        const layers = data.getLayers();
+        assert(layers.length === 0);
+      });
+    });
+
+    suite("#setLayers", function () {
+      test("set layers", function () {
+        let data = new MPQData();
+        data.setWithString(defaultMPQText);
+        let allLayers = ["layer_1", "layer_2"];
+        data.setAllModelLayers(allLayers);
+        // add specific layer
+        data.setLayers(["layer_1"]);
+
+        const layers = data.getLayers();
+        let index = layers?.findIndex((name) => name === "layer_1");
+
+        assert.isTrue(layers.length === 1);
+        assert.isTrue(index === 0);
+      });
+
+      test("NEG: set empty layers", function () {
+        let data = new MPQData();
+        data.setWithString(defaultMPQText);
+        data.setLayers([]);
+        const layers = data.getLayers();
+        assert(layers.length === 0);
+      });
+    });
   });
 });

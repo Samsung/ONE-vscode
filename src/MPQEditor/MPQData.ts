@@ -78,6 +78,13 @@ export class MPQData {
     return this._defaultModelLayers;
   }
 
+  // get layers, which will NOT be qauntized by default
+  getLayers(): string[] {
+    return this._content[MPQData._layersKey].map(
+      (item: any) => item[MPQData._nameKey]
+    );
+  }
+
   // update section(quantization parameter) of nondefault layer
   updateSectionOfLayer(name: string, section: string, value: string) {
     let layer = this._content[MPQData._layersKey].find(
@@ -105,10 +112,35 @@ export class MPQData {
     this.filterDefaultModelLayersByContent();
   }
 
+  setLayers(names: string[]) {
+    let layersToAdd = Array<string>();
+    let layersToDefault = Array<string>();
+    this._content[MPQData._layersKey].forEach((layer: any) => {
+      let foundIndex = names.findIndex(
+        (name: string) => name === layer[MPQData._nameKey]
+      );
+      if (foundIndex < 0) {
+        // name to default
+        layersToDefault.push(layer["name"]);
+      }
+    });
+    names.forEach((name: any) => {
+      let foundIndex = this._content[MPQData._layersKey].findIndex(
+        (x: any) => x[MPQData._nameKey] === name
+      );
+      if (foundIndex < 0) {
+        // name to add
+        layersToAdd.push(name);
+      }
+    });
+    this.setLayersToDefault(layersToDefault);
+    this.addLayers(layersToAdd);
+
+    return layersToAdd;
+  }
+
   private filterDefaultModelLayersByContent() {
-    let layers = this._content[MPQData._layersKey].map(
-      (item: any) => item[MPQData._nameKey]
-    );
+    let layers = this.getLayers();
     this._defaultModelLayers = this._allModelLayers?.filter(
       (name) =>
         layers.find((filterName: string) => name === filterName) === undefined
