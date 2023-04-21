@@ -33,6 +33,9 @@ function main() {
       case "modelNodesChanged":
         handleModelNodesChanged(message.names);
         break;
+      case "modelGraphIsShown":
+        handleModelGraphIsShown(message.shown);
+        break;
       default:
         break;
     }
@@ -40,10 +43,15 @@ function main() {
 
   vscode.postMessage({ type: "requestDisplayMPQ" });
   vscode.postMessage({ type: "requestModelNodes" });
+  vscode.postMessage({ type: "showModelNodes" });
 }
 
 function register() {
   registerMainControls();
+}
+
+function handleModelGraphIsShown(shown) {
+  document.getElementById("circle-graph").checked = shown;
 }
 
 function handleModelNodesChanged(names) {
@@ -63,6 +71,17 @@ function registerMainControls() {
     .addEventListener("click", function () {
       updateGranularity();
       applyUpdates();
+    });
+
+  // show model graph on openening by default
+  document.getElementById("circle-graph").checked = true;
+  document
+    .getElementById("circle-graph")
+    .addEventListener("click", function () {
+      vscode.postMessage({
+        type: "toggleCircleGraphIsShown",
+        show: document.getElementById("circle-graph").checked,
+      });
     });
 
   document
