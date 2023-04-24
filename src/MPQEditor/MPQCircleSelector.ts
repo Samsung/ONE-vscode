@@ -42,16 +42,43 @@ export class MPQSelectionPanel
 
   public static panels: MPQSelectionPanel[] = [];
 
+  private _panel: vscode.WebviewPanel;
+  private _disposables: vscode.Disposable[] = [];
+  private _document: vscode.TextDocument;
+  private _ownerPanel: vscode.WebviewPanel;
+  private _ownerId: string; // stringified uri of the owner document
+  private _modelPath: string; // circle file path
+  private _mpqEventHandler?: MPQSelectionEvent;
+  private _lastSelected: string[];
+  private _closedByOwner: boolean = false;
+
   public static register(_context: vscode.ExtensionContext): void {}
 
   private constructor(
     panel: vscode.WebviewPanel,
     extensionUri: vscode.Uri,
-    _args: MPQSelectionCmdOpenArgs,
-    _handler: MPQSelectionEvent | undefined
+    args: MPQSelectionCmdOpenArgs,
+    handler: MPQSelectionEvent | undefined
   ) {
     super(extensionUri, panel.webview);
-    // TODO
+
+    this._panel = panel;
+    this._ownerId = args.document.uri.toString();
+    this._document = args.document;
+    this._ownerPanel = args.panel;
+    this._modelPath = args.modelPath;
+    this._mpqEventHandler = handler;
+    this._lastSelected = args.names;
+
+    // Listen for when the panel is disposed
+    // This happens when the user closes the panel or when the panel is closed programmatically
+    this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
+
+    this.initGraphCtrl(this._modelPath, this);
+    this.setMode("selector");
+    if (this._mpqEventHandler) {
+      this._mpqEventHandler.onOpened(this._ownerPanel);
+    }
   }
 
   public dispose() {
