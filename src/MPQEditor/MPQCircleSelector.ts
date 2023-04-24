@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import * as path from "path";
 import * as vscode from "vscode";
 
 import {
@@ -39,7 +40,6 @@ export class MPQSelectionPanel
   implements CircleGraphEvent
 {
   public static readonly viewType = "one.viewer.mpq";
-
   public static panels: MPQSelectionPanel[] = [];
 
   private _panel: vscode.WebviewPanel;
@@ -53,6 +53,63 @@ export class MPQSelectionPanel
   private _closedByOwner: boolean = false;
 
   public static register(_context: vscode.ExtensionContext): void {}
+
+  public static createOrShow(
+    extensionUri: vscode.Uri,
+    args: MPQSelectionCmdOpenArgs,
+    handler: MPQSelectionEvent | undefined
+  ) {
+    let column = args.panel.viewColumn;
+    if (column) {
+      if (column >= vscode.ViewColumn.One) {
+        column = column + 1;
+      }
+    }
+
+    // search for existing panel
+    const oldPanel = MPQSelectionPanel.findSelPanel(
+      args.modelPath,
+      args.document.uri.toString()
+    );
+    if (oldPanel) {
+      oldPanel._panel.reveal(column);
+      return;
+    }
+
+    // Otherwise, create a new panel.
+    const lastSlash = args.modelPath.lastIndexOf(path.sep) + 1;
+    const fileNameExt = args.modelPath.substring(lastSlash);
+    const panel = vscode.window.createWebviewPanel(
+      MPQSelectionPanel.viewType,
+      fileNameExt,
+      column || vscode.ViewColumn.Two,
+      { retainContextWhenHidden: true }
+    );
+
+    const graphSelPanel = new MPQSelectionPanel(
+      panel,
+      extensionUri,
+      args,
+      handler
+    );
+
+    MPQSelectionPanel.panels.push(graphSelPanel);
+    graphSelPanel.loadContent();
+    graphSelPanel.onForwardSelection(args.names);
+  }
+
+  private static findSelPanel(
+    docPath: string,
+    id: string
+  ): MPQSelectionPanel | undefined {
+    let result = undefined;
+    MPQSelectionPanel.panels.forEach((selpan) => {
+      if (docPath === selpan._modelPath && id === selpan._ownerId) {
+        result = selpan;
+      }
+    });
+    return result;
+  }
 
   private constructor(
     panel: vscode.WebviewPanel,
@@ -90,5 +147,16 @@ export class MPQSelectionPanel
    */
   public onViewMessage(_message: any) {
     // TODO
+  }
+
+  public onForwardSelection(selection: any) {
+    let selections: string[] = [];
+    let items = selection as Array<string>;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].length > 0) {
+        selections.push(items[i]);
+      }
+    }
+    this.setSelection(selections);
   }
 }
