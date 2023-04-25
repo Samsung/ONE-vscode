@@ -35,11 +35,26 @@ export type MPQSelectionCmdOpenArgs = {
   panel: vscode.WebviewPanel;
 };
 
+export type MPQSelectionCmdCloseArgs = {
+  modelPath: string;
+  document: vscode.TextDocument;
+};
+
+export type MPQSelectionCmdLayersChangedArgs = {
+  modelPath: string;
+  document: vscode.TextDocument;
+  names: any;
+};
+
 export class MPQSelectionPanel
   extends CircleGraphCtrl
   implements CircleGraphEvent
 {
   public static readonly viewType = "one.viewer.mpq";
+  public static readonly cmdOpen = "one.viewer.mpq.openGraphSelector";
+  public static readonly cmdClose = "one.viewer.mpq.closeGraphSelector";
+  public static readonly cmdChanged = "one.viewer.mpq.layersChangedByOwner";
+
   public static panels: MPQSelectionPanel[] = [];
 
   private _panel: vscode.WebviewPanel;
@@ -52,7 +67,33 @@ export class MPQSelectionPanel
   private _lastSelected: string[];
   private _closedByOwner: boolean = false;
 
-  public static register(_context: vscode.ExtensionContext): void {}
+  public static register(context: vscode.ExtensionContext): void {
+    const registrations = [
+      vscode.commands.registerCommand(
+        MPQSelectionPanel.cmdOpen,
+        (args: MPQSelectionCmdOpenArgs, handler: MPQSelectionEvent) => {
+          MPQSelectionPanel.createOrShow(context.extensionUri, args, handler);
+        }
+      ),
+      vscode.commands.registerCommand(
+        MPQSelectionPanel.cmdClose,
+        (args: MPQSelectionCmdCloseArgs) => {
+          MPQSelectionPanel.closeByOwner(context.extensionUri, args);
+        }
+      ),
+      vscode.commands.registerCommand(
+        MPQSelectionPanel.cmdChanged,
+        (args: MPQSelectionCmdLayersChangedArgs) => {
+          MPQSelectionPanel.forwardSelectionByOwner(context.extensionUri, args);
+        }
+      ),
+      // TODO add more commands
+    ];
+
+    registrations.forEach((disposable) =>
+      context.subscriptions.push(disposable)
+    );
+  }
 
   public static createOrShow(
     extensionUri: vscode.Uri,
@@ -109,6 +150,39 @@ export class MPQSelectionPanel
       }
     });
     return result;
+  }
+
+  /**
+   * @brief called when owner is closing
+   */
+  public static closeByOwner(
+    extensionUri: vscode.Uri,
+    args: MPQSelectionCmdCloseArgs
+  ) {
+    let selPanel = MPQSelectionPanel.findSelPanel(
+      args.modelPath,
+      args.document.uri.toString()
+    );
+    if (selPanel) {
+      selPanel._closedByOwner = true;
+      selPanel.dispose();
+    }
+  }
+
+  /**
+   * @brief called when owner selection state of nodes has changed
+   */
+  public static forwardSelectionByOwner(
+    extensionUri: vscode.Uri,
+    args: MPQSelectionCmdLayersChangedArgs
+  ) {
+    let selPanel = MPQSelectionPanel.findSelPanel(
+      args.modelPath,
+      args.document.uri.toString()
+    );
+    if (selPanel) {
+      selPanel.onForwardSelection(args.names);
+    }
   }
 
   private constructor(
