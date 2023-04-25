@@ -31,6 +31,7 @@ import { ToolchainProvider } from "./Toolchain/ToolchainProvider";
 import { Logger } from "./Utils/Logger";
 import { VisqViewerProvider } from "./Visquv/VisqViewer";
 import { MPQEditorProvider } from "./MPQEditor/MPQEditor";
+import { MPQSelectionPanel } from "./MPQEditor/MPQCircleSelector";
 
 /* istanbul ignore next */
 export function activate(context: vscode.ExtensionContext) {
@@ -79,6 +80,7 @@ export function activate(context: vscode.ExtensionContext) {
   MetadataViewerProvider.register(context);
 
   MPQEditorProvider.register(context);
+  MPQSelectionPanel.register(context);
 
   // returning backend registration function that will be called by backend extensions
   return backendRegistrationApi();
