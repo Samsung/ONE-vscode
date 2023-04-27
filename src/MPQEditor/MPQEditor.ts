@@ -25,8 +25,17 @@ import { Logger } from "../Utils/Logger";
 import { getNonce } from "../Utils/external/Nonce";
 import { getUri } from "../Utils/external/Uri";
 import { MPQData } from "./MPQData";
+import {
+  MPQSelectionPanel,
+  MPQSelectionEvent,
+  MPQSelectionCmdCloseArgs,
+  MPQSelectionCmdOpenArgs,
+  MPQSelectionCmdLayersChangedArgs,
+} from "./MPQCircleSelector";
 
-export class MPQEditorProvider implements vscode.CustomTextEditorProvider {
+export class MPQEditorProvider
+  implements vscode.CustomTextEditorProvider, MPQSelectionEvent
+{
   public static readonly viewType = "one.editor.mpq";
   public static readonly fileExtension = ".mpq.json";
 
@@ -319,6 +328,12 @@ export class MPQEditorProvider implements vscode.CustomTextEditorProvider {
         case "removeLayer":
           this.handleRemoveLayerFromLayers(e.name, document);
           break;
+        case "showModelNodes":
+          this.handleShowModelNodes(document, webviewPanel);
+          break;
+        case "toggleCircleGraphIsShown":
+          this.toggleCircleGraphIsShown(e.show, document, webviewPanel);
+          break;
         default:
           break;
       }
@@ -397,6 +412,20 @@ export class MPQEditorProvider implements vscode.CustomTextEditorProvider {
           e.document.uri.toString() === document.uri.toString()
         ) {
           this.updateWebview(document, webviewPanel.webview);
+
+          {
+            // synchronize circle view
+            const args: MPQSelectionCmdLayersChangedArgs = {
+              modelPath: this.getModelFilePath(document),
+              document: document,
+              names: this._mpqDataMap[document.uri.toString()].getLayers(),
+            };
+            vscode.commands.executeCommand(
+              MPQSelectionPanel.cmdChanged,
+              args,
+              this
+            );
+          }
         }
       }
     );
@@ -414,6 +443,8 @@ export class MPQEditorProvider implements vscode.CustomTextEditorProvider {
     );
 
     webviewPanel.onDidDispose(() => {
+      this.closeModelGraphView(document);
+
       changeDocumentSubscription.dispose();
       while (this._disposables.length) {
         const x = this._disposables.pop();
@@ -543,5 +574,86 @@ export class MPQEditorProvider implements vscode.CustomTextEditorProvider {
       text
     );
     await vscode.workspace.applyEdit(edit);
+  }
+
+  /**
+   * @brief Called when selection changed in SelectionView
+   */
+  onSelection(names: string[], document: vscode.TextDocument): void {
+    let docUri = document.uri.toString();
+    this._mpqDataMap[docUri].setLayers(names);
+    this.updateDocument(document);
+  }
+
+  /**
+   * @brief Called when MPQCircleSelector was closed
+   */
+  onClosed(panel: vscode.WebviewPanel): void {
+    panel.webview.postMessage({
+      type: "modelGraphIsShown",
+      shown: false,
+    });
+  }
+
+  /**
+   * @brief Called when MPQCircleSelector was opened
+   */
+  onOpened(panel: vscode.WebviewPanel): void {
+    panel.webview.postMessage({
+      type: "modelGraphIsShown",
+      shown: true,
+    });
+  }
+
+  /**
+   * @brief Close MPQCircleSelector
+   */
+  private closeModelGraphView(document: vscode.TextDocument): void {
+    const args: MPQSelectionCmdCloseArgs = {
+      modelPath: this.getModelFilePath(document),
+      document: document,
+    };
+    vscode.commands.executeCommand(MPQSelectionPanel.cmdClose, args);
+  }
+
+  /**
+   * @brief Open MPQCircleSelector panel
+   */
+  private showCircleModelGraph(
+    document: vscode.TextDocument,
+    webviewPanel: vscode.WebviewPanel
+  ) {
+    const args: MPQSelectionCmdOpenArgs = {
+      modelPath: this.getModelFilePath(document),
+      document: document,
+      names: this._mpqDataMap[document.uri.toString()].getLayers(),
+      panel: webviewPanel,
+    };
+    vscode.commands.executeCommand(MPQSelectionPanel.cmdOpen, args, this);
+  }
+
+  /**
+   * @brief Called when webview requests to Show Model Graph
+   */
+  private handleShowModelNodes(
+    document: vscode.TextDocument,
+    webviewPanel: vscode.WebviewPanel
+  ) {
+    this.showCircleModelGraph(document, webviewPanel);
+  }
+
+  /**
+   * @brief Called when webview toggles whether Model Graph is shown
+   */
+  private toggleCircleGraphIsShown(
+    show: boolean,
+    document: vscode.TextDocument,
+    webviewPanel: vscode.WebviewPanel
+  ) {
+    if (show) {
+      this.showCircleModelGraph(document, webviewPanel);
+    } else {
+      this.closeModelGraphView(document);
+    }
   }
 }
