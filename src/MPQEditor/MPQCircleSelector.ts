@@ -20,6 +20,7 @@ import * as vscode from "vscode";
 import {
   CircleGraphCtrl,
   CircleGraphEvent,
+  MessageDefs,
 } from "../CircleGraph/CircleGraphCtrl";
 
 export interface MPQSelectionEvent {
@@ -213,14 +214,49 @@ export class MPQSelectionPanel
   }
 
   public dispose() {
-    //TODO
+    if (!this._closedByOwner && this._mpqEventHandler) {
+      this._mpqEventHandler.onClosed(this._ownerPanel);
+    }
+
+    this.disposeGraphCtrl();
+
+    MPQSelectionPanel.panels.forEach((selPan, index) => {
+      if (
+        this._ownerId === selPan._ownerId &&
+        this._modelPath === selPan._modelPath
+      ) {
+        MPQSelectionPanel.panels.splice(index, 1);
+      }
+    });
+
+    // Clean up our resources
+    this._panel.dispose();
+
+    while (this._disposables.length) {
+      const x = this._disposables.pop();
+      if (x) {
+        x.dispose();
+      }
+    }
   }
 
   /**
    * CircleGraphEvent interface implementations
    */
-  public onViewMessage(_message: any) {
-    // TODO
+  public onViewMessage(message: any) {
+    switch (message.command) {
+      case MessageDefs.selection:
+        this._lastSelected = message.names;
+        // we need to update the document, but not save to file.
+        // pass to owner to handle this.
+        if (this._mpqEventHandler) {
+          this._mpqEventHandler.onSelection(message.names, this._document);
+        }
+        break;
+      case MessageDefs.finishload:
+        this.onForwardSelection(this._lastSelected);
+        break;
+    }
   }
 
   public onForwardSelection(selection: any) {
