@@ -55,6 +55,7 @@ export class MessageDefs {
   public static readonly backendColor = "backendColor";
   public static readonly error = "error";
   public static readonly colorTheme = "colorTheme";
+  public static readonly scrollToSelected = "scrollToSelected";
   // loadmodel type
   public static readonly modelpath = "modelpath";
   public static readonly uint8array = "uint8array";
