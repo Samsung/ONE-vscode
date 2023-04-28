@@ -32,44 +32,47 @@ limitations under the License.
 <body>
     <div>
         <div>
-            <div>
-                <vscode-radio-group id="DefaultDtype">
-                    <label slot="label">Quantized Data Type</label>
-                    <vscode-radio value="uint8">uint8</vscode-radio>
-                    <vscode-radio value="int16">int16</vscode-radio>
-                </vscode-radio-group>
+            <fieldset class="defparameters">
+                <legend>Set default quantization</legend>
+                <div>
+                    <vscode-radio-group id="DefaultDtype">
+                        <label slot="label">Quantized Data Type</label>
+                        <vscode-radio value="uint8">uint8</vscode-radio>
+                        <vscode-radio value="int16">int16</vscode-radio>
+                    </vscode-radio-group>
+                </div>
+                <div>
+                    <vscode-radio-group id="DefaultGranularity">
+                        <label slot="label">Granularity</label>
+                        <vscode-radio value="layer">layer</vscode-radio>
+                        <vscode-radio value="channel">channel</vscode-radio>
+                    </vscode-radio-group>
+                </div>
+        </fieldset>
+        </div>
+    </div>
+    <fieldset class="specparameters">
+        <legend>Set specific layer's quantization</legend>
+        <div>
+            <div class="leftbtns">
+                <vscode-button id="AddSpecificLayer" appearance="icon">
+                    <span slot="start" class="codicon codicon-add"></span>
+                </vscode-button>
             </div>
-            <div>
-                <vscode-radio-group id="DefaultGranularity">
-                    <label slot="label">Granularity</label>
-                    <vscode-radio value="layer">layer</vscode-radio>
-                    <vscode-radio value="channel">channel</vscode-radio>
-                </vscode-radio-group>
+            <div class="rightbtns">
+                <vscode-checkbox id="circle-graph">Show Graph</vscode-checkbox>
             </div>
         </div>
-    </div>
-    <div>
-        <vscode-divider></vscode-divider>
-    </div>
-    <div>
-        <div class="leftbtns">
-            <vscode-button id="AddSpecificLayer" appearance="icon">
-                <span slot="start" class="codicon codicon-add"></span>
-            </vscode-button>
-        </div>
-        <div class="rightbtns">
-            <vscode-checkbox id="circle-graph">Show Graph</vscode-checkbox>
-        </div>
-    </div>
-    <div>
-        <vscode-data-grid id="LayersTable" class="layers" generate-header="default" aria-label="Default Header" grid-template-columns="1fr 110px 120px 40px">
-            <vscode-data-grid-row row-type="header">
-                <vscode-data-grid-cell cell-type="columnheader" grid-column="1">Name</vscode-data-grid-cell>
-                <vscode-data-grid-cell cell-type="columnheader" grid-column="2">Quantization</vscode-data-grid-cell>
-                <vscode-data-grid-cell cell-type="columnheader" grid-column="3">Granularity</vscode-data-grid-cell>
-                <vscode-data-grid-cell cell-type="columnheader" grid-column="4">&nbsp;</vscode-data-grid-cell>
-            </vscode-data-grid-row>                        
-        </vscode-data-grid>
-    </div>   
+        <div>
+            <vscode-data-grid id="LayersTable" class="layers" generate-header="default" aria-label="Default Header" grid-template-columns="1fr 110px 120px 40px">
+                <vscode-data-grid-row row-type="header">
+                    <vscode-data-grid-cell cell-type="columnheader" grid-column="1">Name</vscode-data-grid-cell>
+                    <vscode-data-grid-cell cell-type="columnheader" grid-column="2">Quantization</vscode-data-grid-cell>
+                    <vscode-data-grid-cell cell-type="columnheader" grid-column="3">Granularity</vscode-data-grid-cell>
+                    <vscode-data-grid-cell cell-type="columnheader" grid-column="4">&nbsp;</vscode-data-grid-cell>
+                </vscode-data-grid-row>                        
+            </vscode-data-grid>
+        </div>   
+    </fieldset>
 </body>
 </html>

@@ -27,6 +27,18 @@ width: auto !important;
 float: left;
 }
 
+.defparameters {
+display: inline-block;
+border-width: 2px;
+border-color: var(--vscode-scrollbarSlider-background);
+}
+
+.specparameters {
+display: inline-block;
+border-width: 2px 0px 0px 0px;
+border-color: var(--vscode-scrollbarSlider-background);
+}
+
 .rightbtns {
 float: right;
 }
