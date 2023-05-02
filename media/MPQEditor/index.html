@@ -58,6 +58,15 @@ limitations under the License.
             </vscode-button>
         </div>
         <div class="rightbtns">
+            <vscode-text-field id="VisqInputPath" startIcon="true" placeholder="visq path" readonly="true">
+                <span slot="start" class="codicon codicon-question" style="cursor: pointer">
+                    <span class="help">
+                        visq.json file with layer-wise quantization errors
+                    </span>
+                </span>
+                <span id="visq-file" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                <span id="visq-delete" slot="end" class="codicon codicon-chrome-close" style="cursor: pointer"></span>
+            </vscode-text-field>
             <vscode-checkbox id="circle-graph">Show Graph</vscode-checkbox>
         </div>
     </div>

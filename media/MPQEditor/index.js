@@ -36,6 +36,9 @@ function main() {
       case "modelGraphIsShown":
         handleModelGraphIsShown(message.shown);
         break;
+      case "VisqFileLoaded":
+        handleVisqFileLoaded(message.visqFile);
+        break;
       default:
         break;
     }
@@ -56,6 +59,10 @@ function handleModelGraphIsShown(shown) {
 
 function handleModelNodesChanged(names) {
   document.getElementById("AddSpecificLayer").disabled = names.length < 1;
+}
+
+function handleVisqFileLoaded(visqFile) {
+  document.getElementById("VisqInputPath").value = visqFile;
 }
 
 function registerMainControls() {
@@ -91,6 +98,28 @@ function registerMainControls() {
         type: "addSpecificLayerFromDialog",
       });
     });
+
+  document
+    .getElementById("VisqInputPath")
+    .addEventListener("input", function () {
+      vscode.postMessage({
+        type: "VisqInputPathChanged",
+        path: document.getElementById("VisqInputPath").value,
+      });
+    });
+
+  document.getElementById("visq-file").addEventListener("click", function () {
+    vscode.postMessage({
+      type: "loadVisqFile",
+    });
+  });
+
+  document.getElementById("visq-delete").addEventListener("click", function () {
+    document.getElementById("VisqInputPath").value = "";
+    vscode.postMessage({
+      type: "removeVisqFile",
+    });
+  });
 
   document.getElementById("AddSpecificLayer").disabled = true;
 }
