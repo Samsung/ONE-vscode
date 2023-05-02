@@ -543,12 +543,23 @@ view.View = class {
   }
 
   /**
+   * @brief called when it's needed to change scroll behaviour
+   */
+  setScrollToSelected(value) {
+    this._scrollToSelected = value;
+  }
+
+  /**
    * @brief toggleSelect will select or toggle select with CtrlKey down
    * @param viewNode view.Node instance
    * @note  works on host mode is viewMode.selector
    */
   toggleSelect(viewNode) {
-    if (viewNode && this._host._mode === viewMode.selector) {
+    if (
+      viewNode &&
+      (this._host._mode === viewMode.selector ||
+        this._host._mode === viewMode.visqselector)
+    ) {
       if (this._keyCtrl) {
         // toggle selection
         let index = this._selectionNodes.indexOf(viewNode);
@@ -585,7 +596,10 @@ view.View = class {
 
   clearSelection() {
     this._clearSelection();
-    if (host._mode === viewMode.selector) {
+    if (
+      host._mode === viewMode.selector ||
+      this._host._mode === viewMode.visqselector
+    ) {
       this._host.onView("selection");
     }
   }
@@ -1098,7 +1112,10 @@ view.View = class {
   }
 
   applyStyleSheetVisq(element) {
-    if (this._host._mode === viewMode.visq) {
+    if (
+      this._host._mode === viewMode.visq ||
+      this._host._mode === viewMode.visqselector
+    ) {
       let rules = [];
       for (const styleSheet of this._host.document.styleSheets) {
         if (styleSheet.title === "visq_style") {
@@ -1503,7 +1520,7 @@ view.Node = class extends grapher.Node {
 
   _visq(node) {
     const host = this.context.view._host;
-    if (host._mode !== viewMode.visq) {
+    if (host._mode !== viewMode.visq && host._mode !== viewMode.visqselector) {
       return;
     }
 
@@ -1535,7 +1552,7 @@ view.Node = class extends grapher.Node {
       }
     }
     let visqSuffix = undefined;
-    if (host._mode === viewMode.visq) {
+    if (host._mode === viewMode.visq || host._mode === viewMode.visqselector) {
       if (node.visq_index) {
         let qstyle = `node-item-type-visq-${node.visq_index}`;
         styles.push(qstyle);
@@ -1571,7 +1588,10 @@ view.Node = class extends grapher.Node {
 
     if (host._mode === viewMode.viewer || host._mode === viewMode.visq) {
       title.on("click", () => this.context.view.showNodeProperties(node, null));
-    } else if (host._mode === viewMode.selector) {
+    } else if (
+      host._mode === viewMode.selector ||
+      host._mode === viewMode.visqselector
+    ) {
       // toggle select with click
       title.on("click", () => {
         this.context.view.toggleSelect(this);
