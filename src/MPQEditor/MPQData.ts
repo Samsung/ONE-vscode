@@ -18,6 +18,7 @@ export class MPQData {
   private _content: any;
   private _allModelLayers: string[] | undefined; // all model layers
   private _defaultModelLayers?: string[]; // layers that will be quantized by default
+  private _visqPath: string = ""; // empty means no visqData is provided
 
   static _layersKey: string = "layers";
   static _nameKey: string = "name";
@@ -137,6 +138,14 @@ export class MPQData {
     this.addLayers(layersToAdd);
 
     return layersToAdd;
+  }
+
+  get visqPath(): string {
+    return this._visqPath;
+  }
+
+  set visqPath(path: string) {
+    this._visqPath = path;
   }
 
   private filterDefaultModelLayersByContent() {
