@@ -32,7 +32,6 @@ import { Version } from "../Version";
 
 class OneDebianToolchain extends DebianToolchain {
   run(cfg: string): Command {
-    this.prepare();
     let cmd = new Command("onecc-docker");
     cmd.push("-C");
     cmd.push(cfg);

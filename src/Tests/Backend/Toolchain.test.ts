@@ -45,14 +45,14 @@ suite("Backend", function () {
     suite("#install()", function () {
       test("NEG: throws by dummy toolchain by install", function () {
         const toolchain = new Toolchain(toolchainInfo);
-        assert.throw(() => toolchain.install());
+        assert.throw(() => toolchain.tool.install());
       });
     });
 
     suite("#installed()", function () {
       test("NEG: throws in dummy toolchain by installed", function () {
         const toolchain = new Toolchain(toolchainInfo);
-        assert.throw(() => toolchain.installed());
+        assert.throw(() => toolchain.tool.installed());
       });
     });
 
@@ -66,7 +66,7 @@ suite("Backend", function () {
     suite("#uninstall()", function () {
       test("NEG: throws in dummy toolchain by uninstall", function () {
         const toolchain = new Toolchain(toolchainInfo);
-        assert.throw(() => toolchain.uninstall());
+        assert.throw(() => toolchain.tool.uninstall());
       });
     });
   });

@@ -158,7 +158,7 @@ class ToolchainEnv extends Env {
   public install(toolchain: Toolchain): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
       const jobs: Array<Job> = [];
-      const job = new JobInstall(toolchain.install());
+      const job = new JobInstall(toolchain.tool.install());
       job.successCallback = () => resolve(true);
       job.failureCallback = () => reject();
       jobs.push(job);
@@ -169,7 +169,7 @@ class ToolchainEnv extends Env {
   public uninstall(toolchain: Toolchain): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
       const jobs: Array<Job> = [];
-      const job = new JobUninstall(toolchain.uninstall());
+      const job = new JobUninstall(toolchain.tool.uninstall());
       job.successCallback = () => resolve(true);
       job.failureCallback = () => reject();
       jobs.push(job);
@@ -183,6 +183,54 @@ class ToolchainEnv extends Env {
       const job = new JobConfig(toolchain.run(cfg));
       job.workDir = path.dirname(cfg);
       job.successCallback = () => resolve(true);
+      job.failureCallback = () => reject();
+      jobs.push(job);
+      this.executeEnv(jobs);
+    });
+  }
+
+  public inference(
+    model: string,
+    options: Map<string, string> | undefined,
+    toolchain: Toolchain
+  ): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      const jobs: Array<Job> = [];
+      const job = new JobConfig(toolchain.runInference(model, options));
+      job.workDir = path.dirname(model);
+      job.successCallback = () => resolve(job.result ? job.result : "");
+      job.failureCallback = () => reject();
+      jobs.push(job);
+      this.executeEnv(jobs);
+    });
+  }
+
+  public profile(
+    model: string,
+    options: Map<string, string> | undefined,
+    toolchain: Toolchain
+  ): Promise<boolean> {
+    return new Promise<boolean>((resolve, reject) => {
+      const jobs: Array<Job> = [];
+      const job = new JobConfig(toolchain.runProfile(model, options));
+      job.workDir = path.dirname(model);
+      job.successCallback = () => resolve(true);
+      job.failureCallback = () => reject();
+      jobs.push(job);
+      this.executeEnv(jobs);
+    });
+  }
+
+  public getModelInfo(
+    model: string,
+    type: string,
+    toolchain: Toolchain
+  ): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      const jobs: Array<Job> = [];
+      const job = new JobConfig(toolchain.runShow(model, type));
+      job.workDir = path.dirname(model);
+      job.successCallback = () => resolve(job.result ? job.result : "");
       job.failureCallback = () => reject();
       jobs.push(job);
       this.executeEnv(jobs);

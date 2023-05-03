@@ -127,6 +127,33 @@ export class MetadataViewerProvider
           );
         }
       ),
+      vscode.commands.registerCommand(
+        "one.viewer.metadata.inference",
+        async (uri) => {
+          // If the method is executed in the ONE Explorer, change the uri instance.
+          const filePath = uri.uri.fsPath;
+          vscode.commands.executeCommand("one.toolchain.inference", filePath);
+        }
+      ),
+      vscode.commands.registerCommand(
+        "one.viewer.metadata.profile",
+        async (uri) => {
+          // If the method is executed in the ONE Explorer, change the uri instance.
+          const filePath = uri.uri.fsPath;
+          vscode.commands.executeCommand("one.toolchain.profile", filePath);
+        }
+      ),
+      vscode.commands.registerCommand(
+        "one.viewer.metadata.showModelInfo",
+        async (uri) => {
+          // If the method is executed in the ONE Explorer, change the uri instance.
+          const filePath = uri.uri.fsPath;
+          vscode.commands.executeCommand(
+            "one.toolchain.getModelInfo",
+            filePath
+          );
+        }
+      ),
       // Add command registration here
     ];
 

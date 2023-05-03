@@ -30,6 +30,7 @@ export interface Job {
   root: boolean;
   workDir: string;
   isCancelable: boolean;
+  result?: string;
   successCallback?: JobCallback;
   failureCallback?: JobCallback;
 }

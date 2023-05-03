@@ -19,6 +19,7 @@ import { ToolchainInfo } from "../../../Backend/Toolchain";
 import {
   DebianArch,
   DebianRepo,
+  DebianTool,
   DebianToolchain,
 } from "../../../Backend/ToolchainImpl/DebianToolchain";
 import { Version } from "../../../Backend/Version";
@@ -28,14 +29,13 @@ import { Version } from "../../../Backend/Version";
 // The tests are fitting its env
 suite("Backend", function () {
   suite("ToolchainImpl", function () {
-    suite("DebianToolchain", function () {
-      // for Toolchain
-      // Let's use `npm`
-      const name = "npm";
-      const desc = "npm toolchain";
-      const version = new Version(6, 14, 4, "+ds-1ubuntu2");
-      const info = new ToolchainInfo(name, desc, version);
-
+    // for Toolchain
+    // Let's use `npm`
+    const name = "npm";
+    const desc = "npm toolchain";
+    const version = new Version(6, 14, 4, "+ds-1ubuntu2");
+    const info = new ToolchainInfo(name, desc, version);
+    suite("DebianTool", function () {
       suite("#constructor()", function () {
         test("is contructed with values", function () {
           const uri = "http://archive.ubuntu.com/ubuntu";
@@ -43,24 +43,16 @@ suite("Backend", function () {
           const comp = "universe";
           const repo = new DebianRepo(uri, dist, comp);
           const arch = DebianArch.amd64;
-          let dt = new DebianToolchain(info, repo, arch);
+          let dt = new DebianTool(info, repo, arch);
           assert.strictEqual(dt.info, info);
           assert.strictEqual(dt.repo, repo);
           assert.strictEqual(dt.arch, arch);
         });
       });
 
-      suite("#prepare()", function () {
-        test("prepare DebianToolchain", function () {
-          let dt = new DebianToolchain(info);
-          dt.prepare();
-          assert.strictEqual(dt.ready, true);
-        });
-      });
-
       suite("#install()", function () {
-        test("install DebianToolchain", function () {
-          let dt = new DebianToolchain(info);
+        test("install DebianTool", function () {
+          let dt = new DebianTool(info);
           let cmd = dt.install();
           const expectedStr = `sudo aptitude install -o Aptitude::ProblemResolver::SolutionCost=100*canceled-actions,200*removals ${name}=${version.str()} -q -y`;
           assert.strictEqual(cmd.str(), expectedStr);
@@ -68,8 +60,8 @@ suite("Backend", function () {
       });
 
       suite("#uninstall()", function () {
-        test("uninstall DebianToolchain", function () {
-          let dt = new DebianToolchain(info);
+        test("uninstall DebianTool", function () {
+          let dt = new DebianTool(info);
           let cmd = dt.uninstall();
           const expectedStr = `sudo aptitude purge ${name} -q -y`;
           assert.strictEqual(cmd.str(), expectedStr);
@@ -77,14 +69,16 @@ suite("Backend", function () {
       });
 
       suite("#installed()", function () {
-        test("check DebianToolchain installed", function () {
-          let dt = new DebianToolchain(info);
+        test("check DebianTool installed", function () {
+          let dt = new DebianTool(info);
           let cmd = dt.installed();
           const expectedStr = `dpkg-query --show ${name}=${version.str()} && echo $?`;
           assert.strictEqual(cmd.str(), expectedStr);
         });
       });
+    });
 
+    suite("DebianToolchain", function () {
       suite("#run()", function () {
         test("returns Commend with cfg", function () {
           let dt = new DebianToolchain(info);
