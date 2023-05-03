@@ -31,54 +31,46 @@ limitations under the License.
 </head>
 <body>
     <div>
-        <div>
-            <div>
-                <vscode-radio-group id="DefaultDtype">
-                    <label slot="label">Quantized Data Type</label>
-                    <vscode-radio value="uint8">uint8</vscode-radio>
-                    <vscode-radio value="int16">int16</vscode-radio>
-                </vscode-radio-group>
-            </div>
-            <div>
-                <vscode-radio-group id="DefaultGranularity">
-                    <label slot="label">Granularity</label>
-                    <vscode-radio value="layer">layer</vscode-radio>
-                    <vscode-radio value="channel">channel</vscode-radio>
-                </vscode-radio-group>
-            </div>
-        </div>
+        <vscode-divider></vscode-divider>
+    </div>
+    <div class="layers">
+        <vscode-data-grid id="LayersTable" generate-header="default" grid-template-columns="1fr 110px 120px 40px">
+            <vscode-data-grid-row row-type="header" id="DefaultValues">
+                <vscode-data-grid-cell cell-type="columnheader" grid-column="1">Default</vscode-data-grid-cell>
+                <vscode-data-grid-cell cell-type="columnheader" grid-column="2">
+                    <vscode-dropdown id="DefaultDtype">
+                        <vscode-option>uint8</vscode-option>
+                        <vscode-option>int16</vscode-option>
+                    </vscode-dropdown>
+                </vscode-data-grid-cell>
+                <vscode-data-grid-cell cell-type="columnheader" grid-column="3">
+                    <vscode-dropdown id="DefaultGranularity">
+                        <vscode-option>layer</vscode-option>
+                        <vscode-option>channel</vscode-option>
+                    </vscode-dropdown>
+                </vscode-data-grid-cell>
+                <vscode-data-grid-cell cell-type="columnheader" grid-column="4">
+                    <vscode-button id="AddSpecificLayer" appearance="icon">
+                        <span slot="start" class="codicon codicon-add"></span>
+                    </vscode-button>
+                </vscode-data-grid-cell>
+            </vscode-data-grid-row>
+        </vscode-data-grid>
     </div>
     <div>
         <vscode-divider></vscode-divider>
     </div>
-    <div>
-        <div class="leftbtns">
-            <vscode-button id="AddSpecificLayer" appearance="icon">
-                <span slot="start" class="codicon codicon-add"></span>
-            </vscode-button>
-        </div>
-        <div class="rightbtns">
-            <vscode-text-field id="VisqInputPath" startIcon="true" placeholder="visq path" readonly="true">
-                <span slot="start" class="codicon codicon-question" style="cursor: pointer">
-                    <span class="help">
-                        visq.json file with layer-wise quantization errors
-                    </span>
+    <div class="bottom">
+        <vscode-checkbox id="circle-graph" class="rightbtns">Show Graph</vscode-checkbox>
+        <vscode-text-field id="VisqInputPath" class="leftbtns" startIcon="true" placeholder="visq path" readonly="true">
+            <span slot="start" class="codicon codicon-question" style="cursor: pointer">
+                <span class="help">
+                    visq.json file with layer-wise quantization errors
                 </span>
-                <span id="visq-file" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
-                <span id="visq-delete" slot="end" class="codicon codicon-chrome-close" style="cursor: pointer"></span>
-            </vscode-text-field>
-            <vscode-checkbox id="circle-graph">Show Graph</vscode-checkbox>
-        </div>
+            </span>
+            <span id="visq-file" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+            <span id="visq-delete" slot="end" class="codicon codicon-chrome-close" style="cursor: pointer"></span>
+        </vscode-text-field>
     </div>
-    <div>
-        <vscode-data-grid id="LayersTable" class="layers" generate-header="default" aria-label="Default Header" grid-template-columns="1fr 110px 120px 40px">
-            <vscode-data-grid-row row-type="header">
-                <vscode-data-grid-cell cell-type="columnheader" grid-column="1">Name</vscode-data-grid-cell>
-                <vscode-data-grid-cell cell-type="columnheader" grid-column="2">Quantization</vscode-data-grid-cell>
-                <vscode-data-grid-cell cell-type="columnheader" grid-column="3">Granularity</vscode-data-grid-cell>
-                <vscode-data-grid-cell cell-type="columnheader" grid-column="4">&nbsp;</vscode-data-grid-cell>
-            </vscode-data-grid-row>                        
-        </vscode-data-grid>
-    </div>   
 </body>
 </html>
