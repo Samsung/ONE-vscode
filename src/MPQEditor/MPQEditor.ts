@@ -334,6 +334,12 @@ export class MPQEditorProvider
         case "toggleCircleGraphIsShown":
           this.toggleCircleGraphIsShown(e.show, document, webviewPanel);
           break;
+        case "removeVisqFile":
+          this.removeVisqFile(document, webviewPanel);
+          break;
+        case "VisqInputPathChanged":
+          this.handleVisqInputPathChanged(e.path, document, webviewPanel);
+          break;
         default:
           break;
       }
@@ -651,9 +657,63 @@ export class MPQEditorProvider
     webviewPanel: vscode.WebviewPanel
   ) {
     if (show) {
-      this.showCircleModelGraph(document, webviewPanel);
+      const docUri = document.uri.toString();
+      const visqPath = this._mpqDataMap[docUri].visqPath;
+      if (visqPath.length < 1) {
+        this.showCircleModelGraph(document, webviewPanel);
+      } else {
+        this.showVisqCircleModelGraph(visqPath, document, webviewPanel);
+      }
     } else {
       this.closeModelGraphView(document);
+    }
+  }
+
+  /**
+   * @brief Called when it's needed to show visq data in circle-graph
+   */
+  private showVisqCircleModelGraph(
+    _visqPath: string,
+    _document: vscode.TextDocument,
+    _webviewPanel: vscode.WebviewPanel
+  ) {
+    // TODO
+  }
+
+  /**
+   * @brief Called when visq path was changed in UI
+   */
+  private handleVisqInputPathChanged(
+    path: string,
+    document: vscode.TextDocument,
+    webviewPanel: vscode.WebviewPanel
+  ): void {
+    if (
+      (path === "" || !path.endsWith(".visq.json")) &&
+      this._mpqDataMap[document.uri.toString()].visqPath.length > 0
+    ) {
+      // remove invalid path
+      this.removeVisqFile(document, webviewPanel);
+    } else if (path.endsWith(".visq.json")) {
+      // reload visq
+      this._mpqDataMap[document.uri.toString()].visqPath = path;
+      this.closeModelGraphView(document);
+      this.showVisqCircleModelGraph(path, document, webviewPanel);
+    }
+  }
+
+  /**
+   * @brief Called when visq path was cleared in UI
+   */
+  private removeVisqFile(
+    document: vscode.TextDocument,
+    webviewPanel: vscode.WebviewPanel
+  ) {
+    if (this._mpqDataMap[document.uri.toString()].visqPath !== "") {
+      this._mpqDataMap[document.uri.toString()].visqPath = ""; // clear visqPath
+
+      this.closeModelGraphView(document);
+      this.showCircleModelGraph(document, webviewPanel);
     }
   }
 }
