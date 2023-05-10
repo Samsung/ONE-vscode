@@ -60,7 +60,7 @@ export class ToolchainNode extends BaseNode {
     public readonly backend: string,
     public readonly toolchain: Toolchain
   ) {
-    super(label, vscode.TreeItemCollapsibleState.None);
+    super(label, vscode.TreeItemCollapsibleState.Expanded);
     if (DefaultToolchain.getInstance().isEqual(toolchain)) {
       const backendThemeColor = new vscode.ThemeColor("charts.green");
       this.iconPath = new vscode.ThemeIcon("layers", backendThemeColor);
@@ -77,6 +77,24 @@ export class ToolchainNode extends BaseNode {
       .toString();
     this.tooltip = dependency;
     this.backendName = backend;
+  }
+}
+
+export class CompilerNode extends BaseNode {
+  constructor() {
+    super("compiler", vscode.TreeItemCollapsibleState.None);
+    const chartsThemeColor = new vscode.ThemeColor("charts.blue");
+    this.iconPath = new vscode.ThemeIcon("circuit-board", chartsThemeColor);
+    this.contextValue = "compiler";
+  }
+}
+
+export class SimulatorNode extends BaseNode {
+  constructor() {
+    super("simulator", vscode.TreeItemCollapsibleState.None);
+    const chartsThemeColor = new vscode.ThemeColor("charts.blue");
+    this.iconPath = new vscode.ThemeIcon("inspect", chartsThemeColor);
+    this.contextValue = "simulator";
   }
 }
 
@@ -111,6 +129,16 @@ export class NodeBuilder {
         let tnode = new ToolchainNode(t.info.name, backendName, t);
         return tnode;
       });
+  }
+
+  static createChildNodes(bnode: BaseNode): BaseNode[] {
+    if (bnode instanceof ToolchainNode === false) {
+      return [];
+    }
+
+    const cnode = new CompilerNode();
+    const snode = new SimulatorNode();
+    return [cnode, snode];
   }
 }
 
@@ -168,8 +196,10 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
   public getChildren(element?: BaseNode): Thenable<BaseNode[]> {
     if (element === undefined) {
       return Promise.resolve(NodeBuilder.createBackendNodes());
-    } else {
+    } else if (element instanceof BackendNode === true) {
       return Promise.resolve(NodeBuilder.createToolchainNodes(element));
+    } else {
+      return Promise.resolve(NodeBuilder.createChildNodes(element));
     }
   }
 
