@@ -36,6 +36,10 @@ export type MPQSelectionCmdOpenArgs = {
   panel: vscode.WebviewPanel;
 };
 
+export type MPQVisqData = {
+  visqPath: string;
+};
+
 export type MPQSelectionCmdCloseArgs = {
   modelPath: string;
   document: vscode.TextDocument;
@@ -55,6 +59,7 @@ export class MPQSelectionPanel
   public static readonly cmdOpen = "one.viewer.mpq.openGraphSelector";
   public static readonly cmdClose = "one.viewer.mpq.closeGraphSelector";
   public static readonly cmdChanged = "one.viewer.mpq.layersChangedByOwner";
+  public static readonly cmdOpenVisq = "one.viewer.mpq.loadVisq";
 
   public static panels: MPQSelectionPanel[] = [];
 
@@ -66,6 +71,7 @@ export class MPQSelectionPanel
   private _modelPath: string; // circle file path
   private _mpqEventHandler?: MPQSelectionEvent;
   private _lastSelected: string[];
+  private _visqData: string[];
   private _closedByOwner: boolean = false;
 
   public static register(context: vscode.ExtensionContext): void {
@@ -73,7 +79,12 @@ export class MPQSelectionPanel
       vscode.commands.registerCommand(
         MPQSelectionPanel.cmdOpen,
         (args: MPQSelectionCmdOpenArgs, handler: MPQSelectionEvent) => {
-          MPQSelectionPanel.createOrShow(context.extensionUri, args, handler);
+          MPQSelectionPanel.createOrShow(
+            context.extensionUri,
+            args,
+            "",
+            handler
+          );
         }
       ),
       vscode.commands.registerCommand(
@@ -88,6 +99,21 @@ export class MPQSelectionPanel
           MPQSelectionPanel.forwardSelectionByOwner(context.extensionUri, args);
         }
       ),
+      vscode.commands.registerCommand(
+        MPQSelectionPanel.cmdOpenVisq,
+        (
+          args: MPQSelectionCmdOpenArgs,
+          visqData: MPQVisqData,
+          handler: MPQSelectionEvent
+        ) => {
+          MPQSelectionPanel.createOrShow(
+            context.extensionUri,
+            args,
+            visqData.visqPath,
+            handler
+          );
+        }
+      ),
       // TODO add more commands
     ];
 
@@ -99,6 +125,7 @@ export class MPQSelectionPanel
   public static createOrShow(
     extensionUri: vscode.Uri,
     args: MPQSelectionCmdOpenArgs,
+    visqPath: string,
     handler: MPQSelectionEvent | undefined
   ) {
     let column = args.panel.viewColumn;
@@ -132,6 +159,7 @@ export class MPQSelectionPanel
       panel,
       extensionUri,
       args,
+      visqPath,
       handler
     );
 
@@ -190,6 +218,7 @@ export class MPQSelectionPanel
     panel: vscode.WebviewPanel,
     extensionUri: vscode.Uri,
     args: MPQSelectionCmdOpenArgs,
+    visqPath: string,
     handler: MPQSelectionEvent | undefined
   ) {
     super(extensionUri, panel.webview);
@@ -201,13 +230,31 @@ export class MPQSelectionPanel
     this._modelPath = args.modelPath;
     this._mpqEventHandler = handler;
     this._lastSelected = args.names;
+    this._visqData = [];
 
     // Listen for when the panel is disposed
     // This happens when the user closes the panel or when the panel is closed programmatically
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
     this.initGraphCtrl(this._modelPath, this);
-    this.setMode("selector");
+    if (visqPath.length < 1) {
+      this.setMode("selector");
+    } else {
+      this.setMode("visqselector");
+      const visqUri = vscode.Uri.file(visqPath);
+      vscode.workspace.fs.readFile(visqUri).then((visqData) => {
+        try {
+          this._visqData = JSON.parse(visqData.toString());
+        } catch (error) {
+          this.onInvalidVISQData(visqPath);
+        }
+
+        // check whether _visqData pretend to be valid
+        if (!("error" in this._visqData) || !("meta" in this._visqData)) {
+          this.onInvalidVISQData(visqPath);
+        }
+      });
+    }
     if (this._mpqEventHandler) {
       this._mpqEventHandler.onOpened(this._ownerPanel);
     }
@@ -256,6 +303,9 @@ export class MPQSelectionPanel
       case MessageDefs.finishload:
         this.onForwardSelection(this._lastSelected);
         break;
+      case MessageDefs.visq:
+        this.sendVisq(this._visqData);
+        break;
     }
   }
 
@@ -268,5 +318,12 @@ export class MPQSelectionPanel
       }
     }
     this.setSelection(selections);
+  }
+
+  private onInvalidVISQData(_visqPath: string) {
+    this._visqData = [];
+    if (this._mpqEventHandler) {
+      // TODO
+    }
   }
 }
