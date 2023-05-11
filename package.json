@@ -263,6 +263,21 @@
         "category": "ONE"
       },
       {
+        "command": "one.viewer.metadata.inference",
+        "title": "Inference",
+        "category": "ONE"
+      },
+      {
+        "command": "one.viewer.metadata.profile",
+        "title": "Profile",
+        "category": "ONE"
+      },
+      {
+        "command": "one.viewer.metadata.showModelInfo",
+        "title": "Show Model information",
+        "category": "ONE"
+      },
+      {
         "command": "one.editor.cfg.setDefaultValues",
         "title": "ONE: Set Default Values",
         "category": "ONE"
@@ -378,6 +393,21 @@
           "command": "one.viewer.metadata.showFromOneExplorer",
           "when": "view == OneExplorerView && viewItem =~ /baseModel|product/",
           "group": "7_metadata@1"
+        },
+        {
+          "command": "one.viewer.metadata.inference",
+          "when": "view == OneExplorerView && viewItem =~ /product/",
+          "group": "7_metadata@1"
+        },
+        {
+          "command": "one.viewer.metadata.profile",
+          "when": "view == OneExplorerView && viewItem =~ /product/",
+          "group": "7_metadata@1"
+        },
+        {
+          "command": "one.viewer.metadata.showModelInfo",
+          "when": "view == OneExplorerView && viewItem =~ /product/",
+          "group": "7_metadata@1"
         }
       ],
       "explorer/context": [
@@ -474,6 +504,18 @@
           "when": "false"
         },
         {
+          "command": "one.viewer.metadata.inference",
+          "when": "false"
+        },
+        {
+          "command": "one.viewer.metadata.profile",
+          "when": "false"
+        },
+        {
+          "command": "one.viewer.metadata.showModelInfo",
+          "when": "false"
+        },
+        {
           "command": "one.editor.mpq.createFromDefaultExplorer",
           "when": "false"
         }
@@ -502,7 +544,7 @@
     "linthtml": "htmlhint media src",
     "unittest": "node ./out/Tests/runTest.js",
     "test": "npm run unittest",
-    "test-no-screen": "DISPLAY=:44 xvfb-run --server-num 44 npm run test",
+    "test-no-screen": "DISPLAY=:46 xvfb-run -a --server-num 46 npm run test",
     "coverage": "npm run test coverage",
     "clean": "rm -rf out"
   },

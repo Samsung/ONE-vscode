@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import assert from "assert";
-
 import { Command } from "../Command";
-import { Toolchain, ToolchainInfo } from "../Toolchain";
+import { IToolchain, IToolCommand, ToolchainInfo } from "../Toolchain";
 
 class DebianRepo {
   uri: string;
@@ -35,9 +33,7 @@ enum DebianArch {
   undefined = "undefined",
 }
 
-class DebianToolchain implements Toolchain {
-  ready: boolean = false;
-
+class DebianTool implements IToolCommand {
   info: ToolchainInfo;
   repo?: DebianRepo;
   arch?: DebianArch = DebianArch.undefined;
@@ -46,16 +42,6 @@ class DebianToolchain implements Toolchain {
     this.info = info;
     this.repo = repo;
     this.arch = arch;
-  }
-
-  prepare() {
-    if (this.ready === false) {
-      // TODO: make listfile and verify with it
-      // /etc/apt/source.list.d/ONE-vscode.list
-      // deb ${this.repo.uri} ${this.repo.foscal} ${this.repo.component}
-      this.ready = true;
-    }
-    assert.ok(this.ready === true);
   }
 
   // impl of Toolchain
@@ -74,7 +60,6 @@ class DebianToolchain implements Toolchain {
     //   * Aptitude::ProblemResolver::SolutionCost
     //        : Describes how to determine the cost of a solution.
     //          ref: https://tools.ietf.org/doc/aptitude/html/en/ch02s03s04.html
-    this.prepare();
     let cmd = new Command("aptitude");
     cmd.push("install");
     cmd.push("-o");
@@ -102,7 +87,6 @@ class DebianToolchain implements Toolchain {
     // According to man(8) apt-get
     // -q: Quiet; produces output suitable for logging, omitting progress indicators.
     // -y: Automatic yes to prompts
-    this.prepare();
     let cmd = new Command("aptitude");
     cmd.push("purge");
     cmd.push(this.info.name);
@@ -112,7 +96,6 @@ class DebianToolchain implements Toolchain {
     return cmd;
   }
   installed(): Command {
-    this.prepare();
     let cmd = new Command("dpkg-query");
     cmd.push("--show");
     let pkg: string = this.info.name;
@@ -124,13 +107,30 @@ class DebianToolchain implements Toolchain {
     cmd.push("echo $?");
     return cmd;
   }
+}
+
+class DebianToolchain implements IToolchain<DebianTool> {
+  tool: DebianTool;
+  info: ToolchainInfo;
+  constructor(info: ToolchainInfo, repo?: DebianRepo, arch?: DebianArch) {
+    this.tool = new DebianTool(info, repo, arch);
+    this.info = info;
+  }
   run(cfg: string): Command {
-    this.prepare();
     let cmd = new Command("onecc");
     cmd.push("--config");
     cmd.push(cfg);
     return cmd;
   }
+  runInference(_model: string, _options?: Map<string, string>): Command {
+    throw new Error("Method not implemented.");
+  }
+  runProfile(_model: string, _options?: Map<string, string>): Command {
+    throw new Error("Method not implemented.");
+  }
+  runShow(_model: string, _option: string): Command {
+    throw new Error("Method not implemented.");
+  }
 }
 
-export { DebianRepo, DebianArch, DebianToolchain };
+export { DebianRepo, DebianArch, DebianTool, DebianToolchain };

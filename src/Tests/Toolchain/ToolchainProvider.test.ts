@@ -82,7 +82,7 @@ suite("Toolchain", function () {
         const toolchain = new DebianToolchain(
           new ToolchainInfo("npm", "package manager for Node.js")
         );
-        const collapsibleState = vscode.TreeItemCollapsibleState.None;
+        const collapsibleState = vscode.TreeItemCollapsibleState.Expanded;
         let node = new ToolchainNode(label, backendName, toolchain);
         assert.strictEqual(node.label, label);
         assert.strictEqual(node.collapsibleState, collapsibleState);
@@ -102,7 +102,7 @@ suite("Toolchain", function () {
             [dependencyInfo]
           )
         );
-        const collapsibleState = vscode.TreeItemCollapsibleState.None;
+        const collapsibleState = vscode.TreeItemCollapsibleState.Expanded;
         let node = new ToolchainNode(label, backendName, toolchain);
         assert.strictEqual(node.label, label);
         assert.strictEqual(node.collapsibleState, collapsibleState);
@@ -184,7 +184,7 @@ suite("Toolchain", function () {
         const toolchain = new DebianToolchain(
           new ToolchainInfo("npm", "package manager for Node.js")
         );
-        const collapsibleState = vscode.TreeItemCollapsibleState.None;
+        const collapsibleState = vscode.TreeItemCollapsibleState.Expanded;
         let node = new ToolchainNode(label, backend, toolchain);
         let provider = new ToolchainProvider();
         let treeItem = provider.getTreeItem(node);
