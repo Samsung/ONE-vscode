@@ -759,7 +759,7 @@ export class MPQEditorProvider
       if (fileUri && fileUri[0]) {
         const visqPath = fileUri[0].fsPath.toString();
 
-        let docUri = document.uri.toString();
+        const docUri = document.uri.toString();
         this._mpqDataMap[docUri].visqPath = visqPath;
         // close previous view if any
         this.closeModelGraphView(document);
