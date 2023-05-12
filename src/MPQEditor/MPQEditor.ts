@@ -753,6 +753,7 @@ export class MPQEditorProvider
       canSelectFolders: false,
       openLabel: "Open",
       filters: { "target files": ["visq.json"], "all files": ["*"] },
+      title: "Open VISQ File",
     };
 
     vscode.window.showOpenDialog(dialogOptions).then((fileUri) => {
