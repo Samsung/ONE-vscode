@@ -33,7 +33,13 @@ import { Version } from "../Version";
 class OneDebianToolchain extends DebianToolchain {
   run(cfg: string): Command {
     this.prepare();
+    const configs = vscode.workspace.getConfiguration();
+    const value = configs.get("one.toolchain.githubToken", "");
     let cmd = new Command("onecc-docker");
+    if (value !== "") {
+      cmd.push("-t");
+      cmd.push(value);
+    }
     cmd.push("-C");
     cmd.push(cfg);
     return cmd;

@@ -489,7 +489,16 @@
           ".cfg"
         ]
       }
-    ]
+    ],
+    "configuration": {
+      "title": "ONE-vscode",
+      "properties": {
+        "one.toolchain.githubToken": {
+          "type": "string",
+          "description": "Sets User GitHub Token"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
