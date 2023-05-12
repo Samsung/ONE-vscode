@@ -288,6 +288,16 @@ export class MPQSelectionPanel
   }
 
   /**
+   * @brief called to prevent the view from scrolling after every user selection
+   */
+  public cancelScrollToSelected() {
+    this._webview.postMessage({
+      command: MessageDefs.scrollToSelected,
+      value: false,
+    });
+  }
+
+  /**
    * CircleGraphEvent interface implementations
    */
   public onViewMessage(message: any) {
@@ -301,9 +311,11 @@ export class MPQSelectionPanel
         }
         break;
       case MessageDefs.finishload:
+        this.cancelScrollToSelected();
         this.onForwardSelection(this._lastSelected);
         break;
       case MessageDefs.visq:
+        this.cancelScrollToSelected();
         this.sendVisq(this._visqData);
         break;
     }
