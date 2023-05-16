@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-let currentConfigType = null;
-
 this.window.addEventListener("message", (event) => {
   const message = event.data;
   switch (message.command) {
@@ -51,13 +49,13 @@ function updateMetadataInfo(metadata) {
     "codicon"
   );
 
-  const viewItemContentBox = document.createElement("div");
-  viewItemContentBox.setAttribute("id", "common-view-content-box");
-  viewItemContentBox.classList.add("view-item-content-box");
+  const commonItemContentBox = document.createElement("div");
+  commonItemContentBox.setAttribute("id", "common-view-content-box");
+  commonItemContentBox.classList.add("view-item-content-box");
 
   document.body.appendChild(mainViewItemBox);
   mainViewItemBox.appendChild(viewItemBox);
-  viewItemBox.append(viewItemHeaderBox, viewItemContentBox);
+  viewItemBox.append(viewItemHeaderBox, commonItemContentBox);
   viewItemHeaderBox.append(viewItemHeader, viewItemShowButton);
 
   // Pull out the main key.(File Name)
@@ -65,184 +63,94 @@ function updateMetadataInfo(metadata) {
 
   // Store metadata information in variable
   const metadataInfo = metadata[mainFileName];
-
   for (const subKey in metadataInfo) {
-    if (subKey === "operations") {
-      const viewItemBox = document.createElement("div");
-      viewItemBox.setAttribute("id", "operations-view-item-box");
-      viewItemBox.classList.add("view-item-box");
+    const type = typeof metadataInfo[subKey];
+    if (type === "undefined" || type === "null") {
+      continue;
+    }
 
-      // draw header
-      const viewItemHeader = document.createElement("div");
-      viewItemHeader.classList.add("view-item-header");
-      viewItemHeader.innerText = "Operations";
-
-      // add show button image
-      const showButton = document.createElement("div");
-      showButton.classList.add(
-        "view-item-show-button",
-        "codicon-collapse-all",
-        "codicon"
-      );
-      showButton.setAttribute("id", "operations-view-item-show-button");
-
-      // draw a header box to hold headers and showButton
-      const viewItemHeaderBox = document.createElement("div");
-      viewItemHeaderBox.classList.add("view-item-header-box");
-
-      viewItemHeaderBox.append(viewItemHeader, showButton);
-      viewItemBox.appendChild(viewItemHeaderBox);
-      mainViewItemBox.appendChild(viewItemBox);
-
-      // draw content box
-      const viewItemContentBox = document.createElement("div");
-      viewItemContentBox.classList.add("view-item-content-box");
-      viewItemContentBox.setAttribute("id", "operations-view-content-box");
-      viewItemBox.appendChild(viewItemContentBox);
-
-      for (const operationsKey in metadataInfo[subKey]) {
-        if (
-          Object.prototype.hasOwnProperty.call(
-            metadataInfo[subKey],
-            operationsKey
-          )
-        ) {
-          metadataDivCreate(
-            operationsKey,
-            metadataInfo[subKey][operationsKey],
-            "operations"
-          );
-        }
-      }
-    } else if (subKey === "cfg-settings") {
-      const viewItemBox = document.createElement("div");
-      viewItemBox.setAttribute("id", "cfg-settings-view-item-box");
-      viewItemBox.classList.add("view-item-box");
-
-      const viewItemHeaderBox = document.createElement("div");
-      viewItemHeaderBox.classList.add("view-item-header-box");
-
-      const viewItemHeader = document.createElement("div");
-      viewItemHeader.classList.add("view-item-header");
-      viewItemHeader.innerText = "Config";
-
-      const showButton = document.createElement("div");
-      showButton.setAttribute("id", "cfg-settings-view-item-show-button");
-      showButton.classList.add(
-        "view-item-show-button",
-        "codicon-collapse-all",
-        "codicon"
-      );
-      // showButton.innerText = '-';
-
-      viewItemHeaderBox.append(viewItemHeader, showButton);
-      viewItemBox.appendChild(viewItemHeaderBox);
-      mainViewItemBox.appendChild(viewItemBox);
-
-      const viewItemContentBox = document.createElement("div");
-      viewItemContentBox.classList.add("view-item-content-box");
-      viewItemContentBox.setAttribute("id", "cfg-settings-view-content-box");
-      viewItemBox.appendChild(viewItemContentBox);
-
-      const oneccInfo = metadataInfo[subKey];
-
-      // Store values that onecc`s value is true
-      const oneccInfoList = [];
-
-      for (const configKey in oneccInfo) {
-        if (Object.prototype.hasOwnProperty.call(oneccInfo, configKey)) {
-          const viewItemSubHeaderBox = document.createElement("div");
-          viewItemSubHeaderBox.classList.add("view-item-header-box");
-
-          const viewItemSubHeader = document.createElement("div");
-          viewItemSubHeader.innerText = `[${configKey}]`;
-          viewItemSubHeader.classList.add("view-item-sub-header");
-
-          const showButton = document.createElement("div");
-          showButton.innerText = `-`;
-          showButton.classList.add("view-item-show-button");
-          showButton.style.fontSize = "20px";
-          showButton.setAttribute("id", `${configKey}-view-item-show-button`);
-
-          viewItemSubHeaderBox.append(viewItemSubHeader, showButton);
-          viewItemContentBox.appendChild(viewItemSubHeaderBox);
-
-          const subContentBox = document.createElement("div");
-          subContentBox.classList.add("sub-view-item-content-box");
-          subContentBox.setAttribute("id", `${configKey}-sub-view-content-box`);
-
-          viewItemContentBox.appendChild(subContentBox);
-
-          // Save the current key to use as id
-          currentConfigType = configKey;
-
-          if (configKey === "onecc") {
-            // Handle if no onecc information is available
-            const viewItemContent = document.createElement("div");
-            viewItemContent.innerText = "There is no config information...";
-            viewItemBox.appendChild(viewItemContent);
-            viewItemContent.classList.add("view-item-info-content");
-
-            for (const oneccSubkey in oneccInfo[configKey]) {
-              if (oneccInfo[configKey][oneccSubkey]) {
-                oneccInfoList.push(oneccSubkey);
-
-                // If you have cfg information, delete the no info statement
-                viewItemContent?.remove();
-                metadataDivCreate(
-                  oneccSubkey,
-                  oneccInfo[configKey][oneccSubkey],
-                  "cfg-settings"
-                );
-              }
-            }
-          } else {
-            if (oneccInfoList.includes(configKey)) {
-              viewItemSubHeader.style.marginTop = "15px";
-              for (const oneccSubkey in oneccInfo[configKey]) {
-                if (
-                  Object.prototype.hasOwnProperty.call(
-                    oneccInfo[configKey],
-                    oneccSubkey
-                  )
-                ) {
-                  metadataDivCreate(
-                    oneccSubkey,
-                    oneccInfo[configKey][oneccSubkey],
-                    "cfg-settings"
-                  );
-                }
-              }
-            } else {
-              viewItemSubHeader?.remove();
-            }
-          }
-        }
-      }
+    if (type !== "object") {
+      // simple type
+      metadataDivCreate(subKey, metadataInfo[subKey], commonItemContentBox);
     } else {
-      // Other common metadata information
-      metadataDivCreate(subKey, metadataInfo[subKey], "common");
+      // complex
+      metadataSectionCreate(
+        subKey,
+        metadataInfo[subKey],
+        mainViewItemBox,
+        false
+      );
     }
   }
+
   showButtonClickEvent();
 }
 
-function metadataDivCreate(subKey, value, type) {
-  let viewItemContentBox = null;
-  let subContentBox = null;
-  if (type === "common") {
-    viewItemContentBox = document.getElementById("common-view-content-box");
-  } else if (type === "operations") {
-    viewItemContentBox = document.getElementById("operations-view-content-box");
-  } else if (type === "cfg-settings") {
-    viewItemContentBox = document.getElementById(
-      "cfg-settings-view-content-box"
-    );
-    subContentBox = document.getElementById(
-      `${currentConfigType}-sub-view-content-box`
-    );
+function metadataSectionCreate(sectionKey, section, parentBox, sub) {
+  const viewItemBox = document.createElement("div");
+  viewItemBox.setAttribute("id", `${sectionKey}-view-item-box`);
+  viewItemBox.classList.add("view-item-box");
+
+  // draw header
+  const viewItemHeader = document.createElement("div");
+  if (sub) {
+    viewItemHeader.innerText = `[${sectionKey}]`;
+    viewItemHeader.classList.add("view-item-sub-header");
+  } else {
+    viewItemHeader.innerText = sectionKey;
+    viewItemHeader.classList.add("view-item-header");
   }
 
+  // add show button image
+  const showButton = document.createElement("div");
+  if (sub) {
+    showButton.innerText = `-`;
+    showButton.classList.add("view-item-show-button");
+    showButton.style.fontSize = "20px";
+    showButton.setAttribute("id", `${sectionKey}-view-item-show-button`);
+  } else {
+    showButton.classList.add(
+      "view-item-show-button",
+      "codicon-collapse-all",
+      "codicon"
+    );
+    showButton.setAttribute("id", `${sectionKey}-view-item-show-button`);
+  }
+
+  // draw a header box to hold headers and showButton
+  const viewItemHeaderBox = document.createElement("div");
+  viewItemHeaderBox.classList.add("view-item-header-box");
+
+  viewItemHeaderBox.append(viewItemHeader, showButton);
+  viewItemBox.appendChild(viewItemHeaderBox);
+  parentBox.appendChild(viewItemBox);
+  // draw content box
+  const viewItemContentBox = document.createElement("div");
+  if (sub) {
+    viewItemContentBox.classList.add("sub-view-item-content-box");
+    viewItemContentBox.setAttribute("id", `${sectionKey}-sub-view-content-box`);
+  } else {
+    viewItemContentBox.classList.add("view-item-content-box");
+    viewItemContentBox.setAttribute("id", `${sectionKey}-view-content-box`);
+  }
+
+  viewItemBox.appendChild(viewItemContentBox);
+
+  //iterate properties
+  for (const key in section) {
+    if (Object.prototype.hasOwnProperty.call(section, key)) {
+      //if data is just an array or simple object just add it
+      if (Array.isArray(section[key]) || typeof section[key] !== "object") {
+        metadataDivCreate(key, section[key], viewItemContentBox);
+      } else {
+        // recurse
+        metadataSectionCreate(key, section[key], viewItemContentBox, true);
+      }
+    }
+  }
+}
+
+function metadataDivCreate(subKey, value, viewItemContentBox) {
   const viewItemContent = document.createElement("div");
   viewItemContent.classList.add("view-item-content");
   const viewItemName = document.createElement("div");
@@ -251,23 +159,25 @@ function metadataDivCreate(subKey, value, type) {
 
   // If the value of the key is the object structure again, turn the repetition door.
   if (typeof value === "object" && value !== null) {
-    const viewItemValueList = document.createElement("div");
-    viewItemValueList.classList.add("view-item-value-list");
+    if (Array.isArray(value)) {
+      const viewItemValueList = document.createElement("div");
+      viewItemValueList.classList.add("view-item-value-list");
 
-    for (const key in value) {
-      if (Object.prototype.hasOwnProperty.call(value, key)) {
-        const viewItemValue = document.createElement("div");
-        viewItemValue.classList.add("view-item-value");
-        viewItemValue.innerText = `${value[key]}`;
-        // if the size of the viewer is smaller, Set items to be smaller in proportion
-        viewItemValue.style.width = "auto";
-        viewItemValue.classList.add("margin-bottom-border-thin-gray");
-        viewItemValueList.appendChild(viewItemValue);
+      for (const key in value) {
+        if (Object.prototype.hasOwnProperty.call(value, key)) {
+          const viewItemValue = document.createElement("div");
+          viewItemValue.classList.add("view-item-value");
+          viewItemValue.innerText = `${value[key]}`;
+          // if the size of the viewer is smaller, Set items to be smaller in proportion
+          viewItemValue.style.width = "auto";
+          viewItemValue.classList.add("margin-bottom-border-thin-gray");
+          viewItemValueList.appendChild(viewItemValue);
+        }
       }
-    }
 
-    viewItemContent.append(viewItemName, viewItemValueList);
-    viewItemContent.classList.add("aline-items-baseline");
+      viewItemContent.append(viewItemName, viewItemValueList);
+      viewItemContent.classList.add("aline-items-baseline");
+    }
   } else {
     // If it's a simple string, it's shown on the screen right away.
     const viewItemValue = document.createElement("div");
@@ -276,12 +186,7 @@ function metadataDivCreate(subKey, value, type) {
     viewItemContent.append(viewItemName, viewItemValue);
   }
 
-  if (type === "cfg-settings") {
-    viewItemContent.style.marginBottom = "1px";
-    subContentBox.appendChild(viewItemContent);
-  } else {
-    viewItemContentBox.appendChild(viewItemContent);
-  }
+  viewItemContentBox.appendChild(viewItemContent);
 }
 
 function showButtonClickEvent() {
