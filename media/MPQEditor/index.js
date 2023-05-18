@@ -68,7 +68,7 @@ function handleVisqFileLoaded(visqFile) {
 function registerMainControls() {
   document
     .getElementById("DefaultDtype")
-    .addEventListener("click", function () {
+    .addEventListener("change", function () {
       updateDefaultQuantization();
       applyUpdates();
     });
@@ -127,6 +127,7 @@ function registerMainControls() {
 function displayMPQToEditor(mpqCfg) {
   document.getElementById("DefaultDtype").value =
     mpqCfg?.["default_quantization_dtype"];
+
   document.getElementById("DefaultGranularity").value =
     mpqCfg?.["default_granularity"];
 
@@ -142,7 +143,8 @@ function displayMPQToEditor(mpqCfg) {
   }
 
   const layersTable = document.getElementById("LayersTable");
-  layersTable.replaceChildren();
+  let header = document.getElementById("LayersHeader");
+  layersTable.replaceChildren(header);
   addQuantizedNodes(names, quantization, granularity, false);
 }
 
@@ -303,20 +305,18 @@ function updateSpecificGranularity(name) {
 }
 
 function updateDefaultQuantization() {
-  let value = document.getElementById("DefaultDtype").value;
   vscode.postMessage({
     type: "updateSection",
     section: "default_quantization_dtype",
-    value: value,
+    value: document.getElementById("DefaultDtype").value,
   });
 }
 
 function updateGranularity() {
-  let value = document.getElementById("DefaultGranularity").value;
   vscode.postMessage({
     type: "updateSection",
     section: "default_granularity",
-    value: value,
+    value: document.getElementById("DefaultGranularity").value,
   });
 }
 

@@ -21,6 +21,9 @@ white-space: pre-wrap;
 body {
 min-width: 500px;
 width: auto !important;
+display: flex;
+flex-flow: column;
+height: 100vh;
 }
 
 .leftbtns {
@@ -48,4 +51,17 @@ font-family: var(--vscode-font-family);
 
 .codicon.codicon-question:hover .help {
 visibility: visible;
+}
+
+.layers {
+flex: 1 1 auto;
+overflow-y: auto;
+}
+
+.bottom {
+flex: 0 1 auto;
+}
+
+.text {
+margin-top: 10px;
 }
