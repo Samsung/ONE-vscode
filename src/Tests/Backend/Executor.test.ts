@@ -21,7 +21,7 @@ suite("Backend", function () {
   suite("ExecutorBase", function () {
     suite("#constructor()", function () {
       test("Create dummy executor", function (pass) {
-        assert.doesNotThrow(() => new ExecutorBase());
+        new ExecutorBase();
 
         pass();
         assert.ok(true);

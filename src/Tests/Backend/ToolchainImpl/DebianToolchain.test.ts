@@ -15,10 +15,12 @@
  */
 
 import { assert } from "chai";
+
 import { ToolchainInfo } from "../../../Backend/Toolchain";
 import {
   DebianArch,
   DebianRepo,
+  DebianTool,
   DebianToolchain,
 } from "../../../Backend/ToolchainImpl/DebianToolchain";
 import { Version } from "../../../Backend/Version";
@@ -28,7 +30,7 @@ import { Version } from "../../../Backend/Version";
 // The tests are fitting its env
 suite("Backend", function () {
   suite("ToolchainImpl", function () {
-    suite("DebianToolchain", function () {
+    suite("DebianTool", function () {
       // for Toolchain
       // Let's use `npm`
       const name = "npm";
@@ -43,24 +45,16 @@ suite("Backend", function () {
           const comp = "universe";
           const repo = new DebianRepo(uri, dist, comp);
           const arch = DebianArch.amd64;
-          let dt = new DebianToolchain(info, repo, arch);
+          let dt = new DebianTool(info, repo, arch);
           assert.strictEqual(dt.info, info);
           assert.strictEqual(dt.repo, repo);
           assert.strictEqual(dt.arch, arch);
         });
       });
 
-      suite("#prepare()", function () {
-        test("prepare DebianToolchain", function () {
-          let dt = new DebianToolchain(info);
-          dt.prepare();
-          assert.strictEqual(dt.ready, true);
-        });
-      });
-
       suite("#install()", function () {
-        test("install DebianToolchain", function () {
-          let dt = new DebianToolchain(info);
+        test("Check install command", function () {
+          let dt = new DebianTool(info);
           let cmd = dt.install();
           const expectedStr = `sudo aptitude install -o Aptitude::ProblemResolver::SolutionCost=100*canceled-actions,200*removals ${name}=${version.str()} -q -y`;
           assert.strictEqual(cmd.str(), expectedStr);
@@ -68,8 +62,8 @@ suite("Backend", function () {
       });
 
       suite("#uninstall()", function () {
-        test("uninstall DebianToolchain", function () {
-          let dt = new DebianToolchain(info);
+        test("Check uninstall command", function () {
+          let dt = new DebianTool(info);
           let cmd = dt.uninstall();
           const expectedStr = `sudo aptitude purge ${name} -q -y`;
           assert.strictEqual(cmd.str(), expectedStr);
@@ -77,11 +71,28 @@ suite("Backend", function () {
       });
 
       suite("#installed()", function () {
-        test("check DebianToolchain installed", function () {
-          let dt = new DebianToolchain(info);
+        test("Check installed command", function () {
+          let dt = new DebianTool(info);
           let cmd = dt.installed();
           const expectedStr = `dpkg-query --show ${name}=${version.str()} && echo $?`;
           assert.strictEqual(cmd.str(), expectedStr);
+        });
+      });
+    });
+
+    suite("DebianToolchain", function () {
+      // for Toolchain
+      // Let's use `npm`
+      const name = "npm";
+      const desc = "npm toolchain";
+      const version = new Version(6, 14, 4, "+ds-1ubuntu2");
+      const info = new ToolchainInfo(name, desc, version);
+
+      suite("#constructor()", function () {
+        test("is contructed with values", function () {
+          let dt = new DebianToolchain(info);
+          assert.strictEqual(dt.info, info);
+          assert.strictEqual(dt.tool.info, info);
         });
       });
 
@@ -93,6 +104,27 @@ suite("Backend", function () {
           assert.deepStrictEqual(cmd[0], "onecc");
           assert.deepStrictEqual(cmd[1], "--config");
           assert.deepStrictEqual(cmd[2], "file.cfg");
+        });
+      });
+
+      suite("#runInference()", function () {
+        test("NEG: throws by dummy toolchain by runInference", function () {
+          const toolchain = new DebianToolchain(info);
+          assert.throw(() => toolchain.runInference(""));
+        });
+      });
+
+      suite("#runProfile()", function () {
+        test("NEG: throws in dummy toolchain by runProfile", function () {
+          const toolchain = new DebianToolchain(info);
+          assert.throw(() => toolchain.runProfile(""));
+        });
+      });
+
+      suite("#runShow()", function () {
+        test("NEG: throws in dummy toolchain by runShow", function () {
+          const toolchain = new DebianToolchain(info);
+          assert.throw(() => toolchain.runShow("", ""));
         });
       });
     });

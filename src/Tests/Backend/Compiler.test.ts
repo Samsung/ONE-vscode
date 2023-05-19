@@ -21,7 +21,7 @@ suite("Backend", function () {
   suite("CompilerBase", function () {
     suite("#constructor()", function () {
       test("Create dummy compiler", function (pass) {
-        assert.doesNotThrow(() => new CompilerBase());
+        new CompilerBase();
 
         pass();
         assert.ok(true);

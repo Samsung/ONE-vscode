@@ -98,4 +98,8 @@ class CompilerBase implements Compiler {
   }
 }
 
-export { Compiler, CompilerBase };
+interface ICompilerCommand {
+  run(cfg: string): Command;
+}
+
+export { Compiler, CompilerBase, ICompilerCommand };
