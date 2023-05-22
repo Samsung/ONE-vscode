@@ -31,6 +31,7 @@ import {
   MPQSelectionCmdCloseArgs,
   MPQSelectionCmdOpenArgs,
   MPQSelectionCmdLayersChangedArgs,
+  MPQVisqData,
 } from "./MPQCircleSelector";
 
 export class MPQEditorProvider
@@ -333,6 +334,9 @@ export class MPQEditorProvider
           break;
         case "toggleCircleGraphIsShown":
           this.toggleCircleGraphIsShown(e.show, document, webviewPanel);
+          break;
+        case "loadVisqFile":
+          this.handleLoadVisqFile(document, webviewPanel);
           break;
         case "removeVisqFile":
           this.removeVisqFile(document, webviewPanel);
@@ -673,11 +677,31 @@ export class MPQEditorProvider
    * @brief Called when it's needed to show visq data in circle-graph
    */
   private showVisqCircleModelGraph(
-    _visqPath: string,
-    _document: vscode.TextDocument,
-    _webviewPanel: vscode.WebviewPanel
+    visqPath: string,
+    document: vscode.TextDocument,
+    webviewPanel: vscode.WebviewPanel
   ) {
-    // TODO
+    const args: MPQSelectionCmdOpenArgs = {
+      modelPath: this.getModelFilePath(document),
+      document: document,
+      names: this._mpqDataMap[document.uri.toString()].getLayers(),
+      panel: webviewPanel,
+    };
+
+    const visqData: MPQVisqData = {
+      visqPath: visqPath,
+    };
+    vscode.commands.executeCommand(
+      MPQSelectionPanel.cmdOpenVisq,
+      args,
+      visqData,
+      this
+    );
+
+    webviewPanel.webview.postMessage({
+      type: "VisqFileLoaded",
+      visqFile: visqPath,
+    });
   }
 
   /**
@@ -715,5 +739,34 @@ export class MPQEditorProvider
       this.closeModelGraphView(document);
       this.showCircleModelGraph(document, webviewPanel);
     }
+  }
+
+  /**
+   * @brief Called when user requests to load visq file from UI
+   */
+  private handleLoadVisqFile(
+    document: vscode.TextDocument,
+    webviewPanel: vscode.WebviewPanel
+  ) {
+    const dialogOptions = {
+      canSelectMany: false,
+      canSelectFolders: false,
+      openLabel: "Open",
+      filters: { "target files": ["visq.json"], "all files": ["*"] },
+      title: "Open VISQ File",
+    };
+
+    vscode.window.showOpenDialog(dialogOptions).then((fileUri) => {
+      if (fileUri && fileUri[0]) {
+        const visqPath = fileUri[0].fsPath.toString();
+
+        const docUri = document.uri.toString();
+        this._mpqDataMap[docUri].visqPath = visqPath;
+        // close previous view if any
+        this.closeModelGraphView(document);
+        // open new view
+        this.showVisqCircleModelGraph(visqPath, document, webviewPanel);
+      }
+    });
   }
 }
