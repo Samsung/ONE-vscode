@@ -666,7 +666,7 @@ export class MPQEditorProvider
       if (visqPath.length < 1) {
         this.showCircleModelGraph(document, webviewPanel);
       } else {
-        this.showVisqCircleModelGraph(visqPath, document, webviewPanel);
+        this.processVisqPath(visqPath, document, webviewPanel);
       }
     } else {
       this.closeModelGraphView(document);
@@ -677,7 +677,7 @@ export class MPQEditorProvider
    * @brief Called when it's needed to show visq data in circle-graph
    */
   private showVisqCircleModelGraph(
-    visqPath: string,
+    visqJsonData: string[],
     document: vscode.TextDocument,
     webviewPanel: vscode.WebviewPanel
   ) {
@@ -689,7 +689,7 @@ export class MPQEditorProvider
     };
 
     const visqData: MPQVisqData = {
-      visqPath: visqPath,
+      visqJsonData: visqJsonData,
     };
     vscode.commands.executeCommand(
       MPQSelectionPanel.cmdOpenVisq,
@@ -700,7 +700,7 @@ export class MPQEditorProvider
 
     webviewPanel.webview.postMessage({
       type: "VisqFileLoaded",
-      visqFile: visqPath,
+      visqFile: this._mpqDataMap[document.uri.toString()].visqPath,
     });
   }
 
@@ -719,10 +719,7 @@ export class MPQEditorProvider
       // remove invalid path
       this.removeVisqFile(document, webviewPanel);
     } else if (path.endsWith(".visq.json")) {
-      // reload visq
-      this._mpqDataMap[document.uri.toString()].visqPath = path;
-      this.closeModelGraphView(document);
-      this.showVisqCircleModelGraph(path, document, webviewPanel);
+      this.processVisqPath(path, document, webviewPanel);
     }
   }
 
@@ -739,6 +736,40 @@ export class MPQEditorProvider
       this.closeModelGraphView(document);
       this.showCircleModelGraph(document, webviewPanel);
     }
+  }
+
+  /**
+   * @brief shows visqPath at selector if it's valid
+   */
+  private processVisqPath(
+    visqPath: string,
+    document: vscode.TextDocument,
+    webviewPanel: vscode.WebviewPanel
+  ): void {
+    const visqUri = vscode.Uri.file(visqPath);
+    vscode.workspace.fs.readFile(visqUri).then((visqData) => {
+      let visqJsonData = null;
+      let valid = true;
+      try {
+        visqJsonData = JSON.parse(visqData.toString());
+      } catch (error) {
+        valid = false;
+      }
+
+      // check whether visqData pretend to be valid
+      valid &&= "error" in visqJsonData && "meta" in visqJsonData;
+
+      if (valid) {
+        const docUri = document.uri.toString();
+        this._mpqDataMap[docUri].visqPath = visqPath;
+        // close previous view if any
+        this.closeModelGraphView(document);
+        // open new view
+        this.showVisqCircleModelGraph(visqJsonData, document, webviewPanel);
+      } else {
+        Balloon.error("Invalid visq file " + visqPath);
+      }
+    });
   }
 
   /**
@@ -759,13 +790,7 @@ export class MPQEditorProvider
     vscode.window.showOpenDialog(dialogOptions).then((fileUri) => {
       if (fileUri && fileUri[0]) {
         const visqPath = fileUri[0].fsPath.toString();
-
-        const docUri = document.uri.toString();
-        this._mpqDataMap[docUri].visqPath = visqPath;
-        // close previous view if any
-        this.closeModelGraphView(document);
-        // open new view
-        this.showVisqCircleModelGraph(visqPath, document, webviewPanel);
+        this.processVisqPath(visqPath, document, webviewPanel);
       }
     });
   }
