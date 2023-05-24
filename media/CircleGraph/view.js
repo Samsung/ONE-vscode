@@ -642,6 +642,23 @@ view.View = class {
     }
   }
 
+  updateSelectionNodes() {
+    if (this._selectionNodes.length > 0) {
+      let names = [];
+      for (let node of this._selectionNodes) {
+        node.value._outputs.forEach((output) => {
+          output._arguments.forEach((arg) => {
+            // NOTE name is tensor_name + tensor_index, in circle.js
+            const mixed = arg._name.split(/\n/);
+            const name = mixed[0];
+            names.push(name);
+          });
+        });
+      }
+      this.setSelectionByNames(names);
+    }
+  }
+
   /**
    * @brief turn on selection for nodes with selection.names array
    */
@@ -653,32 +670,39 @@ view.View = class {
     if (Object.prototype.hasOwnProperty.call(selection, "names")) {
       // selection is by names
       const names = selection.names;
-      let scrollToSelects = []; // elements to make visible by scroll to
-
-      for (const nodeId of this._graph.nodes.keys()) {
-        const node = this._graph.node(nodeId);
-        if (node.label.value._outputs) {
-          node.label.value._outputs.forEach((output) => {
-            output._arguments.forEach((arg) => {
-              // NOTE name is tensor_name + tensor_index, in circle.js
-              const mixed = arg._name.split(/\n/);
-              const name = mixed[0];
-              if (names.includes(name)) {
-                this.selectViewNode(node.label);
-                if (this._scrollToSelected) {
-                  scrollToSelects.push(node.label.element);
-                }
-              }
-            });
-          });
-        }
-      }
-      if (this._scrollToSelected) {
-        // make elements to be visible
-        this.scrollToSelection(scrollToSelects);
-      }
+      this.setSelectionByNames(names);
     }
     // TODO select with others
+  }
+
+  /**
+   * @brief turn on selection for nodes with names array
+   */
+  setSelectionByNames(names) {
+    let scrollToSelects = []; // elements to make visible by scroll to
+
+    for (const nodeId of this._graph.nodes.keys()) {
+      const node = this._graph.node(nodeId);
+      if (node.label.value._outputs) {
+        node.label.value._outputs.forEach((output) => {
+          output._arguments.forEach((arg) => {
+            // NOTE name is tensor_name + tensor_index, in circle.js
+            const mixed = arg._name.split(/\n/);
+            const name = mixed[0];
+            if (names.includes(name)) {
+              this.selectViewNode(node.label);
+              if (this._scrollToSelected) {
+                scrollToSelects.push(node.label.element);
+              }
+            }
+          });
+        });
+      }
+    }
+    if (this._scrollToSelected) {
+      // make elements to be visible
+      this.scrollToSelection(scrollToSelects);
+    }
   }
 
   setNodeBackend(node, backend) {
@@ -902,6 +926,7 @@ view.View = class {
           backButton.style.opacity = 0;
           nameButton.style.opacity = 0;
         }
+        this.updateSelectionNodes();
       };
       return this.renderGraph(this._model, this.activeGraph)
         .then(() => {
@@ -1650,7 +1675,15 @@ view.Node = class extends grapher.Node {
       const list = this.list();
       if (host._mode === viewMode.viewer || host._mode === viewMode.visq) {
         list.on("click", () => this.context.view.showNodeProperties(node));
+      } else if (
+        host._mode === viewMode.selector ||
+        host._mode === viewMode.visqselector
+      ) {
+        list.on("click", () => {
+          this.context.view.toggleSelect(this);
+        });
       }
+
       for (const initializer of initializers) {
         const argument = initializer.arguments[0];
         const type = argument.type;
