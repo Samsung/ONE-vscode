@@ -37,7 +37,7 @@ export type MPQSelectionCmdOpenArgs = {
 };
 
 export type MPQVisqData = {
-  visqPath: string;
+  visqJsonData: string[];
 };
 
 export type MPQSelectionCmdCloseArgs = {
@@ -82,7 +82,7 @@ export class MPQSelectionPanel
           MPQSelectionPanel.createOrShow(
             context.extensionUri,
             args,
-            "",
+            [],
             handler
           );
         }
@@ -109,7 +109,7 @@ export class MPQSelectionPanel
           MPQSelectionPanel.createOrShow(
             context.extensionUri,
             args,
-            visqData.visqPath,
+            visqData.visqJsonData,
             handler
           );
         }
@@ -125,7 +125,7 @@ export class MPQSelectionPanel
   public static createOrShow(
     extensionUri: vscode.Uri,
     args: MPQSelectionCmdOpenArgs,
-    visqPath: string,
+    visqJsonData: string[],
     handler: MPQSelectionEvent | undefined
   ) {
     let column = args.panel.viewColumn;
@@ -159,7 +159,7 @@ export class MPQSelectionPanel
       panel,
       extensionUri,
       args,
-      visqPath,
+      visqJsonData,
       handler
     );
 
@@ -218,7 +218,7 @@ export class MPQSelectionPanel
     panel: vscode.WebviewPanel,
     extensionUri: vscode.Uri,
     args: MPQSelectionCmdOpenArgs,
-    visqPath: string,
+    visqData: string[],
     handler: MPQSelectionEvent | undefined
   ) {
     super(extensionUri, panel.webview);
@@ -230,30 +230,17 @@ export class MPQSelectionPanel
     this._modelPath = args.modelPath;
     this._mpqEventHandler = handler;
     this._lastSelected = args.names;
-    this._visqData = [];
+    this._visqData = visqData;
 
     // Listen for when the panel is disposed
     // This happens when the user closes the panel or when the panel is closed programmatically
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
     this.initGraphCtrl(this._modelPath, this);
-    if (visqPath.length < 1) {
+    if (this._visqData.length < 1) {
       this.setMode("selector");
     } else {
       this.setMode("visqselector");
-      const visqUri = vscode.Uri.file(visqPath);
-      vscode.workspace.fs.readFile(visqUri).then((visqData) => {
-        try {
-          this._visqData = JSON.parse(visqData.toString());
-        } catch (error) {
-          this.onInvalidVISQData(visqPath);
-        }
-
-        // check whether _visqData pretend to be valid
-        if (!("error" in this._visqData) || !("meta" in this._visqData)) {
-          this.onInvalidVISQData(visqPath);
-        }
-      });
     }
     if (this._mpqEventHandler) {
       this._mpqEventHandler.onOpened(this._ownerPanel);
@@ -330,12 +317,5 @@ export class MPQSelectionPanel
       }
     }
     this.setSelection(selections);
-  }
-
-  private onInvalidVISQData(_visqPath: string) {
-    this._visqData = [];
-    if (this._mpqEventHandler) {
-      // TODO
-    }
   }
 }
