@@ -15,6 +15,8 @@
  */
 
 import { Command } from "./Command";
+import { ICompilerCommand } from "./Compiler";
+import { IExecutorCommand } from "./Executor";
 import { Version } from "./Version";
 
 class PackageInfo {
@@ -46,10 +48,14 @@ class ToolchainInfo {
   }
 }
 
-// TODO: Support `DockerToolchain` so multiple toolchains can be installed
-// Toolchain: Debian(...) OR Docker(...)
-// A toolchain has a package or multiple packages
-class Toolchain {
+interface IToolCommand {
+  info: ToolchainInfo;
+  install(): Command;
+  uninstall(): Command;
+  installed(): Command;
+}
+
+class ToolCommand implements IToolCommand {
   info: ToolchainInfo;
   constructor(info: ToolchainInfo) {
     this.info = info;
@@ -63,8 +69,36 @@ class Toolchain {
   installed(): Command {
     throw Error("Invalid installed call");
   }
+}
+
+interface IToolchain<T extends IToolCommand>
+  extends ICompilerCommand,
+    IExecutorCommand {
+  tool: T;
+  info: ToolchainInfo;
+}
+
+// TODO: Support `DockerToolchain` so multiple toolchains can be installed
+// Toolchain: Debian(...) OR Docker(...)
+// A toolchain has a package or multiple packages
+class Toolchain implements IToolchain<ToolCommand> {
+  tool: ToolCommand;
+  info: ToolchainInfo;
+  constructor(info: ToolchainInfo) {
+    this.tool = new ToolCommand(info);
+    this.info = info;
+  }
   run(_cfg: string): Command {
-    throw Error("Invalid run call");
+    throw new Error("Method not implemented.");
+  }
+  runInference(_model: string, _options?: Map<string, string>): Command {
+    throw new Error("Method not implemented.");
+  }
+  runProfile(_model: string, _options?: Map<string, string>): Command {
+    throw new Error("Method not implemented.");
+  }
+  runShow(_model: string, _option: string): Command {
+    throw new Error("Method not implemented.");
   }
 }
 
@@ -77,4 +111,12 @@ class Toolchain {
 // TODO: Support filter(), where(), filter(regex) or orderBy()
 class Toolchains extends Array<Toolchain> {}
 
-export { PackageInfo, ToolchainInfo, Toolchain, Toolchains };
+export {
+  PackageInfo,
+  ToolchainInfo,
+  Toolchain,
+  Toolchains,
+  IToolCommand,
+  ToolCommand,
+  IToolchain,
+};

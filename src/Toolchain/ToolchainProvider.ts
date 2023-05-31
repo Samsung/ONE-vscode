@@ -224,8 +224,8 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
       .then((answer) => {
         if (answer === "Yes") {
           const jobs: Array<Job> = [];
-          jobs.push(new JobUninstall(installed[0].uninstall()));
-          jobs.push(new JobInstall(toolchain.install()));
+          jobs.push(new JobUninstall(installed[0].tool.uninstall()));
+          jobs.push(new JobInstall(toolchain.tool.install()));
           toolchainEnv.request(jobs).then(
             () => this._notifyInstalled(toolchainEnv, toolchain),
             () => this._notifyInstallationError()

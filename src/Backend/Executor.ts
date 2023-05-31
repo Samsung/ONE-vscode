@@ -59,4 +59,13 @@ class ExecutorBase implements Executor {
   }
 }
 
-export { Executor, ExecutorBase };
+interface IExecutorCommand {
+  // TODO: use cfg path to run onecc after one-infer landed
+  runInference(model: string, options?: Map<string, string>): Command;
+
+  runProfile(model: string, options?: Map<string, string>): Command;
+
+  runShow(model: string, option: string): Command;
+}
+
+export { Executor, ExecutorBase, IExecutorCommand };

@@ -158,7 +158,7 @@ class ToolchainEnv extends Env {
   public install(toolchain: Toolchain): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
       const jobs: Array<Job> = [];
-      const job = new JobInstall(toolchain.install());
+      const job = new JobInstall(toolchain.tool.install());
       job.successCallback = () => resolve(true);
       job.failureCallback = () => reject();
       jobs.push(job);
@@ -169,7 +169,7 @@ class ToolchainEnv extends Env {
   public uninstall(toolchain: Toolchain): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
       const jobs: Array<Job> = [];
-      const job = new JobUninstall(toolchain.uninstall());
+      const job = new JobUninstall(toolchain.tool.uninstall());
       job.successCallback = () => resolve(true);
       job.failureCallback = () => reject();
       jobs.push(job);

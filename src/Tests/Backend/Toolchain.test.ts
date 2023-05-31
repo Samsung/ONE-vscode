@@ -15,15 +15,47 @@
  */
 
 import { assert } from "chai";
-import { Toolchain, ToolchainInfo } from "../../Backend/Toolchain";
+import { Toolchain, ToolchainInfo, ToolCommand } from "../../Backend/Toolchain";
 
 suite("Backend", function () {
+  suite("ToolCommand", function () {
+    const toolchainInfo = new ToolchainInfo("dummy", "dummy toolchain");
+    suite("#constructor()", function () {
+      test("Create dummy tool command", function (pass) {
+        new ToolCommand(toolchainInfo);
+
+        pass();
+        assert.ok(true);
+      });
+    });
+
+    suite("#install()", function () {
+      test("NEG: throws by dummy toolchain by install", function () {
+        const toolCommand = new ToolCommand(toolchainInfo);
+        assert.throw(() => toolCommand.install());
+      });
+    });
+
+    suite("#uninstall()", function () {
+      test("NEG: throws in dummy toolchain by uninstall", function () {
+        const toolCommand = new ToolCommand(toolchainInfo);
+        assert.throw(() => toolCommand.uninstall());
+      });
+    });
+
+    suite("#installed()", function () {
+      test("NEG: throws in dummy toolchain by installed", function () {
+        const toolCommand = new ToolCommand(toolchainInfo);
+        assert.throw(() => toolCommand.installed());
+      });
+    });
+  });
   suite("Toolchain", function () {
     const toolchainInfo = new ToolchainInfo("dummy", "dummy toolchain");
 
     suite("#constructor()", function () {
       test("Create dummy toolchain", function (pass) {
-        assert.doesNotThrow(() => new Toolchain(toolchainInfo));
+        new Toolchain(toolchainInfo);
 
         pass();
         assert.ok(true);
@@ -42,20 +74,6 @@ suite("Backend", function () {
       });
     });
 
-    suite("#install()", function () {
-      test("NEG: throws by dummy toolchain by install", function () {
-        const toolchain = new Toolchain(toolchainInfo);
-        assert.throw(() => toolchain.install());
-      });
-    });
-
-    suite("#installed()", function () {
-      test("NEG: throws in dummy toolchain by installed", function () {
-        const toolchain = new Toolchain(toolchainInfo);
-        assert.throw(() => toolchain.installed());
-      });
-    });
-
     suite("#run()", function () {
       test("NEG: throws in dummy toolchain by run", function () {
         const toolchain = new Toolchain(toolchainInfo);
@@ -63,10 +81,24 @@ suite("Backend", function () {
       });
     });
 
-    suite("#uninstall()", function () {
-      test("NEG: throws in dummy toolchain by uninstall", function () {
+    suite("#runInference()", function () {
+      test("NEG: throws by dummy toolchain by runInference", function () {
         const toolchain = new Toolchain(toolchainInfo);
-        assert.throw(() => toolchain.uninstall());
+        assert.throw(() => toolchain.runInference(""));
+      });
+    });
+
+    suite("#runProfile()", function () {
+      test("NEG: throws in dummy toolchain by runProfile", function () {
+        const toolchain = new Toolchain(toolchainInfo);
+        assert.throw(() => toolchain.runProfile(""));
+      });
+    });
+
+    suite("#runShow()", function () {
+      test("NEG: throws in dummy toolchain by runShow", function () {
+        const toolchain = new Toolchain(toolchainInfo);
+        assert.throw(() => toolchain.runShow("", ""));
       });
     });
   });
