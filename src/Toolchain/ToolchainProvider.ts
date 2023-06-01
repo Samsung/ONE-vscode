@@ -276,6 +276,35 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
     return true;
   }
 
+  private checkAvailableToolchain(): [
+    ToolchainEnv | undefined,
+    Toolchain | undefined
+  ] {
+    /* istanbul ignore next */
+    const notifyGuideline = () => {
+      this.error(
+        "Default toolchain is not set. Please install toolchain and set the default toolchain.",
+        "OK",
+        "See Instructions"
+      ).then((value) => {
+        if (value === "See Instructions") {
+          /* istanbul ignore next */
+          DefaultToolchain.getInstance().openDocument();
+        }
+      });
+    };
+
+    const activeToolchainEnv = DefaultToolchain.getInstance().getToolchainEnv();
+    const activeToolchain = DefaultToolchain.getInstance().getToolchain();
+
+    if (!activeToolchainEnv || !activeToolchain) {
+      notifyGuideline();
+      return [undefined, undefined];
+    }
+
+    return [activeToolchainEnv, activeToolchain];
+  }
+
   public _run(cfg: string): boolean {
     /* istanbul ignore next */
     const notifySuccess = () => {
