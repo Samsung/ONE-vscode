@@ -511,7 +511,7 @@
     "linthtml": "htmlhint media src",
     "unittest": "node ./out/Tests/runTest.js",
     "test": "npm run unittest",
-    "test-no-screen": "DISPLAY=:44 xvfb-run --server-num 44 npm run test",
+    "test-no-screen": "DISPLAY=:44 xvfb-run -a --server-num 44 npm run test",
     "coverage": "npm run test coverage",
     "clean": "rm -rf out"
   },
