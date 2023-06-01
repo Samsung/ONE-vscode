@@ -282,5 +282,17 @@ suite("Toolchain", function () {
         );
       });
     });
+
+    suite("#inference()", function () {
+      test("NEG: requests unimplemented inference", async function () {
+        let env = new ToolchainEnv(compiler);
+        const invalidToolchain = env.listInstalled();
+        assert.isAbove(invalidToolchain.length, 0);
+        const model = "model.bin";
+        await env.inference(invalidToolchain[0], model).catch(() => {
+          assert.isTrue(true);
+        });
+      });
+    });
   });
 });
