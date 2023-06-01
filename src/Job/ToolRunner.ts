@@ -33,6 +33,8 @@ const K_ERROR: string = "error";
 export interface SuccessResult {
   // When successful exit, exit code must be 0
   exitCode?: number;
+  // When successful exit, output has the stdout output string.
+  output?: string;
   // When this process was intentionally killed by user, this must be true.
   intentionallyKilled?: boolean;
 }
@@ -59,6 +61,8 @@ export class ToolRunner {
   // This value must be set to false when starting a process
   private killedByMe = false;
 
+  private output: string = "";
+
   private handlePromise(
     resolve: (value: SuccessResult | PromiseLike<SuccessResult>) => void,
     reject: (value: ErrorResult | PromiseLike<ErrorResult>) => void,
@@ -66,6 +70,7 @@ export class ToolRunner {
   ) {
     // stdout
     this.child!.stdout.on(K_DATA, (data: any) => {
+      this.output = this.output.concat(data.toString());
       Logger.append(data.toString());
     });
     // stderr
@@ -141,7 +146,7 @@ export class ToolRunner {
         if (code === 0) {
           Logger.info(this.tag, "Build Success.");
           Logger.appendLine("");
-          resolve({ exitCode: 0 });
+          resolve({ exitCode: 0, output: this.output });
         } else {
           Logger.info(this.tag, "Build Failed:", code);
           Logger.appendLine("");

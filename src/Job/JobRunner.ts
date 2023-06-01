@@ -90,6 +90,7 @@ export class JobRunner extends EventEmitter {
           return;
         }
 
+        job.result = value.output;
         if (success !== undefined) {
           success();
         }
