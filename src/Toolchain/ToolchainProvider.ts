@@ -276,12 +276,10 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
     return true;
   }
 
-  public _run(cfg: string): boolean {
-    /* istanbul ignore next */
-    const notifySuccess = () => {
-      vscode.window.showInformationMessage("Onecc has run successfully.");
-    };
-
+  private checkAvailableToolchain(): [
+    ToolchainEnv | undefined,
+    Toolchain | undefined
+  ] {
     /* istanbul ignore next */
     const notifyGuideline = () => {
       this.error(
@@ -296,26 +294,40 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
       });
     };
 
-    /* istanbul ignore next */
-    const notifyError = () => {
-      this.error("Running onecc has failed.");
-    };
-
     const activeToolchainEnv = DefaultToolchain.getInstance().getToolchainEnv();
     const activeToolchain = DefaultToolchain.getInstance().getToolchain();
 
     if (!activeToolchainEnv || !activeToolchain) {
       notifyGuideline();
+      return [undefined, undefined];
+    }
+
+    return [activeToolchainEnv, activeToolchain];
+  }
+
+  public _run(cfg: string): boolean {
+    /* istanbul ignore next */
+    const notifySuccess = () => {
+      vscode.window.showInformationMessage("Onecc has run successfully.");
+    };
+
+    /* istanbul ignore next */
+    const notifyError = () => {
+      this.error("Running onecc has failed.");
+    };
+
+    const [toolchainEnv, toolchain] = this.checkAvailableToolchain();
+    if (toolchainEnv === undefined || toolchain === undefined) {
       return false;
     }
 
     Logger.info(
       this.tag,
       `Run onecc with ${cfg} cfg and ${
-        activeToolchain.info.name
-      }-${activeToolchain.info.version?.str()} toolchain.`
+        toolchain.info.name
+      }-${toolchain.info.version?.str()} toolchain.`
     );
-    activeToolchainEnv.run(cfg, activeToolchain).then(
+    toolchainEnv.run(cfg, toolchain).then(
       () => notifySuccess(),
       () => notifyError()
     );
