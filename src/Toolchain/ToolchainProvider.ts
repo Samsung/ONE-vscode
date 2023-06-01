@@ -312,29 +312,13 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
     };
 
     /* istanbul ignore next */
-    const notifyGuideline = () => {
-      this.error(
-        "Default toolchain is not set. Please install toolchain and set the default toolchain.",
-        "OK",
-        "See Instructions"
-      ).then((value) => {
-        if (value === "See Instructions") {
-          /* istanbul ignore next */
-          DefaultToolchain.getInstance().openDocument();
-        }
-      });
-    };
-
-    /* istanbul ignore next */
     const notifyError = () => {
       this.error("Running onecc has failed.");
     };
 
-    const activeToolchainEnv = DefaultToolchain.getInstance().getToolchainEnv();
-    const activeToolchain = DefaultToolchain.getInstance().getToolchain();
-
-    if (!activeToolchainEnv || !activeToolchain) {
-      notifyGuideline();
+    const [activeToolchainEnv, activeToolchain] =
+      this.checkAvailableToolchain();
+    if (activeToolchainEnv === undefined || activeToolchain === undefined) {
       return false;
     }
 
