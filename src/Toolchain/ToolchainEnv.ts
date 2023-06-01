@@ -188,6 +188,22 @@ class ToolchainEnv extends Env {
       this.executeEnv(jobs);
     });
   }
+
+  public inference(
+    toolchain: Toolchain,
+    model: string,
+    options?: Map<string, string>
+  ): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      const jobs: Array<Job> = [];
+      const job = new JobConfig(toolchain.runInference(model, options));
+      job.workDir = path.dirname(model);
+      job.successCallback = () => resolve(job.result ? job.result : "");
+      job.failureCallback = () => reject();
+      jobs.push(job);
+      this.executeEnv(jobs);
+    });
+  }
 }
 
 /**
