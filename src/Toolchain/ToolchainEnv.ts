@@ -204,6 +204,22 @@ class ToolchainEnv extends Env {
       this.executeEnv(jobs);
     });
   }
+
+  public profile(
+    toolchain: Toolchain,
+    model: string,
+    options?: Map<string, string>
+  ): Promise<boolean> {
+    return new Promise<boolean>((resolve, reject) => {
+      const jobs: Array<Job> = [];
+      const job = new JobConfig(toolchain.runProfile(model, options));
+      job.workDir = path.dirname(model);
+      job.successCallback = () => resolve(true);
+      job.failureCallback = () => reject();
+      jobs.push(job);
+      this.executeEnv(jobs);
+    });
+  }
 }
 
 /**
