@@ -138,6 +138,9 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
       vscode.commands.registerCommand("one.toolchain.runCfg", (cfg) =>
         provider.run(cfg)
       ),
+      vscode.commands.registerCommand("one.toolchain.inferModel", (model) =>
+        provider.infer(model)
+      ),
       vscode.commands.registerCommand(
         "one.toolchain.setDefaultToolchain",
         (toolchain) => provider.setDefaultToolchain(toolchain)
@@ -342,6 +345,43 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
       return this._run(cfg);
     }
     return false;
+  }
+
+  public infer(
+    model: string,
+    options?: Map<string, string>
+  ): string | undefined {
+    /* istanbul ignore next */
+    const notifySuccess = () => {
+      vscode.window.showInformationMessage("Inference success.");
+    };
+    /* istanbul ignore next */
+    const notifyError = () => {
+      this.error("Inference has failed.");
+    };
+
+    const [toolchainEnv, toolchain] = this.checkAvailableToolchain();
+    if (toolchainEnv === undefined || toolchain === undefined) {
+      return;
+    }
+
+    Logger.info(
+      this.tag,
+      `Infer ${model} file using ${
+        toolchain.info.name
+      }-${toolchain.info.version?.str()} toolchain.`
+    );
+
+    toolchainEnv.infer(toolchain, model, options).then(
+      (result: string) => {
+        notifySuccess();
+        return result;
+      },
+      () => {
+        notifyError();
+      }
+    );
+    return;
   }
 
   public setDefaultToolchain(tnode: ToolchainNode): boolean {
