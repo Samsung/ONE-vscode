@@ -306,5 +306,17 @@ suite("Toolchain", function () {
         });
       });
     });
+
+    suite("#getModelInfo()", function () {
+      test("NEG: requests unimplemented getModelInfo", async function () {
+        let env = new ToolchainEnv(compiler);
+        const invalidToolchain = env.listInstalled();
+        assert.isAbove(invalidToolchain.length, 0);
+        const model = "model.bin";
+        await env.getModelInfo(invalidToolchain[0], model, "test").catch(() => {
+          assert.isTrue(true);
+        });
+      });
+    });
   });
 });
