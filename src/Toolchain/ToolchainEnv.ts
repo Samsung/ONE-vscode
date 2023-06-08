@@ -189,7 +189,7 @@ class ToolchainEnv extends Env {
     });
   }
 
-  public inference(
+  public infer(
     toolchain: Toolchain,
     model: string,
     options?: Map<string, string>
