@@ -242,6 +242,10 @@
         "title": "Run"
       },
       {
+        "command": "one.toolchain.inferModel",
+        "title": "Infer"
+      },
+      {
         "command": "one.device.refresh",
         "title": "Refresh all devices",
         "category": "ONE",
@@ -459,6 +463,10 @@
         },
         {
           "command": "one.toolchain.runCfg",
+          "when": "false"
+        },
+        {
+          "command": "one.toolchain.inferModel",
           "when": "false"
         },
         {

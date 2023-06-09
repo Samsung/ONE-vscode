@@ -302,6 +302,16 @@ suite("Toolchain", function () {
       });
     });
 
+    suite("#infer", function () {
+      test("NEG: requests run with uninitialized default toolchain", function () {
+        const provider = new ToolchainProvider();
+        const model = "model.bin";
+        DefaultToolchain.getInstance().unset();
+        const ret = provider.infer(model);
+        assert.equal(ret, undefined);
+      });
+    });
+
     suite("#setDefaultToolchain", function () {
       test("request setDefaultToolchain", function () {
         const provider = new ToolchainProvider();
