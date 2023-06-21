@@ -246,6 +246,10 @@
         "title": "Infer"
       },
       {
+        "command": "one.toolchain.profileModel",
+        "title": "Profile"
+      },
+      {
         "command": "one.device.refresh",
         "title": "Refresh all devices",
         "category": "ONE",
@@ -467,6 +471,10 @@
         },
         {
           "command": "one.toolchain.inferModel",
+          "when": "false"
+        },
+        {
+          "command": "one.toolchain.profileModel",
           "when": "false"
         },
         {
