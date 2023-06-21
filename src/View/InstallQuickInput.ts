@@ -261,8 +261,12 @@ class InstallQuickInput {
 
       let finished = true;
       if (answer === "Yes") {
-        if (await toolchainEnv.prerequisites()) {
-          finished = false;
+        try {
+          if (await toolchainEnv.prerequisites()) {
+            finished = false;
+          }
+        } catch (err: any) {
+          vscode.window.showErrorMessage(err.message);
         }
       }
 
