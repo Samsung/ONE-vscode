@@ -312,6 +312,16 @@ suite("Toolchain", function () {
       });
     });
 
+    suite("#profile", function () {
+      test("NEG: requests profile with uninitialized default toolchain", function () {
+        const provider = new ToolchainProvider();
+        const model = "model.bin";
+        DefaultToolchain.getInstance().unset();
+        const ret = provider.profile(model);
+        assert.equal(ret, undefined);
+      });
+    });
+
     suite("#setDefaultToolchain", function () {
       test("request setDefaultToolchain", function () {
         const provider = new ToolchainProvider();
