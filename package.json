@@ -250,6 +250,10 @@
         "title": "Profile"
       },
       {
+        "command": "one.toolchain.getModelInfo",
+        "title": "Get Model Info"
+      },
+      {
         "command": "one.device.refresh",
         "title": "Refresh all devices",
         "category": "ONE",
@@ -475,6 +479,10 @@
         },
         {
           "command": "one.toolchain.profileModel",
+          "when": "false"
+        },
+        {
+          "command": "one.toolchain.getModelInfo",
           "when": "false"
         },
         {
