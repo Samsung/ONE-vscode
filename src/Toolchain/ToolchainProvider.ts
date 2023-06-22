@@ -144,6 +144,9 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
       vscode.commands.registerCommand("one.toolchain.profileModel", (model) =>
         provider.profile(model)
       ),
+      vscode.commands.registerCommand("one.toolchain.getModelInfo", (model) =>
+        provider.getModelInfo(model)
+      ),
       vscode.commands.registerCommand(
         "one.toolchain.setDefaultToolchain",
         (toolchain) => provider.setDefaultToolchain(toolchain)
@@ -415,6 +418,42 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
     toolchainEnv.profile(toolchain, model, options).then(
       () => {
         notifySuccess();
+      },
+      () => {
+        notifyError();
+      }
+    );
+    return;
+  }
+
+  public getModelInfo(model: string): string | undefined {
+    /* istanbul ignore next */
+    const notifySuccess = () => {
+      vscode.window.showInformationMessage(
+        "Getting model information success."
+      );
+    };
+    /* istanbul ignore next */
+    const notifyError = () => {
+      this.error("Getting model information has failed.");
+    };
+
+    const [toolchainEnv, toolchain] = this.checkAvailableToolchain();
+    if (toolchainEnv === undefined || toolchain === undefined) {
+      return;
+    }
+
+    Logger.info(
+      this.tag,
+      `Run show with ${model} file using ${
+        toolchain.info.name
+      }-${toolchain.info.version?.str()} toolchain.`
+    );
+
+    toolchainEnv.getModelInfo(toolchain, model, "target-arch").then(
+      (result: string) => {
+        notifySuccess();
+        return result;
       },
       () => {
         notifyError();
