@@ -172,6 +172,12 @@
         "icon": "$(play)"
       },
       {
+        "command": "one.explorer.inferModel",
+        "title": "Infer model with the executor",
+        "category": "ONE",
+        "icon": "$(play)"
+      },
+      {
         "command": "one.explorer.runSingleSelectedCfg",
         "title": "Run selected with the toolchain",
         "category": "ONE"
@@ -329,22 +335,27 @@
       "view/item/context": [
         {
           "command": "one.explorer.runCfg",
-          "when": "view == OneExplorerView && viewItem == config",
+          "when": "view == OneExplorerView && viewItem =~ /config/",
           "group": "1_run"
         },
         {
           "command": "one.explorer.runCfg",
-          "when": "view == OneExplorerView && viewItem == config",
+          "when": "view == OneExplorerView && viewItem =~ /config/",
+          "group": "inline"
+        },
+        {
+          "command": "one.explorer.inferModel",
+          "when": "view == OneExplorerView && viewItem =~ /tvn/",
           "group": "inline"
         },
         {
           "command": "one.explorer.rename",
-          "when": "view == OneExplorerView && viewItem == config",
+          "when": "view == OneExplorerView && viewItem =~ /config/",
           "group": "7_modification"
         },
         {
           "command": "one.explorer.refactor",
-          "when": "view == OneExplorerView && viewItem == baseModel",
+          "when": "view == OneExplorerView && viewItem =~ /baseModel/",
           "group": "7_modification"
         },
         {
@@ -359,17 +370,17 @@
         },
         {
           "command": "one.explorer.openAsText",
-          "when": "view == OneExplorerView && viewItem == config",
+          "when": "view == OneExplorerView && viewItem =~ /config/",
           "group": "3_open@1"
         },
         {
           "command": "one.explorer.revealInDefaultExplorer",
-          "when": "view == OneExplorerView && viewItem != directory",
+          "when": "view == OneExplorerView && !(viewItem =~ /directory/)",
           "group": "3_open@3"
         },
         {
           "command": "one.explorer.createCfg",
-          "when": "view == OneExplorerView && viewItem == baseModel",
+          "when": "view == OneExplorerView && viewItem =~ /baseModel/",
           "group": "inline"
         },
         {
@@ -415,6 +426,10 @@
         },
         {
           "command": "one.explorer.runCfg",
+          "when": "false"
+        },
+        {
+          "command": "one.explorer.inferModel",
           "when": "false"
         },
         {

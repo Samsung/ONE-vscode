@@ -463,7 +463,10 @@ export class OneNode extends vscode.TreeItem {
     //
     // However, resourceExtname returns info of vscode Explorer view (not of OneExplorer).
     //    "when": "view == OneExplorerView && viewItem == config"
-    this.contextValue = node.typeAsString;
+    //
+    // To resolve above the issue, it appends the extname to the contextValue.
+    const extname = path.extname(node.uri.fsPath);
+    this.contextValue = node.typeAsString + extname;
   }
 }
 
@@ -564,6 +567,15 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
       vscode.commands.registerCommand("one.explorer.runCfg", (node: Node) => {
         vscode.commands.executeCommand("one.toolchain.runCfg", node.uri.fsPath);
       }),
+      vscode.commands.registerCommand(
+        "one.explorer.inferModel",
+        (node: Node) => {
+          vscode.commands.executeCommand(
+            "one.toolchain.inferModel",
+            node.uri.fsPath
+          );
+        }
+      ),
       vscode.commands.registerCommand(
         "one.explorer.runSingleSelectedCfg",
         () => {
