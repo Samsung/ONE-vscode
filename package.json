@@ -178,6 +178,12 @@
         "icon": "$(play)"
       },
       {
+        "command": "one.explorer.profileModel",
+        "title": "Profile model with the executor",
+        "category": "ONE",
+        "icon": "$(debug-alt)"
+      },
+      {
         "command": "one.explorer.runSingleSelectedCfg",
         "title": "Run selected with the toolchain",
         "category": "ONE"
@@ -345,6 +351,11 @@
         },
         {
           "command": "one.explorer.inferModel",
+          "when": "view == OneExplorerView && viewItem =~ /tvn/",
+          "group": "inline"
+        },
+        {
+          "command": "one.explorer.profileModel",
           "when": "view == OneExplorerView && viewItem =~ /tvn/",
           "group": "inline"
         },

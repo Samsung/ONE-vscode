@@ -141,8 +141,8 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
       vscode.commands.registerCommand("one.toolchain.inferModel", (model) =>
         provider.infer(model)
       ),
-      vscode.commands.registerCommand("one.toolchain.profileModel", (model) =>
-        provider.profile(model)
+      vscode.commands.registerCommand("one.toolchain.profileModel", (model, options) =>
+        provider.profile(model, options)
       ),
       vscode.commands.registerCommand(
         "one.toolchain.setDefaultToolchain",

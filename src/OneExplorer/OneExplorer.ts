@@ -577,6 +577,19 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
         }
       ),
       vscode.commands.registerCommand(
+        "one.explorer.profileModel",
+        (node: Node) => {
+          const traceName = path.basename(node.uri.fsPath, ".tvn") + ".trace.json";
+          vscode.commands.executeCommand(
+            "one.toolchain.profileModel",
+            node.uri.fsPath,
+            [
+              ['--save-chrome-trace', traceName],
+            ]
+          );
+        }
+      ),
+      vscode.commands.registerCommand(
         "one.explorer.runSingleSelectedCfg",
         () => {
           let selectedCfg = provider.getSelectedCfg();
