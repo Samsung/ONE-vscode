@@ -442,6 +442,7 @@ export class OneNode extends vscode.TreeItem {
     super(node.name, collapsibleState);
 
     this.id = node.id;
+    this.node = node;
     this.resourceUri = node.uri;
     this.description = true;
     this.tooltip = `${this.node.path}`;
@@ -587,9 +588,22 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
       vscode.commands.registerCommand("one.explorer.delete", (node: Node) =>
         provider.delete(node)
       ),
-      vscode.commands.registerCommand("one.explorer.rename", (node: Node) =>
-        provider.rename(node)
-      ),
+      vscode.commands.registerCommand("one.explorer.rename", async () => {
+        if (provider.getSelectedCfg()?.length !== 1) {
+          // Delete is only supported for single selection
+          // Do not show an error or warning message for UI's sake
+          // TODO: handle for multiple selection
+          return;
+        } else {
+          const node = provider.getSelectedCfg()![0];
+          Logger.info("OneExplorer", "Shortcut", `Rename ${node.uri.fsPath}`);
+
+          await provider.rename(node);
+          // TODO: handle for multiple selection
+          // TODO: improve refresh performance
+          provider.refresh(node.parent);
+        }
+      }),
       vscode.commands.registerCommand("one.explorer.refactor", (node: Node) =>
         provider.refactor(node)
       ),
@@ -792,14 +806,14 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
    * @command one.explorer.rename
    * @todo prohibit special characters from new name for security ('..', '*', etc)
    */
-  rename(node: Node): void {
+  async rename(node: Node): Promise<void> {
     assert.ok(node.type === NodeType.config);
 
     if (node.type !== NodeType.config) {
       return;
     }
 
-    this.askNewName(node).then((newname) => {
+    return this.askNewName(node).then((newname) => {
       if (newname) {
         const dirpath = path.dirname(node.uri.fsPath);
         const newpath = `${dirpath}/${newname}`;

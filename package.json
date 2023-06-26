@@ -291,6 +291,11 @@
         "command": "one.cfgEditor.setDefaultValues",
         "key": "ctrl+shift+/",
         "when": "activeCustomEditorId == one.editor.cfg"
+      },
+      {
+        "command": "one.explorer.rename",
+        "key": "F2",
+        "when": "OneExplorerView.active && one.explorer:hasSelectedCfg"
       }
     ],
     "menus": {
