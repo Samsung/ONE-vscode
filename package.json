@@ -291,6 +291,11 @@
         "command": "one.cfgEditor.setDefaultValues",
         "key": "ctrl+shift+/",
         "when": "activeCustomEditorId == one.editor.cfg"
+      },
+      {
+        "command": "one.explorer.delete",
+        "key": "delete",
+        "when": "OneExplorerView.active"
       }
     ],
     "menus": {
