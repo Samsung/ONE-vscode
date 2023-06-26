@@ -442,7 +442,6 @@ export class OneNode extends vscode.TreeItem {
     super(node.name, collapsibleState);
 
     this.id = node.id;
-    this.node = node;
     this.resourceUri = node.uri;
     this.description = true;
     this.tooltip = `${this.node.path}`;
