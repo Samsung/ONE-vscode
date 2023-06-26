@@ -442,6 +442,7 @@ export class OneNode extends vscode.TreeItem {
     super(node.name, collapsibleState);
 
     this.id = node.id;
+    this.node = node;
     this.resourceUri = node.uri;
     this.description = true;
     this.tooltip = `${this.node.path}`;
@@ -483,6 +484,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
   public static didHideExtra: boolean = false;
 
   public static hasSelectedCfg: boolean = false;
+  public static selectedCfgs: Node[] = [];
 
   public static register(context: vscode.ExtensionContext) {
     const provider = new OneTreeDataProvider(context.extension.extensionKind);
@@ -492,7 +494,16 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
       showCollapseAll: true,
       canSelectMany: true,
     });
-    provider._treeView.onDidChangeSelection(() => {
+
+    provider._treeView.onDidChangeSelection((event) => {
+      const selectedItems = event.selection;
+      OneTreeDataProvider.hasSelectedCfg = selectedItems.some(
+        (item) => item.type === NodeType.config
+      );
+      OneTreeDataProvider.selectedCfgs = selectedItems.filter(
+        (item) => item.type === NodeType.config
+      );
+      
       provider.refreshCfgSelection();
     });
 
@@ -588,20 +599,26 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
         provider.delete(node)
       ),
       vscode.commands.registerCommand("one.explorer.rename", async () => {
-        if (provider.getSelectedCfg()?.length !== 1) {
-          // Delete is only supported for single selection
-          // Do not show an error or warning message for UI's sake
-          // TODO: handle for multiple selection
+        const nodes = provider.getSelectedCfg();
+        if(nodes === undefined) {
           return;
-        } else {
-          const node = provider.getSelectedCfg()![0];
-          Logger.info("OneExplorer", "Shortcut", `Rename ${node.uri.fsPath}`);
-
-          await provider.rename(node);
-          // TODO: handle for multiple selection
-          // TODO: improve refresh performance
-          provider.refresh(node.parent);
         }
+        //await Promise.all(nodes.map((node) => this.renameSingleFile(node)));
+
+
+        await provider.renameCfgFiles(nodes);
+        // assert.ok(nodes.length > 0);
+        // assert.ok(nodes.every((node) => node.type === NodeType.config));
+    
+
+        // Rename the files one-by-one
+        // const promises = nodes.map(async (cfg) => {
+        //   Logger.info("ONE Explorer", "Shortcut", `rename ${cfg.uri.fsPath}`);
+        //   await provider.renameSingleFile(cfg);
+        //   await provider.refresh(cfg.parent);
+        //   return;
+        // });
+        // promises.reduce((prev, curr) => prev.then(() => curr), Promise.resolve());
       }),
       vscode.commands.registerCommand("one.explorer.refactor", (node: Node) =>
         provider.refactor(node)
@@ -761,7 +778,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
    */
   private askNewName = (node: Node) => {
     return vscode.window.showInputBox({
-      title: "Enter a file name:",
+      title: `Renaming '${path.basename(node.uri.fsPath)}':`,
       value: `${path.basename(node.uri.fsPath)}`,
       valueSelection: [
         0,
@@ -800,26 +817,40 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
   };
 
   /**
-   * Rename a file
+   * Rename a multiple cfg files
    * @note Renaming is only allowed for config files as it has no impact on the explorer view.
    * @command one.explorer.rename
+   * @assumption All nodes are config files
    * @todo prohibit special characters from new name for security ('..', '*', etc)
    */
-  async rename(node: Node): Promise<void> {
+  async renameCfgFiles(nodes: Node[]): Promise<void> {
+    assert.ok(nodes.length > 0);
+    assert.ok(nodes.every((node) => node.type === NodeType.config));
+
+    await Promise.all(nodes.map(async (node) => await this.renameSingleFile(node).then(async ()=>await this.refresh(node.parent))));
+  }
+
+
+  /**
+   * Rename a single file
+   * @note Renaming is only allowed for config files as it has no impact on the explorer view.
+   * @todo prohibit special characters from new name for security ('..', '*', etc)
+   */
+  async renameSingleFile(node: Node): Promise<void> {
     assert.ok(node.type === NodeType.config);
 
     if (node.type !== NodeType.config) {
       return;
     }
 
-    return this.askNewName(node).then((newname) => {
+    await this.askNewName(node).then(async (newname) => {
       if (newname) {
         const dirpath = path.dirname(node.uri.fsPath);
         const newpath = `${dirpath}/${newname}`;
 
         const edit = new vscode.WorkspaceEdit();
         edit.renameFile(node.uri, vscode.Uri.file(newpath));
-        vscode.workspace.applyEdit(edit);
+        await vscode.workspace.applyEdit(edit);
       }
     });
   }
