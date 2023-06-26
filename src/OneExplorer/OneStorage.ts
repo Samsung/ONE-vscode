@@ -309,7 +309,7 @@ export class OneStorage {
   }
 
   /**
-   * Get cfgObj from the map
+   * Get Node from the map
    */
   public static getNode(fsPath: string): Node | undefined {
     return OneStorage.get()._nodeMap.get(fsPath);
