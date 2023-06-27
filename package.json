@@ -172,6 +172,12 @@
         "icon": "$(play)"
       },
       {
+        "command": "one.explorer.inferModel",
+        "title": "Infer model with the executor",
+        "category": "ONE",
+        "icon": "$(play)"
+      },
+      {
         "command": "one.explorer.runSingleSelectedCfg",
         "title": "Run selected with the toolchain",
         "category": "ONE"
@@ -347,6 +353,11 @@
           "group": "inline"
         },
         {
+          "command": "one.explorer.inferModel",
+          "when": "view == OneExplorerView && viewItem =~ /tvn/",
+          "group": "inline"
+        },
+        {
           "command": "one.explorer.rename",
           "when": "view == OneExplorerView && viewItem =~ /config/",
           "group": "7_modification"
@@ -424,6 +435,10 @@
         },
         {
           "command": "one.explorer.runCfg",
+          "when": "false"
+        },
+        {
+          "command": "one.explorer.inferModel",
           "when": "false"
         },
         {
