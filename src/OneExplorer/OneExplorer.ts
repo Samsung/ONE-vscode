@@ -595,6 +595,22 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
       vscode.commands.registerCommand("one.explorer.delete", (node: Node) =>
         provider.delete(node)
       ),
+      vscode.commands.registerCommand("one.explorer.delete", async () => {
+        if (provider.getSelectedNodes()?.length !== 1) {
+          // Delete is only supported for single selection
+          // Do not show an error or warning message for UI's sake
+          // TODO: handle for multiple selection
+          return;
+        } else {
+          const node = provider.getSelectedNodes()![0];
+          Logger.info("OneExplorer", "Shortcut", `Delete ${node.uri.fsPath}`);
+
+          await provider.delete(node);
+          // TODO: handle for multiple selection
+          // TODO: improve refresh performance
+          provider.refresh(node.parent);
+        }
+      }),
       vscode.commands.registerCommand("one.explorer.rename", (node: Node) =>
         provider.rename(node)
       ),
@@ -892,7 +908,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
   /**
    * @command one.explorer.delete
    */
-  delete(node: Node): void {
+  async delete(node: Node): Promise<void> {
     const isDirectory = node.type === NodeType.directory;
 
     const title = isDirectory
@@ -904,7 +920,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
       ? "The file will be deleted permanently."
       : `You can restore this file from the Trash.`;
 
-    vscode.window
+    await vscode.window
       .showInformationMessage(title, { detail: detail, modal: true }, approval)
       .then((ans) => {
         if (ans !== approval) {
@@ -919,7 +935,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
           ignoreIfNotExists: true,
         });
 
-        vscode.workspace.applyEdit(edit);
+        return vscode.workspace.applyEdit(edit);
       });
   }
 
@@ -995,6 +1011,10 @@ input_path=${modelName}.${extName}
           }
         });
       });
+  }
+
+  private getSelectedNodes(): readonly Node[] | undefined {
+    return this._treeView?.selection;
   }
 
   /**
