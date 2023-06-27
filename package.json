@@ -297,7 +297,7 @@
         "when": "activeCustomEditorId == one.editor.cfg"
       },
       {
-        "command": "one.explorer.delete",
+        "command": "one.explorer.deleteOnShortcut",
         "key": "delete",
         "when": "OneExplorerView.active"
       }
