@@ -573,6 +573,15 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
         vscode.commands.executeCommand("one.toolchain.runCfg", node.uri.fsPath);
       }),
       vscode.commands.registerCommand(
+        "one.explorer.inferModel",
+        (node: Node) => {
+          vscode.commands.executeCommand(
+            "one.toolchain.inferModel",
+            node.uri.fsPath
+          );
+        }
+      ),
+      vscode.commands.registerCommand(
         "one.explorer.runSingleSelectedCfg",
         () => {
           let selectedCfg = provider.getSelectedCfg();
