@@ -463,7 +463,15 @@ export class OneNode extends vscode.TreeItem {
     //
     // However, resourceExtname returns info of vscode Explorer view (not of OneExplorer).
     //    "when": "view == OneExplorerView && viewItem == config"
-    this.contextValue = node.typeAsString;
+
+    // NOTE
+    // this.contextValue has a format of {NodeType}.{Ext}
+    // EXAMPLE
+    //   directory
+    //   basemode.tflite
+    //   product.tvn
+    const extname = path.extname(node.uri.fsPath);
+    this.contextValue = node.typeAsString + extname;
   }
 }
 
