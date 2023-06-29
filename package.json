@@ -312,6 +312,11 @@
         "command": "one.explorer.deleteOnShortcut",
         "key": "delete",
         "when": "OneExplorerView.active"
+      },
+      {
+        "command": "one.explorer.renameOnShortcut",
+        "key": "F2",
+        "when": "OneExplorerView.active && one.explorer:hasSelectedCfg"
       }
     ],
     "menus": {
