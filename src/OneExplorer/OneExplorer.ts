@@ -282,6 +282,7 @@ class DirectoryNode extends Node {
 class BaseModelNode extends Node {
   readonly type = NodeType.baseModel;
 
+  static readonly extList = [".tflite", ".pb", ".onnx"];
   // Do not open file as default
   static defaultOpenViewType = undefined;
   // Display 'symbol-variable' icon to represent model file as default
@@ -338,6 +339,7 @@ class BaseModelNode extends Node {
 class ConfigNode extends Node {
   readonly type = NodeType.config;
 
+  static readonly extList = [".cfg"];
   // Open file with one.editor.cfg as default
   static defaultOpenViewType = "one.editor.cfg";
   // Display gear icon as default
@@ -402,6 +404,15 @@ class ConfigNode extends Node {
 class ProductNode extends Node {
   readonly type = NodeType.product;
 
+  static readonly extList = [
+    ".circle",
+    ".tvn",
+    ".tv2m",
+    ".tv2w",
+    ".tv2o",
+    ".json",
+    ".circle.log",
+  ];
   // Do not open file as default
   static defaultOpenViewType = undefined;
   // Display file icon as default
@@ -508,9 +519,21 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
       provider.fileWatcher.onDidCreate((_uri: vscode.Uri) => {
         provider.refresh();
       }),
-      provider.fileWatcher.onDidChange((_uri: vscode.Uri) => {
-        // TODO Handle by each node types
-        provider.refresh();
+      provider.fileWatcher.onDidChange((uri: vscode.Uri) => {
+        if (
+          [
+            ...BaseModelNode.extList,
+            ...ConfigNode.extList,
+            ...ProductNode.extList,
+          ].includes(path.parse(uri.path).ext)
+        ) {
+          Logger.info(
+            "OneExploer",
+            `Refresh explorer view on a file change in '${uri.path}'`
+          );
+          // TODO Handle by each node types
+          provider.refresh();
+        }
       }),
       provider.fileWatcher.onDidDelete((uri: vscode.Uri) => {
         const node = OneStorage.getNode(uri.fsPath);
