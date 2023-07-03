@@ -559,7 +559,7 @@
       "properties": {
         "one.toolchain.githubToken": {
           "type": "string",
-          "description": "Sets User GitHub Token"
+          "description": "Your github token is needed in order to gain access to ONE toolchain."
         }
       }
     }

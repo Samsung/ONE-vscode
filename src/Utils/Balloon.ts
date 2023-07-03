@@ -58,4 +58,21 @@ export class Balloon {
       func(msg, "OK");
     }
   }
+
+  static showGithubTokenErrorMessage() {
+    vscode.window
+      .showInformationMessage(
+        "Your github token is unset. You are REQUIRED to set your github token to run ONE toolchain.",
+        { modal: true },
+        { title: "Open Settings" }
+      )
+      .then((selection) => {
+        if (selection && selection.title === "Open Settings") {
+          vscode.commands.executeCommand(
+            "workbench.action.openSettings",
+            "one.toolchain.githubToken"
+          );
+        }
+      });
+  }
 }

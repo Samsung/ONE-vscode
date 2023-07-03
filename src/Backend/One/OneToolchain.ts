@@ -18,6 +18,7 @@ import * as cp from "child_process";
 import * as vscode from "vscode";
 
 import { pipedSpawnSync } from "../../Utils/PipedSpawnSync";
+import { Balloon } from "../../Utils/Balloon";
 import { Backend } from "../Backend";
 import { Command } from "../Command";
 import { Compiler } from "../Compiler";
@@ -34,6 +35,10 @@ class OneDebianToolchain extends DebianToolchain {
   run(cfg: string): Command {
     const configs = vscode.workspace.getConfiguration();
     const value = configs.get("one.toolchain.githubToken", "");
+    if (!value) {
+      Balloon.showGithubTokenErrorMessage();
+    }
+
     let cmd = new Command("onecc-docker");
     if (value !== "") {
       cmd.push("-t");
