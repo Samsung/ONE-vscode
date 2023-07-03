@@ -63,7 +63,7 @@ export class Balloon {
     vscode.window
       .showInformationMessage(
         "Your github token is unset. You are REQUIRED to set your github token to run ONE toolchain.",
-        { modal: true },
+        { modal: false },
         { title: "Open Settings" }
       )
       .then((selection) => {
