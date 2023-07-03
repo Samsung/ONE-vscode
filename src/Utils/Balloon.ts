@@ -62,7 +62,7 @@ export class Balloon {
   static showGithubTokenErrorMessage() {
     vscode.window
       .showInformationMessage(
-        "Your github token is unset. You are REQUIRED to set your github token to run ONE toolchain.",
+        "Please set you github token in case your network require an extra access to Samsung/ONE git repository.",
         { modal: false },
         { title: "Open Settings" }
       )
