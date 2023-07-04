@@ -619,19 +619,16 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
       vscode.commands.registerCommand(
         "one.explorer.deleteOnShortcut",
         async () => {
-          if (provider.getSelectedNodes()?.length !== 1) {
-            // Delete is only supported for single selection
-            // Do not show an error or warning message for UI's sake
-            // TODO: handle for multiple selection
-            return;
-          } else {
-            const node = provider.getSelectedNodes()![0];
-            Logger.info("OneExplorer", "Shortcut", `Delete ${node.uri.fsPath}`);
-
-            await provider.delete(node);
-            // TODO: handle for multiple selection
-            provider.refresh(node.parent);
-          }
+          return Promise.all(
+            provider.getSelectedNodes()!.map((node) => {
+              Logger.info(
+                "OneExplorer",
+                "Shortcut",
+                `Delete ${node.uri.fsPath}`
+              );
+              provider.delete(node);
+            })
+          );
         }
       ),
       vscode.commands.registerCommand("one.explorer.rename", (node: Node) =>
