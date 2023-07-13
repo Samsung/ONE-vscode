@@ -884,14 +884,14 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
       return;
     }
 
-    return this.askNewName(node).then((newname) => {
+    await this.askNewName(node).then(async (newname) => {
       if (newname) {
         const dirpath = path.dirname(node.uri.fsPath);
         const newpath = `${dirpath}/${newname}`;
 
         const edit = new vscode.WorkspaceEdit();
         edit.renameFile(node.uri, vscode.Uri.file(newpath));
-        vscode.workspace.applyEdit(edit);
+        await vscode.workspace.applyEdit(edit);
       }
     });
   }
@@ -983,7 +983,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
 
     await vscode.window
       .showInformationMessage(title, { detail: detail, modal: true }, approval)
-      .then((ans) => {
+      .then(async (ans) => {
         if (ans !== approval) {
           return;
         }
@@ -996,7 +996,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
           ignoreIfNotExists: true,
         });
 
-        return vscode.workspace.applyEdit(edit);
+        await vscode.workspace.applyEdit(edit);
       });
   }
 
