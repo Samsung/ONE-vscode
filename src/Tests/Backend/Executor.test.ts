@@ -21,7 +21,8 @@ suite("Backend", function () {
   suite("ExecutorBase", function () {
     suite("#constructor()", function () {
       test("Create dummy executor", function (pass) {
-        new ExecutorBase();
+        const instance = new ExecutorBase();
+        assert.isTrue(instance instanceof ExecutorBase);
 
         pass();
         assert.ok(true);

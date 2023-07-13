@@ -21,7 +21,8 @@ suite("Backend", function () {
   suite("CompilerBase", function () {
     suite("#constructor()", function () {
       test("Create dummy compiler", function (pass) {
-        new CompilerBase();
+        const instance = new CompilerBase();
+        assert.isTrue(instance instanceof CompilerBase);
 
         pass();
         assert.ok(true);
