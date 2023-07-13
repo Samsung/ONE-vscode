@@ -476,35 +476,51 @@ export class CircleEditorDocument
   public sendEncodingData(message: any) {
     let fbb = flexbuffers.builder();
     fbb.startMap();
-    for (const key in message.data) {
-      fbb.addKey(key);
-      const val = message.data[key][0];
-      const valType = message.data[key][1];
-      if (valType === "boolean") {
-        if (val === "true" || val === true) {
-          fbb.add(true);
-        } else if (val === "false" || val === false) {
-          fbb.add(false);
-        } else {
-          Balloon.error("'boolean' type must be 'true' or 'false'.", false);
-          return;
+
+    if ("data" in message) {
+      for (const key in message.data) {
+        if (Object.prototype.hasOwnProperty.call(message.data, key)) {
+          fbb.addKey(key);
+
+          if (message.data[key].length >= 2) {
+            const val = message.data[key][0];
+            const valType = message.data[key][1];
+
+            if (valType === "boolean") {
+              if (val === "true" || val === true) {
+                fbb.add(true);
+              } else if (val === "false" || val === false) {
+                fbb.add(false);
+              } else {
+                Balloon.error(
+                  "'boolean' type must be 'true' or 'false'.",
+                  false
+                );
+                return;
+              }
+            } else if (valType === "int") {
+              const guessType = this.guessExactType(val);
+              if (guessType === "float") {
+                Balloon.error(
+                  "'int' type doesn't include decimal point.",
+                  false
+                );
+                return;
+              } else if (
+                guessType === "error" ||
+                guessType === "not supported type"
+              ) {
+                Balloon.error("it's not a number", false);
+                return;
+              }
+            } else {
+              fbb.add(String(val));
+            }
+          }
         }
-      } else if (valType === "int") {
-        const guessType = this.guessExactType(val);
-        if (guessType === "float") {
-          Balloon.error("'int' type doesn't include decimal point.", false);
-          return;
-        } else if (
-          guessType === "error" ||
-          guessType === "not supported type"
-        ) {
-          Balloon.error("it's not a number", false);
-          return;
-        }
-      } else {
-        fbb.add(String(val));
       }
     }
+
     fbb.end();
     const res = fbb.finish();
     const data = Array.from(res);
@@ -533,19 +549,22 @@ export class CircleEditorDocument
     resData._subgraphIdx = subgraphIdx;
     resData._nodeIdx = operatorIdx;
     resData._type = new Object();
+
     for (const key in customObj) {
-      let customObjDataType: any = typeof customObj[key];
-      if (customObjDataType === "number") {
-        customObjDataType = this.guessExactType(customObj[key]);
-        if (
-          customObjDataType === "error" ||
-          customObjDataType === "not supported type"
-        ) {
-          Balloon.error("It's not a number.", false);
-          return;
+      if (Object.prototype.hasOwnProperty.call(customObj, key)) {
+        let customObjDataType: any = typeof customObj[key];
+        if (customObjDataType === "number") {
+          customObjDataType = this.guessExactType(customObj[key]);
+          if (
+            customObjDataType === "error" ||
+            customObjDataType === "not supported type"
+          ) {
+            Balloon.error("It's not a number.", false);
+            return;
+          }
         }
+        resData._type[key] = customObjDataType;
       }
-      resData._type[key] = customObjDataType;
     }
     let responseData = { command: "setCustomOpAttrT", data: resData };
 
