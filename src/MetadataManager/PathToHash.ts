@@ -38,12 +38,14 @@ class MetadataSynchronizer {
 
   static async createMetadata(flattenMap: any) {
     for (let path in flattenMap) {
-      const hash = flattenMap[path];
-      if (vscode.workspace.workspaceFolders) {
-        await Metadata.createDefault(
-          vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, path),
-          hash
-        );
+      if (Object.prototype.hasOwnProperty.call(flattenMap, path)) {
+        const hash = flattenMap[path];
+        if (vscode.workspace.workspaceFolders) {
+          await Metadata.createDefault(
+            vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, path),
+            hash
+          );
+        }
       }
     }
   }
@@ -178,7 +180,9 @@ export class PathToHash {
     let flatMap: any = {};
     let queue = [];
     for (let data in map) {
-      queue.push([map[data], data.toString()]);
+      if (Object.prototype.hasOwnProperty.call(map, data)) {
+        queue.push([map[data], data.toString()]);
+      }
     }
     while (queue.length !== 0) {
       const node: any = queue.pop();
@@ -188,7 +192,9 @@ export class PathToHash {
       ).fsPath;
       if (fs.lstatSync(path).isDirectory()) {
         for (let key in node[0]) {
-          queue.push([node[0][key], node[1] + "/" + key]);
+          if (Object.prototype.hasOwnProperty.call(node[0], key)) {
+            queue.push([node[0][key], node[1] + "/" + key]);
+          }
         }
       } else {
         flatMap[node[1]] = node[0];
