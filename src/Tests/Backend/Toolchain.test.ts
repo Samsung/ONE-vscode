@@ -21,12 +21,9 @@ suite("Backend", function () {
   suite("ToolCommand", function () {
     const toolchainInfo = new ToolchainInfo("dummy", "dummy toolchain");
     suite("#constructor()", function () {
-      test("Create dummy tool command", function (pass) {
+      test("Create dummy tool command", function () {
         const instance = new ToolCommand(toolchainInfo);
         assert.isTrue(instance instanceof ToolCommand);
-
-        pass();
-        assert.ok(true);
       });
     });
 
@@ -55,12 +52,9 @@ suite("Backend", function () {
     const toolchainInfo = new ToolchainInfo("dummy", "dummy toolchain");
 
     suite("#constructor()", function () {
-      test("Create dummy toolchain", function (pass) {
+      test("Create dummy toolchain", function () {
         const instance = new Toolchain(toolchainInfo);
         assert.isTrue(instance instanceof Toolchain);
-
-        pass();
-        assert.ok(true);
       });
     });
 
