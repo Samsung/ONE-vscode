@@ -482,40 +482,38 @@ export class CircleEditorDocument
         if (Object.prototype.hasOwnProperty.call(message.data, key)) {
           fbb.addKey(key);
 
-          if (message.data[key].length >= 2) {
-            const val = message.data[key][0];
-            const valType = message.data[key][1];
+          const val = message.data[key][0];
+          const valType = message.data[key][1];
 
-            if (valType === "boolean") {
-              if (val === "true" || val === true) {
-                fbb.add(true);
-              } else if (val === "false" || val === false) {
-                fbb.add(false);
-              } else {
-                Balloon.error(
-                  "'boolean' type must be 'true' or 'false'.",
-                  false
-                );
-                return;
-              }
-            } else if (valType === "int") {
-              const guessType = this.guessExactType(val);
-              if (guessType === "float") {
-                Balloon.error(
-                  "'int' type doesn't include decimal point.",
-                  false
-                );
-                return;
-              } else if (
-                guessType === "error" ||
-                guessType === "not supported type"
-              ) {
-                Balloon.error("it's not a number", false);
-                return;
-              }
+          if (valType === "boolean") {
+            if (val === "true" || val === true) {
+              fbb.add(true);
+            } else if (val === "false" || val === false) {
+              fbb.add(false);
             } else {
-              fbb.add(String(val));
+              Balloon.error(
+                "'boolean' type must be 'true' or 'false'.",
+                false
+              );
+              return;
             }
+          } else if (valType === "int") {
+            const guessType = this.guessExactType(val);
+            if (guessType === "float") {
+              Balloon.error(
+                "'int' type doesn't include decimal point.",
+                false
+              );
+              return;
+            } else if (
+              guessType === "error" ||
+              guessType === "not supported type"
+            ) {
+              Balloon.error("it's not a number", false);
+              return;
+            }
+          } else {
+            fbb.add(String(val));
           }
         }
       }
