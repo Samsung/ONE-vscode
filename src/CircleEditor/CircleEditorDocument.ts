@@ -491,19 +491,13 @@ export class CircleEditorDocument
             } else if (val === "false" || val === false) {
               fbb.add(false);
             } else {
-              Balloon.error(
-                "'boolean' type must be 'true' or 'false'.",
-                false
-              );
+              Balloon.error("'boolean' type must be 'true' or 'false'.", false);
               return;
             }
           } else if (valType === "int") {
             const guessType = this.guessExactType(val);
             if (guessType === "float") {
-              Balloon.error(
-                "'int' type doesn't include decimal point.",
-                false
-              );
+              Balloon.error("'int' type doesn't include decimal point.", false);
               return;
             } else if (
               guessType === "error" ||
