@@ -20,11 +20,9 @@ import { CompilerBase } from "../../Backend/Compiler";
 suite("Backend", function () {
   suite("CompilerBase", function () {
     suite("#constructor()", function () {
-      test("Create dummy compiler", function (pass) {
-        new CompilerBase();
-
-        pass();
-        assert.ok(true);
+      test("Create dummy compiler", function () {
+        const instance = new CompilerBase();
+        assert.isTrue(instance instanceof CompilerBase);
       });
     });
 
