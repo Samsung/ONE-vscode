@@ -21,7 +21,7 @@ import { OneToolchain } from "./Backend/One/OneToolchain";
 import { CfgEditorPanel } from "./CfgEditor/CfgEditorPanel";
 import { CircleEditorProvider } from "./CircleEditor/CircleEditorProvider";
 import { CircleViewerProvider } from "./CircleGraph/CircleViewer";
-import { DeviceViewProvider } from "./Execute/DeviceViewProvider";
+import { ExecutorViewProvider } from "./Execute/ExecuteViewProvider";
 import { JsonTracerViewerPanel } from "./Jsontracer/JsonTracerViewerPanel";
 import { MetadataViewerProvider } from "./MetadataViewer/MetadataViewerProvider";
 import { MondrianEditorProvider } from "./Mondrian/MondrianEditor";
@@ -59,9 +59,9 @@ export function activate(context: vscode.ExtensionContext) {
 
   OneTreeDataProvider.register(context);
 
-  ToolchainProvider.register(context);
+  ExecutorViewProvider.register(context);
 
-  DeviceViewProvider.register(context);
+  ToolchainProvider.register(context);
 
   CfgEditorPanel.register(context);
 

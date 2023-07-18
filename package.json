@@ -43,8 +43,8 @@
           "name": "Toolchain"
         },
         {
-          "id": "TargetDeviceView",
-          "name": "Target Devices"
+          "id": "ExecutorView",
+          "name": "Executor"
         }
       ]
     },
@@ -266,6 +266,12 @@
         "title": "Get Model Info"
       },
       {
+        "command": "one.executor.refresh",
+        "title": "Refresh all executors",
+        "category": "ONE",
+        "icon": "$(refresh)"
+      },
+      {
         "command": "one.device.refresh",
         "title": "Refresh all devices",
         "category": "ONE",
@@ -344,6 +350,11 @@
         {
           "command": "one.toolchain.install",
           "when": "view == ToolchainView && !one.job:running",
+          "group": "navigation"
+        },
+        {
+          "command": "one.executor.refresh",
+          "when": "view == ExecutorView",
           "group": "navigation"
         },
         {
@@ -523,6 +534,10 @@
         },
         {
           "command": "one.toolchain.getModelInfo",
+          "when": "false"
+        },
+        {
+          "command": "one.executor.refresh",
           "when": "false"
         },
         {
