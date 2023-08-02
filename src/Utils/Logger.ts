@@ -56,10 +56,12 @@ function _logStr(severity: string, tag: string, ...msgs: MsgList) {
   };
 
   const redact = (msg: string) => {
-    // Replace github tokens with ********
-    const prefix = "ghp_";
-    const regex = new RegExp(`${prefix}[a-zA-Z0-9]+`, "g");
-    return msg.replace(regex, "********");
+    // Replace Github Personal Access Tokens with ********
+    const classicPAT = "ghp_[a-zA-Z0-9]+";
+    const findGrainedPAT = "github_pat_[a-zA-Z0-9_]+";
+    const regex = new RegExp(`(${classicPAT})|(${findGrainedPAT})`, "g");
+
+    return msg.replace(regex, "*********************");
   };
 
   const msg = redact(flatten(msgs));
