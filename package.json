@@ -299,9 +299,9 @@
     ],
     "keybindings": [
       {
-          "command": "one.explorer.runSingleSelectedCfg",
-          "key": "ctrl+f7",
-          "when": "OneExplorerView.active && one.explorer:hasSelectedCfg"
+        "command": "one.explorer.runSingleSelectedCfg",
+        "key": "ctrl+f7",
+        "when": "OneExplorerView.active && one.explorer:hasSelectedCfg"
       },
       {
         "command": "one.cfgEditor.setDefaultValues",
