@@ -17,4 +17,4 @@ Through these activities, ONE-vscode can provide a differentiation that cannot b
 ## Quick Links
 
 - [Tutorial](./docs/Tutorial.md)
-  - The tutorial contains how to install ONE-vscode extension, how to installa toolchain, how to copmile a nodel, etc.
+  - The tutorial contains how to install the ONE-vscode extension, how to install a toolchain, how to compile a model, etc.
