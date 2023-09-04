@@ -599,7 +599,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
         "one.explorer.inferModel",
         (node: Node) => {
           vscode.commands.executeCommand(
-            "one.toolchain.inferModel",
+            "one.executor.inferModel",
             node.uri.fsPath
           );
         }
@@ -610,7 +610,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
           const traceName =
             path.basename(node.uri.fsPath, ".tvn") + ".trace.json";
           vscode.commands.executeCommand(
-            "one.toolchain.profileModel",
+            "one.executor.profileModel",
             node.uri.fsPath,
             [["--save-chrome-trace", traceName]]
           );

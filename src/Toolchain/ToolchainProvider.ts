@@ -44,7 +44,6 @@ export class BaseNode extends vscode.TreeItem {
 export class BackendNode extends BaseNode {
   constructor(public readonly label: string) {
     super(label, vscode.TreeItemCollapsibleState.Expanded);
-    this.iconPath = new vscode.ThemeIcon("bracket");
     this.contextValue = "backend";
   }
 }
@@ -137,16 +136,6 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
       ),
       vscode.commands.registerCommand("one.toolchain.runCfg", (cfg) =>
         provider.run(cfg)
-      ),
-      vscode.commands.registerCommand("one.toolchain.inferModel", (model) =>
-        provider.infer(model)
-      ),
-      vscode.commands.registerCommand(
-        "one.toolchain.profileModel",
-        (model, options) => provider.profile(model, options)
-      ),
-      vscode.commands.registerCommand("one.toolchain.getModelInfo", (model) =>
-        provider.getModelInfo(model)
       ),
       vscode.commands.registerCommand(
         "one.toolchain.setDefaultToolchain",
@@ -475,6 +464,7 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
       tnode.toolchain
     );
     this.refresh();
+    vscode.commands.executeCommand("one.executor.refresh");
     return true;
   }
 }
