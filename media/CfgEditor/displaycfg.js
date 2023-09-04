@@ -41,6 +41,9 @@ export function displayCfgToEditor(cfg) {
     } else if (onecc["one-import-bcq"] === "True") {
       document.getElementById("checkboxImport").checked = true;
       // TODO Enable when one-import-bcq is supported
+    } else if (onecc["one-import-edgetpu"] === "True") {
+      document.getElementById("checkboxImport").checked = true;
+      document.getElementById("importInputModelType").value = "edgetpu";
     } else {
       document.getElementById("checkboxImport").checked = false;
     }

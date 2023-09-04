@@ -25,6 +25,12 @@ export function updateImportUI() {
   const onnxAdvancedOptions = document.getElementById(
     "optionImportONNXAdvanced"
   );
+  const edgeTPUBasicOptions = document.getElementById(
+    "optionImportEdgeTPUBasic"
+  );
+  const edgeTPUAdvancedOptions = document.getElementById(
+    "optionImportEdgeTPUAdvanced"
+  );
 
   pbBasicOptions.style.display = "none";
   pbAdvancedOptions.style.display = "none";
@@ -33,6 +39,8 @@ export function updateImportUI() {
   tfliteBasicOptions.style.display = "none";
   onnxBasicOptions.style.display = "none";
   onnxAdvancedOptions.style.display = "none";
+  edgeTPUBasicOptions.style.display = "none";
+  edgeTPUAdvancedOptions.style.display = "none";
 
   switch (modelType.value) {
     case "pb":
@@ -51,6 +59,10 @@ export function updateImportUI() {
     case "onnx":
       onnxBasicOptions.style.display = "block";
       onnxAdvancedOptions.style.display = "block";
+      break;
+    case "edgetpu":
+      edgeTPUBasicOptions.style.display = "block";
+      edgeTPUAdvancedOptions.style.display = "block";
       break;
     default:
       break;

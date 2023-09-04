@@ -65,6 +65,12 @@ export function updateSteps() {
     param: "one-import-onnx",
     value: "False",
   });
+  postMessageToVsCode({
+    type: "setParam",
+    section: "onecc",
+    param: "one-import-edgetpu",
+    value: "False",
+  });
   if (document.getElementById("checkboxImport").checked) {
     switch (document.getElementById("importInputModelType").value) {
       case "pb":
@@ -90,6 +96,14 @@ export function updateSteps() {
           type: "setParam",
           section: "onecc",
           param: "one-import-onnx",
+          value: "True",
+        });
+        break;
+      case "edgetpu":
+        postMessageToVsCode({
+          type: "setParam",
+          section: "onecc",
+          param: "one-import-edgetpu",
           value: "True",
         });
         break;
@@ -148,6 +162,9 @@ export function updateImportInputModelType() {
       break;
     case "onnx":
       updateImportONNX();
+      break;
+    case "edgetpu":
+      updateImportEdgeTPU();
       break;
     default:
       break;
@@ -270,6 +287,15 @@ export function updateImportONNX() {
   postMessageToVsCode({
     type: "setSection",
     section: "one-import-onnx",
+    param: content,
+  });
+}
+
+export function updateImportEdgeTPU() {
+  let content = "";
+  postMessageToVsCode({
+    type: "setSection",
+    section: "one-import-edgetpu",
     param: content,
   });
 }

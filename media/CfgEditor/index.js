@@ -25,6 +25,7 @@ import {
   updateImportPB,
   updateImportSAVED,
   updateImportTFLITE,
+  updateImportEdgeTPU,
   updateOptimize,
   updateProfile,
   updateQuantizeActionType,
@@ -78,6 +79,9 @@ function main() {
             break;
           case "ImportONNX":
             updateImportONNX();
+            break;
+          case "ImportEdgeTPU":
+            updateImportEdgeTPU();
             break;
           case "Optimize":
             updateOptimize();
@@ -222,6 +226,7 @@ function registerImportOptions() {
   registerKERASOptions();
   registerTFLITEOptions();
   registerONNXOptions();
+  registerEdgeTPUOptions();
 }
 
 function registerPBOptions() {
@@ -330,6 +335,8 @@ function registerONNXOptions() {
     applyUpdates();
   });
 }
+
+function registerEdgeTPUOptions() {}
 
 function registerOptimizeOptions() {
   const optimizeInputPath = document.getElementById("optimizeInputPath");
