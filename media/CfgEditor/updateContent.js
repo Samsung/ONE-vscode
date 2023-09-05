@@ -291,7 +291,7 @@ export function updateImportONNX() {
   });
 }
 
-function addEPostfixToFileName(filePath, postfix) {
+function addPostfixToFileName(filePath, postfix = "") {
   const parts = filePath.split(".");
   if (parts.length < 2) {
     throw new Error("Invalid file ext");
@@ -312,7 +312,7 @@ export function updateImportEdgeTPU() {
   );
   content += iniKeyValueString(
     "output_path",
-    addEPostfixToFileName(
+    addPostfixToFileName(
       document.getElementById("EdgeTPUInputPath").value,
       "_edgetpu"
     )
