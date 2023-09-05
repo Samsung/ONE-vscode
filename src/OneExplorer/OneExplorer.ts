@@ -538,7 +538,6 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
             ...ProductNode.extList,
           ].includes(path.parse(uri.path).ext)
         ) {
-          console.log(path.parse(uri.path));
           Logger.info(
             "OneExploer",
             `Refresh explorer view on a file change in '${uri.path}'`
