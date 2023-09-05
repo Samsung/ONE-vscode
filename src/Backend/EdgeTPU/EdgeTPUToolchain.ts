@@ -16,61 +16,92 @@
 
 import { Command } from "../Command";
 import {
-  DebianToolchain,
+    DebianToolchain,
 } from "../ToolchainImpl/DebianToolchain";
+import { Backend } from "../Backend";
+import { Compiler } from "../Compiler";
+import { Executor } from "../Executor";
 
 import * as ini from "ini";
 import * as fs from "fs";
 
 class EdgeTPUDebianToolchain extends DebianToolchain {
-  run(cfg: string): Command {
-    let cmd = new Command("edgetpu_compiler");
-    var config = ini.parse(fs.readFileSync(cfg, 'utf-8'));    
-    
-    if (config["one-import-edgetpu"] === undefined) {
+    run(cfg: string): Command {
+        let cmd = new Command("edgetpu_compiler");
+        var config = ini.parse(fs.readFileSync(cfg, 'utf-8'));
+
+        if (config["one-import-edgetpu"] === undefined) {
+            return cmd;
+        }
+
+        let outputPath = config["one-import-edgetpu"]["output_path"];
+        cmd.push("--out_dir");
+        cmd.push(outputPath);
+
+        let help = config["one-import-edgetpu"]["help"];
+        if (help === "True") {
+            cmd.push("--help");
+        }
+
+        let intermediateTensors = config["one-import-edgetpu"]["intermediate_tensors"];
+        if (intermediateTensors !== undefined) {
+            cmd.push("--intermediate_tensors");
+            cmd.push(intermediateTensors);
+        }
+
+        let showOperations = config["one-import-edgetpu"]["show_operations"];
+        if (showOperations === "True") {
+            cmd.push("--show_operations");
+        }
+
+        let minRuntimeVersion = config["one-import-edgetpu"]["min_runtime_version"];
+        if (minRuntimeVersion !== undefined) {
+            cmd.push("--min_runtime_version");
+            cmd.push(minRuntimeVersion);
+        }
+
+        let searchDelegate = config["one-import-edgetpu"]["search_delegate"];
+        if (searchDelegate === "True") {
+            cmd.push("--search_delegate");
+        }
+
+        let delegateSearchStep = config["one-import-edgetpu"]["delegate_search_step"];
+        if (delegateSearchStep !== undefined) {
+            cmd.push("--delegate_search_step");
+            cmd.push(delegateSearchStep);
+        }
+
+        let inputPath = config["one-import-edgetpu"]["input_path"];
+        cmd.push(inputPath);
+
         return cmd;
     }
-
-    let outputPath = config["one-import-edgetpu"]["output_path"];
-    cmd.push("--out_dir");
-    cmd.push(outputPath);
-
-    let help = config["one-import-edgetpu"]["help"];
-    if (help === "True") { 
-        cmd.push("--help");
-    } 
-
-    let intermediateTensors = config["one-import-edgetpu"]["intermediate_tensors"];
-    if (intermediateTensors !== undefined) {
-        cmd.push("--intermediate_tensors");
-        cmd.push(intermediateTensors);
-    }
-
-    let showOperations = config["one-import-edgetpu"]["show_operations"];
-    if (showOperations === "True") {
-        cmd.push("--show_operations");
-    }
-
-    let minRuntimeVersion = config["one-import-edgetpu"]["min_runtime_version"];
-    if (minRuntimeVersion !== undefined) {
-        cmd.push("--min_runtime_version");
-        cmd.push(minRuntimeVersion);
-    }
-
-    let searchDelegate = config["one-import-edgetpu"]["search_delegate"];
-    if (searchDelegate === "True") {
-        cmd.push("--search_delegate");
-    }
-
-    let delegateSearchStep = config["one-import-edgetpu"]["delegate_search_step"];
-    if (delegateSearchStep !== undefined) {
-        cmd.push("--delegate_search_step");
-        cmd.push(delegateSearchStep);
-    }
-
-    let inputPath = config["one-import-edgetpu"]["input_path"];
-    cmd.push(inputPath);
-
-    return cmd;
-  }
 }
+
+class EdgeTPUToolchain implements Backend {
+    private readonly backendName: string;
+    private readonly toolchainCompiler: Compiler | undefined;
+
+    constructor() {
+        this.backendName = "EdgeTPU";
+        this.toolchainCompiler = undefined;
+    }
+
+    name(): string {
+        return this.backendName;
+    }
+
+    compiler(): Compiler | undefined {
+        return this.toolchainCompiler;
+    }
+
+    executor(): Executor | undefined {
+        return undefined;
+    }
+
+    executors(): Executor[] {
+        return [];
+    }
+}
+
+export { EdgeTPUToolchain };
