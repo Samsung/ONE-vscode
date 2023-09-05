@@ -270,7 +270,6 @@ class DirectoryNode extends Node {
         }
       } else if (
         fstat.isFile() &&
-        !fname.includes("_edgetpu.tflite")&&
         (fname.endsWith(".pb") ||
           (fname.endsWith(".tflite") && !this.isEdgeTpuCompiled(fpath)) ||
           fname.endsWith(".onnx"))
