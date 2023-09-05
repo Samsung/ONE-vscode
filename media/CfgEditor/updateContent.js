@@ -318,6 +318,10 @@ export function updateImportEdgeTPU() {
     )
   );
   content += iniKeyValueString(
+    "help",
+    document.getElementById("EdgeTPUHelp").checked
+  );
+  content += iniKeyValueString(
     "show_operations",
     document.getElementById("EdgeTPUShowOperations").checked
   );
