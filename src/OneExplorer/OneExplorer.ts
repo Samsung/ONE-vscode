@@ -255,12 +255,12 @@ class DirectoryNode extends Node {
 
       if (fstat.isDirectory()) {
         const dirNode = NodeFactory.create(NodeType.directory, fpath, this);
-
         if (dirNode && dirNode.getChildren().length > 0) {
           this._childNodes!.push(dirNode);
         }
       } else if (
         fstat.isFile() &&
+        !fname.includes("_edgetpu.tflite")&&
         (fname.endsWith(".pb") ||
           fname.endsWith(".tflite") ||
           fname.endsWith(".onnx"))
@@ -412,6 +412,8 @@ class ProductNode extends Node {
     ".tv2o",
     ".json",
     ".circle.log",
+    ".tflite",
+    ".tflite.log",
   ];
   // Do not open file as default
   static defaultOpenViewType = undefined;
@@ -527,6 +529,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
             ...ProductNode.extList,
           ].includes(path.parse(uri.path).ext)
         ) {
+          console.log(path.parse(uri.path));
           Logger.info(
             "OneExploer",
             `Refresh explorer view on a file change in '${uri.path}'`
