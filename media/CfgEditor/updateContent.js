@@ -291,8 +291,32 @@ export function updateImportONNX() {
   });
 }
 
+function addEPostfixToFileName(filePath, postfix) {
+  const parts = filePath.split(".");
+  if (parts.length < 2) {
+    throw new Error("Invalid file ext");
+  }
+  const fileName = parts.slice(0, -1).join(".");
+  const fileExtension = parts[parts.length - 1];
+  const newFileName = `${fileName}${postfix}`;
+  const newFilePath = `${newFileName}.${fileExtension}`;
+
+  return newFilePath;
+}
+
 export function updateImportEdgeTPU() {
   let content = "";
+  content += iniKeyValueString(
+    "input_path",
+    document.getElementById("EdgeTPUInputPath").value
+  );
+  content += iniKeyValueString(
+    "output_path",
+    addEPostfixToFileName(
+      document.getElementById("EdgeTPUInputPath").value,
+      "_edgetpu"
+    )
+  );
   postMessageToVsCode({
     type: "setSection",
     section: "one-import-edgetpu",

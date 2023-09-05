@@ -221,9 +221,27 @@ limitations under the License.
                 </div>
             </div>
             <div class="basic" id="optionImportEdgeTPUBasic">
+                <div class="title">
+                    Basic Options
+                </div>
                 <!-- 여기에 EdgeTPU Compile에 필요한 기본옵션을 추가하기 -->
+                <div class="option">
+                    <vscode-text-field id="EdgeTPUInputPath" startIcon="true" size="50" placeholder="">
+                        Input Path
+                        <span id="EdgeTPUInputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="EdgeTPUOutputPath" startIcon="true" size="50" placeholder="" disabled="true">
+                        Output Path
+                        <span id="EdgeTPUOutputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
             </div>
             <div class="advanced" id="optionImportEdgeTPUAdvanced">
+                <div class="title">
+                    Advanced Options
+                </div>
                 <!-- 여기에 EdgeTPU Compile에 필요한 기본옵션을 추가하기 -->
             </div>
         </div>

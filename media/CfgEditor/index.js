@@ -336,7 +336,13 @@ function registerONNXOptions() {
   });
 }
 
-function registerEdgeTPUOptions() {}
+function registerEdgeTPUOptions() {
+  const edgeTPUInputPath = document.getElementById("EdgeTPUInputPath");
+  edgeTPUInputPath.addEventListener("input", function () {
+    updateImportEdgeTPU();
+    applyUpdates();
+  });
+}
 
 function registerOptimizeOptions() {
   const optimizeInputPath = document.getElementById("optimizeInputPath");
@@ -760,6 +766,18 @@ function registerCodiconEvents() {
         oldPath: document.getElementById("CopyQuantOutputPath").value,
         postStep: "QuantizeCopy",
         postElemID: "CopyQuantOutputPath",
+      });
+    });
+  document
+    .getElementById("EdgeTPUInputPathSearch")
+    .addEventListener("click", function () {
+      postMessageToVsCode({
+        type: "getPathByDialog",
+        isFolder: false,
+        ext: ["tflite"],
+        oldPath: document.getElementById("EdgeTPUInputPath").value,
+        postStep: "ImportEdgeTPU",
+        postElemID: "EdgeTPUInputPath",
       });
     });
 }
