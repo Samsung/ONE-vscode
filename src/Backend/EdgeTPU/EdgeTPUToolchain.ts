@@ -23,13 +23,13 @@ import * as ini from "ini";
 import * as fs from "fs";
 
 class EdgeTPUDebianToolchain extends DebianToolchain {
-  run(cfg: string): Command {
-    let cmd = new Command("edgetpu_compiler");
-    var config = ini.parse(fs.readFileSync(cfg, 'utf-8'));    
-    
-    if (config["one-import-edgetpu"] === undefined) {
-        return cmd;
-    }
+    run(cfg: string): Command {
+        let cmd = new Command("edgetpu_compiler");
+        var config = ini.parse(fs.readFileSync(cfg, 'utf-8').trim());
+        
+        if (config["one-import-edgetpu"] === undefined) {
+            return cmd;
+        }
 
     let outputPath = config["one-import-edgetpu"]["output_path"];
     cmd.push("--out_dir");
