@@ -342,6 +342,9 @@ function registerEdgeTPUOptions() {
   const edgeTPUShowOperations = document.getElementById(
     "EdgeTPUShowOperations"
   );
+  const edgeTPUSearchDelegate = document.getElementById(
+    "EdgeTPUSearchDelegate"
+  );
 
   edgeTPUInputPath.addEventListener("input", function () {
     updateImportEdgeTPU();
@@ -352,6 +355,10 @@ function registerEdgeTPUOptions() {
     applyUpdates();
   });
   edgeTPUShowOperations.addEventListener("click", function () {
+    updateImportEdgeTPU();
+    applyUpdates();
+  });
+  edgeTPUSearchDelegate.addEventListener("click", function () {
     updateImportEdgeTPU();
     applyUpdates();
   });
