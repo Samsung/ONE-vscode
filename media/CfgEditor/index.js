@@ -367,6 +367,10 @@ function registerEdgeTPUOptions() {
   });
   edgeTPUSearchDelegate.addEventListener("click", function () {
     updateImportEdgeTPU();
+    applyUpdates();
+  });
+  edgeTPUSearchDelegate.addEventListener("click", function () {
+    updateImportEdgeTPU();
     applyUpdates();   
   });
 }
