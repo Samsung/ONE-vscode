@@ -153,6 +153,9 @@ export function displayCfgToEditor(cfg) {
   document.getElementById("EdgeTPUHelp").checked = cfgBoolean(
     oneImportEdgeTPU?.["help"]
   );
+  document.getElementById("EdgeTPUIntermediateTensorsInputArrays").value = cfgString(
+    oneImportEdgeTPU?.["intermediate_tensors"]
+  );
   document.getElementById("EdgeTPUShowOperations").checked = cfgBoolean(
     oneImportEdgeTPU?.["show_operations"]
   );
