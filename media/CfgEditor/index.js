@@ -364,6 +364,7 @@ function registerEdgeTPUOptions() {
   edgeTPUMinRuntimeVersion.addEventListener("input", function () {
     updateImportEdgeTPU();
     applyUpdates();
+  });
   edgeTPUSearchDelegate.addEventListener("click", function () {
     updateImportEdgeTPU();
     applyUpdates();   
