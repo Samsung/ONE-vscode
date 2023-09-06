@@ -23,7 +23,7 @@ class Version {
   constructor(
     major: number,
     minor: number | undefined,
-    patch: number | undefined,
+    patch?: number | undefined,
     option: string = ""
   ) {
     this.major = major;
