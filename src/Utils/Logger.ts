@@ -33,26 +33,38 @@ const isDebugMode = process.env.VSCODE_DEBUG_MODE === "true";
  * - message: watch out
  */
 function _logStr(severity: string, tag: string, ...msgs: MsgList) {
-  let logStrList = [];
-
   if (msgs.length === 0) {
     // Do not print
     return "";
   }
 
-  for (let m of msgs) {
-    if (m instanceof Error) {
-      const err = m as Error;
-      logStrList.push(
-        `\nError was thrown:\n- name: ${err.name}\n- message: ${err.message}`
-      );
-    } else if (typeof m === "object") {
-      logStrList.push(`\n${m.constructor.name}: ${JSON.stringify(m)}`);
-    } else {
-      logStrList.push(`${m}`);
+  const flatten = (msgs: MsgList) => {
+    let logStrList = [];
+    for (let m of msgs) {
+      if (m instanceof Error) {
+        const err = m as Error;
+        logStrList.push(
+          `\nError was thrown:\n- name: ${err.name}\n- message: ${err.message}`
+        );
+      } else if (typeof m === "object") {
+        logStrList.push(`\n${m.constructor.name}: ${JSON.stringify(m)}`);
+      } else {
+        logStrList.push(`${m}`);
+      }
     }
-  }
-  const msg = logStrList.join(" ");
+    return logStrList.join(" ");
+  };
+
+  const redact = (msg: string) => {
+    // Replace Github Personal Access Tokens with ********
+    const classicPAT = "ghp_[a-zA-Z0-9]+";
+    const findGrainedPAT = "github_pat_[a-zA-Z0-9_]+";
+    const regex = new RegExp(`(${classicPAT})|(${findGrainedPAT})`, "g");
+
+    return msg.replace(regex, "*********************");
+  };
+
+  const msg = redact(flatten(msgs));
   const time = new Date().toLocaleString();
 
   return `[${time}][${tag}][${severity}] ${msg}`;
@@ -116,6 +128,8 @@ export class Logger {
    * @brief Print msg and a line feed character without adding '[time][tag][severity]'
    * @detail When log is long and need to be splitted into many chunks, append() could be used
    *         after the first chunk.
+   *
+   * @todo streamify logger to format consistently (ex. redact is not applied to this function)
    */
   public static appendLine(msg: string) {
     Logger.checkShow();
@@ -126,6 +140,8 @@ export class Logger {
    * @brief Print msg without adding '[time][tag][severity]'
    * @detail When log is long and need to be splitted into many chunks, append() could be used
    *         after the first chunk.
+   *
+   * @todo streamify logger to format consistently (ex. redact is not applied to this function)
    */
   public static append(msg: string) {
     Logger.checkShow();
