@@ -454,7 +454,6 @@ export class ConfigObj {
           .split(" ")
           .filter((val) => val.endsWith("_edgetpu.tflite"));
         value = filterd.join(" ");
-        console.log(value);
         return LocatorRunner.searchWithExt(".tflite", value).map((filepath) =>
           filepath.replace(".tflite", ".tflite.log")
         );
