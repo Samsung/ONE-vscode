@@ -28,8 +28,8 @@ import * as fs from "fs";
 class EdgeTPUDebianToolchain extends DebianToolchain {
     run(cfg: string): Command {
         let cmd = new Command("edgetpu_compiler");
-        var config = ini.parse(fs.readFileSync(cfg, 'utf-8'));
-
+        var config = ini.parse(fs.readFileSync(cfg, 'utf-8').trim());
+        
         if (config["one-import-edgetpu"] === undefined) {
             return cmd;
         }
@@ -104,4 +104,4 @@ class EdgeTPUToolchain implements Backend {
     }
 }
 
-export { EdgeTPUToolchain };
+export { EdgeTPUDebianToolchain, EdgeTPUToolchain };
