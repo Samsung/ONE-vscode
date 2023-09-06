@@ -342,10 +342,13 @@ function registerEdgeTPUOptions() {
   const edgeTPUShowOperations = document.getElementById(
     "EdgeTPUShowOperations"
   );
+  const edgeTPUMinRuntimeVersion = document.getElementById(
+    "EdgeTPUMinRuntimeVersion"
+  );  
   const edgeTPUSearchDelegate = document.getElementById(
     "EdgeTPUSearchDelegate"
   );
-
+  
   edgeTPUInputPath.addEventListener("input", function () {
     updateImportEdgeTPU();
     applyUpdates();
@@ -358,9 +361,12 @@ function registerEdgeTPUOptions() {
     updateImportEdgeTPU();
     applyUpdates();
   });
-  edgeTPUSearchDelegate.addEventListener("click", function () {
+  edgeTPUMinRuntimeVersion.addEventListener("input", function () {
     updateImportEdgeTPU();
     applyUpdates();
+  edgeTPUSearchDelegate.addEventListener("click", function () {
+    updateImportEdgeTPU();
+    applyUpdates();   
   });
 }
 

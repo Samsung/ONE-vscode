@@ -291,15 +291,20 @@ export function updateImportONNX() {
   });
 }
 
-function addPostfixToFileName(filePath, postfix = "") {
-  const parts = filePath.split(".");
-  if (parts.length < 2) {
-    throw new Error("Invalid file ext");
+function addPostfixToFileName(filePath = "", postfix = "") {
+  if (filePath.trim() === "") {
+    return "";
   }
-  const fileName = parts.slice(0, -1).join(".");
-  const fileExtension = parts[parts.length - 1];
-  const newFileName = `${fileName}${postfix}`;
-  const newFilePath = `${newFileName}.${fileExtension}`;
+  const parts = filePath.split(".");
+  let newFilePath = "";
+  if (parts.length < 2) {
+    newFilePath = `${filePath}${postfix}`;
+  } else {
+    const fileName = parts.slice(0, -1).join(".");
+    const fileExtension = parts[parts.length - 1];
+    const newFileName = `${fileName}${postfix}`;
+    newFilePath = `${newFileName}.${fileExtension}`;
+  }
 
   return newFilePath;
 }
@@ -326,10 +331,14 @@ export function updateImportEdgeTPU() {
     document.getElementById("EdgeTPUShowOperations").checked
   );
   content += iniKeyValueString(
+    "min_runtime_version",
+    document.getElementById("EdgeTPUMinRuntimeVersion").value,    
+    "14"
+  );
+  content += iniKeyValueString(
     "search_delegate",
     document.getElementById("EdgeTPUSearchDelegate").checked
   );
-
 
   postMessageToVsCode({
     type: "setSection",
