@@ -146,6 +146,10 @@ export function displayCfgToEditor(cfg) {
   );
 
   // TODO Support one-import-bcq
+  const oneImportEdgeTPU = cfg["one-import-edgetpu"];
+  document.getElementById("EdgeTPUHelp").checked = cfgBoolean(
+    oneImportEdgeTPU?.["help"]
+  );
 
   // TODO Support import EdgeTPU
   const oneImportEdgeTPU = cfg["one-import-edgetpu"];
