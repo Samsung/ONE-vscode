@@ -330,6 +330,11 @@ export function updateImportEdgeTPU() {
     "show_operations",
     document.getElementById("EdgeTPUShowOperations").checked
   );
+  content += iniKeyValueString(
+    "min_runtime_version",
+    document.getElementById("EdgeTPUMinRuntimeVersion").value,    
+    "14"
+  );
 
   postMessageToVsCode({
     type: "setSection",
