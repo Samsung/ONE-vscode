@@ -443,7 +443,7 @@ export class ConfigObj {
     locatorRunner.register({
       // 'default' view type is 'text editor' (vscode.openWith)
       artifactAttr: {
-        ext: ".log",
+        ext: ".tflite.log",
         openViewType: "default",
         icon: vscode.ThemeIcon.File,
         canHide: true,
@@ -454,8 +454,9 @@ export class ConfigObj {
           .split(" ")
           .filter((val) => val.endsWith("_edgetpu.tflite"));
         value = filterd.join(" ");
+        console.log(value);
         return LocatorRunner.searchWithExt(".tflite", value).map((filepath) =>
-          filepath.replace(".tflite", ".log")
+          filepath.replace(".tflite", ".tflite.log")
         );
       }),
     });
