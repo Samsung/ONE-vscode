@@ -344,6 +344,9 @@ function registerEdgeTPUOptions() {
   );
   const edgeTPUMinRuntimeVersion = document.getElementById(
     "EdgeTPUMinRuntimeVersion"
+  );  
+  const edgeTPUSearchDelegate = document.getElementById(
+    "EdgeTPUSearchDelegate"
   );
   
   edgeTPUInputPath.addEventListener("input", function () {
@@ -358,8 +361,10 @@ function registerEdgeTPUOptions() {
     updateImportEdgeTPU();
     applyUpdates();
   });
-
   edgeTPUMinRuntimeVersion.addEventListener("input", function () {
+    updateImportEdgeTPU();
+    applyUpdates();
+  edgeTPUSearchDelegate.addEventListener("click", function () {
     updateImportEdgeTPU();
     applyUpdates();   
   });
