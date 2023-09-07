@@ -16,9 +16,7 @@
 
 import { assert } from "chai";
 
-import {
-  EdgeTPUDebianToolchain,
-} from "../../../Backend/EdgeTPU/EdgeTPUToolchain";
+import { EdgeTPUDebianToolchain } from "../../../Backend/EdgeTPU/EdgeTPUToolchain";
 import { ToolchainInfo } from "../../../Backend/Toolchain";
 import { Version } from "../../../Backend/Version";
 import { TestBuilder } from "../../TestBuilder";
@@ -74,10 +72,22 @@ suite("Backend", function () {
         const info = new ToolchainInfo(name, desc, version);
         let dt = new EdgeTPUDebianToolchain(info);
         let cmd = dt.run(cfgFilePath);
-        
-        const expectedStrs: string[] = ["edgetpu_compiler", "--out_dir", "/home/workspace/models/sample_edge_tpu.tflite", "--help",
-          "--intermediate_tensors", "tensorName1,tensorName2", "--show_operations", "--min_runtime_version", "14", "--search_delegate", "--delegate_search_step",
-          "4", "/home/workspace/models/sample.tflite"];
+
+        const expectedStrs: string[] = [
+          "edgetpu_compiler",
+          "--out_dir",
+          "/home/workspace/models/sample_edge_tpu.tflite",
+          "--help",
+          "--intermediate_tensors",
+          "tensorName1,tensorName2",
+          "--show_operations",
+          "--min_runtime_version",
+          "14",
+          "--search_delegate",
+          "--delegate_search_step",
+          "4",
+          "/home/workspace/models/sample.tflite",
+        ];
 
         assert.deepEqual(cmd, expectedStrs);
       });
