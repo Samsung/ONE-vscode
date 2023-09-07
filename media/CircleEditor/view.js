@@ -866,7 +866,7 @@ view.View = class {
         url: "https://github.com/lutzroeder/netron/issues/649",
       },
     ];
-    //  on
+
     const known = knowns.find(
       (known) =>
         (known.name.length === 0 || known.name === err.name) &&
