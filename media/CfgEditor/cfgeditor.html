@@ -84,6 +84,7 @@ limitations under the License.
                         <vscode-radio value="tflite">tflite</vscode-radio>
                         <vscode-radio value="onnx">onnx</vscode-radio>
                         <vscode-radio value="bcq" disabled="true">bcq</vscode-radio>
+                        <vscode-radio value="edgetpu">edge_tpu</vscode-radio>
                     </vscode-radio-group>
                 </div>
             </div>
@@ -216,7 +217,117 @@ limitations under the License.
                         <span class="help">
                             LSTM operation in ONNX file is unrolled so that there is no control flow in the graph
                         </span>
-                    </span>                    
+                    </span>                     
+                </div>
+            </div>
+            <div class="basic" id="optionImportEdgeTPUBasic">
+                <div class="title">
+                    Basic Options
+                </div>
+                <!-- 여기에 EdgeTPU Compile에 필요한 기본옵션을 추가하기 -->
+                <div class="option">
+                    <vscode-text-field id="EdgeTPUInputPath" startIcon="true" size="50" placeholder="">
+                        Input Path
+                        <span id="EdgeTPUInputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="EdgeTPUOutputPath" startIcon="true" size="50" placeholder="" disabled="true">
+                        Output Path
+                        <span id="EdgeTPUOutputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+            </div>
+            <div class="advanced" id="optionImportEdgeTPUAdvanced">
+                <div class="title">
+                    Advanced Options
+                </div>
+                <!-- 여기에 EdgeTPU Compile에 필요한 기본옵션을 추가하기 -->
+                <div class="option">
+                    <vscode-checkbox id="EdgeTPUHelp">
+                        Help
+                    </vscode-checkbox>
+                    <span class="codicon codicon-question" style="cursor: pointer">
+                        <span class="help">                    
+                            Print the command line help and exit.
+                        </span>
+                    </span> 
+                </div>
+                <div class="option">
+                    <vscode-text-field id="EdgeTPUIntermediateTensorsInputArrays" startIcon="true" size="50" placeholder="semi-colon separated input names">
+                        Intermediate_tensors
+                    </vscode-text-field> 
+                </div>
+                <div class="option">
+                    <vscode-checkbox id="EdgeTPUShowOperations">
+                        Show Operations (Optional)
+                    </vscode-checkbox>  
+                    <span class="codicon codicon-question" style="cursor: pointer">
+                        <span class="help">
+                            Print the log showing operations that mapped to the Edge TPU.
+                        </span>
+                    </span>
+                </div>               
+                <div class="option">
+                    <div>
+                        Min Runtime Version (Optional)
+                        <span class="codicon codicon-question" style="cursor: pointer">
+                            <span class="help">
+                                Specify the lowest Edge TPU runtime version you want the model to be compatible with. <br />
+                                Version Information
+                                <table class="version-information">
+                                    <thead>
+                                        <tr>
+                                            <th> Compiler version </th>
+                                            <th> Runtime version </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>16.0</td>
+                                            <td>14</td>
+                                        </tr>
+                                        <tr>
+                                            <td>15.0</td>
+                                            <td>13</td>
+                                        </tr>
+                                        <tr>
+                                            <td>14.1</td>
+                                            <td>13</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2.1.302470888</td>
+                                            <td>13</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2.0.291256449</td>
+                                            <td>13</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2.0.267685300</td>
+                                            <td>12</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1.0</td>
+                                            <td>10</td>
+                                        </tr>
+                                    </tbody>
+                                </table>    
+                            </span>
+                        </span>
+                    </div>
+                    <vscode-dropdown id="EdgeTPUMinRuntimeVersion">   
+                    </vscode-dropdown>
+                </div>
+                <div class="option">
+                    <vscode-checkbox id="EdgeTPUSearchDelegate">
+                        Search Delegate
+                    </vscode-checkbox>
+                    <span class="codicon codicon-question" style="cursor: pointer">
+                        <span class="help">
+                            Enable repeated search for a new compilation stopping point earlier in the graph, to avoid rare compiler failures when it encounters an unsupported operation.
+                        </span>
+                    </span>
                 </div>
             </div>
         </div>

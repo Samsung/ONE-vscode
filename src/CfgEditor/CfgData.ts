@@ -22,6 +22,7 @@ const sections = [
   "one-import-tflite",
   "one-import-bcq",
   "one-import-onnx",
+  "one-import-edgetpu",
   "one-optimize",
   "one-quantize",
   "one-codegen",

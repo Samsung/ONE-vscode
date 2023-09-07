@@ -65,6 +65,12 @@ export function updateSteps() {
     param: "one-import-onnx",
     value: "False",
   });
+  postMessageToVsCode({
+    type: "setParam",
+    section: "onecc",
+    param: "one-import-edgetpu",
+    value: "False",
+  });
   if (document.getElementById("checkboxImport").checked) {
     switch (document.getElementById("importInputModelType").value) {
       case "pb":
@@ -90,6 +96,14 @@ export function updateSteps() {
           type: "setParam",
           section: "onecc",
           param: "one-import-onnx",
+          value: "True",
+        });
+        break;
+      case "edgetpu":
+        postMessageToVsCode({
+          type: "setParam",
+          section: "onecc",
+          param: "one-import-edgetpu",
           value: "True",
         });
         break;
@@ -148,6 +162,9 @@ export function updateImportInputModelType() {
       break;
     case "onnx":
       updateImportONNX();
+      break;
+    case "edgetpu":
+      updateImportEdgeTPU();
       break;
     default:
       break;
@@ -270,6 +287,66 @@ export function updateImportONNX() {
   postMessageToVsCode({
     type: "setSection",
     section: "one-import-onnx",
+    param: content,
+  });
+}
+
+function addPostfixToFileName(filePath = "", postfix = "") {
+  if (filePath.trim() === "") {
+    return "";
+  }
+  const parts = filePath.split(".");
+  let newFilePath = "";
+  if (parts.length < 2) {
+    newFilePath = `${filePath}${postfix}`;
+  } else {
+    const fileName = parts.slice(0, -1).join(".");
+    const fileExtension = parts[parts.length - 1];
+    const newFileName = `${fileName}${postfix}`;
+    newFilePath = `${newFileName}.${fileExtension}`;
+  }
+
+  return newFilePath;
+}
+
+export function updateImportEdgeTPU() {
+  let content = "";
+  content += iniKeyValueString(
+    "input_path",
+    document.getElementById("EdgeTPUInputPath").value
+  );
+  content += iniKeyValueString(
+    "output_path",
+    addPostfixToFileName(
+      document.getElementById("EdgeTPUInputPath").value,
+      "_edgetpu"
+    )
+  );
+  content += iniKeyValueString(
+    "help",
+    document.getElementById("EdgeTPUHelp").checked
+  );
+  content += iniKeyValueString(
+    "intermediate_tensors",
+    document.getElementById("EdgeTPUIntermediateTensorsInputArrays").value,
+  );
+  content += iniKeyValueString(
+    "show_operations",
+    document.getElementById("EdgeTPUShowOperations").checked
+  );
+  content += iniKeyValueString(
+    "min_runtime_version",
+    document.getElementById("EdgeTPUMinRuntimeVersion").value,    
+    "14"
+  );
+  content += iniKeyValueString(
+    "search_delegate",
+    document.getElementById("EdgeTPUSearchDelegate").checked
+  );
+
+  postMessageToVsCode({
+    type: "setSection",
+    section: "one-import-edgetpu",
     param: content,
   });
 }

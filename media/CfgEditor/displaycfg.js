@@ -41,6 +41,9 @@ export function displayCfgToEditor(cfg) {
     } else if (onecc["one-import-bcq"] === "True") {
       document.getElementById("checkboxImport").checked = true;
       // TODO Enable when one-import-bcq is supported
+    } else if (onecc["one-import-edgetpu"] === "True") {
+      document.getElementById("checkboxImport").checked = true;
+      document.getElementById("importInputModelType").value = "edgetpu";
     } else {
       document.getElementById("checkboxImport").checked = false;
     }
@@ -136,8 +139,34 @@ export function displayCfgToEditor(cfg) {
   document.getElementById("ONNXUnrollLSTM").checked = cfgBoolean(
     oneImportONNX?.["unroll_lstm"]
   );
-
+  
   // TODO Support one-import-bcq
+
+  // TODO Support import EdgeTPU
+  const oneImportEdgeTPU = cfg["one-import-edgetpu"];
+  document.getElementById("EdgeTPUInputPath").value = cfgString(
+    oneImportEdgeTPU?.["input_path"]
+  );
+  document.getElementById("EdgeTPUOutputPath").value = cfgString(
+    oneImportEdgeTPU?.["output_path"]
+  );  
+  document.getElementById("EdgeTPUHelp").checked = cfgBoolean(
+    oneImportEdgeTPU?.["help"]
+  );
+  document.getElementById("EdgeTPUIntermediateTensorsInputArrays").value = cfgString(
+    oneImportEdgeTPU?.["intermediate_tensors"]
+  );
+  document.getElementById("EdgeTPUShowOperations").checked = cfgBoolean(
+    oneImportEdgeTPU?.["show_operations"]
+  );
+  document.getElementById("EdgeTPUMinRuntimeVersion").value = cfgString(
+    oneImportEdgeTPU?.["min_runtime_version"],
+    "14"
+  );
+  document.getElementById("EdgeTPUSearchDelegate").checked = cfgBoolean(
+    oneImportEdgeTPU?.["search_delegate"]
+  );
+
 
   updateImportUI();
 
