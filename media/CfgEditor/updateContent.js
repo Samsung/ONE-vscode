@@ -336,12 +336,20 @@ export function updateImportEdgeTPU() {
   );
   content += iniKeyValueString(
     "min_runtime_version",
-    document.getElementById("EdgeTPUMinRuntimeVersion").value,    
+    document.getElementById("EdgeTPUMinRuntimeVersion").value,
     "14"
   );
   content += iniKeyValueString(
     "search_delegate",
     document.getElementById("EdgeTPUSearchDelegate").checked
+  );
+  content += iniKeyValueString(
+    "delegate_search_step",
+    document.getElementById("EdgeTPUSearchDelegate").checked
+      ? document.getElementById("EdgeTPUDelegateSearchStep").value < 1
+        ? "1"
+        : document.getElementById("EdgeTPUDelegateSearchStep").value
+      : undefined
   );
 
   postMessageToVsCode({

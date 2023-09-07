@@ -345,11 +345,17 @@ function registerEdgeTPUOptions() {
   );
   const edgeTPUMinRuntimeVersion = document.getElementById(
     "EdgeTPUMinRuntimeVersion"
-  );  
+  );
   const edgeTPUSearchDelegate = document.getElementById(
     "EdgeTPUSearchDelegate"
   );
-  
+  const edgeTPUDelegateSearchStep = document.getElementById(
+    "EdgeTPUDelegateSearchStep"
+  );
+  const edgeTPUDelegateSearchStepDiv = document.getElementById(
+    "EdgeTPUDelegateSearchStepDiv"
+  );
+
   edgeTPUInputPath.addEventListener("input", function () {
     updateImportEdgeTPU();
     applyUpdates();
@@ -371,12 +377,21 @@ function registerEdgeTPUOptions() {
     applyUpdates();
   });
   edgeTPUSearchDelegate.addEventListener("click", function () {
+    if (edgeTPUSearchDelegate.checked) {
+      edgeTPUDelegateSearchStepDiv.style.display = "block";
+    } else {
+      edgeTPUDelegateSearchStepDiv.style.display = "none";
+    }
     updateImportEdgeTPU();
     applyUpdates();
   });
-  edgeTPUSearchDelegate.addEventListener("click", function () {
+  edgeTPUDelegateSearchStep.addEventListener("input", function () {
+    edgeTPUDelegateSearchStep.value =
+      edgeTPUDelegateSearchStep.value < 1
+        ? "1"
+        : edgeTPUDelegateSearchStep.value;
     updateImportEdgeTPU();
-    applyUpdates();   
+    applyUpdates();
   });
 }
 
