@@ -253,7 +253,7 @@ class EdgeTPUCompiler implements Compiler {
         const scriptPath = vscode.Uri.joinPath(
             ext!.extensionUri,
             "script",
-            "prerequisitesForGetToolchains.sh"
+            "prerequisitesForGetEdgeTPUToolchain.sh"
         ).fsPath;
 
         const cmd = new Command("/bin/sh", [`${scriptPath}`]);
