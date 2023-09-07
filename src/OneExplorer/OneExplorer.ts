@@ -237,6 +237,16 @@ class DirectoryNode extends Node {
   }
 
   /**
+   * 
+   * @param fpath Target fpath to determine
+   * @returns 
+   */
+  private isCompiledWithEdgeTPUCompiler(fpath:string): boolean{
+    const result = OneStorage.isCompiledWithEdgeTPUCompiler(fpath);  
+    return result;
+  }
+
+  /**
    * Build a sub-tree under the node
    *
    * directory          <- this
@@ -262,7 +272,7 @@ class DirectoryNode extends Node {
       } else if (
         fstat.isFile() &&
         (fname.endsWith(".pb") ||
-          fname.endsWith(".tflite") ||
+          (fname.endsWith(".tflite")&&!this.isCompiledWithEdgeTPUCompiler(fpath)) ||
           fname.endsWith(".onnx"))
       ) {
         const baseModelNode = NodeFactory.create(

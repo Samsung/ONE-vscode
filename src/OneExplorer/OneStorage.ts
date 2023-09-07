@@ -218,6 +218,11 @@ export class OneStorage {
   private _baseModelToCfgsMap: BaseModelToCfgMap;
 
   /**
+   * @brief A list of path compiled with edge TPU compiler
+   */
+  private _compiledWithEdgeTPUCompiler: string[];
+
+  /**
    * Get the list of .cfg files within the workspace
    * @param root  the file or directory,
    *              which MUST exist in the file system
@@ -276,11 +281,31 @@ export class OneStorage {
     }
   }
 
+  private getCompiledWithEdgeTPUCompilerPaths(cfgList: string[]): string[] {
+    const list: string[] = [];
+  
+    cfgList.forEach((cfg) => {
+      const cfgObj = this._cfgToCfgObjMap.get(cfg);
+      if (cfgObj) {
+        const rawObj = cfgObj.rawObj;
+        const importEdgetpu = rawObj?.onecc["one-import-edgetpu"];
+        const output_path = rawObj?.["one-import-edgetpu"]?.output_path;
+  
+        if (importEdgetpu === "True" && output_path !== undefined) {
+          list.push(output_path);
+        }
+      }
+    });
+  
+    return list;
+  }
+
   private constructor() {
     const cfgList = this._getCfgList();
 
     this._cfgToCfgObjMap = new CfgToCfgObjMap();
     this._cfgToCfgObjMap.init(cfgList);
+    this._compiledWithEdgeTPUCompiler = this.getCompiledWithEdgeTPUCompilerPaths(cfgList); 
 
     this._baseModelToCfgsMap = new BaseModelToCfgMap();
     this._baseModelToCfgsMap.init(cfgList, this._cfgToCfgObjMap);
@@ -341,6 +366,10 @@ export class OneStorage {
       node.parent.resetChildren();
       node.parent.getChildren();
     }
+  }
+
+  public static isCompiledWithEdgeTPUCompiler(fpath:string):boolean{
+    return OneStorage.get()._compiledWithEdgeTPUCompiler.includes(fpath);
   }
 
   /**

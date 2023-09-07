@@ -26,16 +26,34 @@ import { Logger } from "../Utils/Logger";
 import { Artifact, Locator, LocatorRunner } from "./ArtifactLocator";
 
 type Cfg = {
+  "onecc":CfgOnecc;
   "one-import-tflite": CfgOneImportTflite;
   "one-import-onnx": CfgOneImportOnnx;
   "one-import-tf": CfgOneImportTf;
+  "one-import-edgetpu": CfgOneImportEdgeTPU;
 };
 type CfgKeys = keyof Cfg;
 
 // TODO Update
+type CfgOnecc = {
+  "one-import-tflite":string;
+  "one-import-tf":string;
+  "one-import-bcq":string;
+  "one-import-onnx":string;
+  "one-import-edgetpu":string;
+  "one-optimize":string;
+  "one-quantize":string;
+  "one-codegen":string;
+  "one-profile":string;
+}
 type CfgOneImportTflite = any;
 type CfgOneImportOnnx = any;
 type CfgOneImportTf = any;
+type CfgOneImportEdgeTPU = {
+  "input_path":string;
+  "output_path":string;
+  "help":string;
+}
 
 /**
  * @brief A helper class to get parsed artifacts (baseModels, products)
