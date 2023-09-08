@@ -112,12 +112,19 @@ export class ConfigObj {
     return found ? true : false;
   }
 
+  private init() {
+    this.obj = {
+      baseModels: ConfigObj.parseBaseModels(this.uri.fsPath, this.rawObj),
+      products: ConfigObj.parseProducts(this.uri.fsPath, this.rawObj),
+    };
+  }
+
   private constructor(uri: vscode.Uri, rawObj: Cfg) {
     this.uri = uri;
     this.rawObj = rawObj;
     this.obj = {
-      baseModels: ConfigObj.parseBaseModels(uri.fsPath, rawObj),
-      products: ConfigObj.parseProducts(uri.fsPath, rawObj),
+      baseModels: [],
+      products: [],
     };
   }
 
@@ -172,7 +179,10 @@ export class ConfigObj {
       return null;
     }
 
-    return new ConfigObj(uri, obj as Cfg);
+    const cfgObj = new ConfigObj(uri, obj as Cfg);
+    cfgObj.init();
+
+    return cfgObj;
   }
 
   /**
