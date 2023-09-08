@@ -33,7 +33,26 @@ cd ONE-vscode
 bash infra/format
 ```
 
-#### Unit Test (Recommended)
+
+#### Run Unit Test Locally
+
+If any of existing unit tests fails, CI rejects your pull request.
+To prevent this, you can run unit tests on your computer before you make your pr.
+
+```bash
+npm run test
+```
+
+This command will install all the required tools to run your test and pop up a vscode development host.
+
+If you are connecting to your remote development environment, vscode development host cannot pop up, not proceeding the test.
+However, there is a way. This will run the test without display.
+
+```bash
+npm run test-no-screen
+```
+
+#### Add Unit Test (Recommended)
 
 Mind that your PR must pass the mocha test.
 It's always recommended that you write your own unit test with your PR.
