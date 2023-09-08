@@ -16,10 +16,25 @@ If you hit F12 on `import * as vscode from "vscode"` line, you can enter index.d
 `npm` is a package manager like pip or apt.
 Likewise python virtual env, it manages packages directory by directory.
 
-2. Run `npm install`
+```bash
+sudo apt install npm
+```
+
+2. Clone the repository
+
+```bash
+git clone https://github.com/Samsung/ONE-vscode.git
+```
+
+3. Run `npm install`
 npm will prepare dependencies in `node_modules`.
 
-3. For debug, open the vscode window and simply Press F5.
+```bash
+cd ONE-vscode
+npm install
+```
+
+4. For debug, open the vscode window and simply Press F5.
 Another vscode window will be popped up and its name is 'Extension Development Host'.
 <img src="run-dev-host.gif"/>
 Click 'ONE' icon on the left side.
