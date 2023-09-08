@@ -16,7 +16,8 @@
 
 import * as vscode from "vscode";
 
-import { backendRegistrationApi } from "./Backend/API";
+import { API } from "./Backend/API";
+import { OneToolchain } from "./Backend/One/OneToolchain";
 import { CfgEditorPanel } from "./CfgEditor/CfgEditorPanel";
 import { CircleEditorProvider } from "./CircleEditor/CircleEditorProvider";
 import { CircleViewerProvider } from "./CircleGraph/CircleViewer";
@@ -82,8 +83,10 @@ export function activate(context: vscode.ExtensionContext) {
   MPQEditorProvider.register(context);
   MPQSelectionPanel.register(context);
 
+  API.registerBackend(new OneToolchain());
+
   // returning backend registration function that will be called by backend extensions
-  return backendRegistrationApi();
+  return API;
 }
 
 /* istanbul ignore next */
