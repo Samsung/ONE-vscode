@@ -21,6 +21,18 @@ Without this Sign-off, your commit will fail the CI.
 
 For your convenience, add a git hook as explained in the [ONE-vscode-Developer's Certificate of Origin](https://github.com/Samsung/ONE-vscode/wiki/ONE-vscode-Developer\'s-Certificate-of-Origin) page.
 
+#### Format
+
+This project uses a formatter to keep consistency in its style.
+We use `prettier`.
+Your Pull Request will fail the CI if you don't follow this formatter's style. 
+It is included in our npm dependency, so additional installation of formatter is not needed.
+
+```bash
+cd ONE-vscode
+bash infra/format
+```
+
 #### Unit Test (Recommended)
 
 Mind that your PR must pass the mocha test.
