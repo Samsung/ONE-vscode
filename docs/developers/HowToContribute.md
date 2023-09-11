@@ -33,7 +33,6 @@ cd ONE-vscode
 bash infra/format
 ```
 
-
 #### Run Unit Test Locally
 
 If any of existing unit tests fails, CI rejects your pull request.
