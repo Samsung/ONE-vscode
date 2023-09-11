@@ -422,7 +422,7 @@ class ProductNode extends Node {
     ".json",
     ".circle.log",
     ".tflite",
-    ".tflite.log",
+    ".log",
   ];
   // Do not open file as default
   static defaultOpenViewType = undefined;
