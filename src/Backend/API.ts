@@ -43,6 +43,11 @@ const registerBackend = (backend: Backend) => {
   const compiler = backend.compiler();
   if (compiler) {
     gToolchainEnvMap[backend.name()] = new ToolchainEnv(compiler);
+    vscode.commands.executeCommand(
+      "setContext",
+      `one:backend.${backend.name()}`,
+      "enabled"
+    );
   }
   const executor = backend.executor();
   if (executor) {
@@ -77,6 +82,8 @@ const registerExecutor = (executor: Executor) => {
   // TODO: Consider better way to refresh toolchainView after backend's registration.
   vscode.commands.executeCommand("one.device.refresh");
 };
+
+// TODO Add removeBackend
 
 export const API = {
   registerBackend,
