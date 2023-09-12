@@ -29,12 +29,20 @@ interface BackendMap {
   [key: string]: Backend;
 }
 
+// TODO Move outside API.ts
 // List of backend extensions registered
 let globalBackendMap: BackendMap = {};
 // List of Executor extensions registered
 let globalExecutorArray: Executor[] = [];
 
 const logTag = "API";
+
+// TODO Move outside API.ts
+export namespace BackendContext {
+  export const isRegistered = (backendName: string) => {
+    return globalBackendMap[backendName] !== undefined;
+  };
+}
 
 const registerBackend = (backend: Backend) => {
   const backendName = backend.name();
