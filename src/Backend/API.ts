@@ -19,7 +19,6 @@ const assert = require("assert");
 import { Backend } from "./Backend";
 import { gToolchainEnvMap, ToolchainEnv } from "../Toolchain/ToolchainEnv";
 import { Logger } from "../Utils/Logger";
-import { Executor } from "./Executor";
 
 /**
  * Interface of backend map
@@ -32,8 +31,6 @@ interface BackendMap {
 // TODO Move outside API.ts
 // List of backend extensions registered
 let globalBackendMap: BackendMap = {};
-// List of Executor extensions registered
-let globalExecutorArray: Executor[] = [];
 
 const logTag = "API";
 
@@ -57,10 +54,6 @@ const registerBackend = (backend: Backend) => {
       "enabled"
     );
   }
-  const executor = backend.executor();
-  if (executor) {
-    globalExecutorArray.push(executor);
-  }
 
   Logger.info(
     logTag,
@@ -76,26 +69,8 @@ const registerBackend = (backend: Backend) => {
   vscode.commands.executeCommand("one.device.refresh");
 };
 
-const registerExecutor = (executor: Executor) => {
-  globalExecutorArray.push(executor);
-  Logger.info(
-    "API",
-    "Executor",
-    executor.name(),
-    "was registered into ONE-vscode."
-  );
-
-  // NOTE: This might not 100% guaratee the activating extension has been done.
-  //   - link: https://github.com/Samsung/ONE-vscode/pull/1101#issuecomment-1195099002
-  // TODO: Consider better way to refresh toolchainView after backend's registration.
-  vscode.commands.executeCommand("one.device.refresh");
-};
-
-// TODO Add removeBackend
-
 export const API = {
-  registerBackend,
-  registerExecutor,
+  registerBackend
 };
 
-export { globalBackendMap, globalExecutorArray };
+export { globalBackendMap };
