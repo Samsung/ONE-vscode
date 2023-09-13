@@ -40,7 +40,6 @@ input_model_dtype=uint8
 [one-import-edgetpu]
 input_path=/home/workspace/models/sample.tflite
 output_path=/home/workspace/models/sample_edge_tpu.tflite
-help=True
 intermediate_tensors=tensorName1,tensorName2
 show_operations=True
 min_runtime_version=14
@@ -52,7 +51,6 @@ const relativeOutputPathcontent = `
 [one-import-edgetpu]
 input_path=./sample.tflite
 output_path=./sample_edge_tpu.tflite
-help=True
 intermediate_tensors=tensorName1,tensorName2
 show_operations=True
 min_runtime_version=14
@@ -89,7 +87,6 @@ suite("Backend", function () {
           "edgetpu_compiler",
           "--out_dir",
           "/home/workspace/models",
-          "--help",
           "--intermediate_tensors",
           "tensorName1,tensorName2",
           "--show_operations",
@@ -119,7 +116,6 @@ suite("Backend", function () {
           "edgetpu_compiler",
           "--out_dir",
           ".",
-          "--help",
           "--intermediate_tensors",
           "tensorName1,tensorName2",
           "--show_operations",

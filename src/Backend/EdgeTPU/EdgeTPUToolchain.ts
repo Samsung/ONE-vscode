@@ -42,11 +42,6 @@ class EdgeTPUDebianToolchain extends DebianToolchain {
     cmd.push("--out_dir");
     cmd.push(outDir);
 
-    let help = config["one-import-edgetpu"]["help"];
-    if (help === "True") {
-      cmd.push("--help");
-    }
-
     let intermediateTensors =
       config["one-import-edgetpu"]["intermediate_tensors"];
     if (intermediateTensors !== undefined) {
