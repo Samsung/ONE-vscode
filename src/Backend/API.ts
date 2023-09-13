@@ -70,7 +70,7 @@ const registerBackend = (backend: Backend) => {
 };
 
 export const API = {
-  registerBackend
+  registerBackend,
 };
 
 export { globalBackendMap };
