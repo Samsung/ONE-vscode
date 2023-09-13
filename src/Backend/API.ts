@@ -29,12 +29,20 @@ interface BackendMap {
   [key: string]: Backend;
 }
 
+// TODO Move outside API.ts
 // List of backend extensions registered
 let globalBackendMap: BackendMap = {};
 // List of Executor extensions registered
 let globalExecutorArray: Executor[] = [];
 
 const logTag = "API";
+
+// TODO Move outside API.ts
+export namespace BackendContext {
+  export const isRegistered = (backendName: string) => {
+    return globalBackendMap[backendName] !== undefined;
+  };
+}
 
 const registerBackend = (backend: Backend) => {
   const backendName = backend.name();
@@ -43,6 +51,11 @@ const registerBackend = (backend: Backend) => {
   const compiler = backend.compiler();
   if (compiler) {
     gToolchainEnvMap[backend.name()] = new ToolchainEnv(compiler);
+    vscode.commands.executeCommand(
+      "setContext",
+      `one:backend.${backend.name()}`,
+      "enabled"
+    );
   }
   const executor = backend.executor();
   if (executor) {
@@ -77,6 +90,8 @@ const registerExecutor = (executor: Executor) => {
   // TODO: Consider better way to refresh toolchainView after backend's registration.
   vscode.commands.executeCommand("one.device.refresh");
 };
+
+// TODO Add removeBackend
 
 export const API = {
   registerBackend,
