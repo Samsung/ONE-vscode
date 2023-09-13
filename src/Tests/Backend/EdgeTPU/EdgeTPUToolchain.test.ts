@@ -48,6 +48,18 @@ search_delegate=True
 delegate_search_step=4
 `;
 
+const relativeOutputPathcontent = `
+[one-import-edgetpu]
+input_path=./sample.tflite
+output_path=./sample_edge_tpu.tflite
+help=True
+intermediate_tensors=tensorName1,tensorName2
+show_operations=True
+min_runtime_version=14
+search_delegate=True
+delegate_search_step=4
+`;
+
 suite("Backend", function () {
   suite("EdgeTPUDebianToolchain", function () {
     let testBuilder: TestBuilder;
@@ -76,7 +88,7 @@ suite("Backend", function () {
         const expectedStrs: string[] = [
           "edgetpu_compiler",
           "--out_dir",
-          "/home/workspace/models/sample_edge_tpu.tflite",
+          "/home/workspace/models",
           "--help",
           "--intermediate_tensors",
           "tensorName1,tensorName2",
@@ -87,6 +99,36 @@ suite("Backend", function () {
           "--delegate_search_step",
           "4",
           "/home/workspace/models/sample.tflite",
+        ];
+
+        assert.deepEqual(cmd, expectedStrs);
+      });
+
+      test("returns Command with cfg containing relative input path", function () {
+        testBuilder.writeFileSync("file.cfg", relativeOutputPathcontent);
+        const cfgFilePath = testBuilder.getPath("file.cfg");
+
+        const name = "EdgeTPU";
+        const desc = "EdgeTPU Compiler";
+        const version = new Version(0, 1, 0);
+        const info = new ToolchainInfo(name, desc, version);
+        let dt = new EdgeTPUDebianToolchain(info);
+        let cmd = dt.run(cfgFilePath);
+
+        const expectedStrs: string[] = [
+          "edgetpu_compiler",
+          "--out_dir",
+          ".",
+          "--help",
+          "--intermediate_tensors",
+          "tensorName1,tensorName2",
+          "--show_operations",
+          "--min_runtime_version",
+          "14",
+          "--search_delegate",
+          "--delegate_search_step",
+          "4",
+          "./sample.tflite",
         ];
 
         assert.deepEqual(cmd, expectedStrs);
