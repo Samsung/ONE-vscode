@@ -21,6 +21,7 @@ import {
 
 import * as ini from "ini";
 import * as fs from "fs";
+import * as path from "path";
 
 class EdgeTPUDebianToolchain extends DebianToolchain {
     run(cfg: string): Command {
@@ -31,9 +32,9 @@ class EdgeTPUDebianToolchain extends DebianToolchain {
             return cmd;
         }
 
-    let outputPath = config["one-import-edgetpu"]["output_path"];
+    let outDir = path.dirname(config["one-import-edgetpu"]["output_path"]);
     cmd.push("--out_dir");
-    cmd.push(outputPath);
+    cmd.push(outDir);
 
     let help = config["one-import-edgetpu"]["help"];
     if (help === "True") { 
