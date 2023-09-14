@@ -98,22 +98,25 @@ class EdgeTPUCompiler implements Compiler {
     }
 
     let _version = version;
+    let option = "";
 
     const optionIndex = version.search(/[~+-]/);
     if (optionIndex !== -1) {
+      option = version.slice(optionIndex);
       _version = version.slice(0, optionIndex);
     }
 
     const splitedVersion = _version.split(".");
 
-    if (splitedVersion.length > 2) {
+    if (splitedVersion.length > 3) {
       throw Error("Invalid version format.");
     }
 
     let major: number | string;
     let minor: number | string;
+    let patch: number | string;
 
-    [major = "0", minor = "0"] = _version.split(".");
+    [major = "0", minor = "0", patch = "0"] = _version.split(".");
 
     const epochIndex = major.search(/:/);
     if (epochIndex !== -1) {
@@ -122,12 +125,17 @@ class EdgeTPUCompiler implements Compiler {
 
     major = Number(major);
     minor = Number(minor);
-
-    if (isNaN(major) || isNaN(minor)) {
+    patch = Number(patch);
+    
+    if (isNaN(major) || isNaN(minor) || isNaN(patch)) {
       throw Error("Invalid version format.");
     }
 
-    return new Version(major, minor);
+    if (splitedVersion.length === 2 && !option) {
+      return new Version(major, minor);
+    }
+
+    return new Version(major, minor, patch, option);
   }
 
   getToolchains(
