@@ -348,7 +348,7 @@ class BaseModelNode extends Node {
 class ConfigNode extends Node {
   readonly type = NodeType.config;
 
-  static readonly extList = [".cfg"];
+  static readonly extList = [".cfg", ".edgetpucfg"];
   // Open file with one.editor.cfg as default
   static defaultOpenViewType = "one.editor.cfg";
   // Display gear icon as default

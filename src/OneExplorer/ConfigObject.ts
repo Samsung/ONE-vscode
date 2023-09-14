@@ -25,6 +25,7 @@ import { Logger } from "../Utils/Logger";
 
 import { Artifact } from "./ArtifactLocator";
 import { OneConfigSetting } from "./OneConfigSetting";
+import { EdgeTpuConfigSetting } from "./EdgeTpuConfigSetting";
 
 type Cfg = {
   "one-import-tflite": CfgOneImportTflite;
@@ -216,6 +217,9 @@ export class ConfigObj {
     const dir = path.dirname(filePath);
 
     let locatorRunner = OneConfigSetting.getBaseModelsLocatorRunner();
+    if (path.extname(filePath) === ".edgetpucfg") {
+      locatorRunner = EdgeTpuConfigSetting.getBaseModelsLocatorRunner();
+    }
 
     let artifacts: Artifact[] = locatorRunner.run(iniObj, dir);
 
@@ -254,6 +258,9 @@ export class ConfigObj {
     const dir = path.dirname(filePath);
 
     let locatorRunner = OneConfigSetting.getProductsLocatorRunner();
+    if (path.extname(filePath) === ".edgetpucfg") {
+      locatorRunner = EdgeTpuConfigSetting.getProductsLocatorRunner();
+    }
 
     /**
      * When you add a new product type, please append the ext type to
