@@ -3,6 +3,5 @@
 	// for the documentation about the extensions.json format
 	"recommendations": [
 		"dbaeumer.vscode-eslint",
-		"xaver.clang-format"
 	]
 }

@@ -16,11 +16,7 @@
 
 import { assert } from "chai";
 
-import {
-  backendRegistrationApi,
-  globalBackendMap,
-  globalExecutorArray,
-} from "../../Backend/API";
+import { API, globalBackendMap, globalExecutorArray } from "../../Backend/API";
 import { Backend } from "../../Backend/Backend";
 import { Compiler, CompilerBase } from "../../Backend/Compiler";
 import { Executor, ExecutorBase } from "../../Backend/Executor";
@@ -59,9 +55,8 @@ class ExecutorMockup extends ExecutorBase {
 }
 
 suite("Backend", function () {
-  suite("backendRegistrationApi", function () {
+  suite("backendAPI", function () {
     test("registers a OneToolchain", function () {
-      backendRegistrationApi();
       let oneBackend = new OneToolchain();
       assert.strictEqual(Object.entries(globalBackendMap).length, 1);
       assert.strictEqual(globalExecutorArray.length, 0);
@@ -75,13 +70,11 @@ suite("Backend", function () {
       }
     });
     test("registers a backend", function () {
-      let registrationAPI = backendRegistrationApi();
-
       assert.strictEqual(Object.entries(globalBackendMap).length, 1);
       assert.strictEqual(globalExecutorArray.length, 0);
 
       let backend = new BackendMockup();
-      registrationAPI.registerBackend(backend);
+      API.registerBackend(backend);
 
       const entries = Object.entries(globalBackendMap);
       assert.strictEqual(entries.length, 2);
@@ -101,11 +94,9 @@ suite("Backend", function () {
       assert.deepStrictEqual(backend.executors(), globalExecutorArray);
     });
     test("registers a executor", function () {
-      let registrationAPI = backendRegistrationApi();
-
       assert.strictEqual(globalExecutorArray.length, 0);
       let executorMockup = new ExecutorMockup();
-      registrationAPI.registerExecutor(executorMockup);
+      API.registerExecutor(executorMockup);
 
       assert.strictEqual(globalExecutorArray.length, 1);
 

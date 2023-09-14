@@ -734,7 +734,6 @@ view.View = class {
     }
     this._host.exception(err, false);
 
-    // clang-format off
     const knowns = [
       {
         name: "",
@@ -867,7 +866,7 @@ view.View = class {
         url: "https://github.com/lutzroeder/netron/issues/649",
       },
     ];
-    // clang-format on
+
     const known = knowns.find(
       (known) =>
         (known.name.length === 0 || known.name === err.name) &&
@@ -1593,11 +1592,9 @@ view.Node = class extends grapher.Node {
     this._add(this.value);
   }
 
-  // clang-format off
   get class() {
     return "graph-node";
   }
-  // clang-format on
 
   get inputs() {
     return this.value.inputs;
@@ -1764,9 +1761,7 @@ view.Node = class extends grapher.Node {
         );
       }
       if (hiddenInitializers) {
-        // clang-format off
         list.add(null, "\u3008" + "\u2026" + "\u3009", "", null, "");
-        // clang-format on
       }
 
       for (const attribute of sortedAttributes) {
@@ -1836,11 +1831,9 @@ view.Input = class extends grapher.Node {
       (name ? "name-" + name : "id-" + (view.Input.counter++).toString());
   }
 
-  // clang-format off
   get class() {
     return "graph-input";
   }
-  // clang-format on
 
   get inputs() {
     return [];
@@ -2409,7 +2402,6 @@ view.ModelFactoryService = class {
     const json = () => {
       const obj = context.open("json");
       if (obj) {
-        // clang-format off
         const formats = [
           { name: "Netron metadata", tags: ["[].name", "[].schema"] },
           { name: "Netron metadata", tags: ["[].name", "[].attributes"] },
@@ -2453,7 +2445,7 @@ view.ModelFactoryService = class {
             tags: ["CustomVision.Metadata.Version"],
           },
         ];
-        // clang-format on
+
         const match = (obj, tag) => {
           if (tag.startsWith("[].")) {
             tag = tag.substring(3);
@@ -2494,7 +2486,6 @@ view.ModelFactoryService = class {
       }
     };
     const pbtxt = () => {
-      // clang-format off
       const formats = [
         {
           name: "ImageNet LabelMap data",
@@ -2547,7 +2538,7 @@ view.ModelFactoryService = class {
         { name: "tidl_meta_arch.TIDLMetaArch data", tags: ["tidl_retinanet"] },
         { name: "domi.InsertNewOps data", tags: ["aipp_op"] }, // https://github.com/Ascend/parser/blob/development/parser/proto/insert_op.proto
       ];
-      // clang-format on
+
       const tags = context.tags("pbtxt");
       if (tags.size > 0) {
         for (const format of formats) {
@@ -3177,7 +3168,7 @@ view.ModelFactoryService = class {
         return Promise.reject(new view.Error("File has no content.", true));
       }
       /* eslint-disable no-control-regex */
-      // clang-format off
+
       const entries = [
         { name: "ELF executable", value: /^\x7FELF/ },
         { name: "PNG image", value: /^\x89PNG/ },
@@ -3223,7 +3214,7 @@ view.ModelFactoryService = class {
         },
         { name: "OpenVX network binary graph data", value: /^VPMN/ }, // network_binary.nb
       ];
-      // clang-format on
+
       /* eslint-enable no-control-regex */
       const buffer = stream.peek(Math.min(4096, stream.length));
       const content = String.fromCharCode.apply(null, buffer);
