@@ -24,8 +24,9 @@ import { RealPath } from "../Utils/Helpers";
 import { Logger } from "../Utils/Logger";
 
 import { Artifact } from "./ArtifactLocator";
-import { OneConfigSetting } from "./OneConfigSetting";
-import { EdgeTpuConfigSetting } from "./EdgeTpuConfigSetting";
+import { ConfigSetting } from "./ConfigSetting";
+import { OneConfigSetting } from "./ConfigSettings/OneConfigSetting";
+import { EdgeTpuConfigSetting } from "./ConfigSettings/EdgeTpuConfigSetting";
 
 type Cfg = {
   "one-import-tflite": CfgOneImportTflite;
@@ -67,6 +68,12 @@ export class ConfigObj {
    * a parsed config object
    */
   obj: { baseModels: Artifact[]; products: Artifact[] };
+
+  /**
+   * a setting of config object
+   * ex) onecc or edge tpu compiler
+   */
+  configSetting: ConfigSetting;
 
   get getBaseModels() {
     return this.obj.baseModels;
@@ -117,9 +124,18 @@ export class ConfigObj {
   private constructor(uri: vscode.Uri, rawObj: Cfg) {
     this.uri = uri;
     this.rawObj = rawObj;
+    this.configSetting = new OneConfigSetting();
+    const ext = path.extname(uri.fsPath);
+    if (ext === ".edgetpucfg") {
+      this.configSetting = new EdgeTpuConfigSetting();
+    }
     this.obj = {
-      baseModels: ConfigObj.parseBaseModels(uri.fsPath, rawObj),
-      products: ConfigObj.parseProducts(uri.fsPath, rawObj),
+      baseModels: ConfigObj.parseBaseModels(
+        uri.fsPath,
+        rawObj,
+        this.configSetting
+      ),
+      products: ConfigObj.parseProducts(uri.fsPath, rawObj, this.configSetting),
     };
   }
 
@@ -212,14 +228,12 @@ export class ConfigObj {
    */
   private static parseBaseModels = (
     filePath: string,
-    iniObj: object
+    iniObj: object,
+    configSetting: ConfigSetting
   ): Artifact[] => {
     const dir = path.dirname(filePath);
 
-    let locatorRunner = OneConfigSetting.getBaseModelsLocatorRunner();
-    if (path.extname(filePath) === ".edgetpucfg") {
-      locatorRunner = EdgeTpuConfigSetting.getBaseModelsLocatorRunner();
-    }
+    let locatorRunner = configSetting.baseModelsLocatorRunner;
 
     let artifacts: Artifact[] = locatorRunner.run(iniObj, dir);
 
@@ -253,14 +267,12 @@ export class ConfigObj {
    */
   private static parseProducts = (
     filePath: string,
-    iniObj: object
+    iniObj: object,
+    configSetting: ConfigSetting
   ): Artifact[] => {
     const dir = path.dirname(filePath);
 
-    let locatorRunner = OneConfigSetting.getProductsLocatorRunner();
-    if (path.extname(filePath) === ".edgetpucfg") {
-      locatorRunner = EdgeTpuConfigSetting.getProductsLocatorRunner();
-    }
+    let locatorRunner = configSetting.productsLocatorRunner;
 
     /**
      * When you add a new product type, please append the ext type to

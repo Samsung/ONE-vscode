@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 
-import { Locator, LocatorRunner } from "./ArtifactLocator";
+import { Locator, LocatorRunner } from "../ArtifactLocator";
+import { ConfigSetting } from "../ConfigSetting";
 
 // export type OneCfg = {
 //   "one-import-tflite": CfgOneImportTflite;
@@ -11,26 +12,8 @@ import { Locator, LocatorRunner } from "./ArtifactLocator";
 // type CfgOneImportOnnx = any;
 // type CfgOneImportTf = any;
 
-export class EdgeTpuConfigSetting {
-  static baseModelsLocatorRunner: LocatorRunner;
-  static productsLocatorRunner: LocatorRunner;
-  // TODO: make sections for updateBaseModelField method
-
-  static getBaseModelsLocatorRunner(): LocatorRunner {
-    if (!this.baseModelsLocatorRunner) {
-      this._initBaseModelsLocatorRunner();
-    }
-    return this.baseModelsLocatorRunner;
-  }
-
-  static getProductsLocatorRunner(): LocatorRunner {
-    if (!this.productsLocatorRunner) {
-      this._initProductsLocatorRunner();
-    }
-    return this.productsLocatorRunner;
-  }
-
-  private static _initBaseModelsLocatorRunner() {
+export class EdgeTpuConfigSetting extends ConfigSetting {
+  protected _initBaseModelsLocatorRunner() {
     let locatorRunner = new LocatorRunner();
 
     locatorRunner.register({
@@ -51,7 +34,7 @@ export class EdgeTpuConfigSetting {
     this.baseModelsLocatorRunner = locatorRunner;
   }
 
-  private static _initProductsLocatorRunner() {
+  protected _initProductsLocatorRunner() {
     let locatorRunner = new LocatorRunner();
 
     /**
