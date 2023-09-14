@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 
+Copyright (c) 2022 Samsung Electronics Co., Ltd. All Rights Reserved
+ 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+ 
+   http://www.apache.org/licenses/LICENSE-2.0
+ 
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<head>
+    <meta charset="utf-8">
+    <meta
+        http-equiv="Content-Security-Policy"
+        content="img-src vscode;
+                style-src 'unsafe-inline' ${webview.cspSource};
+                script-src 'nonce-${nonce}';">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script nonce="${nonce}" type="module" src="${toolkitUri}"></script>
+    <script nonce="${nonce}" type="module" src="${jsUri}"></script>
+    <link rel="stylesheet" href="${cssUri}">
+    <link rel="stylesheet" href="${codiconUri}">
+    <title>cfg editor</title>
+</head>
+<body>
+    <div class="maintitle" id="CompilerCheckbox">
+        <span class="codicon codicon-megaphone"></span>
+        <span>Choose the compiler to use</span>
+    </div>
+    <vscode-radio-group id="compilerSelector">
+        <vscode-radio value="ONEcc" id="checkboxONEcc" checked="true">ONEcc</vscode-radio>
+        <vscode-radio value="EdgeTPU" id="checkboxEdgeTPU">EdgeTPU Compiler</vscode-checkbox>
+    </vscode-radio-group>
+    <div>
+        <vscode-divider></vscode-divider>
+    </div>
+    <div class="maintitle">
+        <span class="codicon codicon-megaphone"></span>
+        <span>Click checkbox to enable each step.</span>
+    </div>
+    <div class="statusbarPanel">
+        <div class="statusbar" id="statusONEcc">
+            <div class="detail">
+                <div class="expanded" id="expandedDetail">
+                    <span>Steps</span>
+                </div>
+            </div>
+            <div class="steps" id="statusbarSteps">
+                <div class="step" id="stepbarImport">
+                    <vscode-checkbox id="checkboxImport"></vscode-checkbox>
+                    <span id="stepImport" class="title">Import</span>
+                </div>
+                <div class="step" id="stepbarOptimize">
+                    <vscode-checkbox id="checkboxOptimize"></vscode-checkbox>
+                    <span id="stepOptimize" class="title">Optimize</span>
+                </div>
+                <div class="step" id="stepbarQuantize">
+                    <vscode-checkbox id="checkboxQuantize"></vscode-checkbox>
+                    <span id="stepQuantize" class="title">Quantize</span>
+                </div>
+                <div class="step" id="stepbarCodegen">
+                    <vscode-checkbox id="checkboxCodegen"></vscode-checkbox>
+                    <span id="stepCodegen" class="title">Codegen</span>
+                </div>
+                <div class="step" id="stepbarProfile">
+                    <vscode-checkbox id="checkboxProfile"></vscode-checkbox>
+                    <span id="stepProfile" class="title">Profile</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="statusbarPanel">
+        <div class="statusbar" id="statusEdgeTPU">
+            <div class="detail">
+                <div class="expanded" id="expandedDetail">
+                    <span>Steps</span>
+                </div>
+            </div>
+            <div class="steps" id="statusbarSteps">
+                <div class="step" id="stepbarEdgeTPUCompile">
+                    <vscode-checkbox id="checkboxEdgeTPUCompile"></vscode-checkbox>
+                    <span id="stepEdgeTPUCompile" class="title">Compile</span>
+                </div>
+                <div class="step" id="stepbarEdgeTPUProfile">
+                    <vscode-checkbox id="checkboxEdgeTPUProfile"></vscode-checkbox>
+                    <span id="stepEdgeTPUProfile" class="title">Profile</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <vscode-divider></vscode-divider>
+    </div>
+    <div class="optionPanel">
+        <div class="options" id="optionSummary">
+            <!-- TODO Display summarization for all steps -->
+        </div>
+        <div class="options" id="optionImport">
+            <div class="prerequisite">
+                <div class="title">
+                    Basic Options
+                </div>
+                <div class="option">
+                    <vscode-radio-group id="importInputModelType">
+                        <label slot="label">Input Model Type</label>
+                        <vscode-radio value="pb" checked="true">pb</vscode-radio>
+                        <vscode-radio value="saved">saved_model</vscode-radio>
+                        <vscode-radio value="keras">keras_model</vscode-radio>
+                        <vscode-radio value="tflite">tflite</vscode-radio>
+                        <vscode-radio value="onnx">onnx</vscode-radio>
+                        <vscode-radio value="bcq" disabled="true">bcq</vscode-radio>
+                        <vscode-radio value="edgetpu">edge_tpu</vscode-radio>
+                    </vscode-radio-group>
+                </div>
+            </div>
+            <div class="basic" id="optionImportPBBasic">
+                <div class="option">
+                    <vscode-text-field id="PBInputPath" startIcon="true" size="50" placeholder="">
+                        Input Path
+                        <span id="PBInputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="PBOutputPath" startIcon="true" size="50" placeholder="">
+                        Output Path
+                        <span id="PBOutputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-radio-group id="PBConverterVersion">
+                        <label slot="label">Converter Version</label>
+                        <vscode-radio value="v1">v1</vscode-radio>
+                        <vscode-radio value="v2">v2</vscode-radio>
+                    </vscode-radio-group>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="PBInputArrays" startIcon="true" size="50" placeholder="semi-colon separated input names">
+                        Input Arrays
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="PBOutputArrays" startIcon="true" size="50" placeholder="semi-colon separated output names">
+                        Output Arrays
+                    </vscode-text-field>
+                </div>
+            </div>
+            <div class="advanced" id="optionImportPBAdvanced">
+                <div class="title">
+                    <span>Advanced Options</span>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="PBInputShapes" startIcon="true" size="50" placeholder="semi-colon separated input shapes (e.g. 1,299,299,3;1,1001)">
+                        Input Shapes (Optional)
+                    </vscode-text-field>
+                </div>
+            </div>
+            <div class="basic" id="optionImportSAVEDBasic">
+                <div class="option">
+                    <vscode-text-field id="SAVEDInputPath" startIcon="true" size="50" placeholder="">
+                        Input Path
+                        <span id="SAVEDInputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="SAVEDOutputPath" startIcon="true" size="50" placeholder="">
+                        Output Path
+                        <span id="SAVEDOutputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+            </div>
+            <div class="basic" id="optionImportKERASBasic">
+                <div class="option">
+                    <vscode-text-field id="KERASInputPath" startIcon="true" size="50" placeholder="">
+                        Input Path
+                        <span id="KERASInputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="KERASOutputPath" startIcon="true" size="50" placeholder="">
+                        Output Path
+                        <span id="KERASOutputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+            </div>
+            <div class="basic" id="optionImportTFLITEBasic">
+                <div class="option">
+                    <vscode-text-field id="TFLITEInputPath" startIcon="true" size="50" placeholder="">
+                        Input Path
+                        <span id="TFLITEInputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="TFLITEOutputPath" startIcon="true" size="50" placeholder="">
+                        Output Path
+                        <span id="TFLITEOutputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+            </div>
+            <div class="basic" id="optionImportONNXBasic">
+                <div class="option">
+                    <vscode-text-field id="ONNXInputPath" startIcon="true" size="50" placeholder="">
+                        Input Path
+                        <span id="ONNXInputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="ONNXOutputPath" startIcon="true" size="50" placeholder="">
+                        Output Path
+                        <span id="ONNXOutputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+            </div>
+            <div class="advanced" id="optionImportONNXAdvanced">
+                <div class="title">
+                    Advanced Options
+                </div>
+                <div class="option">
+                    <vscode-checkbox id="ONNXSaveIntermediate">
+                        Save Intermediate
+                    </vscode-checkbox>
+                    <span class="codicon codicon-question" style="cursor: pointer">
+                        <span class="help">
+                            Intermediate files are not removed after compilation.
+                        </span>
+                    </span>
+                </div>
+                <div class="option">
+                    <vscode-checkbox id="ONNXUnrollRNN">
+                        Unroll RNN
+                    </vscode-checkbox>
+                    <span class="codicon codicon-question" style="cursor: pointer">
+                        <span class="help">
+                            RNN operation in ONNX file is unrolled so that there is no control flow in the graph
+                        </span>
+                    </span>                    
+                </div>
+                <div class="option">
+                    <vscode-checkbox id="ONNXUnrollLSTM">
+                        Unroll LSTM
+                    </vscode-checkbox>
+                    <span class="codicon codicon-question" style="cursor: pointer">
+                        <span class="help">
+                            LSTM operation in ONNX file is unrolled so that there is no control flow in the graph
+                        </span>
+                    </span>                     
+                </div>
+            </div>
+        </div>
+        <div class="options" id="optionOptimize">
+            <div class="basic">
+                <div class="title">
+                    Basic Options
+                </div>
+                <div class="option">
+                    <vscode-text-field id="optimizeInputPath" startIcon="true" size="50" placeholder="">
+                        Input Path
+                        <span id="optimizeInputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="optimizeOutputPath" startIcon="true" size="50" placeholder="">
+                        Output Path
+                        <span id="optimizeOutputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+            </div>
+            <div class="advanced">
+                <div class="title">
+                    Optimization Parameters
+                </div>
+                <div class="option">
+                    <vscode-data-grid id="basicOptimizeTable" generate-header="default" aria-label="Default Header" grid-template-columns="5% 40% 55%">
+                        <vscode-data-grid-row row-type="header">
+                            <vscode-data-grid-cell cell-type="columnheader" grid-column="1">&nbsp;</vscode-data-grid-cell>
+                            <vscode-data-grid-cell cell-type="columnheader" grid-column="2">Name</vscode-data-grid-cell>
+                            <vscode-data-grid-cell cell-type="columnheader" grid-column="3">Description</vscode-data-grid-cell>
+                        </vscode-data-grid-row>                        
+                    </vscode-data-grid>
+                </div>                
+            </div>
+        </div>
+        <div class="options" id="optionQuantize">
+            <div class="prerequisite">
+                <div class="title">
+                    Basic Options
+                </div>
+                <div class="option">
+                    <vscode-radio-group id="quantizeActionType">
+                        <label slot="label">Quantization Action Type</label>
+                        <vscode-radio value="defaultQuant" checked="true">Quantization</vscode-radio>
+                        <vscode-radio value="forceQuant">Force Quantization Param</vscode-radio>
+                        <vscode-radio value="copyQuant">Copy Quantization Param</vscode-radio>
+                    </vscode-radio-group>
+                </div>
+            </div>
+            <div class="basic" id="optionQuantizeDefaultQuantBasic">
+                <div class="option">
+                    <vscode-text-field id="DefaultQuantInputPath" startIcon="true" size="50" placeholder="">
+                        Input Path
+                        <span id="DefaultQuantInputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="DefaultQuantOutputPath" startIcon="true" size="50" placeholder="">
+                        Output Path
+                        <span id="DefaultQuantOutputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-radio-group id="DefaultQuantInputModelDtype">
+                        <label slot="label">Input Model Data Type</label>
+                        <vscode-radio value="float32">float32</vscode-radio>
+                    </vscode-radio-group>
+                </div>
+                <div class="option">
+                    <vscode-radio-group id="DefaultQuantQuantizedDtype">
+                        <label slot="label">Quantized Data Type</label>
+                        <vscode-radio value="uint8">uint8</vscode-radio>
+                        <vscode-radio value="int16">int16</vscode-radio>
+                    </vscode-radio-group>
+                </div>
+                <div class="option">
+                    <vscode-radio-group id="DefaultQuantGranularity">
+                        <label slot="label">Granularity</label>
+                        <vscode-radio value="layer">layer</vscode-radio>
+                        <vscode-radio value="channel">channel</vscode-radio>
+                    </vscode-radio-group>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="DefaultQuantQuantConfig" startIcon="true" size="50" placeholder="">
+                        <span>Quantization Config File</span>
+                        <span class="codicon codicon-question" style="cursor: pointer">
+                            <span class="help">
+                                This file is for mixed-precision quantization.<br>
+                                Not mandatory option.
+                            </span>
+                        </span>                        
+                        <span id="DefaultQuantQuantConfigSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="DefaultQuantInputData" startIcon="true" size="50" placeholder="">
+                        <span>Input Data</span>
+                        <span class="codicon codicon-question" style="cursor: pointer">
+                            <span class="help">
+                                Dataset used to quantize activation.<br>
+                                If not given, random data will be used for quantization, which significantly degrades the accuracy of the model.
+                            </span>
+                        </span>
+                        <span id="DefaultQuantInputDataSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <span>Input Data Format</span>
+                    <span class="codicon codicon-question" style="cursor: pointer">
+                        <span class="help">
+                            <li>h5 : HDF5 format file</li>
+                            <li>list : a text file where a file path of input data is written in each line</li>
+                            <li>dir : a directory where input data are saved</li>
+                        </span>
+                    </span>
+                    <vscode-radio-group id="DefaultQuantInputDataFormat">
+                        <vscode-radio value="h5">h5</vscode-radio>
+                        <vscode-radio value="list">list</vscode-radio>
+                        <vscode-radio value="dir">dir</vscode-radio>
+                    </vscode-radio-group>
+                </div>
+                <div class="option">
+                    <vscode-radio-group id="DefaultQuantInputType">
+                        <label slot="label">Input Type</label>
+                        <vscode-radio value="default">quantized data type</vscode-radio>
+                        <vscode-radio value="uint8">uint8</vscode-radio>
+                        <vscode-radio value="int16">int16</vscode-radio>
+                        <vscode-radio value="float32">float32</vscode-radio>
+                    </vscode-radio-group>
+                </div>
+                <div class="option">
+                    <vscode-radio-group id="DefaultQuantOutputType">
+                        <label slot="label">Output Type</label>
+                        <vscode-radio value="default">quantized data type</vscode-radio>
+                        <vscode-radio value="uint8">uint8</vscode-radio>
+                        <vscode-radio value="int16">int16</vscode-radio>
+                        <vscode-radio value="float32">float32</vscode-radio>
+                    </vscode-radio-group>
+                </div>
+            </div>
+            <div class="advanced" id="optionQuantizeDefaultQuantAdvanced">
+                <div class="title">
+                    <span>Advanced Options</span>
+                </div>
+                <div class="option">
+                    <span>Mode</span>
+                    <span class="codicon codicon-question" style="cursor: pointer">
+                        <span class="help">
+                            Calibration algorithm for post-training quantization.<br>
+                            <li>percentile : uses the n-th percentiles as min/max values.</li>
+                            <li>moving_average : records the moving average of min/max.</li>
+                        </span>
+                    </span>
+                    <vscode-radio-group id="DefaultQuantMode">
+                        <vscode-radio value="percentile">percentile</vscode-radio>
+                        <vscode-radio value="movingAvg">moving average</vscode-radio>
+                    </vscode-radio-group>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="DefaultQuantMinPercentile" startIcon="true" size="30" placeholder="(default : 1.0)">
+                        Min Percentile
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="DefaultQuantMaxPercentile" startIcon="true" size="30" placeholder="(default : 99.0)">
+                        Max Percentile
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-checkbox id="DefaultQuantVerbose">
+                        Verbose
+                    </vscode-checkbox>
+                </div>
+                <div class="option">
+                    <vscode-checkbox id="DefaultQuantSaveIntermediate">
+                        Save Intermediate
+                    </vscode-checkbox>
+                </div>
+                <div class="option">
+                    <vscode-checkbox id="DefaultQuantGenerateProfileData">
+                        Generate Profile Data
+                    </vscode-checkbox>
+                </div>
+                <div class="option">
+                    <vscode-checkbox id="DefaultQuantTFStyleMaxpool">
+                        TF-style Maxpool
+                    </vscode-checkbox>
+                    <span slot="end" class="codicon codicon-question" style="cursor: pointer">
+                        <span class="help">
+                            Force MaxPool Op to have the same input/output quantparams.<br>
+                            This option can degrade accuracy of some models.
+                        </span>
+                    </span>
+                </div>
+                <!-- TODO Evaluate Result Option -->
+            </div>
+            <div class="basic" id="optionQuantizeForceQuantBasic">
+                <div class="option">
+                    <vscode-text-field id="ForceQuantInputPath" startIcon="true" size="50" placeholder="">
+                        Input Path
+                        <span id="ForceQuantInputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="ForceQuantOutputPath" startIcon="true" size="50" placeholder="">
+                        Output Path
+                        <span id="ForceQuantOutputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="ForceQuantTensorName" startIcon="true" size="50" placeholder="">
+                        Tensor Name
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="ForceQuantScale" startIcon="true" size="30" placeholder="">
+                        Scale
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="ForceQuantZeroPoint" startIcon="true" size="30" placeholder="">
+                        Zero Point
+                    </vscode-text-field>
+                </div>
+            </div>
+            <div class="advanced" id="optionQuantizeForceQuantAdvanced">
+                <div class="title">
+                    <span>Advanced Options</span>
+                </div>
+                <div class="option">
+                    <vscode-checkbox id="ForceQuantVerbose">
+                        Verbose
+                    </vscode-checkbox>
+                </div>
+            </div>
+            <div class="basic" id="optionQuantizeCopyQuantBasic">
+                <div class="option">
+                    <vscode-text-field id="CopyQuantInputPath" startIcon="true" size="50" placeholder="">
+                        Input Path
+                        <span id="CopyQuantInputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="CopyQuantOutputPath" startIcon="true" size="50" placeholder="">
+                        Output Path
+                        <span id="CopyQuantOutputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="CopyQuantSrcTensorName" startIcon="true" size="50" placeholder="">
+                        Source Tensor Name
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="CopyQuantDstTensorName" startIcon="true" size="50" placeholder="">
+                        Destination Tensor Name
+                    </vscode-text-field>
+                </div>
+            </div>
+            <div class="advanced" id="optionQuantizeCopyQuantAdvanced">
+                <div class="title">
+                    <span>Advanced Options</span>
+                </div>
+                <div class="option">
+                    <vscode-checkbox id="CopyQuantVerbose">
+                        Verbose
+                    </vscode-checkbox>
+                </div>
+            </div>
+        </div>
+        <div class="options" id="optionCodegen">
+            <div class="basic">
+                <div class="title">
+                    Basic Options
+                </div>
+                <div class="option">
+                    <vscode-text-field id="codegenBackend" startIcon="true" size="30" placeholder="Backend to generate code">
+                        Backend
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="codegenCommand" startIcon="true" size="50" placeholder="CLI command to execute">
+                        Command
+                    </vscode-text-field>           
+                </div>
+            </div>
+        </div>
+        <div class="options" id="optionProfile">
+            <div class="basic">
+                <div class="title">
+                    Basic Options
+                </div>
+                <div class="option">
+                    <vscode-text-field id="profileBackend" startIcon="true" size="30" placeholder="Backend to generate code">
+                        Backend
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="profileCommand" startIcon="true" size="50" placeholder="CLI command to execute">
+                        Command
+                    </vscode-text-field>           
+                </div>
+            </div>
+        </div>
+        <div class="options" id="optionEdgeTPUCompile">
+            <div class="basic">
+                <div class="title">
+                    Basic Options
+                </div>
+                <!-- 여기에 EdgeTPU Compile에 필요한 기본옵션을 추가하기 -->
+                <div class="option">
+                    <vscode-text-field id="EdgeTPUInputPath" startIcon="true" size="50" placeholder="">
+                        Input Path
+                        <span id="EdgeTPUInputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="EdgeTPUOutputPath" startIcon="true" size="50" placeholder="" disabled="true">
+                        Output Path
+                        <span id="EdgeTPUOutputPathSearch" slot="end" class="codicon codicon-search" style="cursor: pointer"></span>
+                    </vscode-text-field>
+                </div>
+            </div>
+            <div class="advanced">
+                <div class="title">
+                    Advanced Options
+                </div>
+                <!-- 여기에 EdgeTPU Compile에 필요한 기본옵션을 추가하기 -->
+                <div class="option">
+                    <vscode-text-field id="EdgeTPUIntermediateTensorsInputArrays" startIcon="true" size="50" placeholder="comma separated input names">
+                        Intermediate_tensors
+                    </vscode-text-field> 
+                    <span class="codicon codicon-question" style="cursor: pointer">
+                        <span class="help">
+                            This option cannot be with 'search delegate'
+                        </span>
+                    </span>
+                </div>
+                <div class="option">
+                    <vscode-checkbox id="EdgeTPUShowOperations">
+                        Show Operations
+                    </vscode-checkbox>  
+                    <span class="codicon codicon-question" style="cursor: pointer">
+                        <span class="help">
+                            Print the log showing operations that mapped to the Edge TPU.
+                        </span>
+                    </span>
+                </div>  
+                <div class="option">
+                    <div>
+                        Min Runtime Version
+                        <span class="codicon codicon-question" style="cursor: pointer">
+                            <span class="help">
+                                Specify the lowest Edge TPU runtime version you want the model to be compatible with. <br />
+                                Version Information
+                                <table class="version-information">
+                                    <thead>
+                                        <tr>
+                                            <th> Compiler version </th>
+                                            <th> Runtime version </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>16.0</td>
+                                            <td>14</td>
+                                        </tr>
+                                        <tr>
+                                            <td>15.0</td>
+                                            <td>13</td>
+                                        </tr>
+                                        <tr>
+                                            <td>14.1</td>
+                                            <td>13</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2.1.302470888</td>
+                                            <td>13</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2.0.291256449</td>
+                                            <td>13</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2.0.267685300</td>
+                                            <td>12</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1.0</td>
+                                            <td>10</td>
+                                        </tr>
+                                    </tbody>
+                                </table>    
+                            </span>
+                        </span>
+                    </div>
+                    <vscode-dropdown id="EdgeTPUMinRuntimeVersion">   
+                    </vscode-dropdown>
+                </div>
+                <div class="option">
+                    <vscode-checkbox id="EdgeTPUSearchDelegate">
+                        Search Delegate
+                    </vscode-checkbox>
+                    <span class="codicon codicon-question" style="cursor: pointer">
+                        <span class="help">
+                            Enable repeated search for a new compilation stopping point earlier in the graph, to avoid rare compiler failures when it encounters an unsupported operation.
+                        </span>
+                    </span>
+                </div>
+                <div class="option" id="EdgeTPUDelegateSearchStepDiv">
+                    <vscode-text-field type="number" id="EdgeTPUDelegateSearchStep" value="1">
+                        Delegate Search Step
+                    </vscode-text-field>
+                    <span class="codicon codicon-question" style="cursor: pointer">
+                        <span class="help">
+                            Specify a step size (the number of ops to move backward) <br />
+                            Default size is 1 and the mindest size is also 1.
+                        </span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="options" id="optionEdgeTPUProfile">
+            <div class="basic">
+                <div class="title">
+                    Basic Options
+                </div>
+                <div class="option">
+                    <vscode-text-field id="profileBackend" startIcon="true" size="30" placeholder="Backend to generate code">
+                        Backend
+                    </vscode-text-field>
+                </div>
+                <div class="option">
+                    <vscode-text-field id="profileCommand" startIcon="true" size="50" placeholder="CLI command to execute">
+                        Command
+                    </vscode-text-field>           
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

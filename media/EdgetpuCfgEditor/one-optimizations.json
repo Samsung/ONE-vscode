@@ -1,0 +1,146 @@
+{
+  "fold_add_v2": {
+    "description": "This will fold AddV2 operators with constant inputs"
+  },
+  "fold_cast": {
+    "description": "This will fold Cast operators with constant input"
+  },
+  "fold_dequantize": {
+    "description": "This will fold dequantize op"
+  },
+  "fold_dwconv": {
+    "description": "This will fold Depthwise Convolution operator with constant inputs"
+  },
+  "fold_gather": {
+    "description": "This will fold Gather operator"
+  },
+  "fold_sparse_to_dense": {
+    "description": "This will fold SparseToDense operator"
+  },
+  "forward_reshape_to_unaryop": {
+    "description": "This will move Reshape after UnaryOp for centain condition"
+  },
+  "fuse_activation_function": {
+    "description": "This will fuse Activation function to a preceding operator"
+  },
+  "fuse_add_with_fully_connected": {
+    "description": "This will fuse Add operator to FullyConnected operator"
+  },
+  "fuse_add_with_tconv": {
+    "description": "This will fuse Add operator to Transposed Convolution operator"
+  },
+  "fuse_batchnorm_with_conv": {
+    "description": "This will fuse BatchNorm operators to Convolution operator"
+  },
+  "fuse_batchnorm_with_dwconv": {
+    "description": "This will fuse BatchNorm operators to Depthwise Convolution operator"
+  },
+  "fuse_batchnorm_with_tconv": {
+    "description": "This will fuse BatchNorm operators to Transposed Convolution operator"
+  },
+  "fuse_bcq": {
+    "description": "This will fuse operators and apply Binary Coded Quantization"
+  },
+  "fuse_instnorm": {
+    "description": "This will fuse operators to InstanceNorm operator"
+  },
+  "fuse_mean_with_mean": {
+    "description": "This will fuse two Mean operations when they follow one by one. This will fold them into one operation and merge reduction indices."
+  },
+  "fuse_transpose_with_mean": {
+    "description": "This will fuse Mean operation with a preceding Transpose under certain conditions."
+  },
+  "make_batchnorm_gamma_positive": {
+    "description": "This will make negative gamma of BatchNorm into a small positive value (1e-10). Note that this pass can change the execution result of the model. So, use it only when the impact is known to be acceptable."
+  },
+  "fuse_preactivation_batchnorm": {
+    "description": "This will fuse BatchNorm operators of pre-activations to Convolution operator"
+  },
+  "remove_fakequant": {
+    "description": "This will remove FakeQuant operators"
+  },
+  "remove_quantdequant": {
+    "description": "This will remove Quantize-Dequantize sequence"
+  },
+  "remove_redundant_quantize": {
+    "description": "This will remove redundant Quantize operators"
+  },
+  "remove_redundant_reshape": {
+    "description": "This will fuse or remove subsequent Reshape operators"
+  },
+  "remove_redundant_transpose": {
+    "description": "This will fuse or remove subsequent Transpose operators"
+  },
+  "remove_unnecessary_reshape": {
+    "description": "This will remove unnecessary reshape operators"
+  },
+  "remove_unnecessary_slice": {
+    "description": "This will remove unnecessary slice operators"
+  },
+  "remove_unnecessary_strided_slice": {
+    "description": "This will remove unnecessary strided slice operators"
+  },
+  "remove_unnecessary_split": {
+    "description": "This will remove unnecessary split operators"
+  },
+  "replace_cw_mul_add_with_depthwise_conv": {
+    "description": "This will replace channel-wise mul/add with DepthwiseConv2D operator"
+  },
+  "replace_sub_with_add": {
+    "description": "This will replace sub with add operator"
+  },
+  "resolve_customop_add": {
+    "description": "This will convert Custom(Add) to Add operator"
+  },
+  "resolve_customop_batchmatmul": {
+    "description": "This will convert Custom(BatchMatmul) to BatchMatmul operator"
+  },
+  "resolve_customop_matmul": {
+    "description": "This will convert Custom(Matmul) to Matmul operator"
+  },
+  "resolve_customop_max_pool_with_argmax": {
+    "description": "This will convert Custom(MaxPoolWithArgmax) to equivalent set of operators"
+  },
+  "shuffle_weight_to_16x1float32": {
+    "description": "This will convert weight format of FullyConnected to SHUFFLED16x1FLOAT32. Note that it only converts weights whose row is a multiple of 16"
+  },
+  "replace_non_const_fc_with_batch_matmul": {
+    "description": "Replace FullyConnected with BatchMatMul when its weight is non-constant"
+  },
+  "substitute_pack_to_reshape": {
+    "description": "This will convert single input Pack to Reshape"
+  },
+  "substitute_padv2_to_pad": {
+    "description": "This will convert certain condition PadV2 to Pad"
+  },
+  "substitute_splitv_to_split": {
+    "description": "This will convert certain condition SplitV to Split operator"
+  },
+  "substitute_squeeze_to_reshape": {
+    "description": "This will convert certain condition Squeeze to Reshape"
+  },
+  "substitute_strided_slice_to_reshape": {
+    "description": "This will convert certain condition Strided_Slice to Reshape"
+  },
+  "substitute_transpose_to_reshape": {
+    "description": "This will convert single input Transpose to Reshape"
+  },
+  "expand_broadcast_const": {
+    "description": "This will expand broadcastable constant inputs"
+  },
+  "convert_nchw_to_nhwc": {
+    "description": "Experimental: This will convert NCHW operators to NHWC under the assumption that input model is NCHW."
+  },
+  "nchw_to_nhwc_input_shape": {
+    "description": "Convert the input shape of the model (argument for --convert_nchw_to_nhwc)."
+  },
+  "nchw_to_nhwc_output_shape": {
+    "description": "Convert the output shape of the model (argument for --convert_nchw_to_nhwc)."
+  },
+  "transform_min_max_to_relu6": {
+    "description": "Transform Minimum(6)-Maximum(0) pattern to Relu6 operator"
+  },
+  "transform_min_relu_to_relu6": {
+    "description": "Transform Minimum(6)-Relu pattern to Relu6 operator"
+  }
+}

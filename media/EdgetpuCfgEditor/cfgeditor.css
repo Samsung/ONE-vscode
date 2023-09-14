@@ -1,0 +1,191 @@
+/*
+ * Copyright (c) 2022 Samsung Electronics Co., Ltd. All Rights Reserved
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+label {
+  white-space: pre-wrap;
+}
+
+.maintitle {
+  width: 100%;
+  display: flex;
+}
+
+.maintitle span {
+  float: left;
+  display: block;
+  padding-left: 5px;
+}
+
+.statusbar {
+  width: 100%;
+  display: flex;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.statusbar .detail {
+  box-sizing: border-box;
+  float: left;
+  background: #007acc;
+  color: #fff;
+  position: relative;
+  padding-left: 10px;
+  padding-right: 10px;
+  width: 70px;
+  height: 32px;
+  line-height: 32px;
+  text-align: center;
+  display: block;
+}
+
+.statusbar .detail:after {
+  box-sizing: border-box;
+  content: '';
+  border-left: 16px solid #007acc;
+  border-top: 16px solid transparent;
+  border-bottom: 16px solid transparent;
+  position: absolute;
+  top: 0;
+  left: 100%;
+  z-index: 1;
+}
+
+.statusbar .detail .expanded {
+  display: inline-block;
+}
+
+.statusbar .steps {
+  display: inline-flex;
+}
+
+.statusbar .steps .step {
+  box-sizing: border-box;
+  float: left;
+  background: #007acc;
+  color: #fff;
+  position: relative;
+  padding-left: 10px;
+  width: 110px;
+  height: 32px;
+  line-height: 32px;
+  display: flex;
+  justify-content: center;
+}
+
+.statusbar .steps .step span {
+  padding-left: 5px;
+}
+
+.statusbar .steps .step:before {
+  box-sizing: border-box;
+  content: '';
+  border-left: 16px solid #fff;
+  border-top: 16px solid transparent;
+  border-bottom: 16px solid transparent;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.statusbar .steps .step:after {
+  box-sizing: border-box;
+  content: '';
+  border-left: 16px solid #007acc;
+  border-top: 16px solid transparent;
+  border-bottom: 16px solid transparent;
+  position: absolute;
+  top: 0;
+  left: 100%;
+  z-index: 1;
+}
+
+.statusbar .steps .step.current {
+  box-sizing: border-box;
+  float: left;
+  background: #4298da;
+  color: #fff;
+  position: relative;
+  padding-left: 10px;
+  width: 110px;
+  height: 32px;
+  line-height: 32px;
+  display: flex;
+  justify-content: center;
+}
+
+.statusbar .steps .step.current:after {
+  box-sizing: border-box;
+  content: '';
+  border-left: 16px solid #4298da;
+  border-top: 16px solid transparent;
+  border-bottom: 16px solid transparent;
+  position: absolute;
+  top: 0;
+  left: 100%;
+  z-index: 1;
+}
+
+.statusbar .steps .step .title {
+  cursor: pointer;
+}
+
+.optionPanel {
+  display: flex;
+}
+
+.optionPanel .options {
+  display: none;
+}
+
+#optionImport .basic,
+#optionImport .advanced,
+#optionQuantize .basic,
+#optionQuantize .advanced {
+  display: none;
+}
+
+.optionPanel .options .prerequisite .title,
+.optionPanel .options .basic .title,
+.optionPanel .options .advanced .title {
+  font-weight: bold;
+  font-size: 15px;
+  margin-bottom: 15px;
+  margin-top: 15px;
+ }
+
+.optionPanel .options .prerequisite .option,
+.optionPanel .options .basic .option,
+.optionPanel .options .advanced .option {
+  margin-bottom: 5px;
+}
+
+.codicon.codicon-question .help {
+  visibility: hidden;
+  width: auto;
+  background-color: var(--vscode-editorSuggestWidget-background);
+  color: var(--vscode-editorSuggestWidget-foreground);
+  border: 2px solid var(--vscode-editorSuggestWidget-border);
+  font-size: small;
+  text-align: left;
+  position: absolute;
+  z-index: 1;
+  margin-left: 10px;
+  padding: 6px 6px 10px 8px;
+}
+
+.codicon.codicon-question:hover .help {
+  visibility: visible;
+}
