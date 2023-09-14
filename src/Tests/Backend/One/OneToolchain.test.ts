@@ -89,7 +89,7 @@ suite("OneCompiler", function () {
       const version2 = new Version(1, 0, 2);
       assert.deepEqual(version1, version2);
     });
-    test("returns Version object from string version without minor", function () {
+    test("returns Version object from string version without patch", function () {
       const oneCompiler = new OneCompiler();
       const version1 = oneCompiler.parseVersion("1.0-beta");
       const version2 = new Version(1, 0, 0, "-beta");

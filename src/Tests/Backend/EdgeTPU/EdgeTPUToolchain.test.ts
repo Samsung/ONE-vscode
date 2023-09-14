@@ -16,7 +16,10 @@
 
 import { assert } from "chai";
 
-import { EdgeTPUDebianToolchain } from "../../../Backend/EdgeTPU/EdgeTPUToolchain";
+import {
+  EdgeTPUCompiler,
+  EdgeTPUDebianToolchain,
+} from "../../../Backend/EdgeTPU/EdgeTPUToolchain";
 import { ToolchainInfo } from "../../../Backend/Toolchain";
 import { Version } from "../../../Backend/Version";
 import { TestBuilder } from "../../TestBuilder";
@@ -129,6 +132,47 @@ suite("Backend", function () {
 
         assert.deepEqual(cmd, expectedStrs);
       });
+    });
+  });
+});
+
+suite("EdgeTPUCompiler", function () {
+  suite("#parseVersion", function () {
+    test("returns Version object from string version", function () {
+      const edgeTPUCompiler = new EdgeTPUCompiler();
+      const version1 = edgeTPUCompiler.parseVersion("1.0.2~RC0");
+      const version2 = new Version(1, 0, 2, "~RC0");
+      assert.deepEqual(version1, version2);
+    });
+    test("returns Version object from string version without patch and option", function () {
+      const edgeTPUCompiler = new EdgeTPUCompiler();
+      const version1 = edgeTPUCompiler.parseVersion("16.0");
+      const version2 = new Version(16, 0);
+      assert.deepEqual(version1, version2);
+    });
+    test("returns Version object from string version without option", function () {
+      const edgeTPUCompiler = new EdgeTPUCompiler();
+      const version1 = edgeTPUCompiler.parseVersion("2.1.302470888");
+      const version2 = new Version(2, 1, 302470888);
+      assert.deepEqual(version1, version2);
+    });
+    test("returns Version object from string version without patch", function () {
+      const edgeTPUCompiler = new EdgeTPUCompiler();
+      const version1 = edgeTPUCompiler.parseVersion("1.0-beta");
+      const version2 = new Version(1, 0, 0, "-beta");
+      assert.deepEqual(version1, version2);
+    });
+    test("NEG: check invalid version format without numbers", function () {
+      const edgeTPUCompiler = new EdgeTPUCompiler();
+      assert.throws(() => edgeTPUCompiler.parseVersion("a.b.c"));
+    });
+    test("NEG: check invalid version format with too many numbers", function () {
+      const edgeTPUCompiler = new EdgeTPUCompiler();
+      assert.throws(() => edgeTPUCompiler.parseVersion("1.2.3.4"));
+    });
+    test("NEG: check invalid version format with empty string", function () {
+      const edgeTPUCompiler = new EdgeTPUCompiler();
+      assert.throws(() => edgeTPUCompiler.parseVersion(""));
     });
   });
 });
