@@ -28,7 +28,7 @@ import { MondrianEditorProvider } from "./Mondrian/MondrianEditor";
 import { OneTreeDataProvider } from "./OneExplorer/OneExplorer";
 import { PartEditorProvider } from "./PartEditor/PartEditor";
 import { PartGraphSelPanel } from "./PartEditor/PartGraphSelector";
-// import { ToolchainProvider } from "./Toolchain/ToolchainProvider";
+import { ToolchainProvider } from "./Toolchain/ToolchainProvider";
 import { Logger } from "./Utils/Logger";
 import { VisqViewerProvider } from "./Visquv/VisqViewer";
 import { MPQEditorProvider } from "./MPQEditor/MPQEditor";
@@ -63,7 +63,8 @@ export function activate(context: vscode.ExtensionContext) {
   ExecutorViewProvider.register(context);
 
   CompilerViewProvider.register(context);
-  // ToolchainProvider.register(context);
+
+  ToolchainProvider.register(context);
 
   CfgEditorPanel.register(context);
 
