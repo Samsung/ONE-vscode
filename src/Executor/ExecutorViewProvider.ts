@@ -23,9 +23,7 @@ import { BackendExecutorNodeBuilder } from "./BackendExecutorNode";
 
 type ExecutorTreeData = ExecutorNode | undefined | void;
 
-class ExecutorViewProvider
-  implements vscode.TreeDataProvider<ExecutorNode>
-{
+class ExecutorViewProvider implements vscode.TreeDataProvider<ExecutorNode> {
   tag = this.constructor.name; // logging tag
 
   private _onDidChangeTreeData: vscode.EventEmitter<ExecutorTreeData> =
@@ -33,9 +31,7 @@ class ExecutorViewProvider
   readonly onDidChangeTreeData?: vscode.Event<ExecutorTreeData> =
     this._onDidChangeTreeData.event;
 
-  builder: ExecutorNodeBuilder[] = [
-    new BackendExecutorNodeBuilder(),
-  ];
+  builder: ExecutorNodeBuilder[] = [new BackendExecutorNodeBuilder()];
 
   /* istanbul ignore next */
   public static register(context: vscode.ExtensionContext) {
@@ -77,7 +73,9 @@ class ExecutorViewProvider
 
   getChildren(element?: ExecutorNode): vscode.ProviderResult<ExecutorNode[]> {
     let children: ExecutorNode[] = [];
-    this.builder.forEach((builder) => children = children.concat(builder.buildNode(element)));
+    this.builder.forEach(
+      (builder) => (children = children.concat(builder.buildNode(element)))
+    );
     return children;
   }
 

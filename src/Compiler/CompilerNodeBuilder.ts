@@ -18,17 +18,22 @@ import * as vscode from "vscode";
 import { defaultCompiler } from "./DefaultCompiler";
 
 class CompilerNode extends vscode.TreeItem {
-  readonly deviceName: string;  // device name
+  readonly deviceName: string; // device name
 
-  constructor(public readonly label: string,
+  constructor(
+    public readonly label: string,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-    public readonly dname: string = '') {
+    public readonly dname: string = ""
+  ) {
     super(label, collapsibleState);
     this.deviceName = dname;
     this.contextValue = "compiler";
     this.iconPath = new vscode.ThemeIcon("debug-start");
     if (defaultCompiler.isEqual(this)) {
-      this.iconPath = new vscode.ThemeIcon("debug-continue", new vscode.ThemeColor("debugIcon.startForeground"));
+      this.iconPath = new vscode.ThemeIcon(
+        "debug-continue",
+        new vscode.ThemeColor("debugIcon.startForeground")
+      );
       this.contextValue += ".default";
     }
   }

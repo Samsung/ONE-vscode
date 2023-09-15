@@ -32,9 +32,7 @@ class CompilerViewProvider implements vscode.TreeDataProvider<CompilerNode> {
   readonly onDidChangeTreeData?: vscode.Event<ToolchainTreeData> =
     this._onDidChangeTreeData.event;
 
-  builder: CompilerNodeBuilder[] = [
-    new BackendCompilerNodeBuilder(),
-  ];
+  builder: CompilerNodeBuilder[] = [new BackendCompilerNodeBuilder()];
 
   /* istanbul ignore next */
   public static register(context: vscode.ExtensionContext) {
@@ -69,9 +67,13 @@ class CompilerViewProvider implements vscode.TreeDataProvider<CompilerNode> {
     return element;
   }
 
-  public getChildren(element?: CompilerNode): vscode.ProviderResult<CompilerNode[]> {
+  public getChildren(
+    element?: CompilerNode
+  ): vscode.ProviderResult<CompilerNode[]> {
     let children: CompilerNode[] = [];
-    this.builder.forEach((builder) => children = children.concat(builder.buildNode(element)));
+    this.builder.forEach(
+      (builder) => (children = children.concat(builder.buildNode(element)))
+    );
     return children;
   }
 

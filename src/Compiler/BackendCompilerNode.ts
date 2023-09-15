@@ -28,7 +28,7 @@ class BackendCompilerNode extends CompilerNode {
   child: BackendToolchainNode[] = [];
   constructor(
     public readonly label: string,
-    public readonly collapsibleState: vscode.TreeItemCollapsibleState,
+    public readonly collapsibleState: vscode.TreeItemCollapsibleState
   ) {
     super(label, collapsibleState, deviceName);
     this.contextValue += ".Backend";
@@ -39,7 +39,7 @@ class BackendNameNode extends BackendCompilerNode {
   constructor(public readonly label: string) {
     super(label, vscode.TreeItemCollapsibleState.Expanded);
     this.contextValue += ".name";
-    this.iconPath = '';
+    this.iconPath = "";
   }
 }
 
@@ -98,7 +98,7 @@ class BackendToolchainNode extends BackendCompilerNode {
         return [undefined, undefined];
       }
 
-       return [activeToolchainEnv, activeToolchain];
+      return [activeToolchainEnv, activeToolchain];
     }
     return [undefined, undefined];
   }
@@ -153,7 +153,9 @@ class BackendCompilerNodeBuilder implements CompilerNodeBuilder {
 
   createToolchainNodes(node: CompilerNode): BackendToolchainNode[] {
     let children: BackendToolchainNode[] = [];
-    const filter = Object.keys(gToolchainEnvMap).filter((backendName) => backendName.includes(node.label));
+    const filter = Object.keys(gToolchainEnvMap).filter((backendName) =>
+      backendName.includes(node.label)
+    );
     filter.forEach((backendName) => {
       const toolchains = gToolchainEnvMap[backendName].listInstalled();
       toolchains
@@ -161,7 +163,7 @@ class BackendCompilerNodeBuilder implements CompilerNodeBuilder {
         .map((t) => {
           children.push(new BackendToolchainNode(t.info.name, backendName, t));
         });
-      });
+    });
     return children;
   }
 

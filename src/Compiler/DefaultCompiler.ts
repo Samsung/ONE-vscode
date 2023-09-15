@@ -37,7 +37,10 @@ class DefaultToolchain {
     }
     this._compilerNode = compiler;
 
-    Logger.debug("DefaultCompiler", `${this._compilerNode.label} was set as a default toolchain.`);
+    Logger.debug(
+      "DefaultCompiler",
+      `${this._compilerNode.label} was set as a default toolchain.`
+    );
   }
 
   /* istanbul ignore next */

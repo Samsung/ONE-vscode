@@ -19,14 +19,18 @@ import * as vscode from "vscode";
 import { ToolchainEnv, gToolchainEnvMap } from "../Toolchain/ToolchainEnv";
 import { Toolchain } from "../Backend/Toolchain";
 import { Logger } from "../Utils/Logger";
-import { ExecutorNode, ExecutorNodeBuilder, SimulatorNode } from "./ExecutorNodeBuilder";
+import {
+  ExecutorNode,
+  ExecutorNodeBuilder,
+  SimulatorNode,
+} from "./ExecutorNodeBuilder";
 import { defaultExecutor } from "./DefaultExecutor";
 
 class BackendNameNode extends ExecutorNode {
   constructor(public readonly label: string) {
     super(label, vscode.TreeItemCollapsibleState.Expanded);
     this.contextValue += ".name";
-    this.iconPath = '';
+    this.iconPath = "";
   }
 }
 
@@ -45,7 +49,10 @@ class BackendSimulatorNode extends SimulatorNode {
     this.toolchain = t;
     this.toolchainEnv = tEnv;
     if (defaultExecutor.isEqual(this)) {
-      this.iconPath = new vscode.ThemeIcon("debug-continue", new vscode.ThemeColor("debugIcon.startForeground"));
+      this.iconPath = new vscode.ThemeIcon(
+        "debug-continue",
+        new vscode.ThemeColor("debugIcon.startForeground")
+      );
       this.contextValue += ".default";
     }
   }
@@ -133,14 +140,16 @@ class BackendExecutorNodeBuilder implements ExecutorNodeBuilder {
 
   buildSimulatorNode(element: ExecutorNode): BackendSimulatorNode[] {
     element.child.length = 0;
-    const filter = Object.keys(gToolchainEnvMap).filter((backendName) => backendName.includes(element.label));
+    const filter = Object.keys(gToolchainEnvMap).filter((backendName) =>
+      backendName.includes(element.label)
+    );
     filter.forEach((backendName) => {
       const toolchainEnv = gToolchainEnvMap[backendName];
       const toolchains = toolchainEnv.listInstalled();
       toolchains
         .filter((t) => t.info.version)
         .map((t) => {
-          const name = 'simulator' + (element.child.length + 1);
+          const name = "simulator" + (element.child.length + 1);
           element.child.push(new BackendSimulatorNode(name, t, toolchainEnv));
         });
     });
@@ -154,8 +163,6 @@ class BackendExecutorNodeBuilder implements ExecutorNodeBuilder {
       return this.buildSimulatorNode(element as ExecutorNode);
     }
   }
-
-
 }
 
 export { BackendExecutorNodeBuilder };

@@ -35,7 +35,10 @@ class DefaultExecutor {
     }
     this._executorNode = executor;
 
-    Logger.debug("DefaultExecutor", `${this._executorNode.label} was set as a default executor.`);
+    Logger.debug(
+      "DefaultExecutor",
+      `${this._executorNode.label} was set as a default executor.`
+    );
   }
 
   // /* istanbul ignore next */
@@ -49,9 +52,11 @@ class DefaultExecutor {
     return this._executorNode;
   }
 
-
   public isEqual(executor: ExecutorNode) {
-    if (this._executorNode && this._executorNode.description === executor.description) {
+    if (
+      this._executorNode &&
+      this._executorNode.description === executor.description
+    ) {
       return true;
     }
     return false;

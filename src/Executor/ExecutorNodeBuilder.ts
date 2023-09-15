@@ -17,13 +17,13 @@
 import * as vscode from "vscode";
 
 class ExecutorNode extends vscode.TreeItem {
-  child: (SimulatorNode|TargetNode)[] = [];
-  readonly deviceName: string;   // device name
+  child: (SimulatorNode | TargetNode)[] = [];
+  readonly deviceName: string; // device name
 
   constructor(
     public readonly label: string,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-    public readonly dname: string = ''
+    public readonly dname: string = ""
   ) {
     super(label, collapsibleState);
     this.deviceName = dname;
@@ -51,9 +51,7 @@ class ExecutorNode extends vscode.TreeItem {
 }
 
 class SimulatorNode extends ExecutorNode {
-  constructor(
-    public readonly label: string,
-  ) {
+  constructor(public readonly label: string) {
     super(label, vscode.TreeItemCollapsibleState.None);
     this.contextValue += ".simulator";
   }
