@@ -4,3 +4,6 @@
 
 # Generated code by Flatbuffers
 /ONE-vscode/src/CircleEditor/circle_schema_generated.ts
+
+# Unit test code
+/ONE-vscode/src/Tests
