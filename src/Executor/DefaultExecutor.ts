@@ -15,7 +15,7 @@
  */
 
 import { Logger } from "../Utils/Logger";
-import { ExecutorNode } from "./ExecutorViewProvider";
+import { ExecutorNode } from "./ExecutorNodeBuilder";
 
 class DefaultExecutor {
   private static _instance: DefaultExecutor;
@@ -35,7 +35,7 @@ class DefaultExecutor {
     }
     this._executorNode = executor;
 
-    Logger.debug("DefaultToolchain", `${this._executorNode.label} was set as a default toolchain.`);
+    Logger.debug("DefaultExecutor", `${this._executorNode.label} was set as a default executor.`);
   }
 
   // /* istanbul ignore next */

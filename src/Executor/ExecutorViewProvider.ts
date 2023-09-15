@@ -122,4 +122,4 @@ class ExecutorViewProvider
   }
 }
 
-export { ExecutorViewProvider, ExecutorNode };
+export { ExecutorViewProvider };
