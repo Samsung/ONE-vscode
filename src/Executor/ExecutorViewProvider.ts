@@ -19,7 +19,7 @@ import * as vscode from "vscode";
 import { Logger } from "../Utils/Logger";
 import { defaultExecutor } from "./DefaultExecutor";
 import { ExecutorNode, ExecutorNodeBuilder } from "./ExecutorNodeBuilder";
-import { TRIVExecutorNodeBuilder } from "./TRIVExecutorNode";
+import { BackendExecutorNodeBuilder } from "./BackendExecutorNode";
 
 type ExecutorTreeData = ExecutorNode | undefined | void;
 
@@ -34,7 +34,7 @@ class ExecutorViewProvider
     this._onDidChangeTreeData.event;
 
   builder: ExecutorNodeBuilder[] = [
-    new TRIVExecutorNodeBuilder(),
+    new BackendExecutorNodeBuilder(),
   ];
 
   /* istanbul ignore next */

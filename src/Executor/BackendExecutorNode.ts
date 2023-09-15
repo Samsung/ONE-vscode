@@ -19,22 +19,10 @@ import * as vscode from "vscode";
 import { ToolchainEnv, gToolchainEnvMap } from "../Toolchain/ToolchainEnv";
 import { Toolchain } from "../Backend/Toolchain";
 import { Logger } from "../Utils/Logger";
-import { ExecutorNode, ExecutorNodeBuilder } from "./ExecutorNodeBuilder";
+import { ExecutorNode, ExecutorNodeBuilder, SimulatorNode } from "./ExecutorNodeBuilder";
+import { defaultExecutor } from "./DefaultExecutor";
 
-const deviceName = "TRIV";
-
-class TRIVExecutorNode extends ExecutorNode {
-  child: (TRIVSimulatorNode|TRIVTargetNode)[] = [];
-  constructor(
-    public readonly label: string,
-    public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-  ) {
-    super(label, collapsibleState, deviceName);
-    this.contextValue += ".triv";
-  }
-}
-
-class TRIVNameNode extends TRIVExecutorNode {
+class BackendNameNode extends ExecutorNode {
   constructor(public readonly label: string) {
     super(label, vscode.TreeItemCollapsibleState.Expanded);
     this.contextValue += ".name";
@@ -42,7 +30,7 @@ class TRIVNameNode extends TRIVExecutorNode {
   }
 }
 
-class TRIVSimulatorNode extends TRIVExecutorNode {
+class BackendSimulatorNode extends SimulatorNode {
   tag = this.constructor.name; // logging tag
   toolchain: Toolchain;
   toolchainEnv: ToolchainEnv;
@@ -52,11 +40,14 @@ class TRIVSimulatorNode extends TRIVExecutorNode {
     public readonly t: Toolchain,
     public readonly tEnv: ToolchainEnv
   ) {
-    super(label, vscode.TreeItemCollapsibleState.None);
-    this.contextValue += ".simulator";
+    super(label);
     this.description = t.info.name;
     this.toolchain = t;
     this.toolchainEnv = tEnv;
+    if (defaultExecutor.isEqual(this)) {
+      this.iconPath = new vscode.ThemeIcon("debug-continue", new vscode.ThemeColor("debugIcon.startForeground"));
+      this.contextValue += ".default";
+    }
   }
 
   public infer(
@@ -127,32 +118,22 @@ class TRIVSimulatorNode extends TRIVExecutorNode {
   }
 }
 
-class TRIVTargetNode extends TRIVExecutorNode {
-  constructor(public readonly label: string) {
-    super(label, vscode.TreeItemCollapsibleState.None);
-    this.contextValue += ".target";
-  }
-}
-
-class TRIVExecutorNodeBuilder implements ExecutorNodeBuilder {
-  node: TRIVExecutorNode[] = [];
-
-  constructor() {
-    this.node.push(new TRIVNameNode(deviceName));
-  }
-
-  buildNode(element?: ExecutorNode | undefined): ExecutorNode[] {
-    if (element === undefined) {
-      return this.node;
-    } else if (element.label === deviceName) {
-      return this.buildSimulatorNode(element as TRIVExecutorNode );
-    }
-    return [];
+class BackendExecutorNodeBuilder implements ExecutorNodeBuilder {
+  createBackendNodes(): ExecutorNode[] {
+    const nodes: ExecutorNode[] = [];
+    nodes.push(new BackendNameNode("TRIV"));
+    Object.keys(gToolchainEnvMap).forEach((backendName) => {
+      // Ignore TRIV backends with version number
+      if (!backendName.includes("TRIV")) {
+        nodes.push(new BackendNameNode(backendName));
+      }
+    });
+    return nodes;
   }
 
-  buildSimulatorNode(element: TRIVExecutorNode): TRIVSimulatorNode[] {
+  buildSimulatorNode(element: ExecutorNode): BackendSimulatorNode[] {
     element.child.length = 0;
-    const filter = Object.keys(gToolchainEnvMap).filter((backendName) => backendName.includes(deviceName));
+    const filter = Object.keys(gToolchainEnvMap).filter((backendName) => backendName.includes(element.label));
     filter.forEach((backendName) => {
       const toolchainEnv = gToolchainEnvMap[backendName];
       const toolchains = toolchainEnv.listInstalled();
@@ -160,11 +141,21 @@ class TRIVExecutorNodeBuilder implements ExecutorNodeBuilder {
         .filter((t) => t.info.version)
         .map((t) => {
           const name = 'simulator' + (element.child.length + 1);
-          element.child.push(new TRIVSimulatorNode(name, t, toolchainEnv));
+          element.child.push(new BackendSimulatorNode(name, t, toolchainEnv));
         });
     });
-    return element.child as TRIVSimulatorNode[];
+    return element.child as BackendSimulatorNode[];
   }
+
+  buildNode(element?: ExecutorNode | undefined): ExecutorNode[] {
+    if (element === undefined) {
+      return this.createBackendNodes();
+    } else {
+      return this.buildSimulatorNode(element as ExecutorNode);
+    }
+  }
+
+
 }
 
-export { TRIVExecutorNodeBuilder };
+export { BackendExecutorNodeBuilder };

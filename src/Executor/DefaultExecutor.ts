@@ -51,7 +51,7 @@ class DefaultExecutor {
 
 
   public isEqual(executor: ExecutorNode) {
-    if (this._executorNode && this._executorNode.label === executor.label) {
+    if (this._executorNode && this._executorNode.description === executor.description) {
       return true;
     }
     return false;

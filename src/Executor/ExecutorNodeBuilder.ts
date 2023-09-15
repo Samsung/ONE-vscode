@@ -15,9 +15,9 @@
  */
 
 import * as vscode from "vscode";
-import { defaultExecutor } from "./DefaultExecutor";
 
 class ExecutorNode extends vscode.TreeItem {
+  child: (SimulatorNode|TargetNode)[] = [];
   readonly deviceName: string;   // device name
 
   constructor(
@@ -29,10 +29,6 @@ class ExecutorNode extends vscode.TreeItem {
     this.deviceName = dname;
     this.contextValue = "executor";
     this.iconPath = new vscode.ThemeIcon("debug-start");
-    if (defaultExecutor.isEqual(this)) {
-      this.iconPath = new vscode.ThemeIcon("debug-continue", new vscode.ThemeColor("debugIcon.startForeground"));
-      this.contextValue += ".default";
-    }
   }
 
   public infer(
@@ -54,8 +50,24 @@ class ExecutorNode extends vscode.TreeItem {
   }
 }
 
+class SimulatorNode extends ExecutorNode {
+  constructor(
+    public readonly label: string,
+  ) {
+    super(label, vscode.TreeItemCollapsibleState.None);
+    this.contextValue += ".simulator";
+  }
+}
+
+class TargetNode extends ExecutorNode {
+  constructor(public readonly label: string) {
+    super(label, vscode.TreeItemCollapsibleState.None);
+    this.contextValue += ".target";
+  }
+}
+
 interface ExecutorNodeBuilder {
   buildNode(element?: ExecutorNode): ExecutorNode[];
 }
 
-export { ExecutorNode, ExecutorNodeBuilder };
+export { ExecutorNode, SimulatorNode, TargetNode, ExecutorNodeBuilder };
