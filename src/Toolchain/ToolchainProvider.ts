@@ -130,7 +130,7 @@ export class ToolchainProvider {
   }
 
   /* istanbul ignore next */
-  public uninstall(node: CompilerNode | ExecutorNode): boolean {
+  public uninstall(_node: CompilerNode | ExecutorNode): boolean {
     // const notifyUninstalled = () => {
     //   vscode.window.showInformationMessage(`Uninstallation was successful.`);
     //   // TODO unset defaultCompiler and defaultExecutor
