@@ -21,13 +21,15 @@ import { Toolchain } from "../Backend/Toolchain";
 import { Logger } from "../Utils/Logger";
 import { ExecutorNode, ExecutorNodeBuilder } from "./ExecutorNodeBuilder";
 
+const deviceName = "TRIV";
+
 class TRIVExecutorNode extends ExecutorNode {
   child: (TRIVSimulatorNode|TRIVTargetNode)[] = [];
   constructor(
     public readonly label: string,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState,
   ) {
-    super(label, collapsibleState, 'TRIV');
+    super(label, collapsibleState, deviceName);
     this.contextValue += ".triv";
   }
 }
@@ -136,13 +138,13 @@ class TRIVExecutorNodeBuilder implements ExecutorNodeBuilder {
   node: TRIVExecutorNode[] = [];
 
   constructor() {
-    this.node.push(new TRIVNameNode("TRIV"));
+    this.node.push(new TRIVNameNode(deviceName));
   }
 
   buildNode(element?: ExecutorNode | undefined): ExecutorNode[] {
     if (element === undefined) {
       return this.node;
-    } else if (element.label === "TRIV") {
+    } else if (element.label === deviceName) {
       return this.buildSimulatorNode(element as TRIVExecutorNode );
     }
     return [];
@@ -150,7 +152,9 @@ class TRIVExecutorNodeBuilder implements ExecutorNodeBuilder {
 
   buildSimulatorNode(element: TRIVExecutorNode): TRIVSimulatorNode[] {
     element.child.length = 0;
-    Object.entries(gToolchainEnvMap).forEach(([_, toolchainEnv]) => {
+    const filter = Object.keys(gToolchainEnvMap).filter((backendName) => backendName.includes(deviceName));
+    filter.forEach((backendName) => {
+      const toolchainEnv = gToolchainEnvMap[backendName];
       const toolchains = toolchainEnv.listInstalled();
       toolchains
         .filter((t) => t.info.version)

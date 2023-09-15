@@ -22,13 +22,15 @@ import { ToolchainEnv, gToolchainEnvMap } from "../Toolchain/ToolchainEnv";
 import { CompilerNode, CompilerNodeBuilder } from "./CompilerNodeBuilder";
 import { defaultCompiler } from "./DefaultCompiler";
 
+const deviceName = "TRIV";
+
 class TRIVCompilerNode extends CompilerNode {
   child: TRIVToolchainNode[] = [];
   constructor(
     public readonly label: string,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState,
   ) {
-    super(label, collapsibleState, 'TRIV');
+    super(label, collapsibleState, deviceName);
     this.contextValue += ".triv";
   }
 }
@@ -140,12 +142,13 @@ class TRIVCompilerNodeBuilder implements CompilerNodeBuilder {
   node: TRIVCompilerNode[] = [];
 
   constructor() {
-    this.node.push(new TRIVNameNode("TRIV"));
+    this.node.push(new TRIVNameNode(deviceName));
   }
 
   createToolchainNodes(): TRIVToolchainNode[] {
     let children: TRIVToolchainNode[] = [];
-    Object.keys(gToolchainEnvMap).map((backendName) => {
+    const filter = Object.keys(gToolchainEnvMap).filter((backendName) => backendName.includes(deviceName));
+    filter.forEach((backendName) => {
       const toolchains = gToolchainEnvMap[backendName].listInstalled();
       toolchains
         .filter((t) => t.info.version)
@@ -159,7 +162,7 @@ class TRIVCompilerNodeBuilder implements CompilerNodeBuilder {
   buildNode(element?: CompilerNode | undefined): CompilerNode[] {
     if (element === undefined) {
       return this.node;
-    } else if (element.label === "TRIV") {
+    } else if (element.label === deviceName) {
       return this.createToolchainNodes();
     }
     throw new Error("Method not implemented.");
