@@ -46,16 +46,15 @@ suite("OneExplorer", function () {
       });
 
       test("NEG: Create config of a file without any valid content", function () {
-        const configName = "model.cfg";
         const content = `
         empty content
         `;
 
         // Write a file inside temp directory
-        testBuilder.writeFileSync(configName, content);
+        testBuilder.writeFileSync("model.cfg", content);
 
         // Get file paths inside the temp directory
-        const configPath = testBuilder.getPath(configName);
+        const configPath = testBuilder.getPath("model.cfg");
 
         const configObj = ConfigObj.createConfigObj(
           vscode.Uri.file(configPath)
@@ -84,21 +83,19 @@ suite("OneExplorer", function () {
 
     suite("#one-import-onnx section", function () {
       test("Parse basic example with one-import-onnx", function () {
-        const configName = "model.cfg";
-        const modelName = "model.onnx";
-
-        const content = `
-[one-import-onnx]
-input_path=${modelName}
-        `;
-
         // Write a file inside temp directory
-        testBuilder.writeFileSync(configName, content);
-        testBuilder.writeFileSync(modelName, "");
+        testBuilder.writeFileSync(
+          "model.cfg",
+          `
+[one-import-onnx]
+input_path=model.onnx
+                `
+        );
+        testBuilder.writeFileSync("model.onnx", "");
 
         // Get file paths inside the temp directory
-        const configPath = testBuilder.getPath(configName);
-        const modelPath = testBuilder.getPath(modelName);
+        const configPath = testBuilder.getPath("model.cfg");
+        const modelPath = testBuilder.getPath("model.onnx");
 
         const configObj = ConfigObj.createConfigObj(
           vscode.Uri.file(configPath)
@@ -125,21 +122,15 @@ input_path=${modelName}
       });
 
       test("NEG: Parse config with invalid ext with one-import-onnx", function () {
-        const configName = "model.cfg";
         // ERROR INJECTION
         // Invalid ext '.rectangle' instead of '.circle'
-        const productName = "model.rectangle";
-
         const content = `
 [one-import-onnx]
-output_path=${productName}
-        `;
-
-        // Write a file inside a temp directory
-        testBuilder.writeFileSync(configName, content);
+output_path=model.rectangle`;
+        testBuilder.writeFileSync("model.cfg", content);
 
         // Get file paths inside the temp directory
-        const configPath = testBuilder.getPath(configName);
+        const configPath = testBuilder.getPath("model.cfg");
         const configObj = ConfigObj.createConfigObj(
           vscode.Uri.file(configPath)
         );
@@ -155,21 +146,18 @@ output_path=${productName}
 
     suite("#one-import-tflite section", function () {
       test("Parse basic example with one-import-tflite", function () {
-        const configName = "model.cfg";
-        const modelName = "model.tflite";
-
         const content = `
 [one-import-tflite]
-input_path=${modelName}
+input_path=model.tflite
         `;
 
         // Write a file inside temp directory
-        testBuilder.writeFileSync(configName, content);
-        testBuilder.writeFileSync(modelName, "");
+        testBuilder.writeFileSync("model.cfg", content);
+        testBuilder.writeFileSync("model.tflite", "");
 
         // Get file paths inside the temp directory
-        const configPath = testBuilder.getPath(configName);
-        const modelPath = testBuilder.getPath(modelName);
+        const configPath = testBuilder.getPath("model.cfg");
+        const modelPath = testBuilder.getPath("model.tflite");
 
         const configObj = ConfigObj.createConfigObj(
           vscode.Uri.file(configPath)
@@ -196,19 +184,16 @@ input_path=${modelName}
       });
 
       test("NEG: Parse wrong format ini file", function () {
-        const configName = "model.cfg";
-        const modelName = "model.tflite";
-
         const content = `
   [one-import-tflite]
-  input_path=${modelName}
+  input_path=model.tflite
         `;
 
         // Write a file inside temp directory
-        testBuilder.writeFileSync(configName, content);
+        testBuilder.writeFileSync("model.cfg", content);
 
         // Get file paths inside the temp directory
-        const configPath = testBuilder.getPath(configName);
+        const configPath = testBuilder.getPath("model.cfg");
         const configObj = ConfigObj.createConfigObj(
           vscode.Uri.file(configPath)
         );
@@ -222,23 +207,19 @@ input_path=${modelName}
       });
 
       test("NEG: Parse config with invalid ext with one-import-tflite", function () {
-        const configName = "model.cfg";
         // ERROR INJECTION
         // Invalid ext '.rectangle' instead of '.circle'
-        const productName1 = "model.rectangle";
-        const productName2 = "model.opt.rectangle";
-
         const content = `
 [one-import-tflite]
-input_path=${productName1}
-output_path=${productName2}
+input_path=model.rectangle
+output_path=model.opt.rectangle
         `;
 
         // Write a file inside a temp directory
-        testBuilder.writeFileSync(configName, content);
+        testBuilder.writeFileSync("model.cfg", content);
 
         // Get file paths inside the temp directory
-        const configPath = testBuilder.getPath(configName);
+        const configPath = testBuilder.getPath("model.cfg");
         const configObj = ConfigObj.createConfigObj(
           vscode.Uri.file(configPath)
         );
@@ -254,28 +235,23 @@ output_path=${productName2}
 
     suite("#one-quantize section", function () {
       test("Parse basic example with one-quantize", function () {
-        const configName = "model.cfg";
-        const baseModelName = "model.tflite";
-        const productName1 = "model.circle";
-        const productName2 = "model.q8.circle";
-
         const content = `
 [one-import-tflite]
-input_path=${baseModelName}
-output_path=${productName1}
+input_path=model.tflite
+output_path=model.circle
 [one-quantize]
-input_path=${productName1}
-output_path=${productName2}
+input_path=model.circle
+output_path=model.q8.circle
         `;
 
         // Write a file inside a temp directory
-        testBuilder.writeFileSync(configName, content);
+        testBuilder.writeFileSync("model.cfg", content);
 
         // Get file paths inside the temp directory
-        const configPath = testBuilder.getPath(configName);
-        const baseModelPath = testBuilder.getPath(baseModelName);
-        const productPath1 = testBuilder.getPath(productName1);
-        const productPath2 = testBuilder.getPath(productName2);
+        const configPath = testBuilder.getPath("model.cfg");
+        const baseModelPath = testBuilder.getPath("model.tflite");
+        const productPath1 = testBuilder.getPath("model.circle");
+        const productPath2 = testBuilder.getPath("model.q8.circle");
 
         const configObj = ConfigObj.createConfigObj(
           vscode.Uri.file(configPath)
@@ -306,23 +282,19 @@ output_path=${productName2}
       });
 
       test("NEG: Parse config with invalid ext with one-quantize", function () {
-        const configName = "model.cfg";
         // ERROR INJECTION
         // Invalid ext '.rectangle' instead of '.circle'
-        const productName1 = "model.rectangle";
-        const productName2 = "model.opt.rectangle";
-
         const content = `
 [one-quantize]
-input_path=${productName1}
-output_path=${productName2}
+input_path=model.rectangle
+output_path=model.opt.rectangle
         `;
 
         // Write a file inside a temp directory
-        testBuilder.writeFileSync(configName, content);
+        testBuilder.writeFileSync("model.cfg", content);
 
         // Get file paths inside the temp directory
-        const configPath = testBuilder.getPath(configName);
+        const configPath = testBuilder.getPath("model.cfg");
         const configObj = ConfigObj.createConfigObj(
           vscode.Uri.file(configPath)
         );
@@ -336,32 +308,25 @@ output_path=${productName2}
       });
 
       test("Check *.log files", function () {
-        const configName = "model.cfg";
-        const baseModelName = "model.tflite";
-        const productName1 = "model.circle";
-        const productName2 = "model.q8.circle";
-        const productName3 = "model.circle.log";
-        const productName4 = "model.q8.circle.log";
-
         const content = `
 [one-import-tflite]
-input_path=${baseModelName}
-output_path=${productName1}
+input_path=model.tflite
+output_path=model.circle
 [one-quantize]
-input_path=${productName1}
-output_path=${productName2}
+input_path=model.circle
+output_path=model.q8.circle
         `;
 
         // Write a file inside a temp directory
-        testBuilder.writeFileSync(configName, content);
+        testBuilder.writeFileSync("model.cfg", content);
 
         // Get file paths inside the temp directory
-        const configPath = testBuilder.getPath(configName);
-        const baseModelPath = testBuilder.getPath(baseModelName);
-        const productPath1 = testBuilder.getPath(productName1);
-        const productPath2 = testBuilder.getPath(productName2);
-        const productPath3 = testBuilder.getPath(productName3);
-        const productPath4 = testBuilder.getPath(productName4);
+        const configPath = testBuilder.getPath("model.cfg");
+        const baseModelPath = testBuilder.getPath("model.tflite");
+        const productPath1 = testBuilder.getPath("model.circle");
+        const productPath2 = testBuilder.getPath("model.q8.circle");
+        const productPath3 = testBuilder.getPath("model.circle.log");
+        const productPath4 = testBuilder.getPath("model.q8.circle.log");
 
         const configObj = ConfigObj.createConfigObj(
           vscode.Uri.file(configPath)
@@ -402,29 +367,24 @@ output_path=${productName2}
       });
 
       test("Parse config with detouring paths", function () {
-        const configName = "model.cfg";
-        const baseModelName = "model.tflite";
-        const productName1 = "model.circle";
-        const productName2 = "model.q8.circle";
-
         // Detouring paths
         const content = `
 [one-import-tflite]
-input_path=dummy/dummy/../../${baseModelName}
-output_path=dummy/dummy/../../${productName1}
+input_path=dummy/dummy/../../model.tflite
+output_path=dummy/dummy/../../model.circle
 [one-quantize]
-input_path=${productName1}
-output_path=dummy/dummy/../..//${productName2}
+input_path=model.circle
+output_path=dummy/dummy/../../model.q8.circle
         `;
 
         // Write a file inside a temp directory
-        testBuilder.writeFileSync(configName, content);
+        testBuilder.writeFileSync("model.cfg", content);
 
         // Get file paths inside the temp directory
-        const configPath = testBuilder.getPath(configName);
-        const baseModelPath = testBuilder.getPath(baseModelName);
-        const productPath1 = testBuilder.getPath(productName1);
-        const productPath2 = testBuilder.getPath(productName2);
+        const configPath = testBuilder.getPath("model.cfg");
+        const baseModelPath = testBuilder.getPath("model.tflite");
+        const productPath1 = testBuilder.getPath("model.circle");
+        const productPath2 = testBuilder.getPath("model.q8.circle");
 
         const configObj = ConfigObj.createConfigObj(
           vscode.Uri.file(configPath)
@@ -455,30 +415,25 @@ output_path=dummy/dummy/../..//${productName2}
       });
 
       test("NEG: Parse config with detouring paths with faulty absolute path", function () {
-        const configName = "model.cfg";
-        const baseModelName = "model.tflite";
-        const productName1 = "model.circle";
-        const productName2 = "model.q8.circle";
-
         // Detouring paths with faulty absolute path
         // NOTE that path starts with '/' will be interpreted as an absolute path
         const content = `
 [one-import-tflite]
-input_path=/dummy/dummy/../../${baseModelName}
-output_path=/dummy/dummy/../../${productName1}
+input_path=/dummy/dummy/../../model.tflite
+output_path=/dummy/dummy/../../model.circle
 [one-quantize]
-input_path=/${productName1}
-output_path=/dummy/dummy/../..//${productName2}
+input_path=/model.circle
+output_path=/dummy/dummy/../../model.q8.circle
         `;
 
         // Write a file inside a temp directory
-        testBuilder.writeFileSync(configName, content);
+        testBuilder.writeFileSync("model.cfg", content);
 
         // Get file paths inside the temp directory
-        const configPath = testBuilder.getPath(configName);
-        const baseModelPath = testBuilder.getPath(baseModelName);
-        const productPath1 = testBuilder.getPath(productName1);
-        const productPath2 = testBuilder.getPath(productName2);
+        const configPath = testBuilder.getPath("model.cfg");
+        const baseModelPath = testBuilder.getPath("model.tflite");
+        const productPath1 = testBuilder.getPath("model.circle");
+        const productPath2 = testBuilder.getPath("model.q8.circle");
 
         const configObj = ConfigObj.createConfigObj(
           vscode.Uri.file(configPath)
@@ -508,16 +463,11 @@ output_path=/dummy/dummy/../..//${productName2}
       });
 
       test("Parse config with absolute paths", function () {
-        const configName = "model.cfg";
-        const baseModelName = "model.tflite";
-        const productName1 = "model.circle";
-        const productName2 = "model.q8.circle";
-
         // Get file paths inside the temp directory
-        const configPath = testBuilder.getPath(configName);
-        const baseModelPath = testBuilder.getPath(baseModelName);
-        const productPath1 = testBuilder.getPath(productName1);
-        const productPath2 = testBuilder.getPath(productName2);
+        const configPath = testBuilder.getPath("model.cfg");
+        const baseModelPath = testBuilder.getPath("model.tflite");
+        const productPath1 = testBuilder.getPath("model.circle");
+        const productPath2 = testBuilder.getPath("model.q8.circle");
 
         // Detouring paths
         const content = `
@@ -530,7 +480,7 @@ output_path=/${productPath2}
         `;
 
         // Write a file inside a temp directory
-        testBuilder.writeFileSync(configName, content);
+        testBuilder.writeFileSync("model.cfg", content);
 
         const configObj = ConfigObj.createConfigObj(
           vscode.Uri.file(configPath)
@@ -556,17 +506,12 @@ output_path=/${productPath2}
         }
       });
 
-      test("Parse config with exising paths", function () {
-        const configName = "model.cfg";
-        const baseModelName = "model.tflite";
-        const productName1 = "model.circle";
-        const productName2 = "model.q8.circle";
-
+      test("Parse config with existing paths", function () {
         // Get file paths inside the temp directory
-        const configPath = testBuilder.getPath(configName);
-        const baseModelPath = testBuilder.getPath(baseModelName);
-        const productPath1 = testBuilder.getPath(productName1);
-        const productPath2 = testBuilder.getPath(productName2);
+        const configPath = testBuilder.getPath("model.cfg");
+        const baseModelPath = testBuilder.getPath("model.tflite");
+        const productPath1 = testBuilder.getPath("model.circle");
+        const productPath2 = testBuilder.getPath("model.q8.circle");
 
         // Detouring paths
         const content = `
@@ -579,10 +524,10 @@ output_path=/${productPath2}
         `;
 
         // Write a file inside a temp directory
-        testBuilder.writeFileSync(configName, content);
-        testBuilder.writeFileSync(baseModelName, "");
-        testBuilder.writeFileSync(productName1, "");
-        testBuilder.writeFileSync(productName2, "");
+        testBuilder.writeFileSync("model.cfg", content);
+        testBuilder.writeFileSync("model.tflite", "");
+        testBuilder.writeFileSync("model.circle", "");
+        testBuilder.writeFileSync("model.q8.circle", "");
 
         const configObj = ConfigObj.createConfigObj(
           vscode.Uri.file(configPath)
@@ -613,16 +558,11 @@ output_path=/${productPath2}
       });
 
       test("NEG: Parse config with non-exising paths", function () {
-        const configName = "model.cfg";
-        const baseModelName = "model.tflite";
-        const productName1 = "model.circle";
-        const productName2 = "model.q8.circle";
-
         // Get file paths inside the temp directory
-        const configPath = testBuilder.getPath(configName);
-        const baseModelPath = testBuilder.getPath(baseModelName);
-        const productPath1 = testBuilder.getPath(productName1);
-        const productPath2 = testBuilder.getPath(productName2);
+        const configPath = testBuilder.getPath("model.cfg");
+        const baseModelPath = testBuilder.getPath("model.tflite");
+        const productPath1 = testBuilder.getPath("model.circle");
+        const productPath2 = testBuilder.getPath("model.q8.circle");
 
         // Detouring paths
         const content = `
@@ -635,7 +575,7 @@ output_path=/${productPath2}
         `;
 
         // Write a file inside a temp directory
-        testBuilder.writeFileSync(configName, content);
+        testBuilder.writeFileSync("model.cfg", content);
 
         const configObj = ConfigObj.createConfigObj(
           vscode.Uri.file(configPath)
@@ -655,23 +595,19 @@ output_path=/${productPath2}
 
     suite("#one-optimize section", function () {
       test("Parse basic example with one-optimize", function () {
-        const configName = "model.cfg";
-        const productName1 = "model.circle";
-        const productName2 = "model.opt.circle";
-
         const content = `
 [one-optimize]
-input_path=${productName1}
-output_path=${productName2}
+input_path=model.circle
+output_path=model.opt.circle
         `;
 
         // Write a file inside a temp directory
-        testBuilder.writeFileSync(configName, content);
+        testBuilder.writeFileSync("model.cfg", content);
 
         // Get file paths inside the temp directory
-        const configPath = testBuilder.getPath(configName);
-        const productPath1 = testBuilder.getPath(productName1);
-        const productPath2 = testBuilder.getPath(productName2);
+        const configPath = testBuilder.getPath("model.cfg");
+        const productPath1 = testBuilder.getPath("model.circle");
+        const productPath2 = testBuilder.getPath("model.opt.circle");
 
         const configObj = ConfigObj.createConfigObj(
           vscode.Uri.file(configPath)
@@ -697,23 +633,19 @@ output_path=${productName2}
       });
 
       test("NEG: Parse config with invalid ext with one-optimize", function () {
-        const configName = "model.cfg";
         // ERROR INJECTION
         // Invalid ext '.rectangle' instead of '.circle'
-        const productName1 = "model.rectangle";
-        const productName2 = "model.opt.rectangle";
-
         const content = `
 [one-optimize]
-input_path=${productName1}
-output_path=${productName2}
+input_path=model.rectangle
+output_path=model.opt.rectangle
         `;
 
         // Write a file inside a temp directory
-        testBuilder.writeFileSync(configName, content);
+        testBuilder.writeFileSync("model.cfg", content);
 
         // Get file paths inside the temp directory
-        const configPath = testBuilder.getPath(configName);
+        const configPath = testBuilder.getPath("model.cfg");
         const configObj = ConfigObj.createConfigObj(
           vscode.Uri.file(configPath)
         );
@@ -729,21 +661,18 @@ output_path=${productName2}
 
     suite("#one-codegen section", function () {
       test("Parse basic example with one-codegen", function () {
-        const configName = "model.cfg";
-        const productName = "model.tvn";
-
         const content = `
 [one-codegen]
 backend=dummy
-command=${productName}
+command=model.tvn
         `;
 
         // Write a file inside a temp directory
-        testBuilder.writeFileSync(configName, content);
+        testBuilder.writeFileSync("model.cfg", content);
 
         // Get file paths inside the temp directory
-        const configPath = testBuilder.getPath(configName);
-        const productPath = testBuilder.getPath(productName);
+        const configPath = testBuilder.getPath("model.cfg");
+        const productPath = testBuilder.getPath("model.tvn");
 
         const configObj = ConfigObj.createConfigObj(
           vscode.Uri.file(configPath)
@@ -764,22 +693,19 @@ command=${productName}
       });
 
       test("NEG: Parse config with invalid ext with one-codegen", function () {
-        const configName = "model.cfg";
         // ERROR INJECTION
         // Invalid ext '.rectangle' instead of '.tvn'
-        const productName = "model.rectangle";
-
         const content = `
 [one-codegen]
 backend=dummy
-command=${productName}
+command=model.rectangle
         `;
 
         // Write a file inside a temp directory
-        testBuilder.writeFileSync(configName, content);
+        testBuilder.writeFileSync("model.cfg", content);
 
         // Get file paths inside the temp directory
-        const configPath = testBuilder.getPath(configName);
+        const configPath = testBuilder.getPath("model.cfg");
         const configObj = ConfigObj.createConfigObj(
           vscode.Uri.file(configPath)
         );
@@ -793,30 +719,22 @@ command=${productName}
       });
 
       test("Check extra files", function () {
-        const configName = "model.cfg";
-        const productName = "model.tvn";
-
-        const extraName1 = "model.tv2w";
-        const extraName2 = "model.tv2m";
-        const extraName3 = "model.tv2o";
-        const extraName4 = "model.tracealloc.json";
-
         const content = `
 [one-codegen]
 backend=dummy
-command=--save-temps --save-allocations ${productName}
+command=--save-temps --save-allocations model.tvn
         `;
 
         // Write a file inside a temp directory
-        testBuilder.writeFileSync(configName, content);
+        testBuilder.writeFileSync("model.cfg", content);
 
         // Get file paths inside the temp directory
-        const configPath = testBuilder.getPath(configName);
-        const productPath = testBuilder.getPath(productName);
-        const extra1Path = testBuilder.getPath(extraName1);
-        const extra2Path = testBuilder.getPath(extraName2);
-        const extra3Path = testBuilder.getPath(extraName3);
-        const extra4Path = testBuilder.getPath(extraName4);
+        const configPath = testBuilder.getPath("model.cfg");
+        const productPath = testBuilder.getPath("model.tvn");
+        const extra1Path = testBuilder.getPath("model.tv2w");
+        const extra2Path = testBuilder.getPath("model.tv2m");
+        const extra3Path = testBuilder.getPath("model.tv2o");
+        const extra4Path = testBuilder.getPath("model.tracealloc.json");
 
         const configObj = ConfigObj.createConfigObj(
           vscode.Uri.file(configPath)
@@ -859,20 +777,17 @@ command=--save-temps --save-allocations ${productName}
 
     suite("#one-profile section", function () {
       test("Parse basic example with one-profile", function () {
-        const configName = "model.cfg";
-        const traceName = "trace.json";
-
         const content = `
 [one-profile]
-command=--save-chrome-trace ${traceName}
+command=--save-chrome-trace trace.json
         `;
 
         // Write a file inside a temp directory
-        testBuilder.writeFileSync(configName, content);
+        testBuilder.writeFileSync("model.cfg", content);
 
         // Get file paths inside the temp directory
-        const configPath = testBuilder.getPath(configName);
-        const tracePath = testBuilder.getPath(traceName);
+        const configPath = testBuilder.getPath("model.cfg");
+        const tracePath = testBuilder.getPath("trace.json");
 
         const configObj = ConfigObj.createConfigObj(
           vscode.Uri.file(configPath)
@@ -892,20 +807,17 @@ command=--save-chrome-trace ${traceName}
         }
       });
 
-      test("NEG: Unmatching ext (not .json)", function () {
-        const configName = "model.cfg";
-        const traceName = "trace.unexpected";
-
+      test("NEG: Un-matching ext (not .json)", function () {
         const content = `
 [one-profile]
-command=--save-chrome-trace ${traceName}
+command=--save-chrome-trace trace.unexpected
         `;
 
         // Write a file inside a temp directory
-        testBuilder.writeFileSync(configName, content);
+        testBuilder.writeFileSync("model.cfg", content);
 
         // Get file paths inside the temp directory
-        const configPath = testBuilder.getPath(configName);
+        const configPath = testBuilder.getPath("model.cfg");
         const configObj = ConfigObj.createConfigObj(
           vscode.Uri.file(configPath)
         );
@@ -919,9 +831,6 @@ command=--save-chrome-trace ${traceName}
       });
 
       test(`NEG: Typo in a key 'command'`, function () {
-        const configName = "model.cfg";
-        const traceName = "trace.json";
-
         // INJECTED DEFECT
         // 'commands' intead of 'command'
         //
@@ -929,14 +838,14 @@ command=--save-chrome-trace ${traceName}
         // trace.json not found
         const content = `
 [one-profile]
-commands=--save-chrome-trace ${traceName}
+commands=--save-chrome-trace trace.json
         `;
 
         // Write a file inside a temp directory
-        testBuilder.writeFileSync(configName, content);
+        testBuilder.writeFileSync("model.cfg", content);
 
         // Get file paths inside the temp directory
-        const configPath = testBuilder.getPath(configName);
+        const configPath = testBuilder.getPath("model.cfg");
         const configObj = ConfigObj.createConfigObj(
           vscode.Uri.file(configPath)
         );
