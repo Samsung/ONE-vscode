@@ -27,6 +27,7 @@ import { Artifact } from "./ArtifactLocator";
 import { ConfigSetting } from "./ConfigSetting";
 import { OneConfigSetting } from "./ConfigSettings/OneConfigSetting";
 import { EdgeTpuConfigSetting } from "./ConfigSettings/EdgeTpuConfigSetting";
+import { BackendContext } from "../Backend/API";
 
 type Cfg = {
   "one-import-tflite": CfgOneImportTflite;
@@ -126,7 +127,7 @@ export class ConfigObj {
     this.rawObj = rawObj;
     this.configSetting = new OneConfigSetting();
     const ext = path.extname(uri.fsPath);
-    if (ext === ".edgetpucfg") {
+    if (BackendContext.isRegistered("EdgeTPU") && ext === ".edgetpucfg") {
       this.configSetting = new EdgeTpuConfigSetting();
     }
     this.obj = {
