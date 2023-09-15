@@ -52,6 +52,7 @@ class TRIVSimulatorNode extends TRIVExecutorNode {
   ) {
     super(label, vscode.TreeItemCollapsibleState.None);
     this.contextValue += ".simulator";
+    this.description = t.info.name;
     this.toolchain = t;
     this.toolchainEnv = tEnv;
   }
@@ -154,7 +155,8 @@ class TRIVExecutorNodeBuilder implements ExecutorNodeBuilder {
       toolchains
         .filter((t) => t.info.version)
         .map((t) => {
-          element.child.push(new TRIVSimulatorNode(t.info.name, t, toolchainEnv));
+          const name = 'simulator' + (element.child.length + 1);
+          element.child.push(new TRIVSimulatorNode(name, t, toolchainEnv));
         });
     });
     return element.child as TRIVSimulatorNode[];
