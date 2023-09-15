@@ -22,20 +22,20 @@ import { ToolchainEnv, gToolchainEnvMap } from "../Toolchain/ToolchainEnv";
 import { CompilerNode, CompilerNodeBuilder } from "./CompilerNodeBuilder";
 import { defaultCompiler } from "./DefaultCompiler";
 
-const deviceName = "TRIV";
+const deviceName = "Backend";
 
-class TRIVCompilerNode extends CompilerNode {
-  child: TRIVToolchainNode[] = [];
+class BackendCompilerNode extends CompilerNode {
+  child: BackendToolchainNode[] = [];
   constructor(
     public readonly label: string,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState,
   ) {
     super(label, collapsibleState, deviceName);
-    this.contextValue += ".triv";
+    this.contextValue += ".Backend";
   }
 }
 
-class TRIVNameNode extends TRIVCompilerNode {
+class BackendNameNode extends BackendCompilerNode {
   constructor(public readonly label: string) {
     super(label, vscode.TreeItemCollapsibleState.Expanded);
     this.contextValue += ".name";
@@ -45,7 +45,7 @@ class TRIVNameNode extends TRIVCompilerNode {
 
 // ToolchainNode expresses a toolchain from a backend
 // Toolchain doesn't have dependency BackendNode directly but can know its backend name
-class TRIVToolchainNode extends TRIVCompilerNode {
+class BackendToolchainNode extends BackendCompilerNode {
   readonly tag = this.constructor.name; // logging tag
   readonly backendName: string;
 
@@ -88,8 +88,8 @@ class TRIVToolchainNode extends TRIVCompilerNode {
     };
 
     const compilerNode = defaultCompiler.get();
-    if (compilerNode instanceof TRIVToolchainNode) {
-      const toolchainNode = compilerNode as TRIVToolchainNode;
+    if (compilerNode instanceof BackendToolchainNode) {
+      const toolchainNode = compilerNode as BackendToolchainNode;
       const activeToolchainEnv = gToolchainEnvMap[toolchainNode.backendName];
       const activeToolchain = toolchainNode.toolchain;
 
@@ -138,22 +138,28 @@ class TRIVToolchainNode extends TRIVCompilerNode {
 }
 
 // NodeBuilder creates BackendNodes or ToolchainNodes
-class TRIVCompilerNodeBuilder implements CompilerNodeBuilder {
-  node: TRIVCompilerNode[] = [];
-
-  constructor() {
-    this.node.push(new TRIVNameNode(deviceName));
+class BackendCompilerNodeBuilder implements CompilerNodeBuilder {
+  createBackendNodes(): BackendCompilerNode[] {
+    const nodes: BackendCompilerNode[] = [];
+    nodes.push(new BackendNameNode("TRIV"));
+    Object.keys(gToolchainEnvMap).forEach((backendName) => {
+      // Ignore Backend backends with version number
+      if (!backendName.includes("TRIV")) {
+        nodes.push(new BackendNameNode(backendName));
+      }
+    });
+    return nodes;
   }
 
-  createToolchainNodes(): TRIVToolchainNode[] {
-    let children: TRIVToolchainNode[] = [];
-    const filter = Object.keys(gToolchainEnvMap).filter((backendName) => backendName.includes(deviceName));
+  createToolchainNodes(node: CompilerNode): BackendToolchainNode[] {
+    let children: BackendToolchainNode[] = [];
+    const filter = Object.keys(gToolchainEnvMap).filter((backendName) => backendName.includes(node.label));
     filter.forEach((backendName) => {
       const toolchains = gToolchainEnvMap[backendName].listInstalled();
       toolchains
         .filter((t) => t.info.version)
         .map((t) => {
-          children.push(new TRIVToolchainNode(t.info.name, backendName, t));
+          children.push(new BackendToolchainNode(t.info.name, backendName, t));
         });
       });
     return children;
@@ -161,12 +167,11 @@ class TRIVCompilerNodeBuilder implements CompilerNodeBuilder {
 
   buildNode(element?: CompilerNode | undefined): CompilerNode[] {
     if (element === undefined) {
-      return this.node;
-    } else if (element.label === deviceName) {
-      return this.createToolchainNodes();
+      return this.createBackendNodes();
+    } else {
+      return this.createToolchainNodes(element);
     }
-    throw new Error("Method not implemented.");
   }
 }
 
-export { TRIVCompilerNodeBuilder };
+export { BackendCompilerNodeBuilder };
