@@ -464,7 +464,6 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
       tnode.toolchain
     );
     this.refresh();
-    vscode.commands.executeCommand("one.executor.refresh");
     return true;
   }
 }

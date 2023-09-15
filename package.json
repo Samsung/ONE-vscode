@@ -272,6 +272,12 @@
         "icon": "$(refresh)"
       },
       {
+        "command": "one.executor.setDefaultExecutor",
+        "title": "Set Default Executor",
+        "category": "ONE",
+        "icon": "$(check)"
+      },
+      {
         "command": "one.device.refresh",
         "title": "Refresh all devices",
         "category": "ONE",
@@ -425,6 +431,11 @@
           "group": "inline"
         },
         {
+          "command": "one.executor.setDefaultExecutor",
+          "when": "view == ExecutorView && viewItem =~ /executor/ && !one.job:running",
+          "group": "inline"
+        },
+        {
           "command": "one.toolchain.uninstall",
           "when": "view == ToolchainView && viewItem =~ /toolchain/ && !one.job:running",
           "group": "inline"
@@ -474,6 +485,10 @@
         },
         {
           "command": "one.toolchain.setDefaultToolchain",
+          "when": "false"
+        },
+        {
+          "command": "one.executor.setDefaultExecutor",
           "when": "false"
         },
         {

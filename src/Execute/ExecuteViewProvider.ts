@@ -18,6 +18,7 @@ import * as vscode from "vscode";
 import { ToolchainEnv, gToolchainEnvMap } from "../Toolchain/ToolchainEnv";
 import { Toolchain } from "../Backend/Toolchain";
 import { Logger } from "../Utils/Logger";
+import { defaultExecutor } from "./DefaultExecutor";
 
 type ExecutorTreeData = ExecutorNode | undefined | void;
 
@@ -45,6 +46,11 @@ class ExecutorNode extends vscode.TreeItem {
     super(label, collapsibleState);
     this.executorType = eType;
     this.deviceType = dType;
+    this.contextValue = "executor";
+    this.iconPath = new vscode.ThemeIcon("debug-start");
+    if (defaultExecutor.isEqual(this)) {
+      this.iconPath = new vscode.ThemeIcon("debug-alt");
+    }
   }
 
   public infer(
@@ -73,6 +79,7 @@ class TVNode extends ExecutorNode {
     public readonly eType: ExecutorType
   ) {
     super(label, collapsibleState, eType, DeviceType.tv);
+    this.contextValue += ".tv";
   }
 }
 
@@ -87,8 +94,7 @@ class SimulatorNode extends TVNode {
     public readonly tEnv: ToolchainEnv
   ) {
     super(label, vscode.TreeItemCollapsibleState.None, ExecutorType.simulator);
-    this.iconPath = new vscode.ThemeIcon("debug-start");
-    this.contextValue = "simulator";
+    this.contextValue += ".simulator";
     this.toolchain = t;
     this.toolchainEnv = tEnv;
   }
@@ -175,7 +181,7 @@ class TargetNode extends TVNode {
   constructor(public readonly label: string) {
     super(label, vscode.TreeItemCollapsibleState.None, ExecutorType.target);
     this.iconPath = new vscode.ThemeIcon("debug-start");
-    this.contextValue = "target";
+    this.contextValue += ".target";
   }
 }
 
@@ -231,7 +237,6 @@ export class ExecutorViewProvider
     this._onDidChangeTreeData.event;
 
   builder: NodeBuilder = new NodeBuilder();
-  defaultExecutor!: ExecutorNode;
 
   /* istanbul ignore next */
   public static register(context: vscode.ExtensionContext) {
@@ -252,10 +257,10 @@ export class ExecutorViewProvider
       vscode.commands.registerCommand("one.executor.getModelInfo", (model) =>
         provider.getModelInfo(model)
       ),
-      // vscode.commands.registerCommand(
-      //   "one.executor.setDefaultExecutor",
-      //   (toolchain) => provider.setDefaultExecutor(toolchain)
-      // ),
+      vscode.commands.registerCommand(
+        "one.executor.setDefaultExecutor",
+        (executor) => provider.setDefaultExecutor(executor)
+      ),
     ];
 
     registrations.forEach((disposable) =>
@@ -266,13 +271,7 @@ export class ExecutorViewProvider
     return element;
   }
   getChildren(element?: ExecutorNode): vscode.ProviderResult<ExecutorNode[]> {
-    const nodes = this.builder.buildNode(element);
-    const exeNodes = nodes.filter((n) => n.executorType !== ExecutorType.none);
-    if (this.defaultExecutor === undefined && exeNodes.length > 0)
-    {
-      this.defaultExecutor = exeNodes[0];
-    }
-    return nodes;
+    return this.builder.buildNode(element);
   }
   refresh() {
     this._onDidChangeTreeData.fire();
@@ -281,33 +280,37 @@ export class ExecutorViewProvider
     model: string,
     options?: Map<string, string>
   ): string | undefined {
-    return this.defaultExecutor.infer(model, options);
+    if (defaultExecutor.get() === undefined) {
+      Logger.debug("DefaultExecutor", `Default executor is not set.`);
+      return;
+    }
+    return defaultExecutor.get()!.infer(model, options);
   }
 
   public profile(
     model: string,
     options?: Map<string, string>
   ): string | undefined {
-    return this.defaultExecutor.profile(model, options);
+    if (defaultExecutor.get() === undefined) {
+      Logger.debug("DefaultExecutor", `Default executor is not set.`);
+      return;
+    }
+    return defaultExecutor.get()!.profile(model, options);
   }
 
   public getModelInfo(model: string): string | undefined {
-    return this.defaultExecutor.getModelInfo(model);
+    if (defaultExecutor.get() === undefined) {
+      Logger.debug("DefaultExecutor", `Default executor is not set.`);
+      return;
+    }
+    return defaultExecutor.get()!.getModelInfo(model);
   }
 
-  // public setDefaultExecutor(tnode: ToolchainNode): boolean {
-  //   const backendName = tnode.backendName;
-  //   if (!Object.keys(gToolchainEnvMap).includes(backendName)) {
-  //     this.error("Invalid toolchain node.");
-  //     return false;
-  //   }
-
-  //   DefaultExecutor.getInstance().set(
-  //     gToolchainEnvMap[tnode.backend],
-  //     tnode.toolchain
-  //   );
-  //   this.refresh();
-  //   vscode.commands.executeCommand("one.executor.refresh");
-  //   return true;
-  // }
+  public setDefaultExecutor(tnode: ExecutorNode): boolean {
+    defaultExecutor.set(tnode);
+    this.refresh();
+    return true;
+  }
 }
+
+export { ExecutorNode };
