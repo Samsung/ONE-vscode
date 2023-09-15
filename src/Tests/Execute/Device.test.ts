@@ -17,7 +17,7 @@
 import { assert } from "chai";
 import { DeviceSpec, HostPCSpec, TizenDeviceSpec } from "../../Backend/Spec";
 
-import { Device } from "../../Execute/Device";
+import { Device } from "../../Executor/Device";
 
 suite("Device", function () {
   suite("#Device", function () {
