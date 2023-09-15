@@ -17,6 +17,10 @@
 let currentConfigType = null;
 
 this.window.addEventListener("message", (event) => {
+  if (window.origin !== event.origin) {
+    console.log("Unexpected Origin: ", event.origin);
+    return;
+  }
   const message = event.data;
   switch (message.command) {
     case "showMetadata":
