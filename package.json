@@ -225,33 +225,33 @@
         "category": "ONE"
       },
       {
-        "command": "one.toolchain.refresh",
-        "title": "Toolchain Refresh",
+        "command": "one.compiler.refresh",
+        "title": "Refresh Compiler",
         "category": "ONE",
         "icon": "$(refresh)"
       },
       {
-        "command": "one.toolchain.install",
-        "title": "Toolchain Install",
+        "command": "one.compiler.install",
+        "title": "Install Compiler",
         "category": "ONE",
         "icon": "$(add)",
         "enablement": "!one.job:running"
       },
       {
-        "command": "one.toolchain.uninstall",
-        "title": "Toolchain Uninstall",
+        "command": "one.compiler.uninstall",
+        "title": "Uninstall Compiler",
         "category": "ONE",
         "icon": "$(x)"
       },
       {
-        "command": "one.toolchain.setDefaultToolchain",
-        "title": "Set Default Toolchain",
+        "command": "one.compiler.setDefaultCompiler",
+        "title": "Set Default Compiler",
         "category": "ONE",
         "icon": "$(check)"
       },
       {
-        "command": "one.toolchain.runCfg",
-        "title": "Run"
+        "command": "one.compiler.runCfg",
+        "title": "Compile"
       },
       {
         "command": "one.executor.inferModel",
@@ -349,12 +349,12 @@
           "group": "navigation@1"
         },
         {
-          "command": "one.toolchain.refresh",
+          "command": "one.compiler.refresh",
           "when": "view == ToolchainView",
           "group": "navigation"
         },
         {
-          "command": "one.toolchain.install",
+          "command": "one.compiler.install",
           "when": "view == ToolchainView && !one.job:running",
           "group": "navigation"
         },
@@ -426,8 +426,8 @@
           "group": "inline"
         },
         {
-          "command": "one.toolchain.setDefaultToolchain",
-          "when": "view == ToolchainView && viewItem == toolchain && !one.job:running",
+          "command": "one.compiler.setDefaultCompiler",
+          "when": "view == ToolchainView && viewItem =~ /compiler/ && !(viewItem =~ /name/ || viewItem =~ /default/) && !one.job:running",
           "group": "inline"
         },
         {
@@ -436,8 +436,8 @@
           "group": "inline"
         },
         {
-          "command": "one.toolchain.uninstall",
-          "when": "view == ToolchainView && viewItem =~ /toolchain/ && !one.job:running",
+          "command": "one.compiler.uninstall",
+          "when": "view == ToolchainView && viewItem =~ /compiler/ && !one.job:running",
           "group": "inline"
         },
         {
@@ -484,7 +484,7 @@
           "when": "false"
         },
         {
-          "command": "one.toolchain.setDefaultToolchain",
+          "command": "one.compiler.setDefaultCompiler",
           "when": "false"
         },
         {
@@ -524,19 +524,19 @@
           "when": "false"
         },
         {
-          "command": "one.toolchain.install",
+          "command": "one.compiler.install",
           "when": "true"
         },
         {
-          "command": "one.toolchain.uninstall",
+          "command": "one.compiler.uninstall",
           "when": "false"
         },
         {
-          "command": "one.toolchain.refresh",
+          "command": "one.compiler.refresh",
           "when": "false"
         },
         {
-          "command": "one.toolchain.runCfg",
+          "command": "one.compiler.runCfg",
           "when": "false"
         },
         {

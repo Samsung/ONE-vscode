@@ -593,7 +593,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
         provider.createCfg(node)
       ),
       vscode.commands.registerCommand("one.explorer.runCfg", (node: Node) => {
-        vscode.commands.executeCommand("one.toolchain.runCfg", node.uri.fsPath);
+        vscode.commands.executeCommand("one.compiler.runCfg", node.uri.fsPath);
       }),
       vscode.commands.registerCommand(
         "one.explorer.inferModel",
@@ -622,7 +622,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
           let selectedCfg = provider.getSelectedCfg();
           if (selectedCfg && selectedCfg.length === 1) {
             vscode.commands.executeCommand(
-              "one.toolchain.runCfg",
+              "one.compiler.runCfg",
               selectedCfg[0].uri.fsPath
             );
           } else if (!selectedCfg || selectedCfg.length === 0) {
