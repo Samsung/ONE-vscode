@@ -15,7 +15,7 @@
  */
 
 import { Logger } from "../Utils/Logger";
-import { ExecutorNode } from "./ExecuteViewProvider";
+import { ExecutorNode } from "./ExecutorViewProvider";
 
 class DefaultExecutor {
   private static _instance: DefaultExecutor;

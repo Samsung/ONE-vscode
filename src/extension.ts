@@ -21,7 +21,7 @@ import { OneToolchain } from "./Backend/One/OneToolchain";
 import { CfgEditorPanel } from "./CfgEditor/CfgEditorPanel";
 import { CircleEditorProvider } from "./CircleEditor/CircleEditorProvider";
 import { CircleViewerProvider } from "./CircleGraph/CircleViewer";
-import { ExecutorViewProvider } from "./Executor/ExecuteViewProvider";
+import { ExecutorViewProvider } from "./Executor/ExecutorViewProvider";
 import { JsonTracerViewerPanel } from "./Jsontracer/JsonTracerViewerPanel";
 import { MetadataViewerProvider } from "./MetadataViewer/MetadataViewerProvider";
 import { MondrianEditorProvider } from "./Mondrian/MondrianEditor";

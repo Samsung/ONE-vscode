@@ -432,7 +432,7 @@
         },
         {
           "command": "one.executor.setDefaultExecutor",
-          "when": "view == ExecutorView && viewItem =~ /executor/ && !one.job:running",
+          "when": "view == ExecutorView && viewItem =~ /executor/ && !(viewItem =~ /name/) && !one.job:running",
           "group": "inline"
         },
         {
