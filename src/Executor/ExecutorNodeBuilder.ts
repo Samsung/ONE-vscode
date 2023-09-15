@@ -30,7 +30,8 @@ class ExecutorNode extends vscode.TreeItem {
     this.contextValue = "executor";
     this.iconPath = new vscode.ThemeIcon("debug-start");
     if (defaultExecutor.isEqual(this)) {
-      this.iconPath = new vscode.ThemeIcon("debug-alt");
+      this.iconPath = new vscode.ThemeIcon("debug-continue", new vscode.ThemeColor("debugIcon.startForeground"));
+      this.contextValue += ".default";
     }
   }
 
