@@ -37,6 +37,7 @@ class OneDebianToolchain extends DebianToolchain {
     const value = configs.get("one.toolchain.githubToken", "");
     if (!value) {
       Balloon.showGithubTokenErrorMessage();
+      throw new Error("Github token is not set.");
     }
 
     let cmd = new Command("onecc-docker");
@@ -47,6 +48,16 @@ class OneDebianToolchain extends DebianToolchain {
     cmd.push("-C");
     cmd.push(cfg);
     return cmd;
+  }
+
+  runInference(_model: string, _options?: Map<string, string>): Command {
+    throw new Error("Method not implemented.");
+  }
+  runProfile(_model: string, _options?: Map<string, string>): Command {
+    throw new Error("Method not implemented.");
+  }
+  runShow(_model: string, _option: string): Command {
+    throw new Error("Method not implemented.");
   }
 }
 

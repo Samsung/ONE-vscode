@@ -17,8 +17,8 @@
 import { assert } from "chai";
 import { Executor, ExecutorBase } from "../../Backend/Executor";
 import { DeviceSpec } from "../../Backend/Spec";
-import { Device } from "../../Execute/Device";
-import { DeviceManager } from "../../Execute/DeviceManager";
+import { Device } from "../../Executor/Device";
+import { DeviceManager } from "../../Executor/DeviceManager";
 
 const dummyDeviceList: Device[] = [
   new Device(

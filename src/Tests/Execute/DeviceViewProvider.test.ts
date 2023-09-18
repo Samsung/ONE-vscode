@@ -21,7 +21,7 @@ import {
   DeviceViewNode,
   DeviceViewProvider,
   NodeType,
-} from "../../Execute/DeviceViewProvider";
+} from "../../Executor/DeviceViewProvider";
 
 suite("DeviceViewNode", function () {
   suite("#constructor()", function () {

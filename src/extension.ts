@@ -21,7 +21,7 @@ import { OneToolchain } from "./Backend/One/OneToolchain";
 import { CfgEditorPanel } from "./CfgEditor/CfgEditorPanel";
 import { CircleEditorProvider } from "./CircleEditor/CircleEditorProvider";
 import { CircleViewerProvider } from "./CircleGraph/CircleViewer";
-import { DeviceViewProvider } from "./Execute/DeviceViewProvider";
+import { ExecutorViewProvider } from "./Executor/ExecutorViewProvider";
 import { JsonTracerViewerPanel } from "./Jsontracer/JsonTracerViewerPanel";
 import { MetadataViewerProvider } from "./MetadataViewer/MetadataViewerProvider";
 import { MondrianEditorProvider } from "./Mondrian/MondrianEditor";
@@ -33,6 +33,7 @@ import { Logger } from "./Utils/Logger";
 import { VisqViewerProvider } from "./Visquv/VisqViewer";
 import { MPQEditorProvider } from "./MPQEditor/MPQEditor";
 import { MPQSelectionPanel } from "./MPQEditor/MPQCircleSelector";
+import { CompilerViewProvider } from "./Compiler/CompilerViewProvider";
 
 /* istanbul ignore next */
 export function activate(context: vscode.ExtensionContext) {
@@ -59,9 +60,11 @@ export function activate(context: vscode.ExtensionContext) {
 
   OneTreeDataProvider.register(context);
 
-  ToolchainProvider.register(context);
+  ExecutorViewProvider.register(context);
 
-  DeviceViewProvider.register(context);
+  CompilerViewProvider.register(context);
+
+  ToolchainProvider.register(context);
 
   CfgEditorPanel.register(context);
 

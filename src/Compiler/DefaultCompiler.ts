@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Samsung Electronics Co., Ltd. All Rights Reserved
+ * Copyright (c) 2023 Samsung Electronics Co., Ltd. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,12 @@
 
 import * as vscode from "vscode";
 
-import { Toolchain } from "../Backend/Toolchain";
 import { Logger } from "../Utils/Logger";
-import { ToolchainEnv } from "./ToolchainEnv";
+import { CompilerNode } from "./CompilerNodeBuilder";
 
 class DefaultToolchain {
   private static _instance: DefaultToolchain;
-  private _toolchainEnv?: ToolchainEnv;
-  private _toolchain?: Toolchain;
+  private _compilerNode?: CompilerNode;
 
   private constructor() {
     // This is private constructor
@@ -33,20 +31,16 @@ class DefaultToolchain {
     return this._instance || (this._instance = new this());
   }
 
-  public set(toolchainEnv: ToolchainEnv, toolchain: Toolchain) {
-    if (this.isEqual(toolchain)) {
+  public set(compiler: CompilerNode) {
+    if (this.isEqual(compiler)) {
       return;
     }
-    this._toolchainEnv = toolchainEnv;
-    this._toolchain = toolchain;
+    this._compilerNode = compiler;
 
-    const name = `${toolchain.info.name}-${toolchain.info.version?.str()}`;
-    Logger.debug("DefaultToolchain", `${name} was set as a default toolchain.`);
-  }
-
-  public unset() {
-    this._toolchainEnv = undefined;
-    this._toolchain = undefined;
+    Logger.debug(
+      "DefaultCompiler",
+      `${this._compilerNode.label} was set as a default toolchain.`
+    );
   }
 
   /* istanbul ignore next */
@@ -56,23 +50,22 @@ class DefaultToolchain {
     vscode.env.openExternal(vscode.Uri.parse(doc));
   }
 
-  public getToolchain(): Toolchain | undefined {
-    return this._toolchain;
+  public unset() {
+    this._compilerNode = undefined;
   }
 
-  public getToolchainEnv(): ToolchainEnv | undefined {
-    return this._toolchainEnv;
+  public get(): CompilerNode | undefined {
+    return this._compilerNode;
   }
 
-  public isEqual(toolchain: Toolchain) {
-    if (
-      this._toolchain &&
-      JSON.stringify(this._toolchain.info) === JSON.stringify(toolchain.info)
-    ) {
+  public isEqual(compiler: CompilerNode) {
+    if (this._compilerNode && this._compilerNode.label === compiler.label) {
       return true;
     }
     return false;
   }
 }
 
-export { DefaultToolchain };
+const defaultCompiler = DefaultToolchain.getInstance();
+
+export { defaultCompiler };
