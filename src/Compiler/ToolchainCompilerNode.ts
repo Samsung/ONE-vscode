@@ -34,22 +34,26 @@ class ToolchainNameNode extends CompilerNode {
 // Toolchain doesn't have dependency BackendNode directly but can know its backend name
 class ToolchainCompilerNode extends CompilerNode {
   readonly tag = this.constructor.name; // logging tag
-  readonly backendName: string;
+  toolchain: Toolchain;
+  toolchainEnv: ToolchainEnv;
+  // readonly backendName: string;
 
   constructor(
     public readonly label: string,
     public readonly backend: string,
-    public readonly toolchain: Toolchain
+    public readonly t: Toolchain,
+    public readonly tEnv: ToolchainEnv
   ) {
     super(label, vscode.TreeItemCollapsibleState.None, "Toolchain");
+    this.toolchain = t;
+    this.toolchainEnv = tEnv;
     this.contextValue += ".toolchain";
-    this.description = toolchain.info.version?.str();
-    const dependency = toolchain.info.depends
+    this.description = t.info.version?.str();
+    const dependency = t.info.depends
       ?.map((t) => `${t.name} ${t.version.str()}`)
       .join("\n")
       .toString();
     this.tooltip = dependency;
-    this.backendName = backend;
   }
 
   private error(msg: string, ...args: string[]): Thenable<string | undefined> {
@@ -78,7 +82,7 @@ class ToolchainCompilerNode extends CompilerNode {
     const compilerNode = defaultCompiler.get();
     if (compilerNode instanceof ToolchainCompilerNode) {
       const toolchainNode = compilerNode as ToolchainCompilerNode;
-      const activeToolchainEnv = gToolchainEnvMap[toolchainNode.backendName];
+      const activeToolchainEnv = toolchainNode.toolchainEnv;
       const activeToolchain = toolchainNode.toolchain;
 
       if (!activeToolchainEnv || !activeToolchain) {
@@ -145,11 +149,12 @@ class ToolchainCompilerNodeBuilder implements CompilerNodeBuilder {
       backendName.includes(node.label)
     );
     filter.forEach((backendName) => {
+      const toolchainEnv = gToolchainEnvMap[backendName];
       const toolchains = gToolchainEnvMap[backendName].listInstalled();
       toolchains
         .filter((t) => t.info.version)
         .map((t) => {
-          children.push(new ToolchainCompilerNode(t.info.name, backendName, t));
+          children.push(new ToolchainCompilerNode(t.info.name, backendName, t, toolchainEnv));
         });
     });
     return children;

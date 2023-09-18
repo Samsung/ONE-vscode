@@ -23,7 +23,7 @@ import { showInstallQuickInput } from "../View/InstallQuickInput";
 
 import { JobInstall } from "./JobInstall";
 import { JobUninstall } from "./JobUninstall";
-import { ToolchainEnv } from "./ToolchainEnv";
+import { ToolchainEnv, gToolchainEnvMap } from "./ToolchainEnv";
 import { CompilerNode } from "../Compiler/CompilerNodeBuilder";
 import { ExecutorNode } from "../Executor/ExecutorNodeBuilder";
 import { ToolchainCompilerNode } from "../Compiler/ToolchainCompilerNode";
@@ -132,34 +132,28 @@ export class ToolchainProvider {
   }
 
   /* istanbul ignore next */
-  public uninstall(_node: ToolchainCompilerNode | ToolchainSimulatorNode): boolean {
-    // const notifyUninstalled = () => {
-    //   vscode.window.showInformationMessage(`Uninstallation was successful.`);
-    //   // TODO unset defaultCompiler and defaultExecutor
-    //   // if (node instanceof CompilerNode && defaultCompiler.isEqual(node)) {
-    //   //   Logger.info(this.tag, "Setting default toolchain was cancelled.");
-    //   //   defaultCompiler.unset();
-    //   //   // TODO unset defaultExecutor
-    //   // }
-    //   vscode.commands.executeCommand("one.compiler.refresh");
-    //   vscode.commands.executeCommand("one.executor.refresh");
-    // };
+  public uninstall(node: ToolchainCompilerNode | ToolchainSimulatorNode): boolean {
+    const notifyUninstalled = () => {
+      vscode.window.showInformationMessage(`Uninstallation was successful.`);
+      // TODO unset defaultCompiler and defaultExecutor
+      // if (node instanceof CompilerNode && defaultCompiler.isEqual(node)) {
+      //   Logger.info(this.tag, "Setting default toolchain was cancelled.");
+      //   defaultCompiler.unset();
+      //   // TODO unset defaultExecutor
+      // }
+      vscode.commands.executeCommand("one.compiler.refresh");
+      vscode.commands.executeCommand("one.executor.refresh");
+    };
 
-    // /* istanbul ignore next */
-    // const notifyError = () => {
-    //   this.error("Uninstallation has failed.");
-    // };
+    /* istanbul ignore next */
+    const notifyError = () => {
+      this.error("Uninstallation has failed.");
+    };
 
-    // const backendName = node.deviceName;
-    // if (!Object.keys(gToolchainEnvMap).includes(backendName)) {
-    //   this.error("Invalid toolchain node.");
-    //   return false;
-    // }
-
-    // gToolchainEnvMap[backendName].uninstall(node.toolchain).then(
-    //   () => notifyUninstalled(),
-    //   () => notifyError()
-    // );
+    node.toolchainEnv.uninstall(node.toolchain).then(
+      () => notifyUninstalled(),
+      () => notifyError()
+    );
     return true;
   }
 }
