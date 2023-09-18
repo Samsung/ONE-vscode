@@ -22,20 +22,7 @@ import { ToolchainEnv, gToolchainEnvMap } from "../Toolchain/ToolchainEnv";
 import { CompilerNode, CompilerNodeBuilder } from "./CompilerNodeBuilder";
 import { defaultCompiler } from "./DefaultCompiler";
 
-const deviceName = "Backend";
-
-class ToolchainCompilerNode extends CompilerNode {
-  child: ToolchainNode[] = [];
-  constructor(
-    public readonly label: string,
-    public readonly collapsibleState: vscode.TreeItemCollapsibleState
-  ) {
-    super(label, collapsibleState, deviceName);
-    this.contextValue += ".Backend";
-  }
-}
-
-class ToolchainNameNode extends ToolchainCompilerNode {
+class ToolchainNameNode extends CompilerNode {
   constructor(public readonly label: string) {
     super(label, vscode.TreeItemCollapsibleState.Expanded);
     this.contextValue += ".name";
@@ -45,7 +32,7 @@ class ToolchainNameNode extends ToolchainCompilerNode {
 
 // ToolchainNode expresses a toolchain from a backend
 // Toolchain doesn't have dependency BackendNode directly but can know its backend name
-class ToolchainNode extends ToolchainCompilerNode {
+class ToolchainCompilerNode extends CompilerNode {
   readonly tag = this.constructor.name; // logging tag
   readonly backendName: string;
 
@@ -54,7 +41,8 @@ class ToolchainNode extends ToolchainCompilerNode {
     public readonly backend: string,
     public readonly toolchain: Toolchain
   ) {
-    super(label, vscode.TreeItemCollapsibleState.None);
+    super(label, vscode.TreeItemCollapsibleState.None, "Toolchain");
+    this.contextValue += ".toolchain";
     this.description = toolchain.info.version?.str();
     const dependency = toolchain.info.depends
       ?.map((t) => `${t.name} ${t.version.str()}`)
@@ -88,8 +76,8 @@ class ToolchainNode extends ToolchainCompilerNode {
     };
 
     const compilerNode = defaultCompiler.get();
-    if (compilerNode instanceof ToolchainNode) {
-      const toolchainNode = compilerNode as ToolchainNode;
+    if (compilerNode instanceof ToolchainCompilerNode) {
+      const toolchainNode = compilerNode as ToolchainCompilerNode;
       const activeToolchainEnv = gToolchainEnvMap[toolchainNode.backendName];
       const activeToolchain = toolchainNode.toolchain;
 
@@ -139,8 +127,8 @@ class ToolchainNode extends ToolchainCompilerNode {
 
 // NodeBuilder creates BackendNodes or ToolchainNodes
 class ToolchainCompilerNodeBuilder implements CompilerNodeBuilder {
-  createBackendNodes(): ToolchainCompilerNode[] {
-    const nodes: ToolchainCompilerNode[] = [];
+  createNameNodes(): CompilerNode[] {
+    const nodes: CompilerNode[] = [];
     nodes.push(new ToolchainNameNode("TRIV"));
     Object.keys(gToolchainEnvMap).forEach((backendName) => {
       // Ignore Backend backends with version number
@@ -151,8 +139,8 @@ class ToolchainCompilerNodeBuilder implements CompilerNodeBuilder {
     return nodes;
   }
 
-  createToolchainNodes(node: CompilerNode): ToolchainNode[] {
-    let children: ToolchainNode[] = [];
+  createToolchainNodes(node: CompilerNode): ToolchainCompilerNode[] {
+    let children: ToolchainCompilerNode[] = [];
     const filter = Object.keys(gToolchainEnvMap).filter((backendName) =>
       backendName.includes(node.label)
     );
@@ -161,7 +149,7 @@ class ToolchainCompilerNodeBuilder implements CompilerNodeBuilder {
       toolchains
         .filter((t) => t.info.version)
         .map((t) => {
-          children.push(new ToolchainNode(t.info.name, backendName, t));
+          children.push(new ToolchainCompilerNode(t.info.name, backendName, t));
         });
     });
     return children;
@@ -169,11 +157,11 @@ class ToolchainCompilerNodeBuilder implements CompilerNodeBuilder {
 
   buildNode(element?: CompilerNode | undefined): CompilerNode[] {
     if (element === undefined) {
-      return this.createBackendNodes();
+      return this.createNameNodes();
     } else {
       return this.createToolchainNodes(element);
     }
   }
 }
 
-export { ToolchainCompilerNodeBuilder };
+export { ToolchainCompilerNodeBuilder, ToolchainCompilerNode };

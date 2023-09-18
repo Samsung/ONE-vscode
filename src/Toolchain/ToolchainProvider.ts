@@ -26,6 +26,8 @@ import { JobUninstall } from "./JobUninstall";
 import { ToolchainEnv } from "./ToolchainEnv";
 import { CompilerNode } from "../Compiler/CompilerNodeBuilder";
 import { ExecutorNode } from "../Executor/ExecutorNodeBuilder";
+import { ToolchainCompilerNode } from "../Compiler/ToolchainCompilerNode";
+import { ToolchainSimulatorNode } from "../Executor/ToolchainExecutorNode";
 
 export class ToolchainProvider {
   tag = this.constructor.name; // logging tag
@@ -130,7 +132,7 @@ export class ToolchainProvider {
   }
 
   /* istanbul ignore next */
-  public uninstall(_node: CompilerNode | ExecutorNode): boolean {
+  public uninstall(_node: ToolchainCompilerNode | ToolchainSimulatorNode): boolean {
     // const notifyUninstalled = () => {
     //   vscode.window.showInformationMessage(`Uninstallation was successful.`);
     //   // TODO unset defaultCompiler and defaultExecutor

@@ -126,7 +126,7 @@ class ToolchainSimulatorNode extends SimulatorNode {
 }
 
 class ToolchainExecutorNodeBuilder implements ExecutorNodeBuilder {
-  createBackendNodes(): ExecutorNode[] {
+  createNameNodes(): ExecutorNode[] {
     const nodes: ExecutorNode[] = [];
     nodes.push(new ToolchainNameNode("TRIV"));
     Object.keys(gToolchainEnvMap).forEach((backendName) => {
@@ -158,11 +158,11 @@ class ToolchainExecutorNodeBuilder implements ExecutorNodeBuilder {
 
   buildNode(element?: ExecutorNode | undefined): ExecutorNode[] {
     if (element === undefined) {
-      return this.createBackendNodes();
+      return this.createNameNodes();
     } else {
       return this.buildSimulatorNode(element as ExecutorNode);
     }
   }
 }
 
-export { ToolchainExecutorNodeBuilder };
+export { ToolchainExecutorNodeBuilder, ToolchainSimulatorNode };
