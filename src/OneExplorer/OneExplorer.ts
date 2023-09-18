@@ -195,7 +195,12 @@ class NodeFactory {
           undefined,
           "Config nodes cannot have attributes"
         );
-        node = new ConfigNode(uri, parent);
+        const ext = path.extname(fpath);
+        if(ext === ".edgetpucfg"){
+          node = new ConfigNode(uri, parent,"one.editor.edgetpucfg");
+        }else{
+          node = new ConfigNode(uri, parent);
+        }
         break;
       }
       case NodeType.product: {
