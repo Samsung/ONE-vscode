@@ -14,95 +14,6 @@
  * limitations under the License.
  */
 
-export function updateImportUI() {
-  const modelType = document.getElementById("importInputModelType");
-  const pbBasicOptions = document.getElementById("optionImportPBBasic");
-  const pbAdvancedOptions = document.getElementById("optionImportPBAdvanced");
-  const savedBasicOptions = document.getElementById("optionImportSAVEDBasic");
-  const kerasBasicOptions = document.getElementById("optionImportKERASBasic");
-  const tfliteBasicOptions = document.getElementById("optionImportTFLITEBasic");
-  const onnxBasicOptions = document.getElementById("optionImportONNXBasic");
-  const onnxAdvancedOptions = document.getElementById(
-    "optionImportONNXAdvanced"
-  );
-
-  pbBasicOptions.style.display = "none";
-  pbAdvancedOptions.style.display = "none";
-  savedBasicOptions.style.display = "none";
-  kerasBasicOptions.style.display = "none";
-  tfliteBasicOptions.style.display = "none";
-  onnxBasicOptions.style.display = "none";
-  onnxAdvancedOptions.style.display = "none";
-
-  switch (modelType.value) {
-    case "pb":
-      pbBasicOptions.style.display = "block";
-      pbAdvancedOptions.style.display = "block";
-      break;
-    case "saved":
-      savedBasicOptions.style.display = "block";
-      break;
-    case "keras":
-      kerasBasicOptions.style.display = "block";
-      break;
-    case "tflite":
-      tfliteBasicOptions.style.display = "block";
-      break;
-    case "onnx":
-      onnxBasicOptions.style.display = "block";
-      onnxAdvancedOptions.style.display = "block";
-      break;
-    default:
-      break;
-  }
-}
-
-export function updateQuantizeUI() {
-  const actionType = document.getElementById("quantizeActionType");
-  const defaultQuantBasicOptions = document.getElementById(
-    "optionQuantizeDefaultQuantBasic"
-  );
-  const defaultQuantAdvancedOptions = document.getElementById(
-    "optionQuantizeDefaultQuantAdvanced"
-  );
-  const forceQuantBasicOptions = document.getElementById(
-    "optionQuantizeForceQuantBasic"
-  );
-  const forceQuantAdvancedOptions = document.getElementById(
-    "optionQuantizeForceQuantAdvanced"
-  );
-  const copyQuantBasicOptions = document.getElementById(
-    "optionQuantizeCopyQuantBasic"
-  );
-  const copyQuantAdvancedOptions = document.getElementById(
-    "optionQuantizeCopyQuantAdvanced"
-  );
-
-  defaultQuantBasicOptions.style.display = "none";
-  defaultQuantAdvancedOptions.style.display = "none";
-  forceQuantBasicOptions.style.display = "none";
-  forceQuantAdvancedOptions.style.display = "none";
-  copyQuantBasicOptions.style.display = "none";
-  copyQuantAdvancedOptions.style.display = "none";
-
-  switch (actionType.value) {
-    case "defaultQuant":
-      defaultQuantBasicOptions.style.display = "block";
-      defaultQuantAdvancedOptions.style.display = "block";
-      break;
-    case "forceQuant":
-      forceQuantBasicOptions.style.display = "block";
-      forceQuantAdvancedOptions.style.display = "block";
-      break;
-    case "copyQuant":
-      copyQuantBasicOptions.style.display = "block";
-      copyQuantAdvancedOptions.style.display = "block";
-      break;
-    default:
-      break;
-  }
-}
-
 export function updateStepUI(step) {
   const allOptionPanels = document.querySelectorAll(".optionPanel .options");
   allOptionPanels.forEach(function (panel) {
@@ -111,6 +22,23 @@ export function updateStepUI(step) {
 
   const optionPanel = document.getElementById("option" + step);
   optionPanel.style.display = "block";
+
+  const edgeTPUSearchDelegate = document.getElementById(
+    "EdgeTPUSearchDelegate"
+  );
+  const edgeTPUDelegateSearchStepDiv = document.getElementById(
+    "EdgeTPUDelegateSearchStepDiv"
+  );
+  const edgeTPUIntermediateTensors = document.getElementById(
+    "EdgeTPUIntermediateTensors"
+  );
+
+  if (edgeTPUSearchDelegate.checked) {
+    edgeTPUIntermediateTensors.value = "";
+    edgeTPUDelegateSearchStepDiv.style.display = "block";
+  } else {
+    edgeTPUDelegateSearchStepDiv.style.display = "none";
+  }
 
   const allSteps = document.querySelectorAll(".statusbar .steps .step");
   allSteps.forEach(function (step) {
@@ -121,54 +49,28 @@ export function updateStepUI(step) {
   stepbar.classList.add("current");
 }
 
-export function updateCompilerUI() {
-  const compilerSelector = document.getElementById("compilerSelector");
-  const statusONEcc = document.getElementById("statusONEcc");
-  const statusEdgeTPU = document.getElementById("statusEdgeTPU");
-
-  statusONEcc.style.display = "none";
-  statusEdgeTPU.style.display = "none";  
-  
-  if(compilerSelector.value === "ONEcc") {
-    statusONEcc.style.display = "block";
-  } else {    
-    statusEdgeTPU.style.display = "block";
-  }
-}
-
 export function updateEdgeTPUCompileUI() {
   const allOptionPanels = document.querySelectorAll(".optionPanel .options");
   allOptionPanels.forEach(function (panel) {
     panel.style.display = "none";
   });
-  
+
   const edgeTPUBasicOptions = document.getElementById(
     "optionImportEdgeTPUBasic"
   );
   const edgeTPUAdvancedOptions = document.getElementById(
     "optionImportEdgeTPUAdvanced"
   );
-  const edgeTPUMinRuntimeVersion = document.getElementById(
-    "EdgeTPUMinRuntimeVersion"
-  );
   const edgeTPUSearchDelegate = document.getElementById(
     "EdgeTPUSearchDelegate"
   );
   const edgeTPUDelegateSearchStepDiv = document.getElementById(
     "EdgeTPUDelegateSearchStepDiv"
-  );  
+  );
 
-  const versionList = [10, 11, 12, 13, 14];
-  
   edgeTPUBasicOptions.style.display = "none";
   edgeTPUAdvancedOptions.style.display = "none";
 
-  if (edgeTPUMinRuntimeVersion.childElementCount !== versionList.length) {
-    versionList.forEach((version) => {
-      var option = new Option(version);
-      edgeTPUMinRuntimeVersion.append(option);
-    });
-  }
   edgeTPUDelegateSearchStepDiv.style.display = edgeTPUSearchDelegate.checked
     ? "block"
     : "none";
