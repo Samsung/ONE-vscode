@@ -20,7 +20,7 @@ import { saveDirtyDocuments } from "../Utils/Helpers";
 import { Logger } from "../Utils/Logger";
 import { defaultCompiler } from "./DefaultCompiler";
 import { CompilerNode, CompilerNodeBuilder } from "./CompilerNodeBuilder";
-import { BackendCompilerNodeBuilder } from "./BackendCompilerNode";
+import { ToolchainCompilerNodeBuilder } from "./ToolchainCompilerNode";
 
 type ToolchainTreeData = CompilerNode | undefined | void;
 
@@ -32,7 +32,7 @@ class CompilerViewProvider implements vscode.TreeDataProvider<CompilerNode> {
   readonly onDidChangeTreeData?: vscode.Event<ToolchainTreeData> =
     this._onDidChangeTreeData.event;
 
-  builder: CompilerNodeBuilder[] = [new BackendCompilerNodeBuilder()];
+  builder: CompilerNodeBuilder[] = [new ToolchainCompilerNodeBuilder()];
 
   /* istanbul ignore next */
   public static register(context: vscode.ExtensionContext) {

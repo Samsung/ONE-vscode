@@ -24,8 +24,8 @@ import { defaultCompiler } from "./DefaultCompiler";
 
 const deviceName = "Backend";
 
-class BackendCompilerNode extends CompilerNode {
-  child: BackendToolchainNode[] = [];
+class ToolchainCompilerNode extends CompilerNode {
+  child: ToolchainNode[] = [];
   constructor(
     public readonly label: string,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState
@@ -35,7 +35,7 @@ class BackendCompilerNode extends CompilerNode {
   }
 }
 
-class BackendNameNode extends BackendCompilerNode {
+class ToolchainNameNode extends ToolchainCompilerNode {
   constructor(public readonly label: string) {
     super(label, vscode.TreeItemCollapsibleState.Expanded);
     this.contextValue += ".name";
@@ -45,7 +45,7 @@ class BackendNameNode extends BackendCompilerNode {
 
 // ToolchainNode expresses a toolchain from a backend
 // Toolchain doesn't have dependency BackendNode directly but can know its backend name
-class BackendToolchainNode extends BackendCompilerNode {
+class ToolchainNode extends ToolchainCompilerNode {
   readonly tag = this.constructor.name; // logging tag
   readonly backendName: string;
 
@@ -88,8 +88,8 @@ class BackendToolchainNode extends BackendCompilerNode {
     };
 
     const compilerNode = defaultCompiler.get();
-    if (compilerNode instanceof BackendToolchainNode) {
-      const toolchainNode = compilerNode as BackendToolchainNode;
+    if (compilerNode instanceof ToolchainNode) {
+      const toolchainNode = compilerNode as ToolchainNode;
       const activeToolchainEnv = gToolchainEnvMap[toolchainNode.backendName];
       const activeToolchain = toolchainNode.toolchain;
 
@@ -138,21 +138,21 @@ class BackendToolchainNode extends BackendCompilerNode {
 }
 
 // NodeBuilder creates BackendNodes or ToolchainNodes
-class BackendCompilerNodeBuilder implements CompilerNodeBuilder {
-  createBackendNodes(): BackendCompilerNode[] {
-    const nodes: BackendCompilerNode[] = [];
-    nodes.push(new BackendNameNode("TRIV"));
+class ToolchainCompilerNodeBuilder implements CompilerNodeBuilder {
+  createBackendNodes(): ToolchainCompilerNode[] {
+    const nodes: ToolchainCompilerNode[] = [];
+    nodes.push(new ToolchainNameNode("TRIV"));
     Object.keys(gToolchainEnvMap).forEach((backendName) => {
       // Ignore Backend backends with version number
       if (!backendName.includes("TRIV")) {
-        nodes.push(new BackendNameNode(backendName));
+        nodes.push(new ToolchainNameNode(backendName));
       }
     });
     return nodes;
   }
 
-  createToolchainNodes(node: CompilerNode): BackendToolchainNode[] {
-    let children: BackendToolchainNode[] = [];
+  createToolchainNodes(node: CompilerNode): ToolchainNode[] {
+    let children: ToolchainNode[] = [];
     const filter = Object.keys(gToolchainEnvMap).filter((backendName) =>
       backendName.includes(node.label)
     );
@@ -161,7 +161,7 @@ class BackendCompilerNodeBuilder implements CompilerNodeBuilder {
       toolchains
         .filter((t) => t.info.version)
         .map((t) => {
-          children.push(new BackendToolchainNode(t.info.name, backendName, t));
+          children.push(new ToolchainNode(t.info.name, backendName, t));
         });
     });
     return children;
@@ -176,4 +176,4 @@ class BackendCompilerNodeBuilder implements CompilerNodeBuilder {
   }
 }
 
-export { BackendCompilerNodeBuilder };
+export { ToolchainCompilerNodeBuilder };

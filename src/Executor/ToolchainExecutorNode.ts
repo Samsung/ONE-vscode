@@ -26,7 +26,7 @@ import {
 } from "./ExecutorNodeBuilder";
 import { defaultExecutor } from "./DefaultExecutor";
 
-class BackendNameNode extends ExecutorNode {
+class ToolchainNameNode extends ExecutorNode {
   constructor(public readonly label: string) {
     super(label, vscode.TreeItemCollapsibleState.Expanded);
     this.contextValue += ".name";
@@ -34,7 +34,7 @@ class BackendNameNode extends ExecutorNode {
   }
 }
 
-class BackendSimulatorNode extends SimulatorNode {
+class ToolchainSimulatorNode extends SimulatorNode {
   tag = this.constructor.name; // logging tag
   toolchain: Toolchain;
   toolchainEnv: ToolchainEnv;
@@ -125,20 +125,20 @@ class BackendSimulatorNode extends SimulatorNode {
   }
 }
 
-class BackendExecutorNodeBuilder implements ExecutorNodeBuilder {
+class ToolchainExecutorNodeBuilder implements ExecutorNodeBuilder {
   createBackendNodes(): ExecutorNode[] {
     const nodes: ExecutorNode[] = [];
-    nodes.push(new BackendNameNode("TRIV"));
+    nodes.push(new ToolchainNameNode("TRIV"));
     Object.keys(gToolchainEnvMap).forEach((backendName) => {
       // Ignore TRIV backends with version number
       if (!backendName.includes("TRIV")) {
-        nodes.push(new BackendNameNode(backendName));
+        nodes.push(new ToolchainNameNode(backendName));
       }
     });
     return nodes;
   }
 
-  buildSimulatorNode(element: ExecutorNode): BackendSimulatorNode[] {
+  buildSimulatorNode(element: ExecutorNode): ToolchainSimulatorNode[] {
     element.child.length = 0;
     const filter = Object.keys(gToolchainEnvMap).filter((backendName) =>
       backendName.includes(element.label)
@@ -150,10 +150,10 @@ class BackendExecutorNodeBuilder implements ExecutorNodeBuilder {
         .filter((t) => t.info.version)
         .map((t) => {
           const name = "simulator" + (element.child.length + 1);
-          element.child.push(new BackendSimulatorNode(name, t, toolchainEnv));
+          element.child.push(new ToolchainSimulatorNode(name, t, toolchainEnv));
         });
     });
-    return element.child as BackendSimulatorNode[];
+    return element.child as ToolchainSimulatorNode[];
   }
 
   buildNode(element?: ExecutorNode | undefined): ExecutorNode[] {
@@ -165,4 +165,4 @@ class BackendExecutorNodeBuilder implements ExecutorNodeBuilder {
   }
 }
 
-export { BackendExecutorNodeBuilder };
+export { ToolchainExecutorNodeBuilder };

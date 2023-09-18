@@ -19,7 +19,7 @@ import * as vscode from "vscode";
 import { Logger } from "../Utils/Logger";
 import { defaultExecutor } from "./DefaultExecutor";
 import { ExecutorNode, ExecutorNodeBuilder } from "./ExecutorNodeBuilder";
-import { BackendExecutorNodeBuilder } from "./BackendExecutorNode";
+import { ToolchainExecutorNodeBuilder } from "./ToolchainExecutorNode";
 
 type ExecutorTreeData = ExecutorNode | undefined | void;
 
@@ -31,7 +31,7 @@ class ExecutorViewProvider implements vscode.TreeDataProvider<ExecutorNode> {
   readonly onDidChangeTreeData?: vscode.Event<ExecutorTreeData> =
     this._onDidChangeTreeData.event;
 
-  builder: ExecutorNodeBuilder[] = [new BackendExecutorNodeBuilder()];
+  builder: ExecutorNodeBuilder[] = [new ToolchainExecutorNodeBuilder()];
 
   /* istanbul ignore next */
   public static register(context: vscode.ExtensionContext) {
