@@ -169,13 +169,13 @@
         "command": "one.explorer.runCfg",
         "title": "Run with the compiler (Ctrl+F7)",
         "category": "ONE",
-        "icon": "$(play)"
+        "icon": "$(debug-coverage)"
       },
       {
         "command": "one.explorer.inferModel",
         "title": "Infer model with the executor",
         "category": "ONE",
-        "icon": "$(play)"
+        "icon": "$(debug-start)"
       },
       {
         "command": "one.explorer.profileModel",

@@ -28,7 +28,10 @@ class ExecutorNode extends vscode.TreeItem {
     super(label, collapsibleState);
     this.deviceName = dname;
     this.contextValue = "executor";
-    this.iconPath = new vscode.ThemeIcon("debug-start");
+    this.iconPath = new vscode.ThemeIcon(
+      "server-environment",
+      new vscode.ThemeColor("debugIcon.stopForeground")
+    );
   }
 
   public infer(

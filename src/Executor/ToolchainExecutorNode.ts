@@ -50,7 +50,7 @@ class ToolchainSimulatorNode extends SimulatorNode {
     this.toolchainEnv = tEnv;
     if (defaultExecutor.isEqual(this)) {
       this.iconPath = new vscode.ThemeIcon(
-        "debug-continue",
+        "server-environment",
         new vscode.ThemeColor("debugIcon.startForeground")
       );
       this.contextValue += ".default";

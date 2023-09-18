@@ -28,10 +28,13 @@ class CompilerNode extends vscode.TreeItem {
     super(label, collapsibleState);
     this.deviceName = dname;
     this.contextValue = "compiler";
-    this.iconPath = new vscode.ThemeIcon("debug-start");
+    this.iconPath = new vscode.ThemeIcon(
+      "tools",
+      new vscode.ThemeColor("debugIcon.stopForeground")
+    );
     if (defaultCompiler.isEqual(this)) {
       this.iconPath = new vscode.ThemeIcon(
-        "debug-continue",
+        "tools",
         new vscode.ThemeColor("debugIcon.startForeground")
       );
       this.contextValue += ".default";
