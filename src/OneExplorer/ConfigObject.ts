@@ -333,7 +333,7 @@ export class ConfigObj {
       artifactAttr: {
         ext: ".trace.json",
         icon: new vscode.ThemeIcon("graph"),
-        openViewType: "one.editor.jsonTracer",
+        openViewType: "default",
         canHide: true,
       },
       locator: new Locator((value: string) => {
@@ -347,7 +347,7 @@ export class ConfigObj {
       artifactAttr: {
         ext: ".json",
         icon: new vscode.ThemeIcon("graph"),
-        openViewType: "one.editor.jsonTracer",
+        openViewType: "default",
         canHide: true,
       },
       locator: new Locator(
