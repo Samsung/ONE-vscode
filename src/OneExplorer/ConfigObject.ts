@@ -305,6 +305,7 @@ export class ConfigObj {
       artifactAttr: {
         ext: ".tvn",
         icon: new vscode.ThemeIcon("symbol-variable"),
+        openViewType: "default",
       },
       locator: new Locator((value: string) =>
         LocatorRunner.searchWithExt(".tvn", value)
@@ -367,6 +368,7 @@ export class ConfigObj {
       artifactAttr: {
         ext: ".tv2m",
         icon: new vscode.ThemeIcon("symbol-method"),
+        openViewType: "default",
         canHide: true,
       },
       locator: new Locator((value: string) => {
@@ -380,6 +382,7 @@ export class ConfigObj {
       artifactAttr: {
         ext: ".tv2o",
         icon: new vscode.ThemeIcon("symbol-method"),
+        openViewType: "default",
         canHide: true,
       },
       locator: new Locator((value: string) => {
@@ -393,6 +396,7 @@ export class ConfigObj {
       artifactAttr: {
         ext: ".tv2w",
         icon: new vscode.ThemeIcon("symbol-method"),
+        openViewType: "default",
         canHide: true,
       },
       locator: new Locator((value: string) => {
