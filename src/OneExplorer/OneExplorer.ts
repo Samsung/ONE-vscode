@@ -25,6 +25,8 @@ import { Logger } from "../Utils/Logger";
 
 import { ArtifactAttr } from "./ArtifactLocator";
 import { OneStorage } from "./OneStorage";
+import { DefaultToolchain } from "../Toolchain/DefaultToolchain";
+import { BackendContext } from "../Backend/API";
 
 // Exported for unit testing only
 export {
@@ -247,10 +249,34 @@ class DirectoryNode extends Node {
    * To exclude Edge TPU compiled tflite file from baseModel
    * Now check with postfix of Edge TPU Compiler's default file name
    */
-  private isEdgeTpuCompiled(fpath: string): boolean {
-    return fpath.endsWith("_edgetpu.tflite");
+
+  private isToolchainOne(fname:string):boolean{
+    return fname.endsWith(".pb") || (fname.endsWith(".tflite")&& !fname.endsWith("_edgetpu.tflite"))||fname.endsWith(".onnx");
   }
 
+  private isToolchainEdgeTPU(fname: string): boolean {
+    return BackendContext.isRegistered("EdgeTPU") && fname.endsWith(".tflite") && !fname.endsWith("_edgetpu.tflite");
+  }
+
+  /*
+  Check if the file is a basemodel.
+  The type to check depending on the default toolchain.
+  */
+  private checkBaseModel(fname : string) : boolean{
+    let defaultToolchain = DefaultToolchain.getInstance().getToolchain()?.info.name;
+    if(!defaultToolchain) defaultToolchain = "onecc-docker";
+    switch(defaultToolchain){
+      case"onecc-docker":{
+        return this.isToolchainOne(fname);
+      }
+      case "edgetpu-compiler":{
+        return this.isToolchainEdgeTPU(fname);
+      }
+      default: {
+        throw Error("Unkown Toolchain");
+      }
+    }
+  }
   /**
    * Build a sub-tree under the node
    *
@@ -274,10 +300,7 @@ class DirectoryNode extends Node {
           this._childNodes!.push(dirNode);
         }
       } else if (
-        fstat.isFile() &&
-        (fname.endsWith(".pb") ||
-          (fname.endsWith(".tflite") && !this.isEdgeTpuCompiled(fpath)) ||
-          fname.endsWith(".onnx"))
+        fstat.isFile() && this.checkBaseModel(fname)
       ) {
         const baseModelNode = NodeFactory.create(
           NodeType.baseModel,
