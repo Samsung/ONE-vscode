@@ -34,9 +34,12 @@ function containsNonAscii(str: string): boolean {
 }
 
 /* istanbul ignore next */
-async function showPasswordQuickInput(): Promise<string | undefined> {
+async function showPasswordQuickInput(
+  placeholder?: string
+): Promise<string | undefined> {
   return await vscode.window.showInputBox({
     title: "Enter password",
+    placeHolder: placeholder,
     password: true,
     validateInput: validateInputIsAscii,
   });
