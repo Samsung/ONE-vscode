@@ -367,11 +367,32 @@ class BaseModelNode extends Node {
     if (!configPaths) {
       return;
     }
-    configPaths.forEach((configPath) => {
-      const configNode = NodeFactory.create(NodeType.config, configPath, this);
 
-      if (configNode) {
-        this._childNodes!.push(configNode);
+    let defaultToolchain = DefaultToolchain.getInstance().getToolchain()?.info.name;
+    if(!defaultToolchain) defaultToolchain = "onecc-docker";
+    configPaths.forEach((configPath) => {
+      switch(defaultToolchain){
+        case"onecc-docker":{
+          if(configPath.endsWith(".cfg")){
+            const configNode = NodeFactory.create(NodeType.config, configPath, this);
+            if (configNode) {
+              this._childNodes!.push(configNode);
+            }
+          }
+          break;
+        }
+        case "edgetpu-compiler":{
+          if(configPath.endsWith(".edgetpucfg")){
+            const configNode = NodeFactory.create(NodeType.config, configPath, this);
+            if (configNode) {
+              this._childNodes!.push(configNode);
+            }
+          }
+          break;
+        }
+        default: {
+          throw Error("Unkown Toolchain");
+        }
       }
     });
   };
