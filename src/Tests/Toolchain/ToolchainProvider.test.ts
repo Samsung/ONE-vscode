@@ -227,7 +227,6 @@ suite("Toolchain", function () {
         const toolchains = toolchainEnv.listAvailable(types[0], 0, 1);
         assert.isAbove(toolchains.length, 0);
         provider._install(toolchainEnv, toolchains[0]);
-        assert.isTrue(true);
       });
       test("requests _install with no installed toolchain", function () {
         const provider = new ToolchainProvider();
@@ -237,7 +236,6 @@ suite("Toolchain", function () {
         const toolchains = invalidToolchainEnv.listAvailable(types[0], 0, 1);
         assert.isAbove(toolchains.length, 0);
         provider._install(invalidToolchainEnv, toolchains[0]);
-        assert.isTrue(true);
       });
       test("NEG: requests _install with multiple installed toolchains", function () {
         const provider = new ToolchainProvider();
@@ -262,7 +260,6 @@ suite("Toolchain", function () {
         const tnodes = NodeBuilder.createToolchainNodes(bnodes[1]);
         assert.isAbove(tnodes.length, 0);
         provider.uninstall(tnodes[0]);
-        assert.isTrue(true);
       });
       test("NEG: requests uninstall with invalid toolchain node", function () {
         const provider = new ToolchainProvider();
@@ -291,7 +288,6 @@ suite("Toolchain", function () {
         assert.isAbove(toolchains.length, 0);
         DefaultToolchain.getInstance().set(toolchainEnv, toolchains[0]);
         provider._run(modelCfg);
-        assert.isTrue(true);
       });
       test("NEG: requests run with uninitialized default toolchain", function () {
         const provider = new ToolchainProvider();

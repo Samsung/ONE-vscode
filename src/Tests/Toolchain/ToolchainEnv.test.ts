@@ -153,7 +153,7 @@ suite("Toolchain", function () {
           assert.fail();
         },
         () => {
-          assert.isTrue(true);
+          // pass
         }
       );
     });
@@ -163,7 +163,7 @@ suite("Toolchain", function () {
         let env = new ToolchainEnv(compiler);
         env.prerequisites().then(
           () => {
-            assert.isTrue(true);
+            // pass
           },
           () => {
             assert.fail();
@@ -180,7 +180,7 @@ suite("Toolchain", function () {
         assert.isAbove(availableToolchains.length, 0);
         env.install(availableToolchains[0]).then(
           () => {
-            assert.isTrue(true);
+            // pass
           },
           () => {
             assert.fail();
@@ -198,7 +198,7 @@ suite("Toolchain", function () {
             assert.fail();
           },
           () => {
-            assert.isTrue(true);
+            // pass
           }
         );
       });
@@ -211,7 +211,7 @@ suite("Toolchain", function () {
         assert.isAbove(installedToolchains.length, 0);
         env.uninstall(installedToolchains[0]).then(
           () => {
-            assert.isTrue(true);
+            // pass
           },
           () => {
             assert.fail();
@@ -229,7 +229,7 @@ suite("Toolchain", function () {
             assert.fail();
           },
           () => {
-            assert.isTrue(true);
+            // pass
           }
         );
       });
@@ -243,7 +243,7 @@ suite("Toolchain", function () {
         const modelCfg = "model.cfg";
         env.run(modelCfg, installedToolchains[0]).then(
           () => {
-            assert.isTrue(true);
+            // pass
           },
           () => {
             assert.fail();
@@ -261,7 +261,7 @@ suite("Toolchain", function () {
             assert.fail();
           },
           () => {
-            assert.isTrue(true);
+            // pass
           }
         );
       });
@@ -277,7 +277,7 @@ suite("Toolchain", function () {
             assert.fail();
           },
           () => {
-            assert.isTrue(true);
+            // pass
           }
         );
       });
@@ -290,7 +290,7 @@ suite("Toolchain", function () {
         assert.isAbove(invalidToolchain.length, 0);
         const model = "model.bin";
         await env.infer(invalidToolchain[0], model).catch(() => {
-          assert.isTrue(true);
+          // pass
         });
       });
     });
@@ -302,7 +302,7 @@ suite("Toolchain", function () {
         assert.isAbove(invalidToolchain.length, 0);
         const model = "model.bin";
         await env.profile(invalidToolchain[0], model).catch(() => {
-          assert.isTrue(true);
+          // pass
         });
       });
     });
@@ -314,7 +314,7 @@ suite("Toolchain", function () {
         assert.isAbove(invalidToolchain.length, 0);
         const model = "model.bin";
         await env.getModelInfo(invalidToolchain[0], model, "test").catch(() => {
-          assert.isTrue(true);
+          // pass
         });
       });
     });

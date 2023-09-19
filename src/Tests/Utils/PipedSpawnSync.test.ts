@@ -80,7 +80,6 @@ suite("Utils", function () {
         assert.fail("should not reach here");
       } catch (err) {
         // success
-        assert.isTrue(true);
       }
     });
   });
@@ -143,7 +142,6 @@ suite("Utils", function () {
         assert.fail("should not reach here");
       } catch (err) {
         // success
-        assert.isTrue(true);
       }
     });
   });
