@@ -19,17 +19,19 @@ import * as vscode from "vscode";
 import { Locator, LocatorRunner } from "../ArtifactLocator";
 import { ConfigSetting } from "../ConfigSetting";
 
-// export type OneCfg = {
-//   "one-import-tflite": CfgOneImportTflite;
-//   "one-import-onnx": CfgOneImportOnnx;
-//   "one-import-tf": CfgOneImportTf;
-// };
-// type CfgOneImportTflite = any;
-// type CfgOneImportOnnx = any;
-// type CfgOneImportTf = any;
+export type OneCfg = {
+  "one-import-tflite": CfgOneImportTflite;
+  "one-import-onnx": CfgOneImportOnnx;
+  "one-import-tf": CfgOneImportTf;
+};
+type CfgOneImportTflite = any;
+type CfgOneImportOnnx = any;
+type CfgOneImportTf = any;
 
 export class OneConfigSetting extends ConfigSetting {
-  // TODO: make sections for updateBaseModelField method
+  public updateOutPath(): void {
+    return;
+  }
 
   protected _initBaseModelsLocatorRunner() {
     let locatorRunner = new LocatorRunner();

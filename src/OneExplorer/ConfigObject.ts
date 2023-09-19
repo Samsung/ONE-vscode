@@ -25,21 +25,26 @@ import { Logger } from "../Utils/Logger";
 
 import { Artifact } from "./ArtifactLocator";
 import { ConfigSetting } from "./ConfigSetting";
-import { OneConfigSetting } from "./ConfigSettings/OneConfigSetting";
-import { EdgeTpuConfigSetting } from "./ConfigSettings/EdgeTpuConfigSetting";
+import { OneCfg, OneConfigSetting } from "./ConfigSettings/OneConfigSetting";
+import {
+  EdgeTpuCfg,
+  EdgeTpuConfigSetting,
+} from "./ConfigSettings/EdgeTpuConfigSetting";
 import { BackendContext } from "../Backend/API";
 
-type Cfg = {
-  "one-import-tflite": CfgOneImportTflite;
-  "one-import-onnx": CfgOneImportOnnx;
-  "one-import-tf": CfgOneImportTf;
-};
+type Cfg = OneCfg & EdgeTpuCfg;
 type CfgKeys = keyof Cfg;
 
 // TODO Update
-type CfgOneImportTflite = any;
-type CfgOneImportOnnx = any;
-type CfgOneImportTf = any;
+// type CfgOneImportTflite = any;
+// type CfgOneImportOnnx = any;
+// type CfgOneImportTf = any;
+
+type CfgType = {
+  one: any;
+  "edge-tpu": any;
+};
+type CfgTypeKeys = keyof CfgType;
 
 /**
  * @brief A helper class to get parsed artifacts (baseModels, products)
@@ -71,10 +76,9 @@ export class ConfigObj {
   obj: { baseModels: Artifact[]; products: Artifact[] };
 
   /**
-   * a setting of config object
-   * ex) onecc or edge tpu compiler
+   * type of config setting
    */
-  configSetting: ConfigSetting;
+  configType: CfgTypeKeys;
 
   get getBaseModels() {
     return this.obj.baseModels;
@@ -122,21 +126,40 @@ export class ConfigObj {
     return found ? true : false;
   }
 
+  /**
+   * @brief getter for config setting
+   */
+  public get getConfigSetting(): ConfigSetting {
+    let configSetting: ConfigSetting;
+    switch (this.configType) {
+      case "edge-tpu":
+        configSetting = new EdgeTpuConfigSetting();
+        break;
+      case "one":
+        configSetting = new OneConfigSetting();
+        break;
+      default:
+        configSetting = new OneConfigSetting();
+    }
+    configSetting.init();
+
+    return configSetting;
+  }
+
   private constructor(uri: vscode.Uri, rawObj: Cfg) {
     this.uri = uri;
     this.rawObj = rawObj;
-    this.configSetting = new OneConfigSetting();
+    this.configType = "one";
     const ext = path.extname(uri.fsPath);
     if (BackendContext.isRegistered("EdgeTPU") && ext === ".edgetpucfg") {
-      this.configSetting = new EdgeTpuConfigSetting();
+      this.configType = "edge-tpu";
     }
+
+    // separate to init()
+    const configSetting = this.getConfigSetting;
     this.obj = {
-      baseModels: ConfigObj.parseBaseModels(
-        uri.fsPath,
-        rawObj,
-        this.configSetting
-      ),
-      products: ConfigObj.parseProducts(uri.fsPath, rawObj, this.configSetting),
+      baseModels: configSetting.parseBaseModels(uri.fsPath, rawObj),
+      products: configSetting.parseProducts(uri.fsPath, rawObj),
     };
   }
 
@@ -146,11 +169,7 @@ export class ConfigObj {
   ): Thenable<void> {
     const getSection = (name: string) => {
       const ext = path.extname(name);
-      const sections = {
-        ".pb": "one-import-tf",
-        ".tflite": "one-import-tflite",
-        ".onnx": "one-import-onnx",
-      };
+      const sections = this.getConfigSetting.sections;
 
       return sections[ext as keyof typeof sections];
     };
@@ -159,6 +178,7 @@ export class ConfigObj {
     const kSection: CfgKeys = section as keyof Cfg;
 
     if (
+      this.rawObj[kSection] &&
       this.rawObj[kSection].input_path &&
       this.getFullPath(this.rawObj[kSection].input_path) === oldpath
     ) {
@@ -169,6 +189,8 @@ export class ConfigObj {
         `Cannot update base model field: ${oldpath} not found`
       );
     }
+
+    this.getConfigSetting.updateOutPath(newpath, this.rawObj, kSection);
 
     return vscode.workspace.fs.writeFile(
       this.uri,
@@ -213,77 +235,4 @@ export class ConfigObj {
     // TODO check if toString() is required
     return ini.parse(configRaw.toString());
   }
-
-  /**
-   * @brief Parse base models written in the ini object and return the absolute path.
-   *
-   * @param uri cfg uri is required to calculate absolute path
-   *
-   * ABOUT MULTIPLE BASE MODELS
-   *
-   * onecc doesn't support multiple base models.
-   * However, OneExplorer will show the config node below multiple base models
-   * to prevent a case that users cannot find their faulty config files on ONE explorer.
-   *
-   * TODO Move to backend
-   */
-  private static parseBaseModels = (
-    filePath: string,
-    iniObj: object,
-    configSetting: ConfigSetting
-  ): Artifact[] => {
-    const dir = path.dirname(filePath);
-
-    let locatorRunner = configSetting.baseModelsLocatorRunner;
-
-    let artifacts: Artifact[] = locatorRunner.run(iniObj, dir);
-
-    if (artifacts.length > 1) {
-      // TODO Notify the error with a better UX
-      // EX. put question mark next to the config icon
-      Logger.debug(
-        "OneExplorer",
-        `There are multiple input models in the configuration(${filePath}).`
-      );
-    }
-    if (artifacts.length === 0) {
-      // TODO Notify the error with a better UX
-      // EX. showing orphan nodes somewhere
-      Logger.debug(
-        "OneExplorer",
-        `There is no input model in the configuration(${filePath}).`
-      );
-    }
-
-    // Return as list of uri
-    return artifacts;
-  };
-
-  /**
-   * @brief Find derived models written in the ini object and return the absolute path.
-   *
-   * @param filePath cfg file path is required to calculate absolute path
-   *
-   * TODO Move to backend
-   */
-  private static parseProducts = (
-    filePath: string,
-    iniObj: object,
-    configSetting: ConfigSetting
-  ): Artifact[] => {
-    const dir = path.dirname(filePath);
-
-    let locatorRunner = configSetting.productsLocatorRunner;
-
-    /**
-     * When you add a new product type, please append the ext type to
-     * OneTreeDataProvider.fileWatcher too, to prevent a bug.
-     *
-     * TODO Provide better structure to remove this extra work
-     */
-
-    let artifacts: Artifact[] = locatorRunner.run(iniObj, dir);
-
-    return artifacts;
-  };
 }

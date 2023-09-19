@@ -15,20 +15,41 @@
  */
 
 import * as vscode from "vscode";
+import * as path from "path";
 
 import { Locator, LocatorRunner } from "../ArtifactLocator";
 import { ConfigSetting } from "../ConfigSetting";
 
-// export type OneCfg = {
-//   "one-import-tflite": CfgOneImportTflite;
-//   "one-import-onnx": CfgOneImportOnnx;
-//   "one-import-tf": CfgOneImportTf;
-// };
+export type EdgeTpuCfg = {
+  "edgetpu-compile": any;
+};
 // type CfgOneImportTflite = any;
 // type CfgOneImportOnnx = any;
 // type CfgOneImportTf = any;
 
 export class EdgeTpuConfigSetting extends ConfigSetting {
+  constructor() {
+    super();
+    this.ext = ".edgetpucfg";
+    this.sections = {
+      ".tflite": "edgetpu-compile",
+    };
+  }
+
+  public updateOutPath(
+    newpath: string,
+    rawObj: { [key: string]: any },
+    kSection: string
+  ): void {
+    const ext = path.extname(newpath);
+    const name = path.basename(newpath, ext) + "_edgetpu" + ext;
+    const dir = path.dirname(newpath);
+    const outpath = path.join(dir, name);
+    if (rawObj[kSection]) {
+      rawObj[kSection].output_path = outpath;
+    }
+  }
+
   protected _initBaseModelsLocatorRunner() {
     let locatorRunner = new LocatorRunner();
 
