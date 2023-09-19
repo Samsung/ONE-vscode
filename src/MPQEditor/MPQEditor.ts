@@ -62,6 +62,12 @@ export class MPQEditorProvider
           MPQEditorProvider.createMPQJson(uri);
         }
       ),
+      vscode.commands.registerCommand(
+        "one.editor.mpq.createFromOneExplorer",
+        (uri) => {
+          MPQEditorProvider.createMPQJson(uri);
+        }
+      ),
     ];
 
     registrations.forEach((disposable) =>
@@ -119,7 +125,7 @@ export class MPQEditorProvider
 
     vscode.window
       .showInputBox({
-        title: `Create mixed precision quantization configuration for '${modelName}.${extName}' :`,
+        title: `Create a new mixed precision quantization configuration for '${modelName}.${extName}':`,
         placeHolder: `Enter a file name`,
         value: mpqName,
         valueSelection: [
