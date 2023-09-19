@@ -283,7 +283,12 @@
       },
       {
         "command": "one.editor.mpq.createFromDefaultExplorer",
-        "title": "Create MPQ json",
+        "title": "ONE: Create Mixed Precision Quantization Configuration",
+        "category": "ONE"
+      },
+      {
+        "command": "one.editor.mpq.createFromOneExplorer",
+        "title": "Create Mixed Precision Quantization Configuration",
         "category": "ONE"
       }
     ],
@@ -397,6 +402,11 @@
           "command": "one.explorer.createCfg",
           "when": "view == OneExplorerView && viewItem =~ /baseModel/",
           "group": "inline"
+        },
+        {
+          "command": "one.editor.mpq.createFromOneExplorer",
+          "when": "view == OneExplorerView && viewItem =~ /circle/",
+          "group": "4_create@1"
         },
         {
           "command": "one.toolchain.setDefaultToolchain",
@@ -529,6 +539,10 @@
         },
         {
           "command": "one.editor.mpq.createFromDefaultExplorer",
+          "when": "false"
+        },
+        {
+          "command": "one.editor.mpq.createFromOneExplorer",
           "when": "false"
         }
       ]
