@@ -45,9 +45,9 @@ const registerBackend = (backend: Backend) => {
   const backendName = backend.name();
   assert(backendName.length > 0);
   globalBackendMap[backendName] = backend;
-  const compiler = backend.compiler();
-  if (compiler) {
-    gToolchainEnvMap[backend.name()] = new ToolchainEnv(compiler);
+  const tManager = backend.toolchainManager();
+  if (tManager) {
+    gToolchainEnvMap[backend.name()] = new ToolchainEnv(tManager);
     vscode.commands.executeCommand(
       "setContext",
       `one:backend.${backend.name()}`,

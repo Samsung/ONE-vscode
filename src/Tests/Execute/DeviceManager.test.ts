@@ -15,7 +15,6 @@
  */
 
 import { assert } from "chai";
-import { Executor, ExecutorBase } from "../../Backend/Executor";
 import { DeviceSpec } from "../../Backend/Spec";
 import { Device } from "../../Execute/Device";
 import { DeviceManager } from "../../Execute/DeviceManager";
@@ -35,50 +34,15 @@ const dummyDeviceList: Device[] = [
   ),
 ];
 
-class DummyExecutor1 extends ExecutorBase {
-  name(): string {
-    return "dummyExecutor1";
-  }
-  require(): DeviceSpec {
-    return new DeviceSpec("dummySpecHW1", "dummySpecSW1", undefined);
-  }
-}
-
-class DummyExecutor2 extends ExecutorBase {
-  name(): string {
-    return "dummyExecutor2";
-  }
-  require(): DeviceSpec {
-    return new DeviceSpec("dummySpecHW2", "dummySpecSW2", undefined);
-  }
-}
-
-const dummyExecutorList: Executor[] = [
-  new DummyExecutor1(),
-  new DummyExecutor2(),
-];
-
 suite("DeviceManager", function () {
   suite("DeviceManager", function () {
     suite("#construtor()", function () {
-      const deviceManager = new DeviceManager(
-        dummyDeviceList,
-        dummyExecutorList
-      );
+      const deviceManager = new DeviceManager(dummyDeviceList);
       assert.isObject<DeviceManager>(deviceManager);
       assert.strictEqual(dummyDeviceList, deviceManager.allDevices);
-      assert.isTrue(
-        deviceManager.allDevices[0].availableExecutors.has(dummyExecutorList[0])
-      );
-      assert.isTrue(
-        deviceManager.allDevices[2].availableExecutors.has(dummyExecutorList[1])
-      );
     });
     suite("#findDevice()", function () {
-      const deviceManager = new DeviceManager(
-        dummyDeviceList,
-        dummyExecutorList
-      );
+      const deviceManager = new DeviceManager(dummyDeviceList);
       assert.strictEqual(
         deviceManager.findDevice("dummyDevice1"),
         dummyDeviceList[0]

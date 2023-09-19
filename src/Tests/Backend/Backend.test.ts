@@ -18,39 +18,55 @@ import { assert } from "chai";
 
 import { API, globalBackendMap } from "../../Backend/API";
 import { Backend } from "../../Backend/Backend";
-import { Compiler, CompilerBase } from "../../Backend/Compiler";
-import { Executor, ExecutorBase } from "../../Backend/Executor";
-import { OneToolchain } from "../../Backend/One/OneToolchain";
+import { OneBackend } from "../../Backend/One/OneToolchain";
 import { gToolchainEnvMap } from "../../Toolchain/ToolchainEnv";
+import { ToolchainManager } from "../../Backend/ToolchainManager";
+import { Command } from "../../Backend/Command";
+import { Toolchains } from "../../Backend/Toolchain";
 
 const oneBackendName = "ONE";
 
 // TODO: Move it to Mockup
 const backendName = "Mockup";
+
+class MockToolchainManager implements ToolchainManager {
+  getToolchainTypes(): string[] {
+    throw new Error("Method not implemented.");
+  }
+  getToolchains(
+    _toolchainType: string,
+    _start: number,
+    _count: number
+  ): Toolchains {
+    throw new Error("Method not implemented.");
+  }
+  getInstalledToolchains(_toolchainType: string): Toolchains {
+    throw new Error("Method not implemented.");
+  }
+  prerequisitesForGetToolchains(): Command {
+    throw new Error("Method not implemented.");
+  }
+}
+
 class BackendMockup implements Backend {
   name(): string {
     return backendName;
   }
-  compiler(): Compiler | undefined {
-    return new CompilerBase();
+  toolchainManager(): ToolchainManager {
+    return new MockToolchainManager();
   }
-
-  executor(): Executor | undefined {
-    return new ExecutorBase();
+  supportCompiler(): boolean {
+    return true;
   }
-  executors(): Executor[] {
-    const exec = this.executor();
-    if (exec) {
-      return [exec];
-    }
-    return [];
+  supportExecutor(): boolean {
+    return true;
   }
 }
 
 suite("Backend", function () {
   suite("backendAPI", function () {
     test("registers a OneToolchain", function () {
-      let oneBackend = new OneToolchain();
+      let oneBackend = new OneBackend();
       assert.strictEqual(Object.entries(globalBackendMap).length, 1);
 
       const entries = Object.entries(globalBackendMap);

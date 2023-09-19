@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Executor } from "../Backend/Executor";
 import { DeviceSpec } from "../Backend/Spec";
+import { Toolchain } from "../Backend/Toolchain";
 
 /**
  * `Device` class
@@ -33,24 +33,36 @@ import { DeviceSpec } from "../Backend/Spec";
 class Device {
   name: string;
   spec: DeviceSpec;
-  availableExecutors: Set<Executor>;
   constructor(name: string, spec: DeviceSpec) {
     if (name === "") {
       throw Error("empty name device cannot be created.");
     }
     this.name = name;
     this.spec = spec;
-    this.availableExecutors = new Set<Executor>();
   }
 
-  // Register only available executor.
-  registerExecutor(executorList: Executor[]): void {
-    for (const executor of executorList) {
-      if (executor.require().satisfied(this.spec)) {
-        this.availableExecutors.add(executor);
-      }
-    }
+  // // Register only available executor.
+  // registerExecutor(executorList: Toolchain[]): void {
+  //   for (const executor of executorList) {
+  //     if (executor.require().satisfied(this.spec)) {
+  //       this.availableExecutors.add(executor);
+  //     }
+  //   }
+  // }
+}
+
+class SimulatorDevice extends Device {
+  toolchain: Toolchain;
+  constructor(name: string, spec: DeviceSpec, toolchain: Toolchain) {
+    super(name, spec);
+    this.toolchain = toolchain;
   }
 }
 
-export { Device };
+class TargetDevice extends Device {
+  constructor(name: string, spec: DeviceSpec) {
+    super(name, spec);
+  }
+}
+
+export { Device, SimulatorDevice, TargetDevice };

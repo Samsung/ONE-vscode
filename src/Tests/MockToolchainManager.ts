@@ -17,21 +17,20 @@
 import * as assert from "assert";
 import { Command } from "../Backend/Command";
 
-import { CompilerBase } from "../Backend/Compiler";
 import { ToolchainInfo, Toolchains } from "../Backend/Toolchain";
 import { DebianToolchain } from "../Backend/ToolchainImpl/DebianToolchain";
 import { Version } from "../Backend/Version";
+import { ToolchainManager } from "../Backend/ToolchainManager";
 
 const mockCompilerType1: string = "test";
 const mockCompilerType2: string = "test2";
 
-class MockCompiler extends CompilerBase {
+class MockToolchainManager implements ToolchainManager {
   // TODO: What toolchain is necessary as tests?
   installedToolchain: DebianToolchain;
   availableToolchain: DebianToolchain;
 
   constructor() {
-    super();
     this.installedToolchain = new DebianToolchain(
       new ToolchainInfo(
         "npm",
@@ -96,7 +95,7 @@ class MockCompiler extends CompilerBase {
 // In Debian systems, only one package can be installed. This compiler was
 // configured to test the abnormal situation where several of the same packages
 // are installed.
-class MockCompilerWithMultipleInstalledToolchains extends MockCompiler {
+class MockToolchainManagerWithMultipleInstalledToolchains extends MockToolchainManager {
   getInstalledToolchains(toolchainType: string): Toolchains {
     if (
       toolchainType !== mockCompilerType1 &&
@@ -116,7 +115,7 @@ class MockCompilerWithMultipleInstalledToolchains extends MockCompiler {
 
 // NOTE
 // This compiler configures an environment without any installed toolchains.
-class MockCompilerWithNoInstalledToolchain extends MockCompiler {
+class MockToolchainManagerWithNoInstalledToolchain extends MockToolchainManager {
   getInstalledToolchains(toolchainType: string): Toolchains {
     if (
       toolchainType !== mockCompilerType1 &&
@@ -129,7 +128,7 @@ class MockCompilerWithNoInstalledToolchain extends MockCompiler {
 }
 
 export {
-  MockCompiler,
-  MockCompilerWithMultipleInstalledToolchains,
-  MockCompilerWithNoInstalledToolchain,
+  MockToolchainManager,
+  MockToolchainManagerWithMultipleInstalledToolchains,
+  MockToolchainManagerWithNoInstalledToolchain,
 };

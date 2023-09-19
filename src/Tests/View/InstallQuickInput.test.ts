@@ -25,7 +25,7 @@ import {
   InstallQuickInputState,
   InstallQuickInputStep,
 } from "../../View/InstallQuickInput";
-import { MockCompiler } from "../MockCompiler";
+import { MockToolchainManager } from "../MockToolchainManager";
 
 suite("View", function () {
   suite("InnerButton", function () {
@@ -45,8 +45,8 @@ suite("View", function () {
   // Therefore, we focus on testing things not ui
   suite("InstallQuickInput", function () {
     const oneBackendName = "ONE";
-    const compiler = new MockCompiler();
-    const toolchainEnv = new ToolchainEnv(compiler);
+    const tManager = new MockToolchainManager();
+    const toolchainEnv = new ToolchainEnv(tManager);
     const toolchainType = toolchainEnv.getToolchainTypes()[0];
     const toolchain = toolchainEnv.listAvailable(toolchainType, 0, 1)[0];
     const version = new Version(1, 0, 0).str();

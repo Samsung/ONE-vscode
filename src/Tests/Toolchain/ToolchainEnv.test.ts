@@ -20,7 +20,7 @@ import { DebianToolchain } from "../../Backend/ToolchainImpl/DebianToolchain";
 import { Job } from "../../Job/Job";
 
 import { Env, ToolchainEnv } from "../../Toolchain/ToolchainEnv";
-import { MockCompiler } from "../MockCompiler";
+import { MockToolchainManager } from "../MockToolchainManager";
 import { MockFailedJob, MockJob } from "../MockJob";
 
 suite("Toolchain", function () {
@@ -37,33 +37,33 @@ suite("Toolchain", function () {
   });
 
   suite("ToolchainEnv", function () {
-    const compiler = new MockCompiler();
+    const tManager = new MockToolchainManager();
 
     suite("#constructor()", function () {
       test("is constructed with params", function () {
-        let env = new ToolchainEnv(compiler);
-        assert.strictEqual(env.compiler, compiler);
+        let env = new ToolchainEnv(tManager);
+        assert.strictEqual(env.tManager, tManager);
       });
     });
 
     suite("#getToolchainType()", function () {
       test("get toolchain types", function () {
-        let env = new ToolchainEnv(compiler);
+        let env = new ToolchainEnv(tManager);
         const types = env.getToolchainTypes();
-        assert.deepEqual(types, compiler.getToolchainTypes());
+        assert.deepEqual(types, tManager.getToolchainTypes());
       });
     });
 
     suite("#listAvailable()", function () {
       test("lists available toolchains", function () {
-        let env = new ToolchainEnv(compiler);
+        let env = new ToolchainEnv(tManager);
         const types = env.getToolchainTypes();
         let toolchains = env.listAvailable(types[0], 0, 1);
-        assert.deepEqual(toolchains, [compiler.availableToolchain]);
+        assert.deepEqual(toolchains, [tManager.availableToolchain]);
       });
 
       test("checks list count", function () {
-        let env = new ToolchainEnv(compiler);
+        let env = new ToolchainEnv(tManager);
         const types = env.getToolchainTypes();
         const count = 1;
         let toolchains = env.listAvailable(types[0], 0, count);
@@ -71,7 +71,7 @@ suite("Toolchain", function () {
       });
 
       test("NEG: lists available toolchains with wrong type", function () {
-        const env = new ToolchainEnv(compiler);
+        const env = new ToolchainEnv(tManager);
         const types = env.getToolchainTypes();
         const wrongType: string = "abcde";
         assert.equal(types.includes(wrongType), false);
@@ -81,7 +81,7 @@ suite("Toolchain", function () {
       });
 
       test("NEG: lists available toolchains with wrong start number", function () {
-        const env = new ToolchainEnv(compiler);
+        const env = new ToolchainEnv(tManager);
         const types = env.getToolchainTypes();
         const wrongStart = -1;
         expect(function () {
@@ -90,7 +90,7 @@ suite("Toolchain", function () {
       });
 
       test("NEG: lists available toolchains with wrong count number", function () {
-        const env = new ToolchainEnv(compiler);
+        const env = new ToolchainEnv(tManager);
         const types = env.getToolchainTypes();
         const wrongCount = -1;
         expect(function () {
@@ -101,13 +101,13 @@ suite("Toolchain", function () {
 
     suite("#listInstalled()", function () {
       test("lists installed toolchain", function () {
-        let env = new ToolchainEnv(compiler);
+        let env = new ToolchainEnv(tManager);
         let toolchains = env.listInstalled();
-        assert.deepEqual(toolchains, [compiler.installedToolchain]);
+        assert.deepEqual(toolchains, [tManager.installedToolchain]);
       });
 
       test("NEG: lists installed toolchains with wrong type", function () {
-        const env = new ToolchainEnv(compiler);
+        const env = new ToolchainEnv(tManager);
         const types = env.getToolchainTypes();
         const wrongType: string = "abcde";
         assert.equal(types.includes(wrongType), false);
@@ -119,7 +119,7 @@ suite("Toolchain", function () {
 
     suite("#request()", function () {
       test("requests jobs", function () {
-        let env = new ToolchainEnv(compiler);
+        let env = new ToolchainEnv(tManager);
         const job0 = new MockJob("job0");
         const job1 = new MockJob("job1");
         const jobs: Array<Job> = [job0, job1];
@@ -134,7 +134,7 @@ suite("Toolchain", function () {
       });
 
       test("NEG: requests failed job (length:1)", function () {
-        let env = new ToolchainEnv(compiler);
+        let env = new ToolchainEnv(tManager);
         const job0 = new MockFailedJob("job0");
         const jobs: Array<Job> = [job0];
         env.request(jobs).then(() => {
@@ -144,7 +144,7 @@ suite("Toolchain", function () {
     });
 
     test("NEG: requests failed job (length:2)", function () {
-      let env = new ToolchainEnv(compiler);
+      let env = new ToolchainEnv(tManager);
       const job0 = new MockJob("job0");
       const job1 = new MockFailedJob("job1");
       const jobs: Array<Job> = [job0, job1];
@@ -160,7 +160,7 @@ suite("Toolchain", function () {
 
     suite("#prerequisites()", function () {
       test("requests prerequisites", function () {
-        let env = new ToolchainEnv(compiler);
+        let env = new ToolchainEnv(tManager);
         env.prerequisites().then(
           () => {
             // pass
@@ -174,7 +174,7 @@ suite("Toolchain", function () {
 
     suite("#install()", function () {
       test("requests install", function () {
-        let env = new ToolchainEnv(compiler);
+        let env = new ToolchainEnv(tManager);
         const types = env.getToolchainTypes();
         const availableToolchains = env.listAvailable(types[0], 0, 1);
         assert.isAbove(availableToolchains.length, 0);
@@ -189,7 +189,7 @@ suite("Toolchain", function () {
       });
 
       test("NEG: requests install with invalid toolchain", function () {
-        let env = new ToolchainEnv(compiler);
+        let env = new ToolchainEnv(tManager);
         const invalidToolchain = new DebianToolchain(
           new ToolchainInfo("abcde", "Invalid package")
         );
@@ -206,7 +206,7 @@ suite("Toolchain", function () {
 
     suite("#uninstall()", function () {
       test("requests uninstall", function () {
-        let env = new ToolchainEnv(compiler);
+        let env = new ToolchainEnv(tManager);
         const installedToolchains = env.listInstalled();
         assert.isAbove(installedToolchains.length, 0);
         env.uninstall(installedToolchains[0]).then(
@@ -220,7 +220,7 @@ suite("Toolchain", function () {
       });
 
       test("NEG: requests uninstall with invalid toolchain", function () {
-        let env = new ToolchainEnv(compiler);
+        let env = new ToolchainEnv(tManager);
         const invalidToolchain = new DebianToolchain(
           new ToolchainInfo("abcde", "Invalid package")
         );
@@ -237,7 +237,7 @@ suite("Toolchain", function () {
 
     suite("#run()", function () {
       test("requests run", function () {
-        let env = new ToolchainEnv(compiler);
+        let env = new ToolchainEnv(tManager);
         const installedToolchains = env.listInstalled();
         assert.isAbove(installedToolchains.length, 0);
         const modelCfg = "model.cfg";
@@ -252,7 +252,7 @@ suite("Toolchain", function () {
       });
 
       test("NEG: requests run with invalid cfg", function () {
-        let env = new ToolchainEnv(compiler);
+        let env = new ToolchainEnv(tManager);
         const installedToolchains = env.listInstalled();
         assert.isAbove(installedToolchains.length, 0);
         const invalidCfg = "model.abc";
@@ -267,7 +267,7 @@ suite("Toolchain", function () {
       });
 
       test("NEG: requests run with invalid toolchain", function () {
-        let env = new ToolchainEnv(compiler);
+        let env = new ToolchainEnv(tManager);
         const invalidToolchain = new DebianToolchain(
           new ToolchainInfo("abcde", "Invalid package")
         );
@@ -285,7 +285,7 @@ suite("Toolchain", function () {
 
     suite("#infer()", function () {
       test("NEG: requests unimplemented infer", async function () {
-        let env = new ToolchainEnv(compiler);
+        let env = new ToolchainEnv(tManager);
         const invalidToolchain = env.listInstalled();
         assert.isAbove(invalidToolchain.length, 0);
         const model = "model.bin";
@@ -297,7 +297,7 @@ suite("Toolchain", function () {
 
     suite("#profile()", function () {
       test("NEG: requests unimplemented profile", async function () {
-        let env = new ToolchainEnv(compiler);
+        let env = new ToolchainEnv(tManager);
         const invalidToolchain = env.listInstalled();
         assert.isAbove(invalidToolchain.length, 0);
         const model = "model.bin";
@@ -309,7 +309,7 @@ suite("Toolchain", function () {
 
     suite("#getModelInfo()", function () {
       test("NEG: requests unimplemented getModelInfo", async function () {
-        let env = new ToolchainEnv(compiler);
+        let env = new ToolchainEnv(tManager);
         const invalidToolchain = env.listInstalled();
         assert.isAbove(invalidToolchain.length, 0);
         const model = "model.bin";

@@ -21,8 +21,6 @@ import { pipedSpawnSync } from "../../Utils/PipedSpawnSync";
 import { Balloon } from "../../Utils/Balloon";
 import { Backend } from "../Backend";
 import { Command } from "../Command";
-import { Compiler } from "../Compiler";
-import { Executor } from "../Executor";
 import { PackageInfo, ToolchainInfo, Toolchains } from "../Toolchain";
 import {
   DebianArch,
@@ -30,6 +28,7 @@ import {
   DebianToolchain,
 } from "../ToolchainImpl/DebianToolchain";
 import { Version } from "../Version";
+import { ToolchainManager } from "../ToolchainManager";
 
 class OneDebianToolchain extends DebianToolchain {
   run(cfg: string): Command {
@@ -50,7 +49,7 @@ class OneDebianToolchain extends DebianToolchain {
   }
 }
 
-class OneCompiler implements Compiler {
+class OneToolchainManager implements ToolchainManager {
   private readonly toolchainTypes: string[];
   private readonly toolchainName: string;
   private readonly debianRepo: DebianRepo;
@@ -256,30 +255,29 @@ class OneCompiler implements Compiler {
   }
 }
 
-class OneToolchain implements Backend {
+class OneBackend implements Backend {
   private readonly backendName: string;
-  private readonly toolchainCompiler: Compiler | undefined;
+  private readonly toolManager: ToolchainManager;
 
   constructor() {
     this.backendName = "ONE";
-    this.toolchainCompiler = new OneCompiler();
+    this.toolManager = new OneToolchainManager();
   }
 
   name(): string {
     return this.backendName;
   }
 
-  compiler(): Compiler | undefined {
-    return this.toolchainCompiler;
+  toolchainManager(): ToolchainManager {
+    return this.toolManager;
   }
 
-  executor(): Executor | undefined {
-    return undefined;
+  supportCompiler(): boolean {
+    return true;
   }
-
-  executors(): Executor[] {
-    return [];
+  supportExecutor(): boolean {
+    return true;
   }
 }
 
-export { OneDebianToolchain, OneCompiler, OneToolchain };
+export { OneDebianToolchain, OneToolchainManager, OneBackend };

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { Compiler } from "./Compiler";
-import { Executor } from "./Executor";
+import { ToolchainManager } from "./ToolchainManager";
 
 /**
  * This file defines common API exposed by backend extension.
@@ -33,14 +32,10 @@ export interface Backend {
   // backend's name. this doesn't mean the name of the toolchain
   name(): string;
 
-  // compiler specs by being filled by impl
-  compiler(): Compiler | undefined;
+  // toolchain manager
+  // Implementation of ToolchainManager is provided by backend supporter.
+  toolchainManager(): ToolchainManager;
 
-  // executor specs by being filled by impl
-  executor(): Executor | undefined;
-
-  // TODO: This API will replace `executor()` and update Comment.
-  // this will return array only contains executor() result.
-  // if `executor()` return undefined, return [].
-  executors(): Executor[];
+  supportCompiler(): boolean;
+  supportExecutor(): boolean;
 }

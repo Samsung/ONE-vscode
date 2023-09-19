@@ -17,7 +17,6 @@
 import { strict as assert } from "assert";
 import * as path from "path";
 
-import { Compiler } from "../Backend/Compiler";
 import { Toolchain } from "../Backend/Toolchain";
 import { BuilderJob } from "../Job/BuilderJob";
 import { Job } from "../Job/Job";
@@ -29,6 +28,7 @@ import { JobConfig } from "./JobConfig";
 import { JobInstall } from "./JobInstall";
 import { JobPrerequisites } from "./JobPrerequisites";
 import { JobUninstall } from "./JobUninstall";
+import { ToolchainManager } from "../Backend/ToolchainManager";
 
 class Env implements BuilderJob {
   logTag = "Env";
@@ -89,16 +89,16 @@ class Env implements BuilderJob {
 
 class ToolchainEnv extends Env {
   // TODO(jyoung): Support multiple installed toolchains
-  compiler: Compiler;
+  tManager: ToolchainManager;
 
-  constructor(compiler: Compiler) {
+  constructor(tManager: ToolchainManager) {
     super();
-    this.compiler = compiler;
+    this.tManager = tManager;
     this.init();
   }
 
   public getToolchainTypes(): string[] {
-    return this.compiler.getToolchainTypes();
+    return this.tManager.getToolchainTypes();
   }
 
   public listAvailable(
@@ -106,13 +106,13 @@ class ToolchainEnv extends Env {
     start: number,
     count: number
   ): Toolchain[] {
-    return this.compiler.getToolchains(type, start, count);
+    return this.tManager.getToolchains(type, start, count);
   }
 
   public listInstalled(): Toolchain[] {
-    return this.compiler
+    return this.tManager
       .getToolchainTypes()
-      .map((type) => this.compiler.getInstalledToolchains(type))
+      .map((type) => this.tManager.getInstalledToolchains(type))
       .reduce((r, a) => {
         return r.concat(a);
       });
@@ -141,7 +141,7 @@ class ToolchainEnv extends Env {
     return new Promise<boolean>((resolve) => {
       const jobs: Array<Job> = [];
       const job = new JobPrerequisites(
-        this.compiler.prerequisitesForGetToolchains()
+        this.tManager.prerequisitesForGetToolchains()
       );
       job.successCallback = () => resolve(true);
       // NOTE(jyoung)

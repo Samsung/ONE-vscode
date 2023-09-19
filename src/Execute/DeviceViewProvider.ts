@@ -19,11 +19,10 @@ import * as vscode from "vscode";
 
 import { globalBackendMap } from "../Backend/API";
 import { Command } from "../Backend/Command";
-import { Executor } from "../Backend/Executor";
 import { DeviceSpec, supportedSpecs } from "../Backend/Spec";
 import { Logger } from "../Utils/Logger";
 
-import { Device } from "./Device";
+import { Device, SimulatorDevice } from "./Device";
 import { DeviceManager } from "./DeviceManager";
 
 type DeviceTreeView = DeviceViewNode | undefined | void;
@@ -137,30 +136,30 @@ export class DeviceViewProvider
         rtnList.push(
           new DeviceViewNode(
             device.name,
-            vscode.TreeItemCollapsibleState.Expanded,
-            NodeType.device,
+            vscode.TreeItemCollapsibleState.None,
+            NodeType.executor,
             element.managerName
           )
         );
       }
-    } else if (element.type === NodeType.device) {
-      const device = this.deviceManagerMap[element.managerName].findDevice(
-        element.label
-      );
-      const executorList = device?.availableExecutors;
-      if (executorList) {
-        for (const executor of executorList) {
-          // Currently, No Executor name for this, so need to update Executor name first.
-          rtnList.push(
-            new DeviceViewNode(
-              executor.name(),
-              vscode.TreeItemCollapsibleState.None,
-              NodeType.executor,
-              element.managerName
-            )
-          );
-        }
-      }
+      // } else if (element.type == NodeType.device) {
+      //   const device = this.deviceManagerMap[element.managerName].findDevice(
+      //     element.label
+      //   );
+      //   const executorList = device?.availableExecutors;
+      //   if (executorList) {
+      //     for (const executor of executorList) {
+      //       // Currently, No Executor name for this, so need to update Executor name first.
+      //       rtnList.push(
+      //         new DeviceViewNode(
+      //           executor.name(),
+      //           vscode.TreeItemCollapsibleState.None,
+      //           NodeType.executor,
+      //           element.managerName
+      //         )
+      //       );
+      //     }
+      //   }
     }
     if (rtnList.length === 0) {
       rtnList.push(
@@ -227,33 +226,53 @@ export class DeviceViewProvider
       if (deviceSpec.bridge) {
         const deviceGetCmd = deviceSpec.bridge.deviceListCmd;
         listCmds.push(this.getDevicesPromise(deviceGetCmd, deviceSpec));
-      } else {
-        deviceList.push(new Device("HostPC", deviceSpec));
       }
     }
     Promise.all(listCmds).then((results) => {
       for (const result of results) {
         deviceList.push(...result);
       }
-      let executorList: Executor[] = [];
-      const entries = Object.entries(globalBackendMap);
-      for (const entry of entries) {
-        const compiler = entry[1].compiler();
-        if (compiler) {
-          for (const toolchainType of compiler.getToolchainTypes()) {
-            if (compiler.getInstalledToolchains(toolchainType).length > 0) {
-              executorList.push(...entry[1].executors());
-              break;
-            }
-          }
+    });
+
+    Object.entries(globalBackendMap).map((entry) => {
+      if (entry[1].supportExecutor()) {
+        const tmanager = entry[1].toolchainManager();
+        if (tmanager) {
+          tmanager
+            .getToolchainTypes()
+            .map((type) => tmanager.getInstalledToolchains(type))
+            .map((toolchains) => {
+              for (const toolchain of toolchains) {
+                const spec = new DeviceSpec("", "", undefined);
+                deviceList.push(
+                  new SimulatorDevice(toolchain.info.name, spec, toolchain)
+                );
+              }
+            });
         }
       }
-      this.deviceManagerMap[deviceMan] = new DeviceManager(
-        deviceList,
-        executorList
-      );
-      callback(this);
     });
+    // let executorList: Toolchains = [];
+    // Object.entries(globalBackendMap).map((entry) => {
+    //   const tmanager = entry[1].toolchainManager();
+    //   if (tmanager) {
+    //     tmanager.getToolchainTypes().map((type) => tmanager.getInstalledToolchains(type)).map((toolchains) => executorList.push(...toolchains));
+    //   }
+    // });
+    // const entries = Object.entries(globalBackendMap);
+    // for (const entry of entries) {
+    //   const compiler = entry[1].toolchainManager();
+    //   if (compiler) {
+    //     for (const toolchainType of compiler.getToolchainTypes()) {
+    //       if (compiler.getInstalledToolchains(toolchainType).length > 0) {
+    //         executorList.push(...entry[1].executors());
+    //         break;
+    //       }
+    //     }
+    //   }
+    // }
+    this.deviceManagerMap[deviceMan] = new DeviceManager(deviceList);
+    callback(this);
   }
 
   constructor() {
