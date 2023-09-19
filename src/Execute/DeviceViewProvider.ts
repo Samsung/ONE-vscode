@@ -137,7 +137,7 @@ export class DeviceViewProvider
         rtnList.push(
           new DeviceViewNode(
             device.name,
-            vscode.TreeItemCollapsibleState.Collapsed,
+            vscode.TreeItemCollapsibleState.Expanded,
             NodeType.device,
             element.managerName
           )
