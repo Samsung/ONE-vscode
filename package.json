@@ -216,20 +216,20 @@
       },
       {
         "command": "one.toolchain.refresh",
-        "title": "Toolchain Refresh",
+        "title": "Refresh Toolchain",
         "category": "ONE",
         "icon": "$(refresh)"
       },
       {
         "command": "one.toolchain.install",
-        "title": "Toolchain Install",
+        "title": "Install Toolchain",
         "category": "ONE",
         "icon": "$(add)",
         "enablement": "!one.job:running"
       },
       {
         "command": "one.toolchain.uninstall",
-        "title": "Toolchain Uninstall",
+        "title": "Uninstall Toolchain",
         "category": "ONE",
         "icon": "$(x)"
       },
