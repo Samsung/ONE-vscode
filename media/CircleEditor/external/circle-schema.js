@@ -13,7 +13,14 @@ $root.circle.TensorType = {
     INT16: 7,
     COMPLEX64: 8,
     INT8: 9,
-    FLOAT64: 10
+    FLOAT64: 10,
+    COMPLEX128: 11,
+    UINT64: 12,
+    RESOURCE: 13,
+    VARIANT: 14,
+    UINT32: 15,
+    UINT16: 16,
+    INT4: 17
 };
 
 $root.circle.CustomQuantization = class CustomQuantization {
@@ -184,6 +191,25 @@ $root.circle.SparsityParameters = class SparsityParameters {
     }
 };
 
+$root.circle.VariantSubType = class VariantSubType {
+
+    static decode(reader, position) {
+        const $ = new $root.circle.VariantSubType();
+        $.shape = reader.typedArray(position, 4, Int32Array);
+        $.type = reader.int8_(position, 6, 0);
+        $.has_rank = reader.bool_(position, 8, false);
+        return $;
+    }
+
+    static decodeText(reader, json) {
+        const $ = new $root.circle.VariantSubType();
+        $.shape = reader.typedArray(json.shape, Int32Array);
+        $.type = $root.circle.TensorType[json.type];
+        $.has_rank = reader.value(json.has_rank, false);
+        return $;
+    }
+};
+
 $root.circle.Tensor = class Tensor {
 
     static decode(reader, position) {
@@ -196,6 +222,8 @@ $root.circle.Tensor = class Tensor {
         $.is_variable = reader.bool_(position, 14, false);
         $.sparsity = reader.table(position, 16, $root.circle.SparsityParameters.decode);
         $.shape_signature = reader.typedArray(position, 18, Int32Array);
+        $.has_rank = reader.bool_(position, 20, false);
+        $.variant_tensors = reader.tableArray(position, 22, $root.circle.VariantSubType.decode);
         return $;
     }
 
@@ -209,11 +237,16 @@ $root.circle.Tensor = class Tensor {
         $.is_variable = reader.value(json.is_variable, false);
         $.sparsity = reader.object(json.sparsity, $root.circle.SparsityParameters.decodeText);
         $.shape_signature = reader.typedArray(json.shape_signature, Int32Array);
+        $.has_rank = reader.value(json.has_rank, false);
+        $.variant_tensors = reader.objectArray(json.variant_tensors, $root.circle.VariantSubType.decodeText);
         return $;
     }
 };
 
 $root.circle.BuiltinOperator = {
+    BCQ_GATHER: -4,
+    BCQ_FULLY_CONNECTED: -3,
+    INSTANCE_NORM: -2,
     ADD: 0,
     AVERAGE_POOL_2D: 1,
     CONCATENATION: 2,
@@ -341,9 +374,41 @@ $root.circle.BuiltinOperator = {
     DENSIFY: 124,
     SEGMENT_SUM: 125,
     BATCH_MATMUL: 126,
-    BCQ_GATHER: 252,
-    BCQ_FULLY_CONNECTED: 253,
-    INSTANCE_NORM: 254
+    PLACEHOLDER_FOR_GREATER_OP_CODES: 127,
+    CUMSUM: 128,
+    CALL_ONCE: 129,
+    BROADCAST_TO: 130,
+    RFFT2D: 131,
+    CONV_3D: 132,
+    IMAG: 133,
+    REAL: 134,
+    COMPLEX_ABS: 135,
+    HASHTABLE: 136,
+    HASHTABLE_FIND: 137,
+    HASHTABLE_IMPORT: 138,
+    HASHTABLE_SIZE: 139,
+    REDUCE_ALL: 140,
+    CONV_3D_TRANSPOSE: 141,
+    VAR_HANDLE: 142,
+    READ_VARIABLE: 143,
+    ASSIGN_VARIABLE: 144,
+    BROADCAST_ARGS: 145,
+    RANDOM_STANDARD_NORMAL: 146,
+    BUCKETIZE: 147,
+    RANDOM_UNIFORM: 148,
+    MULTINOMIAL: 149,
+    GELU: 150,
+    DYNAMIC_UPDATE_SLICE: 151,
+    RELU_0_TO_1: 152,
+    UNSORTED_SEGMENT_PROD: 153,
+    UNSORTED_SEGMENT_MAX: 154,
+    UNSORTED_SEGMENT_SUM: 155,
+    ATAN2: 156,
+    UNSORTED_SEGMENT_MIN: 157,
+    SIGN: 158,
+    BITCAST: 159,
+    BITWISE_XOR: 160,
+    RIGHT_SHIFT: 161
 };
 
 $root.circle.BuiltinOptions = class {
@@ -451,6 +516,31 @@ $root.circle.BuiltinOptions = class {
             case 99: return $root.circle.DensifyOptions.decode(reader, position);
             case 100: return $root.circle.SegmentSumOptions.decode(reader, position);
             case 101: return $root.circle.BatchMatMulOptions.decode(reader, position);
+            case 102: return $root.circle.CumsumOptions.decode(reader, position);
+            case 103: return $root.circle.CallOnceOptions.decode(reader, position);
+            case 104: return $root.circle.BroadcastToOptions.decode(reader, position);
+            case 105: return $root.circle.Rfft2dOptions.decode(reader, position);
+            case 106: return $root.circle.Conv3DOptions.decode(reader, position);
+            case 107: return $root.circle.HashtableOptions.decode(reader, position);
+            case 108: return $root.circle.HashtableFindOptions.decode(reader, position);
+            case 109: return $root.circle.HashtableImportOptions.decode(reader, position);
+            case 110: return $root.circle.HashtableSizeOptions.decode(reader, position);
+            case 111: return $root.circle.VarHandleOptions.decode(reader, position);
+            case 112: return $root.circle.ReadVariableOptions.decode(reader, position);
+            case 113: return $root.circle.AssignVariableOptions.decode(reader, position);
+            case 114: return $root.circle.RandomOptions.decode(reader, position);
+            case 115: return $root.circle.BucketizeOptions.decode(reader, position);
+            case 116: return $root.circle.GeluOptions.decode(reader, position);
+            case 117: return $root.circle.DynamicUpdateSliceOptions.decode(reader, position);
+            case 118: return $root.circle.UnsortedSegmentProdOptions.decode(reader, position);
+            case 119: return $root.circle.UnsortedSegmentMaxOptions.decode(reader, position);
+            case 120: return $root.circle.UnsortedSegmentMinOptions.decode(reader, position);
+            case 121: return $root.circle.UnsortedSegmentSumOptions.decode(reader, position);
+            case 122: return $root.circle.ATan2Options.decode(reader, position);
+            case 123: return $root.circle.SignOptions.decode(reader, position);
+            case 124: return $root.circle.BitcastOptions.decode(reader, position);
+            case 125: return $root.circle.BitwiseXorOptions.decode(reader, position);
+            case 126: return $root.circle.RightShiftOptions.decode(reader, position);
             case 252: return $root.circle.BCQGatherOptions.decode(reader, position);
             case 253: return $root.circle.BCQFullyConnectedOptions.decode(reader, position);
             case 254: return $root.circle.InstanceNormOptions.decode(reader, position);
@@ -561,6 +651,31 @@ $root.circle.BuiltinOptions = class {
             case 'DensifyOptions': return $root.circle.DensifyOptions.decodeText(reader, json);
             case 'SegmentSumOptions': return $root.circle.SegmentSumOptions.decodeText(reader, json);
             case 'BatchMatMulOptions': return $root.circle.BatchMatMulOptions.decodeText(reader, json);
+            case 'CumsumOptions': return $root.circle.CumsumOptions.decodeText(reader, json);
+            case 'CallOnceOptions': return $root.circle.CallOnceOptions.decodeText(reader, json);
+            case 'BroadcastToOptions': return $root.circle.BroadcastToOptions.decodeText(reader, json);
+            case 'Rfft2dOptions': return $root.circle.Rfft2dOptions.decodeText(reader, json);
+            case 'Conv3DOptions': return $root.circle.Conv3DOptions.decodeText(reader, json);
+            case 'HashtableOptions': return $root.circle.HashtableOptions.decodeText(reader, json);
+            case 'HashtableFindOptions': return $root.circle.HashtableFindOptions.decodeText(reader, json);
+            case 'HashtableImportOptions': return $root.circle.HashtableImportOptions.decodeText(reader, json);
+            case 'HashtableSizeOptions': return $root.circle.HashtableSizeOptions.decodeText(reader, json);
+            case 'VarHandleOptions': return $root.circle.VarHandleOptions.decodeText(reader, json);
+            case 'ReadVariableOptions': return $root.circle.ReadVariableOptions.decodeText(reader, json);
+            case 'AssignVariableOptions': return $root.circle.AssignVariableOptions.decodeText(reader, json);
+            case 'RandomOptions': return $root.circle.RandomOptions.decodeText(reader, json);
+            case 'BucketizeOptions': return $root.circle.BucketizeOptions.decodeText(reader, json);
+            case 'GeluOptions': return $root.circle.GeluOptions.decodeText(reader, json);
+            case 'DynamicUpdateSliceOptions': return $root.circle.DynamicUpdateSliceOptions.decodeText(reader, json);
+            case 'UnsortedSegmentProdOptions': return $root.circle.UnsortedSegmentProdOptions.decodeText(reader, json);
+            case 'UnsortedSegmentMaxOptions': return $root.circle.UnsortedSegmentMaxOptions.decodeText(reader, json);
+            case 'UnsortedSegmentMinOptions': return $root.circle.UnsortedSegmentMinOptions.decodeText(reader, json);
+            case 'UnsortedSegmentSumOptions': return $root.circle.UnsortedSegmentSumOptions.decodeText(reader, json);
+            case 'ATan2Options': return $root.circle.ATan2Options.decodeText(reader, json);
+            case 'SignOptions': return $root.circle.SignOptions.decodeText(reader, json);
+            case 'BitcastOptions': return $root.circle.BitcastOptions.decodeText(reader, json);
+            case 'BitwiseXorOptions': return $root.circle.BitwiseXorOptions.decodeText(reader, json);
+            case 'RightShiftOptions': return $root.circle.RightShiftOptions.decodeText(reader, json);
             case 'BCQGatherOptions': return $root.circle.BCQGatherOptions.decodeText(reader, json);
             case 'BCQFullyConnectedOptions': return $root.circle.BCQFullyConnectedOptions.decodeText(reader, json);
             case 'InstanceNormOptions': return $root.circle.InstanceNormOptions.decodeText(reader, json);
@@ -602,6 +717,35 @@ $root.circle.Conv2DOptions = class Conv2DOptions {
         $.stride_w = reader.value(json.stride_w, 0);
         $.stride_h = reader.value(json.stride_h, 0);
         $.fused_activation_function = $root.circle.ActivationFunctionType[json.fused_activation_function];
+        $.dilation_w_factor = reader.value(json.dilation_w_factor, 1);
+        $.dilation_h_factor = reader.value(json.dilation_h_factor, 1);
+        return $;
+    }
+};
+
+$root.circle.Conv3DOptions = class Conv3DOptions {
+
+    static decode(reader, position) {
+        const $ = new $root.circle.Conv3DOptions();
+        $.padding = reader.int8_(position, 4, 0);
+        $.stride_d = reader.int32_(position, 6, 0);
+        $.stride_w = reader.int32_(position, 8, 0);
+        $.stride_h = reader.int32_(position, 10, 0);
+        $.fused_activation_function = reader.int8_(position, 12, 0);
+        $.dilation_d_factor = reader.int32_(position, 14, 1);
+        $.dilation_w_factor = reader.int32_(position, 16, 1);
+        $.dilation_h_factor = reader.int32_(position, 18, 1);
+        return $;
+    }
+
+    static decodeText(reader, json) {
+        const $ = new $root.circle.Conv3DOptions();
+        $.padding = $root.circle.Padding[json.padding];
+        $.stride_d = reader.value(json.stride_d, 0);
+        $.stride_w = reader.value(json.stride_w, 0);
+        $.stride_h = reader.value(json.stride_h, 0);
+        $.fused_activation_function = $root.circle.ActivationFunctionType[json.fused_activation_function];
+        $.dilation_d_factor = reader.value(json.dilation_d_factor, 1);
         $.dilation_w_factor = reader.value(json.dilation_w_factor, 1);
         $.dilation_h_factor = reader.value(json.dilation_h_factor, 1);
         return $;
@@ -840,12 +984,14 @@ $root.circle.AddOptions = class AddOptions {
     static decode(reader, position) {
         const $ = new $root.circle.AddOptions();
         $.fused_activation_function = reader.int8_(position, 4, 0);
+        $.pot_scale_int16 = reader.bool_(position, 6, true);
         return $;
     }
 
     static decodeText(reader, json) {
         const $ = new $root.circle.AddOptions();
         $.fused_activation_function = $root.circle.ActivationFunctionType[json.fused_activation_function];
+        $.pot_scale_int16 = reader.value(json.pot_scale_int16, true);
         return $;
     }
 };
@@ -938,6 +1084,7 @@ $root.circle.UnidirectionalSequenceLSTMOptions = class UnidirectionalSequenceLST
         $.proj_clip = reader.float32_(position, 8, 0);
         $.time_major = reader.bool_(position, 10, false);
         $.asymmetric_quantize_inputs = reader.bool_(position, 12, false);
+        $.diagonal_recurrent_tensors = reader.bool_(position, 14, false);
         return $;
     }
 
@@ -948,6 +1095,7 @@ $root.circle.UnidirectionalSequenceLSTMOptions = class UnidirectionalSequenceLST
         $.proj_clip = reader.value(json.proj_clip, 0);
         $.time_major = reader.value(json.time_major, false);
         $.asymmetric_quantize_inputs = reader.value(json.asymmetric_quantize_inputs, false);
+        $.diagonal_recurrent_tensors = reader.value(json.diagonal_recurrent_tensors, false);
         return $;
     }
 };
@@ -1003,12 +1151,14 @@ $root.circle.ResizeNearestNeighborOptions = class ResizeNearestNeighborOptions {
     static decode(reader, position) {
         const $ = new $root.circle.ResizeNearestNeighborOptions();
         $.align_corners = reader.bool_(position, 4, false);
+        $.half_pixel_centers = reader.bool_(position, 6, false);
         return $;
     }
 
     static decodeText(reader, json) {
         const $ = new $root.circle.ResizeNearestNeighborOptions();
         $.align_corners = reader.value(json.align_corners, false);
+        $.half_pixel_centers = reader.value(json.half_pixel_centers, false);
         return $;
     }
 };
@@ -1149,12 +1299,14 @@ $root.circle.SubOptions = class SubOptions {
     static decode(reader, position) {
         const $ = new $root.circle.SubOptions();
         $.fused_activation_function = reader.int8_(position, 4, 0);
+        $.pot_scale_int16 = reader.bool_(position, 6, true);
         return $;
     }
 
     static decodeText(reader, json) {
         const $ = new $root.circle.SubOptions();
         $.fused_activation_function = $root.circle.ActivationFunctionType[json.fused_activation_function];
+        $.pot_scale_int16 = reader.value(json.pot_scale_int16, true);
         return $;
     }
 };
@@ -1213,12 +1365,14 @@ $root.circle.GatherOptions = class GatherOptions {
     static decode(reader, position) {
         const $ = new $root.circle.GatherOptions();
         $.axis = reader.int32_(position, 4, 0);
+        $.batch_dims = reader.int32_(position, 6, 0);
         return $;
     }
 
     static decodeText(reader, json) {
         const $ = new $root.circle.GatherOptions();
         $.axis = reader.value(json.axis, 0);
+        $.batch_dims = reader.value(json.batch_dims, 0);
         return $;
     }
 };
@@ -1542,6 +1696,7 @@ $root.circle.TransposeConvOptions = class TransposeConvOptions {
         $.padding = reader.int8_(position, 4, 0);
         $.stride_w = reader.int32_(position, 6, 0);
         $.stride_h = reader.int32_(position, 8, 0);
+        $.fused_activation_function = reader.int8_(position, 10, 0);
         return $;
     }
 
@@ -1550,6 +1705,7 @@ $root.circle.TransposeConvOptions = class TransposeConvOptions {
         $.padding = $root.circle.Padding[json.padding];
         $.stride_w = reader.value(json.stride_w, 0);
         $.stride_h = reader.value(json.stride_h, 0);
+        $.fused_activation_function = $root.circle.ActivationFunctionType[json.fused_activation_function];
         return $;
     }
 };
@@ -2050,6 +2206,21 @@ $root.circle.IfOptions = class IfOptions {
     }
 };
 
+$root.circle.CallOnceOptions = class CallOnceOptions {
+
+    static decode(reader, position) {
+        const $ = new $root.circle.CallOnceOptions();
+        $.init_subgraph_index = reader.int32_(position, 4, 0);
+        return $;
+    }
+
+    static decodeText(reader, json) {
+        const $ = new $root.circle.CallOnceOptions();
+        $.init_subgraph_index = reader.value(json.init_subgraph_index, 0);
+        return $;
+    }
+};
+
 $root.circle.WhileOptions = class WhileOptions {
 
     static decode(reader, position) {
@@ -2151,6 +2322,7 @@ $root.circle.BatchMatMulOptions = class BatchMatMulOptions {
         const $ = new $root.circle.BatchMatMulOptions();
         $.adjoint_lhs = reader.bool_(position, 4, false);
         $.adjoint_rhs = reader.bool_(position, 6, false);
+        $.asymmetric_quantize_inputs = reader.bool_(position, 8, false);
         return $;
     }
 
@@ -2158,6 +2330,328 @@ $root.circle.BatchMatMulOptions = class BatchMatMulOptions {
         const $ = new $root.circle.BatchMatMulOptions();
         $.adjoint_lhs = reader.value(json.adjoint_lhs, false);
         $.adjoint_rhs = reader.value(json.adjoint_rhs, false);
+        $.asymmetric_quantize_inputs = reader.value(json.asymmetric_quantize_inputs, false);
+        return $;
+    }
+};
+
+$root.circle.CumsumOptions = class CumsumOptions {
+
+    static decode(reader, position) {
+        const $ = new $root.circle.CumsumOptions();
+        $.exclusive = reader.bool_(position, 4, false);
+        $.reverse = reader.bool_(position, 6, false);
+        return $;
+    }
+
+    static decodeText(reader, json) {
+        const $ = new $root.circle.CumsumOptions();
+        $.exclusive = reader.value(json.exclusive, false);
+        $.reverse = reader.value(json.reverse, false);
+        return $;
+    }
+};
+
+$root.circle.BroadcastToOptions = class BroadcastToOptions {
+
+    static decode(/* reader, position */) {
+        const $ = new $root.circle.BroadcastToOptions();
+        return $;
+    }
+
+    static decodeText(/* reader, json */) {
+        const $ = new $root.circle.BroadcastToOptions();
+        return $;
+    }
+};
+
+$root.circle.Rfft2dOptions = class Rfft2dOptions {
+
+    static decode(/* reader, position */) {
+        const $ = new $root.circle.Rfft2dOptions();
+        return $;
+    }
+
+    static decodeText(/* reader, json */) {
+        const $ = new $root.circle.Rfft2dOptions();
+        return $;
+    }
+};
+
+$root.circle.HashtableOptions = class HashtableOptions {
+
+    static decode(reader, position) {
+        const $ = new $root.circle.HashtableOptions();
+        $.table_id = reader.int32_(position, 4, 0);
+        $.key_dtype = reader.int8_(position, 6, 0);
+        $.value_dtype = reader.int8_(position, 8, 0);
+        return $;
+    }
+
+    static decodeText(reader, json) {
+        const $ = new $root.circle.HashtableOptions();
+        $.table_id = reader.value(json.table_id, 0);
+        $.key_dtype = $root.circle.TensorType[json.key_dtype];
+        $.value_dtype = $root.circle.TensorType[json.value_dtype];
+        return $;
+    }
+};
+
+$root.circle.HashtableFindOptions = class HashtableFindOptions {
+
+    static decode(/* reader, position */) {
+        const $ = new $root.circle.HashtableFindOptions();
+        return $;
+    }
+
+    static decodeText(/* reader, json */) {
+        const $ = new $root.circle.HashtableFindOptions();
+        return $;
+    }
+};
+
+$root.circle.HashtableImportOptions = class HashtableImportOptions {
+
+    static decode(/* reader, position */) {
+        const $ = new $root.circle.HashtableImportOptions();
+        return $;
+    }
+
+    static decodeText(/* reader, json */) {
+        const $ = new $root.circle.HashtableImportOptions();
+        return $;
+    }
+};
+
+$root.circle.HashtableSizeOptions = class HashtableSizeOptions {
+
+    static decode(/* reader, position */) {
+        const $ = new $root.circle.HashtableSizeOptions();
+        return $;
+    }
+
+    static decodeText(/* reader, json */) {
+        const $ = new $root.circle.HashtableSizeOptions();
+        return $;
+    }
+};
+
+$root.circle.VarHandleOptions = class VarHandleOptions {
+
+    static decode(reader, position) {
+        const $ = new $root.circle.VarHandleOptions();
+        $.container = reader.string_(position, 4, null);
+        $.shared_name = reader.string_(position, 6, null);
+        return $;
+    }
+
+    static decodeText(reader, json) {
+        const $ = new $root.circle.VarHandleOptions();
+        $.container = reader.value(json.container, null);
+        $.shared_name = reader.value(json.shared_name, null);
+        return $;
+    }
+};
+
+$root.circle.ReadVariableOptions = class ReadVariableOptions {
+
+    static decode(/* reader, position */) {
+        const $ = new $root.circle.ReadVariableOptions();
+        return $;
+    }
+
+    static decodeText(/* reader, json */) {
+        const $ = new $root.circle.ReadVariableOptions();
+        return $;
+    }
+};
+
+$root.circle.AssignVariableOptions = class AssignVariableOptions {
+
+    static decode(/* reader, position */) {
+        const $ = new $root.circle.AssignVariableOptions();
+        return $;
+    }
+
+    static decodeText(/* reader, json */) {
+        const $ = new $root.circle.AssignVariableOptions();
+        return $;
+    }
+};
+
+$root.circle.RandomOptions = class RandomOptions {
+
+    static decode(reader, position) {
+        const $ = new $root.circle.RandomOptions();
+        $.seed = reader.int64_(position, 4, 0);
+        $.seed2 = reader.int64_(position, 6, 0);
+        return $;
+    }
+
+    static decodeText(reader, json) {
+        const $ = new $root.circle.RandomOptions();
+        $.seed = reader.value(json.seed, 0);
+        $.seed2 = reader.value(json.seed2, 0);
+        return $;
+    }
+};
+
+$root.circle.BucketizeOptions = class BucketizeOptions {
+
+    static decode(reader, position) {
+        const $ = new $root.circle.BucketizeOptions();
+        $.boundaries = reader.typedArray(position, 4, Float32Array);
+        return $;
+    }
+
+    static decodeText(reader, json) {
+        const $ = new $root.circle.BucketizeOptions();
+        $.boundaries = reader.typedArray(json.boundaries, Float32Array);
+        return $;
+    }
+};
+
+$root.circle.GeluOptions = class GeluOptions {
+
+    static decode(reader, position) {
+        const $ = new $root.circle.GeluOptions();
+        $.approximate = reader.bool_(position, 4, false);
+        return $;
+    }
+
+    static decodeText(reader, json) {
+        const $ = new $root.circle.GeluOptions();
+        $.approximate = reader.value(json.approximate, false);
+        return $;
+    }
+};
+
+$root.circle.DynamicUpdateSliceOptions = class DynamicUpdateSliceOptions {
+
+    static decode(/* reader, position */) {
+        const $ = new $root.circle.DynamicUpdateSliceOptions();
+        return $;
+    }
+
+    static decodeText(/* reader, json */) {
+        const $ = new $root.circle.DynamicUpdateSliceOptions();
+        return $;
+    }
+};
+
+$root.circle.UnsortedSegmentProdOptions = class UnsortedSegmentProdOptions {
+
+    static decode(/* reader, position */) {
+        const $ = new $root.circle.UnsortedSegmentProdOptions();
+        return $;
+    }
+
+    static decodeText(/* reader, json */) {
+        const $ = new $root.circle.UnsortedSegmentProdOptions();
+        return $;
+    }
+};
+
+$root.circle.UnsortedSegmentMaxOptions = class UnsortedSegmentMaxOptions {
+
+    static decode(/* reader, position */) {
+        const $ = new $root.circle.UnsortedSegmentMaxOptions();
+        return $;
+    }
+
+    static decodeText(/* reader, json */) {
+        const $ = new $root.circle.UnsortedSegmentMaxOptions();
+        return $;
+    }
+};
+
+$root.circle.UnsortedSegmentSumOptions = class UnsortedSegmentSumOptions {
+
+    static decode(/* reader, position */) {
+        const $ = new $root.circle.UnsortedSegmentSumOptions();
+        return $;
+    }
+
+    static decodeText(/* reader, json */) {
+        const $ = new $root.circle.UnsortedSegmentSumOptions();
+        return $;
+    }
+};
+
+$root.circle.ATan2Options = class ATan2Options {
+
+    static decode(/* reader, position */) {
+        const $ = new $root.circle.ATan2Options();
+        return $;
+    }
+
+    static decodeText(/* reader, json */) {
+        const $ = new $root.circle.ATan2Options();
+        return $;
+    }
+};
+
+$root.circle.UnsortedSegmentMinOptions = class UnsortedSegmentMinOptions {
+
+    static decode(/* reader, position */) {
+        const $ = new $root.circle.UnsortedSegmentMinOptions();
+        return $;
+    }
+
+    static decodeText(/* reader, json */) {
+        const $ = new $root.circle.UnsortedSegmentMinOptions();
+        return $;
+    }
+};
+
+$root.circle.SignOptions = class SignOptions {
+
+    static decode(/* reader, position */) {
+        const $ = new $root.circle.SignOptions();
+        return $;
+    }
+
+    static decodeText(/* reader, json */) {
+        const $ = new $root.circle.SignOptions();
+        return $;
+    }
+};
+
+$root.circle.BitcastOptions = class BitcastOptions {
+
+    static decode(/* reader, position */) {
+        const $ = new $root.circle.BitcastOptions();
+        return $;
+    }
+
+    static decodeText(/* reader, json */) {
+        const $ = new $root.circle.BitcastOptions();
+        return $;
+    }
+};
+
+$root.circle.BitwiseXorOptions = class BitwiseXorOptions {
+
+    static decode(/* reader, position */) {
+        const $ = new $root.circle.BitwiseXorOptions();
+        return $;
+    }
+
+    static decodeText(/* reader, json */) {
+        const $ = new $root.circle.BitwiseXorOptions();
+        return $;
+    }
+};
+
+$root.circle.RightShiftOptions = class RightShiftOptions {
+
+    static decode(/* reader, position */) {
+        const $ = new $root.circle.RightShiftOptions();
+        return $;
+    }
+
+    static decodeText(/* reader, json */) {
+        const $ = new $root.circle.RightShiftOptions();
         return $;
     }
 };
@@ -2217,17 +2711,19 @@ $root.circle.OperatorCode = class OperatorCode {
 
     static decode(reader, position) {
         const $ = new $root.circle.OperatorCode();
-        $.builtin_code = reader.uint8_(position, 4, 0);
+        $.deprecated_builtin_code = reader.int8_(position, 4, 0);
         $.custom_code = reader.string_(position, 6, null);
         $.version = reader.int32_(position, 8, 1);
+        $.builtin_code = reader.int32_(position, 10, 0);
         return $;
     }
 
     static decodeText(reader, json) {
         const $ = new $root.circle.OperatorCode();
-        $.builtin_code = $root.circle.BuiltinOperator[json.builtin_code];
+        $.deprecated_builtin_code = reader.value(json.deprecated_builtin_code, 0);
         $.custom_code = reader.value(json.custom_code, null);
         $.version = reader.value(json.version, 1);
+        $.builtin_code = $root.circle.BuiltinOperator[json.builtin_code];
         return $;
     }
 };
@@ -2327,6 +2823,46 @@ $root.circle.Metadata = class Metadata {
     }
 };
 
+$root.circle.TensorMap = class TensorMap {
+
+    static decode(reader, position) {
+        const $ = new $root.circle.TensorMap();
+        $.name = reader.string_(position, 4, null);
+        $.tensor_index = reader.uint32_(position, 6, 0);
+        return $;
+    }
+
+    static decodeText(reader, json) {
+        const $ = new $root.circle.TensorMap();
+        $.name = reader.value(json.name, null);
+        $.tensor_index = reader.value(json.tensor_index, 0);
+        return $;
+    }
+};
+
+$root.circle.SignatureDef = class SignatureDef {
+
+    static decode(reader, position) {
+        const $ = new $root.circle.SignatureDef();
+        $.inputs = reader.tableArray(position, 4, $root.circle.TensorMap.decode);
+        $.outputs = reader.tableArray(position, 6, $root.circle.TensorMap.decode);
+        $.signature_key = reader.string_(position, 8, null);
+        $.deprecated_tag = reader.string_(position, 10, null);
+        $.subgraph_index = reader.uint32_(position, 12, 0);
+        return $;
+    }
+
+    static decodeText(reader, json) {
+        const $ = new $root.circle.SignatureDef();
+        $.inputs = reader.objectArray(json.inputs, $root.circle.TensorMap.decodeText);
+        $.outputs = reader.objectArray(json.outputs, $root.circle.TensorMap.decodeText);
+        $.signature_key = reader.value(json.signature_key, null);
+        $.deprecated_tag = reader.value(json.deprecated_tag, null);
+        $.subgraph_index = reader.value(json.subgraph_index, 0);
+        return $;
+    }
+};
+
 $root.circle.Model = class Model {
 
     static identifier(reader) {
@@ -2350,6 +2886,7 @@ $root.circle.Model = class Model {
         $.buffers = reader.tableArray(position, 12, $root.circle.Buffer.decode);
         $.metadata_buffer = reader.typedArray(position, 14, Int32Array);
         $.metadata = reader.tableArray(position, 16, $root.circle.Metadata.decode);
+        $.signature_defs = reader.tableArray(position, 18, $root.circle.SignatureDef.decode);
         return $;
     }
 
@@ -2362,6 +2899,7 @@ $root.circle.Model = class Model {
         $.buffers = reader.objectArray(json.buffers, $root.circle.Buffer.decodeText);
         $.metadata_buffer = reader.typedArray(json.metadata_buffer, Int32Array);
         $.metadata = reader.objectArray(json.metadata, $root.circle.Metadata.decodeText);
+        $.signature_defs = reader.objectArray(json.signature_defs, $root.circle.SignatureDef.decodeText);
         return $;
     }
 };
