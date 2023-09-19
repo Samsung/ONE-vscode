@@ -306,8 +306,14 @@ host.BrowserHost = class {
         this.window.__modules__[id] = circle;
         resolve(circle);
       } else if (id === "circle-schema" || id === "./circle-schema") {
-        this.window.__modules__[id] = $root.circle;
-        resolve($root.circle);
+        this.window.__modules__[id] = cir_root.circle;
+        resolve(cir_root.circle);
+      } else if (id === "tflite" || id === "./tflite") {
+        this.window.__modules__[id] = tflite;
+        resolve(tflite);
+      } else if (id === "tflite-schema" || id === "./tflite-schema") {
+        this.window.__modules__[id] = tfl_root.tflite;
+        resolve(tfl_root.tflite);
       }
       reject(new Error("Unsupported require: " + id));
     });
