@@ -259,19 +259,42 @@ class DirectoryNode extends Node {
         if (dirNode && dirNode.getChildren().length > 0) {
           this._childNodes!.push(dirNode);
         }
-      } else if (
-        fstat.isFile() &&
-        (fname.endsWith(".pb") ||
-          fname.endsWith(".tflite") ||
-          fname.endsWith(".onnx"))
-      ) {
-        const baseModelNode = NodeFactory.create(
-          NodeType.baseModel,
-          fpath,
-          this
-        );
+      } else if (fstat.isFile()) {
+        if (fname.endsWith(".pb")) {
+          const baseModelNode = NodeFactory.create(
+            NodeType.baseModel,
+            fpath,
+            this,
+            {
+              ext: ".pb",
+              openViewType: "default",
+            }
+          );
 
-        if (baseModelNode) {
+          this._childNodes!.push(baseModelNode);
+        } else if (fname.endsWith(".tflite")) {
+          const baseModelNode = NodeFactory.create(
+            NodeType.baseModel,
+            fpath,
+            this,
+            {
+              ext: ".tflite",
+              openViewType: "one.viewer.circle",
+            }
+          );
+
+          this._childNodes!.push(baseModelNode);
+        } else if (fname.endsWith(".onnx")) {
+          const baseModelNode = NodeFactory.create(
+            NodeType.baseModel,
+            fpath,
+            this,
+            {
+              ext: ".onnx",
+              openViewType: "one.viewer.circle",
+            }
+          );
+
           this._childNodes!.push(baseModelNode);
         }
       }
