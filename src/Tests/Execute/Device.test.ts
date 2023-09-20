@@ -17,7 +17,8 @@
 import { assert } from "chai";
 import { DeviceSpec, HostPCSpec, TizenDeviceSpec } from "../../Backend/Spec";
 
-import { Device } from "../../Execute/Device";
+import { Device, SimulatorDevice, TargetDevice } from "../../Execute/Device";
+import { Toolchain, ToolchainInfo } from "../../Backend/Toolchain";
 
 suite("Device", function () {
   suite("#Device", function () {
@@ -84,6 +85,57 @@ suite("Device", function () {
       const hw: string = "TestHW";
       const sw: string = "TestOS";
       const testSpec = new HostPCSpec(hw, sw);
+      try {
+        new Device(deviceName, testSpec);
+      } catch (err: any) {
+        assert.strictEqual(err.message, "empty name device cannot be created.");
+      }
+    });
+  });
+
+  suite("#SimulatorDevice", function () {
+    test("SimulatorDevice constructor", function () {
+      const deviceName: string = "testDevice";
+      const hw: string = "TestHW";
+      const sw: string = "TestOS";
+      const testSpec = new DeviceSpec(hw, sw, undefined);
+      const toolchainInfo = new ToolchainInfo("dummy", "dummy toolchain");
+      const toolchain = new Toolchain(toolchainInfo);
+      const testDevice = new SimulatorDevice(deviceName, testSpec, toolchain);
+      assert.isObject<Device>(testDevice);
+      assert.strictEqual(testDevice.spec, testSpec);
+      assert.strictEqual(testDevice.name, deviceName);
+      assert.strictEqual(testDevice.toolchain, toolchain);
+    });
+    test("NEG: Empty name basic device create", function () {
+      const deviceName: string = "";
+      const hw: string = "TestHW";
+      const sw: string = "TestOS";
+      const testSpec = new DeviceSpec(hw, sw, undefined);
+      try {
+        new Device(deviceName, testSpec);
+      } catch (err: any) {
+        assert.strictEqual(err.message, "empty name device cannot be created.");
+      }
+    });
+  });
+
+  suite("#TargetDevice", function () {
+    test("TargetDevice constructor", function () {
+      const deviceName: string = "testDevice";
+      const hw: string = "TestHW";
+      const sw: string = "TestOS";
+      const testSpec = new DeviceSpec(hw, sw, undefined);
+      const testDevice = new TargetDevice(deviceName, testSpec);
+      assert.isObject<Device>(testDevice);
+      assert.strictEqual(testDevice.spec, testSpec);
+      assert.strictEqual(testDevice.name, deviceName);
+    });
+    test("NEG: Empty name basic device create", function () {
+      const deviceName: string = "";
+      const hw: string = "TestHW";
+      const sw: string = "TestOS";
+      const testSpec = new DeviceSpec(hw, sw, undefined);
       try {
         new Device(deviceName, testSpec);
       } catch (err: any) {
