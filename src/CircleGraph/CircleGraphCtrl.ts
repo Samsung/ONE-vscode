@@ -471,6 +471,13 @@ export class CircleGraphCtrl {
       "%tflite-schema.js%",
       "tflite-schema.js"
     );
+    html = this.updateExternalUri(html, webview, "%onnx.js%", "onnx.js");
+    html = this.updateExternalUri(
+      html,
+      webview,
+      "%onnx-proto.js%",
+      "onnx-proto.js"
+    );
     // modified for one-vscode
     html = this.updateUri(html, webview, "%index.js%", "index.js");
     html = this.updateUri(html, webview, "%view.js%", "view.js");

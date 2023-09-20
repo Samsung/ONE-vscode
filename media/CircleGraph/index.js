@@ -314,6 +314,12 @@ host.BrowserHost = class {
       } else if (id === "tflite-schema" || id === "./tflite-schema") {
         this.window.__modules__[id] = tfl_root.tflite;
         resolve(tfl_root.tflite);
+      } else if (id === "onnx" || id === "./onnx") {
+        this.window.__modules__[id] = onnx;
+        resolve(onnx);
+      } else if (id === "onnx-proto" || id === "./onnx-proto") {
+        this.window.__modules__[id] = onnx_root.onnx;
+        resolve(onnx_root.onnx);
       }
       reject(new Error("Unsupported require: " + id));
     });

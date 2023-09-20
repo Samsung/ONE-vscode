@@ -98,6 +98,9 @@
           },
           {
             "filenamePattern": "*.tflite"
+          },
+          {
+            "filenamePattern": "*.onnx"
           }
         ],
         "priority": "default"
