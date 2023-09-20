@@ -23,7 +23,7 @@ import { Executor } from "../Backend/Executor";
 import { DeviceSpec, supportedSpecs } from "../Backend/Spec";
 import { Logger } from "../Utils/Logger";
 
-import { Device } from "./Device";
+import { Device, SimulatorDevice } from "./Device";
 import { DeviceManager } from "./DeviceManager";
 
 type DeviceTreeView = DeviceViewNode | undefined | void;
@@ -39,14 +39,20 @@ export const deviceManagerList = ["local"];
 export enum NodeType {
   /**
    * A Execution system that contains multiple Devices.
+   * 1. local
+   * 2. TODO remote
    */
   deviceManager,
   /**
    * A single device dedicated to certain device.
+   * // TODO Remove device node type
    */
   device,
   /**
    * A Executor that run on certain device.
+   * 1. the actual target connected to the bridge
+   * 2. simulator on host machine
+   * 3. TODO simulator on docker image
    */
   executor,
   /**
@@ -191,42 +197,59 @@ export class DeviceViewProvider
   }
 
   loadDeviceManager(deviceMan: string, callback: Function): void {
-    const listCmds: Promise<Device[]>[] = [];
     const deviceList: Device[] = [];
+    // load executor environment
+    // 1. the actual target connected to the bridge
+    // 2. simulator on host machine
+    // 3. TODO simulator on docker image
     for (const deviceSpec of supportedSpecs) {
       if (deviceSpec.bridge) {
         const deviceGetCmd = deviceSpec.bridge.deviceListCmd;
+        const listCmds: Promise<Device[]>[] = [];
         listCmds.push(this.getDevicesPromise(deviceGetCmd, deviceSpec));
+        Promise.all(listCmds).then((results) => {
+          for (const result of results) {
+            deviceList.push(...result);
+          }
+        });
       } else {
-        deviceList.push(new Device("HostPC", deviceSpec));
-      }
-    }
-    Promise.all(listCmds).then((results) => {
-      for (const result of results) {
-        deviceList.push(...result);
-      }
-      let executorList: Executor[] = [];
-      const entries = Object.entries(globalBackendMap);
-      for (const entry of entries) {
-        const compiler = entry[1].compiler();
-        if (compiler) {
-          for (const toolchainType of compiler.getToolchainTypes()) {
-            if (compiler.getInstalledToolchains(toolchainType).length > 0) {
-              executorList.push(...entry[1].executors());
-              break;
+        Object.entries(globalBackendMap).map(([_, backend]) => {
+          if (backend.executor()) {
+            const compiler = backend.compiler();
+            if (compiler) {
+              compiler
+                .getToolchainTypes()
+                .map((type) => compiler.getInstalledToolchains(type))
+                .map((toolchains) => {
+                  for (const toolchain of toolchains) {
+                    deviceList.push(
+                      new SimulatorDevice(
+                        toolchain.info.name,
+                        deviceSpec,
+                        toolchain
+                      )
+                    );
+                  }
+                });
             }
           }
-        }
+        });
       }
-      this.deviceManagerMap[deviceMan] = new DeviceManager(
-        deviceList,
-        executorList
-      );
-      callback(this);
-    });
+    }
+
+    // TODO Remove executorList
+    let executorList: Executor[] = [];
+    this.deviceManagerMap[deviceMan] = new DeviceManager(
+      deviceList,
+      executorList
+    );
+    callback(this);
   }
 
   constructor() {
+    // load VSCode environment
+    // 1. local
+    // 2. TODO remote
     for (const deviceMan of deviceManagerList) {
       this.loadDeviceManager(
         deviceMan,
