@@ -2234,6 +2234,7 @@ view.ModelFactoryService = class {
     this._factories = [];
     this.register("./circle", [".circle"]);
     this.register("./tflite", [".tflite"]);
+    this.register("./onnx", [".onnx"]);
   }
   register(id, factories, containers) {
     for (const extension of factories) {
