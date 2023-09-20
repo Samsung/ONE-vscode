@@ -71,8 +71,9 @@ class Env implements BuilderJob {
     const rootJobs = this.workFlow.jobs.filter((j) => j.root === true);
     if (rootJobs.length > 0) {
       Logger.info(this.logTag, "Showing password prompt");
+      const helpMsg: string = "Enter password for sudo authentication";
       /* istanbul ignore next */
-      showPasswordQuickInput().then((password) => {
+      showPasswordQuickInput(helpMsg).then((password) => {
         if (password === undefined) {
           Logger.info(this.logTag, "Password dialog canceled");
           return;
