@@ -301,12 +301,12 @@
       {
         "command": "one.explorer.deleteOnShortcut",
         "key": "delete",
-        "when": "view.OneExplorerView.visible && !explorerResourceReadonly && !inputFocus"
+        "when": "view.OneExplorerView.visible && !inputFocus"
       },
       {
         "command": "one.explorer.renameOnShortcut",
         "key": "F2",
-        "when": "view.OneExplorerView.visible && one.explorer:hasSelectedCfg && !explorerResourceReadonly && !inputFocus"
+        "when": "view.OneExplorerView.visible && one.explorer:hasSelectedCfg && !inputFocus"
       }
     ],
     "menus": {
