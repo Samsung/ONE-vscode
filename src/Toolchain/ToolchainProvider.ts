@@ -61,10 +61,16 @@ export class ToolchainNode extends BaseNode {
   ) {
     super(label, vscode.TreeItemCollapsibleState.None);
     if (DefaultToolchain.getInstance().isEqual(toolchain)) {
-      this.iconPath = new vscode.ThemeIcon("layers-active");
+      this.iconPath = new vscode.ThemeIcon(
+        "layers",
+        new vscode.ThemeColor("debugIcon.startForeground")
+      );
       this.contextValue = "toolchain-default";
     } else {
-      this.iconPath = new vscode.ThemeIcon("layers");
+      this.iconPath = new vscode.ThemeIcon(
+        "layers",
+        new vscode.ThemeColor("disabledForeground")
+      );
       this.contextValue = "toolchain";
     }
     this.description = toolchain.info.version?.str();
@@ -474,7 +480,6 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
       gToolchainEnvMap[tnode.backend],
       tnode.toolchain
     );
-    this.refresh();
     return true;
   }
 }

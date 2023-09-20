@@ -22,8 +22,9 @@ import { Command } from "../Backend/Command";
 import { DeviceSpec, supportedSpecs } from "../Backend/Spec";
 import { Logger } from "../Utils/Logger";
 
-import { Device, SimulatorDevice } from "./Device";
+import { Device, SimulatorDevice, TargetDevice } from "./Device";
 import { DeviceManager } from "./DeviceManager";
+import { DefaultToolchain } from "../Toolchain/DefaultToolchain";
 
 type DeviceTreeView = DeviceViewNode | undefined | void;
 
@@ -56,32 +57,60 @@ export enum NodeType {
 
 export class DeviceViewNode extends vscode.TreeItem {
   type: NodeType;
-  managerName: string;
+
   constructor(
     public readonly label: string,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-    public readonly nodetype: NodeType,
-    public readonly manager: string
+    public readonly nodetype: NodeType
   ) {
     super(label, collapsibleState);
     this.type = nodetype;
-    this.managerName = manager;
-    switch (this.type) {
-      case NodeType.deviceManager:
-        this.iconPath = new vscode.ThemeIcon("list-tree"); // select best icon for this
-        this.contextValue = "deviceManager";
-        break;
-      case NodeType.device:
-        this.iconPath = new vscode.ThemeIcon("device-desktop"); // select best icon for this
-        this.contextValue = "device";
-        break;
-      case NodeType.executor:
-        this.iconPath = new vscode.ThemeIcon("debug-stackframe-focused"); // select best icon for this
-        this.contextValue = "executor";
-        break;
-      default:
-        break;
+  }
+}
+
+export class DeviceManagerNode extends DeviceViewNode {
+  managerName: string;
+  constructor(public readonly label: string) {
+    super(
+      label,
+      vscode.TreeItemCollapsibleState.Expanded,
+      NodeType.deviceManager
+    );
+    this.managerName = label;
+    this.iconPath = new vscode.ThemeIcon("list-tree"); // select best icon for this
+    this.contextValue = "deviceManager";
+  }
+}
+
+export class DeviceSingleNode extends DeviceViewNode {
+  constructor(public readonly label: string) {
+    super(label, vscode.TreeItemCollapsibleState.Expanded, NodeType.device);
+    this.iconPath = new vscode.ThemeIcon("device-desktop"); // select best icon for this
+    this.contextValue = "device";
+  }
+}
+
+export class DeviceExecutorNode extends DeviceViewNode {
+  constructor(public readonly label: string, public readonly device: Device) {
+    super(label, vscode.TreeItemCollapsibleState.None, NodeType.executor);
+    if (device instanceof SimulatorDevice) {
+      if (DefaultToolchain.getInstance().isEqual(device.toolchain)) {
+        this.iconPath = new vscode.ThemeIcon(
+          "server-environment",
+          new vscode.ThemeColor("debugIcon.startForeground")
+        ); // select best icon for this
+      } else {
+        this.iconPath = new vscode.ThemeIcon(
+          "server-environment",
+          new vscode.ThemeColor("disabledForeground")
+        ); // select best icon for this
+      }
+    } else if (device instanceof TargetDevice) {
+      this.iconPath = new vscode.ThemeIcon("device-mobile"); // select best icon for this
+    } else {
+      this.iconPath = new vscode.ThemeIcon("debug-stackframe-focused"); // select best icon for this
     }
+    this.contextValue = "executor";
   }
 }
 
@@ -121,53 +150,20 @@ export class DeviceViewProvider
     const rtnList: DeviceViewNode[] = [];
     if (!element) {
       for (const managerName of deviceManagerList) {
-        rtnList.push(
-          new DeviceViewNode(
-            managerName,
-            vscode.TreeItemCollapsibleState.Expanded,
-            NodeType.deviceManager,
-            managerName
-          )
-        );
+        rtnList.push(new DeviceManagerNode(managerName));
       }
-    } else if (element.type === NodeType.deviceManager) {
+    } else if (element instanceof DeviceManagerNode) {
       const deviceList = this.deviceManagerMap[element.managerName].allDevices;
       for (const device of deviceList) {
-        rtnList.push(
-          new DeviceViewNode(
-            device.name,
-            vscode.TreeItemCollapsibleState.None,
-            NodeType.executor,
-            element.managerName
-          )
-        );
+        rtnList.push(new DeviceExecutorNode(device.name, device));
       }
-      // } else if (element.type == NodeType.device) {
-      //   const device = this.deviceManagerMap[element.managerName].findDevice(
-      //     element.label
-      //   );
-      //   const executorList = device?.availableExecutors;
-      //   if (executorList) {
-      //     for (const executor of executorList) {
-      //       // Currently, No Executor name for this, so need to update Executor name first.
-      //       rtnList.push(
-      //         new DeviceViewNode(
-      //           executor.name(),
-      //           vscode.TreeItemCollapsibleState.None,
-      //           NodeType.executor,
-      //           element.managerName
-      //         )
-      //       );
-      //     }
-      //   }
     }
     if (rtnList.length === 0) {
       rtnList.push(
         new DeviceViewNode(
           "No subtree available",
           vscode.TreeItemCollapsibleState.None,
-          NodeType.none,
-          ""
+          NodeType.none
         )
       );
     }

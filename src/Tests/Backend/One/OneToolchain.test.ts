@@ -75,7 +75,7 @@ suite("OneBackend", function () {
   suite("#supportExecutor()", function () {
     test("supportExecutor", function () {
       const oneBackend = new OneBackend();
-      assert.equal(oneBackend.supportExecutor(), true);
+      assert.equal(oneBackend.supportExecutor(), false);
     });
   });
 });

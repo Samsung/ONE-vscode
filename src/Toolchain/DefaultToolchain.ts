@@ -42,6 +42,9 @@ class DefaultToolchain {
 
     const name = `${toolchain.info.name}-${toolchain.info.version?.str()}`;
     Logger.debug("DefaultToolchain", `${name} was set as a default toolchain.`);
+
+    vscode.commands.executeCommand("one.toolchain.refresh");
+    vscode.commands.executeCommand("one.device.refresh");
   }
 
   public unset() {

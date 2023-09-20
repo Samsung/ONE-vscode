@@ -276,7 +276,7 @@ class OneBackend implements Backend {
     return true;
   }
   supportExecutor(): boolean {
-    return true;
+    return false;
   }
 }
 
