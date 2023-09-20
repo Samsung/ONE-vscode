@@ -95,6 +95,9 @@
         "selector": [
           {
             "filenamePattern": "*.circle"
+          },
+          {
+            "filenamePattern": "*.tflite"
           }
         ],
         "priority": "default"

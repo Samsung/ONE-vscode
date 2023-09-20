@@ -1,50 +1,64 @@
+/* jshint esversion: 6 */
 
-var circle = circle || {};
+var tflite = tflite || {};
 var flatbuffers = flatbuffers || require('./flatbuffers');
-var flexbuffers = flexbuffers || require('./flexbuffers');
+var flexbuffers = {};
 var zip = zip || require('./zip');
 
-circle.ModelFactory = class {
+tflite.ModelFactory = class {
 
     match(context) {
         const tags = context.tags('flatbuffers');
-        if (tags.get('file_identifier') === 'CIR0') {
-            return 'circle.flatbuffers';
+        if (tags.get('file_identifier') === 'TFL3') {
+            return 'tflite.flatbuffers';
+        }
+        const identifier = context.identifier;
+        const extension = identifier.split('.').pop().toLowerCase();
+        const stream = context.stream;
+        if (extension === 'tflite' && stream.length >= 8) {
+            const buffer = stream.peek(Math.min(32, stream.length));
+            const reader = flatbuffers.BinaryReader.open(buffer);
+            if (reader.root === 0x00000018) {
+                const version = reader.uint32_(reader.root, 4, 0);
+                if (version === 3) {
+                    return 'tflite.flatbuffers';
+                }
+            }
         }
         const obj = context.open('json');
         if (obj && obj.subgraphs && obj.operator_codes) {
-            return 'circle.flatbuffers.json';
+            return 'tflite.flatbuffers.json';
         }
         return undefined;
     }
 
     open(context, match) {
-        return context.require('./circle-schema').then(() => {
-            circle.schema = flatbuffers.get('circle').circle;
+        return context.require('./tflite-schema').then(() => {
+            tflite.schema = flatbuffers.get('tflite').tflite;
             let model = null;
             const attachments = new Map();
             switch (match) {
-                case 'circle.flatbuffers.json': {
+                case 'tflite.flatbuffers.json': {
                     try {
                         const obj = context.open('json');
                         const reader = new flatbuffers.TextReader(obj);
-                        model = circle.schema.Model.createText(reader);
+                        model = tflite.schema.Model.createText(reader);
                     }
                     catch (error) {
                         const message = error && error.message ? error.message : error.toString();
-                        throw new circle.Error('File text format is not circle.Model (' + message.replace(/\.$/, '') + ').');
+                        throw new tflite.Error('File text format is not tflite.Model (' + message.replace(/\.$/, '') + ').');
                     }
                     break;
                 }
-                case 'circle.flatbuffers': {
+                case 'tflite.flatbuffers': {
                     const stream = context.stream;
                     try {
                         const reader = flatbuffers.BinaryReader.open(stream);
-                        model = circle.schema.Model.create(reader);
+                        model = tflite.schema.Model.create(reader);
                     }
                     catch (error) {
                         const message = error && error.message ? error.message : error.toString();
-                        throw new circle.Error('File format is not circle.Model (' + message.replace(/\.$/, '') + ').');
+                        throw new tflite.Error('File format is not tflite.Model (' + message.replace(/\.$/, '') + ').');
                     }
                     try {
                         const archive = zip.Archive.open(stream);
@@ -60,64 +74,58 @@ circle.ModelFactory = class {
                     break;
                 }
                 default: {
-                    throw new circle.Error("Unsupported Circle format '" + match + "'.");
+                    throw new tflite.Error("Unknown TensorFlow Lite format '" + match + "'.");
                 }
             }
-            return circle.Metadata.open(context).then((metadata) => {
-                return new circle.Model(metadata, model);
+            return tflite.Metadata.open(context).then((metadata) => {
+                return new tflite.Model(metadata, model);
             });
         });
     }
 };
 
-circle.Model = class {
+tflite.Model = class {
 
     constructor(metadata, model) {
         this._graphs = [];
-        this._format = 'Circle';
+        this._format = 'TensorFlow Lite';
         this._format = this._format + ' v' + model.version.toString();
         this._description = model.description || '';
         const builtinOperators = new Map();
         const upperCase = new Set([ '2D', 'LSH', 'SVDF', 'RNN', 'L2', 'LSTM' ]);
-        for (const key of Object.keys(circle.schema.BuiltinOperator)) {
+        for (const key of Object.keys(tflite.schema.BuiltinOperator)) {
             const value = key === 'BATCH_MATMUL' ? 'BATCH_MAT_MUL' : key;
             const name = value.split('_').map((s) => (s.length < 1 || upperCase.has(s)) ? s : s[0] + s.substring(1).toLowerCase()).join('');
-            const index = circle.schema.BuiltinOperator[key];
+            const index = tflite.schema.BuiltinOperator[key];
             builtinOperators.set(index, name);
         }
         const operators = model.operator_codes.map((operator) => {
-            const code = operator.builtin_code || 0;
+            const code = Math.max(operator.deprecated_builtin_code, operator.builtin_code || 0);
             const version = operator.version;
-            const custom = code === circle.schema.BuiltinOperator.CUSTOM;
+            const custom = code === tflite.schema.BuiltinOperator.CUSTOM;
             const name = custom ? operator.custom_code ? operator.custom_code : 'Custom' : builtinOperators.has(code) ? builtinOperators.get(code) : code.toString();
             return custom ? { name: name, version: version, custom: true } : { name: name, version: version };
         });
         let modelMetadata = null;
         for (const metadata of model.metadata) {
-            const buffer = model.buffers[metadata.buffer];
-            if (buffer) {
-                switch (metadata.name) {
-                    case 'min_runtime_version': {
-                        const data = buffer.data || new Uint8Array(0);
-                        this._runtime = data ? new TextDecoder().decode(data) : undefined;
-                        break;
+            switch (metadata.name) {
+                case 'min_runtime_version': {
+                    const data = model.buffers[metadata.buffer].data;
+                    this._runtime = data ? new TextDecoder().decode(data) : undefined;
+                    break;
+                }
+                case 'TFLITE_METADATA': {
+                    const data = model.buffers[metadata.buffer].data || new Uint8Array(0);
+                    const reader = flatbuffers.BinaryReader.open(data);
+                    if (tflite.schema.ModelMetadata.identifier(reader)) {
+                        modelMetadata = tflite.schema.ModelMetadata.create(reader);
+                        this._name = modelMetadata.name || '';
+                        this._version = modelMetadata.version || '';
+                        this._description = modelMetadata.description ? [ this.description, modelMetadata.description].join(' ') : this._description;
+                        this._author = modelMetadata.author || '';
+                        this._license = modelMetadata.license || '';
                     }
-                    case 'TFLITE_METADATA': {
-                        const data = buffer.data || new Uint8Array(0);
-                        const reader = flatbuffers.BinaryReader.open(data);
-                        if (circle.schema.ModelMetadata.identifier(reader)) {
-                            modelMetadata = circle.schema.ModelMetadata.create(reader);
-                            this._name = modelMetadata.name || '';
-                            this._version = modelMetadata.version || '';
-                            this._description = modelMetadata.description ? [ this.description, modelMetadata.description].join(' ') : this._description;
-                            this._author = modelMetadata.author || '';
-                            this._license = modelMetadata.license || '';
-                        }
-                        break;
-                    }
-                    default: {
-                        break;
-                    }
+                    break;
                 }
             }
         }
@@ -127,7 +135,7 @@ circle.Model = class {
             const subgraph = subgraphs[i];
             const name = subgraphs.length > 1 ? i.toString() : '';
             const subgraphMetadata = subgraphsMetadata && i < subgraphsMetadata.length ? subgraphsMetadata[i] : null;
-            this._graphs.push(new circle.Graph(metadata, subgraph, subgraphMetadata, name, operators, model));
+            this._graphs.push(new tflite.Graph(metadata, subgraph, subgraphMetadata, name, operators, model));
         }
     }
 
@@ -164,7 +172,7 @@ circle.Model = class {
     }
 };
 
-circle.Graph = class {
+tflite.Graph = class {
 
     constructor(metadata, subgraph, subgraphMetadata, name, operators, model) {
         this._nodes = [];
@@ -182,11 +190,11 @@ circle.Graph = class {
                     const buffer = model.buffers[tensor.buffer];
                     const is_variable = tensor.is_variable;
                     const data = buffer ? buffer.data : null;
-                    const initializer = (data && data.length > 0) || is_variable ? new circle.Tensor(index, tensor, buffer, is_variable) : null;
-                    tensors.set(index, new circle.Argument(index, tensor, initializer));
+                    const initializer = (data && data.length > 0) || is_variable ? new tflite.Tensor(index, tensor, buffer, is_variable) : null;
+                    tensors.set(index, new tflite.Argument(index, tensor, initializer));
                 }
                 else {
-                    tensors.set(index, new circle.Argument(index, { name: '' }, null));
+                    tensors.set(index, new tflite.Argument(index, { name: '' }, null));
                 }
             }
             return tensors.get(index);
@@ -195,7 +203,7 @@ circle.Graph = class {
             const node = subgraph.operators[i];
             const index = node.opcode_index;
             const operator = index < operators.length ? operators[index] : { name: '(' + index.toString() + ')' };
-            this._nodes.push(new circle.Node(metadata, node, operator, i.toString(), args));
+            this._nodes.push(new tflite.Node(metadata, node, operator, i.toString(), args));
         }
         const applyTensorMetadata = (argument, tensorMetadata) => {
             if (tensorMetadata) {
@@ -207,22 +215,20 @@ circle.Graph = class {
                 if (argument.type && content) {
                     let denotation = null;
                     const contentProperties = content.content_properties;
-                    if (contentProperties instanceof circle.schema.FeatureProperties) {
+                    if (contentProperties instanceof tflite.schema.FeatureProperties) {
                         denotation = 'Feature';
                     }
-                    else if (contentProperties instanceof circle.schema.ImageProperties) {
+                    else if (contentProperties instanceof tflite.schema.ImageProperties) {
                         denotation = 'Image';
                         switch(contentProperties.color_space) {
-                            case 0: denotation += '(Unknown)'; break;
                             case 1: denotation += '(RGB)'; break;
                             case 2: denotation += '(Grayscale)'; break;
-                            default: throw circle.Error("Unsupported image color space '" + contentProperties.color_space + "'.");
                         }
                     }
-                    else if (contentProperties instanceof circle.schema.BoundingBoxProperties) {
+                    else if (contentProperties instanceof tflite.schema.BoundingBoxProperties) {
                         denotation = 'BoundingBox';
                     }
-                    else if (contentProperties instanceof circle.schema.AudioProperties) {
+                    else if (contentProperties instanceof tflite.schema.AudioProperties) {
                         denotation = 'Audio(' + contentProperties.sample_rate.toString() + ',' + contentProperties.channels.toString() + ')';
                     }
                     if (denotation) {
@@ -238,7 +244,7 @@ circle.Graph = class {
             if (subgraphMetadata && i < subgraphMetadata.input_tensor_metadata.length) {
                 applyTensorMetadata(argument, subgraphMetadata.input_tensor_metadata[i]);
             }
-            this._inputs.push(new circle.Parameter(argument ? argument.name : '?', true, argument ? [ argument ] : []));
+            this._inputs.push(new tflite.Parameter(argument ? argument.name : '?', true, argument ? [ argument ] : []));
         }
         const outputs = subgraph.outputs;
         for (let i = 0; i < outputs.length; i++) {
@@ -247,12 +253,16 @@ circle.Graph = class {
             if (subgraphMetadata && i < subgraphMetadata.output_tensor_metadata.length) {
                 applyTensorMetadata(argument, subgraphMetadata.output_tensor_metadata[i]);
             }
-            this._outputs.push(new circle.Parameter(argument ? argument.name : '?', true, argument ? [ argument ] : []));
+            this._outputs.push(new tflite.Parameter(argument ? argument.name : '?', true, argument ? [ argument ] : []));
         }
     }
 
     get name() {
         return this._name;
+    }
+
+    get groups() {
+        return false;
     }
 
     get inputs() {
@@ -268,7 +278,7 @@ circle.Graph = class {
     }
 };
 
-circle.Node = class {
+tflite.Node = class {
 
     constructor(metadata, node, type, location, args) {
         this._location = location;
@@ -306,7 +316,7 @@ circle.Node = class {
                 }
                 inputIndex += count;
                 inputName = inputName ? inputName : inputIndex.toString();
-                this._inputs.push(new circle.Parameter(inputName, inputVisible, inputArguments));
+                this._inputs.push(new tflite.Parameter(inputName, inputVisible, inputArguments));
             }
             for (let k = 0; k < outputs.length; k++) {
                 const index = outputs[k];
@@ -318,34 +328,32 @@ circle.Node = class {
                 let outputName = k.toString();
                 if (this._type && this._type.outputs && k < this._type.outputs.length) {
                     const output = this._type.outputs[k];
-                    if (output && output.name) {
+                    if (output && (!output.option || output.opcodeIndex != 'variadic') && output.name) {
                         outputName = output.name;
                     }
                 }
-                this._outputs.push(new circle.Parameter(outputName, true, outputArguments));
+                this._outputs.push(new tflite.Parameter(outputName, true, outputArguments));
             }
             if (type.custom && node.custom_options.length > 0) {
                 let decoded = false;
-                if (node.custom_options_format === circle.schema.CustomOptionsFormat.FLEXBUFFERS) {
+                if (node.custom_options_format === tflite.schema.CustomOptionsFormat.FLEXBUFFERS) {
                     try {
-                        const reader = flexbuffers.BinaryReader.open(node.custom_options);
-                        if (reader) {
-                            const custom_options = reader.read();
-                            if (Array.isArray(custom_options)) {
-                                const attribute = new circle.Attribute(null, 'custom_options', custom_options);
+                        const reader = flexbuffers.Reader.open(node.custom_options);
+                        const custom_options = reader.read();
+                        if (Array.isArray(custom_options)) {
+                            const attribute = new tflite.Attribute(null, 'custom_options', custom_options);
+                            this._attributes.push(attribute);
+                            decoded = true;
+                        }
+                        else if (custom_options) {
+                            for (const pair of Object.entries(custom_options)) {
+                                const key = pair[0];
+                                const value = pair[1];
+                                const schema = metadata.attribute(type.name, key);
+                                const attribute = new tflite.Attribute(schema, key, value);
                                 this._attributes.push(attribute);
-                                decoded = true;
                             }
-                            else if (custom_options) {
-                                for (const pair of Object.entries(custom_options)) {
-                                    const key = pair[0];
-                                    const value = pair[1];
-                                    const schema = metadata.attribute(type.name, key);
-                                    const attribute = new circle.Attribute(schema, key, value);
-                                    this._attributes.push(attribute);
-                                }
-                                decoded = true;
-                            }
+                            decoded = true;
                         }
                     }
                     catch (err) {
@@ -354,7 +362,7 @@ circle.Node = class {
                 }
                 if (!decoded) {
                     const schema = metadata.attribute(type.name, 'custom');
-                    this._attributes.push(new circle.Attribute(schema, 'custom', Array.from(node.custom_options)));
+                    this._attributes.push(new tflite.Attribute(schema, 'custom', Array.from(node.custom_options)));
                 }
             }
             const options = node.builtin_options;
@@ -364,13 +372,13 @@ circle.Node = class {
                     if (name === 'fused_activation_function' && value !== 0) {
                         const activationFunctionMap = { 1: 'Relu', 2: 'ReluN1To1', 3: 'Relu6', 4: 'Tanh', 5: 'SignBit' };
                         if (!activationFunctionMap[value]) {
-                            throw new circle.Error("Unsupported activation funtion index '" + JSON.stringify(value) + "'.");
+                            throw new tflite.Error("Unknown activation funtion index '" + JSON.stringify(value) + "'.");
                         }
                         const type = activationFunctionMap[value];
-                        this._chain = [ new circle.Node(metadata, null, { name: type }, null, []) ];
+                        this._chain = [ new tflite.Node(metadata, null, { name: type }, null, []) ];
                     }
                     const schema = metadata.attribute(type.name, name);
-                    this._attributes.push(new circle.Attribute(schema, name, value));
+                    this._attributes.push(new tflite.Attribute(schema, name, value));
                 }
             }
         }
@@ -386,6 +394,10 @@ circle.Node = class {
 
     get location() {
         return this._location;
+    }
+
+    get group() {
+        return null;
     }
 
     get inputs() {
@@ -405,19 +417,32 @@ circle.Node = class {
     }
 };
 
-circle.Attribute = class {
+tflite.Attribute = class {
 
     constructor(metadata, name, value) {
+        this._type = null;
         this._name = name;
-        this._value = ArrayBuffer.isView(value) ? Array.from(value) : value;
-        this._type = metadata && metadata.type ? metadata.type : null;
+        this._value = value;
         if (this._name == 'fused_activation_function') {
             this._visible = false;
         }
-        if (this._type) {
-            this._value = circle.Utility.enum(this._type, this._value);
-        }
         if (metadata) {
+            if (metadata.type) {
+                this._type = metadata.type;
+            }
+            if (this._type) {
+                switch (this._type) {
+                    case 'shape':
+                        this._value = new tflite.TensorShape(value);
+                        break;
+                    case 'TensorType':
+                        this._value = tflite.Utility.dataType(this._value);
+                        break;
+                    default:
+                        this._value = tflite.Utility.enum(this._type, this._value);
+                        break;
+                }
+            }
             if (Object.prototype.hasOwnProperty.call(metadata, 'visible') && !metadata.visible) {
                 this._visible = false;
             }
@@ -450,7 +475,7 @@ circle.Attribute = class {
     }
 };
 
-circle.Parameter = class {
+tflite.Parameter = class {
 
     constructor(name, visible, args) {
         this._name = name;
@@ -471,24 +496,31 @@ circle.Parameter = class {
     }
 };
 
-circle.Argument = class {
+tflite.Argument = class {
 
     constructor(index, tensor, initializer) {
-        const name = tensor.name || '';
+        const name = tensor.name;
+        if (typeof name !== 'string') {
+            throw new tflite.Error("Invalid argument identifier '" + JSON.stringify(name) + "'.");
+        }
         this._name = name + '\n' + index.toString();
         this._location = index.toString();
-        this._type = tensor.type !== undefined && tensor.shape !== undefined ? new circle.TensorType(tensor) : null;
+        this._type = tensor.type !== undefined && tensor.shape !== undefined ? new tflite.TensorType(tensor) : null;
         this._initializer = initializer;
         const quantization = tensor.quantization;
         if (quantization) {
-            const length = Math.max(quantization.scale.length, quantization.zero_point.length, quantization.min.length, quantization.max.length);
-            const list = [];
-            for (let i = 0; i < length; i++) {
+            const value_list = [];
+
+            const num_qparams = Math.max(quantization.scale.length, quantization.zero_point.length, quantization.min.length, quantization.max.length);
+            for (let i = 0; i < num_qparams; i++) {
                 let value = 'q';
-                const scale = i < quantization.scale.length ? quantization.scale[i] : 0;
-                const zeroPoint = (i < quantization.zero_point.length ? quantization.zero_point[i] : 0).toString();
-                if (scale !== 0 || zeroPoint !== '0') {
-                    value = scale.toString() + ' * ' + (zeroPoint === '0' ? 'q' : ('(q' + (!zeroPoint.startsWith('-') ? ' - ' + zeroPoint : ' + ' + zeroPoint.substring(1)) + ')'));
+                if (i < quantization.zero_point.length) {
+                    const zeroPoint = quantization.zero_point[i];
+                    value = zeroPoint == 0 ? 'q' : ('(q - ' + zeroPoint.toString() + ')');
+                }
+                if (i < quantization.scale.length) {
+                    const scale = quantization.scale[i];
+                    value = scale.toString() + ' * ' + value;
                 }
                 if (i < quantization.min.length) {
                     value = quantization.min[i].toString() + ' \u2264 ' + value;
@@ -496,10 +528,12 @@ circle.Argument = class {
                 if (i < quantization.max.length) {
                     value = value + ' \u2264 ' + quantization.max[i].toString();
                 }
-                list.push(value);
+                value_list.push(value);
             }
-            if (list.length > 0 && !list.every((value) => value === 'q')) {
-                this._quantization = list;
+
+            if (value_list.length > 0) {
+                value_list.push('quantized dimension: ' + quantization.quantized_dimension);
+                this._quantization = value_list.join(',');
             }
         }
     }
@@ -533,11 +567,11 @@ circle.Argument = class {
     }
 };
 
-circle.Tensor = class {
+tflite.Tensor = class {
 
     constructor(index, tensor, buffer, is_variable) {
         this._location = index.toString();
-        this._type = new circle.TensorType(tensor);
+        this._type = new tflite.TensorType(tensor);
         this._is_variable = is_variable;
         this._name = tensor.name;
         this._data = buffer.data.slice(0);
@@ -626,7 +660,7 @@ circle.Tensor = class {
                 [ 'float16', 2 ], [ 'float32', 4 ], [ 'float64', 8 ]
             ]);
             if (!itemsize.has(dataType)) {
-                throw new circle.Error("Tensor data type '" + this.type.dataType + "' is not implemented.");
+                throw new tflite.Error("Tensor data type '" + this.type.dataType + "' is not implemented.");
             }
             const size = shape.reduce((a, b) => a * b, 1);
             if (this._data.length < itemsize.get(dataType) * size) {
@@ -724,11 +758,11 @@ circle.Tensor = class {
     }
 };
 
-circle.TensorType = class {
+tflite.TensorType = class {
 
     constructor(tensor) {
-        this._dataType = circle.Utility.dataType(tensor.type);
-        this._shape = new circle.TensorShape(Array.from(tensor.shape || []));
+        this._dataType = tflite.Utility.dataType(tensor.type);
+        this._shape = new tflite.TensorShape(Array.from(tensor.shape || []));
     }
 
     get dataType() {
@@ -752,7 +786,7 @@ circle.TensorType = class {
     }
 };
 
-circle.TensorShape = class {
+tflite.TensorShape = class {
 
     constructor(dimensions) {
         this._dimensions = dimensions;
@@ -770,18 +804,18 @@ circle.TensorShape = class {
     }
 };
 
-circle.Metadata = class {
+tflite.Metadata = class {
 
     static open(context) {
-        if (circle.Metadata._metadata) {
-            return Promise.resolve(circle.Metadata._metadata);
+        if (tflite.Metadata._metadata) {
+            return Promise.resolve(tflite.Metadata._metadata);
         }
-        return context.request('circle-metadata.json', 'utf-8', null).then((data) => {
-            circle.Metadata._metadata = new circle.Metadata(data);
-            return circle.Metadata._metadata;
+        return context.request('tflite-metadata.json', 'utf-8', null).then((data) => {
+            tflite.Metadata._metadata = new tflite.Metadata(data);
+            return tflite.Metadata._metadata;
         }).catch(() => {
-            circle.Metadata._metadata = new circle.Metadata(null);
-            return circle.Metadata._metadata;
+            tflite.Metadata._metadata = new tflite.Metadata(null);
+            return tflite.Metadata._metadata;
         });
     }
 
@@ -816,25 +850,25 @@ circle.Metadata = class {
     }
 };
 
-circle.Utility = class {
+tflite.Utility = class {
 
     static dataType(type) {
-        if (!circle.Utility._tensorTypeMap) {
-            circle.Utility._tensorTypeMap = new Map(Object.keys(circle.schema.TensorType).map((key) => [ circle.schema.TensorType[key], key.toLowerCase() ]));
-            circle.Utility._tensorTypeMap.set(6, 'boolean');
+        if (!tflite.Utility._tensorTypeMap) {
+            tflite.Utility._tensorTypeMap = new Map(Object.keys(tflite.schema.TensorType).map((key) => [ tflite.schema.TensorType[key], key.toLowerCase() ]));
+            tflite.Utility._tensorTypeMap.set(6, 'boolean');
         }
-        return circle.Utility._tensorTypeMap.has(type) ? circle.Utility._tensorTypeMap.get(type) : '?';
+        return tflite.Utility._tensorTypeMap.has(type) ? tflite.Utility._tensorTypeMap.get(type) : '?';
     }
 
     static enum(name, value) {
-        const type = name && circle.schema ? circle.schema[name] : undefined;
+        const type = name && tflite.schema ? tflite.schema[name] : undefined;
         if (type) {
-            circle.Utility._enums = circle.Utility._enums || new Map();
-            if (!circle.Utility._enums.has(name)) {
+            tflite.Utility._enums = tflite.Utility._enums || new Map();
+            if (!tflite.Utility._enums.has(name)) {
                 const map = new Map(Object.keys(type).map((key) => [ type[key], key ]));
-                circle.Utility._enums.set(name, map);
+                tflite.Utility._enums.set(name, map);
             }
-            const map = circle.Utility._enums.get(name);
+            const map = tflite.Utility._enums.get(name);
             if (map.has(value)) {
                 return map.get(value);
             }
@@ -843,14 +877,212 @@ circle.Utility = class {
     }
 };
 
-circle.Error = class extends Error {
+tflite.Error = class extends Error {
 
     constructor(message) {
         super(message);
-        this.name = 'Error loading Circle model.';
+        this.name = 'Error loading TensorFlow Lite model.';
+    }
+};
+
+flexbuffers.Reader = class {
+
+    static open(buffer) {
+        return new flexbuffers.Reader(buffer);
+    }
+
+    constructor(buffer) {
+        this._reader = new flexbuffers.BinaryReader(buffer);
+    }
+
+    read() {
+        const end = this._reader.length;
+        if (end < 3) {
+            throw new flexbuffers.Error('Invalid buffer size.');
+        }
+        const byteWidth = this._reader.uint(end - 1, 1);
+        if (byteWidth > 8) {
+            throw new flexbuffers.Error('Invalid byte size.');
+        }
+        const packedType = this._reader.uint(end - 2, 1);
+        const reference = new flexbuffers.Reference(this._reader, end - 2 - byteWidth, byteWidth, 1 << (packedType & 3), packedType >> 2);
+        return reference.read();
+    }
+};
+
+flexbuffers.Reference = class {
+
+    constructor(reader, offset, parentWidth, byteWidth, type) {
+        this._reader = reader;
+        this._offset = offset;
+        this._parentWidth = parentWidth;
+        this._byteWidth = byteWidth;
+        this._type = type;
+    }
+
+    read() {
+        switch (this._type) {
+            case 0x00:   // null
+                return null;
+            case 0x01:   // int
+                return this._reader.int(this._offset, this._parentWidth);
+            case 0x02:   // uint
+                return this._reader.uint(this._offset, this._parentWidth);
+            case 0x03:   // float
+                return this._reader.float(this._offset, this._parentWidth);
+            case 0x04: { // key
+                return this._reader.string(this._indirect());
+            }
+            case 0x05: { // string
+                const offset = this._indirect();
+                const size = this._reader.uint(offset - this._byteWidth, this._byteWidth);
+                return this._reader.string(offset, size);
+            }
+            case 0x06: // indirect int
+                return this._reader.int(this._indirect(), this._byteWidth);
+            case 0x07: // indirect uint
+                return this._reader.uint(this._indirect(), this._byteWidth);
+            case 0x08:   // indirect float
+                return this._reader.float(this._indirect(), this._byteWidth);
+            case 0x09: { // map
+                const offset = this._indirect();
+                const keysOffset = offset - (this._byteWidth * 3);
+                const keysVectorOffset = keysOffset - this._reader.uint(keysOffset, this._byteWidth);
+                const keysByteWidth = this._reader.uint(keysOffset + this._byteWidth, this._byteWidth);
+                const keys = this._typedVector(keysVectorOffset, keysByteWidth, 0x04);
+                const values = this._vector(offset, this._byteWidth);
+                const map = {};
+                for (let i = 0; i < keys.length; i++) {
+                    map[keys[i]] = values[i];
+                }
+                return map;
+            }
+            case 0x0a: { // vector
+                return this._vector(this._indirect(), this._byteWidth);
+            }
+            case 0x0b:   // vector int
+            case 0x0c:   // vector uint
+            case 0x0d:   // vector float
+            case 0x0e:   // vector key
+            case 0x0f:   // vector string deprecated
+            case 0x24: { // vector bool
+                return this._typedVector(this._indirect(), this._byteWidth, this._type - 0x0b + 0x01);
+            }
+            case 0x10:   // vector int2
+            case 0x11:   // vector uint2
+            case 0x12:   // vector float2
+            case 0x13:   // vector int3
+            case 0x14:   // vector uint3
+            case 0x15:   // vector float3
+            case 0x16:   // vector int4
+            case 0x17:   // vector uint4
+            case 0x18: { // vector float4
+                const offset = this._indirect();
+                const size = (((this._type - 0x10) / 3) >> 0) + 2;
+                const type = ((this._type - 0x10) % 3) + 0x01;
+                return this._typedVector(offset, this._byteWidth, type, size);
+            }
+            case 0x19: { // blob
+                const offset = this._indirect();
+                const size = this._reader.uint(offset - this._byteWidth, this._byteWidth);
+                return this._reader.bytes(offset, size);
+            }
+            case 0x1a: { // bool
+                return this._reader.uint(this._offset, this._parentWidth) !== 0;
+            }
+        }
+        return undefined;
+    }
+
+    _indirect() {
+        return this._offset - this._reader.uint(this._offset, this._parentWidth);
+    }
+
+    _vector(offset, byteWidth) {
+        const size = this._reader.uint(offset - byteWidth, byteWidth);
+        const packedTypeOffset = offset + (size * byteWidth);
+        const vector = new Array(size);
+        for (let i = 0; i < size; i++) {
+            const packedType = this._reader.uint(packedTypeOffset + i, 1);
+            const reference = new flexbuffers.Reference(this._reader, offset + (i * byteWidth), byteWidth, 1 << (packedType & 3), packedType >> 2);
+            vector[i] = reference.read();
+        }
+        return vector;
+    }
+
+    _typedVector(offset, byteWidth, type, size) {
+        size = size === undefined ? this._reader.uint(offset - byteWidth, byteWidth) : size;
+        const vector = new Array(size);
+        for (let i = 0; i < size; i++) {
+            const reference = new flexbuffers.Reference(this._reader, offset + (i * byteWidth), byteWidth, 1, type);
+            vector[i] = reference.read();
+        }
+        return vector;
+    }
+};
+
+flexbuffers.BinaryReader = class {
+
+    constructor(buffer) {
+        this._buffer = buffer;
+        this._length = buffer.length;
+        this._view = new DataView(buffer.buffer, buffer.byteOffset, buffer.byteLength);
+        this._utf8Decoder = new TextDecoder('utf-8');
+    }
+
+    get length() {
+        return this._length;
+    }
+
+    int(offset, size) {
+        switch (size) {
+            case 1: return this._view.getInt8(offset);
+            case 2: return this._view.getInt16(offset, true);
+            case 4: return this._view.getInt32(offset, true);
+            case 8: return this._view.getInt64(offset, true);
+        }
+        throw new flexbuffers.Error("Invalid int size '" + size + "'.");
+    }
+
+    uint(offset, size) {
+        switch (size) {
+            case 1: return this._view.getUint8(offset);
+            case 2: return this._view.getUint16(offset, true);
+            case 4: return this._view.getUint32(offset, true);
+            case 8: return this._view.getUint64(offset, true);
+        }
+        throw new flexbuffers.Error("Invalid uint size '" + size + "'.");
+    }
+
+    float(offset, size) {
+        switch (size) {
+            case 4: return this._view.getFloat32(offset, true);
+            case 8: return this._view.getFloat64(offset, true);
+        }
+        throw new flexbuffers.Error("Invalid float size '" + size + "'.");
+    }
+
+    string(offset, size) {
+        let end = size === undefined ? this._buffer.indexOf(0, offset) : offset + size;
+        end = end === -1 ? this._buffer.length : end;
+        const bytes = this._buffer.subarray(offset, end);
+        return this._utf8Decoder.decode(bytes);
+    }
+
+    bytes(offset, size) {
+        return this._buffer.slice(offset, offset + size);
+    }
+};
+
+flexbuffers.Error = class extends Error {
+
+    constructor(message) {
+        super(message);
+        this.name = 'FlexBuffers Error';
+        this.message = message;
     }
 };
 
 if (typeof module !== 'undefined' && typeof module.exports === 'object') {
-    module.exports.ModelFactory = circle.ModelFactory;
+    module.exports.ModelFactory = tflite.ModelFactory;
 }

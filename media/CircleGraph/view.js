@@ -2233,6 +2233,7 @@ view.ModelFactoryService = class {
     this._extensions = new Set([".zip", ".tar", ".tar.gz", ".tgz", ".gz"]);
     this._factories = [];
     this.register("./circle", [".circle"]);
+    this.register("./tflite", [".tflite"]);
   }
   register(id, factories, containers) {
     for (const extension of factories) {
