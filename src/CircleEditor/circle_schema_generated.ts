@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Samsung Electronics Co., Ltd. All Rights Reserved
+ * Copyright (c) 2023 Samsung Electronics Co., Ltd. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 /*
  * This file is generated with
- *  https://github.com/Samsung/ONE/blob/8e41a5031dabc9b6d265cdf1cd8dd8bba598c614/res/CircleSchema/0.4/circle_schema.fbs
+ *  https://github.com/Samsung/ONE/blob/e09738db8a7f873005d26a21465dfabca12abf88/res/CircleSchema/0.6/circle_schema.fbs
  *  by flatbuffers v2.0.7
  */
 
@@ -40,6 +40,8 @@ export enum TensorType {
   RESOURCE = 13,
   VARIANT = 14,
   UINT32 = 15,
+  UINT16 = 16,
+  INT4 = 17,
 }
 
 export enum QuantizationDetails {
@@ -284,6 +286,21 @@ export enum BuiltinOperator {
   ASSIGN_VARIABLE = 144,
   BROADCAST_ARGS = 145,
   RANDOM_STANDARD_NORMAL = 146,
+  BUCKETIZE = 147,
+  RANDOM_UNIFORM = 148,
+  MULTINOMIAL = 149,
+  GELU = 150,
+  DYNAMIC_UPDATE_SLICE = 151,
+  RELU_0_TO_1 = 152,
+  UNSORTED_SEGMENT_PROD = 153,
+  UNSORTED_SEGMENT_MAX = 154,
+  UNSORTED_SEGMENT_SUM = 155,
+  ATAN2 = 156,
+  UNSORTED_SEGMENT_MIN = 157,
+  SIGN = 158,
+  BITCAST = 159,
+  BITWISE_XOR = 160,
+  RIGHT_SHIFT = 161,
 }
 
 export enum BuiltinOptions {
@@ -402,6 +419,18 @@ export enum BuiltinOptions {
   ReadVariableOptions = 112,
   AssignVariableOptions = 113,
   RandomOptions = 114,
+  BucketizeOptions = 115,
+  GeluOptions = 116,
+  DynamicUpdateSliceOptions = 117,
+  UnsortedSegmentProdOptions = 118,
+  UnsortedSegmentMaxOptions = 119,
+  UnsortedSegmentMinOptions = 120,
+  UnsortedSegmentSumOptions = 121,
+  ATan2Options = 122,
+  SignOptions = 123,
+  BitcastOptions = 124,
+  BitwiseXorOptions = 125,
+  RightShiftOptions = 126,
   BCQGatherOptions = 252,
   BCQFullyConnectedOptions = 253,
   InstanceNormOptions = 254,
@@ -411,6 +440,7 @@ export function unionToBuiltinOptions(
   type: BuiltinOptions,
   accessor: (
     obj:
+      | ATan2Options
       | AbsOptions
       | AddNOptions
       | AddOptions
@@ -423,7 +453,10 @@ export function unionToBuiltinOptions(
       | BatchToSpaceNDOptions
       | BidirectionalSequenceLSTMOptions
       | BidirectionalSequenceRNNOptions
+      | BitcastOptions
+      | BitwiseXorOptions
       | BroadcastToOptions
+      | BucketizeOptions
       | CallOnceOptions
       | CallOptions
       | CastOptions
@@ -438,6 +471,7 @@ export function unionToBuiltinOptions(
       | DepthwiseConv2DOptions
       | DequantizeOptions
       | DivOptions
+      | DynamicUpdateSliceOptions
       | EmbeddingLookupSparseOptions
       | EqualOptions
       | ExpOptions
@@ -449,6 +483,7 @@ export function unionToBuiltinOptions(
       | FullyConnectedOptions
       | GatherNdOptions
       | GatherOptions
+      | GeluOptions
       | GreaterEqualOptions
       | GreaterOptions
       | HardSwishOptions
@@ -497,6 +532,7 @@ export function unionToBuiltinOptions(
       | ReverseSequenceOptions
       | ReverseV2Options
       | Rfft2dOptions
+      | RightShiftOptions
       | SVDFOptions
       | ScatterNdOptions
       | SegmentSumOptions
@@ -504,6 +540,7 @@ export function unionToBuiltinOptions(
       | SelectV2Options
       | SequenceRNNOptions
       | ShapeOptions
+      | SignOptions
       | SkipGramOptions
       | SliceOptions
       | SoftmaxOptions
@@ -524,11 +561,16 @@ export function unionToBuiltinOptions(
       | UnidirectionalSequenceLSTMOptions
       | UniqueOptions
       | UnpackOptions
+      | UnsortedSegmentMaxOptions
+      | UnsortedSegmentMinOptions
+      | UnsortedSegmentProdOptions
+      | UnsortedSegmentSumOptions
       | VarHandleOptions
       | WhereOptions
       | WhileOptions
       | ZerosLikeOptions
   ) =>
+    | ATan2Options
     | AbsOptions
     | AddNOptions
     | AddOptions
@@ -541,7 +583,10 @@ export function unionToBuiltinOptions(
     | BatchToSpaceNDOptions
     | BidirectionalSequenceLSTMOptions
     | BidirectionalSequenceRNNOptions
+    | BitcastOptions
+    | BitwiseXorOptions
     | BroadcastToOptions
+    | BucketizeOptions
     | CallOnceOptions
     | CallOptions
     | CastOptions
@@ -556,6 +601,7 @@ export function unionToBuiltinOptions(
     | DepthwiseConv2DOptions
     | DequantizeOptions
     | DivOptions
+    | DynamicUpdateSliceOptions
     | EmbeddingLookupSparseOptions
     | EqualOptions
     | ExpOptions
@@ -567,6 +613,7 @@ export function unionToBuiltinOptions(
     | FullyConnectedOptions
     | GatherNdOptions
     | GatherOptions
+    | GeluOptions
     | GreaterEqualOptions
     | GreaterOptions
     | HardSwishOptions
@@ -615,6 +662,7 @@ export function unionToBuiltinOptions(
     | ReverseSequenceOptions
     | ReverseV2Options
     | Rfft2dOptions
+    | RightShiftOptions
     | SVDFOptions
     | ScatterNdOptions
     | SegmentSumOptions
@@ -622,6 +670,7 @@ export function unionToBuiltinOptions(
     | SelectV2Options
     | SequenceRNNOptions
     | ShapeOptions
+    | SignOptions
     | SkipGramOptions
     | SliceOptions
     | SoftmaxOptions
@@ -642,12 +691,17 @@ export function unionToBuiltinOptions(
     | UnidirectionalSequenceLSTMOptions
     | UniqueOptions
     | UnpackOptions
+    | UnsortedSegmentMaxOptions
+    | UnsortedSegmentMinOptions
+    | UnsortedSegmentProdOptions
+    | UnsortedSegmentSumOptions
     | VarHandleOptions
     | WhereOptions
     | WhileOptions
     | ZerosLikeOptions
     | null
 ):
+  | ATan2Options
   | AbsOptions
   | AddNOptions
   | AddOptions
@@ -660,7 +714,10 @@ export function unionToBuiltinOptions(
   | BatchToSpaceNDOptions
   | BidirectionalSequenceLSTMOptions
   | BidirectionalSequenceRNNOptions
+  | BitcastOptions
+  | BitwiseXorOptions
   | BroadcastToOptions
+  | BucketizeOptions
   | CallOnceOptions
   | CallOptions
   | CastOptions
@@ -675,6 +732,7 @@ export function unionToBuiltinOptions(
   | DepthwiseConv2DOptions
   | DequantizeOptions
   | DivOptions
+  | DynamicUpdateSliceOptions
   | EmbeddingLookupSparseOptions
   | EqualOptions
   | ExpOptions
@@ -686,6 +744,7 @@ export function unionToBuiltinOptions(
   | FullyConnectedOptions
   | GatherNdOptions
   | GatherOptions
+  | GeluOptions
   | GreaterEqualOptions
   | GreaterOptions
   | HardSwishOptions
@@ -734,6 +793,7 @@ export function unionToBuiltinOptions(
   | ReverseSequenceOptions
   | ReverseV2Options
   | Rfft2dOptions
+  | RightShiftOptions
   | SVDFOptions
   | ScatterNdOptions
   | SegmentSumOptions
@@ -741,6 +801,7 @@ export function unionToBuiltinOptions(
   | SelectV2Options
   | SequenceRNNOptions
   | ShapeOptions
+  | SignOptions
   | SkipGramOptions
   | SliceOptions
   | SoftmaxOptions
@@ -761,6 +822,10 @@ export function unionToBuiltinOptions(
   | UnidirectionalSequenceLSTMOptions
   | UniqueOptions
   | UnpackOptions
+  | UnsortedSegmentMaxOptions
+  | UnsortedSegmentMinOptions
+  | UnsortedSegmentProdOptions
+  | UnsortedSegmentSumOptions
   | VarHandleOptions
   | WhereOptions
   | WhileOptions
@@ -1017,6 +1082,40 @@ export function unionToBuiltinOptions(
       return accessor(new AssignVariableOptions())! as AssignVariableOptions;
     case "RandomOptions":
       return accessor(new RandomOptions())! as RandomOptions;
+    case "BucketizeOptions":
+      return accessor(new BucketizeOptions())! as BucketizeOptions;
+    case "GeluOptions":
+      return accessor(new GeluOptions())! as GeluOptions;
+    case "DynamicUpdateSliceOptions":
+      return accessor(
+        new DynamicUpdateSliceOptions()
+      )! as DynamicUpdateSliceOptions;
+    case "UnsortedSegmentProdOptions":
+      return accessor(
+        new UnsortedSegmentProdOptions()
+      )! as UnsortedSegmentProdOptions;
+    case "UnsortedSegmentMaxOptions":
+      return accessor(
+        new UnsortedSegmentMaxOptions()
+      )! as UnsortedSegmentMaxOptions;
+    case "UnsortedSegmentMinOptions":
+      return accessor(
+        new UnsortedSegmentMinOptions()
+      )! as UnsortedSegmentMinOptions;
+    case "UnsortedSegmentSumOptions":
+      return accessor(
+        new UnsortedSegmentSumOptions()
+      )! as UnsortedSegmentSumOptions;
+    case "ATan2Options":
+      return accessor(new ATan2Options())! as ATan2Options;
+    case "SignOptions":
+      return accessor(new SignOptions())! as SignOptions;
+    case "BitcastOptions":
+      return accessor(new BitcastOptions())! as BitcastOptions;
+    case "BitwiseXorOptions":
+      return accessor(new BitwiseXorOptions())! as BitwiseXorOptions;
+    case "RightShiftOptions":
+      return accessor(new RightShiftOptions())! as RightShiftOptions;
     case "BCQGatherOptions":
       return accessor(new BCQGatherOptions())! as BCQGatherOptions;
     case "BCQFullyConnectedOptions":
@@ -1035,6 +1134,7 @@ export function unionListToBuiltinOptions(
   accessor: (
     index: number,
     obj:
+      | ATan2Options
       | AbsOptions
       | AddNOptions
       | AddOptions
@@ -1047,7 +1147,10 @@ export function unionListToBuiltinOptions(
       | BatchToSpaceNDOptions
       | BidirectionalSequenceLSTMOptions
       | BidirectionalSequenceRNNOptions
+      | BitcastOptions
+      | BitwiseXorOptions
       | BroadcastToOptions
+      | BucketizeOptions
       | CallOnceOptions
       | CallOptions
       | CastOptions
@@ -1062,6 +1165,7 @@ export function unionListToBuiltinOptions(
       | DepthwiseConv2DOptions
       | DequantizeOptions
       | DivOptions
+      | DynamicUpdateSliceOptions
       | EmbeddingLookupSparseOptions
       | EqualOptions
       | ExpOptions
@@ -1073,6 +1177,7 @@ export function unionListToBuiltinOptions(
       | FullyConnectedOptions
       | GatherNdOptions
       | GatherOptions
+      | GeluOptions
       | GreaterEqualOptions
       | GreaterOptions
       | HardSwishOptions
@@ -1121,6 +1226,7 @@ export function unionListToBuiltinOptions(
       | ReverseSequenceOptions
       | ReverseV2Options
       | Rfft2dOptions
+      | RightShiftOptions
       | SVDFOptions
       | ScatterNdOptions
       | SegmentSumOptions
@@ -1128,6 +1234,7 @@ export function unionListToBuiltinOptions(
       | SelectV2Options
       | SequenceRNNOptions
       | ShapeOptions
+      | SignOptions
       | SkipGramOptions
       | SliceOptions
       | SoftmaxOptions
@@ -1148,11 +1255,16 @@ export function unionListToBuiltinOptions(
       | UnidirectionalSequenceLSTMOptions
       | UniqueOptions
       | UnpackOptions
+      | UnsortedSegmentMaxOptions
+      | UnsortedSegmentMinOptions
+      | UnsortedSegmentProdOptions
+      | UnsortedSegmentSumOptions
       | VarHandleOptions
       | WhereOptions
       | WhileOptions
       | ZerosLikeOptions
   ) =>
+    | ATan2Options
     | AbsOptions
     | AddNOptions
     | AddOptions
@@ -1165,7 +1277,10 @@ export function unionListToBuiltinOptions(
     | BatchToSpaceNDOptions
     | BidirectionalSequenceLSTMOptions
     | BidirectionalSequenceRNNOptions
+    | BitcastOptions
+    | BitwiseXorOptions
     | BroadcastToOptions
+    | BucketizeOptions
     | CallOnceOptions
     | CallOptions
     | CastOptions
@@ -1180,6 +1295,7 @@ export function unionListToBuiltinOptions(
     | DepthwiseConv2DOptions
     | DequantizeOptions
     | DivOptions
+    | DynamicUpdateSliceOptions
     | EmbeddingLookupSparseOptions
     | EqualOptions
     | ExpOptions
@@ -1191,6 +1307,7 @@ export function unionListToBuiltinOptions(
     | FullyConnectedOptions
     | GatherNdOptions
     | GatherOptions
+    | GeluOptions
     | GreaterEqualOptions
     | GreaterOptions
     | HardSwishOptions
@@ -1239,6 +1356,7 @@ export function unionListToBuiltinOptions(
     | ReverseSequenceOptions
     | ReverseV2Options
     | Rfft2dOptions
+    | RightShiftOptions
     | SVDFOptions
     | ScatterNdOptions
     | SegmentSumOptions
@@ -1246,6 +1364,7 @@ export function unionListToBuiltinOptions(
     | SelectV2Options
     | SequenceRNNOptions
     | ShapeOptions
+    | SignOptions
     | SkipGramOptions
     | SliceOptions
     | SoftmaxOptions
@@ -1266,6 +1385,10 @@ export function unionListToBuiltinOptions(
     | UnidirectionalSequenceLSTMOptions
     | UniqueOptions
     | UnpackOptions
+    | UnsortedSegmentMaxOptions
+    | UnsortedSegmentMinOptions
+    | UnsortedSegmentProdOptions
+    | UnsortedSegmentSumOptions
     | VarHandleOptions
     | WhereOptions
     | WhileOptions
@@ -1273,6 +1396,7 @@ export function unionListToBuiltinOptions(
     | null,
   index: number
 ):
+  | ATan2Options
   | AbsOptions
   | AddNOptions
   | AddOptions
@@ -1285,7 +1409,10 @@ export function unionListToBuiltinOptions(
   | BatchToSpaceNDOptions
   | BidirectionalSequenceLSTMOptions
   | BidirectionalSequenceRNNOptions
+  | BitcastOptions
+  | BitwiseXorOptions
   | BroadcastToOptions
+  | BucketizeOptions
   | CallOnceOptions
   | CallOptions
   | CastOptions
@@ -1300,6 +1427,7 @@ export function unionListToBuiltinOptions(
   | DepthwiseConv2DOptions
   | DequantizeOptions
   | DivOptions
+  | DynamicUpdateSliceOptions
   | EmbeddingLookupSparseOptions
   | EqualOptions
   | ExpOptions
@@ -1311,6 +1439,7 @@ export function unionListToBuiltinOptions(
   | FullyConnectedOptions
   | GatherNdOptions
   | GatherOptions
+  | GeluOptions
   | GreaterEqualOptions
   | GreaterOptions
   | HardSwishOptions
@@ -1359,6 +1488,7 @@ export function unionListToBuiltinOptions(
   | ReverseSequenceOptions
   | ReverseV2Options
   | Rfft2dOptions
+  | RightShiftOptions
   | SVDFOptions
   | ScatterNdOptions
   | SegmentSumOptions
@@ -1366,6 +1496,7 @@ export function unionListToBuiltinOptions(
   | SelectV2Options
   | SequenceRNNOptions
   | ShapeOptions
+  | SignOptions
   | SkipGramOptions
   | SliceOptions
   | SoftmaxOptions
@@ -1386,6 +1517,10 @@ export function unionListToBuiltinOptions(
   | UnidirectionalSequenceLSTMOptions
   | UniqueOptions
   | UnpackOptions
+  | UnsortedSegmentMaxOptions
+  | UnsortedSegmentMinOptions
+  | UnsortedSegmentProdOptions
+  | UnsortedSegmentSumOptions
   | VarHandleOptions
   | WhereOptions
   | WhileOptions
@@ -1700,6 +1835,45 @@ export function unionListToBuiltinOptions(
       )! as AssignVariableOptions;
     case "RandomOptions":
       return accessor(index, new RandomOptions())! as RandomOptions;
+    case "BucketizeOptions":
+      return accessor(index, new BucketizeOptions())! as BucketizeOptions;
+    case "GeluOptions":
+      return accessor(index, new GeluOptions())! as GeluOptions;
+    case "DynamicUpdateSliceOptions":
+      return accessor(
+        index,
+        new DynamicUpdateSliceOptions()
+      )! as DynamicUpdateSliceOptions;
+    case "UnsortedSegmentProdOptions":
+      return accessor(
+        index,
+        new UnsortedSegmentProdOptions()
+      )! as UnsortedSegmentProdOptions;
+    case "UnsortedSegmentMaxOptions":
+      return accessor(
+        index,
+        new UnsortedSegmentMaxOptions()
+      )! as UnsortedSegmentMaxOptions;
+    case "UnsortedSegmentMinOptions":
+      return accessor(
+        index,
+        new UnsortedSegmentMinOptions()
+      )! as UnsortedSegmentMinOptions;
+    case "UnsortedSegmentSumOptions":
+      return accessor(
+        index,
+        new UnsortedSegmentSumOptions()
+      )! as UnsortedSegmentSumOptions;
+    case "ATan2Options":
+      return accessor(index, new ATan2Options())! as ATan2Options;
+    case "SignOptions":
+      return accessor(index, new SignOptions())! as SignOptions;
+    case "BitcastOptions":
+      return accessor(index, new BitcastOptions())! as BitcastOptions;
+    case "BitwiseXorOptions":
+      return accessor(index, new BitwiseXorOptions())! as BitwiseXorOptions;
+    case "RightShiftOptions":
+      return accessor(index, new RightShiftOptions())! as RightShiftOptions;
     case "BCQGatherOptions":
       return accessor(index, new BCQGatherOptions())! as BCQGatherOptions;
     case "BCQFullyConnectedOptions":
@@ -3143,6 +3317,171 @@ export class SparsityParametersT {
   }
 }
 
+export class VariantSubType {
+  bb: flatbuffers.ByteBuffer | null = null;
+  bb_pos = 0;
+  __init(i: number, bb: flatbuffers.ByteBuffer): VariantSubType {
+    this.bb_pos = i;
+    this.bb = bb;
+    return this;
+  }
+
+  static getRootAsVariantSubType(
+    bb: flatbuffers.ByteBuffer,
+    obj?: VariantSubType
+  ): VariantSubType {
+    return (obj || new VariantSubType()).__init(
+      bb.readInt32(bb.position()) + bb.position(),
+      bb
+    );
+  }
+
+  static getSizePrefixedRootAsVariantSubType(
+    bb: flatbuffers.ByteBuffer,
+    obj?: VariantSubType
+  ): VariantSubType {
+    bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
+    return (obj || new VariantSubType()).__init(
+      bb.readInt32(bb.position()) + bb.position(),
+      bb
+    );
+  }
+
+  shape(index: number): number | null {
+    const offset = this.bb!.__offset(this.bb_pos, 4);
+    return offset
+      ? this.bb!.readInt32(this.bb!.__vector(this.bb_pos + offset) + index * 4)
+      : 0;
+  }
+
+  shapeLength(): number {
+    const offset = this.bb!.__offset(this.bb_pos, 4);
+    return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+  }
+
+  shapeArray(): Int32Array | null {
+    const offset = this.bb!.__offset(this.bb_pos, 4);
+    return offset
+      ? new Int32Array(
+          this.bb!.bytes().buffer,
+          this.bb!.bytes().byteOffset + this.bb!.__vector(this.bb_pos + offset),
+          this.bb!.__vector_len(this.bb_pos + offset)
+        )
+      : null;
+  }
+
+  type(): TensorType {
+    const offset = this.bb!.__offset(this.bb_pos, 6);
+    return offset
+      ? this.bb!.readInt8(this.bb_pos + offset)
+      : TensorType.FLOAT32;
+  }
+
+  hasRank(): boolean {
+    const offset = this.bb!.__offset(this.bb_pos, 8);
+    return offset ? !!this.bb!.readInt8(this.bb_pos + offset) : false;
+  }
+
+  static startVariantSubType(builder: flatbuffers.Builder) {
+    builder.startObject(3);
+  }
+
+  static addShape(
+    builder: flatbuffers.Builder,
+    shapeOffset: flatbuffers.Offset
+  ) {
+    builder.addFieldOffset(0, shapeOffset, 0);
+  }
+
+  static createShapeVector(
+    builder: flatbuffers.Builder,
+    data: number[] | Int32Array
+  ): flatbuffers.Offset;
+  /**
+   * @deprecated This Uint8Array overload will be removed in the future.
+   */
+  static createShapeVector(
+    builder: flatbuffers.Builder,
+    data: number[] | Uint8Array
+  ): flatbuffers.Offset;
+  static createShapeVector(
+    builder: flatbuffers.Builder,
+    data: number[] | Int32Array | Uint8Array
+  ): flatbuffers.Offset {
+    builder.startVector(4, data.length, 4);
+    for (let i = data.length - 1; i >= 0; i--) {
+      builder.addInt32(data[i]!);
+    }
+    return builder.endVector();
+  }
+
+  static startShapeVector(builder: flatbuffers.Builder, numElems: number) {
+    builder.startVector(4, numElems, 4);
+  }
+
+  static addType(builder: flatbuffers.Builder, type: TensorType) {
+    builder.addFieldInt8(1, type, TensorType.FLOAT32);
+  }
+
+  static addHasRank(builder: flatbuffers.Builder, hasRank: boolean) {
+    builder.addFieldInt8(2, +hasRank, +false);
+  }
+
+  static endVariantSubType(builder: flatbuffers.Builder): flatbuffers.Offset {
+    const offset = builder.endObject();
+    return offset;
+  }
+
+  static createVariantSubType(
+    builder: flatbuffers.Builder,
+    shapeOffset: flatbuffers.Offset,
+    type: TensorType,
+    hasRank: boolean
+  ): flatbuffers.Offset {
+    VariantSubType.startVariantSubType(builder);
+    VariantSubType.addShape(builder, shapeOffset);
+    VariantSubType.addType(builder, type);
+    VariantSubType.addHasRank(builder, hasRank);
+    return VariantSubType.endVariantSubType(builder);
+  }
+
+  unpack(): VariantSubTypeT {
+    return new VariantSubTypeT(
+      this.bb!.createScalarList(this.shape.bind(this), this.shapeLength()),
+      this.type(),
+      this.hasRank()
+    );
+  }
+
+  unpackTo(_o: VariantSubTypeT): void {
+    _o.shape = this.bb!.createScalarList(
+      this.shape.bind(this),
+      this.shapeLength()
+    );
+    _o.type = this.type();
+    _o.hasRank = this.hasRank();
+  }
+}
+
+export class VariantSubTypeT {
+  constructor(
+    public shape: number[] = [],
+    public type: TensorType = TensorType.FLOAT32,
+    public hasRank: boolean = false
+  ) {}
+
+  pack(builder: flatbuffers.Builder): flatbuffers.Offset {
+    const shape = VariantSubType.createShapeVector(builder, this.shape);
+
+    return VariantSubType.createVariantSubType(
+      builder,
+      shape,
+      this.type,
+      this.hasRank
+    );
+  }
+}
+
 export class Tensor {
   bb: flatbuffers.ByteBuffer | null = null;
   bb_pos = 0;
@@ -3262,8 +3601,30 @@ export class Tensor {
       : null;
   }
 
+  hasRank(): boolean {
+    const offset = this.bb!.__offset(this.bb_pos, 20);
+    return offset ? !!this.bb!.readInt8(this.bb_pos + offset) : false;
+  }
+
+  variantTensors(index: number, obj?: VariantSubType): VariantSubType | null {
+    const offset = this.bb!.__offset(this.bb_pos, 22);
+    return offset
+      ? (obj || new VariantSubType()).__init(
+          this.bb!.__indirect(
+            this.bb!.__vector(this.bb_pos + offset) + index * 4
+          ),
+          this.bb!
+        )
+      : null;
+  }
+
+  variantTensorsLength(): number {
+    const offset = this.bb!.__offset(this.bb_pos, 22);
+    return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+  }
+
   static startTensor(builder: flatbuffers.Builder) {
-    builder.startObject(8);
+    builder.startObject(10);
   }
 
   static addShape(
@@ -3365,6 +3726,35 @@ export class Tensor {
     builder.startVector(4, numElems, 4);
   }
 
+  static addHasRank(builder: flatbuffers.Builder, hasRank: boolean) {
+    builder.addFieldInt8(8, +hasRank, +false);
+  }
+
+  static addVariantTensors(
+    builder: flatbuffers.Builder,
+    variantTensorsOffset: flatbuffers.Offset
+  ) {
+    builder.addFieldOffset(9, variantTensorsOffset, 0);
+  }
+
+  static createVariantTensorsVector(
+    builder: flatbuffers.Builder,
+    data: flatbuffers.Offset[]
+  ): flatbuffers.Offset {
+    builder.startVector(4, data.length, 4);
+    for (let i = data.length - 1; i >= 0; i--) {
+      builder.addOffset(data[i]!);
+    }
+    return builder.endVector();
+  }
+
+  static startVariantTensorsVector(
+    builder: flatbuffers.Builder,
+    numElems: number
+  ) {
+    builder.startVector(4, numElems, 4);
+  }
+
   static endTensor(builder: flatbuffers.Builder): flatbuffers.Offset {
     const offset = builder.endObject();
     return offset;
@@ -3382,6 +3772,11 @@ export class Tensor {
       this.bb!.createScalarList(
         this.shapeSignature.bind(this),
         this.shapeSignatureLength()
+      ),
+      this.hasRank(),
+      this.bb!.createObjList(
+        this.variantTensors.bind(this),
+        this.variantTensorsLength()
       )
     );
   }
@@ -3402,6 +3797,11 @@ export class Tensor {
       this.shapeSignature.bind(this),
       this.shapeSignatureLength()
     );
+    _o.hasRank = this.hasRank();
+    _o.variantTensors = this.bb!.createObjList(
+      this.variantTensors.bind(this),
+      this.variantTensorsLength()
+    );
   }
 }
 
@@ -3414,7 +3814,9 @@ export class TensorT {
     public quantization: QuantizationParametersT | null = null,
     public isVariable: boolean = false,
     public sparsity: SparsityParametersT | null = null,
-    public shapeSignature: number[] = []
+    public shapeSignature: number[] = [],
+    public hasRank: boolean = false,
+    public variantTensors: VariantSubTypeT[] = []
   ) {}
 
   pack(builder: flatbuffers.Builder): flatbuffers.Offset {
@@ -3427,6 +3829,10 @@ export class TensorT {
       builder,
       this.shapeSignature
     );
+    const variantTensors = Tensor.createVariantTensorsVector(
+      builder,
+      builder.createObjectOffsetList(this.variantTensors)
+    );
 
     Tensor.startTensor(builder);
     Tensor.addShape(builder, shape);
@@ -3437,6 +3843,8 @@ export class TensorT {
     Tensor.addIsVariable(builder, this.isVariable);
     Tensor.addSparsity(builder, sparsity);
     Tensor.addShapeSignature(builder, shapeSignature);
+    Tensor.addHasRank(builder, this.hasRank);
+    Tensor.addVariantTensors(builder, variantTensors);
 
     return Tensor.endTensor(builder);
   }
@@ -5984,8 +6392,13 @@ export class UnidirectionalSequenceLSTMOptions {
     return offset ? !!this.bb!.readInt8(this.bb_pos + offset) : false;
   }
 
+  diagonalRecurrentTensors(): boolean {
+    const offset = this.bb!.__offset(this.bb_pos, 14);
+    return offset ? !!this.bb!.readInt8(this.bb_pos + offset) : false;
+  }
+
   static startUnidirectionalSequenceLSTMOptions(builder: flatbuffers.Builder) {
-    builder.startObject(5);
+    builder.startObject(6);
   }
 
   static addFusedActivationFunction(
@@ -6018,6 +6431,13 @@ export class UnidirectionalSequenceLSTMOptions {
     builder.addFieldInt8(4, +asymmetricQuantizeInputs, +false);
   }
 
+  static addDiagonalRecurrentTensors(
+    builder: flatbuffers.Builder,
+    diagonalRecurrentTensors: boolean
+  ) {
+    builder.addFieldInt8(5, +diagonalRecurrentTensors, +false);
+  }
+
   static endUnidirectionalSequenceLSTMOptions(
     builder: flatbuffers.Builder
   ): flatbuffers.Offset {
@@ -6031,7 +6451,8 @@ export class UnidirectionalSequenceLSTMOptions {
     cellClip: number,
     projClip: number,
     timeMajor: boolean,
-    asymmetricQuantizeInputs: boolean
+    asymmetricQuantizeInputs: boolean,
+    diagonalRecurrentTensors: boolean
   ): flatbuffers.Offset {
     UnidirectionalSequenceLSTMOptions.startUnidirectionalSequenceLSTMOptions(
       builder
@@ -6047,6 +6468,10 @@ export class UnidirectionalSequenceLSTMOptions {
       builder,
       asymmetricQuantizeInputs
     );
+    UnidirectionalSequenceLSTMOptions.addDiagonalRecurrentTensors(
+      builder,
+      diagonalRecurrentTensors
+    );
     return UnidirectionalSequenceLSTMOptions.endUnidirectionalSequenceLSTMOptions(
       builder
     );
@@ -6058,7 +6483,8 @@ export class UnidirectionalSequenceLSTMOptions {
       this.cellClip(),
       this.projClip(),
       this.timeMajor(),
-      this.asymmetricQuantizeInputs()
+      this.asymmetricQuantizeInputs(),
+      this.diagonalRecurrentTensors()
     );
   }
 
@@ -6068,6 +6494,7 @@ export class UnidirectionalSequenceLSTMOptions {
     _o.projClip = this.projClip();
     _o.timeMajor = this.timeMajor();
     _o.asymmetricQuantizeInputs = this.asymmetricQuantizeInputs();
+    _o.diagonalRecurrentTensors = this.diagonalRecurrentTensors();
   }
 }
 
@@ -6077,7 +6504,8 @@ export class UnidirectionalSequenceLSTMOptionsT {
     public cellClip: number = 0.0,
     public projClip: number = 0.0,
     public timeMajor: boolean = false,
-    public asymmetricQuantizeInputs: boolean = false
+    public asymmetricQuantizeInputs: boolean = false,
+    public diagonalRecurrentTensors: boolean = false
   ) {}
 
   pack(builder: flatbuffers.Builder): flatbuffers.Offset {
@@ -6087,7 +6515,8 @@ export class UnidirectionalSequenceLSTMOptionsT {
       this.cellClip,
       this.projClip,
       this.timeMajor,
-      this.asymmetricQuantizeInputs
+      this.asymmetricQuantizeInputs,
+      this.diagonalRecurrentTensors
     );
   }
 }
@@ -9270,8 +9699,15 @@ export class TransposeConvOptions {
     return offset ? this.bb!.readInt32(this.bb_pos + offset) : 0;
   }
 
+  fusedActivationFunction(): ActivationFunctionType {
+    const offset = this.bb!.__offset(this.bb_pos, 10);
+    return offset
+      ? this.bb!.readInt8(this.bb_pos + offset)
+      : ActivationFunctionType.NONE;
+  }
+
   static startTransposeConvOptions(builder: flatbuffers.Builder) {
-    builder.startObject(3);
+    builder.startObject(4);
   }
 
   static addPadding(builder: flatbuffers.Builder, padding: Padding) {
@@ -9286,6 +9722,17 @@ export class TransposeConvOptions {
     builder.addFieldInt32(2, strideH, 0);
   }
 
+  static addFusedActivationFunction(
+    builder: flatbuffers.Builder,
+    fusedActivationFunction: ActivationFunctionType
+  ) {
+    builder.addFieldInt8(
+      3,
+      fusedActivationFunction,
+      ActivationFunctionType.NONE
+    );
+  }
+
   static endTransposeConvOptions(
     builder: flatbuffers.Builder
   ): flatbuffers.Offset {
@@ -9297,12 +9744,17 @@ export class TransposeConvOptions {
     builder: flatbuffers.Builder,
     padding: Padding,
     strideW: number,
-    strideH: number
+    strideH: number,
+    fusedActivationFunction: ActivationFunctionType
   ): flatbuffers.Offset {
     TransposeConvOptions.startTransposeConvOptions(builder);
     TransposeConvOptions.addPadding(builder, padding);
     TransposeConvOptions.addStrideW(builder, strideW);
     TransposeConvOptions.addStrideH(builder, strideH);
+    TransposeConvOptions.addFusedActivationFunction(
+      builder,
+      fusedActivationFunction
+    );
     return TransposeConvOptions.endTransposeConvOptions(builder);
   }
 
@@ -9310,7 +9762,8 @@ export class TransposeConvOptions {
     return new TransposeConvOptionsT(
       this.padding(),
       this.strideW(),
-      this.strideH()
+      this.strideH(),
+      this.fusedActivationFunction()
     );
   }
 
@@ -9318,6 +9771,7 @@ export class TransposeConvOptions {
     _o.padding = this.padding();
     _o.strideW = this.strideW();
     _o.strideH = this.strideH();
+    _o.fusedActivationFunction = this.fusedActivationFunction();
   }
 }
 
@@ -9325,7 +9779,8 @@ export class TransposeConvOptionsT {
   constructor(
     public padding: Padding = Padding.SAME,
     public strideW: number = 0,
-    public strideH: number = 0
+    public strideH: number = 0,
+    public fusedActivationFunction: ActivationFunctionType = ActivationFunctionType.NONE
   ) {}
 
   pack(builder: flatbuffers.Builder): flatbuffers.Offset {
@@ -9333,7 +9788,8 @@ export class TransposeConvOptionsT {
       builder,
       this.padding,
       this.strideW,
-      this.strideH
+      this.strideH,
+      this.fusedActivationFunction
     );
   }
 }
@@ -13203,26 +13659,26 @@ export class RandomOptions {
     );
   }
 
-  seed(): number {
+  seed(): bigint {
     const offset = this.bb!.__offset(this.bb_pos, 4);
-    return offset ? this.bb!.readInt32(this.bb_pos + offset) : 0;
+    return offset ? this.bb!.readInt64(this.bb_pos + offset) : BigInt("0");
   }
 
-  seed2(): number {
+  seed2(): bigint {
     const offset = this.bb!.__offset(this.bb_pos, 6);
-    return offset ? this.bb!.readInt32(this.bb_pos + offset) : 0;
+    return offset ? this.bb!.readInt64(this.bb_pos + offset) : BigInt("0");
   }
 
   static startRandomOptions(builder: flatbuffers.Builder) {
     builder.startObject(2);
   }
 
-  static addSeed(builder: flatbuffers.Builder, seed: number) {
-    builder.addFieldInt32(0, seed, 0);
+  static addSeed(builder: flatbuffers.Builder, seed: bigint) {
+    builder.addFieldInt64(0, seed, BigInt("0"));
   }
 
-  static addSeed2(builder: flatbuffers.Builder, seed2: number) {
-    builder.addFieldInt32(1, seed2, 0);
+  static addSeed2(builder: flatbuffers.Builder, seed2: bigint) {
+    builder.addFieldInt64(1, seed2, BigInt("0"));
   }
 
   static endRandomOptions(builder: flatbuffers.Builder): flatbuffers.Offset {
@@ -13232,8 +13688,8 @@ export class RandomOptions {
 
   static createRandomOptions(
     builder: flatbuffers.Builder,
-    seed: number,
-    seed2: number
+    seed: bigint,
+    seed2: bigint
   ): flatbuffers.Offset {
     RandomOptions.startRandomOptions(builder);
     RandomOptions.addSeed(builder, seed);
@@ -13252,10 +13708,843 @@ export class RandomOptions {
 }
 
 export class RandomOptionsT {
-  constructor(public seed: number = 0, public seed2: number = 0) {}
+  constructor(
+    public seed: bigint = BigInt("0"),
+    public seed2: bigint = BigInt("0")
+  ) {}
 
   pack(builder: flatbuffers.Builder): flatbuffers.Offset {
     return RandomOptions.createRandomOptions(builder, this.seed, this.seed2);
+  }
+}
+
+export class BucketizeOptions {
+  bb: flatbuffers.ByteBuffer | null = null;
+  bb_pos = 0;
+  __init(i: number, bb: flatbuffers.ByteBuffer): BucketizeOptions {
+    this.bb_pos = i;
+    this.bb = bb;
+    return this;
+  }
+
+  static getRootAsBucketizeOptions(
+    bb: flatbuffers.ByteBuffer,
+    obj?: BucketizeOptions
+  ): BucketizeOptions {
+    return (obj || new BucketizeOptions()).__init(
+      bb.readInt32(bb.position()) + bb.position(),
+      bb
+    );
+  }
+
+  static getSizePrefixedRootAsBucketizeOptions(
+    bb: flatbuffers.ByteBuffer,
+    obj?: BucketizeOptions
+  ): BucketizeOptions {
+    bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
+    return (obj || new BucketizeOptions()).__init(
+      bb.readInt32(bb.position()) + bb.position(),
+      bb
+    );
+  }
+
+  boundaries(index: number): number | null {
+    const offset = this.bb!.__offset(this.bb_pos, 4);
+    return offset
+      ? this.bb!.readFloat32(
+          this.bb!.__vector(this.bb_pos + offset) + index * 4
+        )
+      : 0;
+  }
+
+  boundariesLength(): number {
+    const offset = this.bb!.__offset(this.bb_pos, 4);
+    return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+  }
+
+  boundariesArray(): Float32Array | null {
+    const offset = this.bb!.__offset(this.bb_pos, 4);
+    return offset
+      ? new Float32Array(
+          this.bb!.bytes().buffer,
+          this.bb!.bytes().byteOffset + this.bb!.__vector(this.bb_pos + offset),
+          this.bb!.__vector_len(this.bb_pos + offset)
+        )
+      : null;
+  }
+
+  static startBucketizeOptions(builder: flatbuffers.Builder) {
+    builder.startObject(1);
+  }
+
+  static addBoundaries(
+    builder: flatbuffers.Builder,
+    boundariesOffset: flatbuffers.Offset
+  ) {
+    builder.addFieldOffset(0, boundariesOffset, 0);
+  }
+
+  static createBoundariesVector(
+    builder: flatbuffers.Builder,
+    data: number[] | Float32Array
+  ): flatbuffers.Offset;
+  /**
+   * @deprecated This Uint8Array overload will be removed in the future.
+   */
+  static createBoundariesVector(
+    builder: flatbuffers.Builder,
+    data: number[] | Uint8Array
+  ): flatbuffers.Offset;
+  static createBoundariesVector(
+    builder: flatbuffers.Builder,
+    data: number[] | Float32Array | Uint8Array
+  ): flatbuffers.Offset {
+    builder.startVector(4, data.length, 4);
+    for (let i = data.length - 1; i >= 0; i--) {
+      builder.addFloat32(data[i]!);
+    }
+    return builder.endVector();
+  }
+
+  static startBoundariesVector(builder: flatbuffers.Builder, numElems: number) {
+    builder.startVector(4, numElems, 4);
+  }
+
+  static endBucketizeOptions(builder: flatbuffers.Builder): flatbuffers.Offset {
+    const offset = builder.endObject();
+    return offset;
+  }
+
+  static createBucketizeOptions(
+    builder: flatbuffers.Builder,
+    boundariesOffset: flatbuffers.Offset
+  ): flatbuffers.Offset {
+    BucketizeOptions.startBucketizeOptions(builder);
+    BucketizeOptions.addBoundaries(builder, boundariesOffset);
+    return BucketizeOptions.endBucketizeOptions(builder);
+  }
+
+  unpack(): BucketizeOptionsT {
+    return new BucketizeOptionsT(
+      this.bb!.createScalarList(
+        this.boundaries.bind(this),
+        this.boundariesLength()
+      )
+    );
+  }
+
+  unpackTo(_o: BucketizeOptionsT): void {
+    _o.boundaries = this.bb!.createScalarList(
+      this.boundaries.bind(this),
+      this.boundariesLength()
+    );
+  }
+}
+
+export class BucketizeOptionsT {
+  constructor(public boundaries: number[] = []) {}
+
+  pack(builder: flatbuffers.Builder): flatbuffers.Offset {
+    const boundaries = BucketizeOptions.createBoundariesVector(
+      builder,
+      this.boundaries
+    );
+
+    return BucketizeOptions.createBucketizeOptions(builder, boundaries);
+  }
+}
+
+export class GeluOptions {
+  bb: flatbuffers.ByteBuffer | null = null;
+  bb_pos = 0;
+  __init(i: number, bb: flatbuffers.ByteBuffer): GeluOptions {
+    this.bb_pos = i;
+    this.bb = bb;
+    return this;
+  }
+
+  static getRootAsGeluOptions(
+    bb: flatbuffers.ByteBuffer,
+    obj?: GeluOptions
+  ): GeluOptions {
+    return (obj || new GeluOptions()).__init(
+      bb.readInt32(bb.position()) + bb.position(),
+      bb
+    );
+  }
+
+  static getSizePrefixedRootAsGeluOptions(
+    bb: flatbuffers.ByteBuffer,
+    obj?: GeluOptions
+  ): GeluOptions {
+    bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
+    return (obj || new GeluOptions()).__init(
+      bb.readInt32(bb.position()) + bb.position(),
+      bb
+    );
+  }
+
+  approximate(): boolean {
+    const offset = this.bb!.__offset(this.bb_pos, 4);
+    return offset ? !!this.bb!.readInt8(this.bb_pos + offset) : false;
+  }
+
+  static startGeluOptions(builder: flatbuffers.Builder) {
+    builder.startObject(1);
+  }
+
+  static addApproximate(builder: flatbuffers.Builder, approximate: boolean) {
+    builder.addFieldInt8(0, +approximate, +false);
+  }
+
+  static endGeluOptions(builder: flatbuffers.Builder): flatbuffers.Offset {
+    const offset = builder.endObject();
+    return offset;
+  }
+
+  static createGeluOptions(
+    builder: flatbuffers.Builder,
+    approximate: boolean
+  ): flatbuffers.Offset {
+    GeluOptions.startGeluOptions(builder);
+    GeluOptions.addApproximate(builder, approximate);
+    return GeluOptions.endGeluOptions(builder);
+  }
+
+  unpack(): GeluOptionsT {
+    return new GeluOptionsT(this.approximate());
+  }
+
+  unpackTo(_o: GeluOptionsT): void {
+    _o.approximate = this.approximate();
+  }
+}
+
+export class GeluOptionsT {
+  constructor(public approximate: boolean = false) {}
+
+  pack(builder: flatbuffers.Builder): flatbuffers.Offset {
+    return GeluOptions.createGeluOptions(builder, this.approximate);
+  }
+}
+
+export class DynamicUpdateSliceOptions {
+  bb: flatbuffers.ByteBuffer | null = null;
+  bb_pos = 0;
+  __init(i: number, bb: flatbuffers.ByteBuffer): DynamicUpdateSliceOptions {
+    this.bb_pos = i;
+    this.bb = bb;
+    return this;
+  }
+
+  static getRootAsDynamicUpdateSliceOptions(
+    bb: flatbuffers.ByteBuffer,
+    obj?: DynamicUpdateSliceOptions
+  ): DynamicUpdateSliceOptions {
+    return (obj || new DynamicUpdateSliceOptions()).__init(
+      bb.readInt32(bb.position()) + bb.position(),
+      bb
+    );
+  }
+
+  static getSizePrefixedRootAsDynamicUpdateSliceOptions(
+    bb: flatbuffers.ByteBuffer,
+    obj?: DynamicUpdateSliceOptions
+  ): DynamicUpdateSliceOptions {
+    bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
+    return (obj || new DynamicUpdateSliceOptions()).__init(
+      bb.readInt32(bb.position()) + bb.position(),
+      bb
+    );
+  }
+
+  static startDynamicUpdateSliceOptions(builder: flatbuffers.Builder) {
+    builder.startObject(0);
+  }
+
+  static endDynamicUpdateSliceOptions(
+    builder: flatbuffers.Builder
+  ): flatbuffers.Offset {
+    const offset = builder.endObject();
+    return offset;
+  }
+
+  static createDynamicUpdateSliceOptions(
+    builder: flatbuffers.Builder
+  ): flatbuffers.Offset {
+    DynamicUpdateSliceOptions.startDynamicUpdateSliceOptions(builder);
+    return DynamicUpdateSliceOptions.endDynamicUpdateSliceOptions(builder);
+  }
+
+  unpack(): DynamicUpdateSliceOptionsT {
+    return new DynamicUpdateSliceOptionsT();
+  }
+
+  unpackTo(_o: DynamicUpdateSliceOptionsT): void {}
+}
+
+export class DynamicUpdateSliceOptionsT {
+  constructor() {}
+
+  pack(builder: flatbuffers.Builder): flatbuffers.Offset {
+    return DynamicUpdateSliceOptions.createDynamicUpdateSliceOptions(builder);
+  }
+}
+
+export class UnsortedSegmentProdOptions {
+  bb: flatbuffers.ByteBuffer | null = null;
+  bb_pos = 0;
+  __init(i: number, bb: flatbuffers.ByteBuffer): UnsortedSegmentProdOptions {
+    this.bb_pos = i;
+    this.bb = bb;
+    return this;
+  }
+
+  static getRootAsUnsortedSegmentProdOptions(
+    bb: flatbuffers.ByteBuffer,
+    obj?: UnsortedSegmentProdOptions
+  ): UnsortedSegmentProdOptions {
+    return (obj || new UnsortedSegmentProdOptions()).__init(
+      bb.readInt32(bb.position()) + bb.position(),
+      bb
+    );
+  }
+
+  static getSizePrefixedRootAsUnsortedSegmentProdOptions(
+    bb: flatbuffers.ByteBuffer,
+    obj?: UnsortedSegmentProdOptions
+  ): UnsortedSegmentProdOptions {
+    bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
+    return (obj || new UnsortedSegmentProdOptions()).__init(
+      bb.readInt32(bb.position()) + bb.position(),
+      bb
+    );
+  }
+
+  static startUnsortedSegmentProdOptions(builder: flatbuffers.Builder) {
+    builder.startObject(0);
+  }
+
+  static endUnsortedSegmentProdOptions(
+    builder: flatbuffers.Builder
+  ): flatbuffers.Offset {
+    const offset = builder.endObject();
+    return offset;
+  }
+
+  static createUnsortedSegmentProdOptions(
+    builder: flatbuffers.Builder
+  ): flatbuffers.Offset {
+    UnsortedSegmentProdOptions.startUnsortedSegmentProdOptions(builder);
+    return UnsortedSegmentProdOptions.endUnsortedSegmentProdOptions(builder);
+  }
+
+  unpack(): UnsortedSegmentProdOptionsT {
+    return new UnsortedSegmentProdOptionsT();
+  }
+
+  unpackTo(_o: UnsortedSegmentProdOptionsT): void {}
+}
+
+export class UnsortedSegmentProdOptionsT {
+  constructor() {}
+
+  pack(builder: flatbuffers.Builder): flatbuffers.Offset {
+    return UnsortedSegmentProdOptions.createUnsortedSegmentProdOptions(builder);
+  }
+}
+
+export class UnsortedSegmentMaxOptions {
+  bb: flatbuffers.ByteBuffer | null = null;
+  bb_pos = 0;
+  __init(i: number, bb: flatbuffers.ByteBuffer): UnsortedSegmentMaxOptions {
+    this.bb_pos = i;
+    this.bb = bb;
+    return this;
+  }
+
+  static getRootAsUnsortedSegmentMaxOptions(
+    bb: flatbuffers.ByteBuffer,
+    obj?: UnsortedSegmentMaxOptions
+  ): UnsortedSegmentMaxOptions {
+    return (obj || new UnsortedSegmentMaxOptions()).__init(
+      bb.readInt32(bb.position()) + bb.position(),
+      bb
+    );
+  }
+
+  static getSizePrefixedRootAsUnsortedSegmentMaxOptions(
+    bb: flatbuffers.ByteBuffer,
+    obj?: UnsortedSegmentMaxOptions
+  ): UnsortedSegmentMaxOptions {
+    bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
+    return (obj || new UnsortedSegmentMaxOptions()).__init(
+      bb.readInt32(bb.position()) + bb.position(),
+      bb
+    );
+  }
+
+  static startUnsortedSegmentMaxOptions(builder: flatbuffers.Builder) {
+    builder.startObject(0);
+  }
+
+  static endUnsortedSegmentMaxOptions(
+    builder: flatbuffers.Builder
+  ): flatbuffers.Offset {
+    const offset = builder.endObject();
+    return offset;
+  }
+
+  static createUnsortedSegmentMaxOptions(
+    builder: flatbuffers.Builder
+  ): flatbuffers.Offset {
+    UnsortedSegmentMaxOptions.startUnsortedSegmentMaxOptions(builder);
+    return UnsortedSegmentMaxOptions.endUnsortedSegmentMaxOptions(builder);
+  }
+
+  unpack(): UnsortedSegmentMaxOptionsT {
+    return new UnsortedSegmentMaxOptionsT();
+  }
+
+  unpackTo(_o: UnsortedSegmentMaxOptionsT): void {}
+}
+
+export class UnsortedSegmentMaxOptionsT {
+  constructor() {}
+
+  pack(builder: flatbuffers.Builder): flatbuffers.Offset {
+    return UnsortedSegmentMaxOptions.createUnsortedSegmentMaxOptions(builder);
+  }
+}
+
+export class UnsortedSegmentSumOptions {
+  bb: flatbuffers.ByteBuffer | null = null;
+  bb_pos = 0;
+  __init(i: number, bb: flatbuffers.ByteBuffer): UnsortedSegmentSumOptions {
+    this.bb_pos = i;
+    this.bb = bb;
+    return this;
+  }
+
+  static getRootAsUnsortedSegmentSumOptions(
+    bb: flatbuffers.ByteBuffer,
+    obj?: UnsortedSegmentSumOptions
+  ): UnsortedSegmentSumOptions {
+    return (obj || new UnsortedSegmentSumOptions()).__init(
+      bb.readInt32(bb.position()) + bb.position(),
+      bb
+    );
+  }
+
+  static getSizePrefixedRootAsUnsortedSegmentSumOptions(
+    bb: flatbuffers.ByteBuffer,
+    obj?: UnsortedSegmentSumOptions
+  ): UnsortedSegmentSumOptions {
+    bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
+    return (obj || new UnsortedSegmentSumOptions()).__init(
+      bb.readInt32(bb.position()) + bb.position(),
+      bb
+    );
+  }
+
+  static startUnsortedSegmentSumOptions(builder: flatbuffers.Builder) {
+    builder.startObject(0);
+  }
+
+  static endUnsortedSegmentSumOptions(
+    builder: flatbuffers.Builder
+  ): flatbuffers.Offset {
+    const offset = builder.endObject();
+    return offset;
+  }
+
+  static createUnsortedSegmentSumOptions(
+    builder: flatbuffers.Builder
+  ): flatbuffers.Offset {
+    UnsortedSegmentSumOptions.startUnsortedSegmentSumOptions(builder);
+    return UnsortedSegmentSumOptions.endUnsortedSegmentSumOptions(builder);
+  }
+
+  unpack(): UnsortedSegmentSumOptionsT {
+    return new UnsortedSegmentSumOptionsT();
+  }
+
+  unpackTo(_o: UnsortedSegmentSumOptionsT): void {}
+}
+
+export class UnsortedSegmentSumOptionsT {
+  constructor() {}
+
+  pack(builder: flatbuffers.Builder): flatbuffers.Offset {
+    return UnsortedSegmentSumOptions.createUnsortedSegmentSumOptions(builder);
+  }
+}
+
+export class ATan2Options {
+  bb: flatbuffers.ByteBuffer | null = null;
+  bb_pos = 0;
+  __init(i: number, bb: flatbuffers.ByteBuffer): ATan2Options {
+    this.bb_pos = i;
+    this.bb = bb;
+    return this;
+  }
+
+  static getRootAsATan2Options(
+    bb: flatbuffers.ByteBuffer,
+    obj?: ATan2Options
+  ): ATan2Options {
+    return (obj || new ATan2Options()).__init(
+      bb.readInt32(bb.position()) + bb.position(),
+      bb
+    );
+  }
+
+  static getSizePrefixedRootAsATan2Options(
+    bb: flatbuffers.ByteBuffer,
+    obj?: ATan2Options
+  ): ATan2Options {
+    bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
+    return (obj || new ATan2Options()).__init(
+      bb.readInt32(bb.position()) + bb.position(),
+      bb
+    );
+  }
+
+  static startATan2Options(builder: flatbuffers.Builder) {
+    builder.startObject(0);
+  }
+
+  static endATan2Options(builder: flatbuffers.Builder): flatbuffers.Offset {
+    const offset = builder.endObject();
+    return offset;
+  }
+
+  static createATan2Options(builder: flatbuffers.Builder): flatbuffers.Offset {
+    ATan2Options.startATan2Options(builder);
+    return ATan2Options.endATan2Options(builder);
+  }
+
+  unpack(): ATan2OptionsT {
+    return new ATan2OptionsT();
+  }
+
+  unpackTo(_o: ATan2OptionsT): void {}
+}
+
+export class ATan2OptionsT {
+  constructor() {}
+
+  pack(builder: flatbuffers.Builder): flatbuffers.Offset {
+    return ATan2Options.createATan2Options(builder);
+  }
+}
+
+export class UnsortedSegmentMinOptions {
+  bb: flatbuffers.ByteBuffer | null = null;
+  bb_pos = 0;
+  __init(i: number, bb: flatbuffers.ByteBuffer): UnsortedSegmentMinOptions {
+    this.bb_pos = i;
+    this.bb = bb;
+    return this;
+  }
+
+  static getRootAsUnsortedSegmentMinOptions(
+    bb: flatbuffers.ByteBuffer,
+    obj?: UnsortedSegmentMinOptions
+  ): UnsortedSegmentMinOptions {
+    return (obj || new UnsortedSegmentMinOptions()).__init(
+      bb.readInt32(bb.position()) + bb.position(),
+      bb
+    );
+  }
+
+  static getSizePrefixedRootAsUnsortedSegmentMinOptions(
+    bb: flatbuffers.ByteBuffer,
+    obj?: UnsortedSegmentMinOptions
+  ): UnsortedSegmentMinOptions {
+    bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
+    return (obj || new UnsortedSegmentMinOptions()).__init(
+      bb.readInt32(bb.position()) + bb.position(),
+      bb
+    );
+  }
+
+  static startUnsortedSegmentMinOptions(builder: flatbuffers.Builder) {
+    builder.startObject(0);
+  }
+
+  static endUnsortedSegmentMinOptions(
+    builder: flatbuffers.Builder
+  ): flatbuffers.Offset {
+    const offset = builder.endObject();
+    return offset;
+  }
+
+  static createUnsortedSegmentMinOptions(
+    builder: flatbuffers.Builder
+  ): flatbuffers.Offset {
+    UnsortedSegmentMinOptions.startUnsortedSegmentMinOptions(builder);
+    return UnsortedSegmentMinOptions.endUnsortedSegmentMinOptions(builder);
+  }
+
+  unpack(): UnsortedSegmentMinOptionsT {
+    return new UnsortedSegmentMinOptionsT();
+  }
+
+  unpackTo(_o: UnsortedSegmentMinOptionsT): void {}
+}
+
+export class UnsortedSegmentMinOptionsT {
+  constructor() {}
+
+  pack(builder: flatbuffers.Builder): flatbuffers.Offset {
+    return UnsortedSegmentMinOptions.createUnsortedSegmentMinOptions(builder);
+  }
+}
+
+export class SignOptions {
+  bb: flatbuffers.ByteBuffer | null = null;
+  bb_pos = 0;
+  __init(i: number, bb: flatbuffers.ByteBuffer): SignOptions {
+    this.bb_pos = i;
+    this.bb = bb;
+    return this;
+  }
+
+  static getRootAsSignOptions(
+    bb: flatbuffers.ByteBuffer,
+    obj?: SignOptions
+  ): SignOptions {
+    return (obj || new SignOptions()).__init(
+      bb.readInt32(bb.position()) + bb.position(),
+      bb
+    );
+  }
+
+  static getSizePrefixedRootAsSignOptions(
+    bb: flatbuffers.ByteBuffer,
+    obj?: SignOptions
+  ): SignOptions {
+    bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
+    return (obj || new SignOptions()).__init(
+      bb.readInt32(bb.position()) + bb.position(),
+      bb
+    );
+  }
+
+  static startSignOptions(builder: flatbuffers.Builder) {
+    builder.startObject(0);
+  }
+
+  static endSignOptions(builder: flatbuffers.Builder): flatbuffers.Offset {
+    const offset = builder.endObject();
+    return offset;
+  }
+
+  static createSignOptions(builder: flatbuffers.Builder): flatbuffers.Offset {
+    SignOptions.startSignOptions(builder);
+    return SignOptions.endSignOptions(builder);
+  }
+
+  unpack(): SignOptionsT {
+    return new SignOptionsT();
+  }
+
+  unpackTo(_o: SignOptionsT): void {}
+}
+
+export class SignOptionsT {
+  constructor() {}
+
+  pack(builder: flatbuffers.Builder): flatbuffers.Offset {
+    return SignOptions.createSignOptions(builder);
+  }
+}
+
+export class BitcastOptions {
+  bb: flatbuffers.ByteBuffer | null = null;
+  bb_pos = 0;
+  __init(i: number, bb: flatbuffers.ByteBuffer): BitcastOptions {
+    this.bb_pos = i;
+    this.bb = bb;
+    return this;
+  }
+
+  static getRootAsBitcastOptions(
+    bb: flatbuffers.ByteBuffer,
+    obj?: BitcastOptions
+  ): BitcastOptions {
+    return (obj || new BitcastOptions()).__init(
+      bb.readInt32(bb.position()) + bb.position(),
+      bb
+    );
+  }
+
+  static getSizePrefixedRootAsBitcastOptions(
+    bb: flatbuffers.ByteBuffer,
+    obj?: BitcastOptions
+  ): BitcastOptions {
+    bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
+    return (obj || new BitcastOptions()).__init(
+      bb.readInt32(bb.position()) + bb.position(),
+      bb
+    );
+  }
+
+  static startBitcastOptions(builder: flatbuffers.Builder) {
+    builder.startObject(0);
+  }
+
+  static endBitcastOptions(builder: flatbuffers.Builder): flatbuffers.Offset {
+    const offset = builder.endObject();
+    return offset;
+  }
+
+  static createBitcastOptions(
+    builder: flatbuffers.Builder
+  ): flatbuffers.Offset {
+    BitcastOptions.startBitcastOptions(builder);
+    return BitcastOptions.endBitcastOptions(builder);
+  }
+
+  unpack(): BitcastOptionsT {
+    return new BitcastOptionsT();
+  }
+
+  unpackTo(_o: BitcastOptionsT): void {}
+}
+
+export class BitcastOptionsT {
+  constructor() {}
+
+  pack(builder: flatbuffers.Builder): flatbuffers.Offset {
+    return BitcastOptions.createBitcastOptions(builder);
+  }
+}
+
+export class BitwiseXorOptions {
+  bb: flatbuffers.ByteBuffer | null = null;
+  bb_pos = 0;
+  __init(i: number, bb: flatbuffers.ByteBuffer): BitwiseXorOptions {
+    this.bb_pos = i;
+    this.bb = bb;
+    return this;
+  }
+
+  static getRootAsBitwiseXorOptions(
+    bb: flatbuffers.ByteBuffer,
+    obj?: BitwiseXorOptions
+  ): BitwiseXorOptions {
+    return (obj || new BitwiseXorOptions()).__init(
+      bb.readInt32(bb.position()) + bb.position(),
+      bb
+    );
+  }
+
+  static getSizePrefixedRootAsBitwiseXorOptions(
+    bb: flatbuffers.ByteBuffer,
+    obj?: BitwiseXorOptions
+  ): BitwiseXorOptions {
+    bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
+    return (obj || new BitwiseXorOptions()).__init(
+      bb.readInt32(bb.position()) + bb.position(),
+      bb
+    );
+  }
+
+  static startBitwiseXorOptions(builder: flatbuffers.Builder) {
+    builder.startObject(0);
+  }
+
+  static endBitwiseXorOptions(
+    builder: flatbuffers.Builder
+  ): flatbuffers.Offset {
+    const offset = builder.endObject();
+    return offset;
+  }
+
+  static createBitwiseXorOptions(
+    builder: flatbuffers.Builder
+  ): flatbuffers.Offset {
+    BitwiseXorOptions.startBitwiseXorOptions(builder);
+    return BitwiseXorOptions.endBitwiseXorOptions(builder);
+  }
+
+  unpack(): BitwiseXorOptionsT {
+    return new BitwiseXorOptionsT();
+  }
+
+  unpackTo(_o: BitwiseXorOptionsT): void {}
+}
+
+export class BitwiseXorOptionsT {
+  constructor() {}
+
+  pack(builder: flatbuffers.Builder): flatbuffers.Offset {
+    return BitwiseXorOptions.createBitwiseXorOptions(builder);
+  }
+}
+
+export class RightShiftOptions {
+  bb: flatbuffers.ByteBuffer | null = null;
+  bb_pos = 0;
+  __init(i: number, bb: flatbuffers.ByteBuffer): RightShiftOptions {
+    this.bb_pos = i;
+    this.bb = bb;
+    return this;
+  }
+
+  static getRootAsRightShiftOptions(
+    bb: flatbuffers.ByteBuffer,
+    obj?: RightShiftOptions
+  ): RightShiftOptions {
+    return (obj || new RightShiftOptions()).__init(
+      bb.readInt32(bb.position()) + bb.position(),
+      bb
+    );
+  }
+
+  static getSizePrefixedRootAsRightShiftOptions(
+    bb: flatbuffers.ByteBuffer,
+    obj?: RightShiftOptions
+  ): RightShiftOptions {
+    bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
+    return (obj || new RightShiftOptions()).__init(
+      bb.readInt32(bb.position()) + bb.position(),
+      bb
+    );
+  }
+
+  static startRightShiftOptions(builder: flatbuffers.Builder) {
+    builder.startObject(0);
+  }
+
+  static endRightShiftOptions(
+    builder: flatbuffers.Builder
+  ): flatbuffers.Offset {
+    const offset = builder.endObject();
+    return offset;
+  }
+
+  static createRightShiftOptions(
+    builder: flatbuffers.Builder
+  ): flatbuffers.Offset {
+    RightShiftOptions.startRightShiftOptions(builder);
+    return RightShiftOptions.endRightShiftOptions(builder);
+  }
+
+  unpack(): RightShiftOptionsT {
+    return new RightShiftOptionsT();
+  }
+
+  unpackTo(_o: RightShiftOptionsT): void {}
+}
+
+export class RightShiftOptionsT {
+  constructor() {}
+
+  pack(builder: flatbuffers.Builder): flatbuffers.Offset {
+    return RightShiftOptions.createRightShiftOptions(builder);
   }
 }
 
@@ -14181,6 +15470,7 @@ export class OperatorT {
     public outputs: number[] = [],
     public builtinOptionsType: BuiltinOptions = BuiltinOptions.NONE,
     public builtinOptions:
+      | ATan2OptionsT
       | AbsOptionsT
       | AddNOptionsT
       | AddOptionsT
@@ -14193,7 +15483,10 @@ export class OperatorT {
       | BatchToSpaceNDOptionsT
       | BidirectionalSequenceLSTMOptionsT
       | BidirectionalSequenceRNNOptionsT
+      | BitcastOptionsT
+      | BitwiseXorOptionsT
       | BroadcastToOptionsT
+      | BucketizeOptionsT
       | CallOnceOptionsT
       | CallOptionsT
       | CastOptionsT
@@ -14208,6 +15501,7 @@ export class OperatorT {
       | DepthwiseConv2DOptionsT
       | DequantizeOptionsT
       | DivOptionsT
+      | DynamicUpdateSliceOptionsT
       | EmbeddingLookupSparseOptionsT
       | EqualOptionsT
       | ExpOptionsT
@@ -14219,6 +15513,7 @@ export class OperatorT {
       | FullyConnectedOptionsT
       | GatherNdOptionsT
       | GatherOptionsT
+      | GeluOptionsT
       | GreaterEqualOptionsT
       | GreaterOptionsT
       | HardSwishOptionsT
@@ -14267,6 +15562,7 @@ export class OperatorT {
       | ReverseSequenceOptionsT
       | ReverseV2OptionsT
       | Rfft2dOptionsT
+      | RightShiftOptionsT
       | SVDFOptionsT
       | ScatterNdOptionsT
       | SegmentSumOptionsT
@@ -14274,6 +15570,7 @@ export class OperatorT {
       | SelectV2OptionsT
       | SequenceRNNOptionsT
       | ShapeOptionsT
+      | SignOptionsT
       | SkipGramOptionsT
       | SliceOptionsT
       | SoftmaxOptionsT
@@ -14294,6 +15591,10 @@ export class OperatorT {
       | UnidirectionalSequenceLSTMOptionsT
       | UniqueOptionsT
       | UnpackOptionsT
+      | UnsortedSegmentMaxOptionsT
+      | UnsortedSegmentMinOptionsT
+      | UnsortedSegmentProdOptionsT
+      | UnsortedSegmentSumOptionsT
       | VarHandleOptionsT
       | WhereOptionsT
       | WhileOptionsT
