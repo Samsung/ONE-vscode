@@ -1,3 +1,9 @@
 # External code
 /ONE-vscode/media/CircleGraph
 /ONE-vscode/media/CircleEditor
+
+# Generated code by Flatbuffers
+/ONE-vscode/src/CircleEditor/circle_schema_generated.ts
+
+# Unit test code
+/ONE-vscode/src/Tests

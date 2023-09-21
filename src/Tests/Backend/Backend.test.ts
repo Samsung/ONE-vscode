@@ -16,11 +16,7 @@
 
 import { assert } from "chai";
 
-import {
-  backendRegistrationApi,
-  globalBackendMap,
-  globalExecutorArray,
-} from "../../Backend/API";
+import { API, globalBackendMap } from "../../Backend/API";
 import { Backend } from "../../Backend/Backend";
 import { Compiler, CompilerBase } from "../../Backend/Compiler";
 import { Executor, ExecutorBase } from "../../Backend/Executor";
@@ -51,20 +47,11 @@ class BackendMockup implements Backend {
   }
 }
 
-const executorName = "Mockup";
-class ExecutorMockup extends ExecutorBase {
-  name(): string {
-    return executorName;
-  }
-}
-
 suite("Backend", function () {
-  suite("backendRegistrationApi", function () {
+  suite("backendAPI", function () {
     test("registers a OneToolchain", function () {
-      backendRegistrationApi();
       let oneBackend = new OneToolchain();
       assert.strictEqual(Object.entries(globalBackendMap).length, 1);
-      assert.strictEqual(globalExecutorArray.length, 0);
 
       const entries = Object.entries(globalBackendMap);
       assert.strictEqual(entries.length, 1);
@@ -75,13 +62,10 @@ suite("Backend", function () {
       }
     });
     test("registers a backend", function () {
-      let registrationAPI = backendRegistrationApi();
-
       assert.strictEqual(Object.entries(globalBackendMap).length, 1);
-      assert.strictEqual(globalExecutorArray.length, 0);
 
       let backend = new BackendMockup();
-      registrationAPI.registerBackend(backend);
+      API.registerBackend(backend);
 
       const entries = Object.entries(globalBackendMap);
       assert.strictEqual(entries.length, 2);
@@ -93,25 +77,6 @@ suite("Backend", function () {
           assert.deepStrictEqual(value, backend);
         }
       }
-
-      assert.strictEqual(globalExecutorArray.length, 1);
-      for (const executor of globalExecutorArray) {
-        assert.deepStrictEqual(executor, backend.executor());
-      }
-      assert.deepStrictEqual(backend.executors(), globalExecutorArray);
-    });
-    test("registers a executor", function () {
-      let registrationAPI = backendRegistrationApi();
-
-      assert.strictEqual(globalExecutorArray.length, 0);
-      let executorMockup = new ExecutorMockup();
-      registrationAPI.registerExecutor(executorMockup);
-
-      assert.strictEqual(globalExecutorArray.length, 1);
-
-      for (const executor of globalExecutorArray) {
-        assert.deepStrictEqual(executor, executorMockup);
-      }
     });
   });
 
@@ -121,9 +86,6 @@ suite("Backend", function () {
     }
     if (gToolchainEnvMap[backendName] !== undefined) {
       delete gToolchainEnvMap[backendName];
-    }
-    while (globalExecutorArray.length > 0) {
-      globalExecutorArray.pop();
     }
   });
 });

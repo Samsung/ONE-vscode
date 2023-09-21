@@ -16,7 +16,6 @@
 
 import * as cp from "child_process";
 import * as fs from "fs";
-import * as glob from "glob";
 import * as path from "path";
 import * as vscode from "vscode";
 
@@ -197,9 +196,8 @@ export class MPQEditorProvider
     const baseName = baseMPQName;
     let mpqName: string | undefined = undefined;
 
-    const options = { cwd: dirPath };
+    const files = fs.readdirSync(dirPath);
     // set maximal trials as maximal quantity of files + 1
-    const files = glob.sync("*" + MPQEditorProvider.fileExtension, options);
     const maxMPQIndex = files.length + 1;
 
     for (let i = 0; i < maxMPQIndex; i++) {
