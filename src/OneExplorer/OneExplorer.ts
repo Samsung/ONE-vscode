@@ -25,7 +25,6 @@ import { Logger } from "../Utils/Logger";
 
 import { ArtifactAttr } from "./ArtifactLocator";
 import { OneStorage } from "./OneStorage";
-import { BackendContext } from "../Backend/API";
 
 // Exported for unit testing only
 export {
@@ -247,13 +246,6 @@ class DirectoryNode extends Node {
     super(uri, parent);
   }
 
-  /**
-   * Check tflite file is compiled with Edge TPU Compiler
-   *
-   * To exclude Edge TPU compiled tflite file from baseModel
-   * Now check with postfix of Edge TPU Compiler's default file name
-   */
-
   private isOneBaseModel(fname:string):boolean{
     return fname.endsWith(".pb") || fname.endsWith(".tflite") || fname.endsWith(".onnx");
   }
@@ -264,7 +256,6 @@ class DirectoryNode extends Node {
 
   /*
   Check if the file is a basemodel.
-  The type to check depending on the default toolchain.
   */
   private isBaseModel(fname : string) : boolean{
     return this.isOneBaseModel(fname) && this.isEdgetpuBaseModel(fname);
