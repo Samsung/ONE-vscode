@@ -30,7 +30,6 @@ import {
   EdgeTpuCfg,
   EdgeTpuConfigSetting,
 } from "./ConfigSettings/EdgeTpuConfigSetting";
-import { BackendContext } from "../Backend/API";
 
 type Cfg = OneCfg & EdgeTpuCfg;
 type CfgKeys = keyof Cfg;
@@ -148,10 +147,7 @@ export class ConfigObj {
     this.rawObj = rawObj;
     this.configType = CfgType.one;
     const ext = path.extname(uri.fsPath);
-    if (
-      BackendContext.isRegistered(EdgeTpuConfigSetting.backendName) &&
-      ext === EdgeTpuConfigSetting.ext
-    ) {
+    if (ext === EdgeTpuConfigSetting.ext) {
       this.configType = CfgType.edgeTpu;
     }
 
