@@ -203,6 +203,7 @@ class NodeFactory {
             node = new ConfigNode(uri, parent,"one.editor.edgetpucfg");
             break;
           }
+          case ".cfg":
           default :{
             node = new ConfigNode(uri, parent);   
           }
@@ -254,32 +255,25 @@ class DirectoryNode extends Node {
    * Now check with postfix of Edge TPU Compiler's default file name
    */
 
-  private isToolchainOne(fname:string):boolean{
-    return fname.endsWith(".pb") || (fname.endsWith(".tflite")&& !fname.endsWith("_edgetpu.tflite"))||fname.endsWith(".onnx");
+  private isOneBaseModel(fname:string):boolean{
+    return fname.endsWith(".pb") || (fname.endsWith(".tflite") && !fname.endsWith("_edgetpu.tflite"))||fname.endsWith(".onnx");
   }
 
-  private isToolchainEdgeTPU(fname: string): boolean {
-    return BackendContext.isRegistered("EdgeTPU") && fname.endsWith(".tflite") && !fname.endsWith("_edgetpu.tflite");
+  private isEdgetpuBaseModel(fname: string): boolean {
+    return fname.endsWith(".tflite") && !fname.endsWith("_edgetpu.tflite");
   }
 
   /*
   Check if the file is a basemodel.
   The type to check depending on the default toolchain.
   */
-  private checkBaseModel(fname : string) : boolean{
-    let defaultToolchain = DefaultToolchain.getInstance().getToolchain()?.info.name;
-    if(!defaultToolchain) defaultToolchain = "onecc-docker";
-    switch(defaultToolchain){
-      case"onecc-docker":{
-        return this.isToolchainOne(fname);
-      }
-      case "edgetpu-compiler":{
-        return this.isToolchainEdgeTPU(fname);
-      }
-      default: {
-        throw Error("Unkown Toolchain");
-      }
+  private isBaseModel(fname : string) : boolean{
+    let isBaseModel :boolean;
+    isBaseModel = this.isOneBaseModel(fname);
+    if(BackendContext.isRegistered("EdgeTPU")){
+      isBaseModel = isBaseModel && this.isEdgetpuBaseModel(fname);
     }
+    return isBaseModel;
   }
   /**
    * Build a sub-tree under the node
@@ -304,7 +298,7 @@ class DirectoryNode extends Node {
           this._childNodes!.push(dirNode);
         }
       } else if (
-        fstat.isFile() && this.checkBaseModel(fname)
+        fstat.isFile() && this.isBaseModel(fname)
       ) {
         const baseModelNode = NodeFactory.create(
           NodeType.baseModel,
@@ -361,38 +355,16 @@ class BaseModelNode extends Node {
    */
   _buildChildren = (): void => {
     this._childNodes = [];
-
     const configPaths = OneStorage.getCfgs(this.path);
 
     if (!configPaths) {
       return;
     }
 
-    let defaultToolchain = DefaultToolchain.getInstance().getToolchain()?.info.name;
-    if(!defaultToolchain) defaultToolchain = "onecc-docker";
     configPaths.forEach((configPath) => {
-      switch(defaultToolchain){
-        case"onecc-docker":{
-          if(configPath.endsWith(".cfg")){
-            const configNode = NodeFactory.create(NodeType.config, configPath, this);
-            if (configNode) {
-              this._childNodes!.push(configNode);
-            }
-          }
-          break;
-        }
-        case "edgetpu-compiler":{
-          if(configPath.endsWith(".edgetpucfg")){
-            const configNode = NodeFactory.create(NodeType.config, configPath, this);
-            if (configNode) {
-              this._childNodes!.push(configNode);
-            }
-          }
-          break;
-        }
-        default: {
-          throw Error("Unkown Toolchain");
-        }
+      const configNode = NodeFactory.create(NodeType.config, configPath, this);
+      if (configNode) {
+        this._childNodes!.push(configNode);
       }
     });
   };
@@ -474,8 +446,8 @@ class ProductNode extends Node {
     ".tv2o",
     ".json",
     ".circle.log",
-    ".tflite",
-    ".log",
+    "_edgetpu.tflite",
+    "_edgetpu.log",
   ];
   // Do not open file as default
   static defaultOpenViewType = undefined;
@@ -589,8 +561,9 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
             ...BaseModelNode.extList,
             ...ConfigNode.extList,
             ...ProductNode.extList,
-          ].includes(path.parse(uri.path).ext)
+          ].reduce((flag,ext)=>flag||uri.path.endsWith(ext),false)
         ) {
+          console.log("TEST");
           Logger.info(
             "OneExploer",
             `Refresh explorer view on a file change in '${uri.path}'`
