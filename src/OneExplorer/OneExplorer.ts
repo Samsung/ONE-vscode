@@ -255,11 +255,11 @@ class DirectoryNode extends Node {
    */
 
   private isOneBaseModel(fname:string):boolean{
-    return fname.endsWith(".pb") || (fname.endsWith(".tflite") && !fname.endsWith("_edgetpu.tflite"))||fname.endsWith(".onnx");
+    return fname.endsWith(".pb") || fname.endsWith(".tflite") || fname.endsWith(".onnx");
   }
 
   private isEdgetpuBaseModel(fname: string): boolean {
-    return fname.endsWith(".tflite") && !fname.endsWith("_edgetpu.tflite");
+    return fname.endsWith(".tflite") ? !fname.endsWith("_edgetpu.tflite") : true;
   }
 
   /*
@@ -267,12 +267,7 @@ class DirectoryNode extends Node {
   The type to check depending on the default toolchain.
   */
   private isBaseModel(fname : string) : boolean{
-    let isBaseModel :boolean;
-    isBaseModel = this.isOneBaseModel(fname);
-    if(BackendContext.isRegistered("EdgeTPU")){
-      isBaseModel = isBaseModel && this.isEdgetpuBaseModel(fname);
-    }
-    return isBaseModel;
+    return this.isOneBaseModel(fname) && this.isEdgetpuBaseModel(fname);
   }
   /**
    * Build a sub-tree under the node
