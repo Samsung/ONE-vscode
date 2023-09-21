@@ -15,53 +15,53 @@
  */
 
 import { Command } from "../Command";
-import {
-  DebianToolchain,
-} from "../ToolchainImpl/DebianToolchain";
+import { DebianToolchain } from "../ToolchainImpl/DebianToolchain";
 
 import * as ini from "ini";
 import * as fs from "fs";
 import * as path from "path";
 
 class EdgeTPUDebianToolchain extends DebianToolchain {
-    run(cfg: string): Command {
-        let cmd = new Command("edgetpu_compiler");
-        var config = ini.parse(fs.readFileSync(cfg, 'utf-8').trim());
-        
-        if (config["one-import-edgetpu"] === undefined) {
-            return cmd;
-        }
+  run(cfg: string): Command {
+    let cmd = new Command("edgetpu_compiler");
+    var config = ini.parse(fs.readFileSync(cfg, "utf-8").trim());
+
+    if (config["one-import-edgetpu"] === undefined) {
+      return cmd;
+    }
 
     let outDir = path.dirname(config["one-import-edgetpu"]["output_path"]);
     cmd.push("--out_dir");
     cmd.push(outDir);
 
-    let intermediateTensors = config["one-import-edgetpu"]["intermediate_tensors"];
+    let intermediateTensors =
+      config["one-import-edgetpu"]["intermediate_tensors"];
     if (intermediateTensors !== undefined) {
-        cmd.push("--intermediate_tensors");
-        cmd.push(intermediateTensors);
+      cmd.push("--intermediate_tensors");
+      cmd.push(intermediateTensors);
     }
 
     let showOperations = config["one-import-edgetpu"]["show_operations"];
     if (showOperations === "True") {
-        cmd.push("--show_operations");
+      cmd.push("--show_operations");
     }
 
     let minRuntimeVersion = config["one-import-edgetpu"]["min_runtime_version"];
     if (minRuntimeVersion !== undefined) {
-        cmd.push("--min_runtime_version");
-        cmd.push(minRuntimeVersion);
+      cmd.push("--min_runtime_version");
+      cmd.push(minRuntimeVersion);
     }
 
     let searchDelegate = config["one-import-edgetpu"]["search_delegate"];
     if (searchDelegate === "True") {
-        cmd.push("--search_delegate");
+      cmd.push("--search_delegate");
     }
 
-    let delegateSearchStep = config["one-import-edgetpu"]["delegate_search_step"];
+    let delegateSearchStep =
+      config["one-import-edgetpu"]["delegate_search_step"];
     if (delegateSearchStep !== undefined) {
-        cmd.push("--delegate_search_step");
-        cmd.push(delegateSearchStep);
+      cmd.push("--delegate_search_step");
+      cmd.push(delegateSearchStep);
     }
 
     let inputPath = config["one-import-edgetpu"]["input_path"];
@@ -70,3 +70,5 @@ class EdgeTPUDebianToolchain extends DebianToolchain {
     return cmd;
   }
 }
+
+export { EdgeTPUDebianToolchain };

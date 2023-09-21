@@ -16,9 +16,7 @@
 
 import { assert } from "chai";
 
-import {
-  EdgeTPUDebianToolchain,
-} from "../../../Backend/EdgeTPU/EdgeTPUToolchain";
+import { EdgeTPUDebianToolchain } from "../../../Backend/EdgeTPU/EdgeTPUToolchain";
 import { ToolchainInfo } from "../../../Backend/Toolchain";
 import { Version } from "../../../Backend/Version";
 import { TestBuilder } from "../../TestBuilder";
