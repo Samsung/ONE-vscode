@@ -28,9 +28,11 @@ export type EdgeTpuCfg = {
 // type CfgOneImportTf = any;
 
 export class EdgeTpuConfigSetting extends ConfigSetting {
+  static backendName = "EdgeTPU";
+  static ext = ".edgetpucfg";
+
   constructor() {
     super();
-    this.ext = ".edgetpucfg";
     this.sections = {
       ".tflite": "edgetpu-compile",
     };

@@ -20,15 +20,16 @@ import { Logger } from "../Utils/Logger";
 import { Artifact, LocatorRunner } from "./ArtifactLocator";
 
 export abstract class ConfigSetting {
+  static backendName = "ONE";
+  static ext = ".cfg";
+
   baseModelsLocatorRunner: LocatorRunner;
   productsLocatorRunner: LocatorRunner;
-  ext: string;
   sections: { [key: string]: string };
 
   constructor() {
     this.baseModelsLocatorRunner = new LocatorRunner();
     this.productsLocatorRunner = new LocatorRunner();
-    this.ext = ".cfg";
     this.sections = {
       ".pb": "one-import-tf",
       ".tflite": "one-import-tflite",

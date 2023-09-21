@@ -40,11 +40,10 @@ type CfgKeys = keyof Cfg;
 // type CfgOneImportOnnx = any;
 // type CfgOneImportTf = any;
 
-type CfgType = {
-  one: any;
-  "edge-tpu": any;
-};
-type CfgTypeKeys = keyof CfgType;
+enum CfgType {
+  one,
+  edgeTpu,
+}
 
 /**
  * @brief A helper class to get parsed artifacts (baseModels, products)
@@ -78,7 +77,7 @@ export class ConfigObj {
   /**
    * type of config setting
    */
-  configType: CfgTypeKeys;
+  configType: CfgType;
 
   get getBaseModels() {
     return this.obj.baseModels;
@@ -129,15 +128,13 @@ export class ConfigObj {
   /**
    * @brief getter for config setting
    */
-  public get getConfigSetting(): ConfigSetting {
+  public get configSetting(): ConfigSetting {
     let configSetting: ConfigSetting;
     switch (this.configType) {
-      case "edge-tpu":
+      case CfgType.edgeTpu:
         configSetting = new EdgeTpuConfigSetting();
         break;
-      case "one":
-        configSetting = new OneConfigSetting();
-        break;
+      case CfgType.one:
       default:
         configSetting = new OneConfigSetting();
     }
@@ -149,14 +146,17 @@ export class ConfigObj {
   private constructor(uri: vscode.Uri, rawObj: Cfg) {
     this.uri = uri;
     this.rawObj = rawObj;
-    this.configType = "one";
+    this.configType = CfgType.one;
     const ext = path.extname(uri.fsPath);
-    if (BackendContext.isRegistered("EdgeTPU") && ext === ".edgetpucfg") {
-      this.configType = "edge-tpu";
+    if (
+      BackendContext.isRegistered(EdgeTpuConfigSetting.backendName) &&
+      ext === EdgeTpuConfigSetting.ext
+    ) {
+      this.configType = CfgType.edgeTpu;
     }
 
     // separate to init()
-    const configSetting = this.getConfigSetting;
+    const configSetting = this.configSetting;
     this.obj = {
       baseModels: configSetting.parseBaseModels(uri.fsPath, rawObj),
       products: configSetting.parseProducts(uri.fsPath, rawObj),
@@ -169,7 +169,7 @@ export class ConfigObj {
   ): Thenable<void> {
     const getSection = (name: string) => {
       const ext = path.extname(name);
-      const sections = this.getConfigSetting.sections;
+      const sections = this.configSetting.sections;
 
       return sections[ext as keyof typeof sections];
     };
@@ -190,7 +190,7 @@ export class ConfigObj {
       );
     }
 
-    this.getConfigSetting.updateOutPath(newpath, this.rawObj, kSection);
+    this.configSetting.updateOutPath(newpath, this.rawObj, kSection);
 
     return vscode.workspace.fs.writeFile(
       this.uri,
