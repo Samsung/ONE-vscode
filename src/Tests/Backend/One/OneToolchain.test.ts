@@ -188,7 +188,7 @@ suite("OneCompiler", function () {
       const scriptPath = vscode.Uri.joinPath(
         ext!.extensionUri,
         "script",
-        "prerequisitesForGetToolchains.sh"
+        "prerequisitesForGetOneToolchain.sh"
       ).fsPath;
       const cmd = `sudo /bin/sh ${scriptPath}`;
       assert.deepStrictEqual(
