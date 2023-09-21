@@ -247,7 +247,7 @@ class OneCompiler implements Compiler {
     const scriptPath = vscode.Uri.joinPath(
       ext!.extensionUri,
       "script",
-      "prerequisitesForGetToolchains.sh"
+      "prerequisitesForGetOneToolchain.sh"
     ).fsPath;
 
     const cmd = new Command("/bin/sh", [`${scriptPath}`]);
