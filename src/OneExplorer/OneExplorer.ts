@@ -25,7 +25,6 @@ import { Logger } from "../Utils/Logger";
 
 import { ArtifactAttr } from "./ArtifactLocator";
 import { OneStorage } from "./OneStorage";
-import { DefaultToolchain } from "../Toolchain/DefaultToolchain";
 import { BackendContext } from "../Backend/API";
 
 // Exported for unit testing only
