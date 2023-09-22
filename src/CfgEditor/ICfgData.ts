@@ -15,16 +15,16 @@
  */
 
 export interface ICfgData {
-    // returns data decoded or parsed as object
-    getAsConfig(): any;
-    // returns data encoded or stringfied as string
-    getAsString(): string;
-    // sets data with object decoded or parsed
-    setWithConfig(cfg: any): void;
-    // sets data with string encoded or stringfied
-    setWithString(text: string): void;
-    updateSectionWithKeyValue(section: string, key: string, value: string): void;
-    updateSectionWithValue(section: string, value: string): void;
-    isSame(textStringified: string): boolean;
-    sort(): void;
+  // returns data decoded or parsed as object
+  getAsConfig(): any;
+  // returns data encoded or stringfied as string
+  getAsString(): string;
+  // sets data with object decoded or parsed
+  setWithConfig(cfg: any): void;
+  // sets data with string encoded or stringfied
+  setWithString(text: string): void;
+  updateSectionWithKeyValue(section: string, key: string, value: string): void;
+  updateSectionWithValue(section: string, value: string): void;
+  isSame(textStringified: string): boolean;
+  sort(): void;
 }
