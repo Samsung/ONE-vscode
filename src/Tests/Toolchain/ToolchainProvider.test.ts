@@ -34,21 +34,22 @@ import {
   MockCompilerWithMultipleInstalledToolchains,
   MockCompilerWithNoInstalledToolchain,
 } from "../MockCompiler";
+import { OneCompiler } from "../../Backend/One/OneToolchain";
 
 suite("Toolchain", function () {
+  const oneToolhcainEnv = new ToolchainEnv(new OneCompiler());
   const oneBackendName = "ONE";
   const compiler = new MockCompiler();
   const toolchainEnv = new ToolchainEnv(compiler);
   const backendName = "dummy_backend";
 
   setup(function () {
-    gToolchainEnvMap[backendName] = toolchainEnv;
-  });
+    Object.keys(gToolchainEnvMap).forEach(
+      (key) => delete gToolchainEnvMap[key]
+    );
 
-  teardown(function () {
-    if (gToolchainEnvMap[backendName] !== undefined) {
-      delete gToolchainEnvMap[backendName];
-    }
+    gToolchainEnvMap[oneBackendName] = oneToolhcainEnv;
+    gToolchainEnvMap[backendName] = toolchainEnv;
   });
 
   suite("BaseNode", function () {
