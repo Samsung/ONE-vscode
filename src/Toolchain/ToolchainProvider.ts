@@ -480,7 +480,6 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
       gToolchainEnvMap[tnode.backend],
       tnode.toolchain
     );
-    this.refresh();
     return true;
   }
 }
