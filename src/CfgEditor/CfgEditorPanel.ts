@@ -47,9 +47,10 @@ import { getNonce } from "../Utils/external/Nonce";
 import { getUri } from "../Utils/external/Uri";
 
 import { CfgData } from "./CfgData";
+import { ICfgEditorPanel } from "./ICfgEditorPanel";
 
 /* istanbul ignore next */
-export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
+export class CfgEditorPanel implements ICfgEditorPanel {
   private _disposables: vscode.Disposable[] = [];
   private _oneConfigMap: any = {};
   private _activeDocument: vscode.TextDocument | undefined;
@@ -92,7 +93,7 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
 
   constructor(private readonly context: vscode.ExtensionContext) {}
 
-  public async resolveCustomTextEditor(
+  async resolveCustomTextEditor(
     document: vscode.TextDocument,
     webviewPanel: vscode.WebviewPanel,
     _token: vscode.CancellationToken
@@ -105,7 +106,7 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
     this.updateWebview(document, webviewPanel.webview);
   }
 
-  private async initWebview(
+  async initWebview(
     document: vscode.TextDocument,
     webview: vscode.Webview
   ): Promise<void> {
@@ -220,7 +221,7 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
     });
   }
 
-  private initWebviewPanel(
+  initWebviewPanel(
     document: vscode.TextDocument,
     webviewPanel: vscode.WebviewPanel
   ): void {
@@ -273,10 +274,7 @@ export class CfgEditorPanel implements vscode.CustomTextEditorProvider {
     });
   }
 
-  private updateWebview(
-    document: vscode.TextDocument,
-    webview: vscode.Webview
-  ): void {
+  updateWebview(document: vscode.TextDocument, webview: vscode.Webview): void {
     this._oneConfigMap[document.uri.toString()].setWithString(
       document.getText()
     );
