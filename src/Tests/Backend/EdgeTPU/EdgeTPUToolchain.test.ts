@@ -22,22 +22,7 @@ import { Version } from "../../../Backend/Version";
 import { TestBuilder } from "../../TestBuilder";
 
 const content = `
-[onecc]
-one-import-tf=False
-one-import-tflite=False
-one-import-bcq=False
-one-import-onnx=False
-one-optimize=False
-one-quantize=True
-one-pack=False
-one-codegen=False
-
-[one-quantize]
-input_path=./inception_v3_tflite.circle
-output_path=./inception_v3_tflite.q8.circle
-input_model_dtype=uint8
-
-[one-import-edgetpu]
+[edgetpu-compile]
 input_path=/home/workspace/models/sample.tflite
 output_path=/home/workspace/models/sample_edge_tpu.tflite
 intermediate_tensors=tensorName1,tensorName2
@@ -48,7 +33,7 @@ delegate_search_step=4
 `;
 
 const relativeOutputPathcontent = `
-[one-import-edgetpu]
+[edgetpu-compile]
 input_path=./sample.tflite
 output_path=./sample_edge_tpu.tflite
 intermediate_tensors=tensorName1,tensorName2
