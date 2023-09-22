@@ -128,3 +128,15 @@ export abstract class ConfigSetting {
   protected abstract _initBaseModelsLocatorRunner(): void;
   protected abstract _initProductsLocatorRunner(): void;
 }
+
+export class ConfigSettingBase extends ConfigSetting {
+  public updateOutPath(): void {
+    throw new Error("Method not implemented.");
+  }
+  protected _initBaseModelsLocatorRunner(): void {
+    throw new Error("Method not implemented.");
+  }
+  protected _initProductsLocatorRunner(): void {
+    throw new Error("Method not implemented.");
+  }
+}
