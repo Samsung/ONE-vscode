@@ -48,44 +48,51 @@ class BackendMockup implements Backend {
 }
 
 suite("Backend", function () {
+  setup(function () {
+    Object.keys(globalBackendMap).forEach(
+      (key) => delete globalBackendMap[key]
+    );
+    Object.keys(gToolchainEnvMap).forEach(
+      (key) => delete gToolchainEnvMap[key]
+    );
+  });
+
+  teardown(function () {
+    Object.keys(globalBackendMap).forEach(
+      (key) => delete globalBackendMap[key]
+    );
+    Object.keys(gToolchainEnvMap).forEach(
+      (key) => delete gToolchainEnvMap[key]
+    );
+  });
+
   suite("backendAPI", function () {
     test("registers a OneToolchain", function () {
       let oneBackend = new OneToolchain();
-      assert.strictEqual(Object.entries(globalBackendMap).length, 1);
+      API.registerBackend(oneBackend);
 
       const entries = Object.entries(globalBackendMap);
       assert.strictEqual(entries.length, 1);
+
       // this runs once
       for (const [key, value] of entries) {
         assert.strictEqual(key, oneBackendName);
         assert.deepStrictEqual(value, oneBackend);
       }
     });
-    test("registers a backend", function () {
-      assert.strictEqual(Object.entries(globalBackendMap).length, 1);
 
+    test("registers a backend", function () {
       let backend = new BackendMockup();
       API.registerBackend(backend);
 
       const entries = Object.entries(globalBackendMap);
-      assert.strictEqual(entries.length, 2);
+      assert.strictEqual(entries.length, 1);
 
       // this runs once
       for (const [key, value] of entries) {
-        if (key !== oneBackendName) {
-          assert.strictEqual(key, backendName);
-          assert.deepStrictEqual(value, backend);
-        }
+        assert.strictEqual(key, backendName);
+        assert.deepStrictEqual(value, backend);
       }
     });
-  });
-
-  teardown(function () {
-    if (globalBackendMap[backendName] !== undefined) {
-      delete globalBackendMap[backendName];
-    }
-    if (gToolchainEnvMap[backendName] !== undefined) {
-      delete gToolchainEnvMap[backendName];
-    }
   });
 });
