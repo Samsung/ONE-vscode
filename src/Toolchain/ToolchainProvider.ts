@@ -328,8 +328,12 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
     };
 
     /* istanbul ignore next */
-    const notifyError = () => {
-      this.error("Running onecc has failed.");
+    const notifyError = (err?: Error) => {
+      let str = "Running onecc has failed. ";
+      if (err) {
+        str += err.message;
+      }
+      vscode.window.showErrorMessage(str);
     };
 
     const [activeToolchainEnv, activeToolchain] =
@@ -344,10 +348,10 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
         activeToolchain.info.name
       }-${activeToolchain.info.version?.str()} toolchain.`
     );
-    activeToolchainEnv.run(cfg, activeToolchain).then(
-      () => notifySuccess(),
-      () => notifyError()
-    );
+    activeToolchainEnv
+      .run(cfg, activeToolchain)
+      .then(() => notifySuccess())
+      .catch((err) => notifyError(err));
     return true;
   }
 
