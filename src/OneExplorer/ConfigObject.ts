@@ -141,7 +141,7 @@ export class ConfigObj {
     this.rawObj = rawObj;
     this.configType = CfgType.one;
 
-    // separate to init()
+    // TODO: separate to init()
     const configSetting = this.configSetting;
     this.obj = {
       baseModels: configSetting.parseBaseModels(uri.fsPath, rawObj),
