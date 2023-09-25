@@ -1,0 +1,12 @@
+{
+ "default_quantization_dtype": "int16",
+ "default_granularity": "channel",
+ "layers": [
+  {
+   "name": "MobilenetV1/MobilenetV1/Conv2d_6_depthwise/Relu6",
+   "dtype": "int16",
+   "granularity": "channel"
+  }
+ ],
+ "model_path": "model.circle"
+}
