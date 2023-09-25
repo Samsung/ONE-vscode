@@ -29,10 +29,6 @@ suite("OneExplorer", function () {
       testBuilder.setUp();
     });
 
-    teardown(() => {
-      testBuilder.tearDown();
-    });
-
     suite("#createConfigObj()", function () {
       test("NEG: Returns null when file read failed", function () {
         const configObj = ConfigObj.createConfigObj(
@@ -857,6 +853,10 @@ commands=--save-chrome-trace trace.json
           assert.strictEqual(configObj!.getProducts.length, 0);
         }
       });
+    });
+
+    teardown(() => {
+      testBuilder.tearDown();
     });
   });
 });

@@ -33,10 +33,6 @@ suite("OneExplorer", function () {
       testBuilder.setUp();
     });
 
-    teardown(() => {
-      testBuilder.tearDown();
-    });
-
     suite("OneStorage", function () {
       suite("#getCfgs()", function () {
         test("A tflite file with a cfg", function () {
@@ -517,6 +513,10 @@ input_path='model.tflite'
           assert.strictEqual(cfgToCfgObjMap.size, 1);
         });
       });
+    });
+
+    teardown(() => {
+      testBuilder.tearDown();
     });
   });
 });

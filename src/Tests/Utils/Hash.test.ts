@@ -28,10 +28,6 @@ suite("Utils", function () {
       testBuilder.setUp();
     });
 
-    teardown(() => {
-      testBuilder.tearDown();
-    });
-
     suite("#generateHash()", function () {
       test("generate a file hash", async function () {
         const exampleName = "example.txt";
@@ -53,6 +49,10 @@ suite("Utils", function () {
           assert.ok(true);
         });
       });
+    });
+
+    teardown(() => {
+      testBuilder.tearDown();
     });
   });
 });
