@@ -19,9 +19,13 @@ import * as vscode from "vscode";
 import {
   deviceManagerList,
   DeviceViewNode,
+  DeviceManagerNode,
+  DeviceExecutorNode,
   DeviceViewProvider,
   NodeType,
 } from "../../Execute/DeviceViewProvider";
+import { Device } from "../../Execute/Device";
+import { DeviceSpec } from "../../Backend/Spec";
 
 suite("DeviceViewNode", function () {
   suite("#constructor()", function () {
@@ -30,12 +34,7 @@ suite("DeviceViewNode", function () {
         const label = "local";
         const collapsibleState = vscode.TreeItemCollapsibleState.Expanded;
         const managerName = "local";
-        let node = new DeviceViewNode(
-          label,
-          collapsibleState,
-          NodeType.deviceManager,
-          managerName
-        );
+        let node = new DeviceManagerNode(label);
         assert.strictEqual(node.label, label);
         assert.strictEqual(node.collapsibleState, collapsibleState);
         assert.strictEqual(node.nodetype, NodeType.deviceManager);
@@ -47,43 +46,18 @@ suite("DeviceViewNode", function () {
         );
       });
     });
-    suite("NodeType:device", function () {
-      test("is constructed with params with device", function () {
-        const label = "hostPC";
-        const collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
-        const managerName = "local";
-        let node = new DeviceViewNode(
-          label,
-          collapsibleState,
-          NodeType.device,
-          managerName
-        );
-        assert.strictEqual(node.label, label);
-        assert.strictEqual(node.collapsibleState, collapsibleState);
-        assert.strictEqual(node.nodetype, NodeType.device);
-        assert.strictEqual(node.managerName, managerName);
-        assert.strictEqual(node.contextValue, "device");
-        assert.deepStrictEqual(
-          node.iconPath,
-          new vscode.ThemeIcon("device-desktop")
-        );
-      });
-    });
     suite("NodeType:executor", function () {
       test("is constructed with params with executor", function () {
         const label = "MockupSimulator";
-        const collapsibleState = vscode.TreeItemCollapsibleState.None;
-        const managerName = "local";
-        let node = new DeviceViewNode(
-          label,
-          collapsibleState,
-          NodeType.executor,
-          managerName
+        const device = new Device(
+          "hostPC",
+          new DeviceSpec("hostPC", "hostPC", undefined)
         );
+        const collapsibleState = vscode.TreeItemCollapsibleState.None;
+        let node = new DeviceExecutorNode(label, device);
         assert.strictEqual(node.label, label);
         assert.strictEqual(node.collapsibleState, collapsibleState);
         assert.strictEqual(node.nodetype, NodeType.executor);
-        assert.strictEqual(node.managerName, managerName);
         assert.strictEqual(node.contextValue, "executor");
         assert.deepStrictEqual(
           node.iconPath,
@@ -95,17 +69,10 @@ suite("DeviceViewNode", function () {
       test("is constructed with params with none", function () {
         const label = "None";
         const collapsibleState = vscode.TreeItemCollapsibleState.None;
-        const managerName = "";
-        let node = new DeviceViewNode(
-          label,
-          collapsibleState,
-          NodeType.none,
-          managerName
-        );
+        let node = new DeviceViewNode(label, collapsibleState, NodeType.none);
         assert.strictEqual(node.label, label);
         assert.strictEqual(node.collapsibleState, collapsibleState);
         assert.strictEqual(node.nodetype, NodeType.none);
-        assert.strictEqual(node.managerName, managerName);
       });
     });
   });
@@ -123,12 +90,10 @@ suite("DeviceViewProvider", function () {
       let provider = new DeviceViewProvider();
       const label = "local";
       const collapsibleState = vscode.TreeItemCollapsibleState.Expanded;
-      const managerName = "local";
       let node = new DeviceViewNode(
         label,
         collapsibleState,
-        NodeType.deviceManager,
-        managerName
+        NodeType.deviceManager
       );
       let treeItem = provider.getTreeItem(node);
       assert.strictEqual(treeItem.collapsibleState, collapsibleState);
@@ -159,12 +124,10 @@ suite("DeviceViewProvider", function () {
             const element = provider.deviceManagerMap[key];
             const label = key;
             const collapsibleState = vscode.TreeItemCollapsibleState.Expanded;
-            const managerName = key;
             let node = new DeviceViewNode(
               label,
               collapsibleState,
-              NodeType.deviceManager,
-              managerName
+              NodeType.deviceManager
             );
             let result = provider.getChildren(node);
             assert.strictEqual(result.length, element.allDevices.length);
@@ -185,12 +148,10 @@ suite("DeviceViewProvider", function () {
               const label = device.name;
               const collapsibleState =
                 vscode.TreeItemCollapsibleState.Collapsed;
-              const managerName = key;
               let node = new DeviceViewNode(
                 label,
                 collapsibleState,
-                NodeType.device,
-                managerName
+                NodeType.device
               );
               let result = provider.getChildren(node);
               // as currently no executor registered on this test,
@@ -202,7 +163,6 @@ suite("DeviceViewProvider", function () {
                 vscode.TreeItemCollapsibleState.None
               );
               assert.strictEqual(result[0].nodetype, NodeType.none);
-              assert.strictEqual(result[0].managerName, "");
             }
           }
         }
