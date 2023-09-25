@@ -302,7 +302,7 @@
       {
         "command": "one.explorer.runSingleSelectedCfg",
         "key": "ctrl+f7",
-        "when": "OneExplorerView.active && one.explorer:hasSelectedCfg"
+        "when": "view.OneExplorerView.visible && one.explorer:hasSelectedCfg"
       },
       {
         "command": "one.cfgEditor.setDefaultValues",
@@ -312,12 +312,12 @@
       {
         "command": "one.explorer.deleteOnShortcut",
         "key": "delete",
-        "when": "OneExplorerView.active"
+        "when": "view.OneExplorerView.visible && !inputFocus"
       },
       {
         "command": "one.explorer.renameOnShortcut",
         "key": "F2",
-        "when": "OneExplorerView.active && one.explorer:hasSelectedCfg"
+        "when": "view.OneExplorerView.visible && one.explorer:hasSelectedCfg && !inputFocus"
       }
     ],
     "menus": {
