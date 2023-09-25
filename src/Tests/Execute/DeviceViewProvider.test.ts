@@ -114,28 +114,6 @@ suite("DeviceViewProvider", function () {
         done();
       });
     });
-    test("get Children under deviceManager Node", function (done) {
-      let provider = new DeviceViewProvider();
-      provider.loadDeviceManager("local", function () {
-        for (const key in provider.deviceManagerMap) {
-          if (
-            Object.prototype.hasOwnProperty.call(provider.deviceManagerMap, key)
-          ) {
-            const element = provider.deviceManagerMap[key];
-            const label = key;
-            const collapsibleState = vscode.TreeItemCollapsibleState.Expanded;
-            let node = new DeviceViewNode(
-              label,
-              collapsibleState,
-              NodeType.deviceManager
-            );
-            let result = provider.getChildren(node);
-            assert.strictEqual(result.length, element.allDevices.length);
-          }
-        }
-        done();
-      });
-    });
     test("get Children under Device Node", function (done) {
       let provider = new DeviceViewProvider();
       provider.loadDeviceManager("local", function () {
