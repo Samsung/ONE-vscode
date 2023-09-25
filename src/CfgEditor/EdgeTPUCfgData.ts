@@ -34,34 +34,10 @@ export class EdgeTpuCfgData implements ICfgData {
 
   setWithConfig(cfg: any): void {
     this._edgeTpuConfig = cfg;
-    this.resolveDuplicated();
   }
 
   setWithString(text: string): void {
     this._edgeTpuConfig = ini.parse(text);
-    this.resolveDuplicated();
-  }
-
-  private resolveDuplicated(): void {
-    // NOTE 'intermediate_tensors' and a set of 'search_delegate' and 'delegate_search_step' cannot be duplicated.
-    //      Therefore, when only 'intermediate_tensors' and a set of 'search_delegate' and 'delegate_search_step' is used together, those three options will be deleted.
-    if (
-      this._edgeTpuConfig["edgetpu-compile"]["intermediate_tensors"] !==
-      undefined
-    ) {
-      if (
-        this._edgeTpuConfig["edgetpu-compile"]["search_delegate"] !== undefined
-      ) {
-        delete this._edgeTpuConfig["edgetpu-compile"]["intermediate_tensors"];
-        delete this._edgeTpuConfig["edgetpu-compile"]["search_delegate"];
-        if (
-          this._edgeTpuConfig["edgetpu-compile"]["delegate_search_step"] !==
-          undefined
-        ) {
-          delete this._edgeTpuConfig["edgetpu-compile"]["delegate_search_step"];
-        }
-      }
-    }
   }
 
   updateSectionWithKeyValue(section: string, key: string, value: string): void {
@@ -73,13 +49,11 @@ export class EdgeTpuCfgData implements ICfgData {
       this._edgeTpuConfig[section][key] = "";
     }
     this._edgeTpuConfig[section][key] = value;
-    this.resolveDuplicated();
   }
 
   updateSectionWithValue(section: string, value: string): void {
     // value should be encoded or stringfied
     this._edgeTpuConfig[section] = ini.parse(value);
-    this.resolveDuplicated();
   }
 
   isSame(textStringified: string): boolean {

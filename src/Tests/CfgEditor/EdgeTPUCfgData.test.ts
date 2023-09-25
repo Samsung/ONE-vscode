@@ -68,44 +68,6 @@ search_delegate=True
 delegate_search_step=1
 `;
 
-const duplicateEdgeTpuCfgText = `
-[edgetpu-compiler]
-edgetpu-compile=True
-edgetpu-profile=False
-
-[edgetpu-compile]
-input_path=/home/usr/ONE-vscode/res/modelDir/truediv/model.tflite
-output_path=/home/usr/ONE-vscode/res/modelDir/truediv/model_edgetpu.tflite
-intermediate_tensors=opr1
-show_operations=True
-search_delegate=True
-delegate_search_step=1
-`;
-
-const duplicateEdgeTpuCfgText2 = `
-[edgetpu-compiler]
-edgetpu-compile=True
-edgetpu-profile=False
-
-[edgetpu-compile]
-input_path=/home/usr/ONE-vscode/res/modelDir/truediv/model.tflite
-output_path=/home/usr/ONE-vscode/res/modelDir/truediv/model_edgetpu.tflite
-intermediate_tensors=opr1
-show_operations=True
-search_delegate=True
-`;
-
-const resolvedSampleEdgeTpuCfgText = `
-[edgetpu-compiler]
-edgetpu-compile=True
-edgetpu-profile=False
-
-[edgetpu-compile]
-input_path=/home/usr/ONE-vscode/res/modelDir/truediv/model.tflite
-output_path=/home/usr/ONE-vscode/res/modelDir/truediv/model_edgetpu.tflite
-show_operations=True
-`;
-
 suite("EdgetpuCfgEditor", function () {
   suite("EdgetpuCfgData", function () {
     suite("#constructor()", function () {
@@ -204,40 +166,6 @@ suite("EdgetpuCfgEditor", function () {
           cfg["edgetpu-compile"]["delegate_search_step"]
         );
       });
-
-      test("NEG: try to set with config using 'intemediate_tensors' and a set of 'search_delegate' and 'delegate_search_step' in duplicate", function () {
-        let data = new EdgeTpuCfgData();
-        const cfg = ini.parse(duplicateEdgeTpuCfgText);
-        data.setWithConfig(cfg);
-        const dataCfg = data.getAsConfig();
-        assert.strictEqual(
-          dataCfg["edgetpu-compile"]["intermediate_tensors"],
-          undefined
-        );
-        assert.strictEqual(
-          dataCfg["edgetpu-compile"]["search_delegate"],
-          undefined
-        );
-        assert.strictEqual(
-          dataCfg["edgetpu-compile"]["delegate_search_step"],
-          undefined
-        );
-      });
-
-      test("NEG: try to set with config using 'intemediate_tensors' and 'search_delegate' in duplicate", function () {
-        let data = new EdgeTpuCfgData();
-        const cfg = ini.parse(duplicateEdgeTpuCfgText2);
-        data.setWithConfig(cfg);
-        const dataCfg = data.getAsConfig();
-        assert.strictEqual(
-          dataCfg["edgetpu-compile"]["intermediate_tensors"],
-          undefined
-        );
-        assert.strictEqual(
-          dataCfg["edgetpu-compile"]["search_delegate"],
-          undefined
-        );
-      });
     });
 
     suite("#setWithString()", function () {
@@ -327,40 +255,6 @@ suite("EdgetpuCfgEditor", function () {
         assert.strictEqual(
           dataCfg["edgetpu-compile"]["delegate_search_step"],
           cfg["edgetpu-compile"]["delegate_search_step"]
-        );
-      });
-
-      test("NEG: try to set with config using 'intemediate_tensors' and a set of 'search_delegate' and 'delegate_search_step' in duplicate", function () {
-        let data = new EdgeTpuCfgData();
-        const cfg = ini.parse(duplicateEdgeTpuCfgText);
-        data.setWithConfig(cfg);
-        const dataCfg = data.getAsConfig();
-        assert.strictEqual(
-          dataCfg["edgetpu-compile"]["intermediate_tensors"],
-          undefined
-        );
-        assert.strictEqual(
-          dataCfg["edgetpu-compile"]["search_delegate"],
-          undefined
-        );
-        assert.strictEqual(
-          dataCfg["edgetpu-compile"]["delegate_search_step"],
-          undefined
-        );
-      });
-
-      test("NEG: try to set with config using 'intemediate_tensors' and 'search_delegate' in duplicate", function () {
-        let data = new EdgeTpuCfgData();
-        const cfg = ini.parse(duplicateEdgeTpuCfgText2);
-        data.setWithConfig(cfg);
-        const dataCfg = data.getAsConfig();
-        assert.strictEqual(
-          dataCfg["edgetpu-compile"]["intermediate_tensors"],
-          undefined
-        );
-        assert.strictEqual(
-          dataCfg["edgetpu-compile"]["search_delegate"],
-          undefined
         );
       });
     });
@@ -562,29 +456,6 @@ suite("EdgetpuCfgEditor", function () {
       });
     });
 
-    suite("#resolveDuplicated()", function () {
-      test("resolve duplicated options", function () {
-        let data = new EdgeTpuCfgData();
-        data.setWithString(duplicateEdgeTpuCfgText);
-        const isSame: boolean = data.isSame(resolvedSampleEdgeTpuCfgText);
-        assert.isTrue(isSame);
-      });
-
-      test("resolve duplicated options 2", function () {
-        let data = new EdgeTpuCfgData();
-        data.setWithString(duplicateEdgeTpuCfgText2);
-        const isSame: boolean = data.isSame(resolvedSampleEdgeTpuCfgText);
-        assert.isTrue(isSame);
-      });
-
-      test("NEG: no duplicated keys to resolve", function () {
-        let data = new EdgeTpuCfgData();
-        data.setWithString(sampleEdgeTpuCfgText);
-        const isSame: boolean = data.isSame(sampleEdgeTpuCfgText);
-        assert.isTrue(isSame);
-      });
-    });
-
     suite("#updateSectionWithKeyValue()", function () {
       test("update key of section which already exists-1", function () {
         let data = new EdgeTpuCfgData();
@@ -625,24 +496,6 @@ suite("EdgetpuCfgEditor", function () {
           "opr1, opr2"
         );
       });
-      test("NEG: try to update 'search_delegate' value when 'intermediate_tensors' value exists", function () {
-        let data = new EdgeTpuCfgData();
-        data.setWithString(sampleEdgeTpuCfgText2);
-        data.updateSectionWithKeyValue(
-          "edgetpu-compile",
-          "search_delegate",
-          "True"
-        );
-        const cfg = data.getAsConfig();
-        assert.strictEqual(
-          cfg["edgetpu-compile"]["intermediate_tensors"],
-          undefined
-        );
-        assert.strictEqual(
-          cfg["edgetpu-compile"]["search_delegate"],
-          undefined
-        );
-      });
     });
 
     suite("#updateSectionWithValue()", function () {
@@ -670,42 +523,6 @@ show_operations=True
           "opr1"
         );
         assert.strictEqual(cfg["edgetpu-compile"]["show_operations"], "True");
-      });
-
-      test("NEG: try to update 'intermediate_tensors' and 'search_delegate' together", function () {
-        let data = new EdgeTpuCfgData();
-        data.setWithString(sampleEdgeTpuCfgText);
-        const stringified: string = `
-input_path=./inception_v3.tflite
-output_path=./inception_v3_edgetpu.tflite
-intermediate_tensors=opr1
-show_operations=True
-search_delegate=True
-delegate_search_step=1
-          `;
-        data.updateSectionWithValue("edgetpu-compile", stringified);
-        const cfg = data.getAsConfig();
-        assert.strictEqual(
-          cfg["edgetpu-compile"]["input_path"],
-          "./inception_v3.tflite"
-        );
-        assert.strictEqual(
-          cfg["edgetpu-compile"]["output_path"],
-          "./inception_v3_edgetpu.tflite"
-        );
-        assert.strictEqual(cfg["edgetpu-compile"]["show_operations"], "True");
-        assert.strictEqual(
-          cfg["edgetpu-compile"]["intermediate_tensors"],
-          undefined
-        );
-        assert.strictEqual(
-          cfg["edgetpu-compile"]["search_delegate"],
-          undefined
-        );
-        assert.strictEqual(
-          cfg["edgetpu-compile"]["delegate_search_step"],
-          undefined
-        );
       });
     });
 
