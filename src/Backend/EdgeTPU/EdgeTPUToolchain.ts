@@ -30,11 +30,11 @@ class EdgeTPUDebianToolchain extends DebianToolchain {
     if (config["edgetpu-compile"] === undefined) {
       Logger.error(
         "EdgeTPUDebianToolchain",
-        `Fail to run. The configuration file doesn't include 'edgetpu-compile' section. Please add one.`
+        `The configuration file doesn't include 'edgetpu-compile' section.`
       );
 
       throw new Error(
-        `Fail to run. The configuration file doesn't include ''edgetpu-compile' section. Please add one.`
+        `The configuration file doesn't include ''edgetpu-compile' section.`
       );
     }
 
