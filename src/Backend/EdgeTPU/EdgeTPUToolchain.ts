@@ -20,6 +20,7 @@ import { DebianToolchain } from "../ToolchainImpl/DebianToolchain";
 import * as ini from "ini";
 import * as fs from "fs";
 import * as path from "path";
+import { Logger } from "../../Utils/Logger";
 
 class EdgeTPUDebianToolchain extends DebianToolchain {
   run(cfg: string): Command {
@@ -27,15 +28,21 @@ class EdgeTPUDebianToolchain extends DebianToolchain {
     var config = ini.parse(fs.readFileSync(cfg, "utf-8").trim());
 
     if (config["edgetpu-compile"] === undefined) {
-      return cmd;
+      Logger.error(
+        "EdgeTPUDebianToolchain",
+        `Fail to run. The configuration file doesn't include 'edgetpu-compile' section. Please add one.`
+      );
+
+      throw new Error(
+        `Fail to run. The configuration file doesn't include ''edgetpu-compile' section. Please add one.`
+      );
     }
 
     let outDir = path.dirname(config["edgetpu-compile"]["output_path"]);
     cmd.push("--out_dir");
     cmd.push(outDir);
 
-    let intermediateTensors =
-      config["edgetpu-compile"]["intermediate_tensors"];
+    let intermediateTensors = config["edgetpu-compile"]["intermediate_tensors"];
     if (intermediateTensors !== undefined) {
       cmd.push("--intermediate_tensors");
       cmd.push(intermediateTensors);
@@ -57,8 +64,7 @@ class EdgeTPUDebianToolchain extends DebianToolchain {
       cmd.push("--search_delegate");
     }
 
-    let delegateSearchStep =
-      config["edgetpu-compile"]["delegate_search_step"];
+    let delegateSearchStep = config["edgetpu-compile"]["delegate_search_step"];
     if (delegateSearchStep !== undefined) {
       cmd.push("--delegate_search_step");
       cmd.push(delegateSearchStep);
