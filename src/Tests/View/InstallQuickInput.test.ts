@@ -26,6 +26,7 @@ import {
   InstallQuickInputStep,
 } from "../../View/InstallQuickInput";
 import { MockCompiler } from "../MockCompiler";
+import { OneCompiler } from "../../Backend/One/OneToolchain";
 
 suite("View", function () {
   suite("InnerButton", function () {
@@ -45,21 +46,30 @@ suite("View", function () {
   // Therefore, we focus on testing things not ui
   suite("InstallQuickInput", function () {
     const oneBackendName = "ONE";
+    const oneCompiler = new OneCompiler();
+    const oneToolchainEnv = new ToolchainEnv(oneCompiler);
+
+    const backendName = "testBackend";
     const compiler = new MockCompiler();
     const toolchainEnv = new ToolchainEnv(compiler);
+
     const toolchainType = toolchainEnv.getToolchainTypes()[0];
     const toolchain = toolchainEnv.listAvailable(toolchainType, 0, 1)[0];
     const version = new Version(1, 0, 0).str();
-    const backendName = "testBackend";
 
     setup(function () {
+      Object.keys(gToolchainEnvMap).forEach(
+        (key) => delete gToolchainEnvMap[key]
+      );
+
+      gToolchainEnvMap[oneBackendName] = oneToolchainEnv;
       gToolchainEnvMap[backendName] = toolchainEnv;
     });
 
     teardown(function () {
-      if (gToolchainEnvMap[backendName] !== undefined) {
-        delete gToolchainEnvMap[backendName];
-      }
+      Object.keys(gToolchainEnvMap).forEach(
+        (key) => delete gToolchainEnvMap[key]
+      );
     });
 
     suite("#constructor()", function () {
