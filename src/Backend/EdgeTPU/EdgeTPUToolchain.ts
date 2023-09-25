@@ -20,6 +20,7 @@ import * as ini from "ini";
 import * as fs from "fs";
 import * as path from "path";
 
+import { Logger } from "../../Utils/Logger";
 import { pipedSpawnSync } from "../../Utils/PipedSpawnSync";
 import { Backend } from "../Backend";
 import { Command } from "../Command";
@@ -34,45 +35,50 @@ class EdgeTPUDebianToolchain extends DebianToolchain {
     let cmd = new Command("edgetpu_compiler");
     var config = ini.parse(fs.readFileSync(cfg, "utf-8").trim());
 
-    if (config["one-import-edgetpu"] === undefined) {
-      return cmd;
+    if (config["edgetpu-compile"] === undefined) {
+      Logger.error(
+        "EdgeTPUDebianToolchain",
+        `The configuration file doesn't include 'edgetpu-compile' section.`
+      );
+
+      throw new Error(
+        `The configuration file doesn't include ''edgetpu-compile' section.`
+      );
     }
 
-    let outDir = path.dirname(config["one-import-edgetpu"]["output_path"]);
+    let outDir = path.dirname(config["edgetpu-compile"]["output_path"]);
     cmd.push("--out_dir");
     cmd.push(outDir);
 
-    let intermediateTensors =
-      config["one-import-edgetpu"]["intermediate_tensors"];
+    let intermediateTensors = config["edgetpu-compile"]["intermediate_tensors"];
     if (intermediateTensors !== undefined) {
       cmd.push("--intermediate_tensors");
       cmd.push(intermediateTensors);
     }
 
-    let showOperations = config["one-import-edgetpu"]["show_operations"];
+    let showOperations = config["edgetpu-compile"]["show_operations"];
     if (showOperations === "True") {
       cmd.push("--show_operations");
     }
 
-    let minRuntimeVersion = config["one-import-edgetpu"]["min_runtime_version"];
+    let minRuntimeVersion = config["edgetpu-compile"]["min_runtime_version"];
     if (minRuntimeVersion !== undefined) {
       cmd.push("--min_runtime_version");
       cmd.push(minRuntimeVersion);
     }
 
-    let searchDelegate = config["one-import-edgetpu"]["search_delegate"];
+    let searchDelegate = config["edgetpu-compile"]["search_delegate"];
     if (searchDelegate === "True") {
       cmd.push("--search_delegate");
     }
 
-    let delegateSearchStep =
-      config["one-import-edgetpu"]["delegate_search_step"];
+    let delegateSearchStep = config["edgetpu-compile"]["delegate_search_step"];
     if (delegateSearchStep !== undefined) {
       cmd.push("--delegate_search_step");
       cmd.push(delegateSearchStep);
     }
 
-    let inputPath = config["one-import-edgetpu"]["input_path"];
+    let inputPath = config["edgetpu-compile"]["input_path"];
     cmd.push(inputPath);
 
     return cmd;

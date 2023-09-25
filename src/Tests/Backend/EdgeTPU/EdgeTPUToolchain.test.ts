@@ -16,31 +16,13 @@
 
 import { assert } from "chai";
 
-import {
-  EdgeTPUCompiler,
-  EdgeTPUDebianToolchain,
-} from "../../../Backend/EdgeTPU/EdgeTPUToolchain";
+import { EdgeTPUDebianToolchain } from "../../../Backend/EdgeTPU/EdgeTPUToolchain";
 import { ToolchainInfo } from "../../../Backend/Toolchain";
 import { Version } from "../../../Backend/Version";
 import { TestBuilder } from "../../TestBuilder";
 
 const content = `
-[onecc]
-one-import-tf=False
-one-import-tflite=False
-one-import-bcq=False
-one-import-onnx=False
-one-optimize=False
-one-quantize=True
-one-pack=False
-one-codegen=False
-
-[one-quantize]
-input_path=./inception_v3_tflite.circle
-output_path=./inception_v3_tflite.q8.circle
-input_model_dtype=uint8
-
-[one-import-edgetpu]
+[edgetpu-compile]
 input_path=/home/workspace/models/sample.tflite
 output_path=/home/workspace/models/sample_edge_tpu.tflite
 intermediate_tensors=tensorName1,tensorName2
@@ -51,7 +33,7 @@ delegate_search_step=4
 `;
 
 const relativeOutputPathcontent = `
-[one-import-edgetpu]
+[edgetpu-compile]
 input_path=./sample.tflite
 output_path=./sample_edge_tpu.tflite
 intermediate_tensors=tensorName1,tensorName2
@@ -132,47 +114,6 @@ suite("Backend", function () {
 
         assert.deepEqual(cmd, expectedStrs);
       });
-    });
-  });
-});
-
-suite("EdgeTPUCompiler", function () {
-  suite("#parseVersion", function () {
-    test("returns Version object from string version", function () {
-      const edgeTPUCompiler = new EdgeTPUCompiler();
-      const version1 = edgeTPUCompiler.parseVersion("1.0.2~RC0");
-      const version2 = new Version(1, 0, 2, "~RC0");
-      assert.deepEqual(version1, version2);
-    });
-    test("returns Version object from string version without patch and option", function () {
-      const edgeTPUCompiler = new EdgeTPUCompiler();
-      const version1 = edgeTPUCompiler.parseVersion("16.0");
-      const version2 = new Version(16, 0, undefined);
-      assert.deepEqual(version1, version2);
-    });
-    test("returns Version object from string version without option", function () {
-      const edgeTPUCompiler = new EdgeTPUCompiler();
-      const version1 = edgeTPUCompiler.parseVersion("2.1.302470888");
-      const version2 = new Version(2, 1, 302470888);
-      assert.deepEqual(version1, version2);
-    });
-    test("returns Version object from string version without patch", function () {
-      const edgeTPUCompiler = new EdgeTPUCompiler();
-      const version1 = edgeTPUCompiler.parseVersion("1.0-beta");
-      const version2 = new Version(1, 0, 0, "-beta");
-      assert.deepEqual(version1, version2);
-    });
-    test("NEG: check invalid version format without numbers", function () {
-      const edgeTPUCompiler = new EdgeTPUCompiler();
-      assert.throws(() => edgeTPUCompiler.parseVersion("a.b.c"));
-    });
-    test("NEG: check invalid version format with too many numbers", function () {
-      const edgeTPUCompiler = new EdgeTPUCompiler();
-      assert.throws(() => edgeTPUCompiler.parseVersion("1.2.3.4"));
-    });
-    test("NEG: check invalid version format with empty string", function () {
-      const edgeTPUCompiler = new EdgeTPUCompiler();
-      assert.throws(() => edgeTPUCompiler.parseVersion(""));
     });
   });
 });
