@@ -16,6 +16,7 @@
 
 import { Executor } from "../Backend/Executor";
 import { DeviceSpec } from "../Backend/Spec";
+import { Toolchain } from "../Backend/Toolchain";
 
 /**
  * `Device` class
@@ -33,6 +34,9 @@ import { DeviceSpec } from "../Backend/Spec";
 class Device {
   name: string;
   spec: DeviceSpec;
+  // TODO remove availableExecutors
+  // One device is connected to one executor device.
+  // Treeitems are added to the device view for each Device.
   availableExecutors: Set<Executor>;
   constructor(name: string, spec: DeviceSpec) {
     if (name === "") {
@@ -53,4 +57,18 @@ class Device {
   }
 }
 
-export { Device };
+class SimulatorDevice extends Device {
+  toolchain: Toolchain;
+  constructor(name: string, spec: DeviceSpec, toolchain: Toolchain) {
+    super(name, spec);
+    this.toolchain = toolchain;
+  }
+}
+
+class TargetDevice extends Device {
+  constructor(name: string, spec: DeviceSpec) {
+    super(name, spec);
+  }
+}
+
+export { Device, SimulatorDevice, TargetDevice };
