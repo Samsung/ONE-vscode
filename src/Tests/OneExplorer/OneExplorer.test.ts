@@ -35,10 +35,6 @@ suite("OneExplorer", function () {
       testBuilder.setUp();
     });
 
-    teardown(() => {
-      testBuilder.tearDown();
-    });
-
     suite("#NodeFactory", function () {
       test("NEG: create a directory node with attributes", function () {
         assert.throw(() => {
@@ -242,6 +238,10 @@ suite("OneExplorer", function () {
           assert.strictEqual(oneNode.contextValue, "directory");
         }
       });
+    });
+
+    teardown(() => {
+      testBuilder.tearDown();
     });
   });
 });

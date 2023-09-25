@@ -31,10 +31,6 @@ suite("MPQEditor", function () {
       testBuilder.setUp();
     });
 
-    teardown(() => {
-      testBuilder.tearDown();
-    });
-
     suite("#validateMPQName", function () {
       test("test validateMPQName", function () {
         const dirPath: string = testBuilder.dirInTemp;
@@ -162,6 +158,10 @@ suite("MPQEditor", function () {
         assert.strictEqual(newCont["default_granularity"], "layer");
         assert.strictEqual(newCont["model_path"], "sample_1.circle");
       });
+    });
+
+    teardown(() => {
+      testBuilder.tearDown();
     });
   });
 });
