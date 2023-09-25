@@ -213,14 +213,14 @@ export class DeviceViewProvider
           }
         });
       } else {
-        Object.entries(globalBackendMap).map(([_, backend]) => {
+        Object.entries(globalBackendMap).forEach(([_, backend]) => {
           if (backend.executor()) {
             const compiler = backend.compiler();
             if (compiler) {
               compiler
                 .getToolchainTypes()
                 .map((type) => compiler.getInstalledToolchains(type))
-                .map((toolchains) => {
+                .forEach((toolchains) => {
                   for (const toolchain of toolchains) {
                     deviceList.push(
                       new SimulatorDevice(
