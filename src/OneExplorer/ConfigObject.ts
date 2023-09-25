@@ -23,19 +23,23 @@ import * as vscode from "vscode";
 import { RealPath } from "../Utils/Helpers";
 import { Logger } from "../Utils/Logger";
 
-import { Artifact, Locator, LocatorRunner } from "./ArtifactLocator";
+import { Artifact } from "./ArtifactLocator";
+import { OneCfg, OneConfigSetting } from "./ConfigSettings/OneConfigSetting";
+import { ConfigSetting } from "./ConfigSetting";
 
-type Cfg = {
-  "one-import-tflite": CfgOneImportTflite;
-  "one-import-onnx": CfgOneImportOnnx;
-  "one-import-tf": CfgOneImportTf;
-};
+/**
+ * Type for rawObj.
+ * Expand for additional Backend's section value
+ */
+type Cfg = OneCfg;
 type CfgKeys = keyof Cfg;
 
-// TODO Update
-type CfgOneImportTflite = any;
-type CfgOneImportOnnx = any;
-type CfgOneImportTf = any;
+/**
+ * Enum for what type of ConfigSetting that ConfigObject use
+ */
+enum CfgType {
+  one,
+}
 
 /**
  * @brief A helper class to get parsed artifacts (baseModels, products)
@@ -65,6 +69,11 @@ export class ConfigObj {
    * a parsed config object
    */
   obj: { baseModels: Artifact[]; products: Artifact[] };
+
+  /**
+   * type of config setting
+   */
+  configType: CfgType;
 
   get getBaseModels() {
     return this.obj.baseModels;
@@ -112,12 +121,31 @@ export class ConfigObj {
     return found ? true : false;
   }
 
+  /**
+   * @brief getter for config setting
+   */
+  public get configSetting(): ConfigSetting {
+    let configSetting: ConfigSetting;
+    switch (this.configType) {
+      case CfgType.one:
+      default:
+        configSetting = new OneConfigSetting();
+    }
+    configSetting.init();
+
+    return configSetting;
+  }
+
   private constructor(uri: vscode.Uri, rawObj: Cfg) {
     this.uri = uri;
     this.rawObj = rawObj;
+    this.configType = CfgType.one;
+
+    // TODO: separate to init()
+    const configSetting = this.configSetting;
     this.obj = {
-      baseModels: ConfigObj.parseBaseModels(uri.fsPath, rawObj),
-      products: ConfigObj.parseProducts(uri.fsPath, rawObj),
+      baseModels: configSetting.parseBaseModels(uri.fsPath, rawObj),
+      products: configSetting.parseProducts(uri.fsPath, rawObj),
     };
   }
 
@@ -127,11 +155,7 @@ export class ConfigObj {
   ): Thenable<void> {
     const getSection = (name: string) => {
       const ext = path.extname(name);
-      const sections = {
-        ".pb": "one-import-tf",
-        ".tflite": "one-import-tflite",
-        ".onnx": "one-import-onnx",
-      };
+      const sections = this.configSetting.sections;
 
       return sections[ext as keyof typeof sections];
     };
@@ -140,6 +164,7 @@ export class ConfigObj {
     const kSection: CfgKeys = section as keyof Cfg;
 
     if (
+      this.rawObj[kSection] &&
       this.rawObj[kSection].input_path &&
       this.getFullPath(this.rawObj[kSection].input_path) === oldpath
     ) {
@@ -194,238 +219,4 @@ export class ConfigObj {
     // TODO check if toString() is required
     return ini.parse(configRaw.toString());
   }
-
-  /**
-   * @brief Parse base models written in the ini object and return the absolute path.
-   *
-   * @param uri cfg uri is required to calculate absolute path
-   *
-   * ABOUT MULTIPLE BASE MODELS
-   *
-   * onecc doesn't support multiple base models.
-   * However, OneExplorer will show the config node below multiple base models
-   * to prevent a case that users cannot find their faulty config files on ONE explorer.
-   *
-   * TODO Move to backend
-   */
-  private static parseBaseModels = (
-    filePath: string,
-    iniObj: object
-  ): Artifact[] => {
-    const dir = path.dirname(filePath);
-
-    let locatorRunner = new LocatorRunner();
-
-    locatorRunner.register({
-      artifactAttr: {
-        ext: ".tflite",
-        icon: new vscode.ThemeIcon("symbol-variable"),
-      },
-      locator: new Locator((value: string) =>
-        LocatorRunner.searchWithExt(".tflite", value)
-      ),
-    });
-
-    locatorRunner.register({
-      artifactAttr: {
-        ext: ".pb",
-        icon: new vscode.ThemeIcon("symbol-variable"),
-      },
-      locator: new Locator((value: string) =>
-        LocatorRunner.searchWithExt(".pb", value)
-      ),
-    });
-
-    locatorRunner.register({
-      artifactAttr: {
-        ext: ".onnx",
-        icon: new vscode.ThemeIcon("symbol-variable"),
-      },
-      locator: new Locator((value: string) =>
-        LocatorRunner.searchWithExt(".onnx", value)
-      ),
-    });
-
-    let artifacts: Artifact[] = locatorRunner.run(iniObj, dir);
-
-    if (artifacts.length > 1) {
-      // TODO Notify the error with a better UX
-      // EX. put question mark next to the config icon
-      Logger.debug(
-        "OneExplorer",
-        `There are multiple input models in the configuration(${filePath}).`
-      );
-    }
-    if (artifacts.length === 0) {
-      // TODO Notify the error with a better UX
-      // EX. showing orphan nodes somewhere
-      Logger.debug(
-        "OneExplorer",
-        `There is no input model in the configuration(${filePath}).`
-      );
-    }
-
-    // Return as list of uri
-    return artifacts;
-  };
-
-  /**
-   * @brief Find derived models written in the ini object and return the absolute path.
-   *
-   * @param filePath cfg file path is required to calculate absolute path
-   *
-   * TODO Move to backend
-   */
-  private static parseProducts = (
-    filePath: string,
-    iniObj: object
-  ): Artifact[] => {
-    const dir = path.dirname(filePath);
-
-    let locatorRunner = new LocatorRunner();
-
-    /**
-     * ABOUT ORDERING
-     *
-     * The registration order determines the order in the tree view
-     */
-
-    locatorRunner.register({
-      artifactAttr: {
-        ext: ".circle",
-        icon: new vscode.ThemeIcon("symbol-variable"),
-        openViewType: "one.viewer.circle",
-      },
-      locator: new Locator((value: string) =>
-        LocatorRunner.searchWithExt(".circle", value)
-      ),
-    });
-
-    locatorRunner.register({
-      artifactAttr: {
-        ext: ".tvn",
-        icon: new vscode.ThemeIcon("symbol-variable"),
-      },
-      locator: new Locator((value: string) =>
-        LocatorRunner.searchWithExt(".tvn", value)
-      ),
-    });
-
-    locatorRunner.register({
-      artifactAttr: {
-        ext: ".tracealloc.json",
-        icon: new vscode.ThemeIcon("graph"),
-        openViewType: "one.viewer.mondrian",
-        canHide: true,
-      },
-      locator: new Locator((value: string) => {
-        return LocatorRunner.searchWithExt(".tvn", value).map((filepath) =>
-          filepath.replace(".tvn", ".tracealloc.json")
-        );
-      }),
-    });
-
-    // NOTE
-    // Shows <model>.trace.json
-    // REQUIRES: <model>.tvn be written in the config file.
-    // This rule is added to show a trace.json file generated by `one.toolchain.profileModel` command.
-    locatorRunner.register({
-      artifactAttr: {
-        ext: ".trace.json",
-        icon: new vscode.ThemeIcon("graph"),
-        openViewType: "one.editor.jsonTracer",
-        canHide: true,
-      },
-      locator: new Locator((value: string) => {
-        return LocatorRunner.searchWithExt(".tvn", value).map((filepath) =>
-          filepath.replace(".tvn", ".trace.json")
-        );
-      }),
-    });
-
-    locatorRunner.register({
-      artifactAttr: {
-        ext: ".json",
-        icon: new vscode.ThemeIcon("graph"),
-        openViewType: "one.editor.jsonTracer",
-        canHide: true,
-      },
-      locator: new Locator(
-        (value: string) => {
-          return LocatorRunner.searchWithCommandOption(
-            value,
-            "--save-chrome-trace",
-            ".json"
-          );
-        },
-        "one-profile",
-        "command"
-      ),
-    });
-
-    locatorRunner.register({
-      artifactAttr: {
-        ext: ".tv2m",
-        icon: new vscode.ThemeIcon("symbol-method"),
-        canHide: true,
-      },
-      locator: new Locator((value: string) => {
-        return LocatorRunner.searchWithExt(".tvn", value).map((filepath) =>
-          filepath.replace(".tvn", ".tv2m")
-        );
-      }),
-    });
-
-    locatorRunner.register({
-      artifactAttr: {
-        ext: ".tv2o",
-        icon: new vscode.ThemeIcon("symbol-method"),
-        canHide: true,
-      },
-      locator: new Locator((value: string) => {
-        return LocatorRunner.searchWithExt(".tvn", value).map((filepath) =>
-          filepath.replace(".tvn", ".tv2o")
-        );
-      }),
-    });
-
-    locatorRunner.register({
-      artifactAttr: {
-        ext: ".tv2w",
-        icon: new vscode.ThemeIcon("symbol-method"),
-        canHide: true,
-      },
-      locator: new Locator((value: string) => {
-        return LocatorRunner.searchWithExt(".tvn", value).map((filepath) =>
-          filepath.replace(".tvn", ".tv2w")
-        );
-      }),
-    });
-
-    locatorRunner.register({
-      // 'default' view type is 'text editor' (vscode.openWith)
-      artifactAttr: {
-        ext: ".circle.log",
-        openViewType: "default",
-        icon: vscode.ThemeIcon.File,
-        canHide: true,
-      },
-      locator: new Locator((value: string) => {
-        return LocatorRunner.searchWithExt(".circle", value).map((filepath) =>
-          filepath.replace(".circle", ".circle.log")
-        );
-      }),
-    });
-
-    /**
-     * When you add a new product type, please append the ext type to
-     * OneTreeDataProvider.fileWatcher too, to prevent a bug.
-     *
-     * TODO Provide better structure to remove this extra work
-     */
-
-    let artifacts: Artifact[] = locatorRunner.run(iniObj, dir);
-
-    return artifacts;
-  };
 }
