@@ -19,6 +19,7 @@ import * as vscode from "vscode";
 import { ConfigObj } from "../../OneExplorer/ConfigObject";
 
 import { TestBuilder } from "../TestBuilder";
+import { OneConfigSetting } from "../../OneExplorer/ConfigSettings/OneConfigSetting";
 
 suite("OneExplorer", function () {
   suite("ConfigObject", function () {
@@ -78,6 +79,31 @@ suite("OneExplorer", function () {
 
           assert.strictEqual(configObj!.getBaseModels.length, 0);
           assert.strictEqual(configObj!.getProducts.length, 0);
+        }
+      });
+    });
+
+    suite("#configSetting", function () {
+      test("Get one config setting with .cfg file", function () {
+        const configName = "model.cfg";
+
+        const content = `
+`;
+
+        // Write a file inside temp directory
+        testBuilder.writeFileSync(configName, content);
+
+        // Get file paths inside the temp directory
+        const configPath = testBuilder.getPath(configName);
+
+        const configObj = ConfigObj.createConfigObj(
+          vscode.Uri.file(configPath)
+        );
+
+        // Validate
+        {
+          assert.isDefined(configObj);
+          assert.isTrue(configObj!.configSetting instanceof OneConfigSetting);
         }
       });
     });
