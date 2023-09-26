@@ -52,6 +52,12 @@ suite("Toolchain", function () {
     gToolchainEnvMap[backendName] = toolchainEnv;
   });
 
+  teardown(function () {
+    Object.keys(gToolchainEnvMap).forEach(
+      (key) => delete gToolchainEnvMap[key]
+    );
+  });
+
   suite("BaseNode", function () {
     suite("#constructor()", function () {
       test("is constructed with params using base_node", function () {
