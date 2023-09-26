@@ -17,7 +17,7 @@
 import { assert } from "chai";
 import * as ini from "ini";
 
-import { EdgeTpuCfgData } from "../../CfgEditor/EdgeTPUCfgData";
+import { EdgeTPUCfgData } from "../../CfgEditor/EdgeTPUCfgData";
 
 // NOTE
 // sampleEdgeTpuCfgText and sampleEdgeTpuCfgText1 are the same.
@@ -72,14 +72,14 @@ suite("EdgetpuCfgEditor", function () {
   suite("EdgetpuCfgData", function () {
     suite("#constructor()", function () {
       test("is constructed", function () {
-        const data = new EdgeTpuCfgData();
-        assert.instanceOf(data, EdgeTpuCfgData);
+        const data = new EdgeTPUCfgData();
+        assert.instanceOf(data, EdgeTPUCfgData);
       });
     });
 
     suite("#setWithConfig()", function () {
       test("sets with decoded/parsed config param", function () {
-        let data = new EdgeTpuCfgData();
+        let data = new EdgeTPUCfgData();
         const cfg = ini.parse(sampleEdgeTpuCfgText);
         data.setWithConfig(cfg);
         const dataCfg = data.getAsConfig();
@@ -102,7 +102,7 @@ suite("EdgetpuCfgEditor", function () {
       });
 
       test("sets with decoded/parsed config param 2", function () {
-        let data = new EdgeTpuCfgData();
+        let data = new EdgeTPUCfgData();
         const cfg = ini.parse(sampleEdgeTpuCfgText2);
         data.setWithConfig(cfg);
         const dataCfg = data.getAsConfig();
@@ -133,7 +133,7 @@ suite("EdgetpuCfgEditor", function () {
       });
 
       test("sets with decoded/parsed config param 3", function () {
-        let data = new EdgeTpuCfgData();
+        let data = new EdgeTPUCfgData();
         const cfg = ini.parse(sampleEdgeTpuCfgText3);
         data.setWithConfig(cfg);
         const dataCfg = data.getAsConfig();
@@ -170,7 +170,7 @@ suite("EdgetpuCfgEditor", function () {
 
     suite("#setWithString()", function () {
       test("sets with encoded/stringified text param", function () {
-        let data = new EdgeTpuCfgData();
+        let data = new EdgeTPUCfgData();
         data.setWithString(sampleEdgeTpuCfgText);
         const dataCfg = data.getAsConfig();
         const cfg = ini.parse(sampleEdgeTpuCfgText);
@@ -193,7 +193,7 @@ suite("EdgetpuCfgEditor", function () {
       });
 
       test("sets with encoded/stringified text param 2", function () {
-        let data = new EdgeTpuCfgData();
+        let data = new EdgeTPUCfgData();
         data.setWithString(sampleEdgeTpuCfgText2);
         const dataCfg = data.getAsConfig();
         const cfg = ini.parse(sampleEdgeTpuCfgText2);
@@ -224,7 +224,7 @@ suite("EdgetpuCfgEditor", function () {
       });
 
       test("sets with encoded/stringified text param 3", function () {
-        let data = new EdgeTpuCfgData();
+        let data = new EdgeTPUCfgData();
         data.setWithString(sampleEdgeTpuCfgText3);
         const dataCfg = data.getAsConfig();
         const cfg = ini.parse(sampleEdgeTpuCfgText3);
@@ -261,7 +261,7 @@ suite("EdgetpuCfgEditor", function () {
 
     suite("#getAsConfig()", function () {
       test("gets OneConfig decoded/parsed", function () {
-        let data = new EdgeTpuCfgData();
+        let data = new EdgeTPUCfgData();
         const cfg = ini.parse(sampleEdgeTpuCfgText);
         data.setWithConfig(cfg);
         const dataCfg = data.getAsConfig();
@@ -284,7 +284,7 @@ suite("EdgetpuCfgEditor", function () {
       });
 
       test("gets OneConfig decoded/parsed 2", function () {
-        let data = new EdgeTpuCfgData();
+        let data = new EdgeTPUCfgData();
         const cfg = ini.parse(sampleEdgeTpuCfgText2);
         data.setWithConfig(cfg);
         const dataCfg = data.getAsConfig();
@@ -315,7 +315,7 @@ suite("EdgetpuCfgEditor", function () {
       });
 
       test("gets OneConfig decoded/parsed 3", function () {
-        let data = new EdgeTpuCfgData();
+        let data = new EdgeTPUCfgData();
         const cfg = ini.parse(sampleEdgeTpuCfgText3);
         data.setWithConfig(cfg);
         const dataCfg = data.getAsConfig();
@@ -352,12 +352,12 @@ suite("EdgetpuCfgEditor", function () {
 
     suite("#getAsString()", function () {
       test("gets string encoded/stringified", function () {
-        let data = new EdgeTpuCfgData();
+        let data = new EdgeTPUCfgData();
         data.setWithString(sampleEdgeTpuCfgText);
         const cfg1 = data.getAsConfig();
 
         const stringfied = data.getAsString();
-        let data2 = new EdgeTpuCfgData();
+        let data2 = new EdgeTPUCfgData();
         data2.setWithString(stringfied);
         const cfg2 = data2.getAsConfig();
 
@@ -380,12 +380,12 @@ suite("EdgetpuCfgEditor", function () {
       });
 
       test("gets string encoded/stringified 2", function () {
-        let data = new EdgeTpuCfgData();
+        let data = new EdgeTPUCfgData();
         data.setWithString(sampleEdgeTpuCfgText);
         const cfg1 = data.getAsConfig();
 
         const stringfied = data.getAsString();
-        let data2 = new EdgeTpuCfgData();
+        let data2 = new EdgeTPUCfgData();
         data2.setWithString(stringfied);
         const cfg2 = data2.getAsConfig();
 
@@ -416,12 +416,12 @@ suite("EdgetpuCfgEditor", function () {
       });
 
       test("gets string encoded/stringified 3", function () {
-        let data = new EdgeTpuCfgData();
+        let data = new EdgeTPUCfgData();
         data.setWithString(sampleEdgeTpuCfgText);
         const cfg1 = data.getAsConfig();
 
         const stringfied = data.getAsString();
-        let data2 = new EdgeTpuCfgData();
+        let data2 = new EdgeTPUCfgData();
         data2.setWithString(stringfied);
         const cfg2 = data2.getAsConfig();
 
@@ -458,7 +458,7 @@ suite("EdgetpuCfgEditor", function () {
 
     suite("#updateSectionWithKeyValue()", function () {
       test("update key of section which already exists-1", function () {
-        let data = new EdgeTpuCfgData();
+        let data = new EdgeTPUCfgData();
         data.setWithString(sampleEdgeTpuCfgText2);
         data.updateSectionWithKeyValue(
           "edgetpu-compile",
@@ -472,7 +472,7 @@ suite("EdgetpuCfgEditor", function () {
         );
       });
       test("update key of section which already exists-2", function () {
-        let data = new EdgeTpuCfgData();
+        let data = new EdgeTPUCfgData();
         data.setWithString(sampleEdgeTpuCfgText3);
         data.updateSectionWithKeyValue(
           "edgetpu-compile",
@@ -483,7 +483,7 @@ suite("EdgetpuCfgEditor", function () {
         assert.strictEqual(cfg["edgetpu-compile"]["delegate_search_step"], "3");
       });
       test("update section which is not written", function () {
-        let data = new EdgeTpuCfgData();
+        let data = new EdgeTPUCfgData();
         data.setWithString(sampleEdgeTpuCfgText);
         data.updateSectionWithKeyValue(
           "edgetpu-compile",
@@ -500,7 +500,7 @@ suite("EdgetpuCfgEditor", function () {
 
     suite("#updateSectionWithValue()", function () {
       test("update section of config with value encoded/stringified", function () {
-        let data = new EdgeTpuCfgData();
+        let data = new EdgeTPUCfgData();
         data.setWithString(sampleEdgeTpuCfgText);
         const stringified: string = `
 input_path=./inception_v3.tflite
@@ -528,19 +528,19 @@ show_operations=True
 
     suite("#isSame()", function () {
       test("is same to string encoded/stringified", function () {
-        let data = new EdgeTpuCfgData();
+        let data = new EdgeTPUCfgData();
         data.setWithString(sampleEdgeTpuCfgText);
         const isSame: boolean = data.isSame(sampleEdgeTpuCfgText1);
         assert.isTrue(isSame);
       });
       test("is not same to string encoded/stringified", function () {
-        let data = new EdgeTpuCfgData();
+        let data = new EdgeTPUCfgData();
         data.setWithString(sampleEdgeTpuCfgText);
         const isSame: boolean = data.isSame(sampleEdgeTpuCfgText2);
         assert.isNotTrue(isSame);
       });
       test("is not same to string encoded/stringified - 2", function () {
-        let data = new EdgeTpuCfgData();
+        let data = new EdgeTPUCfgData();
         data.setWithString(sampleEdgeTpuCfgText);
         const isSame: boolean = data.isSame(sampleEdgeTpuCfgText3);
         assert.isNotTrue(isSame);
@@ -549,7 +549,7 @@ show_operations=True
 
     suite("#sorted()", function () {
       test("sorts config", function () {
-        let data = new EdgeTpuCfgData();
+        let data = new EdgeTPUCfgData();
         data.setWithString(sampleEdgeTpuCfgText);
         data.sort();
         const isSame: boolean = data.isSame(sampleEdgeTpuCfgText1);

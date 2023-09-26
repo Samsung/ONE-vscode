@@ -18,7 +18,7 @@ import * as ini from "ini";
 import { ICfgData } from "./ICfgData";
 import { Sections } from "./Sections";
 
-export class EdgeTpuCfgData extends ICfgData {
+export class EdgeTPUCfgData extends ICfgData {
   constructor(cfg = undefined) {
     super(cfg, Sections.edgetpu);
   }
