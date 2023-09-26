@@ -52,6 +52,10 @@ const vscode = acquireVsCodeApi();
 
 // event from vscode extension
 window.addEventListener("message", (event) => {
+  if (window.origin !== event.origin) {
+    console.log("Unexpected Origin: ", event.origin);
+    return;
+  }
   const message = event.data;
   switch (message.type) {
     case "load":
