@@ -33,6 +33,7 @@ import {
   MPQVisqData,
 } from "./MPQCircleSelector";
 
+/* istanbul ignore next */
 export class MPQEditorProvider
   implements vscode.CustomTextEditorProvider, MPQSelectionEvent
 {

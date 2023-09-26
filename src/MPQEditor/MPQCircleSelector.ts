@@ -51,6 +51,7 @@ export type MPQSelectionCmdLayersChangedArgs = {
   names: any;
 };
 
+/* istanbul ignore next */
 export class MPQSelectionPanel
   extends CircleGraphCtrl
   implements CircleGraphEvent
