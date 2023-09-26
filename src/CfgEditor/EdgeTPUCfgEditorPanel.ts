@@ -71,18 +71,21 @@ export class EdgeTPUCfgEditorPanel implements vscode.CustomTextEditorProvider {
         }
       ),
       // Add command registration here
-      vscode.commands.registerCommand("one.cfgEditor.setDefaultEdgetpuValues", () => {
-        if (!provider._activeWebviewPanel || !provider._activeDocument) {
-          return;
+      vscode.commands.registerCommand(
+        "one.cfgEditor.setDefaultEdgetpuValues",
+        () => {
+          if (!provider._activeWebviewPanel || !provider._activeDocument) {
+            return;
+          }
+
+          const cfgName = path.parse(provider._activeDocument!.fileName).name;
+
+          provider._activeWebviewPanel!.webview.postMessage({
+            type: "setDefaultEdgetpuValues",
+            name: cfgName,
+          });
         }
-
-        const cfgName = path.parse(provider._activeDocument!.fileName).name;
-
-        provider._activeWebviewPanel!.webview.postMessage({
-          type: "setDefaultEdgetpuValues",
-          name: cfgName,
-        });
-      }),
+      ),
     ];
 
     registrations.forEach((disposable) =>
@@ -226,7 +229,11 @@ export class EdgeTPUCfgEditorPanel implements vscode.CustomTextEditorProvider {
     document: vscode.TextDocument,
     webviewPanel: vscode.WebviewPanel
   ): void {
-    vscode.commands.executeCommand("setContext", EdgeTPUCfgEditorPanel.viewType, true);
+    vscode.commands.executeCommand(
+      "setContext",
+      EdgeTPUCfgEditorPanel.viewType,
+      true
+    );
 
     const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(
       (e) => {
@@ -275,10 +282,7 @@ export class EdgeTPUCfgEditorPanel implements vscode.CustomTextEditorProvider {
     });
   }
 
-  updateWebview(
-    document: vscode.TextDocument,
-    webview: vscode.Webview
-  ): void {
+  updateWebview(document: vscode.TextDocument, webview: vscode.Webview): void {
     this._oneConfigMap[document.uri.toString()].setWithString(
       document.getText()
     );
