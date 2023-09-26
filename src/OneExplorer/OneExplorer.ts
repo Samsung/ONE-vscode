@@ -211,7 +211,17 @@ class NodeFactory {
           undefined,
           "Config nodes cannot have attributes"
         );
-        node = new ConfigNode(uri, parent);
+        const ext = path.extname(fpath);
+        switch (ext) {
+          case ".edgetpucfg": {
+            node = new ConfigNode(uri, parent, "one.editor.edgetpucfg");
+            break;
+          }
+          case ".cfg":
+          default: {
+            node = new ConfigNode(uri, parent);
+          }
+        }
         break;
       }
       case NodeType.product: {
@@ -252,6 +262,26 @@ class DirectoryNode extends Node {
     super(uri, parent);
   }
 
+  private isOneBaseModel(fname: string): boolean {
+    return (
+      fname.endsWith(".pb") ||
+      fname.endsWith(".tflite") ||
+      fname.endsWith(".onnx")
+    );
+  }
+
+  private isEdgetpuBaseModel(fname: string): boolean {
+    return fname.endsWith(".tflite")
+      ? !fname.endsWith("_edgetpu.tflite")
+      : true;
+  }
+
+  /*
+  Check if the file is a basemodel.
+  */
+  private isBaseModel(fname: string): boolean {
+    return this.isOneBaseModel(fname) && this.isEdgetpuBaseModel(fname);
+  }
   /**
    * Build a sub-tree under the node
    *
@@ -271,7 +301,6 @@ class DirectoryNode extends Node {
 
       if (fstat.isDirectory()) {
         const dirNode = NodeFactory.create(NodeType.directory, fpath, this);
-
         if (dirNode && dirNode.getChildren().length > 0) {
           this._childNodes!.push(dirNode);
         }
@@ -359,15 +388,14 @@ class BaseModelNode extends Node {
    */
   _buildChildren = (): void => {
     this._childNodes = [];
-
     const configPaths = OneStorage.getCfgs(this.path);
 
     if (!configPaths) {
       return;
     }
+
     configPaths.forEach((configPath) => {
       const configNode = NodeFactory.create(NodeType.config, configPath, this);
-
       if (configNode) {
         this._childNodes!.push(configNode);
       }
@@ -378,7 +406,7 @@ class BaseModelNode extends Node {
 class ConfigNode extends Node {
   readonly type = NodeType.config;
 
-  static readonly extList = [".cfg"];
+  static readonly extList = [".cfg", ".edgetpucfg"];
   // Open file with one.editor.cfg as default
   static defaultOpenViewType = "one.editor.cfg";
   // Display gear icon as default
@@ -451,6 +479,8 @@ class ProductNode extends Node {
     ".tv2o",
     ".json",
     ".circle.log",
+    "_edgetpu.tflite",
+    "_edgetpu.log",
   ];
   // Do not open file as default
   static defaultOpenViewType = undefined;
