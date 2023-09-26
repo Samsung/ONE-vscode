@@ -286,10 +286,12 @@ export function updateOptimize() {
   );
 
   for (const optName in oneOptimizationList) {
-    content += iniKeyValueString(
-      optName,
-      document.getElementById("checkboxOptimize" + optName).checked
-    );
+    if (Object.prototype.hasOwnProperty.call(oneOptimizationList, optName)) {
+      content += iniKeyValueString(
+        optName,
+        document.getElementById("checkboxOptimize" + optName).checked
+      );
+    }
   }
 
   postMessageToVsCode({

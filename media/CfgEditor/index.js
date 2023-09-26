@@ -347,6 +347,9 @@ function registerOptimizeOptions() {
   });
 
   for (const optName in oneOptimizationList) {
+    if (!Object.prototype.hasOwnProperty.call(oneOptimizationList, optName)) {
+      continue;
+    }
     let row = document.createElement("vscode-data-grid-row");
 
     let cellSwitch = document.createElement("vscode-data-grid-cell");
@@ -370,12 +373,14 @@ function registerOptimizeOptions() {
   }
 
   for (const optName in oneOptimizationList) {
-    document
-      .getElementById("checkboxOptimize" + optName)
-      .addEventListener("click", function () {
-        updateOptimize();
-        applyUpdates();
-      });
+    if (Object.prototype.hasOwnProperty.call(oneOptimizationList, optName)) {
+      document
+        .getElementById("checkboxOptimize" + optName)
+        .addEventListener("click", function () {
+          updateOptimize();
+          applyUpdates();
+        });
+    }
   }
 }
 
