@@ -150,6 +150,29 @@ suite("OneExplorer", function () {
         }
       });
 
+      test("create a config node with edgetpucfg", function () {
+        const configName = "test.edgetpucfg";
+
+        // Write a file inside temp directory
+        testBuilder.writeFileSync(configName, "");
+
+        // Get file paths inside the temp directory
+        const configPath = testBuilder.getPath(configName);
+
+        // Validation
+        {
+          const configNode = NodeFactory.create(
+            NodeType.config,
+            configPath,
+            undefined
+          );
+          assert.strictEqual(configNode.openViewType, "one.editor.edgetpucfg");
+          assert.strictEqual(configNode.icon, ConfigNode.defaultIcon);
+          assert.strictEqual(configNode.canHide, ConfigNode.defaultCanHide);
+          assert.strictEqual(configNode.getChildren().length, 0);
+        }
+      });
+
       test("NEG: create a product node with not existing path", function () {
         assert.throw(() => {
           NodeFactory.create(NodeType.product, "path/not/exist", undefined);

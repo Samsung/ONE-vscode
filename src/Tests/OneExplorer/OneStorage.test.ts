@@ -63,6 +63,30 @@ input_path=${modelName}
           }
         });
 
+        test("A tflite file with a edgetpucfg", function () {
+          const configName = "model.edgetpucfg";
+          const modelName = "model.tflite";
+
+          const content = `
+[edgetpu-compile]
+input_path=${modelName}
+        `;
+
+          testBuilder.writeFileSync(configName, content, "workspace");
+          testBuilder.writeFileSync(modelName, "", "workspace");
+          OneStorage.reset();
+
+          const configPath = testBuilder.getPath(configName, "workspace");
+          const modelPath = testBuilder.getPath(modelName, "workspace");
+
+          // Validation
+          {
+            assert.isDefined(OneStorage.getCfgs(modelPath));
+            assert.strictEqual(OneStorage.getCfgs(modelPath)!.length, 1);
+            assert.strictEqual(OneStorage.getCfgs(modelPath)![0], configPath);
+          }
+        });
+
         test("NEG: Returns undefined for not existing path", function () {
           {
             assert.isUndefined(OneStorage.getCfgs("invalid/path"));
@@ -82,6 +106,17 @@ input_path=${modelName}
 
         test("NEG: Returns undefined for non-base-model files", function () {
           const modelName = "model.circle";
+
+          testBuilder.writeFileSync(modelName, "", "workspace");
+          OneStorage.reset();
+
+          const modelPath = testBuilder.getPath(modelName, "workspace");
+          {
+            assert.isUndefined(OneStorage.getCfgs(modelPath));
+          }
+        });
+        test("NEG: Returns undefined for tflite file compiled with edgetpu", function () {
+          const modelName = "model_edgetpu.tflite";
 
           testBuilder.writeFileSync(modelName, "", "workspace");
           OneStorage.reset();
@@ -122,6 +157,34 @@ input_path=${modelName}
           }
         });
 
+        test("A tflite file with a edgetpucfg", function () {
+          const configName = "model.edgetpucfg";
+          const modelName = "model.tflite";
+
+          const content = `
+[edgetpu-compile]
+input_path=${modelName}
+        `;
+
+          // Write a file inside temp directory
+          testBuilder.writeFileSync(configName, content, "workspace");
+          testBuilder.writeFileSync(modelName, "", "workspace");
+          OneStorage.reset();
+
+          // Get file paths inside the temp directory
+          const configPath = testBuilder.getPath(configName, "workspace");
+          const modelPath = testBuilder.getPath(modelName, "workspace");
+
+          // Validation
+          {
+            assert.isDefined(OneStorage.getCfgObj(configPath));
+            assert.strictEqual(
+              OneStorage.getCfgObj(configPath)!.getBaseModelsExists[0].path,
+              modelPath
+            );
+          }
+        });
+
         test("NEG: Returns nothing for not existing path", function () {
           {
             assert.notExists(OneStorage.getCfgObj("invalid/path"));
@@ -139,11 +202,40 @@ input_path=${modelName}
             assert.notExists(OneStorage.getCfgObj(modelPath));
           }
         });
+
+        test("NEG: Returns undefined for tflite file compiled with edgetpu", function () {
+          const modelName = "model_edgetpu.tflite";
+
+          testBuilder.writeFileSync(modelName, "", "workspace");
+          OneStorage.reset();
+
+          const modelPath = testBuilder.getPath(modelName, "workspace");
+          {
+            assert.notExists(OneStorage.getCfgObj(modelPath));
+          }
+        });
       });
 
       suite("#reset()", function () {
         test("Call reset after the file system change", function () {
           const configName = "model.cfg";
+
+          const configPath = testBuilder.getPath(configName, "workspace");
+
+          {
+            assert.isUndefined(OneStorage.getCfgObj(configPath));
+          }
+
+          testBuilder.writeFileSync(configName, "", "workspace");
+          OneStorage.reset();
+
+          {
+            assert.isDefined(OneStorage.getCfgObj(configPath));
+          }
+        });
+
+        test("Call reset after the edgetpucfg file system change", function () {
+          const configName = "model.edgetpucfg";
 
           const configPath = testBuilder.getPath(configName, "workspace");
 
@@ -215,6 +307,21 @@ input_path=${modelName}
             configPath
           );
         });
+
+        test("existing path - edgetpucfg", function () {
+          const configName = "model.edgetpucfg";
+          const configPath = testBuilder.getPath(configName, "workspace");
+          testBuilder.writeFileSync(configName, "", "workspace");
+
+          const cfgToCfgObjMap = new CfgToCfgObjMap();
+          cfgToCfgObjMap.init([configPath]);
+
+          assert.strictEqual(cfgToCfgObjMap.size, 1);
+          assert.strictEqual(
+            cfgToCfgObjMap.get(configPath)?.uri.fsPath,
+            configPath
+          );
+        });
       });
 
       suite("#reset()", function () {
@@ -229,8 +336,35 @@ input_path=${modelName}
           cfgToCfgObjMap.reset(NodeType.config, configPath);
           assert.strictEqual(cfgToCfgObjMap.size, 0);
         });
+
+        test("existing path - edgetpucfg", function () {
+          const configName = "model.edgetpucfg";
+          const configPath = testBuilder.getPath(configName, "workspace");
+          testBuilder.writeFileSync(configName, "", "workspace");
+          const cfgToCfgObjMap = new CfgToCfgObjMap();
+          cfgToCfgObjMap.init([configPath]);
+
+          assert.strictEqual(cfgToCfgObjMap.size, 1);
+          cfgToCfgObjMap.reset(NodeType.config, configPath);
+          assert.strictEqual(cfgToCfgObjMap.size, 0);
+        });
+
         test("NEG: not existing path", function () {
           const configName = "model.cfg";
+          const configPath = testBuilder.getPath(configName, "workspace");
+          // commented out : testBuilder.writeFileSync(configName, '', 'workspace');
+          const cfgToCfgObjMap = new CfgToCfgObjMap();
+          cfgToCfgObjMap.init([configPath]);
+
+          assert.strictEqual(cfgToCfgObjMap.size, 0);
+          assert.doesNotThrow(() => {
+            cfgToCfgObjMap.reset(NodeType.config, configPath);
+          });
+          assert.strictEqual(cfgToCfgObjMap.size, 0);
+        });
+
+        test("NEG: not existing path - edgetpucfg", function () {
+          const configName = "model.edgetpucfg";
           const configPath = testBuilder.getPath(configName, "workspace");
           // commented out : testBuilder.writeFileSync(configName, '', 'workspace');
           const cfgToCfgObjMap = new CfgToCfgObjMap();
@@ -268,6 +402,29 @@ input_path=${modelName}
           );
         });
 
+        test("existing path - edgetpucfg", function () {
+          const configName = "model.edgetpucfg";
+          const configPath = testBuilder.getPath(configName, "workspace");
+          testBuilder.writeFileSync(configName, "", "workspace");
+
+          const cfgToCfgObjMap = new CfgToCfgObjMap();
+          cfgToCfgObjMap.init([configPath]);
+
+          const newConfigName = "model.new.cfg";
+          const newConfigPath = testBuilder.getPath(newConfigName, "workspace");
+          testBuilder.writeFileSync(newConfigName, "", "workspace");
+
+          assert.strictEqual(cfgToCfgObjMap.size, 1);
+          cfgToCfgObjMap.update(NodeType.config, configPath, newConfigPath);
+          assert.strictEqual(cfgToCfgObjMap.size, 1);
+          assert.isUndefined(cfgToCfgObjMap.get(configPath));
+          assert.isDefined(cfgToCfgObjMap.get(newConfigPath));
+          assert.strictEqual(
+            cfgToCfgObjMap.get(newConfigPath)?.uri.fsPath,
+            newConfigPath
+          );
+        });
+
         test("NEG: not existing new path", function () {
           const configName = "model.cfg";
           const configPath = testBuilder.getPath(configName, "workspace");
@@ -284,6 +441,22 @@ input_path=${modelName}
           assert.strictEqual(cfgToCfgObjMap.size, 0);
         });
 
+        test("NEG: not existing new path - edgetpucfg", function () {
+          const configName = "model.edgetpucfg";
+          const configPath = testBuilder.getPath(configName, "workspace");
+          testBuilder.writeFileSync(configName, "", "workspace");
+          const cfgToCfgObjMap = new CfgToCfgObjMap();
+          cfgToCfgObjMap.init([configPath]);
+
+          const newConfigName = "model.new.edgetpucfg";
+          const newConfigPath = testBuilder.getPath(newConfigName, "workspace");
+          // commented out : testBuilder.writeFileSync(newConfigPath, '', 'workspace');
+
+          assert.strictEqual(cfgToCfgObjMap.size, 1);
+          cfgToCfgObjMap.update(NodeType.config, configPath, newConfigPath);
+          assert.strictEqual(cfgToCfgObjMap.size, 0);
+        });
+
         test("NEG: not existing path", function () {
           const configName = "model.cfg";
           const configPath = testBuilder.getPath(configName, "workspace");
@@ -292,6 +465,25 @@ input_path=${modelName}
           cfgToCfgObjMap.init([configPath]);
 
           const newConfigName = "model.new.cfg";
+          const newConfigPath = testBuilder.getPath(configName, "workspace");
+
+          assert.strictEqual(cfgToCfgObjMap.size, 0);
+          assert.doesNotThrow(() => {
+            cfgToCfgObjMap.update(NodeType.config, configPath, newConfigName);
+          });
+          assert.strictEqual(cfgToCfgObjMap.size, 0);
+          assert.isUndefined(cfgToCfgObjMap.get(configPath));
+          assert.isUndefined(cfgToCfgObjMap.get(newConfigPath));
+        });
+
+        test("NEG: not existing path - edgetpucfg", function () {
+          const configName = "model.edgetpucfg";
+          const configPath = testBuilder.getPath(configName, "workspace");
+          // commented out : testBuilder.writeFileSync(configName, '', 'workspace');
+          const cfgToCfgObjMap = new CfgToCfgObjMap();
+          cfgToCfgObjMap.init([configPath]);
+
+          const newConfigName = "model.new.edgetpucfg";
           const newConfigPath = testBuilder.getPath(configName, "workspace");
 
           assert.strictEqual(cfgToCfgObjMap.size, 0);
@@ -367,6 +559,29 @@ input_path='model.tflite'
           assert.strictEqual(baseModelToCfgMap.get(model)![0], config);
           assert.strictEqual(baseModelToCfgMap.size, 1);
         });
+
+        test("existing path - edgetpucfg", function () {
+          const model = testBuilder.getPath("model.tflite", "workspace");
+          const config = testBuilder.getPath("model.edgetpucfg", "workspace");
+          const content = `
+[edgetpu-complie]
+input_path='model.tflite'
+          `;
+
+          testBuilder.writeFileSync("model.edgetpucfg", content, "workspace");
+          testBuilder.writeFileSync("model.tflite", "", "workspace");
+
+          const cfgList = [config];
+          const cfgToCfgObjMap = new CfgToCfgObjMap();
+          const baseModelToCfgMap = new BaseModelToCfgMap();
+          cfgToCfgObjMap.init(cfgList);
+          baseModelToCfgMap.init(cfgList, cfgToCfgObjMap);
+
+          assert.isDefined(baseModelToCfgMap.get(model));
+          assert.strictEqual(baseModelToCfgMap.get(model)!.length, 1);
+          assert.strictEqual(baseModelToCfgMap.get(model)![0], config);
+          assert.strictEqual(baseModelToCfgMap.size, 1);
+        });
       });
 
       suite("#reset()", function () {
@@ -398,8 +613,53 @@ input_path='model.tflite'
           assert.strictEqual(baseModelToCfgMap.get(model)!.length, 0);
           assert.strictEqual(baseModelToCfgMap.size, 1);
         });
+
+        test("existing path - edgetpucfg", function () {
+          const model = testBuilder.getPath("model.tflite", "workspace");
+          const config = testBuilder.getPath("model.edgetpucfg", "workspace");
+          const content = `
+[edgetpu-complie]
+input_path='model.tflite'
+          `;
+
+          testBuilder.writeFileSync("model.edgetpucfg", content, "workspace");
+          testBuilder.writeFileSync("model.tflite", "", "workspace");
+
+          const cfgList = [config];
+          const cfgToCfgObjMap = new CfgToCfgObjMap();
+          const baseModelToCfgMap = new BaseModelToCfgMap();
+          cfgToCfgObjMap.init(cfgList);
+          baseModelToCfgMap.init(cfgList, cfgToCfgObjMap);
+
+          assert.isDefined(baseModelToCfgMap.get(model));
+          assert.strictEqual(baseModelToCfgMap.get(model)!.length, 1);
+          assert.strictEqual(baseModelToCfgMap.get(model)![0], config);
+          assert.strictEqual(baseModelToCfgMap.size, 1);
+
+          baseModelToCfgMap.reset(NodeType.config, config);
+
+          assert.isDefined(baseModelToCfgMap.get(model));
+          assert.strictEqual(baseModelToCfgMap.get(model)!.length, 0);
+          assert.strictEqual(baseModelToCfgMap.size, 1);
+        });
+
         test("NEG: not existing path", function () {
           const config = testBuilder.getPath("model.cfg", "workspace");
+
+          const cfgList = [config];
+          const cfgToCfgObjMap = new CfgToCfgObjMap();
+          const baseModelToCfgMap = new BaseModelToCfgMap();
+          cfgToCfgObjMap.init(cfgList);
+          baseModelToCfgMap.init(cfgList, cfgToCfgObjMap);
+
+          assert.strictEqual(baseModelToCfgMap.size, 0);
+          assert.doesNotThrow(() =>
+            baseModelToCfgMap.reset(NodeType.config, config)
+          );
+        });
+
+        test("NEG: not existing path - edgetpucfg", function () {
+          const config = testBuilder.getPath("model.edgetpucfg", "workspace");
 
           const cfgList = [config];
           const cfgToCfgObjMap = new CfgToCfgObjMap();
@@ -449,6 +709,47 @@ input_path='model.tflite'
           assert.strictEqual(baseModelToCfgMap.size, 1);
         });
 
+        test("config path - edgetpucfg", function () {
+          const model = testBuilder.getPath("model.tflite", "workspace");
+          const config = testBuilder.getPath("model.edgetpucfg", "workspace");
+
+          const content = `
+[edgetpu-complie]
+input_path='model.tflite'
+          `;
+
+          testBuilder.writeFileSync("model.edgetpucfg", content, "workspace");
+          testBuilder.writeFileSync("model.tflite", "", "workspace");
+
+          const cfgList = [config];
+          const cfgToCfgObjMap = new CfgToCfgObjMap();
+          const baseModelToCfgMap = new BaseModelToCfgMap();
+          cfgToCfgObjMap.init(cfgList);
+          baseModelToCfgMap.init(cfgList, cfgToCfgObjMap);
+
+          assert.isDefined(baseModelToCfgMap.get(model));
+          assert.strictEqual(baseModelToCfgMap.get(model)!.length, 1);
+          assert.strictEqual(baseModelToCfgMap.get(model)![0], config);
+          assert.strictEqual(baseModelToCfgMap.size, 1);
+
+          const newConfig = testBuilder.getPath(
+            "model.new.edgetpucfg",
+            "workspace"
+          );
+          testBuilder.writeFileSync(
+            "model.new.edgetpucfg",
+            content,
+            "workspace"
+          );
+
+          baseModelToCfgMap.update(NodeType.config, config, newConfig);
+
+          assert.isDefined(baseModelToCfgMap.get(model));
+          assert.strictEqual(baseModelToCfgMap.get(model)!.length, 1);
+          assert.strictEqual(baseModelToCfgMap.get(model)![0], newConfig);
+          assert.strictEqual(baseModelToCfgMap.size, 1);
+        });
+
         test("model and config names", function () {
           const content = `
 [one-import-tflite]
@@ -489,6 +790,50 @@ input_path='model.new.tflite'
           assert.strictEqual(baseModelToCfgMap.get(newModel)![0], config);
         });
 
+        test("model and config names - edgetpucfg", function () {
+          const content = `
+[edgetpu-complie]
+input_path='model.tflite'
+          `;
+
+          const oldModel = testBuilder.getPath("model.tflite", "workspace");
+          const config = testBuilder.getPath("model.edgetpucfg", "workspace");
+          testBuilder.writeFileSync("model.edgetpucfg", content, "workspace");
+          testBuilder.writeFileSync("model.tflite", "", "workspace");
+
+          const cfgList = [config];
+          const cfgToCfgObjMap = new CfgToCfgObjMap();
+          const baseModelToCfgMap = new BaseModelToCfgMap();
+          cfgToCfgObjMap.init(cfgList);
+          baseModelToCfgMap.init(cfgList, cfgToCfgObjMap);
+
+          assert.strictEqual(baseModelToCfgMap.size, 1);
+          assert.isDefined(baseModelToCfgMap.get(oldModel));
+          assert.strictEqual(baseModelToCfgMap.get(oldModel)!.length, 1);
+          assert.strictEqual(baseModelToCfgMap.get(oldModel)![0], config);
+
+          const newModel = testBuilder.getPath("model.new.tflite", "workspace");
+          const newContent = `
+[edgetpu-complie]
+input_path='model.new.tflite'
+          `;
+
+          testBuilder.writeFileSync(
+            "model.edgetpucfg",
+            newContent,
+            "workspace"
+          );
+          testBuilder.writeFileSync("model.new.tflite", "", "workspace");
+
+          baseModelToCfgMap.update(NodeType.baseModel, oldModel, newModel);
+
+          assert.strictEqual(baseModelToCfgMap.size, 1);
+          assert.isUndefined(baseModelToCfgMap.get(oldModel));
+          assert.isDefined(baseModelToCfgMap.get(newModel));
+          assert.strictEqual(baseModelToCfgMap.get(newModel)!.length, 1);
+          assert.strictEqual(baseModelToCfgMap.get(newModel)![0], config);
+        });
+
         test("NEG: not existing path", function () {
           const content = `
 [one-import-tflite]
@@ -498,6 +843,34 @@ input_path='model.tflite'
           const model = testBuilder.getPath("model.tflite", "workspace");
           const config = testBuilder.getPath("model.cfg", "workspace");
           testBuilder.writeFileSync("model.cfg", content, "workspace");
+          testBuilder.writeFileSync("model.tflite", "", "workspace");
+
+          const cfgList = [config];
+          const cfgToCfgObjMap = new CfgToCfgObjMap();
+          const baseModelToCfgMap = new BaseModelToCfgMap();
+          cfgToCfgObjMap.init(cfgList);
+          baseModelToCfgMap.init(cfgList, cfgToCfgObjMap);
+
+          assert.strictEqual(baseModelToCfgMap.size, 1);
+          assert.isDefined(baseModelToCfgMap.get(model));
+          assert.strictEqual(baseModelToCfgMap.get(model)!.length, 1);
+          assert.strictEqual(baseModelToCfgMap.get(model)![0], config);
+
+          assert.doesNotThrow(() => {
+            baseModelToCfgMap.update(NodeType.config, config, "/invalid/path");
+          });
+          assert.strictEqual(cfgToCfgObjMap.size, 1);
+        });
+
+        test("NEG: not existing path - edgetpucfg", function () {
+          const content = `
+[edgetpu-complie]
+input_path='model.tflite'
+          `;
+
+          const model = testBuilder.getPath("model.tflite", "workspace");
+          const config = testBuilder.getPath("model.edgetpucfg", "workspace");
+          testBuilder.writeFileSync("model.edgetpucfg", content, "workspace");
           testBuilder.writeFileSync("model.tflite", "", "workspace");
 
           const cfgList = [config];

@@ -244,9 +244,13 @@ export class OneStorage {
     };
 
     try {
+      const extList = [".cfg", ".edgetpucfg"];
+
       return roots
         .map((root) =>
-          readdirSyncRecursive(root).filter((val) => val.endsWith(".cfg"))
+          readdirSyncRecursive(root).filter((val) =>
+            extList.some((ext) => val.endsWith(ext))
+          )
         )
         .reduce((prev, cur) => [...prev, ...cur]);
     } catch {
