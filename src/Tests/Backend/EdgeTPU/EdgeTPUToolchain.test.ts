@@ -147,7 +147,7 @@ suite("EdgeTPUCompiler", function () {
     test("returns Version object from string version without patch and option", function () {
       const edgeTPUCompiler = new EdgeTPUCompiler();
       const version1 = edgeTPUCompiler.parseVersion("16.0");
-      const version2 = new Version(16, 0);
+      const version2 = new Version(16, 0, undefined);
       assert.deepEqual(version1, version2);
     });
     test("returns Version object from string version without option", function () {

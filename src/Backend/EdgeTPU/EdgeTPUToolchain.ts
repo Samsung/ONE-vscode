@@ -126,13 +126,13 @@ class EdgeTPUCompiler implements Compiler {
     major = Number(major);
     minor = Number(minor);
     patch = Number(patch);
-    
+
     if (isNaN(major) || isNaN(minor) || isNaN(patch)) {
       throw Error("Invalid version format.");
     }
 
     if (splitedVersion.length === 2 && !option) {
-      return new Version(major, minor);
+      return new Version(major, minor, undefined);
     }
 
     return new Version(major, minor, patch, option);
@@ -237,7 +237,7 @@ class EdgeTPUCompiler implements Compiler {
     const description = installedToolchain.slice(descriptionIdx).trim();
 
     const depends: Array<PackageInfo> = [
-      new PackageInfo("edgetpu_compiler", new Version(16, 0)),
+      new PackageInfo("edgetpu_compiler", new Version(16, 0, undefined)),
     ];
     const toolchainInfo = new ToolchainInfo(
       this.toolchainName,
