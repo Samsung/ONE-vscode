@@ -5,7 +5,7 @@ on:
     inputs:
       prerelease:
         description: 'Identify the release as a prerelease (default: false)'
-        type: string
+        type: boolean
         default: false
       publish:
         description: 'Publish extension to marketplace'
