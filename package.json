@@ -410,11 +410,6 @@
           "group": "inline"
         },
         {
-          "command": "one.editor.mpq.createFromOneExplorer",
-          "when": "view == OneExplorerView && viewItem =~ /circle/",
-          "group": "4_create@1"
-        },
-        {
           "command": "one.toolchain.setDefaultToolchain",
           "when": "view == ToolchainView && viewItem == toolchain && !one.job:running",
           "group": "inline"
@@ -426,11 +421,6 @@
         }
       ],
       "explorer/context": [
-        {
-          "command": "one.editor.mpq.createFromDefaultExplorer",
-          "when": "resourceExtname == .circle",
-          "group": "1_tools"
-        }
       ],
       "commandPalette": [
         {
