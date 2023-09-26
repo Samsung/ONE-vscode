@@ -147,10 +147,14 @@ export class ConfigObj {
   private constructor(uri: vscode.Uri, rawObj: Cfg) {
     this.uri = uri;
     this.rawObj = rawObj;
-    this.configType = CfgType.one;
     const ext = path.extname(uri.fsPath);
-    if (ext === EdgeTpuConfigSetting.ext) {
-      this.configType = CfgType.edgeTpu;
+    switch (ext) {
+      case EdgeTpuConfigSetting.ext:
+        this.configType = CfgType.edgeTpu;
+        break;
+      case OneConfigSetting.ext:
+      default:
+        this.configType = CfgType.one;
     }
 
     // TODO: separate to init()
