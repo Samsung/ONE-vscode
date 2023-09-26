@@ -347,35 +347,39 @@ function registerOptimizeOptions() {
   });
 
   for (const optName in oneOptimizationList) {
-    let row = document.createElement("vscode-data-grid-row");
+    if (Object.prototype.hasOwnProperty.call(oneOptimizationList, optName)) {
+      let row = document.createElement("vscode-data-grid-row");
 
-    let cellSwitch = document.createElement("vscode-data-grid-cell");
-    let checkbox = document.createElement("vscode-checkbox");
-    checkbox.setAttribute("id", "checkboxOptimize" + optName);
-    cellSwitch.appendChild(checkbox);
-    cellSwitch.setAttribute("grid-column", "1");
-    row.appendChild(cellSwitch);
+      let cellSwitch = document.createElement("vscode-data-grid-cell");
+      let checkbox = document.createElement("vscode-checkbox");
+      checkbox.setAttribute("id", "checkboxOptimize" + optName);
+      cellSwitch.appendChild(checkbox);
+      cellSwitch.setAttribute("grid-column", "1");
+      row.appendChild(cellSwitch);
 
-    let cellName = document.createElement("vscode-data-grid-cell");
-    cellName.textContent = optName;
-    cellName.setAttribute("grid-column", "2");
-    row.appendChild(cellName);
+      let cellName = document.createElement("vscode-data-grid-cell");
+      cellName.textContent = optName;
+      cellName.setAttribute("grid-column", "2");
+      row.appendChild(cellName);
 
-    let cellDescription = document.createElement("vscode-data-grid-cell");
-    cellDescription.textContent = oneOptimizationList[optName].description;
-    cellDescription.setAttribute("grid-column", "3");
-    row.appendChild(cellDescription);
+      let cellDescription = document.createElement("vscode-data-grid-cell");
+      cellDescription.textContent = oneOptimizationList[optName].description;
+      cellDescription.setAttribute("grid-column", "3");
+      row.appendChild(cellDescription);
 
-    basicOptimizeTable.appendChild(row);
+      basicOptimizeTable.appendChild(row);
+    }
   }
 
   for (const optName in oneOptimizationList) {
-    document
-      .getElementById("checkboxOptimize" + optName)
-      .addEventListener("click", function () {
-        updateOptimize();
-        applyUpdates();
-      });
+    if (Object.prototype.hasOwnProperty.call(oneOptimizationList, optName)) {
+      document
+        .getElementById("checkboxOptimize" + optName)
+        .addEventListener("click", function () {
+          updateOptimize();
+          applyUpdates();
+        });
+    }
   }
 }
 

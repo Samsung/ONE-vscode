@@ -149,9 +149,10 @@ export function displayCfgToEditor(cfg) {
     oneOptimize?.["output_path"]
   );
   for (const optName in oneOptimizationList) {
-    document.getElementById("checkboxOptimize" + optName).checked = cfgBoolean(
-      oneOptimize?.[optName]
-    );
+    if (Object.prototype.hasOwnProperty.call(oneOptimizationList, optName)) {
+      document.getElementById("checkboxOptimize" + optName).checked =
+        cfgBoolean(oneOptimize?.[optName]);
+    }
   }
 
   const oneQuantize = cfg["one-quantize"];
