@@ -732,8 +732,15 @@ input_path='model.tflite'
           assert.strictEqual(baseModelToCfgMap.get(model)![0], config);
           assert.strictEqual(baseModelToCfgMap.size, 1);
 
-          const newConfig = testBuilder.getPath("model.new.edgetpucfg", "workspace");
-          testBuilder.writeFileSync("model.new.edgetpucfg", content, "workspace");
+          const newConfig = testBuilder.getPath(
+            "model.new.edgetpucfg",
+            "workspace"
+          );
+          testBuilder.writeFileSync(
+            "model.new.edgetpucfg",
+            content,
+            "workspace"
+          );
 
           baseModelToCfgMap.update(NodeType.config, config, newConfig);
 
@@ -811,7 +818,11 @@ input_path='model.tflite'
 input_path='model.new.tflite'
           `;
 
-          testBuilder.writeFileSync("model.edgetpucfg", newContent, "workspace");
+          testBuilder.writeFileSync(
+            "model.edgetpucfg",
+            newContent,
+            "workspace"
+          );
           testBuilder.writeFileSync("model.new.tflite", "", "workspace");
 
           baseModelToCfgMap.update(NodeType.baseModel, oldModel, newModel);

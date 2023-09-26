@@ -196,14 +196,14 @@ class NodeFactory {
           "Config nodes cannot have attributes"
         );
         const ext = path.extname(fpath);
-        switch(ext){
-          case ".edgetpucfg":{
-            node = new ConfigNode(uri, parent,"one.editor.edgetpucfg");
+        switch (ext) {
+          case ".edgetpucfg": {
+            node = new ConfigNode(uri, parent, "one.editor.edgetpucfg");
             break;
           }
           case ".cfg":
-          default :{
-            node = new ConfigNode(uri, parent);   
+          default: {
+            node = new ConfigNode(uri, parent);
           }
         }
         break;
@@ -246,18 +246,24 @@ class DirectoryNode extends Node {
     super(uri, parent);
   }
 
-  private isOneBaseModel(fname:string):boolean{
-    return fname.endsWith(".pb") || fname.endsWith(".tflite") || fname.endsWith(".onnx");
+  private isOneBaseModel(fname: string): boolean {
+    return (
+      fname.endsWith(".pb") ||
+      fname.endsWith(".tflite") ||
+      fname.endsWith(".onnx")
+    );
   }
 
   private isEdgetpuBaseModel(fname: string): boolean {
-    return fname.endsWith(".tflite") ? !fname.endsWith("_edgetpu.tflite") : true;
+    return fname.endsWith(".tflite")
+      ? !fname.endsWith("_edgetpu.tflite")
+      : true;
   }
 
   /*
   Check if the file is a basemodel.
   */
-  private isBaseModel(fname : string) : boolean{
+  private isBaseModel(fname: string): boolean {
     return this.isOneBaseModel(fname) && this.isEdgetpuBaseModel(fname);
   }
   /**
@@ -282,9 +288,7 @@ class DirectoryNode extends Node {
         if (dirNode && dirNode.getChildren().length > 0) {
           this._childNodes!.push(dirNode);
         }
-      } else if (
-        fstat.isFile() && this.isBaseModel(fname)
-      ) {
+      } else if (fstat.isFile() && this.isBaseModel(fname)) {
         const baseModelNode = NodeFactory.create(
           NodeType.baseModel,
           fpath,
@@ -546,7 +550,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
             ...BaseModelNode.extList,
             ...ConfigNode.extList,
             ...ProductNode.extList,
-          ].reduce((flag,ext)=>flag||uri.path.endsWith(ext),false)
+          ].reduce((flag, ext) => flag || uri.path.endsWith(ext), false)
         ) {
           Logger.info(
             "OneExploer",

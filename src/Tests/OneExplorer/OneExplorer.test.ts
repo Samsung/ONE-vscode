@@ -166,10 +166,7 @@ suite("OneExplorer", function () {
             configPath,
             undefined
           );
-          assert.strictEqual(
-            configNode.openViewType,
-            "one.editor.edgetpucfg"
-          );
+          assert.strictEqual(configNode.openViewType, "one.editor.edgetpucfg");
           assert.strictEqual(configNode.icon, ConfigNode.defaultIcon);
           assert.strictEqual(configNode.canHide, ConfigNode.defaultCanHide);
           assert.strictEqual(configNode.getChildren().length, 0);
