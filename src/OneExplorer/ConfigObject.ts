@@ -24,14 +24,18 @@ import { RealPath } from "../Utils/Helpers";
 import { Logger } from "../Utils/Logger";
 
 import { Artifact } from "./ArtifactLocator";
-import { OneCfg, OneConfigSetting } from "./ConfigSettings/OneConfigSetting";
 import { ConfigSetting } from "./ConfigSetting";
+import { OneCfg, OneConfigSetting } from "./ConfigSettings/OneConfigSetting";
+import {
+  EdgeTpuCfg,
+  EdgeTpuConfigSetting,
+} from "./ConfigSettings/EdgeTpuConfigSetting";
 
 /**
  * Type for rawObj.
  * Expand for additional Backend's section value
  */
-type Cfg = OneCfg;
+type Cfg = OneCfg & EdgeTpuCfg;
 type CfgKeys = keyof Cfg;
 
 /**
@@ -39,6 +43,7 @@ type CfgKeys = keyof Cfg;
  */
 enum CfgType {
   one,
+  edgeTpu,
 }
 
 /**
@@ -127,6 +132,9 @@ export class ConfigObj {
   public get configSetting(): ConfigSetting {
     let configSetting: ConfigSetting;
     switch (this.configType) {
+      case CfgType.edgeTpu:
+        configSetting = new EdgeTpuConfigSetting();
+        break;
       case CfgType.one:
       default:
         configSetting = new OneConfigSetting();
@@ -139,7 +147,15 @@ export class ConfigObj {
   private constructor(uri: vscode.Uri, rawObj: Cfg) {
     this.uri = uri;
     this.rawObj = rawObj;
-    this.configType = CfgType.one;
+    const ext = path.extname(uri.fsPath);
+    switch (ext) {
+      case EdgeTpuConfigSetting.ext:
+        this.configType = CfgType.edgeTpu;
+        break;
+      case OneConfigSetting.ext:
+      default:
+        this.configType = CfgType.one;
+    }
 
     // TODO: separate to init()
     const configSetting = this.configSetting;
@@ -175,6 +191,10 @@ export class ConfigObj {
         `Cannot update base model field: ${oldpath} not found`
       );
     }
+
+    // EdgeTpu Compiler's output_path is fixed
+    // ex) `input_path`_edgetpu.tflite
+    this.configSetting.updateOutPath(newpath, this.rawObj, kSection);
 
     return vscode.workspace.fs.writeFile(
       this.uri,

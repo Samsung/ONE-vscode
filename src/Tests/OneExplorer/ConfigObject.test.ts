@@ -20,6 +20,7 @@ import { ConfigObj } from "../../OneExplorer/ConfigObject";
 
 import { TestBuilder } from "../TestBuilder";
 import { OneConfigSetting } from "../../OneExplorer/ConfigSettings/OneConfigSetting";
+import { EdgeTpuConfigSetting } from "../../OneExplorer/ConfigSettings/EdgeTpuConfigSetting";
 
 suite("OneExplorer", function () {
   suite("ConfigObject", function () {
@@ -104,6 +105,31 @@ suite("OneExplorer", function () {
         {
           assert.isDefined(configObj);
           assert.isTrue(configObj!.configSetting instanceof OneConfigSetting);
+        }
+      });
+
+      test("Get edge tpu config setting with .edgetpucfg file", function () {
+        const configName = "model.edgetpucfg";
+
+        const content = `
+`;
+
+        // Write a file inside temp directory
+        testBuilder.writeFileSync(configName, content);
+
+        // Get file paths inside the temp directory
+        const configPath = testBuilder.getPath(configName);
+
+        const configObj = ConfigObj.createConfigObj(
+          vscode.Uri.file(configPath)
+        );
+
+        // Validate
+        {
+          assert.isDefined(configObj);
+          assert.isTrue(
+            configObj!.configSetting instanceof EdgeTpuConfigSetting
+          );
         }
       });
     });
