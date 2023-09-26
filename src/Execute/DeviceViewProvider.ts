@@ -23,8 +23,9 @@ import { Executor } from "../Backend/Executor";
 import { DeviceSpec, supportedSpecs } from "../Backend/Spec";
 import { Logger } from "../Utils/Logger";
 
-import { Device, SimulatorDevice } from "./Device";
+import { Device, SimulatorDevice, TargetDevice } from "./Device";
 import { DeviceManager } from "./DeviceManager";
+import { DefaultToolchain } from "../Toolchain/DefaultToolchain";
 
 type DeviceTreeView = DeviceViewNode | undefined | void;
 
@@ -90,7 +91,23 @@ export class DeviceManagerNode extends DeviceViewNode {
 export class DeviceExecutorNode extends DeviceViewNode {
   constructor(public readonly label: string, public readonly device: Device) {
     super(label, vscode.TreeItemCollapsibleState.None, NodeType.executor);
-    this.iconPath = new vscode.ThemeIcon("debug-stackframe-focused"); // select best icon for this
+    if (device instanceof SimulatorDevice) {
+      if (DefaultToolchain.getInstance().isEqual(device.toolchain)) {
+        this.iconPath = new vscode.ThemeIcon(
+          "server-environment",
+          new vscode.ThemeColor("debugIcon.startForeground")
+        ); // select best icon for this
+      } else {
+        this.iconPath = new vscode.ThemeIcon(
+          "server-environment",
+          new vscode.ThemeColor("disabledForeground")
+        ); // select best icon for this
+      }
+    } else if (device instanceof TargetDevice) {
+      this.iconPath = new vscode.ThemeIcon("device-mobile"); // select best icon for this
+    } else {
+      this.iconPath = new vscode.ThemeIcon("debug-stackframe-focused"); // select best icon for this
+    }
     this.contextValue = "executor";
   }
 }
