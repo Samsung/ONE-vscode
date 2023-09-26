@@ -135,19 +135,19 @@ export class EdgeTPUCfgEditorPanel implements vscode.CustomTextEditorProvider {
 
     const jsUri = getUri(webview, this.context.extensionUri, [
       "media",
-      "EdgetpuCfgEditor",
+      "EdgeTPUCfgEditor",
       "index.js",
     ]);
 
     const cssUri = getUri(webview, this.context.extensionUri, [
       "media",
-      "EdgetpuCfgEditor",
+      "EdgeTPUCfgEditor",
       "cfgeditor.css",
     ]);
 
     const htmlUri = vscode.Uri.joinPath(
       this.context.extensionUri,
-      "media/EdgetpuCfgEditor/cfgeditor.html"
+      "media/EdgeTPUCfgEditor/cfgeditor.html"
     );
 
     let html = Buffer.from(
