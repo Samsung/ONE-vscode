@@ -50,7 +50,12 @@ function setupCoverage() {
   const nyc = new NYC({
     extends: "@istanbuljs/nyc-config-typescript",
     cwd: join(__dirname, "..", ".."),
-    exclude: ["**/Tests/**", "**/external/**"],
+    exclude: [
+      "**/Tests/**",
+      "**/external/**",
+      "**/CircleEditor/**",
+      "**/MetadataViewer/**",
+    ],
     include: ["src/**/*.ts", "out/**/*.js"],
     reporter: ["cobertura", "lcov", "html", "text", "text-summary"],
     all: true,
