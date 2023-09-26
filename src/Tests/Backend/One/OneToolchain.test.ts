@@ -30,17 +30,39 @@ const oneBackendName = "ONE";
 suite("Backend", function () {
   suite("OneDebianToolchain", function () {
     suite("#run", function () {
-      test("returns Commend with cfg", function () {
+      test("returns Command with cfg", async function () {
         const name = "onecc-docker";
         const desc = "On-device Neural Engine docker package";
         const version = new Version(0, 1, 0, "-0~202209280519~ubuntu18.04.1");
         const info = new ToolchainInfo(name, desc, version);
         let dt = new OneDebianToolchain(info);
+        await vscode.workspace
+          .getConfiguration()
+          .update("one.toolchain.githubToken", "");
         let cmd = dt.run("file.cfg");
         assert.strictEqual(cmd.length, 3);
         assert.deepStrictEqual(cmd[0], "onecc-docker");
         assert.deepStrictEqual(cmd[1], "-C");
         assert.deepStrictEqual(cmd[2], "file.cfg");
+      });
+
+      test("returns Command using githubToken", async function () {
+        const name = "onecc-docker";
+        const desc = "On-device Neural Engine docker package";
+        const version = new Version(0, 1, 0, "-0~202209280519~ubuntu18.04.1");
+        const info = new ToolchainInfo(name, desc, version);
+        let dt = new OneDebianToolchain(info);
+        const githubToken = "abcde";
+        await vscode.workspace
+          .getConfiguration()
+          .update("one.toolchain.githubToken", githubToken);
+        let cmd = dt.run("file.cfg");
+        assert.strictEqual(cmd.length, 5);
+        assert.deepStrictEqual(cmd[0], "onecc-docker");
+        assert.deepStrictEqual(cmd[1], "-t");
+        assert.deepStrictEqual(cmd[2], githubToken);
+        assert.deepStrictEqual(cmd[3], "-C");
+        assert.deepStrictEqual(cmd[4], "file.cfg");
       });
     });
   });
@@ -178,26 +200,6 @@ suite("OneCompiler", function () {
     });
   });
 
-  suite("#prerequisitesForGetToolchains", function () {
-    test("returns a command which executes a shell script for prerequisites", function () {
-      const oneCompiler = new OneCompiler();
-      const extensionId = "Samsung.one-vscode";
-      const ext = vscode.extensions.getExtension(
-        extensionId
-      ) as vscode.Extension<any>;
-      const scriptPath = vscode.Uri.joinPath(
-        ext!.extensionUri,
-        "script",
-        "prerequisitesForGetOneToolchain.sh"
-      ).fsPath;
-      const cmd = `sudo /bin/sh ${scriptPath}`;
-      assert.deepStrictEqual(
-        oneCompiler.prerequisitesForGetToolchains().str(),
-        cmd
-      );
-    });
-  });
-
   suite("OneToolchain", function () {
     suite("#constructor()", function () {
       test("Create dummy OneToolchain backend", function (pass) {
@@ -223,7 +225,18 @@ suite("OneCompiler", function () {
       });
     });
 
-    // TODO
-    // Add test case for executor() and executors()
+    suite("#executor()", function () {
+      test("returns executor", function () {
+        const oneBackend = new OneToolchain();
+        assert.strictEqual(oneBackend.executor(), undefined);
+      });
+    });
+
+    suite("#executors()", function () {
+      test("returns executor", function () {
+        const oneBackend = new OneToolchain();
+        assert.isEmpty(oneBackend.executors());
+      });
+    });
   });
 });
