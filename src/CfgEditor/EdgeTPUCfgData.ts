@@ -16,81 +16,36 @@
 
 import * as ini from "ini";
 import { ICfgData } from "./ICfgData";
+import { Sections } from "./Sections";
 
-const sections = ["edgetpu-compiler", "edgetpu-compile", "edgetpu-profile"];
-
-export class EdgeTpuCfgData implements ICfgData {
-  private _edgeTpuConfig: any = undefined;
-
-  constructor() {}
-
-  getAsConfig(): any {
-    return this._edgeTpuConfig;
-  }
-
-  getAsString(): string {
-    return ini.stringify(this._edgeTpuConfig);
+export class EdgeTpuCfgData extends ICfgData {
+  constructor(cfg = undefined) {
+    super(cfg, Sections.edgetpu);
   }
 
   setWithConfig(cfg: any): void {
-    this._edgeTpuConfig = cfg;
+    this.setConfig(cfg);
   }
 
   setWithString(text: string): void {
-    this._edgeTpuConfig = ini.parse(text);
+    this.setConfig(ini.parse(text));
   }
 
   updateSectionWithKeyValue(section: string, key: string, value: string): void {
-    if (this._edgeTpuConfig[section] === undefined) {
-      this._edgeTpuConfig[section] = {};
+    const config = this.getAsConfig();
+    if (config[section] === undefined) {
+      config[section] = {};
     }
 
-    if (this._edgeTpuConfig[section][key] === undefined) {
-      this._edgeTpuConfig[section][key] = "";
+    if (config[section][key] === undefined) {
+      config[section][key] = "";
     }
-    this._edgeTpuConfig[section][key] = value;
+    config[section][key] = value;
   }
 
   updateSectionWithValue(section: string, value: string): void {
     // value should be encoded or stringfied
-    this._edgeTpuConfig[section] = ini.parse(value);
-  }
-
-  isSame(textStringified: string): boolean {
-    const iniDocument = ini.parse(textStringified);
-    for (const [sectionName, section] of Object.entries(this._edgeTpuConfig)) {
-      for (const [paramName, param] of Object.entries(section as any)) {
-        if (
-          iniDocument[sectionName] !== undefined &&
-          iniDocument[sectionName][paramName] === param
-        ) {
-          continue;
-        }
-        return false;
-      }
-    }
-    for (const [sectionName, section] of Object.entries(iniDocument)) {
-      for (const [paramName, param] of Object.entries(section as any)) {
-        if (
-          this._edgeTpuConfig[sectionName] !== undefined &&
-          this._edgeTpuConfig[sectionName][paramName] === param
-        ) {
-          continue;
-        }
-        return false;
-      }
-    }
-    return true;
-  }
-
-  sort(): void {
-    // cfg file is written along with the order of array elements
-    let sorted: any = {};
-    sections.forEach((section) => {
-      if (this._edgeTpuConfig[section] !== undefined) {
-        sorted[section] = this._edgeTpuConfig[section];
-      }
-    });
-    this.setWithConfig(sorted);
+    const config = this.getAsConfig();
+    config[section] = ini.parse(value);
   }
 }
