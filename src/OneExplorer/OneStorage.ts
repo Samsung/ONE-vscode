@@ -247,7 +247,7 @@ export class OneStorage {
       return roots
         .map((root) =>
           readdirSyncRecursive(root).filter(
-            (val) => val.endsWith(".cfg") || val.endsWith(".edgetpucfg")
+            (val) => extList.some((ext) => val.endsWith(ext))
           )
         )
         .reduce((prev, cur) => [...prev, ...cur]);
