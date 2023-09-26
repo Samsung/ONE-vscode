@@ -61,7 +61,7 @@
       },
       {
         "viewType": "one.editor.edgetpucfg",
-        "displayName": "Edgetpu Cfg Editor",
+        "displayName": "Edge TPU Configuration Editor",
         "selector": [
           {
             "filenamePattern": "*.edgetpucfg"
