@@ -759,7 +759,7 @@ sidebar.VisualTensorView = class {
     this._element = this._host.document.createElement("div");
     this._tensorShape = getTensorShape(this._tensor);
     if (this._tensorShape.length < 2) {
-      return this;
+      return;
     }
     this._element.className = "sidebar-view-item-value-line-border";
 
