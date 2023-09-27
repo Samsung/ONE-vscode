@@ -13,7 +13,6 @@
   - delete: DEL
   - run cfg: ctrl + F7
 
-
 ### Device View
 
 - Remove the HostPC target so that only the host and remote are visiable
