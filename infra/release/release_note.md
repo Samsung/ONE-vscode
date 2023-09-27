@@ -4,8 +4,8 @@
 
 ### ONE Explorer View
 
-- Open tflite and onnx files in CircleViewer
-  - Circle Schema update to v0.6
+- Support tflite and onnx files with CircleViewer
+  - Updated Circle Schema to v0.6
 - Improvement ONE Explorer file viewer according to the file type
   - Open json file with default text editor
 - Support keybindings
@@ -13,7 +13,6 @@
   - delete: DEL
   - run cfg: ctrl + F7
 
-### Toolchain View
 
 ### Device View
 
