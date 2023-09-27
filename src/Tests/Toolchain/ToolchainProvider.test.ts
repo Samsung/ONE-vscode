@@ -44,18 +44,13 @@ suite("Toolchain", function () {
   const backendName = "dummy_backend";
 
   setup(function () {
+    // TODO: provide delete function for backend, which recursively deleting toolchain and executors
     Object.keys(gToolchainEnvMap).forEach(
       (key) => delete gToolchainEnvMap[key]
     );
 
     gToolchainEnvMap[oneBackendName] = oneToolhcainEnv;
     gToolchainEnvMap[backendName] = toolchainEnv;
-  });
-
-  teardown(function () {
-    Object.keys(gToolchainEnvMap).forEach(
-      (key) => delete gToolchainEnvMap[key]
-    );
   });
 
   suite("BaseNode", function () {
@@ -372,5 +367,12 @@ suite("Toolchain", function () {
         assert.isFalse(ret);
       });
     });
+  });
+
+  teardown(function () {
+    // TODO: provide delete function for backend, which recursively deleting toolchain and executors
+    Object.keys(gToolchainEnvMap).forEach(
+      (key) => delete gToolchainEnvMap[key]
+    );
   });
 });
