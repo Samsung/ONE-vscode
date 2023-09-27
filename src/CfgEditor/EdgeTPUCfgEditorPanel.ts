@@ -46,7 +46,7 @@ import * as vscode from "vscode";
 import { getNonce } from "../Utils/external/Nonce";
 import { getUri } from "../Utils/external/Uri";
 
-import { CfgData } from "./CfgData";
+import { EdgeTpuCfgData } from "./EdgeTPUCfgData";
 
 /* istanbul ignore next */
 export class EdgeTPUCfgEditorPanel implements vscode.CustomTextEditorProvider {
@@ -102,7 +102,7 @@ export class EdgeTPUCfgEditorPanel implements vscode.CustomTextEditorProvider {
   ): Promise<void> {
     this._activeWebviewPanel = webviewPanel;
     this._activeDocument = document;
-    this._oneConfigMap[document.uri.toString()] = new CfgData();
+    this._oneConfigMap[document.uri.toString()] = new EdgeTpuCfgData();
     await this.initWebview(document, webviewPanel.webview);
     this.initWebviewPanel(document, webviewPanel);
     this.updateWebview(document, webviewPanel.webview);
