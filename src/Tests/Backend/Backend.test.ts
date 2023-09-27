@@ -49,15 +49,7 @@ class BackendMockup implements Backend {
 
 suite("Backend", function () {
   setup(function () {
-    Object.keys(globalBackendMap).forEach(
-      (key) => delete globalBackendMap[key]
-    );
-    Object.keys(gToolchainEnvMap).forEach(
-      (key) => delete gToolchainEnvMap[key]
-    );
-  });
-
-  teardown(function () {
+    // TODO: provide delete function for backend, which recursively deleting toolchain and executors
     Object.keys(globalBackendMap).forEach(
       (key) => delete globalBackendMap[key]
     );
@@ -94,5 +86,15 @@ suite("Backend", function () {
         assert.deepStrictEqual(value, backend);
       }
     });
+  });
+
+  teardown(function () {
+    // TODO: provide delete function for backend, which recursively deleting toolchain and executors
+    Object.keys(globalBackendMap).forEach(
+      (key) => delete globalBackendMap[key]
+    );
+    Object.keys(gToolchainEnvMap).forEach(
+      (key) => delete gToolchainEnvMap[key]
+    );
   });
 });

@@ -58,18 +58,13 @@ suite("View", function () {
     const version = new Version(1, 0, 0).str();
 
     setup(function () {
+      // TODO: provide delete function for backend, which recursively deleting toolchain and executors
       Object.keys(gToolchainEnvMap).forEach(
         (key) => delete gToolchainEnvMap[key]
       );
 
       gToolchainEnvMap[oneBackendName] = oneToolchainEnv;
       gToolchainEnvMap[backendName] = toolchainEnv;
-    });
-
-    teardown(function () {
-      Object.keys(gToolchainEnvMap).forEach(
-        (key) => delete gToolchainEnvMap[key]
-      );
     });
 
     suite("#constructor()", function () {
@@ -675,6 +670,13 @@ suite("View", function () {
           quickInput.getMultiSteps(invalidState);
         }).to.throw(`state is wrong: ` + String(invalidState.current));
       });
+    });
+
+    teardown(function () {
+      // TODO: provide delete function for backend, which recursively deleting toolchain and executors
+      Object.keys(gToolchainEnvMap).forEach(
+        (key) => delete gToolchainEnvMap[key]
+      );
     });
   });
 });
