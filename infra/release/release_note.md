@@ -1,14 +1,20 @@
-# Release Note 0.4.0
+# Release Note 0.5.0
 
 ## ONE-vscode
 
 ### ONE Explorer View
 
-- Improve latency on startup/refresh/file system changes
-- Revive rename command for ONE configuration files
-- Support refactoring - a function that automatically updates corresponding fields in ONE configuration files when parent model files are renamed
-- Support multi-root workspace
-### Toolchain View
+- Support tflite and onnx files with CircleViewer
+  - Updated Circle Schema to v0.6
+- Improvement ONE Explorer file viewer according to the file type
+  - Open json file with default text editor
+- Support keybindings
+  - rename: F2
+  - delete: DEL
+  - run cfg: ctrl + F7
 
-- Support ONE toolchain
+### Device View
 
+- Remove the HostPC target so that only the host and remote are visible
+- Update simulator node icon
+- Apply default toolchain executor
