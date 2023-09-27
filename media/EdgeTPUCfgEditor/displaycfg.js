@@ -15,23 +15,32 @@
  */
 
 export function displayCfgToEditor(cfg) {
-  const edgeTPUCompiler = cfg["edgetpu-compile"];
+  const edgeTPUCompiler = cfg["edgetpu-compiler"];
+  document.getElementById("checkboxEdgeTPUCompile").checked = cfgBoolean(
+    edgeTPUCompiler["edgetpu-compile"]
+  );
+  document.getElementById("checkboxEdgeTPUProfile").checked = cfgBoolean(
+    edgeTPUCompiler["edgetpu-profile"]
+  );
+
+
+  const edgeTPUCompile = cfg["edgetpu-compile"];
   document.getElementById("EdgeTPUInputPath").value = cfgString(
-    edgeTPUCompiler?.["input_path"]
+    edgeTPUCompile?.["input_path"]
   );
   document.getElementById("EdgeTPUOutputPath").value = cfgString(
-    edgeTPUCompiler?.["output_path"]
+    edgeTPUCompile?.["output_path"]
   );
   document.getElementById("EdgeTPUIntermediateTensorsInputArrays").value =
-    cfgString(edgeTPUCompiler?.["intermediate_tensors"]);
+    cfgString(edgeTPUCompile?.["intermediate_tensors"]);
   document.getElementById("EdgeTPUShowOperations").checked = cfgBoolean(
-    edgeTPUCompiler?.["show_operations"]
+    edgeTPUCompile?.["show_operations"]
   );
   document.getElementById("EdgeTPUSearchDelegate").checked = cfgBoolean(
-    edgeTPUCompiler?.["search_delegate"]
+    edgeTPUCompile?.["search_delegate"]
   );
   document.getElementById("EdgeTPUDelegateSearchStep").value = cfgString(
-    edgeTPUCompiler?.["delegate_search_step"],
+    edgeTPUCompile?.["delegate_search_step"],
     "1"
   );
 }
