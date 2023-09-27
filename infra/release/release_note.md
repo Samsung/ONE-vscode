@@ -15,6 +15,6 @@
 
 ### Device View
 
-- Remove the HostPC target so that only the host and remote are visiable
+- Remove the HostPC target so that only the host and remote are visible
 - Update simulator node icon
 - Apply default toolchain executor
