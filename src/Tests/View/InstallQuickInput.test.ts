@@ -26,7 +26,6 @@ import {
   InstallQuickInputStep,
 } from "../../View/InstallQuickInput";
 import { MockCompiler } from "../MockCompiler";
-import { OneCompiler } from "../../Backend/One/OneToolchain";
 
 suite("View", function () {
   suite("InnerButton", function () {
@@ -46,24 +45,15 @@ suite("View", function () {
   // Therefore, we focus on testing things not ui
   suite("InstallQuickInput", function () {
     const oneBackendName = "ONE";
-    const oneCompiler = new OneCompiler();
-    const oneToolchainEnv = new ToolchainEnv(oneCompiler);
-
+    const edgeTPUBackendName = "EdgeTPU";
     const backendName = "testBackend";
     const compiler = new MockCompiler();
     const toolchainEnv = new ToolchainEnv(compiler);
-
     const toolchainType = toolchainEnv.getToolchainTypes()[0];
     const toolchain = toolchainEnv.listAvailable(toolchainType, 0, 1)[0];
     const version = new Version(1, 0, 0).str();
-
+    
     setup(function () {
-      // TODO: provide delete function for backend, which recursively deleting toolchain and executors
-      Object.keys(gToolchainEnvMap).forEach(
-        (key) => delete gToolchainEnvMap[key]
-      );
-
-      gToolchainEnvMap[oneBackendName] = oneToolchainEnv;
       gToolchainEnvMap[backendName] = toolchainEnv;
     });
 
@@ -377,9 +367,10 @@ suite("View", function () {
       test("gets all toolchain env names from global toolchain env", function () {
         let quickInput = new InstallQuickInput();
         let envs = quickInput.getAllToolchainEnvNames();
-        assert.strictEqual(envs.length, 2);
+        assert.strictEqual(envs.length, 3);
         assert.strictEqual(envs[0], oneBackendName);
-        assert.strictEqual(envs[1], backendName);
+        assert.strictEqual(envs[1], edgeTPUBackendName);
+        assert.strictEqual(envs[2], backendName);
       });
     });
 
@@ -673,10 +664,9 @@ suite("View", function () {
     });
 
     teardown(function () {
-      // TODO: provide delete function for backend, which recursively deleting toolchain and executors
-      Object.keys(gToolchainEnvMap).forEach(
-        (key) => delete gToolchainEnvMap[key]
-      );
+      if (gToolchainEnvMap[backendName] !== undefined) {
+        delete gToolchainEnvMap[backendName];
+      }
     });
   });
 });

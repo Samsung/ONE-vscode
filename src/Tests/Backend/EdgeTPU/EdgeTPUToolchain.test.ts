@@ -56,10 +56,6 @@ suite("Backend", function () {
       testBuilder.setUp();
     });
 
-    teardown(() => {
-      testBuilder.tearDown();
-    });
-
     suite("#run", function () {
       test("returns Command with cfg", function () {
         testBuilder.writeFileSync("file.cfg", content);
@@ -118,6 +114,10 @@ suite("Backend", function () {
 
         assert.deepEqual(cmd, expectedStrs);
       });
+    });
+
+    teardown(() => {
+      testBuilder.tearDown();
     });
   });
 });
