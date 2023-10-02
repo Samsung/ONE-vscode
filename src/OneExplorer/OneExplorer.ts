@@ -90,6 +90,13 @@ export enum NodeType {
   product,
 }
 
+export type CfgInfo = {
+  title: string;
+  viewType: string;
+  extType: string;
+  content: string;
+};
+
 export abstract class Node {
   abstract readonly type: NodeType;
   public readonly id: string;
@@ -1252,10 +1259,3 @@ input_path=${modelName}.${extName}
     return this._tree;
   }
 }
-
-type CfgInfo = {
-  title: string;
-  viewType: string;
-  extType: string;
-  content: string;
-};
