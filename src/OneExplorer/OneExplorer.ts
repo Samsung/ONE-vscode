@@ -1044,7 +1044,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
     if (extName === "tflite") {
       options.push({
         label: ".edgetpucfg",
-        description: "configuration file of edgetpu compiler",
+        description: "configuration file of edge tpu compiler",
       });
     }
 
