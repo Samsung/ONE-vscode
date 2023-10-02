@@ -1036,7 +1036,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
   private async generateCfgInfo(
     modelName: string,
     extName: string
-  ): Promise<CfgInfo> {
+  ): Promise<CfgInfo | undefined> {
     const options = [
       { label: ".cfg", description: "configuration file of onecc compiler" },
     ];
@@ -1049,7 +1049,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
     }
 
     const selectedOption = await vscode.window.showQuickPick(options);
-    const selectedLabel = selectedOption ? selectedOption.label : ".cfg";
+    const selectedLabel = selectedOption?.label;
 
     switch (selectedLabel) {
       case ".edgetpucfg":
@@ -1067,7 +1067,6 @@ output_path=${modelName}_edgetpu.${extName}
 `,
         };
       case ".cfg":
-      default:
         return {
           title: `Create ONE configuration of '${modelName}.${extName}' :`,
           viewType: "one.editor.cfg",
@@ -1078,6 +1077,8 @@ one-import-${extName}=True
 input_path=${modelName}.${extName}
 `,
         };
+      default:
+        return undefined;
     }
   }
 
@@ -1095,6 +1096,11 @@ input_path=${modelName}.${extName}
     const extName = path.parse(node.path).ext.slice(1);
 
     const cfgInfo = await this.generateCfgInfo(modelName, extName);
+
+    //When the user presses the ESC button, it is cancelled
+    if (cfgInfo === undefined) {
+      return;
+    }
 
     // TODO(dayo) Auto-configure more fields
     const validateInputPath = (cfgName: string): string | undefined => {
