@@ -302,7 +302,7 @@
         "category": "ONE"
       },
       {
-        "command": "one.editor.cfg.setDefaultEdgetpuValues",
+        "command": "one.editor.edgetpucfg.setDefaultValues",
         "title": "ONE: Set Default EdgeTPU Compiler Values",
         "category": "ONE"
       },
