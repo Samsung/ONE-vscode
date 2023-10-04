@@ -24,6 +24,7 @@ import { Logger } from "../Utils/Logger";
 
 import { ConfigObj } from "./ConfigObject";
 import { Node, NodeType } from "./OneExplorer";
+import { Balloon } from "../Utils/Balloon";
 
 export {
   BaseModelToCfgMap as _unit_test_BaseModelToCfgMap,
@@ -222,33 +223,31 @@ export class OneStorage {
    * @param root  the file or directory,
    *              which MUST exist in the file system
    */
-  private _getCfgList(roots: string[] = obtainWorkspaceRoots()): string[] {
+  private async _getCfgList(roots: string[] = obtainWorkspaceRoots()): Promise<string[]> {
     /**
      * Returns an array of all the file names inside the root directory
      * @todo Check soft link
      */
-    const readdirSyncRecursive = (root: string): string[] => {
-      if (fs.statSync(root).isFile()) {
-        return [root];
+    const readdirRecursively = async (curPath: string): Promise<string[]> => {
+      const stat: fs.Stats = await fs.promises.stat(curPath);
+      
+      if(stat.isFile()){
+        return curPath.endsWith(".cfg") ? [curPath] : [];
       }
+      else if (stat.isDirectory()){
+        let children: string[] = [];
 
-      let children: string[] = [];
-      if (fs.statSync(root).isDirectory()) {
-        fs.readdirSync(root).forEach((val) => {
-          children = children.concat(
-            readdirSyncRecursive(path.join(root, val))
-          );
-        });
+        const childPaths: string[] = (await fs.promises.readdir(curPath)).map(childName=>path.join(curPath, childName));
+        childPaths.forEach(async childPath => children.concat(await readdirRecursively(childPath)));
+
+        return children;
       }
-      return children;
+      else {return [];}
     };
 
     try {
-      return roots
-        .map((root) =>
-          readdirSyncRecursive(root).filter((val) => val.endsWith(".cfg"))
-        )
-        .reduce((prev, cur) => [...prev, ...cur]);
+      const cfgLists = await Promise.all(roots.map(async root=>{return await readdirRecursively(root);}));
+      return cfgLists.reduce((prev, cur) => [...prev, ...cur]);  
     } catch {
       Logger.error(
         "OneExplorer",
@@ -283,8 +282,8 @@ export class OneStorage {
   }
 
   // Use `private` to protect its Singleton behavior
-  private init() {
-    const cfgList = this._getCfgList();
+  private async init() {
+    const cfgList = await this._getCfgList();
     this._cfgToCfgObjMap.init(cfgList);
     this._baseModelToCfgsMap.init(cfgList, this._cfgToCfgObjMap);
   }
