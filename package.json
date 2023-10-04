@@ -60,6 +60,16 @@
         "priority": "option"
       },
       {
+        "viewType": "one.editor.edgetpucfg",
+        "displayName": "Edge TPU Configuration Editor",
+        "selector": [
+          {
+            "filenamePattern": "*.edgetpucfg"
+          }
+        ],
+        "priority": "option"
+      },
+      {
         "viewType": "one.viewer.mondrian",
         "displayName": "Mondrian",
         "selector": [
@@ -292,6 +302,11 @@
         "category": "ONE"
       },
       {
+        "command": "one.editor.edgetpucfg.setDefaultValues",
+        "title": "ONE: Set Default EdgeTPU Compiler Values",
+        "category": "ONE"
+      },
+      {
         "command": "one.editor.mpq.createFromDefaultExplorer",
         "title": "Create MPQ json",
         "category": "ONE"
@@ -307,6 +322,11 @@
         "command": "one.cfgEditor.setDefaultValues",
         "key": "ctrl+shift+/",
         "when": "activeCustomEditorId == one.editor.cfg"
+      },
+      {
+        "command": "one.cfgEditor.setDefaultEdgetpuValues",
+        "key": "ctrl+shift+/",
+        "when": "activeCustomEditorId == one.editor.edgetpucfg"
       },
       {
         "command": "one.explorer.deleteOnShortcut",
