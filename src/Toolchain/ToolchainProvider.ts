@@ -318,7 +318,7 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
   public _run(cfg: string): boolean {
     const [activeToolchainEnv, activeToolchain] =
       this.checkAvailableToolchain();
-    if (activeToolchainEnv === undefined || activeToolchain === undefined) {
+    if (!activeToolchainEnv || !activeToolchain) {
       return false;
     }
 
@@ -338,7 +338,7 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
 
     Logger.info(
       this.tag,
-      `Run tools with ${cfg} cfg and ${activeToolchainName}-${activeToolchain.info.version?.str()} toolchain.`
+      `Run ${activeToolchainName}-${activeToolchain.info.version?.str()} toolchain with ${cfg} cfg.`
     );
     activeToolchainEnv.run(cfg, activeToolchain).then(
       () => notifySuccess(),
