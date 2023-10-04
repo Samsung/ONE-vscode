@@ -25,10 +25,7 @@ import { Logger } from "../Utils/Logger";
 import { ConfigObj } from "./ConfigObject";
 import { Node, NodeType } from "./OneExplorer";
 
-export {
-  BaseModelToCfgMap as _unit_test_BaseModelToCfgMap,
-  CfgToCfgObjMap as _unit_test_CfgToCfgObjMap,
-};
+export { CfgToCfgObjMap as _unit_test_CfgToCfgObjMap };
 
 class CfgToCfgObjMap {
   private _map: Map<string, ConfigObj>;
@@ -44,6 +41,10 @@ class CfgToCfgObjMap {
         this._map.set(cfg, cfgObj);
       }
     });
+  }
+
+  get map() {
+    return this._map;
   }
 
   get size() {
@@ -99,88 +100,6 @@ class CfgToCfgObjMap {
   }
 }
 
-class BaseModelToCfgMap {
-  private _map: Map<string, string[]>;
-
-  constructor() {
-    this._map = new Map<string, string[]>();
-  }
-
-  public init(cfgList: string[], cfgToCfgObjMap: CfgToCfgObjMap) {
-    cfgList.forEach((cfg) => {
-      const cfgObj = cfgToCfgObjMap.get(cfg);
-
-      (cfgObj ? cfgObj.getBaseModelsExists : []).forEach((artifact) => {
-        this._map.get(artifact.path)
-          ? this._map.set(
-              artifact.path,
-              this._map.get(artifact.path)!.concat([cfg])
-            )
-          : this._map.set(artifact.path, [cfg]);
-      });
-    });
-  }
-
-  get size() {
-    return this._map.size;
-  }
-
-  public get(path: string) {
-    return this._map.get(path);
-  }
-
-  public reset(type: NodeType, path: string) {
-    switch (type) {
-      case NodeType.baseModel:
-        this._map.delete(path);
-        break;
-      case NodeType.config:
-        this._map.forEach((cfgs, key, map) => {
-          if (cfgs.includes(path)) {
-            cfgs = cfgs.filter((cfg) => cfg !== path);
-            map.set(key, cfgs);
-          }
-        });
-        break;
-      case NodeType.product:
-      case NodeType.directory:
-      default:
-        assert.fail(`Cannot reach here`);
-        break;
-    }
-  }
-
-  public update(type: NodeType, oldpath: string, newpath: string) {
-    switch (type) {
-      case NodeType.baseModel: {
-        const value = this._map.get(oldpath);
-
-        if (!value) {
-          return;
-        }
-
-        this._map.delete(oldpath);
-        this._map.set(newpath, value);
-
-        break;
-      }
-      case NodeType.config:
-        this._map.forEach((cfgs, key, map) => {
-          if (cfgs.includes(oldpath)) {
-            cfgs = cfgs.map((cfg) => (cfg === oldpath ? newpath : cfg));
-            map.set(key, cfgs);
-          }
-        });
-        break;
-      case NodeType.product:
-      case NodeType.directory:
-      default:
-        assert.fail(`Cannot reach here`);
-        break;
-    }
-  }
-}
-
 /**
  * A singleton storage class
  *
@@ -211,11 +130,7 @@ export class OneStorage {
   /**
    * @brief A map of ConfigObj (key: cfg path)
    */
-  private _cfgToCfgObjMap: CfgToCfgObjMap;
-  /**
-   * @brief A map of BaseModel path to Cfg path
-   */
-  private _baseModelToCfgsMap: BaseModelToCfgMap;
+  private _cfgToCfgObjMap = new CfgToCfgObjMap();
 
   /**
    * Get the list of .cfg files within the workspace
@@ -264,11 +179,7 @@ export class OneStorage {
     instance._nodeMap.delete(node.path);
 
     switch (node.type) {
-      case NodeType.baseModel:
-        instance._baseModelToCfgsMap.reset(node.type, node.path);
-        break;
       case NodeType.config:
-        instance._baseModelToCfgsMap.reset(node.type, node.path);
         instance._cfgToCfgObjMap.reset(node.type, node.path);
         break;
       default:
@@ -277,16 +188,12 @@ export class OneStorage {
   }
 
   // Use `private` to protect its Singleton behavior
-  private constructor() {
-    this._cfgToCfgObjMap = new CfgToCfgObjMap();
-    this._baseModelToCfgsMap = new BaseModelToCfgMap();
-  }
+  private constructor() {}
 
   // Use `private` to protect its Singleton behavior
   private init() {
     const cfgList = this._getCfgList();
     this._cfgToCfgObjMap.init(cfgList);
-    this._baseModelToCfgsMap.init(cfgList, this._cfgToCfgObjMap);
   }
 
   private static _obj: OneStorage | undefined;
@@ -294,14 +201,20 @@ export class OneStorage {
   /**
    * Get cfg lists which refers the base model path
    * @param baseModelPath
-   * @return a list of cfg path or undefined
+   * @return a list of referring cfg path
    *         An empty array is returned when
    *          (1) the path not exists
    *          (2) the path is not a base model file
    *          (3) the path is a lonely base model file
    */
-  public static getCfgs(baseModelPath: string): string[] | undefined {
-    return OneStorage.get()._baseModelToCfgsMap.get(baseModelPath);
+  public static getCfgs(baseModelPath: string): string[] {
+    let cfgs = [];
+    for (let [path, cfgObj] of OneStorage.get()._cfgToCfgObjMap.map) {
+      if (cfgObj.getBaseModels.some((bm) => bm.path === baseModelPath)) {
+        cfgs.push(path);
+      }
+    }
+    return cfgs;
   }
 
   /**
