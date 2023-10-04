@@ -130,7 +130,7 @@ export class OneStorage {
   /**
    * @brief A map of ConfigObj (key: cfg path)
    */
-  private _cfgToCfgObjMap = new CfgToCfgObjMap();
+  private _cfgToCfgObjMap: CfgToCfgObjMap = new CfgToCfgObjMap();
 
   /**
    * Get the list of .cfg files within the workspace
