@@ -1055,9 +1055,11 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
       });
     }
 
+    const placeHolder = options.map(option=>option.label).join(" / ");
+
     const selectedOption = await vscode.window.showQuickPick(options, {
       title: "Pick a configuration to create",
-      placeHolder: "cfg / edgetpucfg",
+      placeHolder: placeHolder,
     });
     const selectedLabel = selectedOption?.label;
 
