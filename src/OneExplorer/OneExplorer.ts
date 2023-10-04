@@ -24,6 +24,9 @@ import { Logger } from "../Utils/Logger";
 
 import { ArtifactAttr } from "./ArtifactLocator";
 import { OneStorage } from "./OneStorage";
+import { CfgInfo, ICfgData } from "../CfgEditor/ICfgData";
+import { EdgeTPUCfgData } from "../CfgEditor/EdgeTPUCfgData";
+import { CfgData } from "../CfgEditor/CfgData";
 
 // Exported for unit testing only
 export {
@@ -89,13 +92,6 @@ export enum NodeType {
    */
   product,
 }
-
-export type CfgInfo = {
-  title: string;
-  viewType: string;
-  extType: string;
-  content: string;
-};
 
 export abstract class Node {
   abstract readonly type: NodeType;
@@ -1034,7 +1030,6 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
   /**
    * Select the option for the configuration you want to create
    * Return information about the selected option
-   * Default option is information about .cfg
    *
    * @param modelName A base model's name
    * @param extName A base model's extension name
@@ -1044,7 +1039,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
     modelName: string,
     extName: string
   ): Promise<CfgInfo | undefined> {
-    const options = [
+    const options: vscode.QuickPickItem[] = [
       { label: ".cfg", description: "configuration file of onecc compiler" },
     ];
 
@@ -1055,7 +1050,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
       });
     }
 
-    const placeHolder = options.map(option=>option.label).join(" / ");
+    const placeHolder = options.map((option) => option.label).join(" / ");
 
     const selectedOption = await vscode.window.showQuickPick(options, {
       title: "Pick a configuration to create",
@@ -1063,35 +1058,21 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
     });
     const selectedLabel = selectedOption?.label;
 
+    let cfgData: ICfgData | undefined = undefined;
+
     switch (selectedLabel) {
       case ".edgetpucfg":
-        return {
-          title: `Create EdgeTPU configuration of '${modelName}.${extName}' :`,
-          viewType: "one.editor.edgetpucfg",
-          extType: ".edgetpucfg",
-          content: `[edgetpu-compiler]
-edgetpu-compile=True
-edgetpu-profile=False
-
-[edgetpu-compile]
-input_path=${modelName}.${extName}
-output_path=${modelName}_edgetpu.${extName}
-`,
-        };
+        cfgData = new EdgeTPUCfgData();
+        break;
       case ".cfg":
-        return {
-          title: `Create ONE configuration of '${modelName}.${extName}' :`,
-          viewType: "one.editor.cfg",
-          extType: ".cfg",
-          content: `[onecc]
-one-import-${extName}=True
-[one-import-${extName}]
-input_path=${modelName}.${extName}
-`,
-        };
+        cfgData = new CfgData();
+        break;
       default:
-        return undefined;
+        cfgData = undefined;
+        break;
     }
+
+    return cfgData?.generateCfgInfo(modelName, extName);
   }
 
   /**
