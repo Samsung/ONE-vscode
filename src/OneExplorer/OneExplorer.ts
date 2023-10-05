@@ -1039,6 +1039,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
     modelName: string,
     extName: string
   ): Promise<CfgInfo | undefined> {
+    //Options must be added according to extension
     const options: vscode.QuickPickItem[] = [
       { label: ".cfg", description: "configuration file of onecc compiler" },
     ];
@@ -1052,20 +1053,24 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
 
     const placeHolder = options.map((option) => option.label).join(" / ");
 
-    const selectedOption = await vscode.window.showQuickPick(options, {
-      title: "Pick a configuration to create",
-      placeHolder: placeHolder,
-    });
-    const selectedLabel = selectedOption?.label;
-
+    let selectedLabel: string | undefined = ".cfg";
     let cfgData: ICfgData | undefined = undefined;
 
+    //If options array only has the `.cfg` option, skip selecting it.
+    if (options.length !== 1) {
+      const selectedOption = await vscode.window.showQuickPick(options, {
+        title: "Pick a configuration to create",
+        placeHolder: placeHolder,
+      });
+      selectedLabel = selectedOption?.label;
+    }
+
     switch (selectedLabel) {
-      case ".edgetpucfg":
-        cfgData = new EdgeTPUCfgData();
-        break;
       case ".cfg":
         cfgData = new CfgData();
+        break;
+      case ".edgetpucfg":
+        cfgData = new EdgeTPUCfgData();
         break;
       default:
         cfgData = undefined;
