@@ -27,6 +27,50 @@ import { Node, NodeType } from "./OneExplorer";
 
 export { CfgToCfgObjMap as _unit_test_CfgToCfgObjMap };
 
+export class MultiMap<U, T> {
+  private _map: Map<U, T[]>;
+
+  constructor() {
+    this._map = new Map<U, T[]>();
+  }
+
+  get(u: U): T[] {
+    return this._map.get(u) ?? [];
+  }
+
+  exist(u: U, t: T): boolean {
+    return this._map.get(u)?.includes(t) ? true : false;
+  }
+
+  insert(u: U, t: T) {
+    if (this.exist(u, t)) {
+      return;
+    }
+
+    if (!this._map.get(u)) {
+      this._map.set(u, [t]);
+    } else {
+      this._map.set(u, [...this._map.get(u)!, t]);
+    }
+  }
+
+  delete(u: U, t?: T) {
+    if (!t) {
+      this._map.delete(u);
+      return;
+    }
+
+    if (!this.exist(u, t)) {
+      return;
+    }
+
+    this._map.set(
+      u,
+      this._map.get(u)!.filter((_t) => _t !== t)
+    );
+  }
+}
+
 class CfgToCfgObjMap {
   private _map: Map<string, ConfigObj>;
 
@@ -130,7 +174,7 @@ export class OneStorage {
    * pre-built. Mind that it will slow down the extension to gather data about unseen nodes.
    *       Currently, only the two depths from those shown nodes are built.
    */
-  private _nodeMap: Map<string, Node> = new Map<string, Node>();
+  private _nodeMap: MultiMap<string, Node> = new MultiMap<string, Node>();
 
   /**
    * @brief A map of ConfigObj (key: cfg path)
@@ -232,13 +276,19 @@ export class OneStorage {
   /**
    * Get Node from the map
    */
-  public static getNode(fsPath: string): Node | undefined {
+  public static getNodes(fsPath: string): Node[] {
     return OneStorage.get()._nodeMap.get(fsPath);
   }
 
   public static insert(node: Node) {
     const inst = OneStorage.get();
-    inst._nodeMap.set(node.path, node);
+
+    if (inst._nodeMap.exist(node.path, node)) {
+      return;
+    }
+
+    inst._nodeMap.insert(node.path, node);
+
     if (node.type === NodeType.config) {
       if (!inst._cfgToCfgObjMap.get(node.path)) {
         const cfgObj = ConfigObj.createConfigObj(node.uri);
