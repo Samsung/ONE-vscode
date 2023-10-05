@@ -559,13 +559,15 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
         }
       }),
       provider.fileWatcher.onDidDelete((uri: vscode.Uri) => {
-        const node = OneStorage.getNode(uri.fsPath);
-        if (!node) {
+        const nodes = OneStorage.getNodes(uri.fsPath);
+        if (nodes.length === 0) {
           return;
         }
 
-        OneStorage.delete(node, true);
-        provider.refresh(node.parent);
+        nodes.forEach((node) => {
+          OneStorage.delete(node, true);
+          provider.refresh(node.parent);
+        });
       }),
       vscode.workspace.onDidChangeWorkspaceFolders(() => {
         provider._workspaceRoots = obtainWorkspaceRoots().map((root) =>
@@ -577,14 +579,14 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
       vscode.commands.registerCommand(
         "one.explorer.revealInOneExplorer",
         (path: string) => {
-          const node = OneStorage.getNode(path);
-          if (node) {
+          const nodes = OneStorage.getNodes(path);
+          nodes.forEach((node) => {
             provider._treeView?.reveal(node, {
               select: true,
               focus: true,
               expand: true,
             });
-          }
+          });
         }
       ),
       vscode.commands.registerCommand(
