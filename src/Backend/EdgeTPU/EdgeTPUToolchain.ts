@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-import * as cp from "child_process";
-import * as vscode from "vscode";
 import * as ini from "ini";
 import * as fs from "fs";
 import * as path from "path";
 
 import { Logger } from "../../Utils/Logger";
-import { pipedSpawnSync } from "../../Utils/PipedSpawnSync";
 import { Command } from "../Command";
-import { Compiler } from "../Compiler";
-import { PackageInfo, ToolchainInfo, Toolchains } from "../Toolchain";
+import { PackageInfo } from "../Toolchain";
 import { DebianToolchain } from "../ToolchainImpl/DebianToolchain";
 import { Version } from "../Version";
+import { DebianCompiler } from "../CompilerImpl/DebianCompiler";
 
 class EdgeTPUDebianToolchain extends DebianToolchain {
   run(cfg: string): Command {
@@ -83,17 +80,15 @@ class EdgeTPUDebianToolchain extends DebianToolchain {
   }
 }
 
-class EdgeTPUCompiler implements Compiler {
-  private readonly toolchainTypes: string[];
-  private readonly toolchainName: string;
-
+class EdgeTPUCompiler extends DebianCompiler {
   constructor() {
-    this.toolchainName = "edgetpu-compiler";
-    this.toolchainTypes = ["latest"];
-  }
-
-  getToolchainTypes(): string[] {
-    return this.toolchainTypes;
+    super(
+      ["latest"],
+      "edgetpu-compiler",
+      EdgeTPUDebianToolchain,
+      [new PackageInfo("edgetpu_compiler", new Version(16, 0, undefined))],
+      "prerequisitesForGetEdgeTPUToolchain.sh"
+    );
   }
 
   parseVersion(version: string): Version {
@@ -140,133 +135,6 @@ class EdgeTPUCompiler implements Compiler {
     }
 
     return new Version(major, minor, patch, option);
-  }
-
-  getToolchains(
-    _toolchainType: string,
-    _start: number,
-    _count: number
-  ): Toolchains {
-    if (_toolchainType !== "latest") {
-      throw Error(`Invalid toolchain type : ${_toolchainType}`);
-    }
-
-    if (_start < 0) {
-      throw Error(`wrong start number: ${_start}`);
-    }
-    if (_count < 0) {
-      throw Error(`wrong count number: ${_count}`);
-    }
-    if (_count === 0) {
-      return [];
-    }
-
-    try {
-      cp.spawnSync(`apt-cache show ${this.toolchainName}`);
-    } catch (error) {
-      throw Error(`Getting ${this.toolchainName} package list is failed`);
-    }
-
-    let result;
-    try {
-      result = pipedSpawnSync(
-        "apt-cache",
-        ["madison", `${this.toolchainName}`],
-        { encoding: "utf8" },
-        "awk",
-        ['{printf $3" "}'],
-        { encoding: "utf8" }
-      );
-    } catch (error) {
-      throw Error(
-        `Getting ${this.toolchainName} package version list is failed`
-      );
-    }
-
-    if (result.status !== 0) {
-      return [];
-    }
-
-    const toolchainVersions: string = result.stdout.toString();
-    const versionList = toolchainVersions.trim().split(" ");
-
-    const availableToolchains = new Toolchains();
-    for (const version of versionList) {
-      const toolchainInfo = new ToolchainInfo(
-        this.toolchainName,
-        "Description: test",
-        this.parseVersion(version)
-      );
-
-      const toolchain = new EdgeTPUDebianToolchain(toolchainInfo);
-      availableToolchains.push(toolchain);
-    }
-
-    return availableToolchains;
-  }
-
-  getInstalledToolchains(_toolchainType: string): Toolchains {
-    if (_toolchainType !== "latest") {
-      throw Error(`Invalid toolchain type : ${_toolchainType}`);
-    }
-
-    let result;
-    try {
-      result = cp.spawnSync(
-        "dpkg-query",
-        [
-          "--show",
-          `--showformat='\${Version} \${Description}'`,
-          `${this.toolchainName}`,
-        ],
-        { encoding: "utf8" }
-      );
-    } catch (error) {
-      throw new Error(
-        `Getting installed ${this.toolchainName} package list is failed`
-      );
-    }
-
-    if (result.status !== 0) {
-      return [];
-    }
-
-    // NOTE
-    // The output format string of dpkg-query is '${Version} ${Description}'.
-    // To remove the first and last single quote character of output string, it slices from 1 to -1.
-    const installedToolchain: string = result.stdout.toString().slice(1, -1);
-
-    const descriptionIdx = installedToolchain.search(" ");
-    const versionStr = installedToolchain.slice(0, descriptionIdx).trim();
-    const description = installedToolchain.slice(descriptionIdx).trim();
-
-    const depends: Array<PackageInfo> = [
-      new PackageInfo("edgetpu_compiler", new Version(16, 0, undefined)),
-    ];
-    const toolchainInfo = new ToolchainInfo(
-      this.toolchainName,
-      description,
-      this.parseVersion(versionStr),
-      depends
-    );
-    const toolchain = new EdgeTPUDebianToolchain(toolchainInfo);
-    return [toolchain];
-  }
-
-  prerequisitesForGetToolchains(): Command {
-    const extensionId = "Samsung.one-vscode";
-    const ext = vscode.extensions.getExtension(
-      extensionId
-    ) as vscode.Extension<any>;
-    const scriptPath = vscode.Uri.joinPath(
-      ext!.extensionUri,
-      "script",
-      "prerequisitesForGetEdgeTPUToolchain.sh"
-    ).fsPath;
-
-    const cmd = new Command("/bin/sh", [`${scriptPath}`]);
-    cmd.setRoot();
-    return cmd;
   }
 }
 
