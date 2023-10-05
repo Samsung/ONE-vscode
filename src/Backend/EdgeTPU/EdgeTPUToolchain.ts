@@ -18,6 +18,9 @@ import * as ini from "ini";
 import * as fs from "fs";
 import * as path from "path";
 
+import { Backend } from "../Backend";
+import { Compiler } from "../Compiler";
+import { Executor } from "../Executor";
 import { Logger } from "../../Utils/Logger";
 import { Command } from "../Command";
 import { PackageInfo } from "../Toolchain";
@@ -140,4 +143,30 @@ class EdgeTPUCompiler extends DebianCompiler {
   }
 }
 
-export { EdgeTPUDebianToolchain, EdgeTPUCompiler };
+class EdgeTPUToolchain implements Backend {
+  private readonly backendName: string;
+  private readonly toolchainCompiler: Compiler | undefined;
+
+  constructor() {
+    this.backendName = "EdgeTPU";
+    this.toolchainCompiler = undefined;
+  }
+
+  name(): string {
+    return this.backendName;
+  }
+
+  compiler(): Compiler | undefined {
+    return this.toolchainCompiler;
+  }
+
+  executor(): Executor | undefined {
+    return undefined;
+  }
+
+  executors(): Executor[] {
+    return [];
+  }
+}
+
+export { EdgeTPUDebianToolchain, EdgeTPUCompiler, EdgeTPUToolchain };
