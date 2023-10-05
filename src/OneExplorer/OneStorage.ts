@@ -55,6 +55,11 @@ class CfgToCfgObjMap {
     return this._map.get(path);
   }
 
+  public set(path: string, cfgObj: ConfigObj) {
+    this.map.set(path, cfgObj);
+  }
+
+  // TODO Revisit here
   public reset(type: NodeType, path: string) {
     switch (type) {
       case NodeType.config:
@@ -232,10 +237,16 @@ export class OneStorage {
   }
 
   public static insert(node: Node) {
-    // NOTE
-    // Only _nodeMap is built by calling this function
-    // _baseModelToCfgsMap and _cfgToCfgObjMap are built at constructors
-    OneStorage.get()._nodeMap.set(node.path, node);
+    const inst = OneStorage.get();
+    inst._nodeMap.set(node.path, node);
+    if (node.type === NodeType.config) {
+      if (!inst._cfgToCfgObjMap.get(node.path)) {
+        const cfgObj = ConfigObj.createConfigObj(node.uri);
+        if (cfgObj) {
+          inst._cfgToCfgObjMap.set(node.path, cfgObj);
+        }
+      }
+    }
   }
 
   /**
