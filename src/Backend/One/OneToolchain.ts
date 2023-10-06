@@ -51,19 +51,19 @@ class OneDebianToolchain extends DebianToolchain {
 
 class OneCompiler extends DebianCompiler {
   constructor() {
-    super(
-      ["latest"],
-      "onecc-docker",
-      OneDebianToolchain,
-      [new PackageInfo("one-compiler", new Version(1, 21, 0))],
-      "prerequisitesForGetOneToolchain.sh",
-      new DebianRepo(
+    super({
+      toolchainTypes: ["latest"],
+      toolchainName: "onecc-docker",
+      debianToolchainClass: OneDebianToolchain,
+      depends: [new PackageInfo("one-compiler", new Version(1, 21, 0))],
+      prerequisites: "prerequisitesForGetOneToolchain.sh",
+      debianRepo: new DebianRepo(
         "http://ppa.launchpad.net/one-compiler/onecc-docker/ubuntu",
         "bionic",
         "main"
       ),
-      DebianArch.amd64
-    );
+      debianArch: DebianArch.amd64,
+    });
   }
 }
 

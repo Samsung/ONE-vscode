@@ -82,13 +82,15 @@ class EdgeTPUDebianToolchain extends DebianToolchain {
 
 class EdgeTPUCompiler extends DebianCompiler {
   constructor() {
-    super(
-      ["latest"],
-      "edgetpu-compiler",
-      EdgeTPUDebianToolchain,
-      [new PackageInfo("edgetpu_compiler", new Version(16, 0, undefined))],
-      "prerequisitesForGetEdgeTPUToolchain.sh"
-    );
+    super({
+      toolchainTypes: ["latest"],
+      toolchainName: "edgetpu-compiler",
+      debianToolchainClass: EdgeTPUDebianToolchain,
+      depends: [
+        new PackageInfo("edgetpu_compiler", new Version(16, 0, undefined)),
+      ],
+      prerequisites: "prerequisitesForGetEdgeTPUToolchain.sh",
+    });
   }
 
   parseVersion(version: string): Version {

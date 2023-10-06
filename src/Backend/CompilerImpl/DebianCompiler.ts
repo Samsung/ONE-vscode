@@ -39,15 +39,23 @@ export class DebianCompiler implements Compiler {
   private readonly debianRepo: DebianRepo | undefined;
   private readonly debianArch: DebianArch | undefined;
 
-  constructor(
-    toolchainTypes: string[],
-    toolchainName: string,
-    debianToolchainClass: typeof DebianToolchain,
-    depends: Array<PackageInfo>,
-    prerequisites: string,
-    debianRepo?: DebianRepo,
-    debianArch?: DebianArch
-  ) {
+  constructor({
+    toolchainTypes,
+    toolchainName,
+    debianToolchainClass,
+    depends,
+    prerequisites,
+    debianRepo,
+    debianArch,
+  }: {
+    toolchainTypes: string[];
+    toolchainName: string;
+    debianToolchainClass: typeof DebianToolchain;
+    depends: Array<PackageInfo>;
+    prerequisites: string;
+    debianRepo?: DebianRepo;
+    debianArch?: DebianArch;
+  }) {
     this.toolchainTypes = toolchainTypes;
     this.toolchainName = toolchainName;
 
