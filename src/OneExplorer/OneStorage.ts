@@ -276,13 +276,16 @@ export class OneStorage {
     }
   }
 
+  // Use `private` to protect its Singleton behavior
   private constructor() {
-    const cfgList = this._getCfgList();
-
     this._cfgToCfgObjMap = new CfgToCfgObjMap();
-    this._cfgToCfgObjMap.init(cfgList);
-
     this._baseModelToCfgsMap = new BaseModelToCfgMap();
+  }
+
+  // Use `private` to protect its Singleton behavior
+  private init() {
+    const cfgList = this._getCfgList();
+    this._cfgToCfgObjMap.init(cfgList);
     this._baseModelToCfgsMap.init(cfgList, this._cfgToCfgObjMap);
   }
 
@@ -349,11 +352,13 @@ export class OneStorage {
   private static get(): OneStorage {
     if (!OneStorage._obj) {
       OneStorage._obj = new OneStorage();
+      OneStorage._obj.init();
     }
     return OneStorage._obj;
   }
 
   public static reset(): void {
-    OneStorage._obj = undefined;
+    OneStorage._obj = new OneStorage();
+    OneStorage._obj.init();
   }
 }
