@@ -45,7 +45,7 @@ function updateMetadataInfo(metadata) {
 
   const viewItemHeader = document.createElement("div");
   viewItemHeader.classList.add("view-item-header");
-  viewItemHeader.innerText = "Common";
+  viewItemHeader.innerText = "TVN File Information";
 
   const viewItemShowButton = document.createElement("div");
   viewItemShowButton.setAttribute("id", "common-view-item-show-button");
@@ -71,7 +71,55 @@ function updateMetadataInfo(metadata) {
   const metadataInfo = metadata[mainFileName];
 
   for (const subKey in metadataInfo) {
-    if (subKey === "operations") {
+    if (subKey === "Origins") {
+      const viewItemBox = document.createElement("div");
+      viewItemBox.setAttribute("id", "operations-view-item-box");
+      viewItemBox.classList.add("view-item-box");
+
+      // draw header
+      const viewItemHeader = document.createElement("div");
+      viewItemHeader.classList.add("view-item-header");
+      viewItemHeader.innerText = "Operation Origins";
+
+      // add show button image
+      const showButton = document.createElement("div");
+      showButton.classList.add(
+        "view-item-show-button",
+        "codicon-collapse-all",
+        "codicon"
+      );
+      showButton.setAttribute("id", "operations-view-item-show-button");
+
+      // draw a header box to hold headers and showButton
+      const viewItemHeaderBox = document.createElement("div");
+      viewItemHeaderBox.classList.add("view-item-header-box");
+
+      viewItemHeaderBox.append(viewItemHeader, showButton);
+      viewItemBox.appendChild(viewItemHeaderBox);
+      mainViewItemBox.appendChild(viewItemBox);
+
+      // draw content box
+      const viewItemContentBox = document.createElement("div");
+      viewItemContentBox.classList.add("view-item-content-box");
+      viewItemContentBox.setAttribute("id", "operations-view-content-box");
+      viewItemBox.appendChild(viewItemContentBox);
+
+      for (const operationsKey in metadataInfo[subKey]) {
+        if (
+          Object.prototype.hasOwnProperty.call(
+            metadataInfo[subKey],
+            operationsKey
+          )
+        ) {
+          metadataDivCreate(
+            operationsKey,
+            metadataInfo[subKey][operationsKey],
+            "operations"
+          );
+        }
+      }
+    }
+    else if (subKey === "operations") {
       const viewItemBox = document.createElement("div");
       viewItemBox.setAttribute("id", "operations-view-item-box");
       viewItemBox.classList.add("view-item-box");
