@@ -15,10 +15,14 @@
  */
 
 import * as crypto from "crypto";
+import fs from "fs";
 import vscode from "vscode";
 
-export async function generateHash(uri: vscode.Uri) {
-  // TODO: Error handling
+export async function generateHash(uri: vscode.Uri): Promise<string> {
+  if (!fs.existsSync(uri.fsPath)) {
+    throw new Error(`File does not exists at ${uri.fsPath}`);
+  }
+
   return crypto
     .createHash("sha256")
     .update(Buffer.from(await vscode.workspace.fs.readFile(uri)).toString())

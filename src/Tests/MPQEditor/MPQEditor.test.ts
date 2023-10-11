@@ -151,7 +151,7 @@ suite("MPQEditor", function () {
 
         await MPQEditorProvider.updateDocumentBy(document, newJson);
 
-        document.save();
+        await document.save();
         const newJsonText: string = document.getText();
         const newCont = JSON.parse(newJsonText);
         assert.strictEqual(newCont["default_quantization_dtype"], "int16");

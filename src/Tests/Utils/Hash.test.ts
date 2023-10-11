@@ -46,7 +46,6 @@ suite("Utils", function () {
         const notExistingPath = testBuilder.getPath("non-existing");
         generateHash(vscode.Uri.file(notExistingPath)).catch(() => {
           pass();
-          assert.ok(true);
         });
       });
     });
