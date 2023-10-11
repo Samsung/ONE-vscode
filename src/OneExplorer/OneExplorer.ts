@@ -19,13 +19,15 @@ import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 
-import { CfgEditorPanel } from "../CfgEditor/CfgEditorPanel";
 import { obtainWorkspaceRoots } from "../Utils/Helpers";
 import { Logger } from "../Utils/Logger";
 
 import { ConfigObj } from "./ConfigObject";
 import { ArtifactAttr } from "./ArtifactLocator";
 import { OneStorage } from "./OneStorage";
+import { CfgInfo, ICfgData } from "../CfgEditor/ICfgData";
+import { EdgeTPUCfgData } from "../CfgEditor/EdgeTPUCfgData";
+import { CfgData } from "../CfgEditor/CfgData";
 
 // Exported for unit testing only
 export {
@@ -1107,8 +1109,61 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
   }
 
   /**
-   * Create ONE configuration file for a base model
-   * Input box is prefilled as <base model's name>.cfg
+   * Select the option for the configuration you want to create
+   * Return information about the selected option
+   *
+   * @param modelName A base model's name
+   * @param extName A base model's extension name
+   *
+   */
+  private async generateCfgInfo(
+    modelName: string,
+    extName: string
+  ): Promise<CfgInfo | undefined> {
+    //Options must be added according to extension
+    const options: vscode.QuickPickItem[] = [
+      { label: ".cfg", description: "configuration file of onecc compiler" },
+    ];
+
+    if (extName === "tflite") {
+      options.push({
+        label: ".edgetpucfg",
+        description: "configuration file of edge tpu compiler",
+      });
+    }
+
+    const placeHolder = options.map((option) => option.label).join(" / ");
+
+    let selectedLabel: string | undefined = ".cfg";
+    let cfgData: ICfgData | undefined = undefined;
+
+    //If options array only has the `.cfg` option, skip selecting it.
+    if (options.length !== 1) {
+      const selectedOption = await vscode.window.showQuickPick(options, {
+        title: "Pick a configuration to create",
+        placeHolder: placeHolder,
+      });
+      selectedLabel = selectedOption?.label;
+    }
+
+    switch (selectedLabel) {
+      case ".cfg":
+        cfgData = new CfgData();
+        break;
+      case ".edgetpucfg":
+        cfgData = new EdgeTPUCfgData();
+        break;
+      default:
+        cfgData = undefined;
+        break;
+    }
+
+    return cfgData?.generateCfgInfo(modelName, extName);
+  }
+
+  /**
+   * A configuration file is created for the selected option.
+   * Input box is prefilled as <base model's name>.<selected option>
    * The operation will be cancelled if the file already exists.
    *
    * @command one.explorer.createCfg
@@ -1119,18 +1174,19 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
     const modelName = path.parse(node.path).name;
     const extName = path.parse(node.path).ext.slice(1);
 
-    // TODO(dayo) Auto-configure more fields
-    const content = `[onecc]
-one-import-${extName}=True
-[one-import-${extName}]
-input_path=${modelName}.${extName}
-`;
+    const cfgInfo = await this.generateCfgInfo(modelName, extName);
 
+    //When the user presses the ESC button, it is cancelled
+    if (cfgInfo === undefined) {
+      return;
+    }
+
+    // TODO(dayo) Auto-configure more fields
     const validateInputPath = (cfgName: string): string | undefined => {
       const cfgPath: string = path.join(dirPath, cfgName);
 
-      if (!cfgName.endsWith(".cfg")) {
-        return `A file extension must be .cfg`;
+      if (!cfgName.endsWith(cfgInfo.extType)) {
+        return `A file extension must be ${cfgInfo.extType}`;
       }
 
       if (fs.existsSync(cfgPath)) {
@@ -1140,10 +1196,13 @@ input_path=${modelName}.${extName}
 
     vscode.window
       .showInputBox({
-        title: `Create ONE configuration of '${modelName}.${extName}' :`,
+        title: cfgInfo.title,
         placeHolder: `Enter a file name`,
-        value: `${modelName}.cfg`,
-        valueSelection: [0, `${modelName}.cfg`.length - `.cfg`.length],
+        value: `${modelName}${cfgInfo.extType}`,
+        valueSelection: [
+          0,
+          `${modelName}${cfgInfo.extType}`.length - `${cfgInfo.extType}`.length,
+        ],
         validateInput: validateInputPath,
       })
       .then((value) => {
@@ -1157,7 +1216,7 @@ input_path=${modelName}.${extName}
 
         const edit = new vscode.WorkspaceEdit();
         edit.createFile(uri);
-        edit.insert(uri, new vscode.Position(0, 0), content);
+        edit.insert(uri, new vscode.Position(0, 0), cfgInfo.content);
 
         vscode.workspace.applyEdit(edit).then((isSuccess) => {
           if (isSuccess) {
@@ -1166,7 +1225,7 @@ input_path=${modelName}.${extName}
               vscode.commands.executeCommand(
                 "vscode.openWith",
                 uri,
-                CfgEditorPanel.viewType
+                cfgInfo.viewType
               );
             });
           } else {

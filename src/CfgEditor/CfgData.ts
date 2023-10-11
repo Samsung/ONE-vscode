@@ -15,7 +15,7 @@
  */
 
 import * as ini from "ini";
-import { ICfgData } from "./ICfgData";
+import { CfgInfo, ICfgData } from "./ICfgData";
 import { Sections } from "./Sections";
 
 // NOTE: Why is not function overloadding used? Its maintain costs expensive.
@@ -33,7 +33,7 @@ import { Sections } from "./Sections";
 //
 export class CfgData extends ICfgData {
   constructor(cfg = undefined) {
-    super(cfg, Sections.onecc);
+    super(cfg, Sections.onecc, "one.editor.cfg", ".cfg");
   }
 
   setWithConfig(cfg: any): void {
@@ -85,5 +85,18 @@ export class CfgData extends ICfgData {
     const config = this.getAsConfig();
     config[section] = ini.parse(value);
     this.resolveDeprecated();
+  }
+
+  generateCfgInfo(modelName: string, extName: string): CfgInfo {
+    return {
+      title: `Create ONE configuration of '${modelName}.${extName}' :`,
+      viewType: this.viewType,
+      extType: this.extType,
+      content: `[onecc]
+one-import-${extName}=True
+[one-import-${extName}]
+input_path=${modelName}.${extName}
+`,
+    };
   }
 }

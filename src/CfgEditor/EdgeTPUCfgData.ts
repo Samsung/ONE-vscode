@@ -15,12 +15,12 @@
  */
 
 import * as ini from "ini";
-import { ICfgData } from "./ICfgData";
+import { CfgInfo, ICfgData } from "./ICfgData";
 import { Sections } from "./Sections";
 
 export class EdgeTPUCfgData extends ICfgData {
   constructor(cfg = undefined) {
-    super(cfg, Sections.edgetpu);
+    super(cfg, Sections.edgetpu, "one.editor.edgetpucfg", ".edgetpucfg");
   }
 
   setWithConfig(cfg: any): void {
@@ -47,5 +47,21 @@ export class EdgeTPUCfgData extends ICfgData {
     // value should be encoded or stringfied
     const config = this.getAsConfig();
     config[section] = ini.parse(value);
+  }
+
+  generateCfgInfo(modelName: string, extName: string): CfgInfo {
+    return {
+      title: `Create EdgeTPU configuration of '${modelName}.${extName}' :`,
+      viewType: this.viewType,
+      extType: this.extType,
+      content: `[edgetpu-compiler]
+edgetpu-compile=True
+edgetpu-profile=False
+
+[edgetpu-compile]
+input_path=${modelName}.${extName}
+output_path=${modelName}_edgetpu.${extName}
+`,
+    };
   }
 }
