@@ -316,27 +316,29 @@ export class ToolchainProvider implements vscode.TreeDataProvider<BaseNode> {
   }
 
   public _run(cfg: string): boolean {
+    const [activeToolchainEnv, activeToolchain] =
+      this.checkAvailableToolchain();
+    if (!activeToolchainEnv || !activeToolchain) {
+      return false;
+    }
+
+    const activeToolchainName = activeToolchain.info.name;
+
     /* istanbul ignore next */
     const notifySuccess = () => {
-      vscode.window.showInformationMessage("Onecc has run successfully.");
+      vscode.window.showInformationMessage(
+        `${activeToolchainName} has run successfully.`
+      );
     };
 
     /* istanbul ignore next */
     const notifyError = () => {
-      this.error("Running onecc has failed.");
+      this.error(`Running ${activeToolchainName} has failed.`);
     };
-
-    const [activeToolchainEnv, activeToolchain] =
-      this.checkAvailableToolchain();
-    if (activeToolchainEnv === undefined || activeToolchain === undefined) {
-      return false;
-    }
 
     Logger.info(
       this.tag,
-      `Run onecc with ${cfg} cfg and ${
-        activeToolchain.info.name
-      }-${activeToolchain.info.version?.str()} toolchain.`
+      `Run ${activeToolchainName}-${activeToolchain.info.version?.str()} toolchain with ${cfg} cfg.`
     );
     activeToolchainEnv.run(cfg, activeToolchain).then(
       () => notifySuccess(),
