@@ -15,15 +15,29 @@
  */
 import * as ini from "ini";
 
-export abstract class ICfgData {
-  //config can be undefined
-  private _config: any;
-  //section must be existed
-  private _section!: string[];
+export type CfgInfo = {
+  title: string;
+  viewType: string;
+  extType: string;
+  content: string;
+};
 
-  constructor(_config: any, _section: string[]) {
+export abstract class ICfgData {
+  private _config: any;
+  private _section!: string[];
+  private _viewType!: string;
+  private _extType!: string;
+
+  constructor(
+    _config: any,
+    _section: string[],
+    _viewType: string,
+    _extType: string
+  ) {
     this._config = _config;
     this._section = _section;
+    this._viewType = _viewType;
+    this._extType = _extType;
   }
 
   // sets data with object decoded or parsed
@@ -36,6 +50,17 @@ export abstract class ICfgData {
     value: string
   ): void;
   abstract updateSectionWithValue(section: string, value: string): void;
+  //Return information about each cfgType
+  abstract generateCfgInfo(modelName: string, extName: string): CfgInfo;
+
+  //getter
+  get viewType(): string {
+    return this._viewType;
+  }
+
+  get extType(): string {
+    return this._extType;
+  }
 
   // set cfgData's config
   // only child class can use this method
