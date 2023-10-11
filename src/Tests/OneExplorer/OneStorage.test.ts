@@ -18,10 +18,7 @@ import { assert } from "chai";
 
 import { NodeType } from "../../OneExplorer/OneExplorer";
 import { OneStorage } from "../../OneExplorer/OneStorage";
-import {
-  _unit_test_BaseModelToCfgMap as BaseModelToCfgMap,
-  _unit_test_CfgToCfgObjMap as CfgToCfgObjMap,
-} from "../../OneExplorer/OneStorage";
+import { _unit_test_CfgToCfgObjMap as CfgToCfgObjMap } from "../../OneExplorer/OneStorage";
 import { TestBuilder } from "../TestBuilder";
 
 suite("OneExplorer", function () {
@@ -59,24 +56,24 @@ input_path=${modelName}
           }
         });
 
-        test("NEG: Returns undefined for not existing path", function () {
+        test("NEG: Returns an empty array for not existing path", function () {
           {
-            assert.isUndefined(OneStorage.getCfgs("invalid/path"));
+            assert.isEmpty(OneStorage.getCfgs("invalid/path"));
           }
         });
 
-        test("NEG: Returns undefined for lonely base model file", function () {
+        test("NEG: Returns an empty array for lonely base model file", function () {
           const modelName = "model.tflite";
 
           testBuilder.writeFileSync(modelName, "", "workspace");
           OneStorage.reset();
 
           {
-            assert.isUndefined(OneStorage.getCfgs("invalid/path"));
+            assert.isEmpty(OneStorage.getCfgs("invalid/path"));
           }
         });
 
-        test("NEG: Returns undefined for non-base-model files", function () {
+        test("NEG: Returns an empty array  for non-base-model files", function () {
           const modelName = "model.circle";
 
           testBuilder.writeFileSync(modelName, "", "workspace");
@@ -84,7 +81,7 @@ input_path=${modelName}
 
           const modelPath = testBuilder.getPath(modelName, "workspace");
           {
-            assert.isUndefined(OneStorage.getCfgs(modelPath));
+            assert.isEmpty(OneStorage.getCfgs(modelPath));
           }
         });
       });
@@ -297,220 +294,6 @@ input_path=${modelName}
           assert.strictEqual(cfgToCfgObjMap.size, 0);
           assert.isUndefined(cfgToCfgObjMap.get(configPath));
           assert.isUndefined(cfgToCfgObjMap.get(newConfigPath));
-        });
-      });
-    });
-
-    suite("BaseModelToCfgMap", function () {
-      suite("#constructor()", function () {
-        test("does not throw", function () {
-          assert.doesNotThrow(() => new BaseModelToCfgMap());
-        });
-      });
-
-      suite("#init()", function () {
-        test("NEG: with an empty cfglist and cfgObjMap", function () {
-          const baseModelToCfgMap = new BaseModelToCfgMap();
-          assert.doesNotThrow(() => {
-            baseModelToCfgMap.init([], new CfgToCfgObjMap());
-          });
-          assert.strictEqual(baseModelToCfgMap.size, 0);
-        });
-        test("NEG: falsy cfg list (not existing)", function () {
-          const baseModelToCfgMap = new BaseModelToCfgMap();
-          assert.doesNotThrow(() => {
-            baseModelToCfgMap.init(["not/existing/path"], new CfgToCfgObjMap());
-          });
-          assert.isUndefined(baseModelToCfgMap.get("not/existing/path"));
-          assert.strictEqual(baseModelToCfgMap.size, 0);
-        });
-      });
-
-      suite("#get()", function () {
-        test("NEG: empty path", function () {
-          const baseModelToCfgMap = new BaseModelToCfgMap();
-          baseModelToCfgMap.init([], new CfgToCfgObjMap());
-          assert.isUndefined(baseModelToCfgMap.get(""));
-          assert.strictEqual(baseModelToCfgMap.size, 0);
-        });
-
-        test("NEG: invalid path", function () {
-          const baseModelToCfgMap = new BaseModelToCfgMap();
-          baseModelToCfgMap.init([], new CfgToCfgObjMap());
-          assert.isUndefined(baseModelToCfgMap.get("invalid/path"));
-          assert.strictEqual(baseModelToCfgMap.size, 0);
-        });
-
-        test("existing path", function () {
-          const model = testBuilder.getPath("model.tflite", "workspace");
-          const config = testBuilder.getPath("model.cfg", "workspace");
-          const content = `
-[one-import-tflite]
-input_path='model.tflite'
-          `;
-
-          testBuilder.writeFileSync("model.cfg", content, "workspace");
-          testBuilder.writeFileSync("model.tflite", "", "workspace");
-
-          const cfgList = [config];
-          const cfgToCfgObjMap = new CfgToCfgObjMap();
-          const baseModelToCfgMap = new BaseModelToCfgMap();
-          cfgToCfgObjMap.init(cfgList);
-          baseModelToCfgMap.init(cfgList, cfgToCfgObjMap);
-
-          assert.isDefined(baseModelToCfgMap.get(model));
-          assert.strictEqual(baseModelToCfgMap.get(model)!.length, 1);
-          assert.strictEqual(baseModelToCfgMap.get(model)![0], config);
-          assert.strictEqual(baseModelToCfgMap.size, 1);
-        });
-      });
-
-      suite("#reset()", function () {
-        test("existing path", function () {
-          const model = testBuilder.getPath("model.tflite", "workspace");
-          const config = testBuilder.getPath("model.cfg", "workspace");
-          const content = `
-[one-import-tflite]
-input_path='model.tflite'
-          `;
-
-          testBuilder.writeFileSync("model.cfg", content, "workspace");
-          testBuilder.writeFileSync("model.tflite", "", "workspace");
-
-          const cfgList = [config];
-          const cfgToCfgObjMap = new CfgToCfgObjMap();
-          const baseModelToCfgMap = new BaseModelToCfgMap();
-          cfgToCfgObjMap.init(cfgList);
-          baseModelToCfgMap.init(cfgList, cfgToCfgObjMap);
-
-          assert.isDefined(baseModelToCfgMap.get(model));
-          assert.strictEqual(baseModelToCfgMap.get(model)!.length, 1);
-          assert.strictEqual(baseModelToCfgMap.get(model)![0], config);
-          assert.strictEqual(baseModelToCfgMap.size, 1);
-
-          baseModelToCfgMap.reset(NodeType.config, config);
-
-          assert.isDefined(baseModelToCfgMap.get(model));
-          assert.strictEqual(baseModelToCfgMap.get(model)!.length, 0);
-          assert.strictEqual(baseModelToCfgMap.size, 1);
-        });
-        test("NEG: not existing path", function () {
-          const config = testBuilder.getPath("model.cfg", "workspace");
-
-          const cfgList = [config];
-          const cfgToCfgObjMap = new CfgToCfgObjMap();
-          const baseModelToCfgMap = new BaseModelToCfgMap();
-          cfgToCfgObjMap.init(cfgList);
-          baseModelToCfgMap.init(cfgList, cfgToCfgObjMap);
-
-          assert.strictEqual(baseModelToCfgMap.size, 0);
-          assert.doesNotThrow(() =>
-            baseModelToCfgMap.reset(NodeType.config, config)
-          );
-        });
-      });
-
-      suite("#update()", function () {
-        test("config path", function () {
-          const model = testBuilder.getPath("model.tflite", "workspace");
-          const config = testBuilder.getPath("model.cfg", "workspace");
-
-          const content = `
-[one-import-tflite]
-input_path='model.tflite'
-          `;
-
-          testBuilder.writeFileSync("model.cfg", content, "workspace");
-          testBuilder.writeFileSync("model.tflite", "", "workspace");
-
-          const cfgList = [config];
-          const cfgToCfgObjMap = new CfgToCfgObjMap();
-          const baseModelToCfgMap = new BaseModelToCfgMap();
-          cfgToCfgObjMap.init(cfgList);
-          baseModelToCfgMap.init(cfgList, cfgToCfgObjMap);
-
-          assert.isDefined(baseModelToCfgMap.get(model));
-          assert.strictEqual(baseModelToCfgMap.get(model)!.length, 1);
-          assert.strictEqual(baseModelToCfgMap.get(model)![0], config);
-          assert.strictEqual(baseModelToCfgMap.size, 1);
-
-          const newConfig = testBuilder.getPath("model.new.cfg", "workspace");
-          testBuilder.writeFileSync("model.new.cfg", content, "workspace");
-
-          baseModelToCfgMap.update(NodeType.config, config, newConfig);
-
-          assert.isDefined(baseModelToCfgMap.get(model));
-          assert.strictEqual(baseModelToCfgMap.get(model)!.length, 1);
-          assert.strictEqual(baseModelToCfgMap.get(model)![0], newConfig);
-          assert.strictEqual(baseModelToCfgMap.size, 1);
-        });
-
-        test("model and config names", function () {
-          const content = `
-[one-import-tflite]
-input_path='model.tflite'
-          `;
-
-          const oldModel = testBuilder.getPath("model.tflite", "workspace");
-          const config = testBuilder.getPath("model.cfg", "workspace");
-          testBuilder.writeFileSync("model.cfg", content, "workspace");
-          testBuilder.writeFileSync("model.tflite", "", "workspace");
-
-          const cfgList = [config];
-          const cfgToCfgObjMap = new CfgToCfgObjMap();
-          const baseModelToCfgMap = new BaseModelToCfgMap();
-          cfgToCfgObjMap.init(cfgList);
-          baseModelToCfgMap.init(cfgList, cfgToCfgObjMap);
-
-          assert.strictEqual(baseModelToCfgMap.size, 1);
-          assert.isDefined(baseModelToCfgMap.get(oldModel));
-          assert.strictEqual(baseModelToCfgMap.get(oldModel)!.length, 1);
-          assert.strictEqual(baseModelToCfgMap.get(oldModel)![0], config);
-
-          const newModel = testBuilder.getPath("model.new.tflite", "workspace");
-          const newContent = `
-[one-import-tflite]
-input_path='model.new.tflite'
-          `;
-
-          testBuilder.writeFileSync("model.cfg", newContent, "workspace");
-          testBuilder.writeFileSync("model.new.tflite", "", "workspace");
-
-          baseModelToCfgMap.update(NodeType.baseModel, oldModel, newModel);
-
-          assert.strictEqual(baseModelToCfgMap.size, 1);
-          assert.isUndefined(baseModelToCfgMap.get(oldModel));
-          assert.isDefined(baseModelToCfgMap.get(newModel));
-          assert.strictEqual(baseModelToCfgMap.get(newModel)!.length, 1);
-          assert.strictEqual(baseModelToCfgMap.get(newModel)![0], config);
-        });
-
-        test("NEG: not existing path", function () {
-          const content = `
-[one-import-tflite]
-input_path='model.tflite'
-          `;
-
-          const model = testBuilder.getPath("model.tflite", "workspace");
-          const config = testBuilder.getPath("model.cfg", "workspace");
-          testBuilder.writeFileSync("model.cfg", content, "workspace");
-          testBuilder.writeFileSync("model.tflite", "", "workspace");
-
-          const cfgList = [config];
-          const cfgToCfgObjMap = new CfgToCfgObjMap();
-          const baseModelToCfgMap = new BaseModelToCfgMap();
-          cfgToCfgObjMap.init(cfgList);
-          baseModelToCfgMap.init(cfgList, cfgToCfgObjMap);
-
-          assert.strictEqual(baseModelToCfgMap.size, 1);
-          assert.isDefined(baseModelToCfgMap.get(model));
-          assert.strictEqual(baseModelToCfgMap.get(model)!.length, 1);
-          assert.strictEqual(baseModelToCfgMap.get(model)![0], config);
-
-          assert.doesNotThrow(() => {
-            baseModelToCfgMap.update(NodeType.config, config, "/invalid/path");
-          });
-          assert.strictEqual(cfgToCfgObjMap.size, 1);
         });
       });
     });
