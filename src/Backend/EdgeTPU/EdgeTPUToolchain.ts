@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-import { Command } from "../Command";
-import { DebianToolchain } from "../ToolchainImpl/DebianToolchain";
-
 import * as ini from "ini";
 import * as fs from "fs";
 import * as path from "path";
+
 import { Logger } from "../../Utils/Logger";
+import { Command } from "../Command";
+import { PackageInfo } from "../Toolchain";
+import { DebianToolchain } from "../ToolchainImpl/DebianToolchain";
+import { Version } from "../Version";
+import { DebianCompiler } from "../CompilerImpl/DebianCompiler";
 
 class EdgeTPUDebianToolchain extends DebianToolchain {
   run(cfg: string): Command {
@@ -77,4 +80,64 @@ class EdgeTPUDebianToolchain extends DebianToolchain {
   }
 }
 
-export { EdgeTPUDebianToolchain };
+class EdgeTPUCompiler extends DebianCompiler {
+  constructor() {
+    super({
+      toolchainTypes: ["latest"],
+      toolchainName: "edgetpu-compiler",
+      debianToolchainClass: EdgeTPUDebianToolchain,
+      depends: [
+        new PackageInfo("edgetpu_compiler", new Version(16, 0, undefined)),
+      ],
+      prerequisites: "prerequisitesForGetEdgeTPUToolchain.sh",
+    });
+  }
+
+  parseVersion(version: string): Version {
+    if (!version.trim()) {
+      throw Error("Invalid version format.");
+    }
+
+    let _version = version;
+    let option = "";
+
+    const optionIndex = version.search(/[~+-]/);
+    if (optionIndex !== -1) {
+      option = version.slice(optionIndex);
+      _version = version.slice(0, optionIndex);
+    }
+
+    const splitedVersion = _version.split(".");
+
+    if (splitedVersion.length > 3) {
+      throw Error("Invalid version format.");
+    }
+
+    let major: number | string;
+    let minor: number | string;
+    let patch: number | string;
+
+    [major = "0", minor = "0", patch = "0"] = _version.split(".");
+
+    const epochIndex = major.search(/:/);
+    if (epochIndex !== -1) {
+      major = major.slice(epochIndex + 1);
+    }
+
+    major = Number(major);
+    minor = Number(minor);
+    patch = Number(patch);
+
+    if (isNaN(major) || isNaN(minor) || isNaN(patch)) {
+      throw Error("Invalid version format.");
+    }
+
+    if (splitedVersion.length === 2 && !option) {
+      return new Version(major, minor, undefined);
+    }
+
+    return new Version(major, minor, patch, option);
+  }
+}
+
+export { EdgeTPUDebianToolchain, EdgeTPUCompiler };
