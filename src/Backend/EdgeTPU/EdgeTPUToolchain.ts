@@ -149,7 +149,7 @@ class EdgeTPUToolchain implements Backend {
 
   constructor() {
     this.backendName = "EdgeTPU";
-    this.toolchainCompiler = undefined;
+    this.toolchainCompiler = new EdgeTPUCompiler();
   }
 
   name(): string {
