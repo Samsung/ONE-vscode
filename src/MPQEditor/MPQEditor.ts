@@ -94,14 +94,13 @@ export class MPQEditorProvider
     const uri = vscode.Uri.file(`${dirPath}/${mpqName}`);
 
     const edit = new vscode.WorkspaceEdit();
-    edit.createFile(uri);
-    edit.insert(uri, new vscode.Position(0, 0), content);
-
     try {
+      edit.createFile(uri);
+      edit.insert(uri, new vscode.Position(0, 0), content);
       await vscode.workspace.applyEdit(edit);
       let document = await vscode.workspace.openTextDocument(uri);
-      document.save();
-    } catch (error) {
+      await document.save();
+    } catch (error: any) {
       return undefined;
     }
 
@@ -588,7 +587,11 @@ export class MPQEditorProvider
       new vscode.Range(0, 0, document.lineCount, 0),
       text
     );
-    await vscode.workspace.applyEdit(edit);
+    try {
+      await vscode.workspace.applyEdit(edit);
+    } catch (error) {
+      Logger.error("MPQEditor", "failed to applyEdit");
+    }
   }
 
   /**
