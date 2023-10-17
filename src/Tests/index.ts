@@ -98,6 +98,7 @@ export async function run(): Promise<void> {
     ui: "tdd",
     color: true,
     fgrep: testFilter,
+    timeout: 10000,
   };
 
   const runner = new Mocha(mochaOpts);
