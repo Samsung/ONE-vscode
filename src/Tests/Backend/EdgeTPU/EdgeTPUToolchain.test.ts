@@ -20,10 +20,13 @@ import * as vscode from "vscode";
 import {
   EdgeTPUCompiler,
   EdgeTPUDebianToolchain,
+  EdgeTPUToolchain,
 } from "../../../Backend/EdgeTPU/EdgeTPUToolchain";
 import { ToolchainInfo } from "../../../Backend/Toolchain";
 import { Version } from "../../../Backend/Version";
 import { TestBuilder } from "../../TestBuilder";
+
+const edgeTPUBackendName = "EdgeTPU";
 
 const content = `
 [edgetpu-compile]
@@ -54,10 +57,6 @@ suite("Backend", function () {
     setup(() => {
       testBuilder = new TestBuilder(this);
       testBuilder.setUp();
-    });
-
-    teardown(() => {
-      testBuilder.tearDown();
     });
 
     suite("#run", function () {
@@ -118,6 +117,10 @@ suite("Backend", function () {
 
         assert.deepEqual(cmd, expectedStrs);
       });
+    });
+
+    teardown(() => {
+      testBuilder.tearDown();
     });
   });
 });
@@ -266,5 +269,34 @@ suite("EdgeTPUCompiler", function () {
         cmd
       );
     });
+  });
+
+  suite("EdgeTPUToolchain", function () {
+    suite("#constructor()", function () {
+      test("Create dummy EdgeTPUToolchain backend", function (pass) {
+        assert.doesNotThrow(() => new EdgeTPUToolchain());
+  
+        pass();
+        assert.ok(true);
+      });
+    });
+  
+    suite("#name()", function () {
+      test("returns backend name", function () {
+        const edgeTPUBackend = new EdgeTPUToolchain();
+        assert.strictEqual(edgeTPUBackend.name(), edgeTPUBackendName);
+      });
+    });
+  
+    suite("#compiler()", function () {
+      test("returns edgeTPUCompiler", function () {
+        const edgeTPUBackend = new EdgeTPUToolchain();
+        const edgeTPUCompiler = edgeTPUBackend.compiler();
+        assert.instanceOf(edgeTPUCompiler, EdgeTPUCompiler);
+      });
+    });
+  
+    // TODO
+    // Add test case for executor() and executors()
   });
 });
