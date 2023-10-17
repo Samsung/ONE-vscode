@@ -23,6 +23,7 @@ import { CfgEditorPanel } from "../CfgEditor/CfgEditorPanel";
 import { obtainWorkspaceRoots } from "../Utils/Helpers";
 import { Logger } from "../Utils/Logger";
 
+import { ConfigObj } from "./ConfigObject";
 import { ArtifactAttr } from "./ArtifactLocator";
 import { OneStorage } from "./OneStorage";
 
@@ -156,6 +157,21 @@ export abstract class Node {
   get typeAsString(): string {
     // Return a NodeType as a string value
     return NodeType[this.type];
+  }
+
+  /**
+   * Match possible node types from the given uri
+   */
+  static matchType(uri: vscode.Uri): NodeType {
+    if (BaseModelNode.extList.some((ext) => uri.fsPath.endsWith(ext))) {
+      return NodeType.baseModel;
+    } else if (ConfigNode.extList.some((ext) => uri.fsPath.endsWith(ext))) {
+      return NodeType.config;
+    } else if (ProductNode.extList.some((ext) => uri.fsPath.endsWith(ext))) {
+      return NodeType.product;
+    }
+
+    return NodeType.directory;
   }
 }
 
@@ -516,6 +532,16 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
   readonly onDidChangeTreeData: vscode.Event<Node | undefined | void> =
     this._onDidChangeTreeData.event;
 
+  private _onDidChangeConfig: vscode.EventEmitter<vscode.Uri> =
+    new vscode.EventEmitter<vscode.Uri>();
+  readonly onDidChangeConfig: vscode.Event<vscode.Uri> =
+    this._onDidChangeConfig.event;
+
+  private _onDidDeleteProduct: vscode.EventEmitter<vscode.Uri> =
+    new vscode.EventEmitter<vscode.Uri>();
+  readonly onDidDeleteProduct: vscode.Event<vscode.Uri> =
+    this._onDidDeleteProduct.event;
+
   private fileWatcher = vscode.workspace.createFileSystemWatcher(`**/*`);
 
   private _tree: Node[] | undefined;
@@ -543,30 +569,85 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
         provider.refresh();
       }),
       provider.fileWatcher.onDidChange((uri: vscode.Uri) => {
-        if (
-          [
-            ...BaseModelNode.extList,
-            ...ConfigNode.extList,
-            ...ProductNode.extList,
-          ].includes(path.parse(uri.path).ext)
-        ) {
-          Logger.info(
-            "OneExploer",
-            `Refresh explorer view on a file change in '${uri.path}'`
-          );
-          // TODO Handle by each node types
-          provider.refresh();
+        switch (Node.matchType(uri)) {
+          case NodeType.config:
+            provider._onDidChangeConfig.fire(uri);
+            break;
+          case NodeType.baseModel:
+          case NodeType.product:
+          default:
+            // Do nothing
+            break;
         }
       }),
-      provider.fileWatcher.onDidDelete((uri: vscode.Uri) => {
-        const nodes = OneStorage.getNodes(uri.fsPath);
-        if (nodes.length === 0) {
-          return;
-        }
+      provider.onDidChangeConfig((uri: vscode.Uri) => {
+        let nodesChanged: Node[] = [];
 
-        nodes.forEach((node) => {
-          OneStorage.delete(node, true);
-          provider.refresh(node.parent);
+        const oldCfgObj = OneStorage.getCfgObj(uri.fsPath);
+        const newCfgObj = ConfigObj.createConfigObj(uri)!;
+
+        const [adopters, droppers] = ConfigObj.diffBaseModels(
+          newCfgObj,
+          oldCfgObj
+        );
+
+        // Create new config node
+        adopters
+          .map((adopter) => OneStorage.getBaseModelNode(adopter))
+          .forEach((adopterNode) => {
+            OneStorage.insert(
+              NodeFactory.create(NodeType.config, uri.fsPath, adopterNode)
+            );
+            adopterNode.resetChildren();
+            adopterNode.getChildren();
+            nodesChanged.push(adopterNode);
+          });
+
+        // Remove old config node
+        OneStorage.getNodes(uri.fsPath).forEach((node) => {
+          if (droppers.some((dropper) => dropper === node?.parent?.path)) {
+            OneStorage.delete(node, true);
+          }
+        });
+
+        droppers
+          .map((dropper) => OneStorage.getBaseModelNode(dropper))
+          .forEach((dropperNode) => {
+            dropperNode.resetChildren();
+            dropperNode.getChildren();
+            nodesChanged.push(dropperNode);
+          });
+
+        nodesChanged.forEach((node) => {
+          provider._onDidChangeTreeData.fire(node);
+        });
+      }),
+      provider.fileWatcher.onDidDelete((uri: vscode.Uri) => {
+        switch (Node.matchType(uri)) {
+          case NodeType.product:
+            provider._onDidDeleteProduct.fire(uri);
+            break;
+          case NodeType.directory:
+          case NodeType.config:
+          case NodeType.baseModel:
+            OneStorage.getNodes(uri.fsPath).forEach((node) => {
+              OneStorage.delete(node, true);
+              provider._onDidChangeTreeData.fire(node.parent);
+            });
+            break;
+          default:
+            // Do nothing
+            break;
+        }
+      }),
+      provider.onDidDeleteProduct((uri: vscode.Uri) => {
+        OneStorage.getNodes(uri.fsPath).forEach((node) => {
+          OneStorage.delete(node);
+
+          const dropper = node.parent;
+          dropper!.resetChildren();
+          dropper!.getChildren();
+          provider._onDidChangeTreeData.fire(dropper);
         });
       }),
       vscode.workspace.onDidChangeWorkspaceFolders(() => {

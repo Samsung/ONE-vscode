@@ -121,6 +121,42 @@ export class ConfigObj {
     };
   }
 
+  static diffBaseModels(
+    newCfgObj?: ConfigObj,
+    oldCfgObj?: ConfigObj
+  ): [addedBaseModels: string[], removedBaseModels: string[]] {
+    const newBaseModels =
+      newCfgObj?.getBaseModelsExists.map((artifact) => artifact.path) ?? [];
+    const oldBaseModels =
+      oldCfgObj?.getBaseModelsExists.map((artifact) => artifact.path) ?? [];
+
+    const addedBaseModels =
+      newBaseModels.filter((path) => !oldBaseModels.includes(path)) ?? [];
+
+    const removedBaseModels =
+      oldBaseModels.filter((path) => !newBaseModels.includes(path)) ?? [];
+
+    return [addedBaseModels, removedBaseModels];
+  }
+
+  static diffProducts(
+    newCfgObj?: ConfigObj,
+    oldCfgObj?: ConfigObj
+  ): [addedProducts: string[], removedProducts: string[]] {
+    const newProducts =
+      newCfgObj?.getProductsExists.map((artifact) => artifact.path) ?? [];
+    const oldProducts =
+      oldCfgObj?.getProductsExists.map((artifact) => artifact.path) ?? [];
+
+    const addedProducts =
+      newProducts.filter((path) => !oldProducts.includes(path)) ?? [];
+
+    const removedProducts =
+      oldProducts.filter((path) => !newProducts.includes(path)) ?? [];
+
+    return [addedProducts, removedProducts];
+  }
+
   public updateBaseModelField(
     oldpath: string,
     newpath: string
