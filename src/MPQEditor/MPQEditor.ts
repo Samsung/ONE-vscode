@@ -100,7 +100,7 @@ export class MPQEditorProvider
     try {
       await vscode.workspace.applyEdit(edit);
       let document = await vscode.workspace.openTextDocument(uri);
-      document.save();
+      await document.save();
     } catch (error) {
       return undefined;
     }
