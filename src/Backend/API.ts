@@ -24,7 +24,7 @@ import { Logger } from "../Utils/Logger";
  * Interface of backend map
  * - Use Object class to use the only string key
  */
-interface BackendMap {
+export interface BackendMap {
   [key: string]: Backend;
 }
 

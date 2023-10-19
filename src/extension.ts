@@ -34,6 +34,7 @@ import { Logger } from "./Utils/Logger";
 import { VisqViewerProvider } from "./Visquv/VisqViewer";
 import { MPQEditorProvider } from "./MPQEditor/MPQEditor";
 import { MPQSelectionPanel } from "./MPQEditor/MPQCircleSelector";
+import { EdgeTPUToolchain } from "./Backend/EdgeTPU/EdgeTPUToolchain";
 
 /* istanbul ignore next */
 export function activate(context: vscode.ExtensionContext) {
@@ -87,6 +88,7 @@ export function activate(context: vscode.ExtensionContext) {
   MPQSelectionPanel.register(context);
 
   API.registerBackend(new OneToolchain());
+  API.registerBackend(new EdgeTPUToolchain());
 
   // returning backend registration function that will be called by backend extensions
   return API;
