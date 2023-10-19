@@ -62,7 +62,7 @@ suite("Backend", function () {
       assert.deepStrictEqual(globalBackendMap, expectedGlobalBackendMap);
     });
     test("registers a backend", function () {
-      assert.strictEqual(Object.entries(globalBackendMap).length, 1);
+      assert.strictEqual(Object.entries(globalBackendMap).length, 2);
 
       let backend = new BackendMockup();
       API.registerBackend(backend);
