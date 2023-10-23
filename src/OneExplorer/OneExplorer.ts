@@ -106,7 +106,7 @@ export abstract class Node {
    * @protected _parent
    * `undefined` only if it has no parent (tree root)
    */
-  protected _parent: Node | undefined;
+  public _parent: Node | undefined;
   uri: vscode.Uri;
 
   abstract icon: vscode.ThemeIcon;
@@ -125,12 +125,19 @@ export abstract class Node {
    */
   abstract _buildChildren: () => void;
 
+  getVisibleChildren(): Node[] {
+    return OneTreeDataProvider.didHideExtra
+      ? this.getChildren().filter((node) => !node.canHide)
+      : this.getChildren();
+  }
+
   getChildren(): Node[] {
     if (this._childNodes) {
       return this._childNodes;
     }
 
     this._buildChildren();
+
     return this._childNodes!;
   }
 
@@ -138,12 +145,28 @@ export abstract class Node {
     this._childNodes = undefined;
   }
 
-  get path(): string {
-    return this.uri.fsPath;
+  dropChild(child: Node): void{
+    this._childNodes = this._childNodes?.filter(node=>node.path !== child.path);
   }
 
-  get parent(): Node | undefined {
-    return this._parent;
+  adoptChild(child:Node): void{
+    if(!this._childNodes){
+      this._childNodes = [child];
+    }
+    else{
+      this._childNodes.push(child);
+    }
+  }
+  
+  set parent(adopter: Node) {
+    const dropper = this._parent;
+    dropper!.dropChild(this);
+    adopter.adoptChild(this);
+    this._parent = adopter;
+  }
+
+  get path(): string {
+    return this.uri.fsPath;
   }
 
   get name(): string {
@@ -879,6 +902,17 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
     this.refresh(undefined, false);
   }
 
+  init(): void {
+    this._tree = this._workspaceRoots.map(
+      (root) =>
+        NodeFactory.create(
+          NodeType.directory,
+          root.fsPath,
+          undefined
+        ) as DirectoryNode
+    );
+  }
+
   /**
    * Refresh the tree under the given Node
    * @command one.explorer.refresh
@@ -1221,7 +1255,7 @@ input_path=${modelName}.${extName}
       case NodeType.baseModel:
       case NodeType.config:
         return new OneNode(
-          node.getChildren().length > 0
+          node.getVisibleChildren().length > 0
             ? vscode.TreeItemCollapsibleState.Collapsed
             : vscode.TreeItemCollapsibleState.None,
           node
@@ -1242,9 +1276,7 @@ input_path=${modelName}.${extName}
       return this.getTree();
     }
 
-    return OneTreeDataProvider.didHideExtra
-      ? element.getChildren().filter((node) => !node.canHide)
-      : element.getChildren();
+    return element.getVisibleChildren();
   }
 
   /**
