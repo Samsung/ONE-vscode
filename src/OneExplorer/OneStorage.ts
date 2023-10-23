@@ -280,6 +280,13 @@ export class OneStorage {
     return OneStorage.get()._nodeMap.get(fsPath);
   }
 
+  public static getBaseModelNode(fsPath: string): Node {
+    const nodes = OneStorage.get()._nodeMap.get(fsPath);
+    assert.ok(nodes.length === 1);
+    assert.ok(nodes[0].type === NodeType.baseModel);
+    return nodes[0];
+  }
+
   public static insert(node: Node) {
     const inst = OneStorage.get();
 
