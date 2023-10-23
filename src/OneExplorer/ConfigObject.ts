@@ -341,7 +341,7 @@ export class ConfigObj {
       artifactAttr: {
         ext: ".tvn",
         icon: new vscode.ThemeIcon("symbol-variable"),
-        openViewType: "default",
+        openViewType: "one.viewer.metadata",
       },
       locator: new Locator((value: string) =>
         LocatorRunner.searchWithExt(".tvn", value)
