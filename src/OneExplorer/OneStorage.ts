@@ -106,12 +106,12 @@ class CfgToCfgObjMap {
   // TODO Revisit here
   public reset(type: NodeType, path: string) {
     switch (type) {
-      case NodeType.config:
+      case "config":
         this._map.delete(path);
         break;
-      case NodeType.baseModel:
-      case NodeType.product:
-      case NodeType.directory:
+      case "baseModel":
+      case "product":
+      case "directory":
       default:
         assert.fail(`Cannot reach here`);
         break;
@@ -126,7 +126,7 @@ class CfgToCfgObjMap {
    */
   public update(type: NodeType, path: string, newpath?: string) {
     switch (type) {
-      case NodeType.config: {
+      case "config": {
         this._map.delete(path);
 
         if (newpath) {
@@ -139,9 +139,9 @@ class CfgToCfgObjMap {
 
         break;
       }
-      case NodeType.baseModel:
-      case NodeType.product:
-      case NodeType.directory:
+      case "baseModel":
+      case "product":
+      case "directory":
       default:
         assert.fail(`Cannot reach here`);
         break;
@@ -228,7 +228,7 @@ export class OneStorage {
     instance._nodeMap.delete(node.path);
 
     switch (node.type) {
-      case NodeType.config:
+      case "config":
         instance._cfgToCfgObjMap.reset(node.type, node.path);
         break;
       default:
@@ -289,7 +289,7 @@ export class OneStorage {
 
     inst._nodeMap.insert(node.path, node);
 
-    if (node.type === NodeType.config) {
+    if (node.type === "config") {
       if (!inst._cfgToCfgObjMap.get(node.path)) {
         const cfgObj = ConfigObj.createConfigObj(node.uri);
         if (cfgObj) {

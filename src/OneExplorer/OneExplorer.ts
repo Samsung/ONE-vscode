@@ -23,8 +23,9 @@ import { CfgEditorPanel } from "../CfgEditor/CfgEditorPanel";
 import { obtainWorkspaceRoots } from "../Utils/Helpers";
 import { Logger } from "../Utils/Logger";
 
-import { ArtifactAttr } from "./ArtifactLocator";
 import { OneStorage } from "./OneStorage";
+import { ArtifactAttrProvider, ArtifactType } from "./Artifact";
+import { OneTreeItemGenerator } from "./OneTreeItemGenerator";
 
 // Exported for unit testing only
 export {
@@ -33,7 +34,7 @@ export {
   DirectoryNode as _unit_test_DirectoryNode,
   NodeFactory as _unit_test_NodeFactory,
   NodeType as _unit_test_NodeType,
-  OneNode as _unit_test_OneNode,
+  OneTreeItem as _unit_test_OneNode,
   ProductNode as _unit_test_ProductNode,
 };
 
@@ -65,63 +66,58 @@ export {
  * the config file.
  *
  */
-export enum NodeType {
+export type NodeType =
   /**
    * A directory which contains one or more baseModel.
    */
-  directory,
+  "directory" |
 
   /**
    * A base model from which ONE imports 'circle'.
    * EXAMPLE: .onnx, .tflite, .tf
    */
-  baseModel,
+  "baseModel"|
 
-  /**
+  /*
    * An ONE configuration file for onecc.
    * Which imports a targeted 'baseModel' (NOTE baseModel:config has 1:N relationship)
    */
-  config,
+  "config"|
 
   /**
    * All the result files obtained by running ONE config.
    *
    * EXAMPLE: .circle, .tvn, .log
    */
-  product,
-}
+  "product";
+
 
 export abstract class Node {
   abstract readonly type: NodeType;
   public readonly id: string;
+  public artifactType: ArtifactType;
   /**
    * @protected _childNodes
    * `undefined` when it's not build yet.
    * If it has no child, it is an empty array.
    */
-  protected _childNodes: Node[] | undefined;
-
-  /**
-   * @protected _parent
-   * `undefined` only if it has no parent (tree root)
-   */
-  protected _parent: Node | undefined;
+  protected _childNodes?: Node[];
+  protected _parent?: Node;
   uri: vscode.Uri;
 
-  abstract icon: vscode.ThemeIcon;
-  abstract openViewType: string | undefined;
-  abstract canHide: boolean;
-
-  constructor(uri: vscode.Uri, parent: Node | undefined) {
+  /**
+   * 
+   * @param uri 
+   * @param artifactType 
+   * @param parent 'undefined' if it's root
+   */
+  constructor(uri: vscode.Uri, artifactType: ArtifactType, parent?: Node) {
     this.id = Math.random().toString();
-    this._childNodes = undefined;
+    this.artifactType = artifactType;
     this.uri = uri;
     this._parent = parent;
   }
 
-  /**
-   * Build `_childNodes` on demand, which is initially undefined
-   */
   abstract _buildChildren: () => void;
 
   getChildren(): Node[] {
@@ -137,12 +133,29 @@ export abstract class Node {
     this._childNodes = undefined;
   }
 
-  get path(): string {
-    return this.uri.fsPath;
+  dropChild(child: Node): void {
+    this._childNodes = this._childNodes?.filter(
+      (node) => node.path !== child.path
+    );
   }
 
-  get parent(): Node | undefined {
-    return this._parent;
+  adoptChild(child: Node): void {
+    if (!this._childNodes) {
+      this._childNodes = [child];
+    } else {
+      this._childNodes.push(child);
+    }
+  }
+
+  set parent(adopter: Node) {
+    const dropper = this._parent;
+    dropper!.dropChild(this);
+    adopter.adoptChild(this);
+    this._parent = adopter;
+  }
+
+  get path(): string {
+    return this.uri.fsPath;
   }
 
   get name(): string {
@@ -152,60 +165,28 @@ export abstract class Node {
   get ext(): string {
     return path.extname(this.uri.fsPath);
   }
-
-  get typeAsString(): string {
-    // Return a NodeType as a string value
-    return NodeType[this.type];
-  }
 }
 
 class NodeFactory {
-  static create(
-    type: NodeType,
-    fpath: string,
-    parent: Node | undefined,
-    attr?: ArtifactAttr
-  ): Node {
+  static create(type: NodeType, fpath: string, parent?: Node, artifactType?: ArtifactType): Node {
     const uri = vscode.Uri.file(fpath);
 
     let node: Node;
     switch (type) {
-      case NodeType.directory: {
-        assert.strictEqual(
-          attr,
-          undefined,
-          "Directory nodes cannot have attributes"
-        );
-        node = new DirectoryNode(uri, parent);
+      case "directory": {
+        node = new DirectoryNode(uri, "DIRECTORY", parent);
         break;
       }
-      case NodeType.baseModel: {
-        node = new BaseModelNode(
-          uri,
-          parent,
-          attr?.openViewType,
-          attr?.icon,
-          attr?.canHide
-        );
+      case "baseModel": {
+        node = new BaseModelNode(uri, artifactType!, parent);
         break;
       }
-      case NodeType.config: {
-        assert.strictEqual(
-          attr,
-          undefined,
-          "Config nodes cannot have attributes"
-        );
-        node = new ConfigNode(uri, parent);
+      case "config": {
+        node = new ConfigNode(uri,  "CONFIG_ONE", parent);
         break;
       }
-      case NodeType.product: {
-        node = new ProductNode(
-          uri,
-          parent,
-          attr?.openViewType,
-          attr?.icon,
-          attr?.canHide
-        );
+      case "product": {
+        node = new ProductNode(uri, artifactType!, parent);
         break;
       }
       default: {
@@ -219,21 +200,11 @@ class NodeFactory {
   }
 }
 
-class DirectoryNode extends Node {
-  readonly type = NodeType.directory;
+class DirectoryNode extends Node{
+  readonly type = "directory";
 
-  // DO NOT OPEN DIRECTORY AS ALWAYS
-  readonly openViewType = undefined;
-  // DISPLAY FOLDER ICON AS ALWAYS
-  readonly icon = vscode.ThemeIcon.Folder;
-  // DO NOT HIDE DIRECTORY NODE AS ALWAYS
-  readonly canHide = false;
-
-  constructor(uri: vscode.Uri, parent: Node | undefined) {
-    assert.ok(fs.statSync(uri.fsPath));
-    assert.strictEqual(fs.statSync(uri.fsPath).isDirectory(), true);
-
-    super(uri, parent);
+  constructor(uri: vscode.Uri, artifactType: ArtifactType, parent?: Node) {
+    super(uri, artifactType, parent);
   }
 
   /**
@@ -254,45 +225,40 @@ class DirectoryNode extends Node {
       const fstat = fs.statSync(fpath);
 
       if (fstat.isDirectory()) {
-        const dirNode = NodeFactory.create(NodeType.directory, fpath, this);
+        const dirNode = NodeFactory.create(
+          "directory",
+          fpath,
+          this
+        );
 
         if (dirNode && dirNode.getChildren().length > 0) {
           this._childNodes!.push(dirNode);
         }
       } else if (fstat.isFile()) {
-        if (fname.endsWith(".pb")) {
+        if(fname.endsWith(".pb")){
           const baseModelNode = NodeFactory.create(
-            NodeType.baseModel,
+            "baseModel",
             fpath,
             this,
-            {
-              ext: ".pb",
-              openViewType: "default",
-            }
+            "BASEMODEL_PB"
           );
 
           this._childNodes!.push(baseModelNode);
-        } else if (fname.endsWith(".tflite")) {
+        }else if(fname.endsWith(".tflite")){
           const baseModelNode = NodeFactory.create(
-            NodeType.baseModel,
+            "baseModel",
             fpath,
             this,
-            {
-              ext: ".tflite",
-              openViewType: "one.viewer.circle",
-            }
+            "BASEMODEL_TFLITE"
           );
 
           this._childNodes!.push(baseModelNode);
-        } else if (fname.endsWith(".onnx")) {
+        }else if(fname.endsWith(".onnx")){
           const baseModelNode = NodeFactory.create(
-            NodeType.baseModel,
+            "baseModel",
             fpath,
             this,
-            {
-              ext: ".onnx",
-              openViewType: "one.viewer.circle",
-            }
+            "BASEMODEL_ONNX"
           );
 
           this._childNodes!.push(baseModelNode);
@@ -303,34 +269,10 @@ class DirectoryNode extends Node {
 }
 
 class BaseModelNode extends Node {
-  readonly type = NodeType.baseModel;
+  readonly type = "baseModel";
 
-  static readonly extList = [".tflite", ".pb", ".onnx"];
-  // Do not open file as default
-  static defaultOpenViewType = undefined;
-  // Display 'symbol-variable' icon to represent model file as default
-  static defaultIcon = new vscode.ThemeIcon("symbol-variable");
-  // Show file always as default
-  static defaultCanHide = false;
-
-  openViewType: string | undefined = BaseModelNode.defaultOpenViewType;
-  icon = BaseModelNode.defaultIcon;
-  canHide = BaseModelNode.defaultCanHide;
-
-  constructor(
-    uri: vscode.Uri,
-    parent: Node | undefined,
-    openViewType: string | undefined = BaseModelNode.defaultOpenViewType,
-    icon: vscode.ThemeIcon = BaseModelNode.defaultIcon,
-    canHide: boolean = BaseModelNode.defaultCanHide
-  ) {
-    assert.ok(fs.statSync(uri.fsPath));
-    assert.strictEqual(fs.statSync(uri.fsPath).isFile(), true);
-
-    super(uri, parent);
-    this.openViewType = openViewType;
-    this.icon = icon;
-    this.canHide = canHide;
+  constructor(uri: vscode.Uri, artifactType: ArtifactType, parent?: Node) {
+    super(uri, artifactType, parent);
   }
 
   /**
@@ -350,7 +292,7 @@ class BaseModelNode extends Node {
       return;
     }
     configPaths.forEach((configPath) => {
-      const configNode = NodeFactory.create(NodeType.config, configPath, this);
+      const configNode = NodeFactory.create("config", configPath, this);
 
       if (configNode) {
         this._childNodes!.push(configNode);
@@ -360,36 +302,11 @@ class BaseModelNode extends Node {
 }
 
 class ConfigNode extends Node {
-  readonly type = NodeType.config;
+  readonly type = "config";
 
-  static readonly extList = [".cfg"];
-  // Open file with one.editor.cfg as default
-  static defaultOpenViewType = "one.editor.cfg";
-  // Display gear icon as default
-  static defaultIcon = new vscode.ThemeIcon("gear");
-  // Show file always as default
-  static defaultCanHide = false;
-
-  openViewType = ConfigNode.defaultOpenViewType;
-  icon = ConfigNode.defaultIcon;
-  canHide = ConfigNode.defaultCanHide;
-
-  constructor(
-    uri: vscode.Uri,
-    parent: Node | undefined,
-    openViewType: string = ConfigNode.defaultOpenViewType,
-    icon: vscode.ThemeIcon = ConfigNode.defaultIcon,
-    canHide: boolean = ConfigNode.defaultCanHide
-  ) {
-    assert.ok(fs.statSync(uri.fsPath));
-    assert.strictEqual(fs.statSync(uri.fsPath).isFile(), true);
-
-    super(uri, parent);
-    this.openViewType = openViewType;
-    this.icon = icon;
-    this.canHide = canHide;
+  constructor(uri: vscode.Uri, artifactType: ArtifactType, parent?: Node) {
+    super(uri, artifactType, parent);
   }
-
   /**
    * Build a sub-tree under the node
    *
@@ -407,15 +324,10 @@ class ConfigNode extends Node {
       return;
     }
 
-    const products = cfgObj.getProductsExists;
+    const products: {type: ArtifactType, path: string}[] = cfgObj.getProductsExists;
 
-    products.forEach((product) => {
-      const productNode = NodeFactory.create(
-        NodeType.product,
-        product.path,
-        this,
-        product.attr
-      );
+    products.forEach(({type, path}) => {
+      const productNode = NodeFactory.create("product", path, this, type);
 
       if (productNode) {
         this._childNodes!.push(productNode);
@@ -425,42 +337,10 @@ class ConfigNode extends Node {
 }
 
 class ProductNode extends Node {
-  readonly type = NodeType.product;
+  readonly type = "product";
 
-  static readonly extList = [
-    ".circle",
-    ".tvn",
-    ".tv2m",
-    ".tv2w",
-    ".tv2o",
-    ".json",
-    ".circle.log",
-  ];
-  // Do not open file as default
-  static defaultOpenViewType = undefined;
-  // Display file icon as default
-  static defaultIcon = vscode.ThemeIcon.File;
-  // Show file always as default
-  static defaultCanHide = false;
-
-  openViewType: string | undefined = ProductNode.defaultOpenViewType;
-  icon = ProductNode.defaultIcon;
-  canHide = ProductNode.defaultCanHide;
-
-  constructor(
-    uri: vscode.Uri,
-    parent: Node | undefined,
-    openViewType: string | undefined = ProductNode.defaultOpenViewType,
-    icon: vscode.ThemeIcon = ProductNode.defaultIcon,
-    canHide: boolean = ProductNode.defaultCanHide
-  ) {
-    assert.ok(fs.statSync(uri.fsPath));
-    assert.strictEqual(fs.statSync(uri.fsPath).isFile(), true);
-
-    super(uri, parent);
-    this.openViewType = openViewType;
-    this.icon = icon;
-    this.canHide = canHide;
+  constructor(uri: vscode.Uri, artifactType: ArtifactType, parent?: Node) {
+    super(uri, artifactType, parent);
   }
 
   _buildChildren = (): void => {
@@ -468,11 +348,12 @@ class ProductNode extends Node {
   };
 }
 
-export class OneNode extends vscode.TreeItem {
-  constructor(
-    public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-    public readonly node: Node
-  ) {
+
+export class OneTreeItem extends vscode.TreeItem {
+  constructor(public readonly node: Node, 
+    icon: vscode.ThemeIcon,
+    collapsibleState: vscode.TreeItemCollapsibleState,
+    openViewType?: string) {
     super(node.name, collapsibleState);
 
     this.id = node.id;
@@ -480,15 +361,15 @@ export class OneNode extends vscode.TreeItem {
     this.description = true;
     this.tooltip = `${this.node.path}`;
 
-    if (node.openViewType) {
+    if (openViewType) {
       this.command = {
         command: "vscode.openWith",
         title: "Open with Custom Viewer",
-        arguments: [node.uri, node.openViewType],
+        arguments: [node.uri, openViewType],
       };
     }
 
-    this.iconPath = node.icon;
+    this.iconPath = icon;
 
     // To show contextual menu on items in OneExplorer,
     // we have to use "when" clause under "view/item/context" under "menus".
@@ -505,7 +386,7 @@ export class OneNode extends vscode.TreeItem {
     //   basemode.tflite
     //   product.tvn
     const extname = path.extname(node.uri.fsPath);
-    this.contextValue = node.typeAsString + extname;
+    this.contextValue = node.type as string + extname;
   }
 }
 
@@ -522,13 +403,17 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
   private _treeView: vscode.TreeView<Node> | undefined;
   private _workspaceRoots: vscode.Uri[] = [];
 
-  public static didHideExtra: boolean = false;
+  public _oneTreeItemGenerator?: OneTreeItemGenerator;
+  public _nodePropDef?: NodePropDef;
 
+  public static didHideExtra: boolean = false;
   public static hasSelectedCfg: boolean = false;
 
   public static register(context: vscode.ExtensionContext) {
     const provider = new OneTreeDataProvider(context.extension.extensionKind);
 
+    provider._nodePropProvider = new NodePropProvider(new NodeOptionProvider);
+    provider._oneTreeItemGenerator = new OneTreeItemGenerator(new NodeOptionProvider);
     provider._treeView = vscode.window.createTreeView("OneExplorerView", {
       treeDataProvider: provider,
       showCollapseAll: true,
@@ -543,13 +428,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
         provider.refresh();
       }),
       provider.fileWatcher.onDidChange((uri: vscode.Uri) => {
-        if (
-          [
-            ...BaseModelNode.extList,
-            ...ConfigNode.extList,
-            ...ProductNode.extList,
-          ].includes(path.parse(uri.path).ext)
-        ) {
+        if (path.extname(uri.fsPath) === ".cfg") {
           Logger.info(
             "OneExploer",
             `Refresh explorer view on a file change in '${uri.path}'`
@@ -798,6 +677,17 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
     this.refresh(undefined, false);
   }
 
+  init(): void {
+    this._tree = this._workspaceRoots.map(
+      (root) =>
+        NodeFactory.create(
+          "directory",
+          root.fsPath,
+          undefined
+        ) as DirectoryNode
+    );
+  }
+
   /**
    * Refresh the tree under the given Node
    * @command one.explorer.refresh
@@ -903,9 +793,9 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
    * @todo prohibit special characters from new name for security ('..', '*', etc)
    */
   async rename(node: Node): Promise<void> {
-    assert.ok(node.type === NodeType.config);
+    assert.ok(node.type === "config");
 
-    if (node.type !== NodeType.config) {
+    if (node.type !== "config") {
       return;
     }
 
@@ -929,7 +819,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
    * @todo prohibit special characters from new name for security ('..', '*', etc)
    */
   async refactor(node: Node): Promise<void> {
-    assert.ok(node.type === NodeType.baseModel);
+    assert.ok(node.type === "baseModel");
 
     // Ask the new name of the model file
     const newname = await this.askNewName(node);
@@ -995,7 +885,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
    * @command one.explorer.delete
    */
   async delete(node: Node): Promise<void> {
-    const isDirectory = node.type === NodeType.directory;
+    const isDirectory = node.type === "directory";
 
     const title = isDirectory
       ? `Are you sure you want to delete '${node.name}' and its contents?`
@@ -1114,7 +1004,7 @@ input_path=${modelName}.${extName}
 
     const configs: Node[] = [];
     for (var node of this._treeView!.selection) {
-      if (node.type === NodeType.config) {
+      if (node.type === "config") {
         configs.push(node);
       }
     }
@@ -1131,23 +1021,8 @@ input_path=${modelName}.${extName}
     return element.parent;
   }
 
-  getTreeItem(node: Node): OneNode {
-    switch (node.type) {
-      case NodeType.directory:
-        return new OneNode(vscode.TreeItemCollapsibleState.Expanded, node);
-      case NodeType.product:
-        return new OneNode(vscode.TreeItemCollapsibleState.None, node);
-      case NodeType.baseModel:
-      case NodeType.config:
-        return new OneNode(
-          node.getChildren().length > 0
-            ? vscode.TreeItemCollapsibleState.Collapsed
-            : vscode.TreeItemCollapsibleState.None,
-          node
-        );
-      default:
-        throw Error("Undefined NodeType");
-    }
+  getTreeItem(node: Node): OneTreeItem {
+    return this._oneTreeItemGenerator!.generate(node);
   }
 
   /**
@@ -1156,34 +1031,27 @@ input_path=${modelName}.${extName}
    * (2) mapping the nodes to OneNode(Tree Item) using getTreeItem()
    * Therefore, to decide whether to display node or not, getChildren() should make decision.
    */
-  getChildren(element?: Node): vscode.ProviderResult<Node[]> {
-    if (!element) {
+  getChildren(node?: Node): vscode.ProviderResult<Node[]> {
+    if (!node) {
       return this.getTree();
     }
 
-    return OneTreeDataProvider.didHideExtra
-      ? element.getChildren().filter((node) => !node.canHide)
-      : element.getChildren();
+    const getVisibleChildren = (node: Node): Node[] => {
+      return OneTreeDataProvider.didHideExtra
+        ? node.getChildren().filter((node) => !node.canHide)
+        : node.getChildren();
+    };
+
+    return node.getVisibleChildren();
   }
 
   /**
    * Get the root of the tree
    */
   private getTree(): Node[] | undefined {
-    if (!this._workspaceRoots || this._workspaceRoots.length === 0) {
-      return undefined;
-    }
-
-    if (!this._tree) {
-      this._tree = this._workspaceRoots.map(
-        (root) =>
-          NodeFactory.create(
-            NodeType.directory,
-            root.fsPath,
-            undefined
-          ) as DirectoryNode
-      );
-    }
+    this._tree =
+      this._tree ??
+      this._workspaceRoots?.map((root) => NodeFactory.create("directory", root.fsPath, undefined));
 
     return this._tree;
   }

@@ -16,67 +16,7 @@
 
 import * as assert from "assert";
 import * as path from "path";
-import * as vscode from "vscode";
-
-/**
- * 'Artifact'
- * The collective term is and inclusive, it includes two types of files:
- * (1) Pre-existing files to run ONE config, a.k.a. base models (.tflite, .onnx, ...)
- * (2) Result files after running ONE config, a.k.a. products (.circle, .log, ...)
- */
-export interface Artifact {
-  /**
-   * An artifact's attribute
-   */
-  attr: ArtifactAttr;
-
-  /**
-   * A full path in file system
-   */
-  path: string;
-}
-
-export interface ArtifactAttr {
-  /**
-   * ABOUT EXTENDED EXTENSION (WITH MULTIPLE PERIODS, *.extended.ext)
-   *
-   * Generally, file name extensions are defined from the last period.
-   * Let's define 'extended file extension' with multiple periods.
-   *
-   * EXAMPLE
-   *
-   * (File name)          model.opt.circle.log
-   * (Extension)          .log
-   * (Extended Extension) .circle.log OR opt.circle.log (selective)
-   */
-  ext: string;
-
-  /**
-   * An icon for the artifact
-   *
-   * If not set, it is set by OneExplorer Node.
-   */
-  icon?: vscode.ThemeIcon;
-
-  /**
-   * A openViewType for the artifact
-   *
-   * It is used as an argument for 'vscode.openWith' command
-   * to open the file with specified editor.
-   *
-   * If not set, it is set by OneExplorer Node.
-   * If 'default'(string), open with text editor
-   *
-   * @reference vscode.openWith
-   */
-  openViewType?: string;
-
-  /**
-   * Hidden from the default view.
-   * The status can be unhide by command
-   */
-  canHide?: boolean;
-}
+import {ArtifactType} from "./Artifact";
 
 /**
  * 'Locator' is to grep matching paths inside Ini Object
@@ -210,7 +150,7 @@ export class Locator {
 
 // TODO Move to backend side with some modification
 export class LocatorRunner {
-  private artifactLocators: { artifactAttr: ArtifactAttr; locator: Locator }[] =
+  private artifactLocators: { type: ArtifactType, locator: Locator }[] =
     [];
 
   /**
@@ -266,7 +206,7 @@ export class LocatorRunner {
   };
 
   public register(artifactLocator: {
-    artifactAttr: ArtifactAttr;
+    type: ArtifactType;
     locator: Locator;
   }) {
     this.artifactLocators.push(artifactLocator);
@@ -275,22 +215,21 @@ export class LocatorRunner {
   /**
    * @brief Run registered locators
    *
-   * @returns Artifact[] with paths
+   * @returns {ArtifactType: type, path: string}[] with paths
    */
-  public run(iniObj: object, dir: string): Artifact[] {
+  public run(iniObj: object, dir: string): {type:ArtifactType, path:string}[] {
     assert.strictEqual(
       path.isAbsolute(dir),
       true,
       "FIX CALLER: dir argument must be an absolute path"
     );
 
-    let artifacts: Artifact[] = [];
+    let artifacts: {type:ArtifactType, path:string}[] = [];
 
-    // Get Artifacts with {type, ext, path}
-    this.artifactLocators.forEach(({ artifactAttr, locator }) => {
+    this.artifactLocators.forEach(({ type, locator }) => {
       let filePaths: string[] = locator.locate(iniObj, dir);
       filePaths.forEach((filePath) => {
-        let artifact: Artifact = { attr: artifactAttr, path: filePath };
+        let artifact = { type: type, path: filePath };
         artifacts.push(artifact);
       });
     });
