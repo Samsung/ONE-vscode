@@ -62,5 +62,13 @@
     "(MIT OR CC0-1.0)": {
         "permitted": "conditional",
         "caution": "Non-single license is hard to be judged automatically"
+    },
+
+    "(MIT AND Zlib)": {
+        "permitted": "yes"
+    },
+
+    "(MIT OR GPL-3.0-or-later)": {
+        "permitted": "yes"
     }
 }
