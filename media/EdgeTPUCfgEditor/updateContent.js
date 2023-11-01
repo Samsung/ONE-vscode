@@ -39,23 +39,23 @@ export function applyUpdates() {
   postMessageToVsCode({ type: "updateDocument" });
 }
 
-export function updateEdgeTPUStep(){
+export function updateEdgeTPUStep() {
   postMessageToVsCode({
     type: "setParam",
     section: "edgetpu-compiler",
     param: "edgetpu-compile",
     value: document.getElementById("checkboxEdgeTPUCompile").checked
-    ? "True"
-    : "False",
-  }); 
+      ? "True"
+      : "False",
+  });
   postMessageToVsCode({
     type: "setParam",
     section: "edgetpu-compiler",
     param: "edgetpu-profile",
     value: document.getElementById("checkboxEdgeTPUProfile").checked
-    ? "True"
-    : "False",
-  }); 
+      ? "True"
+      : "False",
+  });
 }
 
 function addPostfixToFileName(filePath = "", postfix = "") {
