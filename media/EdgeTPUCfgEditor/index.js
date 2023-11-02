@@ -18,11 +18,9 @@ import { displayCfgToEditor } from "./displaycfg.js";
 import {
   applyUpdates,
   updateEdgeTPUStep,
-  updateEdgeTPUCompile
+  updateEdgeTPUCompile,
 } from "./updateContent.js";
-import {
-  updateStepUI,
-} from "./updateUI.js";
+import { updateStepUI } from "./updateUI.js";
 import { postMessageToVsCode } from "./vscodeapi.js";
 
 // Just like a regular webpage we need to wait for the webview
@@ -48,7 +46,7 @@ function main() {
         break;
       case "applyDialogPath":
         document.getElementById(message.elemID).value = message.path;
-        switch (message.step) {          
+        switch (message.step) {
           case "EdgeTPUCompile":
             updateEdgeTPUCompile();
             break;
@@ -84,20 +82,24 @@ function setDefaultEdgetpuValues(name) {
 }
 
 function registerCompilerStep() {
-  const checkboxEdgeTPUCompile = document.getElementById("checkboxEdgeTPUCompile");
-  const checkboxEdgeTPUProfile = document.getElementById("checkboxEdgeTPUProfile");
+  const checkboxEdgeTPUCompile = document.getElementById(
+    "checkboxEdgeTPUCompile"
+  );
+  const checkboxEdgeTPUProfile = document.getElementById(
+    "checkboxEdgeTPUProfile"
+  );
   const stepEdgeTPUCompile = document.getElementById("stepEdgeTPUCompile");
   const stepEdgeTPUProfile = document.getElementById("stepEdgeTPUProfile");
 
   checkboxEdgeTPUCompile.addEventListener("click", function () {
-    updateEdgeTPUStep();    
+    updateEdgeTPUStep();
     applyUpdates();
   });
   checkboxEdgeTPUProfile.addEventListener("click", function () {
-    updateEdgeTPUStep();    
+    updateEdgeTPUStep();
     applyUpdates();
   });
-  
+
   stepEdgeTPUCompile.addEventListener("click", function () {
     updateStepUI("EdgeTPUCompile");
   });
@@ -155,7 +157,7 @@ function registerCompileOptions() {
       edgeTPUDelegateSearchStep.value < 1
         ? "1"
         : edgeTPUDelegateSearchStep.value;
-        updateEdgeTPUCompile();
+    updateEdgeTPUCompile();
     applyUpdates();
   });
 }

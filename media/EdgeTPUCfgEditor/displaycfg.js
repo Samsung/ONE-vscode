@@ -23,7 +23,6 @@ export function displayCfgToEditor(cfg) {
     edgeTPUCompiler["edgetpu-profile"]
   );
 
-
   const edgeTPUCompile = cfg["edgetpu-compile"];
   document.getElementById("EdgeTPUInputPath").value = cfgString(
     edgeTPUCompile?.["input_path"]
