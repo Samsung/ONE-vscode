@@ -129,7 +129,7 @@ input_path=${modelName}
 
           const modelPath = testBuilder.getPath(modelName, "workspace");
           {
-            assert.isUndefined(OneStorage.getCfgs(modelPath));
+            assert.isEmpty(OneStorage.getCfgs(modelPath));
           }
         });
         test("NEG: Returns undefined for tflite file compiled with edgetpu", function () {
