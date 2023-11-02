@@ -19,6 +19,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 
+import { BackendContext } from "../Backend/API";
 import { obtainWorkspaceRoots } from "../Utils/Helpers";
 import { Logger } from "../Utils/Logger";
 
@@ -1027,19 +1028,10 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
       });
   }
 
-  /**
-   * Select the option for the configuration you want to create
-   * Return information about the selected option
-   *
-   * @param modelName A base model's name
-   * @param extName A base model's extension name
-   *
-   */
-  private async generateCfgInfo(
-    modelName: string,
+  private async askCfgExt(
     extName: string
-  ): Promise<CfgInfo | undefined> {
-    //Options must be added according to extension
+  ): Promise<string | undefined> {
+    // Options must be added according to extension
     const options: vscode.QuickPickItem[] = [
       { label: ".cfg", description: "configuration file of onecc compiler" },
     ];
@@ -1054,7 +1046,6 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
     const placeHolder = options.map((option) => option.label).join(" / ");
 
     let selectedLabel: string | undefined = ".cfg";
-    let cfgData: ICfgData | undefined = undefined;
 
     //If options array only has the `.cfg` option, skip selecting it.
     if (options.length !== 1) {
@@ -1064,8 +1055,24 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
       });
       selectedLabel = selectedOption?.label;
     }
+    
+    return selectedLabel;
+  }
 
-    switch (selectedLabel) {
+  /**
+   * Select the option for the configuration you want to create
+   * Return information about the selected option
+   *
+   * @param modelName A base model's name
+   * @param extName A base model's extension name
+   */
+  private async generateCfgInfo(
+    modelName: string,
+    extName: string,
+    cfgExt: string
+  ): Promise<CfgInfo> {
+    let cfgData : ICfgData | undefined = undefined;
+    switch (cfgExt) {
       case ".cfg":
         cfgData = new CfgData();
         break;
@@ -1073,11 +1080,10 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
         cfgData = new EdgeTPUCfgData();
         break;
       default:
-        cfgData = undefined;
-        break;
+        throw Error("OneExplorer: Cannot reach here");
     }
 
-    return cfgData?.generateCfgInfo(modelName, extName);
+    return cfgData!.generateCfgInfo(modelName, extName);
   }
 
   /**
@@ -1093,12 +1099,14 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
     const modelName = path.parse(node.path).name;
     const extName = path.parse(node.path).ext.slice(1);
 
-    const cfgInfo = await this.generateCfgInfo(modelName, extName);
+    const cfgExt = BackendContext.isRegistered("EdgeTPU") ? await this.askCfgExt(extName) : ".cfg";
 
-    //When the user presses the ESC button, it is cancelled
-    if (cfgInfo === undefined) {
+    if (cfgExt === undefined) {
+      // When the user presses the ESC button, it is cancelled
       return;
     }
+
+    const cfgInfo = await this.generateCfgInfo(modelName, extName, cfgExt);
 
     // TODO(dayo) Auto-configure more fields
     const validateInputPath = (cfgName: string): string | undefined => {

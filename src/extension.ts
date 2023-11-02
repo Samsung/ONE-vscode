@@ -88,7 +88,7 @@ export function activate(context: vscode.ExtensionContext) {
   MPQSelectionPanel.register(context);
 
   API.registerBackend(new OneToolchain());
-  API.registerBackend(new EdgeTPUToolchain());
+  //API.registerBackend(new EdgeTPUToolchain());
 
   // returning backend registration function that will be called by backend extensions
   return API;
