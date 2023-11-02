@@ -304,7 +304,7 @@ class DirectoryNode extends Node {
         if (dirNode && dirNode.getChildren().length > 0) {
           this._childNodes!.push(dirNode);
         }
-      } else if (fstat.isFile()) {
+      } else if (fstat.isFile() && this.isBaseModel(fname)) {
         if (fname.endsWith(".pb")) {
           const baseModelNode = NodeFactory.create(
             NodeType.baseModel,
