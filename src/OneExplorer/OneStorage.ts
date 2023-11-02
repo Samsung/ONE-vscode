@@ -24,6 +24,7 @@ import { Logger } from "../Utils/Logger";
 
 import { ConfigObj } from "./ConfigObject";
 import { Node, NodeType } from "./OneExplorer";
+import { BackendContext } from "../Backend/API";
 
 export {
   BaseModelToCfgMap as _unit_test_BaseModelToCfgMap,
@@ -244,7 +245,7 @@ export class OneStorage {
     };
 
     try {
-      const extList = [".cfg", ".edgetpucfg"];
+      const extList = BackendContext.isRegistered("EdgeTPU") ? [".cfg", ".edgetpucfg"] : [".cfg"];
 
       return roots
         .map((root) =>
