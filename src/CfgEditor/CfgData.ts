@@ -15,6 +15,7 @@
  */
 
 import * as ini from "ini";
+import { ICfgData } from "./ICfgData";
 
 const sections = [
   "onecc",
@@ -41,28 +42,24 @@ const sections = [
 //   }
 // }
 //
-export class CfgData {
+export class CfgData implements ICfgData {
   private _oneConfig: any = undefined;
 
   constructor() {}
 
-  // returns data decoded or parsed as object
   getAsConfig(): any {
     return this._oneConfig;
   }
 
-  // returns data encoded or stringfied as string
   getAsString(): string {
     return ini.stringify(this._oneConfig);
   }
 
-  // sets data with object decoded or parsed
   setWithConfig(cfg: any): void {
     this._oneConfig = cfg;
     this.resolveDeprecated();
   }
 
-  // sets data with string encoded or stringfied
   setWithString(text: string): void {
     this._oneConfig = ini.parse(text);
     this.resolveDeprecated();
