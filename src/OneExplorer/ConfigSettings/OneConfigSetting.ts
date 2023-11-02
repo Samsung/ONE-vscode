@@ -130,7 +130,7 @@ export class OneConfigSetting extends ConfigSetting {
       artifactAttr: {
         ext: ".trace.json",
         icon: new vscode.ThemeIcon("graph"),
-        openViewType: "one.editor.jsonTracer",
+        openViewType: "default",
         canHide: true,
       },
       locator: new Locator((value: string) => {
@@ -144,7 +144,7 @@ export class OneConfigSetting extends ConfigSetting {
       artifactAttr: {
         ext: ".json",
         icon: new vscode.ThemeIcon("graph"),
-        openViewType: "one.editor.jsonTracer",
+        openViewType: "default",
         canHide: true,
       },
       locator: new Locator(
