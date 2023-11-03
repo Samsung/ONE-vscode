@@ -1139,9 +1139,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
       });
   }
 
-  private async askCfgExt(
-    extName: string
-  ): Promise<string | undefined> {
+  private async askCfgExt(extName: string): Promise<string | undefined> {
     // Options must be added according to extension
     const options: vscode.QuickPickItem[] = [
       { label: ".cfg", description: "configuration file of onecc compiler" },
@@ -1166,7 +1164,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
       });
       selectedLabel = selectedOption?.label;
     }
-    
+
     return selectedLabel;
   }
 
@@ -1182,7 +1180,7 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
     extName: string,
     cfgExt: string
   ): Promise<CfgInfo> {
-    let cfgData : ICfgData | undefined = undefined;
+    let cfgData: ICfgData | undefined = undefined;
     switch (cfgExt) {
       case ".cfg":
         cfgData = new CfgData();
@@ -1210,7 +1208,9 @@ export class OneTreeDataProvider implements vscode.TreeDataProvider<Node> {
     const modelName = path.parse(node.path).name;
     const extName = path.parse(node.path).ext.slice(1);
 
-    const cfgExt = BackendContext.isRegistered("EdgeTPU") ? await this.askCfgExt(extName) : ".cfg";
+    const cfgExt = BackendContext.isRegistered("EdgeTPU")
+      ? await this.askCfgExt(extName)
+      : ".cfg";
 
     if (cfgExt === undefined) {
       // When the user presses the ESC button, it is cancelled
