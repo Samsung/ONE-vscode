@@ -22,6 +22,7 @@ import * as vscode from "vscode";
 import { obtainWorkspaceRoots } from "../Utils/Helpers";
 import { Logger } from "../Utils/Logger";
 
+import { BackendContext } from "../Backend/API";
 import { ConfigObj } from "./ConfigObject";
 import { ArtifactAttr } from "./ArtifactLocator";
 import { OneStorage } from "./OneStorage";
