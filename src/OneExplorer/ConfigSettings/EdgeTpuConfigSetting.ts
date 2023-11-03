@@ -90,6 +90,7 @@ export class EdgeTpuConfigSetting extends ConfigSetting {
       artifactAttr: {
         ext: ".tflite",
         icon: new vscode.ThemeIcon("symbol-variable"),
+        openViewType: "one.viewer.circle",
       },
       locator: new Locator((value: string) => {
         value += "";
