@@ -182,6 +182,7 @@ class ToolchainEnv extends Env {
     return new Promise<boolean>((resolve, reject) => {
       const jobs: Array<Job> = [];
       const job = new JobConfig(toolchain.run(cfg));
+      job.notiTitle = `Running ${toolchain.info.name}`;
       job.workDir = path.dirname(cfg);
       job.successCallback = () => resolve(true);
       job.failureCallback = () => reject();

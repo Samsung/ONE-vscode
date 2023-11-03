@@ -27,7 +27,7 @@ class JobConfig extends JobCommand {
     super(cmd);
     this.jobType = JobType.tConfig;
     this.name = "config";
-    this.notiTitle = "Running onecc...";
+    this.notiTitle = "Running tools...";
     this.valid = true;
     this.isCancelable = true;
   }
