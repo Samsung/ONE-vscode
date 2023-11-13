@@ -200,6 +200,26 @@ suite("OneCompiler", function () {
     });
   });
 
+  suite("#prerequisitesForGetToolchains", function () {
+    test("returns a command which executes a shell script for prerequisites", function () {
+      const oneCompiler = new OneCompiler();
+      const extensionId = "Samsung.one-vscode";
+      const ext = vscode.extensions.getExtension(
+        extensionId
+      ) as vscode.Extension<any>;
+      const scriptPath = vscode.Uri.joinPath(
+        ext!.extensionUri,
+        "script",
+        "prerequisitesForGetOneToolchain.sh"
+      ).fsPath;
+      const cmd = `sudo /bin/sh ${scriptPath}`;
+      assert.deepStrictEqual(
+        oneCompiler.prerequisitesForGetToolchains().str(),
+        cmd
+      );
+    });
+  });
+
   suite("OneToolchain", function () {
     suite("#constructor()", function () {
       test("Create dummy OneToolchain backend", function (pass) {
