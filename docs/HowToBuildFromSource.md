@@ -2,14 +2,9 @@
 
 If you want to use the latest version of ONE-vscode, let's do the following:
 
-## STEP1. Install vsce
+## STEP1. Install prerequisites
 
-[vsce](https://code.visualstudio.com/api/working-with-extensions/publishing-extension) is `Visual Studio Code Extension`.
-- You should install [Node.js and npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) before installing vsce
-
-```console
-$ npm install -g vsce
-```
+You should install [Node.js and npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm). 
 
 ## STEP2. Clone repository
 
@@ -17,14 +12,19 @@ git clone `ONE-vscode`
 
 ```console
 $ git clone https://github.com/Samsung/ONE-vscode.git
+$ cd ONE-vscode
 ```
 
 ## STEP3. Create vsix package
 
+To install required node package depedencies, simply run `npm install`.
+
 ```console
 ONE-vscode$ npm install
-...
+```
 
+To create visx package, run `vsce package`.
+```
 ONE-vscode$ vsce package
 Executing prepublish script 'npm run vscode:prepublish'...
 
