@@ -67,6 +67,7 @@ const registerBackend = (backend: Backend) => {
   // TODO: Consider better way to refresh toolchainView after backend's registration.
   vscode.commands.executeCommand("one.toolchain.refresh");
   vscode.commands.executeCommand("one.device.refresh");
+  vscode.commands.executeCommand("one.explorer.refresh");
 };
 
 export const API = {
