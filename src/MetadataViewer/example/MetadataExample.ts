@@ -20,6 +20,7 @@ TODO Replace this sample logic into real logic
 */
 export function getMetadata(_path: any) {
   return {
+    /* eslint-disable */
     "test.log": {
       "file-extension": "log",
       "created-time": new Date().toLocaleString(),
@@ -28,12 +29,10 @@ export function getMetadata(_path: any) {
 
       "toolchain-version": "toolchain v1.3.0",
       "onecc-version": "1.20.0",
-      operations: { "op-total": 50, ops: ["conv2d", "relu", "conv", "spp"] },
-      "cfg-settings": {
+      Operations: { "op-total": 50, ops: ["conv2d", "relu", "conv", "spp"] },
+      Config: {
         onecc: {
           "one-import-tf": true,
-          "one-import-tflite": false,
-          "one-import-onnx": false,
           "one-quantize": true,
         },
         "one-import-tf": {
@@ -51,5 +50,6 @@ export function getMetadata(_path: any) {
         },
       },
     },
+    /* eslint-enable */
   };
 }
