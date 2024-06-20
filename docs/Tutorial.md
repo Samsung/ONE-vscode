@@ -1,6 +1,7 @@
 # Tutorial
 
 ## Table of Contents
+
 - [How to install ONE-vscode](#how-to-install-one-vscode)
 - [Screen layout](#screen-layout)
 - [Workspace](#workspace)
@@ -40,7 +41,7 @@ Backend extension should be installed _after_ installing ONE-vscode extension.
 ### Use ONE-vscode without any backend extension
 ONE-vscode supports `ONE` backend by default. This requires [Docker Installation](https://docs.docker.com/desktop/install/ubuntu/) and [root privileges](https://docs.docker.com/engine/install/linux-postinstall/). However it supports only basic compilation. If you want to compile for a specific hardware model, please install backend extensions.
 
-<img src="./OneToolchain.jpg" width=1000/>
+![](OneToolchain.jpg)
 
 ### Build from source
 
@@ -50,7 +51,7 @@ For developers who want to build the latest extension file by themselves, read [
 
 ONE-vscode has 6 screen components.
 
-<img src="./ScreenLayout.jpg" width=1000/>
+![](ScreenLayout.jpg)
 
 1. `ONE icon`
     - Clicking this will load ONE-vscode extension into vscode
@@ -101,7 +102,7 @@ One example you can get is in [res/modelDir/truediv](../res/modelDir/truediv/). 
 
 You can also edit the cfg file with GUI cfg editor.
 
-<img src="one-explorer-cfg-editor.gif"/>
+![](one-explorer-cfg-editor.gif)
 
 ## Compile a model
 
