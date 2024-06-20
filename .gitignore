@@ -9,3 +9,7 @@ test-results.xml
 
 # production for react-app
 build
+
+# python bytecode
+.pyc
+__pycache__
