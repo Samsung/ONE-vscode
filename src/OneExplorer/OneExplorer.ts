@@ -22,6 +22,7 @@ import * as vscode from "vscode";
 import { obtainWorkspaceRoots } from "../Utils/Helpers";
 import { Logger } from "../Utils/Logger";
 
+import { BackendContext } from "../Backend/API";
 import { ConfigObj } from "./ConfigObject";
 import { ArtifactAttr } from "./ArtifactLocator";
 import { OneStorage } from "./OneStorage";
@@ -214,15 +215,10 @@ class NodeFactory {
           "Config nodes cannot have attributes"
         );
         const ext = path.extname(fpath);
-        switch (ext) {
-          case ".edgetpucfg": {
-            node = new ConfigNode(uri, parent, "one.editor.edgetpucfg");
-            break;
-          }
-          case ".cfg":
-          default: {
-            node = new ConfigNode(uri, parent);
-          }
+        if (BackendContext.isRegistered("EdgeTPU") && ext === ".edgetpucfg") {
+          node = new ConfigNode(uri, parent, "one.editor.edgetpucfg");
+        } else {
+          node = new ConfigNode(uri, parent);
         }
         break;
       }
